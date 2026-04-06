@@ -21,7 +21,7 @@ export default function HomeScreen() {
     const router = useRouter();
 
     const handleTile = (id: string) => {
-        // placeholder — each module will be wired up as we build them
+        if (id === 'shopping') router.push('/shopping');
     };
 
     return (
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     },
     tileLabel: {
         fontSize: 18,
-        fontWeight: '500',
+        fontWeight: '600',
         color: Colors.primary,
         textAlign: 'center',
     },
