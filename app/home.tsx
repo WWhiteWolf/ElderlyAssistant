@@ -9,12 +9,14 @@ import {
 import { Colors } from '../constants/Colors';
 
 const modules = [
+    { id: 'settings', label: 'Settings', icon: '⚙️' },
     { id: 'shopping', label: 'Shopping List', icon: '🛒' },
-    { id: 'timer', label: 'Timer Alerts', icon: '⏱️' },
     { id: 'spell', label: 'Spell Assist', icon: '🔤' },
-    { id: 'todo', label: 'To-Do List', icon: '✅' },
-    { id: 'calendar', label: 'Calendar', icon: '📆' },
-    { id: 'routine', label: 'Daily Routine', icon: '📅' },
+    { id: 'week', label: 'Week Ahead', icon: '📆' },
+    { id: 'timer', label: 'Timer Alerts', icon: '⏱️' },
+    { id: 'myday', label: 'My Day', icon: '📅' },
+    { id: 'mollie', label: 'Mollie', icon: '🐕' },
+    { id: 'todo', label: 'To-Do', icon: '✅' },
 ];
 
 export default function HomeScreen() {
@@ -22,6 +24,7 @@ export default function HomeScreen() {
 
     const handleTile = (id: string) => {
         if (id === 'shopping') router.push('/shopping');
+        if (id === 'timer') router.push('/timer');
     };
 
     return (

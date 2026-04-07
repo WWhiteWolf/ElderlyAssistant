@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/Colors';
 
 interface Item {
@@ -88,12 +89,14 @@ export default function ShoppingScreen() {
 
     return (
         <GestureHandlerRootView style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-                    <Text style={styles.backText}>← Home</Text>
-                </TouchableOpacity>
-                <Text style={styles.title}>Shopping List</Text>
-            </View>
+            <SafeAreaView style={{ backgroundColor: Colors.primary }}>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => router.replace('/home')} style={styles.backBtn}>
+                        <Text style={styles.backText}>← Home</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.title}>Shopping List</Text>
+                </View>
+            </SafeAreaView>
 
             <View style={styles.bridge} />
 
@@ -198,8 +201,7 @@ const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: Colors.background },
     header: {
         backgroundColor: Colors.primary,
-        paddingTop: 15,
-        paddingBottom: 12,
+        paddingTop: 20,
         paddingHorizontal: 20,
         flexDirection: 'row',
         alignItems: 'center',
