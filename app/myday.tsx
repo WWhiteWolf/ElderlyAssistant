@@ -1,0 +1,644 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import * as Notifications from 'expo-notifications';
+import { SchedulableTriggerInputTypes } from 'expo-notifications';
+import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import {
+    Alert,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '../constants/Colors';
+interface ScheduleItem {
+    id: string;
+    label: string;
+    hour: number;
+    minute: number;
+    completed: boolean;
+}
+
+interface HistoryEntry {
+    id: string;
+    date: string;
+    sched: string;
+    actual: string;
+    what?: string;
+    note?: string;
+}
+
+const INITIAL_MEALS: ScheduleItem[] = [
+    { id: '1', label: 'Breakfast', hour: 8, minute: 0, completed: false },
+    { id: '2', label: 'Lunch', hour: 12, minute: 0, completed: false },
+    { id: '3', label: 'Snack', hour: 15, minute: 0, completed: false },
+    { id: '4', label: 'Dinner', hour: 18, minute: 0, completed: false },
+];
+export default function MyDayScreen() {
+    const router = useRouter();
+    const [schedule, setSchedule] = useState<ScheduleItem[]>(INITIAL_MEALS);
+    const [history, setHistory] = useState<HistoryEntry[]>([]);
+    const [showPicker, setShowPicker] = useState(false);
+    const [activeId, setActiveId] = useState<string | null>(null);
+    const [tempName, setTempName] = useState('');
+    const [tempWhat, setTempWhat] = useState('');
+    const [tempNote, setTempNote] = useState('');
+    const [showLogModal, setShowLogModal] = useState(false);
+    const [showNameEdit, setShowNameEdit] = useState(false);
+    const [pendingLogId, setPendingLogId] = useState<string | null>(null);
+    const [editEntry, setEditEntry] = useState<HistoryEntry | null>(null);
+    const [coffeeCount, setCoffeeCount] = useState(0);
+    const [showCoffeeModal, setShowCoffeeModal] = useState(false);
+    const [tempCoffeeNote, setTempCoffeeNote] = useState('');
+    const [editWhat, setEditWhat] = useState('');
+    const [editNote, setEditNote] = useState('');
+    useEffect(() => {
+        const setup = async () => {
+            const { status } = await Notifications.requestPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Permission Needed', 'Please enable notifications in settings.');
+            }
+            Notifications.setNotificationHandler({
+                handleNotification: async () => ({
+                    shouldShowAlert: true,
+                    shouldPlaySound: true,
+                    shouldSetBadge: false,
+                    shouldShowBanner: true,
+                    shouldShowList: true,
+                }),
+            });
+            await loadData();
+        };
+        setup();
+    }, []);
+
+    const loadData = async () => {
+        try {
+            const savedDate = await AsyncStorage.getItem('my_last_date');
+            const today = new Date().toLocaleDateString();
+            const savedSched = await AsyncStorage.getItem('my_schedule');
+            const savedHist = await AsyncStorage.getItem('my_history');
+            if (savedHist) setHistory(JSON.parse(savedHist));
+            const parsedSched = savedSched ? JSON.parse(savedSched) : null;
+            if (savedDate !== today) {
+                const resetSched = parsedSched
+                    ? parsedSched.map((s: ScheduleItem) => ({ ...s, completed: false }))
+                    : INITIAL_MEALS;
+                setSchedule(resetSched);
+                await AsyncStorage.setItem('my_last_date', today);
+                await saveData(resetSched, savedHist ? JSON.parse(savedHist) : []);
+            } else {
+                if (parsedSched) setSchedule(parsedSched);
+            }
+            await scheduleAllNotifications();
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const saveData = async (s: ScheduleItem[], h: HistoryEntry[]) => {
+        await AsyncStorage.setItem('my_schedule', JSON.stringify(s));
+        await AsyncStorage.setItem('my_history', JSON.stringify(h));
+        await scheduleAllNotifications();
+    };
+
+    const scheduleAllNotifications = async () => {
+        await Notifications.cancelAllScheduledNotificationsAsync();
+        for (const item of schedule) {
+            if (!item.completed) {
+                await Notifications.scheduleNotificationAsync({
+                    content: {
+                        title: 'Daily Routine',
+                        body: `Time for ${item.label}!`,
+                    },
+                    trigger: {
+                        type: SchedulableTriggerInputTypes.DAILY,
+                        hour: item.hour,
+                        minute: item.minute,
+                    } as Notifications.DailyTriggerInput,
+                });
+            }
+        }
+    };
+
+    const format12Hour = (h: number, m: number) => {
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+    };
+
+    const openLogModal = (id: string) => {
+        setPendingLogId(id);
+        setTempWhat('');
+        setTempNote('');
+        setShowLogModal(true);
+    };
+
+    const confirmLog = () => {
+        if (!pendingLogId) return;
+        const item = schedule.find(i => i.id === pendingLogId);
+        if (!item) return;
+        const now = new Date().toLocaleTimeString([], {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: false,
+        });
+        const newEntry: HistoryEntry = {
+            id: Date.now().toString(),
+            date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
+            sched: format12Hour(item.hour, item.minute),
+            actual: now,
+            what: tempWhat || '',
+            note: tempNote || '',
+        };
+        const updatedHist = [newEntry, ...history].slice(0, 50);
+        const updatedSched = schedule.map(s =>
+            s.id === pendingLogId ? { ...s, completed: true } : s
+        );
+        setHistory(updatedHist);
+        setSchedule(updatedSched);
+        saveData(updatedSched, updatedHist);
+        setShowLogModal(false);
+        setPendingLogId(null);
+    };
+
+    const snoozeReminder = () => {
+        Alert.alert(
+            'Snooze Reminders',
+            'How long?',
+            [
+                {
+                    text: '15 Minutes', onPress: async () => {
+                        await Notifications.cancelAllScheduledNotificationsAsync();
+                        await Notifications.scheduleNotificationAsync({
+                            content: { title: 'Snooze Over', body: 'Your 15 minute snooze is up!' },
+                            trigger: {
+                                type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+                                seconds: 900,
+                            } as Notifications.TimeIntervalTriggerInput,
+                        });
+                    },
+                },
+                {
+                    text: '30 Minutes', onPress: async () => {
+                        await Notifications.cancelAllScheduledNotificationsAsync();
+                        await Notifications.scheduleNotificationAsync({
+                            content: { title: 'Snooze Over', body: 'Your 30 minute snooze is up!' },
+                            trigger: {
+                                type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+                                seconds: 1800,
+                            } as Notifications.TimeIntervalTriggerInput,
+                        });
+                    },
+                },
+                {
+                    text: '60 Minutes', onPress: async () => {
+                        await Notifications.cancelAllScheduledNotificationsAsync();
+                        await Notifications.scheduleNotificationAsync({
+                            content: { title: 'Snooze Over', body: 'Your 60 minute snooze is up!' },
+                            trigger: {
+                                type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+                                seconds: 3600,
+                            } as Notifications.TimeIntervalTriggerInput,
+                        });
+                    },
+                },
+                { text: 'Cancel', style: 'cancel' },
+            ]
+        );
+    };
+
+    const onTimeChange = (event: any, date?: Date) => {
+        setShowPicker(false);
+        setActiveId(null);
+        if (event.type === 'set' && date && activeId) {
+            const updated = schedule.map(s =>
+                s.id === activeId
+                    ? { ...s, hour: date.getHours(), minute: date.getMinutes() }
+                    : s
+            );
+            setSchedule(updated);
+            saveData(updated, history);
+        }
+    };
+
+    const addMeal = () => {
+        const newItem: ScheduleItem = {
+            id: Date.now().toString(),
+            label: 'New Meal',
+            hour: 12,
+            minute: 0,
+            completed: false,
+        };
+        const updated = [...schedule, newItem];
+        setSchedule(updated);
+        saveData(updated, history);
+    };
+
+    const deleteMeal = (id: string) => {
+        Alert.alert('Delete', 'Remove this meal from your schedule?', [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Delete', style: 'destructive', onPress: () => {
+                    const updated = schedule.filter(s => s.id !== id);
+                    setSchedule(updated);
+                    saveData(updated, history);
+                },
+            },
+        ]);
+    };
+
+    const confirmCoffee = () => {
+        const now = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false });
+        const newEntry: HistoryEntry = {
+            id: Date.now().toString(),
+            date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
+            sched: 'Coffee',
+            actual: now,
+            what: tempCoffeeNote || '',
+            note: '',
+        };
+        const updatedHist = [newEntry, ...history].slice(0, 50);
+        const newCount = coffeeCount + 1;
+        setCoffeeCount(newCount);
+        setHistory(updatedHist);
+        saveData(schedule, updatedHist);
+        setShowCoffeeModal(false);
+        setTempCoffeeNote('');
+    };
+
+    const decrementCoffee = () => {
+        if (coffeeCount > 0) setCoffeeCount(coffeeCount - 1);
+    };
+    return (
+        <GestureHandlerRootView style={styles.container}>
+            <SafeAreaView style={{ backgroundColor: Colors.primary }}>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => router.replace('/home')} style={styles.backBtn}>
+                        <Text style={styles.backText}>← Home</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.title}>My Day</Text>
+                </View>
+            </SafeAreaView>
+
+            <View style={styles.bridge} />
+
+            <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Meal Schedule</Text>
+                    {schedule.map(item => (
+                        <Swipeable
+                            key={item.id}
+                            renderRightActions={() => (
+                                <TouchableOpacity
+                                    style={styles.swipeDelete}
+                                    onPress={() => deleteMeal(item.id)}
+                                >
+                                    <Text style={styles.swipeDeleteText}>Delete</Text>
+                                </TouchableOpacity>
+                            )}
+                        >
+                            <View style={styles.row}>
+                                <TouchableOpacity
+                                    style={styles.labelArea}
+                                    onPress={() => {
+                                        setActiveId(item.id);
+                                        setTempName(item.label);
+                                        setShowNameEdit(true);
+                                    }}
+                                >
+                                    <Text style={styles.itemLabel}>{item.label}</Text>
+                                    <TouchableOpacity onPress={() => { setActiveId(item.id); setShowPicker(true); }}>
+                                        <Text style={styles.timeText}>{format12Hour(item.hour, item.minute)}</Text>
+                                    </TouchableOpacity>
+                                    <Text style={styles.hintText}>Tap name to edit · Tap time to change</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.logBtn, item.completed && styles.loggedBtn]}
+                                    onPress={() => openLogModal(item.id)}
+                                >
+                                    <Text style={styles.logBtnText}>{item.completed ? '✓' : 'Log'}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </Swipeable>
+                    ))}
+                </View>
+
+                <View style={styles.coffeeBox}>
+                    <Text style={styles.coffeeTitle}>Coffee</Text>
+                    <View style={styles.coffeeControls}>
+                        <TouchableOpacity style={styles.minusBtn} onPress={decrementCoffee}>
+                            <Text style={styles.counterBtnText}>-</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.coffeeCount}>{coffeeCount}</Text>
+                        <TouchableOpacity style={styles.plusBtn} onPress={() => { setTempCoffeeNote(''); setShowCoffeeModal(true); }}>
+                            <Text style={styles.counterBtnText}>+</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                <TouchableOpacity style={styles.snoozeBtn} onPress={snoozeReminder}>
+                    <Text style={styles.snoozeBtnText}>Snooze Reminders</Text>
+                </TouchableOpacity>
+
+                <View style={styles.historySection}>
+                    <Text style={styles.sectionTitle}>My Meal Log</Text>
+                    <ScrollView style={styles.historyScroll} nestedScrollEnabled={true}>
+                        {history.map(l => (
+                            <TouchableOpacity key={l.id} style={styles.historyItem} onPress={() => {
+                                setEditEntry(l);
+                                setEditWhat(l.what || '');
+                                setEditNote(l.note || '');
+                            }}>
+                                <Text style={styles.historyText}>
+                                    {l.date} | {l.sched} → {l.actual}
+                                    {l.what ? ` | ${l.what}` : ''}
+                                    {l.note ? ` | ${l.note}` : ''}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
+                </View>
+
+            </ScrollView>
+
+            {showLogModal && (
+                <View style={styles.modal}>
+                    <Text style={styles.modalTitle}>Log Meal</Text>
+                    <Text style={styles.inputLabel}>What did you eat?</Text>
+                    <TextInput style={styles.input} value={tempWhat} onChangeText={setTempWhat} placeholder="e.g. Oatmeal, toast..." />
+                    <Text style={styles.inputLabel}>Notes (optional)</Text>
+                    <TextInput style={styles.input} value={tempNote} onChangeText={setTempNote} placeholder="Any details..." />
+                    <View style={styles.modalBtns}>
+                        <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowLogModal(false)}>
+                            <Text style={styles.cancelBtnText}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.confirmBtn} onPress={confirmLog}>
+                            <Text style={styles.confirmBtnText}>Log</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
+
+            {showCoffeeModal && (
+                <View style={styles.modal}>
+                    <Text style={styles.modalTitle}>Log Coffee</Text>
+                    <Text style={styles.inputLabel}>Notes (optional)</Text>
+                    <TextInput style={styles.input} value={tempCoffeeNote} onChangeText={setTempCoffeeNote} placeholder="e.g. black, with cream..." autoFocus={true} />
+                    <View style={styles.modalBtns}>
+                        <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowCoffeeModal(false)}>
+                            <Text style={styles.cancelBtnText}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.confirmBtn} onPress={confirmCoffee}>
+                            <Text style={styles.confirmBtnText}>Log</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
+
+            {editEntry && (
+                <View style={styles.modal}>
+                    <Text style={styles.modalTitle}>Edit Log Entry</Text>
+                    <Text style={styles.inputLabel}>What did you eat?</Text>
+                    <TextInput style={styles.input} value={editWhat} onChangeText={setEditWhat} placeholder="e.g. Oatmeal, toast..." />
+                    <Text style={styles.inputLabel}>Notes (optional)</Text>
+                    <TextInput style={styles.input} value={editNote} onChangeText={setEditNote} placeholder="Any details..." />
+                    <View style={styles.modalBtns}>
+                        <TouchableOpacity style={styles.cancelBtn} onPress={() => setEditEntry(null)}>
+                            <Text style={styles.cancelBtnText}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.confirmBtn} onPress={() => {
+                            const updated = history.map(h =>
+                                h.id === editEntry.id ? { ...h, what: editWhat, note: editNote } : h
+                            );
+                            setHistory(updated);
+                            saveData(schedule, updated);
+                            setEditEntry(null);
+                        }}>
+                            <Text style={styles.confirmBtnText}>Save</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
+
+            {showNameEdit && activeId && (
+                <View style={styles.modal}>
+                    <Text style={styles.inputLabel}>Meal Name:</Text>
+                    <TextInput style={styles.input} value={tempName} onChangeText={setTempName} placeholder="Enter name..." autoFocus={true} />
+                    <View style={styles.modalBtns}>
+                        <TouchableOpacity style={styles.cancelBtn} onPress={() => { setShowNameEdit(false); setActiveId(null); }}>
+                            <Text style={styles.cancelBtnText}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.confirmBtn} onPress={() => {
+                            if (activeId) {
+                                const updated = schedule.map(s => s.id === activeId ? { ...s, label: tempName } : s);
+                                setSchedule(updated);
+                                saveData(updated, history);
+                            }
+                            setShowNameEdit(false);
+                            setActiveId(null);
+                        }}>
+                            <Text style={styles.confirmBtnText}>OK</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
+
+            {showPicker && activeId && (
+                <View style={styles.modal}>
+                    <DateTimePicker
+                        value={new Date(new Date().setHours(
+                            schedule.find(i => i.id === activeId)?.hour || 0,
+                            schedule.find(i => i.id === activeId)?.minute || 0
+                        ))}
+                        mode="time"
+                        is24Hour={false}
+                        display="default"
+                        onChange={onTimeChange}
+                    />
+                </View>
+            )}
+
+        </GestureHandlerRootView>
+    );
+}
+const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: Colors.background },
+    header: {
+        paddingTop: 20,
+        paddingHorizontal: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    backBtn: { marginRight: 16 },
+    backText: { color: Colors.lightBlue, fontSize: 16 },
+    title: {
+        fontSize: 26,
+        fontWeight: '500',
+        color: Colors.textLight,
+        fontStyle: 'italic',
+        fontFamily: 'Georgia',
+    },
+    bridge: { height: 8, backgroundColor: Colors.bridge },
+    scroll: { flex: 1 },
+    section: {
+        backgroundColor: Colors.white,
+        borderRadius: 12,
+        padding: 15,
+        margin: 12,
+        borderWidth: 0.5,
+        borderColor: Colors.lightBlue,
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: Colors.primary,
+        marginBottom: 10,
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    labelArea: { flex: 1, marginRight: 10 },
+    itemLabel: { fontSize: 17, color: Colors.primary, fontWeight: '500' },
+    timeText: { fontSize: 15, color: Colors.bridge, marginTop: 2 },
+    hintText: { fontSize: 11, color: '#aaa', marginTop: 2 },
+    logBtn: {
+        backgroundColor: Colors.primary,
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+    },
+    loggedBtn: { backgroundColor: Colors.bridge },
+    logBtnText: { color: Colors.white, fontWeight: '600' },
+    addBtn: {
+        marginTop: 8,
+        padding: 10,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: Colors.primary,
+        alignItems: 'center',
+    },
+    addBtnText: { color: Colors.primary, fontWeight: '600' },
+    coffeeBox: {
+        flexDirection: 'row',
+        backgroundColor: Colors.white,
+        borderRadius: 12,
+        padding: 15,
+        marginHorizontal: 12,
+        marginBottom: 12,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderWidth: 0.5,
+        borderColor: Colors.lightBlue,
+    },
+    coffeeTitle: { fontSize: 18, fontWeight: '600', color: Colors.primary },
+    coffeeControls: { flexDirection: 'row', alignItems: 'center' },
+    coffeeCount: { fontSize: 22, fontWeight: 'bold', width: 40, textAlign: 'center', color: Colors.primary },
+    minusBtn: {
+        backgroundColor: '#ffcc00',
+        width: 40, height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    plusBtn: {
+        backgroundColor: Colors.bridge,
+        width: 40, height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    counterBtnText: { fontSize: 24, color: Colors.white, fontWeight: 'bold' },
+    snoozeBtn: {
+        backgroundColor: '#FF9500',
+        padding: 15,
+        borderRadius: 12,
+        alignItems: 'center',
+        marginHorizontal: 12,
+        marginBottom: 12,
+    },
+    snoozeBtnText: { color: Colors.white, fontWeight: '600', fontSize: 16 },
+    historySection: { marginHorizontal: 12, marginBottom: 12 },
+    historyScroll: {
+        height: 300,
+        backgroundColor: Colors.white,
+        borderRadius: 8,
+        padding: 8,
+        borderWidth: 0.5,
+        borderColor: Colors.lightBlue,
+    },
+    historyItem: {
+        borderBottomWidth: 0.5,
+        borderBottomColor: '#eee',
+        paddingVertical: 6,
+    },
+    historyText: { fontSize: 13, color: Colors.text, lineHeight: 18 },
+    modal: {
+        position: 'absolute',
+        top: 100,
+        left: 20,
+        right: 20,
+        backgroundColor: Colors.white,
+        borderRadius: 12,
+        padding: 16,
+        borderWidth: 0.5,
+        borderColor: Colors.lightBlue,
+        elevation: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 4,
+        zIndex: 999,
+    },
+    modalTitle: { fontSize: 18, fontWeight: '600', color: Colors.primary, marginBottom: 10 },
+    inputLabel: { fontSize: 14, color: '#666', marginBottom: 4 },
+    input: {
+        borderWidth: 0.5,
+        borderColor: Colors.lightBlue,
+        borderRadius: 8,
+        padding: 10,
+        fontSize: 16,
+        backgroundColor: Colors.background,
+        marginBottom: 10,
+        color: Colors.text,
+    },
+    modalBtns: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 },
+    cancelBtn: {
+        backgroundColor: '#ccc',
+        padding: 10,
+        borderRadius: 8,
+        flex: 1,
+        alignItems: 'center',
+        marginRight: 8,
+    },
+    cancelBtnText: { color: '#333', fontWeight: '600' },
+    confirmBtn: {
+        backgroundColor: Colors.primary,
+        padding: 10,
+        borderRadius: 8,
+        flex: 1,
+        alignItems: 'center',
+    },
+    confirmBtnText: { color: Colors.white, fontWeight: '600' },
+    swipeDelete: {
+        backgroundColor: '#e74c3c',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 80,
+        borderRadius: 10,
+        marginBottom: 12,
+    },
+    swipeDeleteText: {
+        color: '#fff',
+        fontWeight: '600',
+        fontSize: 15,
+    },
+});

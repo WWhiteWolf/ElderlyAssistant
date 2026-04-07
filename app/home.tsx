@@ -25,6 +25,7 @@ export default function HomeScreen() {
     const handleTile = (id: string) => {
         if (id === 'shopping') router.push('/shopping');
         if (id === 'timer') router.push('/timer');
+        if (id === 'myday') router.push('/myday');
     };
 
     return (
