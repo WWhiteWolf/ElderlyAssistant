@@ -1,11 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Notifications from 'expo-notifications';
 import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
     Alert,
+    Modal,
     ScrollView,
     StyleSheet,
     Text,
@@ -17,6 +17,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/Colors';
+
 interface ScheduleItem {
     id: string;
     label: string;
@@ -39,7 +40,6 @@ const INITIAL_MEALS: ScheduleItem[] = [
     { id: '2', label: 'Lunch', hour: 12, minute: 0, completed: false },
     { id: '3', label: 'Snack', hour: 15, minute: 0, completed: false },
     { id: '4', label: 'Dinner', hour: 18, minute: 0, completed: false },
-    { id: 'med1', label: 'Morning Medication', hour: 8, minute: 0, completed: false },
 ];
 const INITIAL_MEDS: ScheduleItem[] = [
     { id: 'med1', label: 'Morning Medication', hour: 8, minute: 0, completed: false },
@@ -65,6 +65,12 @@ export default function MyDayScreen() {
     const [editNote, setEditNote] = useState('');
     const [meds, setMeds] = useState<ScheduleItem[]>(INITIAL_MEDS);
     const [editingMeds, setEditingMeds] = useState(false);
+    const [pendingTime, setPendingTime] = useState<Date | null>(null);
+    const [waterCount, setWaterCount] = useState(0);
+    const [showWaterModal, setShowWaterModal] = useState(false);
+    const [tempWaterNote, setTempWaterNote] = useState('');
+    const [mealsExpanded, setMealsExpanded] = useState(false);
+    const [medsExpanded, setMedsExpanded] = useState(false);
 
     useEffect(() => {
         const setup = async () => {
@@ -162,9 +168,9 @@ export default function MyDayScreen() {
         const newEntry: HistoryEntry = {
             id: Date.now().toString(),
             date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
-            sched: format12Hour(item.hour, item.minute),
+            sched: item.label,
             actual: now,
-            what: editingMeds ? (tempWhat || item.label) : tempWhat || '',
+            what: tempWhat || '',
             note: tempNote || '',
         };
         const updatedHist = [newEntry, ...history].slice(0, 50);
@@ -233,26 +239,8 @@ export default function MyDayScreen() {
     };
 
     const onTimeChange = (event: any, date?: Date) => {
-        setShowPicker(false);
-        setActiveId(null);
-        if (event.type === 'set' && date && activeId) {
-            if (editingMeds) {
-                const updated = meds.map(m =>
-                    m.id === activeId
-                        ? { ...m, hour: date.getHours(), minute: date.getMinutes() }
-                        : m
-                );
-                setMeds(updated);
-                saveMeds(updated);
-            } else {
-                const updated = schedule.map(s =>
-                    s.id === activeId
-                        ? { ...s, hour: date.getHours(), minute: date.getMinutes() }
-                        : s
-                );
-                setSchedule(updated);
-                saveData(updated, history);
-            }
+        if (date) {
+            setPendingTime(date);
         }
     };
 
@@ -340,7 +328,7 @@ export default function MyDayScreen() {
             sched: format12Hour(item.hour, item.minute),
             actual: now,
             what: item.label,
-            note: tempNote || '',
+            note: '',
         };
         const updatedHist = [newEntry, ...history].slice(0, 50);
         const updatedMeds = meds.map(m =>
@@ -377,6 +365,24 @@ export default function MyDayScreen() {
         if (coffeeCount > 0) setCoffeeCount(coffeeCount - 1);
     };
 
+    const confirmWater = () => {
+        const now = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false });
+        const newEntry: HistoryEntry = {
+            id: Date.now().toString(),
+            date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
+            sched: 'Water',
+            actual: now,
+            what: tempWaterNote || '',
+            note: '',
+        };
+        const updatedHist = [newEntry, ...history].slice(0, 50);
+        setWaterCount(waterCount + 1);
+        setHistory(updatedHist);
+        saveData(schedule, updatedHist);
+        setShowWaterModal(false);
+        setTempWaterNote('');
+    };
+
     return (
         <GestureHandlerRootView style={styles.container}>
             <SafeAreaView style={{ backgroundColor: Colors.primary }}>
@@ -390,115 +396,116 @@ export default function MyDayScreen() {
 
             <View style={styles.bridge} />
 
-            <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
+            <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }} scrollEventThrottle={16} directionalLockEnabled={true}>
 
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Meal Schedule</Text>
-                    {schedule.map(item => (
-                        <Swipeable
-                            key={item.id}
-                            renderRightActions={() => (
-                                <TouchableOpacity
-                                    style={styles.swipeDelete}
-                                    onPress={() => deleteMeal(item.id)}
-                                >
-                                    <Text style={styles.swipeDeleteText}>Delete</Text>
-                                </TouchableOpacity>
-                            )}
-                        >
-                            <View style={styles.row}>
-                                <TouchableOpacity
-                                    style={styles.labelArea}
-                                    onPress={() => {
-                                        setEditingMeds(false);
-                                        setActiveId(item.id);
-                                        setTempName(item.label);
-                                        setShowNameEdit(true);
-                                    }}
-                                >
-                                    <Text style={styles.itemLabel}>{item.label}</Text>
-                                    <TouchableOpacity onPress={() => {
-                                        setEditingMeds(false);
-                                        setActiveId(item.id);
-                                        setShowPicker(true);
-                                    }}>
-                                        <Text style={styles.timeText}>{format12Hour(item.hour, item.minute)}</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.hintText}>Tap name to edit · Tap time to change</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[styles.logBtn, item.completed && styles.loggedBtn]}
-                                    onPress={() => openLogModal(item.id)}
-                                >
-                                    <Text style={styles.logBtnText}>{item.completed ? '✓' : 'Log'}</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </Swipeable>
-                    ))}
-                    <TouchableOpacity style={styles.addBtn} onPress={addMeal}>
-                        <Text style={styles.addBtnText}>+ Add Meal</Text>
+                    <TouchableOpacity onPress={() => setMealsExpanded(!mealsExpanded)} style={styles.sectionHeader}>
+                        <Text style={styles.sectionTitle}>Meal Schedule</Text>
+                        <Text style={styles.expandIcon}>{mealsExpanded ? '▲' : '▼'}</Text>
                     </TouchableOpacity>
+                    <Text style={styles.hintText}>Hold name to edit · Tap time to change · Swipe to delete</Text>
+                    {mealsExpanded && (
+                        <>
+                            {schedule.map(item => (
+                                <Swipeable
+                                    key={item.id}
+                                    renderRightActions={() => (
+                                        <TouchableOpacity
+                                            style={styles.swipeDelete}
+                                            onPress={() => deleteMeal(item.id)}
+                                        >
+                                            <Text style={styles.swipeDeleteText}>Delete</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                >
+                                    <View style={styles.row}>
+                                        <TouchableOpacity
+                                            style={styles.labelArea}
+                                            onLongPress={() => {
+                                                setEditingMeds(false);
+                                                setActiveId(item.id);
+                                                setTempName(item.label);
+                                                setShowNameEdit(true);
+                                            }}
+                                        >
+                                            <Text style={styles.itemLabel}>{item.label}</Text>
+                                            <TouchableOpacity onPress={() => {
+                                                setEditingMeds(false);
+                                                setActiveId(item.id);
+                                                setShowPicker(true);
+                                            }}>
+                                                <Text style={styles.timeText}>{format12Hour(item.hour, item.minute)}</Text>
+                                            </TouchableOpacity>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={[styles.logBtn, item.completed && styles.loggedBtn]}
+                                            onPress={() => openLogModal(item.id)}
+                                        >
+                                            <Text style={styles.logBtnText}>{item.completed ? '✓' : 'Log'}</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </Swipeable>
+                            ))}
+                            <TouchableOpacity style={styles.addBtn} onPress={addMeal}>
+                                <Text style={styles.addBtnText}>+ Add Meal</Text>
+                            </TouchableOpacity>
+                        </>
+                    )}
                 </View>
 
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Medications</Text>
-                    {meds.map(item => (
-                        <Swipeable
-                            key={item.id}
-                            renderRightActions={() => (
-                                <TouchableOpacity
-                                    style={styles.swipeDelete}
-                                    onPress={() => deleteMed(item.id)}
-                                >
-                                    <Text style={styles.swipeDeleteText}>Delete</Text>
-                                </TouchableOpacity>
-                            )}
-                        >
-                            <View style={styles.row}>
-                                <TouchableOpacity
-                                    style={styles.labelArea}
-                                    onPress={() => {
-                                        setEditingMeds(true);
-                                        setActiveId(item.id);
-                                        setTempName(item.label);
-                                        setShowNameEdit(true);
-                                    }}
-                                >
-                                    <Text style={styles.itemLabel}>{item.label}</Text>
-                                    <TouchableOpacity onPress={() => {
-                                        setEditingMeds(true);
-                                        setActiveId(item.id);
-                                        setShowPicker(true);
-                                    }}>
-                                        <Text style={styles.timeText}>{format12Hour(item.hour, item.minute)}</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.hintText}>Tap name to edit · Tap time to change</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[styles.logBtn, item.completed && styles.loggedBtn]}
-                                    onPress={() => openMedLogModal(item.id)}
-                                >
-                                    <Text style={styles.logBtnText}>{item.completed ? '✓' : 'Log'}</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </Swipeable>
-                    ))}
-                    <TouchableOpacity style={styles.addBtn} onPress={addMed}>
-                        <Text style={styles.addBtnText}>+ Add Medication</Text>
+                    <TouchableOpacity onPress={() => setMedsExpanded(!medsExpanded)} style={styles.sectionHeader}>
+                        <Text style={styles.sectionTitle}>Medications</Text>
+                        <Text style={styles.expandIcon}>{medsExpanded ? '▲' : '▼'}</Text>
                     </TouchableOpacity>
-                </View>
-
-                <View style={styles.coffeeBox}>
-                    <Text style={styles.coffeeTitle}>Coffee</Text>
-                    <View style={styles.coffeeControls}>
-                        <TouchableOpacity style={styles.minusBtn} onPress={decrementCoffee}>
-                            <Text style={styles.counterBtnText}>-</Text>
-                        </TouchableOpacity>
-                        <Text style={styles.coffeeCount}>{coffeeCount}</Text>
-                        <TouchableOpacity style={styles.plusBtn} onPress={() => { setTempCoffeeNote(''); setShowCoffeeModal(true); }}>
-                            <Text style={styles.counterBtnText}>+</Text>
-                        </TouchableOpacity>
-                    </View>
+                    <Text style={styles.hintText}>Hold name to edit · Tap time to change · Swipe to delete</Text>
+                    {medsExpanded && (
+                        <>
+                            {meds.map(item => (
+                                <Swipeable
+                                    key={item.id}
+                                    renderRightActions={() => (
+                                        <TouchableOpacity
+                                            style={styles.swipeDelete}
+                                            onPress={() => deleteMed(item.id)}
+                                        >
+                                            <Text style={styles.swipeDeleteText}>Delete</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                >
+                                    <View style={styles.row}>
+                                        <TouchableOpacity
+                                            style={styles.labelArea}
+                                            onLongPress={() => {
+                                                setEditingMeds(true);
+                                                setActiveId(item.id);
+                                                setTempName(item.label);
+                                                setShowNameEdit(true);
+                                            }}
+                                        >
+                                            <Text style={styles.itemLabel}>{item.label}</Text>
+                                            <TouchableOpacity onPress={() => {
+                                                setEditingMeds(true);
+                                                setActiveId(item.id);
+                                                setShowPicker(true);
+                                            }}>
+                                                <Text style={styles.timeText}>{format12Hour(item.hour, item.minute)}</Text>
+                                            </TouchableOpacity>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={[styles.logBtn, item.completed && styles.loggedBtn]}
+                                            onPress={() => openMedLogModal(item.id)}
+                                        >
+                                            <Text style={styles.logBtnText}>{item.completed ? '✓' : 'Log'}</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </Swipeable>
+                            ))}
+                            <TouchableOpacity style={styles.addBtn} onPress={addMed}>
+                                <Text style={styles.addBtnText}>+ Add Medication</Text>
+                            </TouchableOpacity>
+                        </>
+                    )}
                 </View>
 
                 <TouchableOpacity style={styles.snoozeBtn} onPress={snoozeReminder}>
@@ -506,7 +513,7 @@ export default function MyDayScreen() {
                 </TouchableOpacity>
 
                 <View style={styles.historySection}>
-                    <Text style={styles.sectionTitle}>My Meal Log</Text>
+                    <Text style={styles.sectionTitle}>My Log</Text>
                     <ScrollView style={styles.historyScroll} nestedScrollEnabled={true}>
                         {history.map(l => (
                             <TouchableOpacity key={l.id} style={styles.historyItem} onPress={() => {
@@ -515,9 +522,7 @@ export default function MyDayScreen() {
                                 setEditNote(l.note || '');
                             }}>
                                 <Text style={styles.historyText}>
-                                    {l.date} | {l.sched} → {l.actual}
-                                    {l.what ? ` | ${l.what}` : ''}
-                                    {l.note ? ` | ${l.note}` : ''}
+                                    {l.date} | {l.actual} | {l.sched}{l.what ? ` | ${l.what}` : ''}
                                 </Text>
                             </TouchableOpacity>
                         ))}
@@ -530,9 +535,7 @@ export default function MyDayScreen() {
                 <View style={styles.modal}>
                     <Text style={styles.modalTitle}>{editingMeds ? 'Log Medication' : 'Log Meal'}</Text>
                     <Text style={styles.inputLabel}>{editingMeds ? 'Medication:' : 'What did you eat?'}</Text>
-                    <TextInput style={styles.input} value={tempWhat} onChangeText={setTempWhat} placeholder={editingMeds ? 'Any notes...' : 'e.g. Oatmeal, toast...'} />
-                    <Text style={styles.inputLabel}>Notes (optional)</Text>
-                    <TextInput style={styles.input} value={tempNote} onChangeText={setTempNote} placeholder="Any details..." />
+                    <TextInput style={styles.input} value={tempWhat} onChangeText={setTempWhat} placeholder={editingMeds ? 'Any notes about this medication...' : 'What did you have for this meal?'} />
                     <View style={styles.modalBtns}>
                         <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowLogModal(false)}>
                             <Text style={styles.cancelBtnText}>Cancel</Text>
@@ -560,13 +563,57 @@ export default function MyDayScreen() {
                 </View>
             )}
 
+            {showWaterModal && (
+                <View style={styles.modal}>
+                    <Text style={styles.modalTitle}>Log Water</Text>
+                    <Text style={styles.inputLabel}>Notes (optional)</Text>
+                    <TextInput style={styles.input} value={tempWaterNote} onChangeText={setTempWaterNote} placeholder="e.g. glass, bottle..." autoFocus={true} />
+                    <View style={styles.modalBtns}>
+                        <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowWaterModal(false)}>
+                            <Text style={styles.cancelBtnText}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.confirmBtn} onPress={confirmWater}>
+                            <Text style={styles.confirmBtnText}>Log</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
+
+            <View style={styles.counterBox}>
+                <View style={styles.counterItem}>
+                    <Text style={styles.counterTitle}>Coffee</Text>
+                    <View style={styles.counterControls}>
+                        <TouchableOpacity style={styles.minusBtn} onPress={decrementCoffee}>
+                            <Text style={styles.counterBtnText}>-</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.coffeeCount}>{coffeeCount}</Text>
+                        <TouchableOpacity style={styles.plusBtn} onPress={() => { setTempCoffeeNote(''); setShowCoffeeModal(true); }}>
+                            <Text style={styles.counterBtnText}>+</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <View style={styles.counterDivider} />
+                <View style={styles.counterItem}>
+                    <Text style={styles.counterTitle}>Water</Text>
+                    <View style={styles.counterControls}>
+                        <TouchableOpacity style={styles.minusBtn} onPress={() => {
+                            if (waterCount > 0) setWaterCount(waterCount - 1);
+                        }}>
+                            <Text style={styles.counterBtnText}>-</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.coffeeCount}>{waterCount}</Text>
+                        <TouchableOpacity style={styles.plusBtn} onPress={() => { setTempWaterNote(''); setShowWaterModal(true); }}>
+                            <Text style={styles.counterBtnText}>+</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+
             {editEntry && (
                 <View style={styles.modal}>
                     <Text style={styles.modalTitle}>Edit Log Entry</Text>
                     <Text style={styles.inputLabel}>What did you eat?</Text>
                     <TextInput style={styles.input} value={editWhat} onChangeText={setEditWhat} placeholder="e.g. Oatmeal, toast..." />
-                    <Text style={styles.inputLabel}>Notes (optional)</Text>
-                    <TextInput style={styles.input} value={editNote} onChangeText={setEditNote} placeholder="Any details..." />
                     <View style={styles.modalBtns}>
                         <TouchableOpacity style={styles.cancelBtn} onPress={() => setEditEntry(null)}>
                             <Text style={styles.cancelBtnText}>Cancel</Text>
@@ -615,22 +662,141 @@ export default function MyDayScreen() {
             )}
 
             {showPicker && activeId && (
-                <View style={styles.modal}>
-                    <DateTimePicker
-                        value={new Date(new Date().setHours(
-                            editingMeds
-                                ? meds.find(i => i.id === activeId)?.hour || 0
-                                : schedule.find(i => i.id === activeId)?.hour || 0,
-                            editingMeds
-                                ? meds.find(i => i.id === activeId)?.minute || 0
-                                : schedule.find(i => i.id === activeId)?.minute || 0
-                        ))}
-                        mode="time"
-                        is24Hour={false}
-                        display="spinner"
-                        onChange={onTimeChange}
-                    />
-                </View>
+                <Modal
+                    transparent={true}
+                    animationType="fade"
+                    visible={showPicker}
+                >
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.pickerModal}>
+                            <Text style={styles.modalTitle}>Set Time</Text>
+                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 20, marginVertical: 20 }}>
+                                <View style={{ alignItems: 'center' }}>
+                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
+                                        const current = pendingTime || new Date(new Date().setHours(
+                                            editingMeds
+                                                ? meds.find(i => i.id === activeId)?.hour || 0
+                                                : schedule.find(i => i.id === activeId)?.hour || 0,
+                                            editingMeds
+                                                ? meds.find(i => i.id === activeId)?.minute || 0
+                                                : schedule.find(i => i.id === activeId)?.minute || 0
+                                        ));
+                                        const next = new Date(current);
+                                        next.setHours((next.getHours() + 1) % 24);
+                                        setPendingTime(next);
+                                    }}>
+                                        <Text style={styles.timeAdjText}>▲</Text>
+                                    </TouchableOpacity>
+                                    <Text style={styles.timeDisplayText}>
+                                        {String((pendingTime || new Date(new Date().setHours(
+                                            editingMeds
+                                                ? meds.find(i => i.id === activeId)?.hour || 0
+                                                : schedule.find(i => i.id === activeId)?.hour || 0,
+                                            0))).getHours()).padStart(2, '0')}
+                                    </Text>
+                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
+                                        const current = pendingTime || new Date(new Date().setHours(
+                                            editingMeds
+                                                ? meds.find(i => i.id === activeId)?.hour || 0
+                                                : schedule.find(i => i.id === activeId)?.hour || 0,
+                                            editingMeds
+                                                ? meds.find(i => i.id === activeId)?.minute || 0
+                                                : schedule.find(i => i.id === activeId)?.minute || 0
+                                        ));
+                                        const next = new Date(current);
+                                        next.setHours((next.getHours() + 23) % 24);
+                                        setPendingTime(next);
+                                    }}>
+                                        <Text style={styles.timeAdjText}>▼</Text>
+                                    </TouchableOpacity>
+                                    <Text style={{ color: Colors.primary, fontSize: 13 }}>Hour</Text>
+                                </View>
+
+                                <Text style={styles.timeDisplayText}>:</Text>
+
+                                <View style={{ alignItems: 'center' }}>
+                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
+                                        const current = pendingTime || new Date(new Date().setHours(
+                                            editingMeds
+                                                ? meds.find(i => i.id === activeId)?.hour || 0
+                                                : schedule.find(i => i.id === activeId)?.hour || 0,
+                                            editingMeds
+                                                ? meds.find(i => i.id === activeId)?.minute || 0
+                                                : schedule.find(i => i.id === activeId)?.minute || 0
+                                        ));
+                                        const next = new Date(current);
+                                        next.setMinutes((next.getMinutes() + 1) % 60);
+                                        setPendingTime(next);
+                                    }}>
+                                        <Text style={styles.timeAdjText}>▲</Text>
+                                    </TouchableOpacity>
+                                    <Text style={styles.timeDisplayText}>
+                                        {String((pendingTime || new Date(new Date().setHours(
+                                            editingMeds
+                                                ? meds.find(i => i.id === activeId)?.hour || 0
+                                                : schedule.find(i => i.id === activeId)?.hour || 0,
+                                            editingMeds
+                                                ? meds.find(i => i.id === activeId)?.minute || 0
+                                                : schedule.find(i => i.id === activeId)?.minute || 0
+                                        ))).getMinutes()).padStart(2, '0')}
+                                    </Text>
+                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
+                                        const current = pendingTime || new Date(new Date().setHours(
+                                            editingMeds
+                                                ? meds.find(i => i.id === activeId)?.hour || 0
+                                                : schedule.find(i => i.id === activeId)?.hour || 0,
+                                            editingMeds
+                                                ? meds.find(i => i.id === activeId)?.minute || 0
+                                                : schedule.find(i => i.id === activeId)?.minute || 0
+                                        ));
+                                        const next = new Date(current);
+                                        next.setMinutes((next.getMinutes() + 59) % 60);
+                                        setPendingTime(next);
+                                    }}>
+                                        <Text style={styles.timeAdjText}>▼</Text>
+                                    </TouchableOpacity>
+                                    <Text style={{ color: Colors.primary, fontSize: 13 }}>Minute</Text>
+                                </View>
+                            </View>
+
+                            <View style={styles.modalBtns}>
+                                <TouchableOpacity style={styles.cancelBtn} onPress={() => {
+                                    setPendingTime(null);
+                                    setShowPicker(false);
+                                    setActiveId(null);
+                                }}>
+                                    <Text style={styles.cancelBtnText}>Cancel</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.confirmBtn} onPress={() => {
+                                    if (pendingTime && activeId) {
+                                        if (editingMeds) {
+                                            const updated = meds.map(m =>
+                                                m.id === activeId
+                                                    ? { ...m, hour: pendingTime.getHours(), minute: pendingTime.getMinutes() }
+                                                    : m
+                                            );
+                                            setMeds(updated);
+                                            saveMeds(updated);
+                                        } else {
+                                            const updated = schedule.map(s =>
+                                                s.id === activeId
+                                                    ? { ...s, hour: pendingTime.getHours(), minute: pendingTime.getMinutes() }
+                                                    : s
+                                            );
+                                            setSchedule(updated);
+                                            saveData(updated, history);
+                                        }
+                                    }
+                                    setPendingTime(null);
+                                    setShowPicker(false);
+                                    setActiveId(null);
+                                }}>
+                                    <Text style={styles.confirmBtnText}>OK</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
             )}
 
         </GestureHandlerRootView>
@@ -737,7 +903,7 @@ const styles = StyleSheet.create({
     snoozeBtnText: { color: Colors.white, fontWeight: '600', fontSize: 16 },
     historySection: { marginHorizontal: 12, marginBottom: 12 },
     historyScroll: {
-        height: 300,
+        height: 385,
         backgroundColor: Colors.white,
         borderRadius: 8,
         padding: 8,
@@ -809,5 +975,86 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: '600',
         fontSize: 15,
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    timeAdjBtn: {
+        backgroundColor: Colors.primary,
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginVertical: 6,
+    },
+    timeAdjText: {
+        color: Colors.white,
+        fontSize: 22,
+        fontWeight: '600',
+    },
+    timeDisplayText: {
+        fontSize: 40,
+        fontWeight: '600',
+        color: Colors.primary,
+        marginVertical: 4,
+    },
+    pickerModal: {
+        backgroundColor: Colors.white,
+        borderRadius: 12,
+        padding: 16,
+        borderWidth: 0.5,
+        borderColor: Colors.lightBlue,
+        width: '100%',
+    },
+    counterBox: {
+        flexDirection: 'row',
+        backgroundColor: Colors.white,
+        borderRadius: 12,
+        padding: 15,
+        marginHorizontal: 12,
+        marginBottom: 12,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderWidth: 0.5,
+        borderColor: Colors.lightBlue,
+    },
+    counterItem: {
+        flex: 1,
+        alignItems: 'center',
+    },
+    counterTitle: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: Colors.primary,
+        marginBottom: 8,
+    },
+    counterControls: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    counterDivider: {
+        width: 1,
+        height: '80%',
+        backgroundColor: Colors.lightBlue,
+        marginHorizontal: 10,
+    },
+    sectionHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+
+        borderRadius: 8,
+
+        marginBottom: 4,
+    },
+    expandIcon: {
+        fontSize: 16,
+        color: Colors.primary,
+        fontWeight: '600',
     },
 });
