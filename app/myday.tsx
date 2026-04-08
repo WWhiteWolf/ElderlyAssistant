@@ -39,7 +39,12 @@ const INITIAL_MEALS: ScheduleItem[] = [
     { id: '2', label: 'Lunch', hour: 12, minute: 0, completed: false },
     { id: '3', label: 'Snack', hour: 15, minute: 0, completed: false },
     { id: '4', label: 'Dinner', hour: 18, minute: 0, completed: false },
+    { id: 'med1', label: 'Morning Medication', hour: 8, minute: 0, completed: false },
 ];
+const INITIAL_MEDS: ScheduleItem[] = [
+    { id: 'med1', label: 'Morning Medication', hour: 8, minute: 0, completed: false },
+];
+
 export default function MyDayScreen() {
     const router = useRouter();
     const [schedule, setSchedule] = useState<ScheduleItem[]>(INITIAL_MEALS);
@@ -58,6 +63,9 @@ export default function MyDayScreen() {
     const [tempCoffeeNote, setTempCoffeeNote] = useState('');
     const [editWhat, setEditWhat] = useState('');
     const [editNote, setEditNote] = useState('');
+    const [meds, setMeds] = useState<ScheduleItem[]>(INITIAL_MEDS);
+    const [editingMeds, setEditingMeds] = useState(false);
+
     useEffect(() => {
         const setup = async () => {
             const { status } = await Notifications.requestPermissionsAsync();
@@ -96,6 +104,7 @@ export default function MyDayScreen() {
             } else {
                 if (parsedSched) setSchedule(parsedSched);
             }
+            await loadMeds();
             await scheduleAllNotifications();
         } catch (e) {
             console.error(e);
@@ -132,6 +141,7 @@ export default function MyDayScreen() {
     };
 
     const openLogModal = (id: string) => {
+        setEditingMeds(false);
         setPendingLogId(id);
         setTempWhat('');
         setTempNote('');
@@ -140,7 +150,9 @@ export default function MyDayScreen() {
 
     const confirmLog = () => {
         if (!pendingLogId) return;
-        const item = schedule.find(i => i.id === pendingLogId);
+        const item = editingMeds
+            ? meds.find(i => i.id === pendingLogId)
+            : schedule.find(i => i.id === pendingLogId);
         if (!item) return;
         const now = new Date().toLocaleTimeString([], {
             hour: 'numeric',
@@ -152,16 +164,24 @@ export default function MyDayScreen() {
             date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
             sched: format12Hour(item.hour, item.minute),
             actual: now,
-            what: tempWhat || '',
+            what: editingMeds ? (tempWhat || item.label) : tempWhat || '',
             note: tempNote || '',
         };
         const updatedHist = [newEntry, ...history].slice(0, 50);
-        const updatedSched = schedule.map(s =>
-            s.id === pendingLogId ? { ...s, completed: true } : s
-        );
+        if (editingMeds) {
+            const updatedMeds = meds.map(m =>
+                m.id === pendingLogId ? { ...m, completed: true } : m
+            );
+            setMeds(updatedMeds);
+            saveMeds(updatedMeds);
+        } else {
+            const updatedSched = schedule.map(s =>
+                s.id === pendingLogId ? { ...s, completed: true } : s
+            );
+            setSchedule(updatedSched);
+            saveData(updatedSched, updatedHist);
+        }
         setHistory(updatedHist);
-        setSchedule(updatedSched);
-        saveData(updatedSched, updatedHist);
         setShowLogModal(false);
         setPendingLogId(null);
     };
@@ -216,13 +236,23 @@ export default function MyDayScreen() {
         setShowPicker(false);
         setActiveId(null);
         if (event.type === 'set' && date && activeId) {
-            const updated = schedule.map(s =>
-                s.id === activeId
-                    ? { ...s, hour: date.getHours(), minute: date.getMinutes() }
-                    : s
-            );
-            setSchedule(updated);
-            saveData(updated, history);
+            if (editingMeds) {
+                const updated = meds.map(m =>
+                    m.id === activeId
+                        ? { ...m, hour: date.getHours(), minute: date.getMinutes() }
+                        : m
+                );
+                setMeds(updated);
+                saveMeds(updated);
+            } else {
+                const updated = schedule.map(s =>
+                    s.id === activeId
+                        ? { ...s, hour: date.getHours(), minute: date.getMinutes() }
+                        : s
+                );
+                setSchedule(updated);
+                saveData(updated, history);
+            }
         }
     };
 
@@ -252,6 +282,78 @@ export default function MyDayScreen() {
         ]);
     };
 
+    const addMed = () => {
+        const newItem: ScheduleItem = {
+            id: Date.now().toString(),
+            label: 'New Medication',
+            hour: 8,
+            minute: 0,
+            completed: false,
+        };
+        const updated = [...meds, newItem];
+        setMeds(updated);
+        saveMeds(updated);
+    };
+
+    const deleteMed = (id: string) => {
+        Alert.alert('Delete', 'Remove this medication from your schedule?', [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Delete', style: 'destructive', onPress: () => {
+                    const updated = meds.filter(m => m.id !== id);
+                    setMeds(updated);
+                    saveMeds(updated);
+                },
+            },
+        ]);
+    };
+
+    const saveMeds = async (m: ScheduleItem[]) => {
+        await AsyncStorage.setItem('my_meds', JSON.stringify(m));
+    };
+
+    const loadMeds = async () => {
+        const saved = await AsyncStorage.getItem('my_meds');
+        if (saved) setMeds(JSON.parse(saved));
+    };
+
+    const openMedLogModal = (id: string) => {
+        setEditingMeds(true);
+        setPendingLogId(id);
+        setTempWhat('');
+        setTempNote('');
+        setShowLogModal(true);
+    };
+
+    const confirmMedLog = () => {
+        if (!pendingLogId) return;
+        const item = meds.find(i => i.id === pendingLogId);
+        if (!item) return;
+        const now = new Date().toLocaleTimeString([], {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: false,
+        });
+        const newEntry: HistoryEntry = {
+            id: Date.now().toString(),
+            date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
+            sched: format12Hour(item.hour, item.minute),
+            actual: now,
+            what: item.label,
+            note: tempNote || '',
+        };
+        const updatedHist = [newEntry, ...history].slice(0, 50);
+        const updatedMeds = meds.map(m =>
+            m.id === pendingLogId ? { ...m, completed: true } : m
+        );
+        setHistory(updatedHist);
+        setMeds(updatedMeds);
+        saveData(schedule, updatedHist);
+        saveMeds(updatedMeds);
+        setShowLogModal(false);
+        setPendingLogId(null);
+    };
+
     const confirmCoffee = () => {
         const now = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false });
         const newEntry: HistoryEntry = {
@@ -274,6 +376,7 @@ export default function MyDayScreen() {
     const decrementCoffee = () => {
         if (coffeeCount > 0) setCoffeeCount(coffeeCount - 1);
     };
+
     return (
         <GestureHandlerRootView style={styles.container}>
             <SafeAreaView style={{ backgroundColor: Colors.primary }}>
@@ -307,13 +410,18 @@ export default function MyDayScreen() {
                                 <TouchableOpacity
                                     style={styles.labelArea}
                                     onPress={() => {
+                                        setEditingMeds(false);
                                         setActiveId(item.id);
                                         setTempName(item.label);
                                         setShowNameEdit(true);
                                     }}
                                 >
                                     <Text style={styles.itemLabel}>{item.label}</Text>
-                                    <TouchableOpacity onPress={() => { setActiveId(item.id); setShowPicker(true); }}>
+                                    <TouchableOpacity onPress={() => {
+                                        setEditingMeds(false);
+                                        setActiveId(item.id);
+                                        setShowPicker(true);
+                                    }}>
                                         <Text style={styles.timeText}>{format12Hour(item.hour, item.minute)}</Text>
                                     </TouchableOpacity>
                                     <Text style={styles.hintText}>Tap name to edit · Tap time to change</Text>
@@ -327,6 +435,57 @@ export default function MyDayScreen() {
                             </View>
                         </Swipeable>
                     ))}
+                    <TouchableOpacity style={styles.addBtn} onPress={addMeal}>
+                        <Text style={styles.addBtnText}>+ Add Meal</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Medications</Text>
+                    {meds.map(item => (
+                        <Swipeable
+                            key={item.id}
+                            renderRightActions={() => (
+                                <TouchableOpacity
+                                    style={styles.swipeDelete}
+                                    onPress={() => deleteMed(item.id)}
+                                >
+                                    <Text style={styles.swipeDeleteText}>Delete</Text>
+                                </TouchableOpacity>
+                            )}
+                        >
+                            <View style={styles.row}>
+                                <TouchableOpacity
+                                    style={styles.labelArea}
+                                    onPress={() => {
+                                        setEditingMeds(true);
+                                        setActiveId(item.id);
+                                        setTempName(item.label);
+                                        setShowNameEdit(true);
+                                    }}
+                                >
+                                    <Text style={styles.itemLabel}>{item.label}</Text>
+                                    <TouchableOpacity onPress={() => {
+                                        setEditingMeds(true);
+                                        setActiveId(item.id);
+                                        setShowPicker(true);
+                                    }}>
+                                        <Text style={styles.timeText}>{format12Hour(item.hour, item.minute)}</Text>
+                                    </TouchableOpacity>
+                                    <Text style={styles.hintText}>Tap name to edit · Tap time to change</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.logBtn, item.completed && styles.loggedBtn]}
+                                    onPress={() => openMedLogModal(item.id)}
+                                >
+                                    <Text style={styles.logBtnText}>{item.completed ? '✓' : 'Log'}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </Swipeable>
+                    ))}
+                    <TouchableOpacity style={styles.addBtn} onPress={addMed}>
+                        <Text style={styles.addBtnText}>+ Add Medication</Text>
+                    </TouchableOpacity>
                 </View>
 
                 <View style={styles.coffeeBox}>
@@ -369,9 +528,9 @@ export default function MyDayScreen() {
 
             {showLogModal && (
                 <View style={styles.modal}>
-                    <Text style={styles.modalTitle}>Log Meal</Text>
-                    <Text style={styles.inputLabel}>What did you eat?</Text>
-                    <TextInput style={styles.input} value={tempWhat} onChangeText={setTempWhat} placeholder="e.g. Oatmeal, toast..." />
+                    <Text style={styles.modalTitle}>{editingMeds ? 'Log Medication' : 'Log Meal'}</Text>
+                    <Text style={styles.inputLabel}>{editingMeds ? 'Medication:' : 'What did you eat?'}</Text>
+                    <TextInput style={styles.input} value={tempWhat} onChangeText={setTempWhat} placeholder={editingMeds ? 'Any notes...' : 'e.g. Oatmeal, toast...'} />
                     <Text style={styles.inputLabel}>Notes (optional)</Text>
                     <TextInput style={styles.input} value={tempNote} onChangeText={setTempNote} placeholder="Any details..." />
                     <View style={styles.modalBtns}>
@@ -428,7 +587,7 @@ export default function MyDayScreen() {
 
             {showNameEdit && activeId && (
                 <View style={styles.modal}>
-                    <Text style={styles.inputLabel}>Meal Name:</Text>
+                    <Text style={styles.inputLabel}>{editingMeds ? 'Medication Name:' : 'Meal Name:'}</Text>
                     <TextInput style={styles.input} value={tempName} onChangeText={setTempName} placeholder="Enter name..." autoFocus={true} />
                     <View style={styles.modalBtns}>
                         <TouchableOpacity style={styles.cancelBtn} onPress={() => { setShowNameEdit(false); setActiveId(null); }}>
@@ -436,9 +595,15 @@ export default function MyDayScreen() {
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.confirmBtn} onPress={() => {
                             if (activeId) {
-                                const updated = schedule.map(s => s.id === activeId ? { ...s, label: tempName } : s);
-                                setSchedule(updated);
-                                saveData(updated, history);
+                                if (editingMeds) {
+                                    const updated = meds.map(m => m.id === activeId ? { ...m, label: tempName } : m);
+                                    setMeds(updated);
+                                    saveMeds(updated);
+                                } else {
+                                    const updated = schedule.map(s => s.id === activeId ? { ...s, label: tempName } : s);
+                                    setSchedule(updated);
+                                    saveData(updated, history);
+                                }
                             }
                             setShowNameEdit(false);
                             setActiveId(null);
@@ -453,12 +618,16 @@ export default function MyDayScreen() {
                 <View style={styles.modal}>
                     <DateTimePicker
                         value={new Date(new Date().setHours(
-                            schedule.find(i => i.id === activeId)?.hour || 0,
-                            schedule.find(i => i.id === activeId)?.minute || 0
+                            editingMeds
+                                ? meds.find(i => i.id === activeId)?.hour || 0
+                                : schedule.find(i => i.id === activeId)?.hour || 0,
+                            editingMeds
+                                ? meds.find(i => i.id === activeId)?.minute || 0
+                                : schedule.find(i => i.id === activeId)?.minute || 0
                         ))}
                         mode="time"
                         is24Hour={false}
-                        display="default"
+                        display="spinner"
                         onChange={onTimeChange}
                     />
                 </View>

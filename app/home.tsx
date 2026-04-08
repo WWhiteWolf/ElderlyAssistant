@@ -17,6 +17,8 @@ const modules = [
     { id: 'myday', label: 'My Day', icon: '📅' },
     { id: 'mollie', label: 'Mollie', icon: '🐕' },
     { id: 'todo', label: 'To-Do', icon: '✅' },
+    { id: 'money', label: 'Money', icon: '💰' },
+    { id: 'notepad', label: 'Notepad', icon: '📝' },
 ];
 
 export default function HomeScreen() {
