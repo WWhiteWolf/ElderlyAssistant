@@ -175,7 +175,7 @@ export default function TimerScreen() {
         <View style={styles.container}>
             <SafeAreaView style={{ backgroundColor: Colors.primary }}>
                 <View style={styles.header}>
-                    <TouchableOpacity onPress={() => router.replace('/home')} style={styles.backBtn}>
+                    <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.backBtn}>
                         <Text style={styles.backText}>← Home</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>Shopping List</Text>

@@ -387,7 +387,7 @@ export default function MyDayScreen() {
         <GestureHandlerRootView style={styles.container}>
             <SafeAreaView style={{ backgroundColor: Colors.primary }}>
                 <View style={styles.header}>
-                    <TouchableOpacity onPress={() => router.replace('/home')} style={styles.backBtn}>
+                    <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.backBtn}>
                         <Text style={styles.backText}>← Home</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>My Day</Text>
@@ -1047,9 +1047,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-
         borderRadius: 8,
-
         marginBottom: 4,
     },
     expandIcon: {
