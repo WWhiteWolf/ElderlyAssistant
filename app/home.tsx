@@ -19,6 +19,8 @@ const modules = [
     { id: 'todo', label: 'To-Do', icon: '✅' },
     { id: 'money', label: 'Money', icon: '💰' },
     { id: 'notepad', label: 'Notepad', icon: '📝' },
+    { id: 'journal', label: 'Journal', icon: '📖' },
+    { id: 'planner', label: 'Project Planner', icon: '📋' },
 ];
 
 export default function HomeScreen() {
@@ -96,7 +98,7 @@ const styles = StyleSheet.create({
         width: '47%',
         backgroundColor: Colors.white,
         borderRadius: 16,
-        paddingVertical: 28,
+        paddingVertical: 20,
         alignItems: 'center',
         borderWidth: 0.5,
         borderColor: Colors.lightBlue,
@@ -107,8 +109,8 @@ const styles = StyleSheet.create({
         shadowRadius: 2,
     },
     tileIcon: {
-        fontSize: 44,
-        marginBottom: 12,
+        fontSize: 40,
+        marginBottom: 8,
     },
     tileLabel: {
         fontSize: 18,
