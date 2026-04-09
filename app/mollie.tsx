@@ -180,7 +180,7 @@ export default function MollieScreen() {
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.backBtn}>
                         <Text style={styles.backText}>← Home</Text>
                     </TouchableOpacity>
-                    <Text style={styles.title}>Mollie 🐕</Text>
+                    <Text style={styles.title}>Dog Day 🐕</Text>
                 </View>
             </SafeAreaView>
 
@@ -244,7 +244,7 @@ export default function MollieScreen() {
 
 
                 <View style={styles.historySection}>
-                    <Text style={styles.sectionTitle}>Mollie's Log</Text>
+                    <Text style={styles.sectionTitle}>Dog's Log</Text>
                     <ScrollView style={styles.historyScroll} nestedScrollEnabled={true}>
                         {history.map(l => (
                             <TouchableOpacity key={l.id} style={styles.historyItem} onPress={() => {

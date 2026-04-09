@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -17,6 +18,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/Colors';
+
 type Priority = 'Urgent' | 'Normal' | 'Someday';
 type RecurType = 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly';
 
@@ -90,10 +92,31 @@ export default function TodoScreen() {
     const [newNotes, setNewNotes] = useState('');
     const [newCategoryName, setNewCategoryName] = useState('');
     const [newCategoryColor, setNewCategoryColor] = useState('#1a6e8a');
+    const [newTaskType, setNewTaskType] = useState<'scheduled' | 'background'>('scheduled');
+    const [newReminders, setNewReminders] = useState<Reminder[]>([]);
+    const [reminderAmount, setReminderAmount] = useState('');
+    const [reminderUnit, setReminderUnit] = useState<'minutes' | 'hours' | 'days'>('hours');
+    const [showBannerDismissed, setShowBannerDismissed] = useState(false);
 
     useEffect(() => {
         loadData();
     }, []);
+
+    interface Task {
+        id: string;
+        title: string;
+        categoryId: string;
+        priority: Priority;
+        recurring: RecurType;
+        taskType: 'scheduled' | 'background';
+        dueDate: string;
+        dueTime: string;
+        reminders: Reminder[];
+        completed: boolean;
+        createdDate: string;
+        completedDate?: string;
+        notes: string;
+    }
 
     const loadData = async () => {
         try {
@@ -128,9 +151,13 @@ export default function TodoScreen() {
         setNewCategory('c1');
         setNewPriority('Normal');
         setNewRecurring('none');
+        setNewTaskType('scheduled');
         setNewDueDate('');
         setNewDueTime('');
         setNewNotes('');
+        setNewReminders([]);
+        setReminderAmount('');
+        setReminderUnit('hours');
         setEditTask(null);
     };
 
@@ -145,14 +172,17 @@ export default function TodoScreen() {
             categoryId: newCategory,
             priority: newPriority,
             recurring: newRecurring,
+            taskType: newTaskType,
             dueDate: newDueDate,
             dueTime: newDueTime,
-            reminders: [],
+            reminders: newReminders,
             completed: false,
             createdDate: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' }),
             notes: newNotes,
         };
         saveTasks([...tasks, task]);
+        scheduleReminders(task);
+        scheduleBackgroundReminder();
         resetForm();
         setShowAddTask(false);
     };
@@ -167,13 +197,18 @@ export default function TodoScreen() {
                     categoryId: newCategory,
                     priority: newPriority,
                     recurring: newRecurring,
+                    taskType: newTaskType,
                     dueDate: newDueDate,
                     dueTime: newDueTime,
+                    reminders: newReminders,
                     notes: newNotes,
                 }
                 : t
         );
         saveTasks(updated);
+        cancelReminders(editTask.id);
+        const updatedTask = updated.find(t => t.id === editTask.id);
+        if (updatedTask) scheduleReminders(updatedTask);
         resetForm();
         setShowAddTask(false);
     };
@@ -194,6 +229,7 @@ export default function TodoScreen() {
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Done', onPress: () => {
+                    cancelReminders(task.id);
                     const completedDate = new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' });
                     const logEntry: LogEntry = {
                         id: Date.now().toString(),
@@ -208,6 +244,7 @@ export default function TodoScreen() {
                             t.id === task.id ? { ...t, completed: false } : t
                         );
                         saveTasks(updated);
+                        scheduleReminders({ ...task, completed: false });
                     } else {
                         saveTasks(tasks.filter(t => t.id !== task.id));
                     }
@@ -249,16 +286,22 @@ export default function TodoScreen() {
         setNewCategory(task.categoryId);
         setNewPriority(task.priority);
         setNewRecurring(task.recurring);
+        setNewTaskType(task.taskType || 'scheduled');
         setNewDueDate(task.dueDate);
         setNewDueTime(task.dueTime);
         setNewNotes(task.notes);
+        setNewReminders(task.reminders || []);
+        setReminderAmount('');
+        setReminderUnit('hours');
         setShowAddTask(true);
     };
 
     const getSortedTasks = () => {
         let filtered = filterCategory === 'all'
-            ? tasks
-            : tasks.filter(t => t.categoryId === filterCategory);
+            ? tasks.filter(t => t.taskType !== 'background')
+            : filterCategory === 'background'
+                ? tasks.filter(t => t.taskType === 'background')
+                : tasks.filter(t => t.categoryId === filterCategory && t.taskType !== 'background');
 
         filtered = filtered.filter(t => !t.completed);
 
@@ -283,6 +326,79 @@ export default function TodoScreen() {
     const getCategoryColor = (id: string) => {
         return categories.find(c => c.id === id)?.color || Colors.primary;
     };
+
+    const scheduleReminders = async (task: Task) => {
+        if (task.taskType === 'background' || !task.dueDate || task.reminders.length === 0) return;
+        for (const reminder of task.reminders) {
+            const dueDateTime = new Date(`${task.dueDate} ${task.dueTime || '09:00'}`);
+            let msOffset = 0;
+            if (reminder.unit === 'minutes') msOffset = reminder.amount * 60 * 1000;
+            if (reminder.unit === 'hours') msOffset = reminder.amount * 60 * 60 * 1000;
+            if (reminder.unit === 'days') msOffset = reminder.amount * 24 * 60 * 60 * 1000;
+            const fireTime = new Date(dueDateTime.getTime() - msOffset);
+            if (fireTime > new Date()) {
+                await Notifications.scheduleNotificationAsync({
+                    content: {
+                        title: `📋 Reminder: ${task.title}`,
+                        body: task.dueDate ? `Due: ${task.dueDate}${task.dueTime ? ' at ' + task.dueTime : ''}` : '',
+                        data: { taskId: task.id },
+                    },
+                    trigger: {
+                        type: Notifications.SchedulableTriggerInputTypes.DATE,
+                        date: fireTime,
+                    },
+                });
+            }
+        }
+    };
+
+    const cancelReminders = async (taskId: string) => {
+        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+        for (const notif of scheduled) {
+            if (notif.content.data?.taskId === taskId) {
+                await Notifications.cancelScheduledNotificationAsync(notif.identifier);
+            }
+        }
+    };
+
+    const scheduleBackgroundReminder = async () => {
+        const backgroundTasks = tasks.filter(t => t.taskType === 'background');
+        if (backgroundTasks.length === 0) return;
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(8, 0, 0, 0);
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: '📋 Background Tasks',
+                body: `You have ${backgroundTasks.length} background task${backgroundTasks.length > 1 ? 's' : ''} to review.`,
+            },
+            trigger: {
+                type: Notifications.SchedulableTriggerInputTypes.DAILY,
+                hour: 8,
+                minute: 0,
+            } as Notifications.DailyTriggerInput,
+        });
+    };
+
+    const addReminder = () => {
+        const amount = parseInt(reminderAmount);
+        if (!amount || isNaN(amount) || amount <= 0) {
+            Alert.alert('Invalid', 'Please enter a valid number.');
+            return;
+        }
+        const reminder: Reminder = {
+            id: Date.now().toString(),
+            amount,
+            unit: reminderUnit,
+        };
+        setNewReminders([...newReminders, reminder]);
+        setReminderAmount('');
+    };
+
+    const removeReminder = (id: string) => {
+        setNewReminders(newReminders.filter(r => r.id !== id));
+    };
+
 
     return (
         <GestureHandlerRootView style={styles.container}>
@@ -331,6 +447,19 @@ export default function TodoScreen() {
                     ))}
                 </View>
             </View>
+
+            {tasks.filter(t => t.taskType === 'background').length > 0 && !showBannerDismissed && (
+                <View style={styles.backgroundBanner}>
+                    <TouchableOpacity style={{ flex: 1 }} onPress={() => setFilterCategory('background')}>
+                        <Text style={styles.backgroundBannerText}>
+                            📋 {tasks.filter(t => t.taskType === 'background').length} background task{tasks.filter(t => t.taskType === 'background').length > 1 ? 's' : ''} — tap to review
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setShowBannerDismissed(true)}>
+                        <Text style={{ color: Colors.white, fontSize: 18, paddingLeft: 10 }}>✕</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
 
             <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 100 }}>
                 {getSortedTasks().length === 0 && (
@@ -470,6 +599,57 @@ export default function TodoScreen() {
 
                                     <Text style={styles.inputLabel}>Notes (optional)</Text>
                                     <TextInput style={styles.input} value={newNotes} onChangeText={setNewNotes} placeholder="Any details..." multiline />
+
+                                    <Text style={styles.inputLabel}>Task Type</Text>
+                                    <View style={styles.priorityRow}>
+                                        <TouchableOpacity
+                                            style={[styles.priorityBtn, newTaskType === 'scheduled' && { backgroundColor: Colors.primary }]}
+                                            onPress={() => setNewTaskType('scheduled')}
+                                        >
+                                            <Text style={[styles.priorityBtnText, newTaskType === 'scheduled' && { color: '#fff' }]}>Scheduled</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={[styles.priorityBtn, newTaskType === 'background' && { backgroundColor: Colors.bridge }]}
+                                            onPress={() => setNewTaskType('background')}
+                                        >
+                                            <Text style={[styles.priorityBtnText, newTaskType === 'background' && { color: '#fff' }]}>Background</Text>
+                                        </TouchableOpacity>
+                                    </View>
+
+                                    {newTaskType === 'scheduled' && (
+                                        <>
+                                            <Text style={styles.inputLabel}>Reminders</Text>
+                                            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}>
+                                                <TextInput
+                                                    style={[styles.input, { flex: 1 }]}
+                                                    value={reminderAmount}
+                                                    onChangeText={setReminderAmount}
+                                                    placeholder="Amount"
+                                                    keyboardType="numeric"
+                                                />
+                                                {(['minutes', 'hours', 'days'] as const).map(u => (
+                                                    <TouchableOpacity
+                                                        key={u}
+                                                        style={[styles.recurBtn, reminderUnit === u && styles.recurBtnActive]}
+                                                        onPress={() => setReminderUnit(u)}
+                                                    >
+                                                        <Text style={[styles.recurBtnText, reminderUnit === u && styles.recurBtnTextActive]}>{u}</Text>
+                                                    </TouchableOpacity>
+                                                ))}
+                                                <TouchableOpacity style={styles.confirmBtn} onPress={addReminder}>
+                                                    <Text style={styles.confirmBtnText}>+</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                            {newReminders.map(r => (
+                                                <View key={r.id} style={styles.reminderRow}>
+                                                    <Text style={styles.reminderText}>{r.amount} {r.unit} before</Text>
+                                                    <TouchableOpacity onPress={() => removeReminder(r.id)}>
+                                                        <Text style={styles.catDeleteBtn}>✕</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                            ))}
+                                        </>
+                                    )}
 
                                     <View style={styles.modalBtns}>
                                         <TouchableOpacity style={styles.cancelBtn} onPress={() => { resetForm(); setShowAddTask(false); }}>
@@ -804,4 +984,28 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     hintText: { fontSize: 11, color: '#aaa', marginBottom: 8 },
+    reminderRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 6,
+        paddingHorizontal: 10,
+        backgroundColor: Colors.background,
+        borderRadius: 8,
+        marginBottom: 4,
+        borderWidth: 0.5,
+        borderColor: Colors.lightBlue,
+    },
+    reminderText: { fontSize: 14, color: Colors.primary },
+    backgroundBanner: {
+        backgroundColor: Colors.bridge,
+        padding: 10,
+        marginHorizontal: 12,
+        marginTop: 8,
+        borderRadius: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    backgroundBannerText: { color: Colors.white, fontWeight: '600', fontSize: 14, textAlign: 'center' },
+
 });

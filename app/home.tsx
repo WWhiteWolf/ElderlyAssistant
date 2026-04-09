@@ -15,7 +15,7 @@ const modules = [
     { id: 'week', label: 'Week Ahead', icon: '📆' },
     { id: 'timer', label: 'Timer Alerts', icon: '⏱️' },
     { id: 'myday', label: 'My Day', icon: '📅' },
-    { id: 'mollie', label: 'Mollie', icon: '🐕' },
+    { id: 'mollie', label: 'Dog Day', icon: '🐕' },
     { id: 'todo', label: 'To-Do', icon: '✅' },
     { id: 'money', label: 'Money', icon: '💰' },
     { id: 'notepad', label: 'Notepad', icon: '📝' },
@@ -37,7 +37,7 @@ export default function HomeScreen() {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}>Elderly Assistant</Text>
+                <Text style={styles.title}>Remember When</Text>
                 <Text style={styles.subtitle}>Good to see you, Patrick</Text>
             </View>
 
