@@ -61,10 +61,10 @@ const DEFAULT_CATEGORIES: Category[] = [
     { id: 'c1', name: 'General', color: '#1a6e8a' },
     { id: 'c2', name: 'Health', color: '#2d9e8f' },
     { id: 'c3', name: 'Home', color: '#85c5ab' },
-    { id: 'c4', name: 'Mollie', color: '#e67e22' },
-    { id: 'c5', name: 'Financial', color: '#8e44ad' },
+    { id: 'c4', name: 'Dog Day', color: '#e67e22' },
+    { id: 'c5', name: 'Bills', color: '#8e44ad' },
+    { id: 'c6', name: 'Writings', color: '#c0392b' },
 ];
-
 const PRIORITY_COLORS: Record<Priority, string> = {
     Urgent: '#e74c3c',
     Normal: '#1a6e8a',
@@ -489,7 +489,9 @@ export default function TodoScreen() {
                                     </View>
                                     <View style={styles.taskBottomRow}>
                                         <Text style={[styles.priorityLabel, { color: PRIORITY_COLORS[task.priority] }]}>{task.priority}</Text>
-                                        {task.notes ? <Text style={styles.taskNotes}>{task.notes}</Text> : null}
+                                        <Text style={[styles.priorityLabel, { color: getCategoryColor(task.categoryId) }]}>{getCategoryName(task.categoryId)}</Text>
+                                        {task.dueDate ? <Text style={styles.dueDateText}>Due: {task.dueDate}</Text> : null}
+                                        {task.recurring !== 'none' ? <Text style={styles.recurringText}>🔁 {task.recurring}</Text> : null}
                                     </View>
                                 </View>
                             </TouchableOpacity>
@@ -523,14 +525,15 @@ export default function TodoScreen() {
                             <View style={styles.taskContent}>
                                 <View style={styles.taskTopRow}>
                                     <Text style={styles.taskTitle}>{task.title}</Text>
-                                    <View style={[styles.categoryBadge, { backgroundColor: getCategoryColor(task.categoryId) }]}>
-                                        <Text style={styles.categoryBadgeText}>{getCategoryName(task.categoryId)}</Text>
-                                    </View>
+                                    <Text style={styles.pressToEdit}>Press to Edit</Text>
                                 </View>
-                                <View style={styles.taskBottomRow}>
-                                    <Text style={[styles.priorityLabel, { color: PRIORITY_COLORS[task.priority] }]}>{task.priority}</Text>
-                                    {task.dueDate ? <Text style={styles.dueDateText}>Due: {task.dueDate}</Text> : null}
-                                    {task.recurring !== 'none' ? <Text style={styles.recurringText}>🔁 {task.recurring}</Text> : null}
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <View style={styles.taskBottomRow}>
+                                        <Text style={[styles.priorityLabel, { color: PRIORITY_COLORS[task.priority] }]}>{task.priority}</Text>
+                                        <Text style={[styles.priorityLabel, { color: getCategoryColor(task.categoryId) }]}>{getCategoryName(task.categoryId)}</Text>
+                                        {task.dueDate ? <Text style={styles.dueDateText}>Due: {task.dueDate}</Text> : null}
+                                        {task.recurring !== 'none' ? <Text style={styles.recurringText}>🔁 {task.recurring}</Text> : null}                                    </View>
+
                                 </View>
                                 {task.notes ? <Text style={styles.taskNotes}>{task.notes}</Text> : null}
                             </View>
@@ -722,7 +725,7 @@ export default function TodoScreen() {
                                 ))}
                             </View>
                             <Text style={styles.inputLabel}>Existing Categories</Text>
-                            {categories.filter(c => !['c1', 'c2', 'c3', 'c4', 'c5'].includes(c.id)).map(cat => (
+                            {categories.filter(c => !['c1', 'c2', 'c3', 'c4', 'c5', 'c6'].includes(c.id)).map(cat => (
                                 <View key={cat.id} style={styles.catManageRow}>
                                     <View style={[styles.catDot, { backgroundColor: cat.color }]} />
                                     <Text style={styles.catManageName}>{cat.name}</Text>
@@ -1049,4 +1052,5 @@ const styles = StyleSheet.create({
         marginHorizontal: 12,
         marginBottom: 8,
     },
+    pressToEdit: { fontSize: 11, color: '#aaa', fontStyle: 'italic' },
 });

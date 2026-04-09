@@ -32,6 +32,7 @@ export default function HomeScreen() {
         if (id === 'myday') router.push('/myday');
         if (id === 'mollie') router.push('/mollie');
         if (id === 'todo') router.push('/todo');
+        if (id === 'planner') router.push('/planner');
     };
 
     return (
