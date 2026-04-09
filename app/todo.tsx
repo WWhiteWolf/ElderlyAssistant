@@ -82,7 +82,6 @@ export default function TodoScreen() {
     const [showAddCategory, setShowAddCategory] = useState(false);
     const [showLog, setShowLog] = useState(false);
     const [editTask, setEditTask] = useState<Task | null>(null);
-
     const [newTitle, setNewTitle] = useState('');
     const [newCategory, setNewCategory] = useState('c1');
     const [newPriority, setNewPriority] = useState<Priority>('Normal');
@@ -96,7 +95,7 @@ export default function TodoScreen() {
     const [newReminders, setNewReminders] = useState<Reminder[]>([]);
     const [reminderAmount, setReminderAmount] = useState('');
     const [reminderUnit, setReminderUnit] = useState<'minutes' | 'hours' | 'days'>('hours');
-    const [showBannerDismissed, setShowBannerDismissed] = useState(false);
+    const [showBackgroundTasks, setShowBackgroundTasks] = useState(false);
 
     useEffect(() => {
         loadData();
@@ -299,9 +298,7 @@ export default function TodoScreen() {
     const getSortedTasks = () => {
         let filtered = filterCategory === 'all'
             ? tasks.filter(t => t.taskType !== 'background')
-            : filterCategory === 'background'
-                ? tasks.filter(t => t.taskType === 'background')
-                : tasks.filter(t => t.categoryId === filterCategory && t.taskType !== 'background');
+            : tasks.filter(t => t.categoryId === filterCategory && t.taskType !== 'background');
 
         filtered = filtered.filter(t => !t.completed);
 
@@ -328,14 +325,18 @@ export default function TodoScreen() {
     };
 
     const scheduleReminders = async (task: Task) => {
+        console.log('scheduleReminders called', task.taskType, task.dueDate, task.reminders.length);
         if (task.taskType === 'background' || !task.dueDate || task.reminders.length === 0) return;
         for (const reminder of task.reminders) {
-            const dueDateTime = new Date(`${task.dueDate} ${task.dueTime || '09:00'}`);
+            const [month, day, year] = task.dueDate.split('/');
+            const fullYear = year.length === 2 ? `20${year}` : year;
+            const dueDateTime = new Date(`${fullYear}-${month}-${day}T${task.dueTime || '09:00'}:00`);
             let msOffset = 0;
             if (reminder.unit === 'minutes') msOffset = reminder.amount * 60 * 1000;
             if (reminder.unit === 'hours') msOffset = reminder.amount * 60 * 60 * 1000;
             if (reminder.unit === 'days') msOffset = reminder.amount * 24 * 60 * 60 * 1000;
             const fireTime = new Date(dueDateTime.getTime() - msOffset);
+            console.log('Fire time:', fireTime, 'Now:', new Date(), 'Future?', fireTime > new Date());
             if (fireTime > new Date()) {
                 await Notifications.scheduleNotificationAsync({
                     content: {
@@ -448,16 +449,52 @@ export default function TodoScreen() {
                 </View>
             </View>
 
-            {tasks.filter(t => t.taskType === 'background').length > 0 && !showBannerDismissed && (
-                <View style={styles.backgroundBanner}>
-                    <TouchableOpacity style={{ flex: 1 }} onPress={() => setFilterCategory('background')}>
-                        <Text style={styles.backgroundBannerText}>
-                            📋 {tasks.filter(t => t.taskType === 'background').length} background task{tasks.filter(t => t.taskType === 'background').length > 1 ? 's' : ''} — tap to review
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setShowBannerDismissed(true)}>
-                        <Text style={{ color: Colors.white, fontSize: 18, paddingLeft: 10 }}>✕</Text>
-                    </TouchableOpacity>
+            {tasks.filter(t => t.taskType === 'background').length > 0 && (
+                <TouchableOpacity
+                    style={styles.backgroundBanner}
+                    onPress={() => setShowBackgroundTasks(!showBackgroundTasks)}
+                >
+                    <Text style={styles.backgroundBannerText}>
+                        📋 {tasks.filter(t => t.taskType === 'background').length} background task{tasks.filter(t => t.taskType === 'background').length > 1 ? 's' : ''} — tap to {showBackgroundTasks ? 'hide' : 'review'}
+                    </Text>
+                </TouchableOpacity>
+            )}
+
+            {showBackgroundTasks && (
+                <View style={styles.backgroundList}>
+                    {tasks.filter(t => t.taskType === 'background' && !t.completed).map(task => (
+                        <Swipeable
+                            key={task.id}
+                            renderRightActions={() => (
+                                <TouchableOpacity
+                                    style={styles.swipeDelete}
+                                    onPress={() => deleteTask(task.id)}
+                                >
+                                    <Text style={styles.swipeDeleteText}>Delete</Text>
+                                </TouchableOpacity>
+                            )}
+                        >
+                            <TouchableOpacity
+                                style={styles.taskCard}
+                                onPress={() => openEditTask(task)}
+                                onLongPress={() => completeTask(task)}
+                            >
+                                <View style={[styles.priorityBar, { backgroundColor: PRIORITY_COLORS[task.priority] }]} />
+                                <View style={styles.taskContent}>
+                                    <View style={styles.taskTopRow}>
+                                        <Text style={styles.taskTitle}>{task.title}</Text>
+                                        <View style={[styles.categoryBadge, { backgroundColor: getCategoryColor(task.categoryId) }]}>
+                                            <Text style={styles.categoryBadgeText}>{getCategoryName(task.categoryId)}</Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.taskBottomRow}>
+                                        <Text style={[styles.priorityLabel, { color: PRIORITY_COLORS[task.priority] }]}>{task.priority}</Text>
+                                        {task.notes ? <Text style={styles.taskNotes}>{task.notes}</Text> : null}
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
+                        </Swipeable>
+                    ))}
                 </View>
             )}
 
@@ -541,10 +578,18 @@ export default function TodoScreen() {
                     >
                         <View style={styles.modalOverlay}>
                             <View style={styles.modalBox}>
-                                <ScrollView keyboardShouldPersistTaps="handled">
+                                <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                                         <Text style={styles.modalTitle}>{editTask ? 'Edit Task' : 'New Task'}</Text>
-                                        <Text style={{ fontSize: 13, color: Colors.bridge, fontStyle: 'italic' }}>Scroll ↓ for Cancel & Update buttons</Text>
+                                        <Text style={{ fontSize: 13, color: Colors.bridge, fontStyle: 'italic' }}>Tap background, or Scroll ↓ to view everything</Text>
+                                    </View>
+                                    <View style={styles.modalBtns}>
+                                        <TouchableOpacity style={styles.cancelBtn} onPress={() => { resetForm(); setShowAddTask(false); }}>
+                                            <Text style={styles.cancelBtnText}>Cancel</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={styles.confirmBtn} onPress={editTask ? updateTask : addTask}>
+                                            <Text style={styles.confirmBtnText}>{editTask ? 'Update' : 'Add'}</Text>
+                                        </TouchableOpacity>
                                     </View>
 
                                     <Text style={styles.inputLabel}>Title</Text>
@@ -651,14 +696,7 @@ export default function TodoScreen() {
                                         </>
                                     )}
 
-                                    <View style={styles.modalBtns}>
-                                        <TouchableOpacity style={styles.cancelBtn} onPress={() => { resetForm(); setShowAddTask(false); }}>
-                                            <Text style={styles.cancelBtnText}>Cancel</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity style={styles.confirmBtn} onPress={editTask ? updateTask : addTask}>
-                                            <Text style={styles.confirmBtnText}>{editTask ? 'Update' : 'Add'}</Text>
-                                        </TouchableOpacity>
-                                    </View>
+
                                 </ScrollView>
                             </View>
                         </View>
@@ -1007,5 +1045,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     backgroundBannerText: { color: Colors.white, fontWeight: '600', fontSize: 14, textAlign: 'center' },
-
+    backgroundList: {
+        marginHorizontal: 12,
+        marginBottom: 8,
+    },
 });
