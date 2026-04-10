@@ -180,7 +180,10 @@ export default function MollieScreen() {
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.backBtn}>
                         <Text style={styles.backText}>← Home</Text>
                     </TouchableOpacity>
-                    <Text style={styles.title}>Dog Day 🐕</Text>
+                    <Text style={styles.title}>Shopping List</Text>
+                    <TouchableOpacity onPress={() => router.push('/settings')} style={styles.settingsBtn}>
+                        <Text style={styles.settingsBtnText}>⚙️</Text>
+                    </TouchableOpacity>
                 </View>
             </SafeAreaView>
 
@@ -471,7 +474,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
-    backBtn: { marginRight: 16 },
+    backBtn: { width: 70 },
+    settingsBtn: { width: 70, alignItems: 'flex-end' },
+    settingsBtnText: { fontSize: 22 },
     backText: { color: Colors.lightBlue, fontSize: 16 },
     title: {
         fontSize: 26,
@@ -479,6 +484,8 @@ const styles = StyleSheet.create({
         color: Colors.textLight,
         fontStyle: 'italic',
         fontFamily: 'Georgia',
+        flex: 1,
+        textAlign: 'center',
     },
     bridge: { height: 8, backgroundColor: Colors.bridge },
     scroll: { flex: 1 },

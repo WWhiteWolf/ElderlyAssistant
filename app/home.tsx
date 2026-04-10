@@ -6,10 +6,10 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/Colors';
 
 const modules = [
-    { id: 'settings', label: 'Settings', icon: '⚙️' },
     { id: 'shopping', label: 'Shopping List', icon: '🛒' },
     { id: 'spell', label: 'Spell Assist', icon: '🔤' },
     { id: 'week', label: 'Week Ahead', icon: '📆' },
@@ -37,13 +37,19 @@ export default function HomeScreen() {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>Remember When</Text>
-                <Text style={styles.subtitle}>Good to see you, Patrick</Text>
-            </View>
-
+            <SafeAreaView style={{ backgroundColor: Colors.primary }} edges={['top']}>
+                <View style={styles.header}>
+                    <View style={{ width: 70 }} />
+                    <View style={{ flex: 1, alignItems: 'center' }}>
+                        <Text style={styles.title}>Remember When</Text>
+                        <Text style={styles.subtitle}>Good to see you, Patrick</Text>
+                    </View>
+                    <TouchableOpacity onPress={() => router.push('/settings')} style={{ width: 70, alignItems: 'flex-end' }}>
+                        <Text style={{ fontSize: 22, color: Colors.textLight }}>⚙️</Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
             <View style={styles.bridge} />
-
             <ScrollView contentContainerStyle={styles.grid}>
                 {modules.map((mod) => (
                     <TouchableOpacity
@@ -67,19 +73,22 @@ const styles = StyleSheet.create({
     },
     header: {
         backgroundColor: Colors.primary,
-        paddingTop: 60,
-        paddingBottom: 20,
+        paddingBottom: 12,
+        paddingHorizontal: 16,
+        flexDirection: 'row',
         alignItems: 'center',
     },
     title: {
-        fontSize: 32,
+        fontSize: 28,
         fontWeight: '500',
         color: Colors.textLight,
         fontStyle: 'italic',
         fontFamily: 'Georgia',
+        textAlign: 'center',
     },
     subtitle: {
-        fontSize: 24,
+        fontSize: 22,
+        paddingBottom: 12,
         color: Colors.lightBlue,
         fontStyle: 'italic',
         fontFamily: 'Georgia',
