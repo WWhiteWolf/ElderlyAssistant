@@ -41,6 +41,7 @@ interface Task {
     categoryId: string;
     priority: Priority;
     recurring: RecurType;
+    taskType: 'scheduled' | 'background';
     dueDate: string;
     dueTime: string;
     reminders: Reminder[];
@@ -48,8 +49,9 @@ interface Task {
     createdDate: string;
     completedDate?: string;
     notes: string;
+    status: 'Active' | 'On Hold' | 'Completed';
+    onHoldNote: string;
 }
-
 interface LogEntry {
     id: string;
     taskTitle: string;
@@ -96,26 +98,13 @@ export default function TodoScreen() {
     const [reminderAmount, setReminderAmount] = useState('');
     const [reminderUnit, setReminderUnit] = useState<'minutes' | 'hours' | 'days'>('hours');
     const [showBackgroundTasks, setShowBackgroundTasks] = useState(false);
+    const [newTaskStatus, setNewTaskStatus] = useState<'Active' | 'On Hold' | 'Completed'>('Active');
+    const [newTaskOnHoldNote, setNewTaskOnHoldNote] = useState('');
 
     useEffect(() => {
         loadData();
     }, []);
 
-    interface Task {
-        id: string;
-        title: string;
-        categoryId: string;
-        priority: Priority;
-        recurring: RecurType;
-        taskType: 'scheduled' | 'background';
-        dueDate: string;
-        dueTime: string;
-        reminders: Reminder[];
-        completed: boolean;
-        createdDate: string;
-        completedDate?: string;
-        notes: string;
-    }
 
     const loadData = async () => {
         try {
@@ -158,6 +147,8 @@ export default function TodoScreen() {
         setReminderAmount('');
         setReminderUnit('hours');
         setEditTask(null);
+        setNewTaskStatus('Active');
+        setNewTaskOnHoldNote('');
     };
 
     const addTask = () => {
@@ -178,6 +169,8 @@ export default function TodoScreen() {
             completed: false,
             createdDate: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' }),
             notes: newNotes,
+            status: newTaskStatus,
+            onHoldNote: newTaskOnHoldNote,
         };
         saveTasks([...tasks, task]);
         scheduleReminders(task);
@@ -188,6 +181,11 @@ export default function TodoScreen() {
 
     const updateTask = () => {
         if (!editTask || !newTitle.trim()) return;
+        if (newTaskStatus === 'Completed') {
+            completeTask(editTask);
+            setShowAddTask(false);
+            return;
+        }
         const updated = tasks.map(t =>
             t.id === editTask.id
                 ? {
@@ -201,13 +199,12 @@ export default function TodoScreen() {
                     dueTime: newDueTime,
                     reminders: newReminders,
                     notes: newNotes,
+                    status: newTaskStatus,
+                    onHoldNote: newTaskOnHoldNote,
                 }
                 : t
         );
         saveTasks(updated);
-        cancelReminders(editTask.id);
-        const updatedTask = updated.find(t => t.id === editTask.id);
-        if (updatedTask) scheduleReminders(updatedTask);
         resetForm();
         setShowAddTask(false);
     };
@@ -293,6 +290,8 @@ export default function TodoScreen() {
         setReminderAmount('');
         setReminderUnit('hours');
         setShowAddTask(true);
+        setNewTaskStatus(task.status || 'Active');
+        setNewTaskOnHoldNote(task.onHoldNote || '');
     };
 
     const getSortedTasks = () => {
@@ -477,15 +476,14 @@ export default function TodoScreen() {
                             <TouchableOpacity
                                 style={styles.taskCard}
                                 onPress={() => openEditTask(task)}
-                                onLongPress={() => completeTask(task)}
                             >
                                 <View style={[styles.priorityBar, { backgroundColor: PRIORITY_COLORS[task.priority] }]} />
                                 <View style={styles.taskContent}>
                                     <View style={styles.taskTopRow}>
                                         <Text style={styles.taskTitle}>{task.title}</Text>
-                                        <View style={[styles.categoryBadge, { backgroundColor: getCategoryColor(task.categoryId) }]}>
-                                            <Text style={styles.categoryBadgeText}>{getCategoryName(task.categoryId)}</Text>
-                                        </View>
+                                        <TouchableOpacity onPress={() => openEditTask(task)} style={styles.editBtn}>
+                                            <Text style={styles.editBtnText}>Edit</Text>
+                                        </TouchableOpacity>
                                     </View>
                                     <View style={styles.taskBottomRow}>
                                         <Text style={[styles.priorityLabel, { color: PRIORITY_COLORS[task.priority] }]}>{task.priority}</Text>
@@ -516,28 +514,27 @@ export default function TodoScreen() {
                             </TouchableOpacity>
                         )}
                     >
-                        <TouchableOpacity
-                            style={styles.taskCard}
-                            onPress={() => openEditTask(task)}
-                            onLongPress={() => completeTask(task)}
-                        >
+                        <View style={styles.taskCard}>
                             <View style={[styles.priorityBar, { backgroundColor: PRIORITY_COLORS[task.priority] }]} />
                             <View style={styles.taskContent}>
                                 <View style={styles.taskTopRow}>
                                     <Text style={styles.taskTitle}>{task.title}</Text>
-                                    <Text style={styles.pressToEdit}>Press to Edit</Text>
+                                    <TouchableOpacity onPress={() => openEditTask(task)} style={styles.editBtn}>
+                                        <Text style={styles.editBtnText}>Edit</Text>
+                                    </TouchableOpacity>
                                 </View>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <View style={styles.taskBottomRow}>
                                         <Text style={[styles.priorityLabel, { color: PRIORITY_COLORS[task.priority] }]}>{task.priority}</Text>
                                         <Text style={[styles.priorityLabel, { color: getCategoryColor(task.categoryId) }]}>{getCategoryName(task.categoryId)}</Text>
                                         {task.dueDate ? <Text style={styles.dueDateText}>Due: {task.dueDate}</Text> : null}
-                                        {task.recurring !== 'none' ? <Text style={styles.recurringText}>🔁 {task.recurring}</Text> : null}                                    </View>
+                                        {task.recurring !== 'none' ? <Text style={styles.recurringText}>🔁 {task.recurring}</Text> : null}
+                                    </View>
 
                                 </View>
                                 {task.notes ? <Text style={styles.taskNotes}>{task.notes}</Text> : null}
                             </View>
-                        </TouchableOpacity>
+                        </View>
                     </Swipeable>
                 ))}
             </ScrollView>
@@ -623,6 +620,28 @@ export default function TodoScreen() {
                                             </TouchableOpacity>
                                         ))}
                                     </View>
+                                    <Text style={styles.inputLabel}>Status</Text>
+                                    <View style={styles.priorityRow}>
+                                        {(['Active', 'On Hold', 'Completed'] as const).map(s => (
+                                            <TouchableOpacity
+                                                key={s}
+                                                style={[styles.priorityBtn, newTaskStatus === s && {
+                                                    backgroundColor: s === 'Active' ? Colors.primary : s === 'On Hold' ? '#e67e22' : Colors.bridge
+                                                }]}
+                                                onPress={() => setNewTaskStatus(s)}
+                                            >
+                                                <Text style={[styles.priorityBtnText, newTaskStatus === s && { color: '#fff' }]}>
+                                                    {s === 'Completed' ? 'Done' : s}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        ))}
+                                    </View>
+                                    {newTaskStatus === 'On Hold' && (
+                                        <>
+                                            <Text style={styles.inputLabel}>Reason for Hold</Text>
+                                            <TextInput style={styles.input} value={newTaskOnHoldNote} onChangeText={setNewTaskOnHoldNote} placeholder="Why is this on hold?" />
+                                        </>
+                                    )}
 
                                     <Text style={styles.inputLabel}>Recurring</Text>
                                     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
@@ -1053,4 +1072,13 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     pressToEdit: { fontSize: 11, color: '#aaa', fontStyle: 'italic' },
+    editBtn: {
+        backgroundColor: Colors.background,
+        borderWidth: 0.5,
+        borderColor: Colors.primary,
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+    },
+    editBtnText: { color: Colors.primary, fontSize: 16, fontWeight: '600' },
 });

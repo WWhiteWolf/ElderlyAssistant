@@ -249,6 +249,11 @@ export default function PlannerScreen() {
 
     const updateTask = () => {
         if (!editTask || !selectedProject || !newTaskTitle.trim()) return;
+        if (newTaskStatus === 'Completed') {
+            completeTask({ ...editTask, title: newTaskTitle.trim(), notes: newTaskNotes });
+            setShowAddTask(false);
+            return;
+        }
         const updatedTask: ProjectTask = {
             ...editTask,
             title: newTaskTitle.trim(),
@@ -435,24 +440,23 @@ export default function PlannerScreen() {
                             <TouchableOpacity
                                 style={styles.taskCard}
                                 onPress={() => openEditTask(task)}
-                                onLongPress={() => completeTask(task)}
+                                delayLongPress={400}
                             >
                                 <View style={[styles.priorityBar, { backgroundColor: PRIORITY_COLORS[task.priority] }]} />
                                 <View style={styles.taskContent}>
                                     <View style={styles.taskTopRow}>
                                         <Text style={styles.taskTitle}>{task.title}</Text>
-                                        <View style={[styles.statusBadge, { backgroundColor: STATUS_COLORS[task.status] }]}>
-                                            <Text style={styles.statusBadgeText}>{task.status}</Text>
-                                        </View>
+                                        <Text style={styles.pressToEdit}>Press to Edit</Text>
+                                    </View>
+                                    <View style={styles.taskBottomRow}>
+                                        <Text style={[styles.priorityLabel, { color: PRIORITY_COLORS[task.priority] }]}>{task.priority}</Text>
+                                        <Text style={[styles.priorityLabel, { color: STATUS_COLORS[task.status] }]}>{task.status}</Text>
+                                        {task.dueDate ? <Text style={styles.dueDateText}>Due: {task.dueDate}</Text> : null}
+                                        {task.hasReminder ? <Text style={styles.reminderIndicator}>🔔 {task.reminderDate}</Text> : null}
                                     </View>
                                     {task.status === 'On Hold' && task.onHoldNote ? (
                                         <Text style={styles.onHoldNote}>On Hold: {task.onHoldNote}</Text>
                                     ) : null}
-                                    <View style={styles.taskBottomRow}>
-                                        <Text style={[styles.priorityLabel, { color: PRIORITY_COLORS[task.priority] }]}>{task.priority}</Text>
-                                        {task.dueDate ? <Text style={styles.dueDateText}>Due: {task.dueDate}</Text> : null}
-                                        {task.hasReminder ? <Text style={styles.reminderIndicator}>🔔 {task.reminderDate}</Text> : null}
-                                    </View>
                                     {task.notes ? <Text style={styles.taskNotes}>{task.notes}</Text> : null}
                                 </View>
                             </TouchableOpacity>
@@ -592,13 +596,13 @@ export default function PlannerScreen() {
 
                                     <Text style={styles.inputLabel}>Status</Text>
                                     <View style={styles.priorityRow}>
-                                        {(['Active', 'On Hold'] as TaskStatus[]).map(s => (
+                                        {(['Active', 'On Hold', 'Completed'] as TaskStatus[]).map(s => (
                                             <TouchableOpacity
                                                 key={s}
                                                 style={[styles.priorityBtn, newTaskStatus === s && { backgroundColor: STATUS_COLORS[s] }]}
                                                 onPress={() => setNewTaskStatus(s)}
                                             >
-                                                <Text style={[styles.priorityBtnText, newTaskStatus === s && { color: '#fff' }]}>{s}</Text>
+                                                <Text style={[styles.priorityBtnText, newTaskStatus === s && { color: '#fff' }]}>{s === 'Completed' ? 'Done' : s}</Text>
                                             </TouchableOpacity>
                                         ))}
                                     </View>
@@ -902,4 +906,5 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     hintText: { fontSize: 11, color: '#aaa', marginBottom: 8 },
+    pressToEdit: { fontSize: 11, color: '#aaa', fontStyle: 'italic' },
 });
