@@ -437,16 +437,14 @@ export default function PlannerScreen() {
                                 </TouchableOpacity>
                             )}
                         >
-                            <TouchableOpacity
-                                style={styles.taskCard}
-                                onPress={() => openEditTask(task)}
-                                delayLongPress={400}
-                            >
+                            <View style={styles.taskCard}>
                                 <View style={[styles.priorityBar, { backgroundColor: PRIORITY_COLORS[task.priority] }]} />
                                 <View style={styles.taskContent}>
                                     <View style={styles.taskTopRow}>
                                         <Text style={styles.taskTitle}>{task.title}</Text>
-                                        <Text style={styles.pressToEdit}>Press to Edit</Text>
+                                        <TouchableOpacity onPress={() => openEditTask(task)} style={styles.editBtn}>
+                                            <Text style={styles.editBtnText}>Edit</Text>
+                                        </TouchableOpacity>
                                     </View>
                                     <View style={styles.taskBottomRow}>
                                         <Text style={[styles.priorityLabel, { color: PRIORITY_COLORS[task.priority] }]}>{task.priority}</Text>
@@ -459,7 +457,7 @@ export default function PlannerScreen() {
                                     ) : null}
                                     {task.notes ? <Text style={styles.taskNotes}>{task.notes}</Text> : null}
                                 </View>
-                            </TouchableOpacity>
+                            </View>
                         </Swipeable>
                     ))}
                 </ScrollView>
@@ -907,4 +905,13 @@ const styles = StyleSheet.create({
     },
     hintText: { fontSize: 11, color: '#aaa', marginBottom: 8 },
     pressToEdit: { fontSize: 11, color: '#aaa', fontStyle: 'italic' },
+    editBtn: {
+        backgroundColor: Colors.background,
+        borderWidth: 0.5,
+        borderColor: Colors.primary,
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+    },
+    editBtnText: { color: Colors.primary, fontSize: 16, fontWeight: '600' },
 });
