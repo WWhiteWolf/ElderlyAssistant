@@ -13,6 +13,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/Colors';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 interface VaultItem {
     id: string;
@@ -140,7 +142,7 @@ export default function VaultScreen() {
     };
 
     return (
-        <View style={styles.container}>
+        <GestureHandlerRootView style={styles.container}>
             <SafeAreaView style={{ backgroundColor: Colors.primary }} edges={['top']}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.backBtn}>
@@ -188,28 +190,34 @@ export default function VaultScreen() {
                     )}
 
                     {getCategoryItems().map(item => (
-                        <View key={item.id} style={styles.itemCard}>
-                            <View style={styles.itemHeader}>
-                                <Text style={styles.itemLabel}>{item.label}</Text>
-                                <View style={styles.itemActions}>
-                                    <TouchableOpacity onPress={() => toggleShowValue(item.id)} style={styles.showBtn}>
-                                        <Text style={styles.showBtnText}>{showValues[item.id] ? 'Hide' : 'Show'}</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => openEditItem(item)} style={styles.editBtn}>
-                                        <Text style={styles.editBtnText}>Edit</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => deleteItem(item.id)} style={styles.deleteBtn}>
-                                        <Text style={styles.deleteBtnText}>✕</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                            {showValues[item.id] ? (
-                                <Text style={styles.itemValue}>{item.value}</Text>
-                            ) : (
-                                <Text style={styles.itemValueHidden}>••••••••</Text>
+                        <Swipeable
+                            key={item.id}
+                            renderRightActions={() => (
+                                <TouchableOpacity style={styles.swipeDelete} onPress={() => deleteItem(item.id)}>
+                                    <Text style={styles.swipeDeleteText}>Delete</Text>
+                                </TouchableOpacity>
                             )}
-                            {item.notes ? <Text style={styles.itemNotes}>{item.notes}</Text> : null}
-                        </View>
+                        >
+                            <View style={styles.itemCard}>
+                                <View style={styles.itemHeader}>
+                                    <Text style={styles.itemLabel}>{item.label}</Text>
+                                    <View style={styles.itemActions}>
+                                        <TouchableOpacity onPress={() => toggleShowValue(item.id)} style={styles.showBtn}>
+                                            <Text style={styles.showBtnText}>{showValues[item.id] ? 'Hide' : 'Show'}</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => openEditItem(item)} style={styles.editBtn}>
+                                            <Text style={styles.editBtnText}>Edit</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                                {showValues[item.id] ? (
+                                    <Text style={styles.itemValue}>{item.value}</Text>
+                                ) : (
+                                    <Text style={styles.itemValueHidden}>••••••••</Text>
+                                )}
+                                {item.notes ? <Text style={styles.itemNotes}>{item.notes}</Text> : null}
+                            </View>
+                        </Swipeable>
                     ))}
                 </ScrollView>
             )}
@@ -268,7 +276,7 @@ export default function VaultScreen() {
                     </View>
                 </Modal>
             )}
-        </View>
+        </GestureHandlerRootView>
     );
 }
 
@@ -432,4 +440,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     confirmBtnText: { color: Colors.white, fontWeight: '600' },
+    swipeDelete: {
+        backgroundColor: '#e74c3c',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 80,
+        borderRadius: 10,
+        marginBottom: 10,
+    },
+    swipeDeleteText: { color: '#fff', fontWeight: '600', fontSize: 15 },
 });
