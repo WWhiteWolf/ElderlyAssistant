@@ -10,17 +10,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/Colors';
 
 const modules = [
-    { id: 'shopping', label: 'Shopping List', icon: '🛒' },
-    { id: 'spell', label: 'Spell Assist', icon: '🔤' },
-    { id: 'week', label: 'Week Ahead', icon: '📆' },
-    { id: 'timer', label: 'Timer Alerts', icon: '⏱️' },
-    { id: 'myday', label: 'My Day', icon: '📅' },
-    { id: 'mollie', label: 'Pets', icon: '🐾' },
-    { id: 'todo', label: 'To-Do', icon: '✅' },
-    { id: 'money', label: 'Money', icon: '💰' },
-    { id: 'notepad', label: 'Notepad', icon: '📝' },
-    { id: 'journal', label: 'Journal', icon: '📖' },
-    { id: 'planner', label: 'Project Planner', icon: '📋' },
+  { id: 'shopping', label: 'Shopping List', icon: '🛒' },
+  { id: 'spell', label: 'Spell Assist', icon: '🔤' },
+  { id: 'timer', label: 'Timer Alerts', icon: '⏰' },
+  { id: 'myday', label: 'My Day', icon: '☀️' },
+  { id: 'mollie', label: 'Pets', icon: '🐾' },
+  { id: 'todo', label: 'To-Do', icon: '✅' },
+  { id: 'planner', label: 'Project Planner', icon: '📋' },
+  { id: 'vault', label: 'Vault', icon: '🔒' },
 ];
 
 export default function HomeScreen() {
@@ -33,6 +30,7 @@ export default function HomeScreen() {
         if (id === 'mollie') router.push('/mollie');
         if (id === 'todo') router.push('/todo');
         if (id === 'planner') router.push('/planner');
+        if (id === 'vault') router.push('/vault');
     };
 
     return (

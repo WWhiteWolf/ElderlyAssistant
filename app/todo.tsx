@@ -63,7 +63,7 @@ const DEFAULT_CATEGORIES: Category[] = [
     { id: 'c1', name: 'General', color: '#1a6e8a' },
     { id: 'c2', name: 'Health', color: '#2d9e8f' },
     { id: 'c3', name: 'Home', color: '#85c5ab' },
-    { id: 'c4', name: 'Dog Day', color: '#e67e22' },
+    { id: 'c4', name: 'Pet', color: '#e67e22' },
     { id: 'c5', name: 'Bills', color: '#8e44ad' },
 ];
 const PRIORITY_COLORS: Record<Priority, string> = {
@@ -406,7 +406,7 @@ export default function TodoScreen() {
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.backBtn}>
                         <Text style={styles.backText}>← Home</Text>
                     </TouchableOpacity>
-                    <Text style={styles.title}>Shopping List</Text>
+                    <Text style={styles.title}>To-Do</Text>
                     <TouchableOpacity onPress={() => router.push('/settings')} style={styles.settingsBtn}>
                         <Text style={styles.settingsBtnText}>⚙️</Text>
                     </TouchableOpacity>
@@ -602,10 +602,10 @@ export default function TodoScreen() {
                                         {categories.map(cat => (
                                             <TouchableOpacity
                                                 key={cat.id}
-                                                style={[styles.catSelectBtn, newCategory === cat.id && { backgroundColor: cat.color }]}
+                                                style={[styles.filterBtn, newCategory === cat.id && styles.filterBtnActive, { borderColor: cat.color }]}
                                                 onPress={() => setNewCategory(cat.id)}
                                             >
-                                                <Text style={[styles.catSelectText, newCategory === cat.id && { color: '#fff' }]}>{cat.name}</Text>
+                                                <Text style={[styles.filterBtnText, newCategory === cat.id && styles.filterBtnTextActive, { color: newCategory === cat.id ? '#fff' : cat.color }]}>{cat.name}</Text>
                                             </TouchableOpacity>
                                         ))}
                                     </ScrollView>
@@ -654,7 +654,7 @@ export default function TodoScreen() {
                                                 onPress={() => setNewRecurring(r)}
                                             >
                                                 <Text style={[styles.recurBtnText, newRecurring === r && styles.recurBtnTextActive]}>
-                                                    {r === 'none' ? 'One-time' : r.charAt(0).toUpperCase() + r.slice(1)}
+                                                    {r === 'none' ? 'Once' : r.charAt(0).toUpperCase() + r.slice(1)}
                                                 </Text>
                                             </TouchableOpacity>
                                         ))}

@@ -390,7 +390,7 @@ export default function MyDayScreen() {
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.backBtn}>
                         <Text style={styles.backText}>← Home</Text>
                     </TouchableOpacity>
-                    <Text style={styles.title}>Shopping List</Text>
+                    <Text style={styles.title}>My Day</Text>
                     <TouchableOpacity onPress={() => router.push('/settings')} style={styles.settingsBtn}>
                         <Text style={styles.settingsBtnText}>⚙️</Text>
                     </TouchableOpacity>
