@@ -8,6 +8,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/Colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { useCallback } from 'react';
 
 const modules = [
   { id: 'shopping', label: 'Shopping List', icon: '🛒' },
@@ -22,6 +26,18 @@ const modules = [
 
 export default function HomeScreen() {
     const router = useRouter();
+
+    const [userName, setUserName] = useState('');
+
+    useFocusEffect(
+        useCallback(() => {
+            const loadName = async () => {
+                const name = await AsyncStorage.getItem('user_name');
+                if (name) setUserName(name);
+            };
+            loadName();
+        }, [])
+    );
 
     const handleTile = (id: string) => {
         if (id === 'shopping') router.push('/shopping');
@@ -40,7 +56,7 @@ export default function HomeScreen() {
                     <View style={{ width: 70 }} />
                     <View style={{ flex: 1, alignItems: 'center' }}>
                         <Text style={styles.title}>Remember When</Text>
-                        <Text style={styles.subtitle}>Good to see you, Patrick</Text>
+                        <Text style={styles.subtitle}>Good to see you{userName ? `, ${userName}` : ''}!</Text>
                     </View>
                     <TouchableOpacity onPress={() => router.push('/settings')} style={{ width: 70, alignItems: 'flex-end' }}>
                         <Text style={{ fontSize: 22, color: Colors.textLight }}>⚙️</Text>
