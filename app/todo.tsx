@@ -65,7 +65,6 @@ const DEFAULT_CATEGORIES: Category[] = [
     { id: 'c3', name: 'Home', color: '#85c5ab' },
     { id: 'c4', name: 'Dog Day', color: '#e67e22' },
     { id: 'c5', name: 'Bills', color: '#8e44ad' },
-    { id: 'c6', name: 'Writings', color: '#c0392b' },
 ];
 const PRIORITY_COLORS: Record<Priority, string> = {
     Urgent: '#e74c3c',
@@ -747,7 +746,7 @@ export default function TodoScreen() {
                                 ))}
                             </View>
                             <Text style={styles.inputLabel}>Existing Categories</Text>
-                            {categories.filter(c => !['c1', 'c2', 'c3', 'c4', 'c5', 'c6'].includes(c.id)).map(cat => (
+                            {categories.filter(c => !['c1', 'c2', 'c3', 'c4', 'c5'].includes(c.id)).map(cat => (
                                 <View key={cat.id} style={styles.catManageRow}>
                                     <View style={[styles.catDot, { backgroundColor: cat.color }]} />
                                     <Text style={styles.catManageName}>{cat.name}</Text>

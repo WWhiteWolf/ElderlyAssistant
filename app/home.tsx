@@ -15,7 +15,7 @@ const modules = [
     { id: 'week', label: 'Week Ahead', icon: '📆' },
     { id: 'timer', label: 'Timer Alerts', icon: '⏱️' },
     { id: 'myday', label: 'My Day', icon: '📅' },
-    { id: 'mollie', label: 'Dog Day', icon: '🐕' },
+    { id: 'mollie', label: 'Pets', icon: '🐾' },
     { id: 'todo', label: 'To-Do', icon: '✅' },
     { id: 'money', label: 'Money', icon: '💰' },
     { id: 'notepad', label: 'Notepad', icon: '📝' },
