@@ -15,6 +15,7 @@ export default function RootLayout() {
       <Stack.Screen name="planner" options={{ headerShown: false }} />
       <Stack.Screen name="settings" options={{ headerShown: false }} />
       <Stack.Screen name="vault" options={{ headerShown: false }} />
+      <Stack.Screen name="vaultpin" options={{ headerShown: false }} />
     </Stack>
   );
 }

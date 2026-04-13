@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
     Alert,
@@ -11,10 +11,10 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../constants/Colors';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '../constants/Colors';
 
 interface VaultItem {
     id: string;
@@ -36,6 +36,21 @@ const VAULT_CATEGORIES = [
 
 export default function VaultScreen() {
     const router = useRouter();
+    const params = useLocalSearchParams();
+    const [ready, setReady] = useState(false);
+
+    useEffect(() => {
+        const checkSecurity = async () => {
+            const vaultPinEnabled = await AsyncStorage.getItem('vault_pin_enabled');
+            if (vaultPinEnabled === 'true' && !params?.verified) {
+                router.replace('/vaultpin');
+            } else {
+                setReady(true);
+            }
+        };
+        checkSecurity();
+    }, [params]);
+
     const [items, setItems] = useState<VaultItem[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [showAddItem, setShowAddItem] = useState(false);
@@ -140,6 +155,8 @@ export default function VaultScreen() {
     const getCategoryData = (id: string) => {
         return VAULT_CATEGORIES.find(c => c.id === id);
     };
+
+    if (!ready) return <View style={{ flex: 1, backgroundColor: Colors.background }} />;
 
     return (
         <GestureHandlerRootView style={styles.container}>
