@@ -162,15 +162,13 @@ export default function VaultScreen() {
         <GestureHandlerRootView style={styles.container}>
             <SafeAreaView style={{ backgroundColor: Colors.primary }} edges={['top']}>
                 <View style={styles.header}>
-                    <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.backBtn}>
-                        <Text style={styles.backText}>← Home</Text>
+                    <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
+                        <Text style={styles.headerBtnText}>← Home</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>
                         {selectedCategory ? getCategoryData(selectedCategory)?.name : 'Vault 🔒'}
                     </Text>
-                    <TouchableOpacity onPress={() => router.push('/settings')} style={styles.settingsBtn}>
-                        <Text style={styles.settingsBtnText}>⚙️</Text>
-                    </TouchableOpacity>
+                    <View style={styles.settingsBtn} />
                 </View>
             </SafeAreaView>
 
@@ -466,4 +464,13 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     swipeDeleteText: { color: '#fff', fontWeight: '600', fontSize: 15 },
+    
+    headerBtn: {
+    borderWidth: 1,
+    borderColor: Colors.white,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+},
+headerBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
 });

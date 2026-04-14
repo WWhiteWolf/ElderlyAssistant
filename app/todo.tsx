@@ -20,7 +20,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/Colors';
 
 type Priority = 'Urgent' | 'Normal' | 'Someday';
-type RecurType = 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly';
+type RecurType = 'none' | 'daily' | 'weekly' | 'monthly' | 'every3months' | 'every6months' | 'yearly';
 
 interface Category {
     id: string;
@@ -64,9 +64,12 @@ interface LogEntry {
 const DEFAULT_CATEGORIES: Category[] = [
     { id: 'c1', name: 'General', color: '#1a6e8a' },
     { id: 'c2', name: 'Health', color: '#2d9e8f' },
-    { id: 'c3', name: 'Home', color: '#85c5ab' },
-    { id: 'c4', name: 'Pet', color: '#e67e22' },
-    { id: 'c5', name: 'Bills', color: '#8e44ad' },
+    { id: 'c3', name: 'House', color: '#85c5ab' },
+    { id: 'c4', name: 'Yard', color: '#27ae60' },
+    { id: 'c5', name: 'Pet', color: '#e67e22' },
+    { id: 'c6', name: 'Bills', color: '#8e44ad' },
+    { id: 'c7', name: 'Leisure', color: '#2980b9' },
+    { id: 'c8', name: 'Hobbies', color: '#16a085' },
 ];
 const PRIORITY_COLORS: Record<Priority, string> = {
     Urgent: '#e74c3c',
@@ -104,6 +107,7 @@ export default function TodoScreen() {
     const [showWeekAhead, setShowWeekAhead] = useState(false);
     const [newRecurDay, setNewRecurDay] = useState(0);
     const [newRecurMonth, setNewRecurMonth] = useState(1);
+    const [showToday, setShowToday] = useState(false);
 
     useEffect(() => {
         loadData();
@@ -416,12 +420,12 @@ export default function TodoScreen() {
         <GestureHandlerRootView style={styles.container}>
             <SafeAreaView style={{ backgroundColor: Colors.primary }}>
                 <View style={styles.header}>
-                    <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.backBtn}>
-                        <Text style={styles.backText}>← Home</Text>
+                    <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
+                        <Text style={styles.headerBtnText}>← Home</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>To-Do</Text>
-                    <TouchableOpacity onPress={() => router.push('/settings')} style={styles.settingsBtn}>
-                        <Text style={styles.settingsBtnText}>⚙️</Text>
+                    <TouchableOpacity onPress={() => { resetForm(); setShowAddTask(true); }} style={styles.headerBtn}>
+                        <Text style={styles.headerBtnText}>New Task</Text>
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
@@ -561,9 +565,7 @@ export default function TodoScreen() {
                 <TouchableOpacity style={styles.fabSecondary} onPress={() => setShowLog(!showLog)}>
                     <Text style={styles.fabText}>📋 Log</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.fabSecondary} onPress={() => setShowAddCategory(true)}>
-                    <Text style={styles.fabText}>+ Category</Text>
-                </TouchableOpacity>
+
                 <TouchableOpacity style={styles.fab} onPress={() => { resetForm(); setShowAddTask(true); }}>
                     <Text style={styles.fabMainText}>+ Task</Text>
                 </TouchableOpacity>
@@ -625,7 +627,12 @@ export default function TodoScreen() {
                                             </TouchableOpacity>
                                         ))}
                                     </ScrollView>
-
+                                    <TouchableOpacity
+                                        style={[styles.filterBtn, { borderColor: Colors.bridge, marginTop: 6 }]}
+                                        onPress={() => { setShowAddTask(false); setShowAddCategory(true); }}
+                                    >
+                                        <Text style={[styles.filterBtnText, { color: Colors.bridge }]}>+ Custom Category</Text>
+                                    </TouchableOpacity>
                                     <Text style={styles.inputLabel}>Priority</Text>
                                     <View style={styles.priorityRow}>
                                         {(['Urgent', 'Normal', 'Someday'] as Priority[]).map(p => (
@@ -663,14 +670,14 @@ export default function TodoScreen() {
 
                                     <Text style={styles.inputLabel}>Recurring</Text>
                                     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
-                                        {(['none', 'daily', 'weekly', 'monthly', 'yearly'] as RecurType[]).map(r => (
+                                        {(['none', 'daily', 'weekly', 'monthly', 'every3months', 'every6months', 'yearly'] as RecurType[]).map(r => (
                                             <TouchableOpacity
                                                 key={r}
                                                 style={[styles.recurBtn, newRecurring === r && styles.recurBtnActive]}
                                                 onPress={() => setNewRecurring(r)}
                                             >
                                                 <Text style={[styles.recurBtnText, newRecurring === r && styles.recurBtnTextActive]}>
-                                                    {r === 'none' ? 'Once' : r.charAt(0).toUpperCase() + r.slice(1)}
+                                                    {r === 'none' ? 'Once' : r === 'every3months' ? '3 Months' : r === 'every6months' ? '6 Months' : r.charAt(0).toUpperCase() + r.slice(1)}
                                                 </Text>
                                             </TouchableOpacity>
                                         ))}
@@ -748,22 +755,6 @@ export default function TodoScreen() {
                                     <Text style={styles.inputLabel}>Notes (optional)</Text>
                                     <TextInput style={styles.input} value={newNotes} onChangeText={setNewNotes} placeholder="Any details..." multiline />
 
-                                    <Text style={styles.inputLabel}>Task Type</Text>
-                                    <View style={styles.priorityRow}>
-                                        <TouchableOpacity
-                                            style={[styles.priorityBtn, newTaskType === 'scheduled' && { backgroundColor: Colors.primary }]}
-                                            onPress={() => setNewTaskType('scheduled')}
-                                        >
-                                            <Text style={[styles.priorityBtnText, newTaskType === 'scheduled' && { color: '#fff' }]}>Scheduled</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={[styles.priorityBtn, newTaskType === 'background' && { backgroundColor: Colors.bridge }]}
-                                            onPress={() => setNewTaskType('background')}
-                                        >
-                                            <Text style={[styles.priorityBtnText, newTaskType === 'background' && { color: '#fff' }]}>Background</Text>
-                                        </TouchableOpacity>
-                                    </View>
-
                                     {newTaskType === 'scheduled' && (
                                         <>
                                             <Text style={styles.inputLabel}>Reminders</Text>
@@ -825,7 +816,7 @@ export default function TodoScreen() {
                                 ))}
                             </View>
                             <Text style={styles.inputLabel}>Existing Categories</Text>
-                            {categories.filter(c => !['c1', 'c2', 'c3', 'c4', 'c5'].includes(c.id)).map(cat => (
+                            {categories.filter(c => !['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8'].includes(c.id)).map(cat => (
                                 <View key={cat.id} style={styles.catManageRow}>
                                     <View style={[styles.catDot, { backgroundColor: cat.color }]} />
                                     <Text style={styles.catManageName}>{cat.name}</Text>
@@ -850,8 +841,8 @@ export default function TodoScreen() {
                 <View style={styles.weekOverlay}>
                     <View style={styles.weekHeader}>
                         <Text style={styles.weekTitle}>Week Ahead</Text>
-                        <TouchableOpacity onPress={() => setShowWeekAhead(false)}>
-                            <Text style={styles.logClose}>✕</Text>
+                        <TouchableOpacity onPress={() => setShowWeekAhead(false)} style={styles.recurBtn}>
+                            <Text style={styles.recurBtnText}>← Back</Text>
                         </TouchableOpacity>
                     </View>
                     <ScrollView>
@@ -874,7 +865,7 @@ export default function TodoScreen() {
                                 if (t.recurring === 'yearly' && t.recurDay === dayOfMonth && t.recurMonth === monthOfYear) return true;
                                 return false;
                             });
-                            
+
                             return (
                                 <View key={dayOffset} style={styles.weekDay}>
                                     <View style={styles.weekDayHeader}>
@@ -1282,4 +1273,13 @@ const styles = StyleSheet.create({
     },
     weekTaskTitle: { fontSize: 15, color: Colors.primary, fontWeight: '500' },
     weekTaskMeta: { fontSize: 12, color: '#aaa', marginTop: 2 },
+
+    headerBtn: {
+        borderWidth: 1,
+        borderColor: Colors.white,
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderRadius: 20,
+    },
+    headerBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
 });

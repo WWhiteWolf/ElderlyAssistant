@@ -1,4 +1,6 @@
-import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
 import {
     ScrollView,
     StyleSheet,
@@ -8,17 +10,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/Colors';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState } from 'react';
-import { useFocusEffect } from 'expo-router';
-import { useCallback } from 'react';
 
 const modules = [
   { id: 'shopping', label: 'Shopping List', icon: '🛒' },
   { id: 'spell', label: 'Spell Assist', icon: '🔤' },
   { id: 'timer', label: 'Timer Alerts', icon: '⏰' },
   { id: 'myday', label: 'My Day', icon: '☀️' },
-  { id: 'mollie', label: 'Pets', icon: '🐾' },
+  { id: 'mollie', label: 'Pets Day', icon: '🐾' },
   { id: 'todo', label: 'To-Do', icon: '✅' },
   { id: 'planner', label: 'Project Planner', icon: '📋' },
   { id: 'vault', label: 'Vault', icon: '🔒' },

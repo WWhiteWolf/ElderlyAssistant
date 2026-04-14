@@ -239,15 +239,13 @@ export default function PetsScreen() {
         <GestureHandlerRootView style={styles.container}>
             <SafeAreaView style={{ backgroundColor: Colors.primary }} edges={['top']}>
                 <View style={styles.header}>
-                    <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.backBtn}>
-                        <Text style={styles.backText}>← Home</Text>
+                    <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
+                        <Text style={styles.headerBtnText}>← Home</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>
                         {selectedPet ? `${selectedPet.name} ${getPetIcon(selectedPet.type)}` : 'Pets 🐾'}
                     </Text>
-                    <TouchableOpacity onPress={() => router.push('/settings')} style={styles.settingsBtn}>
-                        <Text style={styles.settingsBtnText}>⚙️</Text>
-                    </TouchableOpacity>
+                    <View style={styles.settingsBtn} />
                 </View>
             </SafeAreaView>
 
@@ -518,77 +516,77 @@ export default function PetsScreen() {
             )}
 
             {showAddPet && (
-    <Modal transparent animationType="slide" visible={showAddPet}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-            <View style={styles.modalOverlay}>
-                <View style={styles.modalBox}>
-                    <Text style={styles.modalTitle}>Add Pet</Text>
-                    <Text style={styles.inputLabel}>Pet Name</Text>
-                    <TextInput style={styles.input} value={newPetName} onChangeText={setNewPetName} placeholder="e.g. Mollie, Luna..." autoFocus={true} />
-                    <Text style={styles.inputLabel}>Type</Text>
-                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
-                        {PET_TYPES.map(type => (
-                            <TouchableOpacity
-                                key={type}
-                                style={[styles.typeBtn, newPetType === type && styles.typeBtnActive]}
-                                onPress={() => setNewPetType(type)}
-                            >
-                                <Text style={[styles.typeBtnText, newPetType === type && styles.typeBtnTextActive]}>
-                                    {getPetIcon(type)} {type}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
-                        <TouchableOpacity
-                            style={[styles.typeBtn, newPetType === 'Custom' && styles.typeBtnActive]}
-                            onPress={() => setNewPetType('Custom')}
-                        >
-                            <Text style={[styles.typeBtnText, newPetType === 'Custom' && styles.typeBtnTextActive]}>
-                                🐾 Custom ←Edit
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                    {newPetType === 'Custom' && (
-                        <>
-                            <Text style={styles.inputLabel}>Enter pet type</Text>
-                            <TextInput style={styles.input} value={customPetType} onChangeText={setCustomPetType} placeholder="e.g. Hamster, Turtle..." />
-                        </>
-                    )}
-                    <View style={styles.modalBtns}>
-                        <TouchableOpacity style={styles.cancelBtn} onPress={() => { setNewPetName(''); setNewPetType('Dog'); setCustomPetType(''); setShowAddPet(false); }}>
-                            <Text style={styles.cancelBtnText}>Cancel</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.confirmBtn} onPress={() => {
-                            if (!newPetName.trim()) {
-                                Alert.alert('Missing Name', 'Please enter a pet name.');
-                                return;
-                            }
-                            const finalType = newPetType === 'Custom' ? (customPetType.trim() || 'Other') : newPetType;
-                            const pet: Pet = {
-                                id: Date.now().toString(),
-                                name: newPetName.trim(),
-                                type: finalType,
-                                feeds: [
-                                    { id: 'f1', label: 'Morning Feed', hour: 7, minute: 0, completed: false },
-                                    { id: 'f2', label: 'Evening Feed', hour: 17, minute: 0, completed: false },
-                                ],
-                                treatCount: 0,
-                                history: [],
-                                lastDate: '',
-                            };
-                            savePets([...pets, pet]);
-                            setNewPetName('');
-                            setNewPetType('Dog');
-                            setCustomPetType('');
-                            setShowAddPet(false);
-                        }}>
-                            <Text style={styles.confirmBtnText}>Add</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </View>
-        </KeyboardAvoidingView>
-    </Modal>
-)}
+                <Modal transparent animationType="slide" visible={showAddPet}>
+                    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+                        <View style={styles.modalOverlay}>
+                            <View style={styles.modalBox}>
+                                <Text style={styles.modalTitle}>Add Pet</Text>
+                                <Text style={styles.inputLabel}>Pet Name</Text>
+                                <TextInput style={styles.input} value={newPetName} onChangeText={setNewPetName} placeholder="e.g. Mollie, Luna..." autoFocus={true} />
+                                <Text style={styles.inputLabel}>Type</Text>
+                                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
+                                    {PET_TYPES.map(type => (
+                                        <TouchableOpacity
+                                            key={type}
+                                            style={[styles.typeBtn, newPetType === type && styles.typeBtnActive]}
+                                            onPress={() => setNewPetType(type)}
+                                        >
+                                            <Text style={[styles.typeBtnText, newPetType === type && styles.typeBtnTextActive]}>
+                                                {getPetIcon(type)} {type}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                    <TouchableOpacity
+                                        style={[styles.typeBtn, newPetType === 'Custom' && styles.typeBtnActive]}
+                                        onPress={() => setNewPetType('Custom')}
+                                    >
+                                        <Text style={[styles.typeBtnText, newPetType === 'Custom' && styles.typeBtnTextActive]}>
+                                            🐾 Custom ←Edit
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                                {newPetType === 'Custom' && (
+                                    <>
+                                        <Text style={styles.inputLabel}>Enter pet type</Text>
+                                        <TextInput style={styles.input} value={customPetType} onChangeText={setCustomPetType} placeholder="e.g. Hamster, Turtle..." />
+                                    </>
+                                )}
+                                <View style={styles.modalBtns}>
+                                    <TouchableOpacity style={styles.cancelBtn} onPress={() => { setNewPetName(''); setNewPetType('Dog'); setCustomPetType(''); setShowAddPet(false); }}>
+                                        <Text style={styles.cancelBtnText}>Cancel</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.confirmBtn} onPress={() => {
+                                        if (!newPetName.trim()) {
+                                            Alert.alert('Missing Name', 'Please enter a pet name.');
+                                            return;
+                                        }
+                                        const finalType = newPetType === 'Custom' ? (customPetType.trim() || 'Other') : newPetType;
+                                        const pet: Pet = {
+                                            id: Date.now().toString(),
+                                            name: newPetName.trim(),
+                                            type: finalType,
+                                            feeds: [
+                                                { id: 'f1', label: 'Morning Feed', hour: 7, minute: 0, completed: false },
+                                                { id: 'f2', label: 'Evening Feed', hour: 17, minute: 0, completed: false },
+                                            ],
+                                            treatCount: 0,
+                                            history: [],
+                                            lastDate: '',
+                                        };
+                                        savePets([...pets, pet]);
+                                        setNewPetName('');
+                                        setNewPetType('Dog');
+                                        setCustomPetType('');
+                                        setShowAddPet(false);
+                                    }}>
+                                        <Text style={styles.confirmBtnText}>Add</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </KeyboardAvoidingView>
+                </Modal>
+            )}
 
         </GestureHandlerRootView>
     );
@@ -843,4 +841,13 @@ const styles = StyleSheet.create({
     },
     timeAdjText: { color: Colors.white, fontSize: 22, fontWeight: '600' },
     timeDisplayText: { fontSize: 40, fontWeight: '600', color: Colors.primary, marginVertical: 4 },
+    
+    headerBtn: {
+    borderWidth: 1,
+    borderColor: Colors.white,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+},
+headerBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
 });

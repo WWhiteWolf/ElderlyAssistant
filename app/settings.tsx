@@ -48,9 +48,9 @@ export default function SettingsScreen() {
     };
 
     //const checkBiometric = async () => {
-        //const available = await LocalAuthentication.hasHardwareAsync();
-        //const enrolled = await LocalAuthentication.isEnrolledAsync();
-        //setBiometricAvailable(available && enrolled);
+    //const available = await LocalAuthentication.hasHardwareAsync();
+    //const enrolled = await LocalAuthentication.isEnrolledAsync();
+    //setBiometricAvailable(available && enrolled);
     //};
 
     const saveUserName = async () => {
@@ -184,8 +184,8 @@ export default function SettingsScreen() {
         <View style={styles.container}>
             <SafeAreaView style={{ backgroundColor: Colors.primary }} edges={['top']}>
                 <View style={styles.header}>
-                    <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-                        <Text style={styles.backText}>← Back</Text>
+                    <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
+                        <Text style={styles.headerBtnText}>← Home</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>Settings</Text>
                     <View style={styles.backBtn} />
@@ -198,8 +198,8 @@ export default function SettingsScreen() {
                 <View style={styles.pinContainer}>
                     <Text style={styles.pinInstruction}>
                         {pinStep === 'current' ? 'Enter your current PIN' :
-                         pinStep === 'new' ? 'Enter your new PIN' :
-                         'Confirm your new PIN'}
+                            pinStep === 'new' ? 'Enter your new PIN' :
+                                'Confirm your new PIN'}
                     </Text>
                     <View style={styles.dotsContainer}>
                         {[...Array(6)].map((_, i) => (
@@ -207,7 +207,7 @@ export default function SettingsScreen() {
                         ))}
                     </View>
                     <View style={styles.keypad}>
-                        {['1','2','3','4','5','6','7','8','9','','0','⌫'].map((key, index) => (
+                        {['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'].map((key, index) => (
                             <TouchableOpacity
                                 key={index}
                                 style={[styles.key, key === '' && styles.keyEmpty]}
@@ -415,4 +415,13 @@ const styles = StyleSheet.create({
     keyText: { fontSize: 28, fontWeight: '500', color: Colors.primary },
     cancelPinBtn: { marginTop: 20, padding: 12 },
     cancelPinText: { color: Colors.bridge, fontSize: 16 },
+
+    headerBtn: {
+        borderWidth: 1,
+        borderColor: Colors.white,
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderRadius: 20,
+    },
+    headerBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
 });
