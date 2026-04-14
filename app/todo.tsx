@@ -41,6 +41,8 @@ interface Task {
     categoryId: string;
     priority: Priority;
     recurring: RecurType;
+    recurDay: number;      // 0-6 for weekly (0=Sunday), 1-31 for monthly
+    recurMonth: number;    // 1-12 for yearly only
     taskType: 'scheduled' | 'background';
     dueDate: string;
     dueTime: string;
@@ -99,6 +101,9 @@ export default function TodoScreen() {
     const [showBackgroundTasks, setShowBackgroundTasks] = useState(false);
     const [newTaskStatus, setNewTaskStatus] = useState<'Active' | 'On Hold' | 'Completed'>('Active');
     const [newTaskOnHoldNote, setNewTaskOnHoldNote] = useState('');
+    const [showWeekAhead, setShowWeekAhead] = useState(false);
+    const [newRecurDay, setNewRecurDay] = useState(0);
+    const [newRecurMonth, setNewRecurMonth] = useState(1);
 
     useEffect(() => {
         loadData();
@@ -138,6 +143,8 @@ export default function TodoScreen() {
         setNewCategory('c1');
         setNewPriority('Normal');
         setNewRecurring('none');
+        setNewRecurDay(0);
+        setNewRecurMonth(1);
         setNewTaskType('scheduled');
         setNewDueDate('');
         setNewDueTime('');
@@ -161,6 +168,8 @@ export default function TodoScreen() {
             categoryId: newCategory,
             priority: newPriority,
             recurring: newRecurring,
+            recurDay: newRecurDay,
+            recurMonth: newRecurMonth,
             taskType: newTaskType,
             dueDate: newDueDate,
             dueTime: newDueTime,
@@ -193,6 +202,8 @@ export default function TodoScreen() {
                     categoryId: newCategory,
                     priority: newPriority,
                     recurring: newRecurring,
+                    recurDay: newRecurDay,
+                    recurMonth: newRecurMonth,
                     taskType: newTaskType,
                     dueDate: newDueDate,
                     dueTime: newDueTime,
@@ -281,6 +292,8 @@ export default function TodoScreen() {
         setNewCategory(task.categoryId);
         setNewPriority(task.priority);
         setNewRecurring(task.recurring);
+        setNewRecurDay(task.recurDay || 0);
+        setNewRecurMonth(task.recurMonth || 1);
         setNewTaskType(task.taskType || 'scheduled');
         setNewDueDate(task.dueDate);
         setNewDueTime(task.dueTime);
@@ -542,6 +555,9 @@ export default function TodoScreen() {
             </ScrollView>
 
             <View style={styles.fabRow}>
+                <TouchableOpacity style={styles.fabSecondary} onPress={() => setShowWeekAhead(!showWeekAhead)}>
+                    <Text style={styles.fabText}>📅 Week</Text>
+                </TouchableOpacity>
                 <TouchableOpacity style={styles.fabSecondary} onPress={() => setShowLog(!showLog)}>
                     <Text style={styles.fabText}>📋 Log</Text>
                 </TouchableOpacity>
@@ -660,6 +676,69 @@ export default function TodoScreen() {
                                         ))}
                                     </ScrollView>
 
+                                    {newRecurring === 'weekly' && (
+                                        <View style={{ marginBottom: 10 }}>
+                                            <Text style={styles.inputLabel}>Which day?</Text>
+                                            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                                                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
+                                                    <TouchableOpacity
+                                                        key={day}
+                                                        style={[styles.recurBtn, newRecurDay === index && styles.recurBtnActive]}
+                                                        onPress={() => setNewRecurDay(index)}
+                                                    >
+                                                        <Text style={[styles.recurBtnText, newRecurDay === index && styles.recurBtnTextActive]}>{day}</Text>
+                                                    </TouchableOpacity>
+                                                ))}
+                                            </ScrollView>
+                                        </View>
+                                    )}
+
+                                    {newRecurring === 'monthly' && (
+                                        <View style={{ marginBottom: 10 }}>
+                                            <Text style={styles.inputLabel}>Which date?</Text>
+                                            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                                                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].map(d => (
+                                                    <TouchableOpacity
+                                                        key={d}
+                                                        style={[styles.recurBtn, newRecurDay === d && styles.recurBtnActive]}
+                                                        onPress={() => setNewRecurDay(d)}
+                                                    >
+                                                        <Text style={[styles.recurBtnText, newRecurDay === d && styles.recurBtnTextActive]}>{d}</Text>
+                                                    </TouchableOpacity>
+                                                ))}
+                                            </ScrollView>
+                                        </View>
+                                    )}
+
+                                    {newRecurring === 'yearly' && (
+                                        <View style={{ marginBottom: 10 }}>
+                                            <Text style={styles.inputLabel}>Month</Text>
+                                            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                                                {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((m, index) => (
+                                                    <TouchableOpacity
+                                                        key={m}
+                                                        style={[styles.recurBtn, newRecurMonth === index + 1 && styles.recurBtnActive]}
+                                                        onPress={() => setNewRecurMonth(index + 1)}
+                                                    >
+                                                        <Text style={[styles.recurBtnText, newRecurMonth === index + 1 && styles.recurBtnTextActive]}>{m}</Text>
+                                                    </TouchableOpacity>
+                                                ))}
+                                            </ScrollView>
+                                            <Text style={styles.inputLabel}>Day</Text>
+                                            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                                                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31].map(d => (
+                                                    <TouchableOpacity
+                                                        key={d}
+                                                        style={[styles.recurBtn, newRecurDay === d && styles.recurBtnActive]}
+                                                        onPress={() => setNewRecurDay(d)}
+                                                    >
+                                                        <Text style={[styles.recurBtnText, newRecurDay === d && styles.recurBtnTextActive]}>{d}</Text>
+                                                    </TouchableOpacity>
+                                                ))}
+                                            </ScrollView>
+                                        </View>
+                                    )}
+
                                     <Text style={styles.inputLabel}>Due Date (MM/DD/YY)</Text>
                                     <TextInput style={styles.input} value={newDueDate} onChangeText={setNewDueDate} placeholder="e.g. 04/15/26" keyboardType="numbers-and-punctuation" />
 
@@ -766,6 +845,64 @@ export default function TodoScreen() {
                         </View>
                     </View>
                 </Modal>
+            )}
+            {showWeekAhead && (
+                <View style={styles.weekOverlay}>
+                    <View style={styles.weekHeader}>
+                        <Text style={styles.weekTitle}>Week Ahead</Text>
+                        <TouchableOpacity onPress={() => setShowWeekAhead(false)}>
+                            <Text style={styles.logClose}>✕</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <ScrollView>
+                        {[0, 1, 2, 3, 4, 5, 6].map(dayOffset => {
+                            const date = new Date();
+                            date.setDate(date.getDate() + dayOffset);
+                            const dateStr = date.toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' });
+                            const dayName = dayOffset === 0 ? 'Today' : dayOffset === 1 ? 'Tomorrow' : date.toLocaleDateString([], { weekday: 'long' });
+                            const dayOfWeek = date.getDay();
+                            const dayOfMonth = date.getDate();
+                            const monthOfYear = date.getMonth() + 1;
+
+                            const dayTasks = tasks.filter(t => {
+                                if (t.completed) return false;
+                                if (t.taskType === 'background') return false;
+                                if (t.recurring === 'none' && t.dueDate === dateStr) return true;
+                                if (t.recurring === 'daily') return true;
+                                if (t.recurring === 'weekly' && t.recurDay === dayOfWeek) return true;
+                                if (t.recurring === 'monthly' && t.recurDay === dayOfMonth) return true;
+                                if (t.recurring === 'yearly' && t.recurDay === dayOfMonth && t.recurMonth === monthOfYear) return true;
+                                return false;
+                            });
+                            
+                            return (
+                                <View key={dayOffset} style={styles.weekDay}>
+                                    <View style={styles.weekDayHeader}>
+                                        <Text style={styles.weekDayName}>{dayName}</Text>
+                                        <Text style={styles.weekDayDate}>{dateStr}</Text>
+                                    </View>
+                                    {dayTasks.length === 0 ? (
+                                        <Text style={styles.weekEmpty}>Nothing due</Text>
+                                    ) : (
+                                        dayTasks.map(task => (
+                                            <TouchableOpacity
+                                                key={task.id}
+                                                style={styles.weekTask}
+                                                onPress={() => { setShowWeekAhead(false); openEditTask(task); }}
+                                            >
+                                                <View style={[styles.weekPriorityDot, { backgroundColor: PRIORITY_COLORS[task.priority] }]} />
+                                                <View style={{ flex: 1 }}>
+                                                    <Text style={styles.weekTaskTitle}>{task.title}</Text>
+                                                    <Text style={styles.weekTaskMeta}>{getCategoryName(task.categoryId)}</Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                        ))
+                                    )}
+                                </View>
+                            );
+                        })}
+                    </ScrollView>
+                </View>
             )}
 
         </GestureHandlerRootView>
@@ -1087,4 +1224,62 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     editBtnText: { color: Colors.primary, fontSize: 16, fontWeight: '600' },
+    weekOverlay: {
+        position: 'absolute',
+        top: 60,
+        left: 0,
+        right: 0,
+        bottom: 70,
+        backgroundColor: Colors.white,
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 16,
+        padding: 16,
+        elevation: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 4,
+    },
+    weekHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+        paddingBottom: 8,
+        borderBottomWidth: 0.5,
+        borderBottomColor: Colors.lightBlue,
+    },
+    weekTitle: { fontSize: 20, fontWeight: '600', color: Colors.primary, fontStyle: 'italic', fontFamily: 'Georgia' },
+    weekDay: {
+        marginBottom: 12,
+        paddingBottom: 12,
+        borderBottomWidth: 0.5,
+        borderBottomColor: Colors.lightBlue,
+    },
+    weekDayHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 6,
+    },
+    weekDayName: { fontSize: 16, fontWeight: '600', color: Colors.primary },
+    weekDayDate: { fontSize: 13, color: '#aaa' },
+    weekEmpty: { fontSize: 13, color: '#aaa', fontStyle: 'italic', paddingLeft: 8 },
+    weekTask: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 6,
+        paddingHorizontal: 8,
+        backgroundColor: Colors.background,
+        borderRadius: 8,
+        marginBottom: 4,
+        gap: 10,
+    },
+    weekPriorityDot: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+    },
+    weekTaskTitle: { fontSize: 15, color: Colors.primary, fontWeight: '500' },
+    weekTaskMeta: { fontSize: 12, color: '#aaa', marginTop: 2 },
 });
