@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
@@ -7,15 +6,7 @@ export default function Index() {
   const router = useRouter();
 
   useEffect(() => {
-    const checkPin = async () => {
-      const pinSet = await AsyncStorage.getItem('pin_set');
-      if (pinSet === 'true') {
-        router.replace('/login');
-      } else {
-        router.replace('/setup-pin');
-      }
-    };
-    checkPin();
+    router.replace('/home');
   }, []);
 
   return (
