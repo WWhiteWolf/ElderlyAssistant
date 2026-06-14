@@ -5,10 +5,13 @@
 - **Patrick does all git commits.** Claude must never run `git commit` or any git write command on this project — possible lockout problems if Claude does it. Claude edits files and leaves them for Patrick to commit.
 - **No "boxed" multiple-choice questions.** No button/option-card questions. Ask open questions in plain prose and let Patrick answer freely.
 - **Verify before asserting.** Read the actual code before describing how anything behaves. When unsure, say so and offer to look.
+- **One change at a time.** Discuss before building; make one edit, stop, let Patrick review/commit before the next.
 
 ## Project
 
 Remember When (elderlyassistant) — Expo / React Native app in `Projects/elderlyassistant`. Runs on Patrick's iPhone via TestFlight. No over-the-air updates, so changes only reach the phone through a new TestFlight build. Private GitHub repo. iOS bundle id `com.molliedog.ElderlyAssistant`. New Architecture + React Compiler are enabled.
+
+**Purpose / direction (from Patrick).** Patrick is 72, retired; built this app because nothing else did what he needed for memory support. The **heart of the app is the To-Do list with its flexible reminder scheme** — the reminders are what his memory leans on, so they have to be rock-solid. **My Day** handles the daily routine (meals, meds, etc.) — things that are nearly identical day to day and blur together ("did I do that today or yesterday?"); it resets each item at a new date and logs what's done with a timestamp/history. Screens Patrick wants to rely on day to day: **Shopping List, My Day, To-Do, Pets Day** (Pets Day = `mollie.tsx`). Note: Shopping List (`shopping.tsx`) and Pets Day (`mollie.tsx`) have NO notification code at all, so the notification bugs below can't affect them.
 
 ## Build / release workflow (lessons learned 2026-06-14)
 
@@ -16,31 +19,43 @@ Remember When (elderlyassistant) — Expo / React Native app in `Projects/elderl
 - **Commit FIRST, then build.** EAS captures the git state when the build is *triggered*. If you build while a commit is still in flight, it grabs the OLD file. (This bit us once: a build showed the wrong commit because it started before the commit landed.)
 - **At submit, verify the Commit line** matches the message you just committed before pressing Return.
 - The "Set up Push Notifications?" prompt during build → always **No**. The app uses only LOCAL notifications (no remote push / APNs), so No is correct.
+- **Local testing this session:** dev build into the iOS Simulator via `npm run ios` (iPhone 17, iOS 26.5). Metro picks up file edits, so the My Day fix below was in the running app.
 
-## Last session — what we did (2026-06-14)
+## Last session — what we did (2026-06-14, continued)
 
-Goal grew over the session. All three items below are shipped to TestFlight and confirmed working on the phone.
+Goal was to capture two open items so they don't get lost; grew into making the fix for one of them and trying (unsuccessfully) to validate it live.
 
-1. **Notification banner only said "Remember When Notification."** Not a code bug — it was iOS hiding the preview. Fix was on the phone: Settings → Notifications → Remember When → **Show Previews → Always**. Real notification text now shows.
+1. **Made the My Day "cancel all" fix (code done, UNCOMMITTED, UNVALIDATED).** In `app/myday.tsx`, `scheduleAllNotifications` used to call `cancelAllScheduledNotificationsAsync()` first — which wiped To-Do AND Timer reminders every time My Day scheduled (and My Day schedules on every screen load). Changed it to fetch `getAllScheduledNotificationsAsync()` and cancel only notifications whose `data.source === 'myday'`, then reschedule My Day's meals/meds as before. This leaves To-Do (`source: 'todo'`) and Timer untouched, and mirrors the per-item pattern To-Do already uses in its `cancelReminders`. **Edit is saved in `myday.tsx`; Patrick still needs to review and commit it.**
+   - **Deliberately NOT touched:** the three Snooze buttons in My Day (~lines 211/223/235) STILL call `cancelAllScheduledNotificationsAsync()`. So snoozing in My Day still wipes To-Do/Timer. Left as a separate next step (one change at a time).
 
-2. **App crashed on launch (new build).** Root cause: `app/index.tsx` used `router.replace('/home')` inside a `useEffect` — navigating before the Root Layout mounted. (Committed the prior session as the launch-password removal; only surfaced once actually built.) Diagnosed with a dev build (`npx expo run:ios`) which showed the real "Attempted to navigate before mounting the Root Layout" error. Fixed by replacing the file with `<Redirect href="/home" />`. Committed "Open W/O Password fix." (54d6b57), built (efa56960), shipped. Confirmed: opens straight to Home, no password, no crash.
+2. **Tried to validate in the Simulator — INCONCLUSIVE.** Set up To-Do task "Make coffee" with Due Date 06/14/26, a due time a few minutes out, and a "1 minute before" reminder. Two runs: scheduled the To-Do reminder → opened My Day (to trigger the reschedule) → waited. The To-Do reminder never visibly fired. Run 1 the app was in the foreground (foreground banners don't persist, so that run proves nothing). Run 2 the device was locked/backgrounded and still nothing appeared on the lock screen.
+   - **Gap in the test:** in BOTH runs we opened My Day *before* fire time, so we never confirmed a To-Do reminder fires on its OWN. We therefore cannot yet tell "My Day cancels it" apart from "To-Do reminders aren't firing in this sim at all."
+   - **We never saw ANY app notification fire all session** — only system ones (e.g. "Ready for Apple Intelligence"). When we went to check notification permission, Patrick reported he couldn't find a Notifications entry in Settings. So **notification permission / delivery for the app is unverified** and is the prime suspect.
 
-3. **My Day reminders didn't fire.** Two bugs in `app/myday.tsx`:
-   - `scheduleAllNotifications` read **stale React state** (`schedule`) instead of the saved list, so set/edited meal times were never scheduled (it only ever tried the default times, a step behind).
-   - **Medications were never scheduled at all** (`saveMeds` only wrote storage).
-   Fix: `scheduleAllNotifications` now reads `my_schedule` and `my_meds` from AsyncStorage (source of truth) and schedules **both** meals and meds; `saveMeds` now calls `scheduleAllNotifications`. Committed, built (9b695718), shipped. Confirmed on device: a meal reminder fired without leaving the screen.
+### Verified code facts (don't re-derive)
 
-Also already in the app (committed earlier this session as "Notifications fixed.", ad0978b): `source` tags (`'todo'` / `'myday'`) on notifications, and tap-routing in `app/_layout.tsx` (`useLastNotificationResponse` → opens `/todo` or `/myday`). Timer was deliberately left alone.
+- To-Do schedules a reminder ONLY if: `taskType !== 'background'` AND `dueDate` set AND `reminders.length > 0` AND fire time is still in the future (`todo.tsx` ~line 344). **"Recurring: Daily" does NOT schedule a notification** — it only affects the Week view.
+- My Day's `scheduleAllNotifications` runs on screen load (in `loadData`), and on every meal/med save — not just on edits.
+- Tap-routing (`_layout.tsx`) reads `data.source` and `router.push('/todo' | '/myday')` — it routes to the SCREEN only, ignores any item id, and is still UNTESTED with a real tap.
+
+### Tooling notes (save pain next time)
+
+- **Don't type into Simulator text fields with the assistant's tools** — it triggers iOS press-and-hold accent popups and mangles input. Have Patrick type directly (native keyboard works fine).
+- **Assistant swipe/tap gestures on the Simulator are unreliable** (Spotlight search, home-screen gestures didn't register). Patrick driving the device directly is more reliable. Good division of labor: Patrick does direct manipulation/typing, Claude reasons/guides and does menu-level actions.
+
+### Apple notification limit (for future design — not the cause here)
+
+`expo-notifications` wraps iOS `UNUserNotificationCenter`. iOS caps an app at **64 pending scheduled local notifications**; beyond that, it keeps the soonest-firing 64 and **silently drops the rest** (a repeating/DAILY trigger counts as ONE). We were nowhere near 64, so this did NOT cause the test failure — but when moving My Day (and later Snooze) off "cancel all" to per-item, keep pending counts from piling up, because over-limit drops fail silently.
 
 ## Open items / next candidates
 
-1. **Tap-routing is untested.** The `_layout.tsx` code that opens the right screen when you tap a To-Do or My Day notification is in the build but has NOT been verified with a real notification tap. Confirm it next.
-2. **My Day's "cancel all" wipes other reminders.** `scheduleAllNotifications` calls `cancelAllScheduledNotificationsAsync()` before rescheduling, which clears To-Do and Timer scheduled notifications whenever My Day schedules. Recommended next fix (schedule/cancel per-item instead). 
-3. **Possible Timer cancel bug (unconfirmed).** `cancelTimer` cancels using `timer.id` (a `Date.now()` string), but the real notification identifier is the value returned by `scheduleNotificationAsync` — so cancelling the main timer notification may silently fail.
-4. **"Background Tasks" (To-Do) and "Snooze Over" (My Day)** notifications carry no item id — they open the screen but can't highlight a specific row.
-5. **Pre-existing unrelated TS error:** `app/settings.tsx` line 165 — `pin` parameter implicitly `any`. Untouched.
-6. **Project Planner** (`app/planner.tsx`) has reminder UI/fields (`hasReminder`, `reminderDate`, `reminderTime`) but schedules no notifications. Dormant feature, not a priority.
+1. **My Day "cancel all" fix — DONE in code (uncommitted), UNVALIDATED.** Validate next session in this order: (a) **confirm notifications work at all** — check notification permission for the app, and read how/where `requestPermissionsAsync` is called; (b) **control test** — schedule a To-Do reminder a couple minutes out, do NOT open My Day, lock/background the app, confirm it fires on the lock screen (proves scheduling + delivery); (c) **then re-test the fix** — schedule a To-Do reminder, open My Day, lock, confirm the To-Do reminder still fires.
+2. **My Day Snooze buttons still call `cancelAllScheduledNotificationsAsync()`** (~lines 211/223/235) — apply the same per-source cancel as its own change.
+3. **Tap-routing untested AND screen-only.** `_layout.tsx` opens the right screen on tap but never lands on the specific item; never confirmed with a real tap. To-Do reminders already carry `taskId`, so landing on the task is feasible; My Day reminders and To-Do's "Background Tasks" reminder carry no item id yet.
+4. **Possible Timer cancel bug (unconfirmed).** `cancelTimer` cancels using `timer.id` (a `Date.now()` string), not the id returned by `scheduleNotificationAsync` — cancelling the main timer notification may silently fail.
+5. **Pre-existing TS error:** `app/settings.tsx` line 165 — `pin` parameter implicitly `any`. Untouched.
+6. **Project Planner** (`app/planner.tsx`) has reminder UI/fields but schedules no notifications. Dormant, low priority.
 
 ## Files touched this session
 
-`app/index.tsx` (Redirect fix), `app/myday.tsx` (source tag + scheduling fix + med scheduling), `app/todo.tsx` (source tags), `app/_layout.tsx` (tap-routing), `docs/session-start.md` + `docs/handoff.md` (standing rules + this note). All committed by Patrick.
+`app/myday.tsx` (`scheduleAllNotifications` → cancel only `source: 'myday'`, was uncommitted at session end), `docs/handoff.md` (this note). The myday.tsx change is **not yet committed** — Patrick to review and commit.

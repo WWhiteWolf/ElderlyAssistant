@@ -125,7 +125,15 @@ export default function MyDayScreen() {
     };
 
     const scheduleAllNotifications = async () => {
-        await Notifications.cancelAllScheduledNotificationsAsync();
+        // Cancel only My Day's own notifications (tagged source: 'myday'),
+        // leaving To-Do and Timer reminders untouched. (Previously this called
+        // cancelAllScheduledNotificationsAsync(), which wiped every reminder.)
+        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+        for (const notif of scheduled) {
+            if (notif.content.data?.source === 'myday') {
+                await Notifications.cancelScheduledNotificationAsync(notif.identifier);
+            }
+        }
         // Read the saved lists from storage (source of truth) so we never
         // schedule from a stale in-memory copy of state.
         const savedSched = await AsyncStorage.getItem('my_schedule');
