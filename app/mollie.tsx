@@ -54,10 +54,8 @@ export default function PetsScreen() {
     const [newPetName, setNewPetName] = useState('');
     const [newPetType, setNewPetType] = useState('Dog');
     const [editPet, setEditPet] = useState<Pet | null>(null);
-    const [showPicker, setShowPicker] = useState(false);
     const [activeId, setActiveId] = useState<string | null>(null);
     const [tempName, setTempName] = useState('');
-    const [showNameEdit, setShowNameEdit] = useState(false);
     const [showLogModal, setShowLogModal] = useState(false);
     const [pendingLogId, setPendingLogId] = useState<string | null>(null);
     const [tempWhat, setTempWhat] = useState('');
@@ -66,6 +64,8 @@ export default function PetsScreen() {
     const [feedsExpanded, setFeedsExpanded] = useState(false);
     const [pendingTime, setPendingTime] = useState<Date | null>(null);
     const [customPetType, setCustomPetType] = useState('');
+    const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+    const [showEditModal, setShowEditModal] = useState(false);
 
     useEffect(() => {
         loadPets();
@@ -199,14 +199,10 @@ export default function PetsScreen() {
 
     const addFeed = () => {
         if (!selectedPet) return;
-        const newFeed: FeedItem = {
-            id: Date.now().toString(),
-            label: 'New Feed',
-            hour: 12,
-            minute: 0,
-            completed: false,
-        };
-        updateSelectedPet({ ...selectedPet, feeds: [...selectedPet.feeds, newFeed] });
+        setActiveId(null);
+        setTempName('');
+        setPendingTime(new Date(new Date().setHours(12, 0, 0, 0)));
+        setShowEditModal(true);
     };
 
     const deleteFeed = (id: string) => {
@@ -221,8 +217,86 @@ export default function PetsScreen() {
         ]);
     };
 
-    const onTimeChange = (event: any, date?: Date) => {
-        if (date) setPendingTime(date);
+    const toggleSelect = (id: string) => {
+        if (selectedItemId === id) {
+            setSelectedItemId(null);
+        } else {
+            setSelectedItemId(id);
+        }
+    };
+
+    const moveFeed = (direction: 'up' | 'down') => {
+        if (!selectedPet || !selectedItemId) return;
+        const list = selectedPet.feeds;
+        const index = list.findIndex(i => i.id === selectedItemId);
+        if (index === -1) return;
+        if (direction === 'up' && index === 0) return;
+        if (direction === 'down' && index === list.length - 1) return;
+        const updated = [...list];
+        const swap = direction === 'up' ? index - 1 : index + 1;
+        [updated[index], updated[swap]] = [updated[swap], updated[index]];
+        updateSelectedPet({ ...selectedPet, feeds: updated });
+    };
+
+    const saveEdit = () => {
+        if (!selectedPet) return;
+        const name = tempName.trim();
+        if (!name) {
+            Alert.alert('Missing Name', 'Please enter a name.');
+            return;
+        }
+        const hour = pendingTime ? pendingTime.getHours() : 12;
+        const minute = pendingTime ? pendingTime.getMinutes() : 0;
+        if (activeId) {
+            const updated = selectedPet.feeds.map(f =>
+                f.id === activeId ? { ...f, label: name, hour, minute } : f
+            );
+            updateSelectedPet({ ...selectedPet, feeds: updated });
+        } else {
+            const newFeed: FeedItem = {
+                id: Date.now().toString(),
+                label: name,
+                hour,
+                minute,
+                completed: false,
+            };
+            updateSelectedPet({ ...selectedPet, feeds: [...selectedPet.feeds, newFeed] });
+        }
+        setShowEditModal(false);
+        setActiveId(null);
+        setTempName('');
+        setPendingTime(null);
+    };
+
+    const closeEdit = () => {
+        setShowEditModal(false);
+        setActiveId(null);
+        setTempName('');
+        setPendingTime(null);
+    };
+
+    const deleteHistoryEntry = (id: string) => {
+        if (!selectedPet) return;
+        const updated = selectedPet.history.filter(h => h.id !== id);
+        updateSelectedPet({ ...selectedPet, history: updated });
+    };
+
+    const clearAllHistory = () => {
+        if (!selectedPet) return;
+        Alert.alert(
+            'Clear All',
+            `Delete all of ${selectedPet.name}'s log entries? This cannot be undone.`,
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Clear All', style: 'destructive', onPress: () => {
+                        if (selectedPet) {
+                            updateSelectedPet({ ...selectedPet, history: [] });
+                        }
+                    },
+                },
+            ]
+        );
     };
 
     const getPetIcon = (type: string) => {
@@ -287,7 +361,7 @@ export default function PetsScreen() {
                             <Text style={styles.sectionTitle}>Feeding Schedule</Text>
                             <Text style={styles.expandIcon}>{feedsExpanded ? '▲' : '▼'}</Text>
                         </TouchableOpacity>
-                        <Text style={styles.hintText}>Hold name to edit · Tap time to change · Swipe to delete</Text>
+                        <Text style={styles.hintText}>Tap to select for reorder · Edit to change · Swipe to delete</Text>
                         {feedsExpanded && (
                             <>
                                 {selectedPet.feeds.map(item => (
@@ -299,19 +373,23 @@ export default function PetsScreen() {
                                             </TouchableOpacity>
                                         )}
                                     >
-                                        <View style={styles.row}>
+                                        <View style={[styles.row, selectedItemId === item.id && styles.rowSelected]}>
                                             <TouchableOpacity
                                                 style={styles.labelArea}
-                                                onLongPress={() => {
+                                                onPress={() => toggleSelect(item.id)}
+                                            >
+                                                <Text style={styles.itemLabel}>{format12Hour(item.hour, item.minute)} {item.label}</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                style={styles.editBtn}
+                                                onPress={() => {
                                                     setActiveId(item.id);
                                                     setTempName(item.label);
-                                                    setShowNameEdit(true);
+                                                    setPendingTime(new Date(new Date().setHours(item.hour, item.minute, 0, 0)));
+                                                    setShowEditModal(true);
                                                 }}
                                             >
-                                                <Text style={styles.itemLabel}>{item.label}</Text>
-                                                <TouchableOpacity onPress={() => { setActiveId(item.id); setShowPicker(true); }}>
-                                                    <Text style={styles.timeText}>{format12Hour(item.hour, item.minute)}</Text>
-                                                </TouchableOpacity>
+                                                <Text style={styles.editBtnText}>Edit</Text>
                                             </TouchableOpacity>
                                             <TouchableOpacity
                                                 style={[styles.logBtn, item.completed && styles.loggedBtn]}
@@ -330,14 +408,30 @@ export default function PetsScreen() {
                     </View>
 
                     <View style={styles.historySection}>
-                        <Text style={styles.sectionTitle}>{selectedPet.name}'s Log</Text>
+                        <View style={styles.historyHeader}>
+                            <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>{selectedPet.name}'s Log</Text>
+                            {selectedPet.history.length > 0 && (
+                                <TouchableOpacity style={styles.clearAllBtn} onPress={clearAllHistory}>
+                                    <Text style={styles.clearAllBtnText}>Clear All</Text>
+                                </TouchableOpacity>
+                            )}
+                        </View>
                         <ScrollView style={styles.historyScroll} nestedScrollEnabled={true}>
                             {selectedPet.history.map(l => (
-                                <View key={l.id} style={styles.historyItem}>
-                                    <Text style={styles.historyText}>
-                                        {l.date} | {l.actual} | {l.sched}{l.what ? ` | ${l.what}` : ''}
-                                    </Text>
-                                </View>
+                                <Swipeable
+                                    key={l.id}
+                                    renderRightActions={() => (
+                                        <TouchableOpacity style={styles.swipeDelete} onPress={() => deleteHistoryEntry(l.id)}>
+                                            <Text style={styles.swipeDeleteText}>Delete</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                >
+                                    <View style={styles.historyItem}>
+                                        <Text style={styles.historyText}>
+                                            {l.date} | {l.actual} | {l.sched}{l.what ? ` | ${l.what}` : ''}
+                                        </Text>
+                                    </View>
+                                </Swipeable>
                             ))}
                         </ScrollView>
                     </View>
@@ -403,38 +497,37 @@ export default function PetsScreen() {
                 </View>
             )}
 
-            {showNameEdit && activeId && selectedPet && (
-                <View style={styles.modal}>
-                    <Text style={styles.inputLabel}>Feed Name:</Text>
-                    <TextInput style={styles.input} value={tempName} onChangeText={setTempName} placeholder="Enter name..." autoFocus={true} />
-                    <View style={styles.modalBtns}>
-                        <TouchableOpacity style={styles.cancelBtn} onPress={() => { setShowNameEdit(false); setActiveId(null); }}>
-                            <Text style={styles.cancelBtnText}>Cancel</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.confirmBtn} onPress={() => {
-                            const updatedFeeds = selectedPet.feeds.map(f => f.id === activeId ? { ...f, label: tempName } : f);
-                            updateSelectedPet({ ...selectedPet, feeds: updatedFeeds });
-                            setShowNameEdit(false);
-                            setActiveId(null);
-                        }}>
-                            <Text style={styles.confirmBtnText}>OK</Text>
-                        </TouchableOpacity>
-                    </View>
+            {selectedItemId && (
+                <View style={styles.arrowOverlay}>
+                    <TouchableOpacity style={styles.arrowBtn} onPress={() => moveFeed('up')}>
+                        <Text style={styles.arrowText}>▲</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.arrowBtn} onPress={() => moveFeed('down')}>
+                        <Text style={styles.arrowText}>▼</Text>
+                    </TouchableOpacity>
                 </View>
             )}
 
-            {showPicker && activeId && selectedPet && (
-                <Modal transparent={true} animationType="fade" visible={showPicker}>
+            {showEditModal && (
+                <Modal transparent={true} animationType="fade" visible={showEditModal}>
                     <View style={styles.modalOverlay}>
                         <View style={styles.pickerModal}>
-                            <Text style={styles.modalTitle}>Set Time</Text>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 20, marginVertical: 20 }}>
+                            <Text style={styles.modalTitle}>{activeId ? 'Edit Feed' : 'New Feed'}</Text>
+
+                            <Text style={styles.inputLabel}>Name</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={tempName}
+                                onChangeText={setTempName}
+                                placeholder="e.g. Morning Feed"
+                                autoFocus={!activeId}
+                            />
+
+                            <Text style={styles.inputLabel}>Time</Text>
+                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 20, marginVertical: 10 }}>
                                 <View style={{ alignItems: 'center' }}>
                                     <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
-                                        const current = pendingTime || new Date(new Date().setHours(
-                                            selectedPet.feeds.find(i => i.id === activeId)?.hour || 0,
-                                            selectedPet.feeds.find(i => i.id === activeId)?.minute || 0
-                                        ));
+                                        const current = pendingTime || new Date(new Date().setHours(12, 0, 0, 0));
                                         const next = new Date(current);
                                         next.setHours((next.getHours() + 1) % 24);
                                         setPendingTime(next);
@@ -442,15 +535,10 @@ export default function PetsScreen() {
                                         <Text style={styles.timeAdjText}>▲</Text>
                                     </TouchableOpacity>
                                     <Text style={styles.timeDisplayText}>
-                                        {String((pendingTime || new Date(new Date().setHours(
-                                            selectedPet.feeds.find(i => i.id === activeId)?.hour || 0, 0
-                                        ))).getHours()).padStart(2, '0')}
+                                        {String((pendingTime || new Date(new Date().setHours(12, 0, 0, 0))).getHours()).padStart(2, '0')}
                                     </Text>
                                     <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
-                                        const current = pendingTime || new Date(new Date().setHours(
-                                            selectedPet.feeds.find(i => i.id === activeId)?.hour || 0,
-                                            selectedPet.feeds.find(i => i.id === activeId)?.minute || 0
-                                        ));
+                                        const current = pendingTime || new Date(new Date().setHours(12, 0, 0, 0));
                                         const next = new Date(current);
                                         next.setHours((next.getHours() + 23) % 24);
                                         setPendingTime(next);
@@ -462,10 +550,7 @@ export default function PetsScreen() {
                                 <Text style={styles.timeDisplayText}>:</Text>
                                 <View style={{ alignItems: 'center' }}>
                                     <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
-                                        const current = pendingTime || new Date(new Date().setHours(
-                                            selectedPet.feeds.find(i => i.id === activeId)?.hour || 0,
-                                            selectedPet.feeds.find(i => i.id === activeId)?.minute || 0
-                                        ));
+                                        const current = pendingTime || new Date(new Date().setHours(12, 0, 0, 0));
                                         const next = new Date(current);
                                         next.setMinutes((next.getMinutes() + 1) % 60);
                                         setPendingTime(next);
@@ -473,16 +558,10 @@ export default function PetsScreen() {
                                         <Text style={styles.timeAdjText}>▲</Text>
                                     </TouchableOpacity>
                                     <Text style={styles.timeDisplayText}>
-                                        {String((pendingTime || new Date(new Date().setHours(
-                                            selectedPet.feeds.find(i => i.id === activeId)?.hour || 0,
-                                            selectedPet.feeds.find(i => i.id === activeId)?.minute || 0
-                                        ))).getMinutes()).padStart(2, '0')}
+                                        {String((pendingTime || new Date(new Date().setHours(12, 0, 0, 0))).getMinutes()).padStart(2, '0')}
                                     </Text>
                                     <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
-                                        const current = pendingTime || new Date(new Date().setHours(
-                                            selectedPet.feeds.find(i => i.id === activeId)?.hour || 0,
-                                            selectedPet.feeds.find(i => i.id === activeId)?.minute || 0
-                                        ));
+                                        const current = pendingTime || new Date(new Date().setHours(12, 0, 0, 0));
                                         const next = new Date(current);
                                         next.setMinutes((next.getMinutes() + 59) % 60);
                                         setPendingTime(next);
@@ -492,22 +571,13 @@ export default function PetsScreen() {
                                     <Text style={{ color: Colors.primary, fontSize: 13 }}>Minute</Text>
                                 </View>
                             </View>
+
                             <View style={styles.modalBtns}>
-                                <TouchableOpacity style={styles.cancelBtn} onPress={() => { setPendingTime(null); setShowPicker(false); setActiveId(null); }}>
+                                <TouchableOpacity style={styles.cancelBtn} onPress={closeEdit}>
                                     <Text style={styles.cancelBtnText}>Cancel</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.confirmBtn} onPress={() => {
-                                    if (pendingTime && activeId && selectedPet) {
-                                        const updatedFeeds = selectedPet.feeds.map(f =>
-                                            f.id === activeId ? { ...f, hour: pendingTime.getHours(), minute: pendingTime.getMinutes() } : f
-                                        );
-                                        updateSelectedPet({ ...selectedPet, feeds: updatedFeeds });
-                                    }
-                                    setPendingTime(null);
-                                    setShowPicker(false);
-                                    setActiveId(null);
-                                }}>
-                                    <Text style={styles.confirmBtnText}>OK</Text>
+                                <TouchableOpacity style={styles.confirmBtn} onPress={saveEdit}>
+                                    <Text style={styles.confirmBtnText}>Save</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -850,4 +920,60 @@ const styles = StyleSheet.create({
     borderRadius: 20,
 },
 headerBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
+    rowSelected: {
+        backgroundColor: '#d6eef8',
+        borderRadius: 8,
+    },
+    editBtn: {
+        backgroundColor: Colors.background,
+        borderWidth: 0.5,
+        borderColor: Colors.bridge,
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        borderRadius: 8,
+        marginRight: 28,
+    },
+    editBtnText: { color: Colors.bridge, fontSize: 13, fontWeight: '600' },
+    historyHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    clearAllBtn: {
+        paddingVertical: 4,
+        paddingHorizontal: 10,
+        borderRadius: 6,
+        borderWidth: 0.5,
+        borderColor: '#e74c3c',
+    },
+    clearAllBtnText: {
+        color: '#e74c3c',
+        fontSize: 13,
+        fontWeight: '600',
+    },
+    arrowOverlay: {
+        position: 'absolute',
+        right: 16,
+        bottom: 140,
+        backgroundColor: Colors.primary,
+        borderRadius: 12,
+        padding: 8,
+        gap: 8,
+        elevation: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        zIndex: 1000,
+    },
+    arrowBtn: {
+        padding: 10,
+        alignItems: 'center',
+    },
+    arrowText: {
+        color: Colors.white,
+        fontSize: 22,
+        fontWeight: '600',
+    },
 });

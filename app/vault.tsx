@@ -466,11 +466,11 @@ const styles = StyleSheet.create({
     swipeDeleteText: { color: '#fff', fontWeight: '600', fontSize: 15 },
     
     headerBtn: {
-    borderWidth: 1,
-    borderColor: Colors.white,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 20,
+        borderWidth: 1,
+        borderColor: Colors.white,
+        paddingVertical: 2,
+        paddingHorizontal: 12,
+        borderRadius: 20,
 },
-headerBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
+headerBtnText: { color: Colors.white, fontSize: 16, fontWeight: '600' },
 });

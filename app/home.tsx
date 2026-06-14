@@ -13,7 +13,6 @@ import { Colors } from '../constants/Colors';
 
 const modules = [
   { id: 'shopping', label: 'Shopping List', icon: '🛒' },
-  { id: 'spell', label: 'Spell Assist', icon: '🔤' },
   { id: 'timer', label: 'Timer Alerts', icon: '⏰' },
   { id: 'myday', label: 'My Day', icon: '☀️' },
   { id: 'mollie', label: 'Pets Day', icon: '🐾' },
