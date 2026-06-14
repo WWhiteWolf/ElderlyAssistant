@@ -126,7 +126,14 @@ export default function MyDayScreen() {
 
     const scheduleAllNotifications = async () => {
         await Notifications.cancelAllScheduledNotificationsAsync();
-        for (const item of schedule) {
+        // Read the saved lists from storage (source of truth) so we never
+        // schedule from a stale in-memory copy of state.
+        const savedSched = await AsyncStorage.getItem('my_schedule');
+        const savedMeds = await AsyncStorage.getItem('my_meds');
+        const meals: ScheduleItem[] = savedSched ? JSON.parse(savedSched) : INITIAL_MEALS;
+        const medsList: ScheduleItem[] = savedMeds ? JSON.parse(savedMeds) : INITIAL_MEDS;
+        const allItems = [...meals, ...medsList];
+        for (const item of allItems) {
             if (!item.completed) {
                 await Notifications.scheduleNotificationAsync({
                     content: {
@@ -284,6 +291,7 @@ export default function MyDayScreen() {
 
     const saveMeds = async (m: ScheduleItem[]) => {
         await AsyncStorage.setItem('my_meds', JSON.stringify(m));
+        await scheduleAllNotifications();
     };
 
     const loadMeds = async () => {
