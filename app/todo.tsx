@@ -357,7 +357,7 @@ export default function TodoScreen() {
                     content: {
                         title: `📋 Reminder: ${task.title}`,
                         body: task.dueDate ? `Due: ${task.dueDate}${task.dueTime ? ' at ' + task.dueTime : ''}` : '',
-                        data: { taskId: task.id },
+                        data: { taskId: task.id, source: 'todo' },
                     },
                     trigger: {
                         type: Notifications.SchedulableTriggerInputTypes.DATE,
@@ -387,6 +387,7 @@ export default function TodoScreen() {
             content: {
                 title: '📋 Background Tasks',
                 body: `You have ${backgroundTasks.length} background task${backgroundTasks.length > 1 ? 's' : ''} to review.`,
+                data: { source: 'todo' },
             },
             trigger: {
                 type: Notifications.SchedulableTriggerInputTypes.DAILY,

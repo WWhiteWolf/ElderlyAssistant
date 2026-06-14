@@ -132,6 +132,7 @@ export default function MyDayScreen() {
                     content: {
                         title: 'Daily Routine',
                         body: `Time for ${item.label}!`,
+                        data: { source: 'myday' },
                     },
                     trigger: {
                         type: SchedulableTriggerInputTypes.DAILY,
@@ -202,7 +203,7 @@ export default function MyDayScreen() {
                     text: '15 Minutes', onPress: async () => {
                         await Notifications.cancelAllScheduledNotificationsAsync();
                         await Notifications.scheduleNotificationAsync({
-                            content: { title: 'Snooze Over', body: 'Your 15 minute snooze is up!' },
+                            content: { title: 'Snooze Over', body: 'Your 15 minute snooze is up!', data: { source: 'myday' } },
                             trigger: {
                                 type: SchedulableTriggerInputTypes.TIME_INTERVAL,
                                 seconds: 900,
@@ -214,7 +215,7 @@ export default function MyDayScreen() {
                     text: '30 Minutes', onPress: async () => {
                         await Notifications.cancelAllScheduledNotificationsAsync();
                         await Notifications.scheduleNotificationAsync({
-                            content: { title: 'Snooze Over', body: 'Your 30 minute snooze is up!' },
+                            content: { title: 'Snooze Over', body: 'Your 30 minute snooze is up!', data: { source: 'myday' } },
                             trigger: {
                                 type: SchedulableTriggerInputTypes.TIME_INTERVAL,
                                 seconds: 1800,
@@ -226,7 +227,7 @@ export default function MyDayScreen() {
                     text: '60 Minutes', onPress: async () => {
                         await Notifications.cancelAllScheduledNotificationsAsync();
                         await Notifications.scheduleNotificationAsync({
-                            content: { title: 'Snooze Over', body: 'Your 60 minute snooze is up!' },
+                            content: { title: 'Snooze Over', body: 'Your 60 minute snooze is up!', data: { source: 'myday' } },
                             trigger: {
                                 type: SchedulableTriggerInputTypes.TIME_INTERVAL,
                                 seconds: 3600,
