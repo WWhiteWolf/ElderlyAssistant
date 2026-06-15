@@ -2,7 +2,7 @@
 
 ## FIRST THING TO ASK PATRICK
 
-The **My Day & Pets Day restructure is built and type-clean**, but as of the end of the 2026-06-15 session it was **about to be committed / built / submitted / loaded / device-tested** — it had NOT yet been validated on the phone. So the first thing: confirm the restructure build loaded and ask how the device test went (any issues to fix?). If it tested clean, the restructure is settled and the next live goal is unscoped — ask Patrick what he wants to take on (likely something from `docs/parked-items.md`).
+The **My Day & Pets Day restructure is committed AND device-validated** (2026-06-15) — Patrick committed, built, submitted, loaded via TestFlight, and tested on the phone; it "works good." That work is settled — don't re-open it. The next goal is already named (see Active next step): **(1) add a "time set" display to each tile in My Day, and (2) rename the Pets Day list heading from "Feeding Schedule" to "Routine."** Confirm Patrick wants to start there, and clarify point 1 before building (see the note in Active next step).
 
 ## To the next session: what I need to be fresh and synced (read this first)
 
@@ -37,7 +37,7 @@ Remember When (elderlyassistant) — Expo / React Native app in `Projects/elderl
 
 ## Latest session — 2026-06-15 (My Day & Pets Day restructure)
 
-Goal: restructure My Day and Pets Day so each is one continuous, always-visible list on a single page. Read both files first, scoped WITH Patrick, then built. **Type-clean** (only the known `settings.tsx:165` remains). **NOT yet device-tested** at session close.
+Goal: restructure My Day and Pets Day so each is one continuous, always-visible list on a single page. Read both files first, scoped WITH Patrick, then built. **Type-clean** (only the known `settings.tsx:165` remains). **COMMITTED + DEVICE-VALIDATED 2026-06-15** — Patrick committed, built, submitted, loaded, and tested on the phone; works good.
 
 **My Day (`app/myday.tsx`) — full rewrite of the component:**
 - Merged the two collapsed sections (Meals + Medications) into ONE always-visible **"Routine"** list of Entries. Each Entry still shows time + name, an Edit button, and a Log button.
@@ -69,17 +69,21 @@ Goal: restructure My Day and Pets Day so each is one continuous, always-visible 
 - **Don't type into Simulator text fields with the assistant's tools** — triggers iOS accent popups and mangles input. Have Patrick type directly.
 - **Assistant swipe/tap gestures on the Simulator are unreliable.** Patrick does direct manipulation/typing on the device; Claude reasons/guides, reads code, does menu-level actions.
 
-## Active next step
+## Active next step (the named goal for next session)
 
-- **Device-test the My Day & Pets Day restructure** (the build Patrick was about to load at session close). Confirm: My Day shows one Routine list with existing meals+meds migrated in; Pets Day is a single page with the feeding list; Add Entry works from the header on both; AM/PM displays and the picker reads right; the edit popup clears the keyboard; the common Log writes history; daily reset works. Fix anything that surfaces.
-- After that, no goal is scoped. Pull the next one from `docs/parked-items.md` (e.g. Pets Day feeding notifications, old `pets_data` cleanup, `deleteTask` cancel, To-Do due-time display, the To-Do recurring/daily design decision, the `settings.tsx:165` TS error).
+Two items Patrick named at the close of 2026-06-15:
 
-## Files touched this session (NOT yet committed at session close — Patrick to commit)
+1. **My Day — add a "time set" display to each tile** (`app/myday.tsx`). Patrick's words: "add a time set display to each tile in My Day." NOTE before building: the tiles ALREADY prefix the scheduled time to the label (e.g. "8:00 AM Breakfast" via `format12Hour`). So clarify WITH Patrick what he wants — likely a separate, more prominent / styled time field or column (there's an unused `timeText` style at the bottom of the file that may be the intent), not just the inline prefix. Scope it before editing.
+2. **Pets Day — rename the list heading** (`app/mollie.tsx`) from **"Feeding Schedule"** to **"Routine"** (the `sectionTitle` text in the feeding section). Small, one-line text change.
 
-- `app/myday.tsx` — full component rewrite: merged Routine list, `my_routine` migration, common Log, header Add Entry, AM/PM tiles + picker, KeyboardAvoidingView on edit modal.
-- `app/mollie.tsx` — full rewrite: single-page Pets Day mirroring My Day, new `pets_*` keys, header Add Entry, AM/PM, KeyboardAvoidingView.
-- `docs/parked-items.md` — added Pets Day notifications + old `pets_data` cleanup; cleared the now-done merge + AM/PM items.
-- `docs/handoff.md` — this refresh.
+After these, no further goal is scoped. Pull the next from `docs/parked-items.md` (Pets Day feeding notifications, old `pets_data` cleanup, `deleteTask` cancel, To-Do due-time display, the To-Do recurring/daily design decision, the `settings.tsx:165` TS error).
+
+## Files touched this session
+
+- `app/myday.tsx` — full component rewrite: merged Routine list, `my_routine` migration, common Log, header Add Entry, AM/PM tiles + picker, KeyboardAvoidingView on edit modal. **COMMITTED + device-validated.**
+- `app/mollie.tsx` — full rewrite: single-page Pets Day mirroring My Day, new `pets_*` keys, header Add Entry, AM/PM, KeyboardAvoidingView. **COMMITTED + device-validated.**
+- `docs/parked-items.md` — added Pets Day notifications + old `pets_data` cleanup; cleared the now-done merge + AM/PM items. **COMMITTED.**
+- `docs/handoff.md` — refreshed at session close; then updated again after Patrick's device test (this version) recording the restructure as validated and naming the next-session goal. **Patrick is committing this handoff update.**
 
 ---
 
@@ -89,6 +93,6 @@ You're picking up the "Remember When" app (Expo / React Native, runs on my iPhon
 
 1. The `elderlyassistant` folder must be connected via Cowork's folder picker — if you can't see it, give me the folder-request button; don't ask me to upload files.
 2. Open and read `docs/handoff.md` first (full state, standing rules, next step), then skim `docs/parked-items.md` (the eventual-work backlog) so you know what's deferred.
-3. Last session restructured My Day (one "Routine" list) and Pets Day (single page mirroring My Day), built and type-clean but device-tested by me afterward. Ask how that device test went and whether anything needs fixing before picking a new goal.
+3. Last session's My Day + Pets Day restructure is DONE — committed and device-tested, works good. Don't re-open it. The goal for THIS session is already named: (1) add a "time set" display to each My Day tile (clarify what's wanted first — tiles already show the time inline), and (2) rename the Pets Day list heading from "Feeding Schedule" to "Routine."
 
-Then tell me how heavy the goal looks and wait for my "go." Nothing is scoped yet.
+Tell me how heavy each looks and wait for my "go" before changing anything.
