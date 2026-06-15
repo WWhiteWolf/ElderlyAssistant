@@ -35,6 +35,7 @@ interface HistoryEntry {
     note?: string;
 }
 
+// Kept only as fallbacks for the one-time migration into the merged Routine list.
 const INITIAL_MEALS: ScheduleItem[] = [
     { id: '1', label: 'Breakfast', hour: 8, minute: 0, completed: false },
     { id: '2', label: 'Lunch', hour: 12, minute: 0, completed: false },
@@ -44,10 +45,11 @@ const INITIAL_MEALS: ScheduleItem[] = [
 const INITIAL_MEDS: ScheduleItem[] = [
     { id: 'med1', label: 'Morning Medication', hour: 8, minute: 0, completed: false },
 ];
+const INITIAL_ROUTINE: ScheduleItem[] = [...INITIAL_MEALS, ...INITIAL_MEDS];
 
 export default function MyDayScreen() {
     const router = useRouter();
-    const [schedule, setSchedule] = useState<ScheduleItem[]>(INITIAL_MEALS);
+    const [routine, setRoutine] = useState<ScheduleItem[]>(INITIAL_ROUTINE);
     const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [activeId, setActiveId] = useState<string | null>(null);
     const [tempName, setTempName] = useState('');
@@ -61,16 +63,11 @@ export default function MyDayScreen() {
     const [tempCoffeeNote, setTempCoffeeNote] = useState('');
     const [editWhat, setEditWhat] = useState('');
     const [editNote, setEditNote] = useState('');
-    const [meds, setMeds] = useState<ScheduleItem[]>(INITIAL_MEDS);
-    const [editingMeds, setEditingMeds] = useState(false);
     const [pendingTime, setPendingTime] = useState<Date | null>(null);
     const [waterCount, setWaterCount] = useState(0);
     const [showWaterModal, setShowWaterModal] = useState(false);
     const [tempWaterNote, setTempWaterNote] = useState('');
-    const [mealsExpanded, setMealsExpanded] = useState(false);
-    const [medsExpanded, setMedsExpanded] = useState(false);
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-    const [selectedSection, setSelectedSection] = useState<'meals' | 'meds' | null>(null);
     const [showEditModal, setShowEditModal] = useState(false);
 
     useEffect(() => {
@@ -93,55 +90,60 @@ export default function MyDayScreen() {
         setup();
     }, []);
 
+    // Build the merged Routine list, migrating old separate keys the first time.
+    const getMigratedRoutine = async (): Promise<ScheduleItem[]> => {
+        const savedRoutine = await AsyncStorage.getItem('my_routine');
+        if (savedRoutine) return JSON.parse(savedRoutine);
+        // First run after the merge: fold the old Meals + Meds lists into one.
+        const savedSched = await AsyncStorage.getItem('my_schedule');
+        const savedMeds = await AsyncStorage.getItem('my_meds');
+        const oldMeals: ScheduleItem[] = savedSched ? JSON.parse(savedSched) : INITIAL_MEALS;
+        const oldMeds: ScheduleItem[] = savedMeds ? JSON.parse(savedMeds) : INITIAL_MEDS;
+        const merged = [...oldMeals, ...oldMeds];
+        await AsyncStorage.setItem('my_routine', JSON.stringify(merged));
+        return merged;
+    };
+
     const loadData = async () => {
         try {
             const savedDate = await AsyncStorage.getItem('my_last_date');
             const today = new Date().toLocaleDateString();
-            const savedSched = await AsyncStorage.getItem('my_schedule');
             const savedHist = await AsyncStorage.getItem('my_history');
             if (savedHist) setHistory(JSON.parse(savedHist));
-            const parsedSched = savedSched ? JSON.parse(savedSched) : null;
+            const parsedRoutine = await getMigratedRoutine();
             if (savedDate !== today) {
-                const resetSched = parsedSched
-                    ? parsedSched.map((s: ScheduleItem) => ({ ...s, completed: false }))
-                    : INITIAL_MEALS;
-                setSchedule(resetSched);
+                const resetRoutine = parsedRoutine.map((s: ScheduleItem) => ({ ...s, completed: false }));
+                setRoutine(resetRoutine);
                 await AsyncStorage.setItem('my_last_date', today);
-                await saveData(resetSched, savedHist ? JSON.parse(savedHist) : []);
+                await saveData(resetRoutine, savedHist ? JSON.parse(savedHist) : []);
             } else {
-                if (parsedSched) setSchedule(parsedSched);
+                setRoutine(parsedRoutine);
             }
-            await loadMeds();
             await scheduleAllNotifications();
         } catch (e) {
             console.error(e);
         }
     };
 
-    const saveData = async (s: ScheduleItem[], h: HistoryEntry[]) => {
-        await AsyncStorage.setItem('my_schedule', JSON.stringify(s));
+    const saveData = async (r: ScheduleItem[], h: HistoryEntry[]) => {
+        await AsyncStorage.setItem('my_routine', JSON.stringify(r));
         await AsyncStorage.setItem('my_history', JSON.stringify(h));
         await scheduleAllNotifications();
     };
 
     const scheduleAllNotifications = async () => {
         // Cancel only My Day's own notifications (tagged source: 'myday'),
-        // leaving To-Do and Timer reminders untouched. (Previously this called
-        // cancelAllScheduledNotificationsAsync(), which wiped every reminder.)
+        // leaving To-Do and Timer reminders untouched.
         const scheduled = await Notifications.getAllScheduledNotificationsAsync();
         for (const notif of scheduled) {
             if (notif.content.data?.source === 'myday') {
                 await Notifications.cancelScheduledNotificationAsync(notif.identifier);
             }
         }
-        // Read the saved lists from storage (source of truth) so we never
+        // Read the saved Routine list from storage (source of truth) so we never
         // schedule from a stale in-memory copy of state.
-        const savedSched = await AsyncStorage.getItem('my_schedule');
-        const savedMeds = await AsyncStorage.getItem('my_meds');
-        const meals: ScheduleItem[] = savedSched ? JSON.parse(savedSched) : INITIAL_MEALS;
-        const medsList: ScheduleItem[] = savedMeds ? JSON.parse(savedMeds) : INITIAL_MEDS;
-        const allItems = [...meals, ...medsList];
-        for (const item of allItems) {
+        const items = await getMigratedRoutine();
+        for (const item of items) {
             if (!item.completed) {
                 await Notifications.scheduleNotificationAsync({
                     content: {
@@ -164,11 +166,13 @@ export default function MyDayScreen() {
     };
 
     const format12Hour = (h: number, m: number) => {
-        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+        const period = h < 12 ? 'AM' : 'PM';
+        let hr = h % 12;
+        if (hr === 0) hr = 12;
+        return `${hr}:${m.toString().padStart(2, '0')} ${period}`;
     };
 
     const openLogModal = (id: string) => {
-        setEditingMeds(false);
         setPendingLogId(id);
         setTempWhat('');
         setTempNote('');
@@ -177,9 +181,7 @@ export default function MyDayScreen() {
 
     const confirmLog = () => {
         if (!pendingLogId) return;
-        const item = editingMeds
-            ? meds.find(i => i.id === pendingLogId)
-            : schedule.find(i => i.id === pendingLogId);
+        const item = routine.find(i => i.id === pendingLogId);
         if (!item) return;
         const now = new Date().toLocaleTimeString([], {
             hour: 'numeric',
@@ -195,111 +197,34 @@ export default function MyDayScreen() {
             note: tempNote || '',
         };
         const updatedHist = [newEntry, ...history].slice(0, 50);
-        if (editingMeds) {
-            const updatedMeds = meds.map(m =>
-                m.id === pendingLogId ? { ...m, completed: true } : m
-            );
-            setMeds(updatedMeds);
-            saveMeds(updatedMeds);
-        } else {
-            const updatedSched = schedule.map(s =>
-                s.id === pendingLogId ? { ...s, completed: true } : s
-            );
-            setSchedule(updatedSched);
-            saveData(updatedSched, updatedHist);
-        }
+        const updatedRoutine = routine.map(s =>
+            s.id === pendingLogId ? { ...s, completed: true } : s
+        );
+        setRoutine(updatedRoutine);
         setHistory(updatedHist);
+        saveData(updatedRoutine, updatedHist);
         setShowLogModal(false);
         setPendingLogId(null);
     };
 
-    const addMeal = () => {
-        setEditingMeds(false);
+    const addEntry = () => {
         setActiveId(null);
         setTempName('');
         setPendingTime(new Date(new Date().setHours(12, 0, 0, 0)));
         setShowEditModal(true);
     };
 
-    const deleteMeal = (id: string) => {
-        Alert.alert('Delete', 'Remove this meal from your schedule?', [
+    const deleteEntry = (id: string) => {
+        Alert.alert('Delete', 'Remove this entry from your routine?', [
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Delete', style: 'destructive', onPress: () => {
-                    const updated = schedule.filter(s => s.id !== id);
-                    setSchedule(updated);
+                    const updated = routine.filter(s => s.id !== id);
+                    setRoutine(updated);
                     saveData(updated, history);
                 },
             },
         ]);
-    };
-
-    const addMed = () => {
-        setEditingMeds(true);
-        setActiveId(null);
-        setTempName('');
-        setPendingTime(new Date(new Date().setHours(8, 0, 0, 0)));
-        setShowEditModal(true);
-    };
-
-    const deleteMed = (id: string) => {
-        Alert.alert('Delete', 'Remove this medication from your schedule?', [
-            { text: 'Cancel', style: 'cancel' },
-            {
-                text: 'Delete', style: 'destructive', onPress: () => {
-                    const updated = meds.filter(m => m.id !== id);
-                    setMeds(updated);
-                    saveMeds(updated);
-                },
-            },
-        ]);
-    };
-
-    const saveMeds = async (m: ScheduleItem[]) => {
-        await AsyncStorage.setItem('my_meds', JSON.stringify(m));
-        await scheduleAllNotifications();
-    };
-
-    const loadMeds = async () => {
-        const saved = await AsyncStorage.getItem('my_meds');
-        if (saved) setMeds(JSON.parse(saved));
-    };
-
-    const openMedLogModal = (id: string) => {
-        setEditingMeds(true);
-        setPendingLogId(id);
-        setTempWhat('');
-        setTempNote('');
-        setShowLogModal(true);
-    };
-
-    const confirmMedLog = () => {
-        if (!pendingLogId) return;
-        const item = meds.find(i => i.id === pendingLogId);
-        if (!item) return;
-        const now = new Date().toLocaleTimeString([], {
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: false,
-        });
-        const newEntry: HistoryEntry = {
-            id: Date.now().toString(),
-            date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
-            sched: format12Hour(item.hour, item.minute),
-            actual: now,
-            what: item.label,
-            note: '',
-        };
-        const updatedHist = [newEntry, ...history].slice(0, 50);
-        const updatedMeds = meds.map(m =>
-            m.id === pendingLogId ? { ...m, completed: true } : m
-        );
-        setHistory(updatedHist);
-        setMeds(updatedMeds);
-        saveData(schedule, updatedHist);
-        saveMeds(updatedMeds);
-        setShowLogModal(false);
-        setPendingLogId(null);
     };
 
     const confirmCoffee = () => {
@@ -316,7 +241,7 @@ export default function MyDayScreen() {
         const newCount = coffeeCount + 1;
         setCoffeeCount(newCount);
         setHistory(updatedHist);
-        saveData(schedule, updatedHist);
+        saveData(routine, updatedHist);
         setShowCoffeeModal(false);
         setTempCoffeeNote('');
     };
@@ -338,38 +263,30 @@ export default function MyDayScreen() {
         const updatedHist = [newEntry, ...history].slice(0, 50);
         setWaterCount(waterCount + 1);
         setHistory(updatedHist);
-        saveData(schedule, updatedHist);
+        saveData(routine, updatedHist);
         setShowWaterModal(false);
         setTempWaterNote('');
     };
 
-    const toggleSelect = (id: string, section: 'meals' | 'meds') => {
-        if (selectedItemId === id && selectedSection === section) {
+    const toggleSelect = (id: string) => {
+        if (selectedItemId === id) {
             setSelectedItemId(null);
-            setSelectedSection(null);
         } else {
             setSelectedItemId(id);
-            setSelectedSection(section);
         }
     };
 
     const moveItem = (direction: 'up' | 'down') => {
-        if (!selectedItemId || !selectedSection) return;
-        const list = selectedSection === 'meals' ? schedule : meds;
-        const index = list.findIndex(i => i.id === selectedItemId);
+        if (!selectedItemId) return;
+        const index = routine.findIndex(i => i.id === selectedItemId);
         if (index === -1) return;
         if (direction === 'up' && index === 0) return;
-        if (direction === 'down' && index === list.length - 1) return;
-        const updated = [...list];
+        if (direction === 'down' && index === routine.length - 1) return;
+        const updated = [...routine];
         const swap = direction === 'up' ? index - 1 : index + 1;
         [updated[index], updated[swap]] = [updated[swap], updated[index]];
-        if (selectedSection === 'meals') {
-            setSchedule(updated);
-            saveData(updated, history);
-        } else {
-            setMeds(updated);
-            saveMeds(updated);
-        }
+        setRoutine(updated);
+        saveData(updated, history);
     };
 
     const saveEdit = () => {
@@ -380,40 +297,21 @@ export default function MyDayScreen() {
         }
         const hour = pendingTime ? pendingTime.getHours() : 12;
         const minute = pendingTime ? pendingTime.getMinutes() : 0;
-        if (editingMeds) {
-            if (activeId) {
-                const updated = meds.map(m => m.id === activeId ? { ...m, label: name, hour, minute } : m);
-                setMeds(updated);
-                saveMeds(updated);
-            } else {
-                const newItem: ScheduleItem = {
-                    id: Date.now().toString(),
-                    label: name,
-                    hour,
-                    minute,
-                    completed: false,
-                };
-                const updated = [...meds, newItem];
-                setMeds(updated);
-                saveMeds(updated);
-            }
+        if (activeId) {
+            const updated = routine.map(s => s.id === activeId ? { ...s, label: name, hour, minute } : s);
+            setRoutine(updated);
+            saveData(updated, history);
         } else {
-            if (activeId) {
-                const updated = schedule.map(s => s.id === activeId ? { ...s, label: name, hour, minute } : s);
-                setSchedule(updated);
-                saveData(updated, history);
-            } else {
-                const newItem: ScheduleItem = {
-                    id: Date.now().toString(),
-                    label: name,
-                    hour,
-                    minute,
-                    completed: false,
-                };
-                const updated = [...schedule, newItem];
-                setSchedule(updated);
-                saveData(updated, history);
-            }
+            const newItem: ScheduleItem = {
+                id: Date.now().toString(),
+                label: name,
+                hour,
+                minute,
+                completed: false,
+            };
+            const updated = [...routine, newItem];
+            setRoutine(updated);
+            saveData(updated, history);
         }
         setShowEditModal(false);
         setActiveId(null);
@@ -431,7 +329,7 @@ export default function MyDayScreen() {
     const deleteHistoryEntry = (id: string) => {
         const updated = history.filter(h => h.id !== id);
         setHistory(updated);
-        saveData(schedule, updated);
+        saveData(routine, updated);
     };
 
     const clearAllHistory = () => {
@@ -443,7 +341,7 @@ export default function MyDayScreen() {
                 {
                     text: 'Clear All', style: 'destructive', onPress: () => {
                         setHistory([]);
-                        saveData(schedule, []);
+                        saveData(routine, []);
                     },
                 },
             ]
@@ -458,7 +356,9 @@ export default function MyDayScreen() {
                         <Text style={styles.headerBtnText}>← Home</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>My Day</Text>
-                    <View style={styles.settingsBtn} />
+                    <TouchableOpacity onPress={addEntry} style={styles.headerBtn}>
+                        <Text style={styles.headerBtnText}>+ Add Entry</Text>
+                    </TouchableOpacity>
                 </View>
             </SafeAreaView>
 
@@ -467,113 +367,47 @@ export default function MyDayScreen() {
             <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }} scrollEventThrottle={16} directionalLockEnabled={true}>
 
                 <View style={styles.section}>
-                    <TouchableOpacity onPress={() => setMealsExpanded(!mealsExpanded)} style={styles.sectionHeader}>
-                        <Text style={styles.sectionTitle}>Meal Schedule</Text>
-                        <Text style={styles.expandIcon}>{mealsExpanded ? '▲' : '▼'}</Text>
-                    </TouchableOpacity>
+                    <Text style={styles.sectionTitle}>Routine</Text>
                     <Text style={styles.hintText}>Tap to select for reorder · Edit to change · Swipe to delete</Text>
-                    {mealsExpanded && (
-                        <>
-                            {schedule.map(item => (
-                                <Swipeable
-                                    key={item.id}
-                                    renderRightActions={() => (
-                                        <TouchableOpacity
-                                            style={styles.swipeDelete}
-                                            onPress={() => deleteMeal(item.id)}
-                                        >
-                                            <Text style={styles.swipeDeleteText}>Delete</Text>
-                                        </TouchableOpacity>
-                                    )}
+                    {routine.map(item => (
+                        <Swipeable
+                            key={item.id}
+                            renderRightActions={() => (
+                                <TouchableOpacity
+                                    style={styles.swipeDelete}
+                                    onPress={() => deleteEntry(item.id)}
                                 >
-                                    <View style={[styles.row, selectedItemId === item.id && selectedSection === 'meals' && styles.rowSelected]}>
-                                        <TouchableOpacity
-                                            style={styles.labelArea}
-                                            onPress={() => toggleSelect(item.id, 'meals')}
-                                        >
-                                            <Text style={styles.itemLabel}>{format12Hour(item.hour, item.minute)} {item.label}</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.editBtn}
-                                            onPress={() => {
-                                                setEditingMeds(false);
-                                                setActiveId(item.id);
-                                                setTempName(item.label);
-                                                setPendingTime(new Date(new Date().setHours(item.hour, item.minute, 0, 0)));
-                                                setShowEditModal(true);
-                                            }}
-                                        >
-                                            <Text style={styles.editBtnText}>Edit</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={[styles.logBtn, item.completed && styles.loggedBtn]}
-                                            onPress={() => openLogModal(item.id)}
-                                        >
-                                            <Text style={styles.logBtnText}>{item.completed ? '✓' : 'Log'}</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </Swipeable>
-                            ))}
-                            <TouchableOpacity style={styles.addBtn} onPress={addMeal}>
-                                <Text style={styles.addBtnText}>+ Add Meal</Text>
-                            </TouchableOpacity>
-                        </>
-                    )}
-                </View>
-
-                <View style={styles.section}>
-                    <TouchableOpacity onPress={() => setMedsExpanded(!medsExpanded)} style={styles.sectionHeader}>
-                        <Text style={styles.sectionTitle}>Medications</Text>
-                        <Text style={styles.expandIcon}>{medsExpanded ? '▲' : '▼'}</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.hintText}>Tap to select for reorder · Edit to change · Swipe to delete</Text>
-                    {medsExpanded && (
-                        <>
-                            {meds.map(item => (
-                                <Swipeable
-                                    key={item.id}
-                                    renderRightActions={() => (
-                                        <TouchableOpacity
-                                            style={styles.swipeDelete}
-                                            onPress={() => deleteMed(item.id)}
-                                        >
-                                            <Text style={styles.swipeDeleteText}>Delete</Text>
-                                        </TouchableOpacity>
-                                    )}
+                                    <Text style={styles.swipeDeleteText}>Delete</Text>
+                                </TouchableOpacity>
+                            )}
+                        >
+                            <View style={[styles.row, selectedItemId === item.id && styles.rowSelected]}>
+                                <TouchableOpacity
+                                    style={styles.labelArea}
+                                    onPress={() => toggleSelect(item.id)}
                                 >
-                                    <View style={[styles.row, selectedItemId === item.id && selectedSection === 'meds' && styles.rowSelected]}>
-                                        <TouchableOpacity
-                                            style={styles.labelArea}
-                                            onPress={() => toggleSelect(item.id, 'meds')}
-                                        >
-                                            <Text style={styles.itemLabel}>{format12Hour(item.hour, item.minute)} {item.label}</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.editBtn}
-                                            onPress={() => {
-                                                setEditingMeds(true);
-                                                setActiveId(item.id);
-                                                setTempName(item.label);
-                                                setPendingTime(new Date(new Date().setHours(item.hour, item.minute, 0, 0)));
-                                                setShowEditModal(true);
-                                            }}
-                                        >
-                                            <Text style={styles.editBtnText}>Edit</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={[styles.logBtn, item.completed && styles.loggedBtn]}
-                                            onPress={() => openMedLogModal(item.id)}
-                                        >
-                                            <Text style={styles.logBtnText}>{item.completed ? '✓' : 'Log'}</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </Swipeable>
-                            ))}
-                            <TouchableOpacity style={styles.addBtn} onPress={addMed}>
-                                <Text style={styles.addBtnText}>+ Add Medication</Text>
-                            </TouchableOpacity>
-                        </>
-                    )}
+                                    <Text style={styles.itemLabel}>{format12Hour(item.hour, item.minute)} {item.label}</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles.editBtn}
+                                    onPress={() => {
+                                        setActiveId(item.id);
+                                        setTempName(item.label);
+                                        setPendingTime(new Date(new Date().setHours(item.hour, item.minute, 0, 0)));
+                                        setShowEditModal(true);
+                                    }}
+                                >
+                                    <Text style={styles.editBtnText}>Edit</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.logBtn, item.completed && styles.loggedBtn]}
+                                    onPress={() => openLogModal(item.id)}
+                                >
+                                    <Text style={styles.logBtnText}>{item.completed ? '✓' : 'Log'}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </Swipeable>
+                    ))}
                 </View>
 
                 <View style={styles.historySection}>
@@ -613,9 +447,9 @@ export default function MyDayScreen() {
 
             {showLogModal && (
                 <View style={styles.modal}>
-                    <Text style={styles.modalTitle}>{editingMeds ? 'Log Medication' : 'Log Meal'}</Text>
-                    <Text style={styles.inputLabel}>{editingMeds ? 'Medication:' : 'What did you eat?'}</Text>
-                    <TextInput style={styles.input} value={tempWhat} onChangeText={setTempWhat} placeholder={editingMeds ? 'Any notes about this medication...' : 'What did you have for this meal?'} />
+                    <Text style={styles.modalTitle}>Log Entry</Text>
+                    <Text style={styles.inputLabel}>Notes (optional)</Text>
+                    <TextInput style={styles.input} value={tempWhat} onChangeText={setTempWhat} placeholder="Add a note about this entry..." />
                     <View style={styles.modalBtns}>
                         <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowLogModal(false)}>
                             <Text style={styles.cancelBtnText}>Cancel</Text>
@@ -692,8 +526,8 @@ export default function MyDayScreen() {
             {editEntry && (
                 <View style={styles.modal}>
                     <Text style={styles.modalTitle}>Edit Log Entry</Text>
-                    <Text style={styles.inputLabel}>What did you eat?</Text>
-                    <TextInput style={styles.input} value={editWhat} onChangeText={setEditWhat} placeholder="e.g. Oatmeal, toast..." />
+                    <Text style={styles.inputLabel}>Notes (optional)</Text>
+                    <TextInput style={styles.input} value={editWhat} onChangeText={setEditWhat} placeholder="Add a note about this entry..." />
                     <View style={styles.modalBtns}>
                         <TouchableOpacity style={styles.cancelBtn} onPress={() => setEditEntry(null)}>
                             <Text style={styles.cancelBtnText}>Cancel</Text>
@@ -703,7 +537,7 @@ export default function MyDayScreen() {
                                 h.id === editEntry.id ? { ...h, what: editWhat, note: editNote } : h
                             );
                             setHistory(updated);
-                            saveData(schedule, updated);
+                            saveData(routine, updated);
                             setEditEntry(null);
                         }}>
                             <Text style={styles.confirmBtnText}>Save</Text>
@@ -732,9 +566,7 @@ export default function MyDayScreen() {
                     <View style={styles.modalOverlay}>
                         <View style={styles.pickerModal}>
                             <Text style={styles.modalTitle}>
-                                {activeId
-                                    ? (editingMeds ? 'Edit Medication' : 'Edit Meal')
-                                    : (editingMeds ? 'New Medication' : 'New Meal')}
+                                {activeId ? 'Edit Entry' : 'New Entry'}
                             </Text>
 
                             <Text style={styles.inputLabel}>Name</Text>
@@ -742,7 +574,7 @@ export default function MyDayScreen() {
                                 style={styles.input}
                                 value={tempName}
                                 onChangeText={setTempName}
-                                placeholder={editingMeds ? 'e.g. Morning Vitamins' : 'e.g. Breakfast'}
+                                placeholder="e.g. Breakfast, Morning Medication"
                                 autoFocus={!activeId}
                             />
 
@@ -752,18 +584,26 @@ export default function MyDayScreen() {
                                     <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
                                         const current = pendingTime || new Date(new Date().setHours(12, 0, 0, 0));
                                         const next = new Date(current);
-                                        next.setHours((next.getHours() + 1) % 24);
+                                        const h = next.getHours();
+                                        const isPM = h >= 12;
+                                        let h12 = h % 12; if (h12 === 0) h12 = 12;
+                                        h12 = h12 === 12 ? 1 : h12 + 1;
+                                        next.setHours(isPM ? (h12 % 12) + 12 : h12 % 12);
                                         setPendingTime(next);
                                     }}>
                                         <Text style={styles.timeAdjText}>▲</Text>
                                     </TouchableOpacity>
                                     <Text style={styles.timeDisplayText}>
-                                        {String((pendingTime || new Date(new Date().setHours(12, 0, 0, 0))).getHours()).padStart(2, '0')}
+                                        {(() => { const h = (pendingTime || new Date(new Date().setHours(12, 0, 0, 0))).getHours(); let h12 = h % 12; if (h12 === 0) h12 = 12; return String(h12).padStart(2, '0'); })()}
                                     </Text>
                                     <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
                                         const current = pendingTime || new Date(new Date().setHours(12, 0, 0, 0));
                                         const next = new Date(current);
-                                        next.setHours((next.getHours() + 23) % 24);
+                                        const h = next.getHours();
+                                        const isPM = h >= 12;
+                                        let h12 = h % 12; if (h12 === 0) h12 = 12;
+                                        h12 = h12 === 1 ? 12 : h12 - 1;
+                                        next.setHours(isPM ? (h12 % 12) + 12 : h12 % 12);
                                         setPendingTime(next);
                                     }}>
                                         <Text style={styles.timeAdjText}>▼</Text>
@@ -794,6 +634,29 @@ export default function MyDayScreen() {
                                         <Text style={styles.timeAdjText}>▼</Text>
                                     </TouchableOpacity>
                                     <Text style={{ color: Colors.primary, fontSize: 13 }}>Minute</Text>
+                                </View>
+
+                                <View style={{ alignItems: 'center' }}>
+                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
+                                        const current = pendingTime || new Date(new Date().setHours(12, 0, 0, 0));
+                                        const next = new Date(current);
+                                        next.setHours((next.getHours() + 12) % 24);
+                                        setPendingTime(next);
+                                    }}>
+                                        <Text style={styles.timeAdjText}>▲</Text>
+                                    </TouchableOpacity>
+                                    <Text style={[styles.timeDisplayText, { fontSize: 28 }]}>
+                                        {(pendingTime || new Date(new Date().setHours(12, 0, 0, 0))).getHours() < 12 ? 'AM' : 'PM'}
+                                    </Text>
+                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
+                                        const current = pendingTime || new Date(new Date().setHours(12, 0, 0, 0));
+                                        const next = new Date(current);
+                                        next.setHours((next.getHours() + 12) % 24);
+                                        setPendingTime(next);
+                                    }}>
+                                        <Text style={styles.timeAdjText}>▼</Text>
+                                    </TouchableOpacity>
+                                    <Text style={{ color: Colors.primary, fontSize: 13 }}>AM/PM</Text>
                                 </View>
                             </View>
 
@@ -859,7 +722,7 @@ const styles = StyleSheet.create({
     labelArea: { flex: 1, marginRight: 10 },
     itemLabel: { fontSize: 17, color: Colors.primary, fontWeight: '500' },
     timeText: { fontSize: 15, color: Colors.bridge, marginTop: 2 },
-    hintText: { fontSize: 11, color: '#aaa', marginTop: 2 },
+    hintText: { fontSize: 11, color: '#aaa', marginTop: 2, marginBottom: 8 },
     logBtn: {
         backgroundColor: Colors.primary,
         paddingVertical: 8,
@@ -1069,7 +932,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: Colors.primary,
         fontWeight: '600',
-    }, 
+    },
     headerBtn: {
         borderWidth: 1,
         borderColor: Colors.white,
