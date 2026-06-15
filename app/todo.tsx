@@ -197,34 +197,36 @@ export default function TodoScreen() {
         setShowAddTask(false);
     };
 
-    const updateTask = () => {
+    const updateTask = async () => {
         if (!editTask || !newTitle.trim()) return;
         if (newTaskStatus === 'Completed') {
             completeTask(editTask);
             setShowAddTask(false);
             return;
         }
-        const updated = tasks.map(t =>
-            t.id === editTask.id
-                ? {
-                    ...t,
-                    title: newTitle.trim(),
-                    categoryId: newCategory,
-                    priority: newPriority,
-                    recurring: newRecurring,
-                    recurDay: newRecurDay,
-                    recurMonth: newRecurMonth,
-                    taskType: newTaskType,
-                    dueDate: newDueDate,
-                    dueTime: newDueTime,
-                    reminders: newReminders,
-                    notes: newNotes,
-                    status: newTaskStatus,
-                    onHoldNote: newTaskOnHoldNote,
-                }
-                : t
-        );
+        const updatedTask: Task = {
+            ...editTask,
+            title: newTitle.trim(),
+            categoryId: newCategory,
+            priority: newPriority,
+            recurring: newRecurring,
+            recurDay: newRecurDay,
+            recurMonth: newRecurMonth,
+            taskType: newTaskType,
+            dueDate: newDueDate,
+            dueTime: newDueTime,
+            reminders: newReminders,
+            notes: newNotes,
+            status: newTaskStatus,
+            onHoldNote: newTaskOnHoldNote,
+        };
+        const updated = tasks.map(t => (t.id === editTask.id ? updatedTask : t));
         saveTasks(updated);
+        // Editing used to schedule nothing, so changes to due time/reminders
+        // never took effect. Cancel this task's old reminders first, then
+        // reschedule from the new values (mirrors the Add path).
+        await cancelReminders(editTask.id);
+        await scheduleReminders(updatedTask);
         resetForm();
         setShowAddTask(false);
     };
