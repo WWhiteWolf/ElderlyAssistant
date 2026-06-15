@@ -5,7 +5,9 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
     Alert,
+    KeyboardAvoidingView,
     Modal,
+    Platform,
     ScrollView,
     StyleSheet,
     Text,
@@ -563,6 +565,7 @@ export default function MyDayScreen() {
                     animationType="fade"
                     visible={showEditModal}
                 >
+                    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
                     <View style={styles.modalOverlay}>
                         <View style={styles.pickerModal}>
                             <Text style={styles.modalTitle}>
@@ -670,6 +673,7 @@ export default function MyDayScreen() {
                             </View>
                         </View>
                     </View>
+                    </KeyboardAvoidingView>
                 </Modal>
             )}
 

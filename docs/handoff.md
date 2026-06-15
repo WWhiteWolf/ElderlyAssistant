@@ -2,9 +2,7 @@
 
 ## FIRST THING TO ASK PATRICK
 
-The **notification work is fully settled.** The `updateTask` Edit-path fix and the **notification-sound fix** (`sound: 'default'` in `todo.tsx` and `myday.tsx`) are both **committed AND device-validated** (2026-06-15 session). There is no open notification thread to confirm. The new goal Patrick named for next session: the **My Day & Pets Day restructure** (see Active next step) — confirm he wants to start there.
-
-**Device validation done 2026-06-15 (don't re-test unless something changes):** sound fired on My Day, on To-Do via both the Add path and the Edit path, with the phone **locked** (Watch off) producing **sound + banner**, and tapping the banner routed to the correct screen and landed on the pending tile. Caveat: tap-routing is **screen-level** in code (routes by `data.source`, not item id) — it landed on the right tile here partly because it was the only pending tile, so item-level targeting is NOT proven from this single-tile case.
+The **My Day & Pets Day restructure is built and type-clean**, but as of the end of the 2026-06-15 session it was **about to be committed / built / submitted / loaded / device-tested** — it had NOT yet been validated on the phone. So the first thing: confirm the restructure build loaded and ask how the device test went (any issues to fix?). If it tested clean, the restructure is settled and the next live goal is unscoped — ask Patrick what he wants to take on (likely something from `docs/parked-items.md`).
 
 ## To the next session: what I need to be fresh and synced (read this first)
 
@@ -14,82 +12,74 @@ I start each session blank. I do NOT automatically open any file in this repo, a
 
 Once connected, I read the app's code and the tracking docs straight from the folder. Patrick tells me **the one goal**, I say how heavy it looks, and I wait for his "go" before changing anything. At session end I write a fresh version of this note.
 
-**Two tracking docs, different jobs.** This `handoff.md` keeps us on course session to session — current state, the active goal, decisions, and what just changed. `docs/parked-items.md` is the backlog: things to do *eventually* (bugs, design decisions, UI polish), not the current goal. When a parked item becomes the live goal, move it here; when something is done but more spin-offs remain, park them there. Keep the eventual-work list out of this note so it stays focused.
+**Two tracking docs, different jobs.** This `handoff.md` keeps us on course session to session — current state, the active goal, decisions, and what just changed. `docs/parked-items.md` is the backlog: things to do *eventually* (bugs, design decisions, UI polish), not the current goal. When a parked item becomes the live goal, move it here; when something is done but more spin-offs remain, park them there.
 
 ## Standing rules (always apply)
 
 - **Patrick does all git commits.** Claude must never run `git commit` or any git write command — possible lockout. Claude edits files and leaves them for Patrick to commit.
 - **No "boxed" multiple-choice questions.** Ask open questions in plain prose; let Patrick answer freely.
 - **Verify before asserting.** Read the actual code before describing behavior. When unsure, say so and offer to look.
-- **One change at a time.** Discuss before building; make one edit, stop, let Patrick review/commit before the next.
+- **One change at a time.** Discuss before building; make one edit, stop, let Patrick review/commit before the next. (Patrick: retired, does this for fun — "there's always time to do it right, without being a zealot." Favor the clean/standard approach; don't rush him.)
 
 ## Project
 
 Remember When (elderlyassistant) — Expo / React Native app in `Projects/elderlyassistant`. Runs on Patrick's iPhone via TestFlight. No OTA updates — changes reach the phone only through a new TestFlight build. Private GitHub repo. iOS bundle id `com.molliedog.ElderlyAssistant`. New Architecture + React Compiler enabled.
 
-**Purpose / direction (from Patrick).** Patrick is 72, retired; built this app for memory support. The **heart of the app is the To-Do list with its flexible reminder scheme** — the reminders are what his memory leans on, so they must be rock-solid. **My Day** handles the daily routine (meals, meds, etc.) — things nearly identical day to day that blur together ("did I do that today or yesterday?"); it resets each item at a new date and logs what's done with a timestamp/history. Day-to-day screens: **Shopping List, My Day, To-Do, Pets Day** (Pets Day = `mollie.tsx`). Shopping List (`shopping.tsx`) and Pets Day (`mollie.tsx`) have NO notification code.
+**Purpose / direction (from Patrick).** Patrick is 72, retired; built this app for memory support. The **heart of the app is the To-Do list with its flexible reminder scheme** — the reminders are what his memory leans on, so they must be rock-solid. **My Day** handles the daily routine (meals, meds, etc.) — things nearly identical day to day that blur together; it resets each item at a new date and logs what's done with a timestamp/history. Day-to-day screens: **Shopping List, My Day, To-Do, Pets Day** (Pets Day = `mollie.tsx`). Shopping List (`shopping.tsx`) has NO notification code. Pets Day (`mollie.tsx`) has NO notification code (parked: add feeding reminders).
 
 ## Build / release workflow
 
 - Path to phone: `eas build --platform ios --profile production` → "Build finished" → `eas submit --platform ios --profile production` → pick build → Apple processes (5–15 min, email when ready) → update **Remember When** in TestFlight.
 - **Commit FIRST, then build.** EAS captures git state when the build is *triggered*; building mid-commit grabs the OLD file.
-- **At submit, verify the Commit line** matches what you just committed before pressing Return.
+- **At submit, verify the Build number line** before pressing Return. Build numbers AUTO-INCREMENT (`eas.json` production has `autoIncrement: true`, `appVersionSource: remote`). If submit fails with **"build number N already used for version 1.0.0,"** it usually means a build was already accepted by Apple (e.g. an accidental double-submit) — just check App Store Connect / TestFlight; the build is likely already there. A genuine bump needs a fresh BUILD (the number is baked into the binary), not a resubmit.
 - "Set up Push Notifications?" during build → always **No** (app uses only LOCAL notifications, no remote push/APNs).
 - Local testing: dev build into iOS Simulator via `npm run ios`. Metro picks up edits live.
 
-## Latest session — 2026-06-15 (notification-sound fix)
+## Latest session — 2026-06-15 (My Day & Pets Day restructure)
 
-Goal: get reminders to actually play a sound. Verified in code first, then made the fix.
+Goal: restructure My Day and Pets Day so each is one continuous, always-visible list on a single page. Read both files first, scoped WITH Patrick, then built. **Type-clean** (only the known `settings.tsx:165` remains). **NOT yet device-tested** at session close.
 
-**What we confirmed (in code):** the handler's `shouldPlaySound: true` only *permits* sound — the notification *content* must also name a sound, and neither To-Do nor My Day did. Timer (`timer.tsx`) already sets `sound: true` on its content, which is why that path could make noise and the others couldn't.
+**My Day (`app/myday.tsx`) — full rewrite of the component:**
+- Merged the two collapsed sections (Meals + Medications) into ONE always-visible **"Routine"** list of Entries. Each Entry still shows time + name, an Edit button, and a Log button.
+- New single storage key **`my_routine`** with a one-time migration: on first load it folds the old `my_schedule` + `my_meds` into `my_routine` (nothing lost). `saveData` and `scheduleAllNotifications` now read `my_routine`.
+- One **common Log** modal with a neutral "Notes (optional)" field (the old meal-vs-med split and "What did you eat?" prompt are gone). Removed `editingMeds`, `meds` state, `saveMeds/loadMeds`, the med-specific log path, and the two `*Expanded` collapse flags.
+- **"+ Add Entry"** button moved into the top header on the right (was an empty spacer).
+- **AM/PM** everywhere: `format12Hour` now outputs real 12-hour AM/PM on tiles; the edit modal time picker is three columns — **Hour (1–12) / Minute / AM-PM toggle** — while still storing 24h internally (notifications/DAILY trigger unaffected).
+- Coffee/Water counters, daily reset, and "My Log" history unchanged.
 
-**Fix (COMMITTED + DEVICE-VALIDATED):** added `sound: 'default'` to the notification *content* in three spots —
-- `app/todo.tsx` `scheduleReminders` (To-Do dated reminders).
-- `app/todo.tsx` `scheduleBackgroundReminder` (daily 8am "background tasks" reminder).
-- `app/myday.tsx` `scheduleAllNotifications` (My Day routine alerts).
+**Keyboard fix (both screens):** wrapped the New/Edit time-picker modal in a `KeyboardAvoidingView` (behavior `padding` on iOS) in BOTH `myday.tsx` (added `KeyboardAvoidingView` + `Platform` imports) and `mollie.tsx` (imports already present from the Add Pet modal), so the box lifts above the keyboard instead of being covered. (The Pets Day Add Pet modal already had this; its Edit modal did not.)
 
-Type-check clean except the known pre-existing `settings.tsx:165` error.
-
-**Device validation (done 2026-06-15):** three staggered reminders (My Day → To-Do → My Day, a minute apart) all fired with sound; a locked-phone test (Watch off) fired with **sound + banner** and tapping it routed to the correct screen/pending tile. Diagnostic learned along the way: a To-Do that won't fire is almost always a **stale due date** (e.g. set to yesterday) or **no reminder chip attached** — `scheduleReminders` bails on zero reminders and the future-guard drops past dates. Not a code bug. The Apple Watch remains a real-world factor for everyday locked-phone use (it pulls the alert to the wrist).
-
-**Stale-fact note (still true, carried forward):** `scheduleReminders` ignores the `recurring` field — it ALWAYS builds a one-shot DATE trigger from `dueDate`+`dueTime`. A To-Do "daily" task fires ONCE on its date and does not truly repeat (on completion it reschedules to a now-past date → dropped by the future-guard). To-Do's `recurring` (daily/weekly/monthly/yearly) drives **only the Week-view display**, never notifications. (Tracked for a design decision in `parked-items.md`.)
+**Pets Day (`app/mollie.tsx`) — full rewrite, now mirrors My Day:**
+- Dropped the entire multi-pet system: no "All Pets" list, no Add Pet modal, no pet types/icons, no `selectedPet`. One single page.
+- One always-visible **"Feeding Schedule"** Entry list (time + name, Edit, Log), the same common Log ("Notes (optional)"), a **Treats** counter, and a **"Pets Log"** history.
+- **"+ Add Entry"** in the header on the right; **AM/PM** tiles + the same Hour/Minute/AM-PM picker; `KeyboardAvoidingView` on the edit modal.
+- New storage keys **`pets_feeds` / `pets_history` / `pets_last_date`** with a daily reset on load. Per Patrick, existing pet data does NOT matter — starts fresh with two default feeds (Morning Feed 7:00 AM, Evening Feed 5:00 PM). Old `pets_data` key is left orphaned (parked: one-time cleanup).
+- Still **NO notifications** on Pets Day (parked: add feeding reminders).
 
 ## Verified code facts (don't re-derive)
 
-- **To-Do schedules a reminder ONLY if:** `taskType !== 'background'` AND `dueDate` set AND `reminders.length > 0` AND fire time is still in the future (`scheduleReminders`, `todo.tsx:346`). Due date + time alone schedule nothing — there must be a reminder entry.
-- To-Do reminder entry is one-tap presets (`REMINDER_PRESETS`); "At time" is amount 0 → fires at the due time. **Add-path To-Do DATE delivery CONFIRMED on device this session.**
-- **`updateTask` cancels + reschedules** (cancel + reschedule, mirroring the Add path). **COMMITTED.** `deleteTask` still does NOT cancel — a deleted task can still fire (UNFIXED, parked).
-- **Notification sound:** content needs an explicit `sound` field; the handler's `shouldPlaySound: true` alone is not enough. `sound: 'default'` set in `todo.tsx` (`scheduleReminders`, `scheduleBackgroundReminder`) and `myday.tsx` (`scheduleAllNotifications`); Timer already used `sound: true`. **COMMITTED and DEVICE-VALIDATED 2026-06-15** (My Day, To-Do Add + Edit, locked-phone sound + banner, screen-level tap-routing).
-- To-Do uses a one-shot **DATE** trigger; My Day and the To-Do "Background Tasks" reminder use a repeating **DAILY** trigger (`hour`/`minute`, no date).
-- My Day's `scheduleAllNotifications` (`myday.tsx:127`) runs on screen load and on every meal/med save; it cancels only `data.source === 'myday'` (committed fix) and reschedules from storage, so To-Do/Timer are untouched.
-- My Day Meals and Meds are the **same `ScheduleItem` type** (`id/label/hour/minute/completed`) and are already scheduled together (`myday.tsx:143`, `allItems = [...meals, ...medsList]`). They differ only by separate state, separate storage keys (`my_schedule` / `my_meds`), separate sections, and an `editingMeds` flag.
-- My Day tiles **already show the time** prefixed to the label (`myday.tsx:493` & `:548`), in 24-hour format (helper `format12Hour`, `:165`, is misnamed — it outputs 24h). Sections are **collapsed by default**.
-- To-Do tiles show `Due: {dueDate}` only (`todo.tsx:513` & `:552`) — **due TIME is not displayed** (it is stored in `dueTime`).
-- Tap-routing (`_layout.tsx`) routes by `data.source` to the SCREEN only (ignores item id); handles `mydaysnooze` → /myday and snooze action buttons. Still UNTESTED with a real tap.
+- **My Day list is now `routine`** (single `ScheduleItem[]`), persisted under **`my_routine`**, reset `completed:false` daily. `scheduleAllNotifications` reads `my_routine`, cancels only `data.source === 'myday'`, and schedules a repeating **DAILY** trigger per incomplete item with `sound: 'default'`. (Sound fix from earlier 2026-06-15 is committed + device-validated.)
+- **Pets Day is `feeds`** (single `FeedItem[]`), persisted under **`pets_feeds`**, reset daily. No notification code at all. Treats counter is state-only (like My Day's Coffee/Water — not persisted), but logging a Treat writes a history entry.
+- **Both screens' time picker** stores 24h internally; the UI shows/edit in AM/PM. `format12Hour` (both files) outputs real 12-hour AM/PM.
+- **To-Do (`todo.tsx`) is unchanged this session.** It schedules a one-shot DATE reminder ONLY if `taskType !== 'background'` AND `dueDate` set AND `reminders.length > 0` AND fire time is still future. `updateTask` cancels+reschedules (committed); `deleteTask` still does NOT cancel (parked). `recurring` drives only the Week-view display, never notifications (parked).
+- iOS caps an app at **64 pending scheduled local notifications** (a DAILY/repeating trigger counts as ONE). Keep this in mind if Pets Day notifications get added.
 
 ## Tooling notes
 
 - **Don't type into Simulator text fields with the assistant's tools** — triggers iOS accent popups and mangles input. Have Patrick type directly.
-- **Assistant swipe/tap gestures on the Simulator are unreliable.** Good division of labor: Patrick does direct manipulation/typing on the device; Claude reasons/guides, reads code, does menu-level actions.
-
-## Apple notification limit (for future design)
-
-iOS caps an app at **64 pending scheduled local notifications**; beyond that it keeps the soonest 64 and silently drops the rest (a repeating/DAILY trigger counts as ONE). We're nowhere near 64, but keep per-item scheduling from piling up.
+- **Assistant swipe/tap gestures on the Simulator are unreliable.** Patrick does direct manipulation/typing on the device; Claude reasons/guides, reads code, does menu-level actions.
 
 ## Active next step
 
-- **My Day & Pets Day restructure** — the next live goal (Patrick named it; not yet scoped). Related parked item: merge My Day's Meals + Meds into one card-styled list (tiles like the To-Do cards), with cautions on naming (avoid "Tasks"), the `my_schedule` + `my_meds` storage-key migration, and the food-specific log wording. Pets Day = `mollie.tsx` (no notification code today). Read the relevant code and scope it WITH Patrick before any edits — nothing decided yet.
+- **Device-test the My Day & Pets Day restructure** (the build Patrick was about to load at session close). Confirm: My Day shows one Routine list with existing meals+meds migrated in; Pets Day is a single page with the feeding list; Add Entry works from the header on both; AM/PM displays and the picker reads right; the edit popup clears the keyboard; the common Log writes history; daily reset works. Fix anything that surfaces.
+- After that, no goal is scoped. Pull the next one from `docs/parked-items.md` (e.g. Pets Day feeding notifications, old `pets_data` cleanup, `deleteTask` cancel, To-Do due-time display, the To-Do recurring/daily design decision, the `settings.tsx:165` TS error).
 
-Everything else — `deleteTask` not cancelling, the Timer cancel bug, the To-Do recurring/daily design decision, the merge-Medication redesign, To-Do due-time display, My Day time formatting, tap-routing, the `settings.tsx:165` TS error, the dormant Planner — now lives in **`docs/parked-items.md`** (the eventual-work backlog). Pull from there when one becomes the live goal.
+## Files touched this session (NOT yet committed at session close — Patrick to commit)
 
-## Files touched (sound fix — committed earlier 2026-06-15)
-
-- `app/todo.tsx` — `sound: 'default'` in `scheduleReminders` and `scheduleBackgroundReminder`. **COMMITTED + device-validated.**
-- `app/myday.tsx` — `sound: 'default'` in `scheduleAllNotifications`. **COMMITTED + device-validated.**
-
-## This session (2026-06-15, later — device validation only)
-
-- No app code changed. Verified the sound fix and edit path on device (see above) and refreshed `docs/handoff.md`. Nothing to commit except this doc.
+- `app/myday.tsx` — full component rewrite: merged Routine list, `my_routine` migration, common Log, header Add Entry, AM/PM tiles + picker, KeyboardAvoidingView on edit modal.
+- `app/mollie.tsx` — full rewrite: single-page Pets Day mirroring My Day, new `pets_*` keys, header Add Entry, AM/PM, KeyboardAvoidingView.
+- `docs/parked-items.md` — added Pets Day notifications + old `pets_data` cleanup; cleared the now-done merge + AM/PM items.
+- `docs/handoff.md` — this refresh.
 
 ---
 
@@ -99,6 +89,6 @@ You're picking up the "Remember When" app (Expo / React Native, runs on my iPhon
 
 1. The `elderlyassistant` folder must be connected via Cowork's folder picker — if you can't see it, give me the folder-request button; don't ask me to upload files.
 2. Open and read `docs/handoff.md` first (full state, standing rules, next step), then skim `docs/parked-items.md` (the eventual-work backlog) so you know what's deferred.
-3. The notification work is DONE and device-validated — don't re-open it. Today's goal is the **My Day & Pets Day restructure** (see Active next step). Read `app/myday.tsx` and `app/mollie.tsx` before proposing anything.
+3. Last session restructured My Day (one "Routine" list) and Pets Day (single page mirroring My Day), built and type-clean but device-tested by me afterward. Ask how that device test went and whether anything needs fixing before picking a new goal.
 
-Then tell me how heavy the goal looks and wait for my "go." I'll give you the specifics — nothing is scoped yet.
+Then tell me how heavy the goal looks and wait for my "go." Nothing is scoped yet.
