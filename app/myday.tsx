@@ -147,7 +147,10 @@ export default function MyDayScreen() {
                     content: {
                         title: 'Daily Routine',
                         body: `Time for ${item.label}!`,
-                        data: { source: 'myday' },
+                        // Carry the item id + label so a Snooze button tap can
+                        // reschedule just this item; category adds the buttons.
+                        data: { source: 'myday', itemId: item.id, label: item.label },
+                        categoryIdentifier: 'mydaysnooze',
                     },
                     trigger: {
                         type: SchedulableTriggerInputTypes.DAILY,
@@ -207,52 +210,6 @@ export default function MyDayScreen() {
         setHistory(updatedHist);
         setShowLogModal(false);
         setPendingLogId(null);
-    };
-
-    const snoozeReminder = () => {
-        Alert.alert(
-            'Snooze Reminders',
-            'How long?',
-            [
-                {
-                    text: '15 Minutes', onPress: async () => {
-                        await Notifications.cancelAllScheduledNotificationsAsync();
-                        await Notifications.scheduleNotificationAsync({
-                            content: { title: 'Snooze Over', body: 'Your 15 minute snooze is up!', data: { source: 'myday' } },
-                            trigger: {
-                                type: SchedulableTriggerInputTypes.TIME_INTERVAL,
-                                seconds: 900,
-                            } as Notifications.TimeIntervalTriggerInput,
-                        });
-                    },
-                },
-                {
-                    text: '30 Minutes', onPress: async () => {
-                        await Notifications.cancelAllScheduledNotificationsAsync();
-                        await Notifications.scheduleNotificationAsync({
-                            content: { title: 'Snooze Over', body: 'Your 30 minute snooze is up!', data: { source: 'myday' } },
-                            trigger: {
-                                type: SchedulableTriggerInputTypes.TIME_INTERVAL,
-                                seconds: 1800,
-                            } as Notifications.TimeIntervalTriggerInput,
-                        });
-                    },
-                },
-                {
-                    text: '60 Minutes', onPress: async () => {
-                        await Notifications.cancelAllScheduledNotificationsAsync();
-                        await Notifications.scheduleNotificationAsync({
-                            content: { title: 'Snooze Over', body: 'Your 60 minute snooze is up!', data: { source: 'myday' } },
-                            trigger: {
-                                type: SchedulableTriggerInputTypes.TIME_INTERVAL,
-                                seconds: 3600,
-                            } as Notifications.TimeIntervalTriggerInput,
-                        });
-                    },
-                },
-                { text: 'Cancel', style: 'cancel' },
-            ]
-        );
     };
 
     const addMeal = () => {
@@ -617,10 +574,6 @@ export default function MyDayScreen() {
                         </>
                     )}
                 </View>
-
-                <TouchableOpacity style={styles.snoozeBtn} onPress={snoozeReminder}>
-                    <Text style={styles.snoozeBtnText}>Snooze Reminders</Text>
-                </TouchableOpacity>
 
                 <View style={styles.historySection}>
                     <View style={styles.historyHeader}>
