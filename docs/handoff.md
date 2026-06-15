@@ -6,12 +6,11 @@ The **`updateTask` Edit-path fix** is **CONFIRMED committed** by Patrick (2026-0
 
 ## To the next session: what I need to be fresh and synced (read this first)
 
-I start each session blank. I do NOT automatically open any file in this repo, and folder access does not carry over. Two things must happen before I can help:
+I start each session blank. I do NOT automatically open any file in this repo, and folder access does not carry over. One thing must happen before I can help:
 
-1. **Connect the folder in Cowork.** Patrick selects/connects the `elderlyassistant` (or parent `Projects`) folder in Cowork's folder picker — a UI action. **If I ever say the folders look empty or ask Patrick to "upload the file," that's the missing step — ask Patrick to connect it; don't ask him to upload files.**
-2. **Paste this whole hand-off note.** It's the only way I get the context below.
+- **Connect the folder in Cowork.** Patrick selects/connects the `elderlyassistant` (or parent `Projects`) folder in Cowork's folder picker — a UI action. **If I ever say the folders look empty or ask Patrick to "upload the file," that's the missing step — ask Patrick to connect it; don't ask him to upload files.**
 
-Once connected, I read the app's code straight from the folder. Patrick tells me **the one goal**, I say how heavy it looks, and I wait for his "go" before changing anything. At session end I write a fresh version of this note.
+Once connected, I read the app's code and the tracking docs straight from the folder. Patrick tells me **the one goal**, I say how heavy it looks, and I wait for his "go" before changing anything. At session end I write a fresh version of this note.
 
 **Two tracking docs, different jobs.** This `handoff.md` keeps us on course session to session — current state, the active goal, decisions, and what just changed. `docs/parked-items.md` is the backlog: things to do *eventually* (bugs, design decisions, UI polish), not the current goal. When a parked item becomes the live goal, move it here; when something is done but more spin-offs remain, park them there. Keep the eventual-work list out of this note so it stays focused.
 
