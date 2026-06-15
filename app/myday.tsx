@@ -151,6 +151,7 @@ export default function MyDayScreen() {
                         // reschedule just this item; category adds the buttons.
                         data: { source: 'myday', itemId: item.id, label: item.label },
                         categoryIdentifier: 'mydaysnooze',
+                        sound: 'default',
                     },
                     trigger: {
                         type: SchedulableTriggerInputTypes.DAILY,
