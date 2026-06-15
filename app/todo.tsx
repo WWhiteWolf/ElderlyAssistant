@@ -61,6 +61,16 @@ interface LogEntry {
     notes: string;
 }
 
+// One-tap reminder presets. amount 0 = fire at the due time ("At time").
+const REMINDER_PRESETS: { label: string; amount: number; unit: 'minutes' | 'hours' | 'days' }[] = [
+    { label: 'At time', amount: 0, unit: 'minutes' },
+    { label: '5 min', amount: 5, unit: 'minutes' },
+    { label: '15 min', amount: 15, unit: 'minutes' },
+    { label: '30 min', amount: 30, unit: 'minutes' },
+    { label: '1 hour', amount: 1, unit: 'hours' },
+    { label: '1 day', amount: 1, unit: 'days' },
+];
+
 const DEFAULT_CATEGORIES: Category[] = [
     { id: 'c1', name: 'General', color: '#1a6e8a' },
     { id: 'c2', name: 'Health', color: '#2d9e8f' },
@@ -99,8 +109,6 @@ export default function TodoScreen() {
     const [newCategoryColor, setNewCategoryColor] = useState('#1a6e8a');
     const [newTaskType, setNewTaskType] = useState<'scheduled' | 'background'>('scheduled');
     const [newReminders, setNewReminders] = useState<Reminder[]>([]);
-    const [reminderAmount, setReminderAmount] = useState('');
-    const [reminderUnit, setReminderUnit] = useState<'minutes' | 'hours' | 'days'>('hours');
     const [showBackgroundTasks, setShowBackgroundTasks] = useState(false);
     const [newTaskStatus, setNewTaskStatus] = useState<'Active' | 'On Hold' | 'Completed'>('Active');
     const [newTaskOnHoldNote, setNewTaskOnHoldNote] = useState('');
@@ -154,8 +162,6 @@ export default function TodoScreen() {
         setNewDueTime('');
         setNewNotes('');
         setNewReminders([]);
-        setReminderAmount('');
-        setReminderUnit('hours');
         setEditTask(null);
         setNewTaskStatus('Active');
         setNewTaskOnHoldNote('');
@@ -303,8 +309,6 @@ export default function TodoScreen() {
         setNewDueTime(task.dueTime);
         setNewNotes(task.notes);
         setNewReminders(task.reminders || []);
-        setReminderAmount('');
-        setReminderUnit('hours');
         setShowAddTask(true);
         setNewTaskStatus(task.status || 'Active');
         setNewTaskOnHoldNote(task.onHoldNote || '');
@@ -397,19 +401,15 @@ export default function TodoScreen() {
         });
     };
 
-    const addReminder = () => {
-        const amount = parseInt(reminderAmount);
-        if (!amount || isNaN(amount) || amount <= 0) {
-            Alert.alert('Invalid', 'Please enter a valid number.');
-            return;
-        }
+    const addPresetReminder = (amount: number, unit: 'minutes' | 'hours' | 'days') => {
+        // Skip if this exact reminder is already in the list.
+        if (newReminders.some(r => r.amount === amount && r.unit === unit)) return;
         const reminder: Reminder = {
             id: Date.now().toString(),
             amount,
-            unit: reminderUnit,
+            unit,
         };
         setNewReminders([...newReminders, reminder]);
-        setReminderAmount('');
     };
 
     const removeReminder = (id: string) => {
@@ -758,31 +758,23 @@ export default function TodoScreen() {
 
                                     {newTaskType === 'scheduled' && (
                                         <>
-                                            <Text style={styles.inputLabel}>Reminders</Text>
-                                            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}>
-                                                <TextInput
-                                                    style={[styles.input, { flex: 1 }]}
-                                                    value={reminderAmount}
-                                                    onChangeText={setReminderAmount}
-                                                    placeholder="Amount"
-                                                    keyboardType="numeric"
-                                                />
-                                                {(['minutes', 'hours', 'days'] as const).map(u => (
+                                            <Text style={styles.inputLabel}>Reminders — tap to add</Text>
+                                            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
+                                                {REMINDER_PRESETS.map(p => (
                                                     <TouchableOpacity
-                                                        key={u}
-                                                        style={[styles.recurBtn, reminderUnit === u && styles.recurBtnActive]}
-                                                        onPress={() => setReminderUnit(u)}
+                                                        key={p.label}
+                                                        style={[styles.recurBtn, { marginRight: 0 }]}
+                                                        onPress={() => addPresetReminder(p.amount, p.unit)}
                                                     >
-                                                        <Text style={[styles.recurBtnText, reminderUnit === u && styles.recurBtnTextActive]}>{u}</Text>
+                                                        <Text style={styles.recurBtnText}>{p.label}</Text>
                                                     </TouchableOpacity>
                                                 ))}
-                                                <TouchableOpacity style={styles.confirmBtn} onPress={addReminder}>
-                                                    <Text style={styles.confirmBtnText}>+</Text>
-                                                </TouchableOpacity>
                                             </View>
                                             {newReminders.map(r => (
                                                 <View key={r.id} style={styles.reminderRow}>
-                                                    <Text style={styles.reminderText}>{r.amount} {r.unit} before</Text>
+                                                    <Text style={styles.reminderText}>
+                                                        {r.amount === 0 ? 'At time of event' : `${r.amount} ${r.unit} before`}
+                                                    </Text>
                                                     <TouchableOpacity onPress={() => removeReminder(r.id)}>
                                                         <Text style={styles.catDeleteBtn}>✕</Text>
                                                     </TouchableOpacity>
