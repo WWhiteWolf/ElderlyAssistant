@@ -2,7 +2,9 @@
 
 ## FIRST THING TO ASK PATRICK
 
-The **`updateTask` Edit-path fix** is **CONFIRMED committed** by Patrick (2026-06-14 work, committed since), so that's settled. The new thing to confirm at the start of the next session: whether the **notification-sound fix** (this session, 2026-06-15 — `sound: 'default'` added in `todo.tsx` and `myday.tsx`, see below) has been committed and built yet, since hearing the sound on the phone depends on a new TestFlight build.
+The **notification work is fully settled.** The `updateTask` Edit-path fix and the **notification-sound fix** (`sound: 'default'` in `todo.tsx` and `myday.tsx`) are both **committed AND device-validated** (2026-06-15 session). There is no open notification thread to confirm. The new goal Patrick named for next session: the **My Day & Pets Day restructure** (see Active next step) — confirm he wants to start there.
+
+**Device validation done 2026-06-15 (don't re-test unless something changes):** sound fired on My Day, on To-Do via both the Add path and the Edit path, with the phone **locked** (Watch off) producing **sound + banner**, and tapping the banner routed to the correct screen and landed on the pending tile. Caveat: tap-routing is **screen-level** in code (routes by `data.source`, not item id) — it landed on the right tile here partly because it was the only pending tile, so item-level targeting is NOT proven from this single-tile case.
 
 ## To the next session: what I need to be fresh and synced (read this first)
 
@@ -41,14 +43,14 @@ Goal: get reminders to actually play a sound. Verified in code first, then made 
 
 **What we confirmed (in code):** the handler's `shouldPlaySound: true` only *permits* sound — the notification *content* must also name a sound, and neither To-Do nor My Day did. Timer (`timer.tsx`) already sets `sound: true` on its content, which is why that path could make noise and the others couldn't.
 
-**Fix made this session (UNCOMMITTED, needs a new build to hear on the phone):** added `sound: 'default'` to the notification *content* in three spots —
+**Fix (COMMITTED + DEVICE-VALIDATED):** added `sound: 'default'` to the notification *content* in three spots —
 - `app/todo.tsx` `scheduleReminders` (To-Do dated reminders).
 - `app/todo.tsx` `scheduleBackgroundReminder` (daily 8am "background tasks" reminder).
 - `app/myday.tsx` `scheduleAllNotifications` (My Day routine alerts).
 
 Type-check clean except the known pre-existing `settings.tsx:165` error.
 
-**Validate on device (after commit + build):** test with the phone **UNLOCKED first** so the Apple Watch doesn't pull the alert to the wrist; then, if you want to confirm locked-phone audio, test locked with the Watch removed. The Watch remains a real-world factor for everyday locked-phone use.
+**Device validation (done 2026-06-15):** three staggered reminders (My Day → To-Do → My Day, a minute apart) all fired with sound; a locked-phone test (Watch off) fired with **sound + banner** and tapping it routed to the correct screen/pending tile. Diagnostic learned along the way: a To-Do that won't fire is almost always a **stale due date** (e.g. set to yesterday) or **no reminder chip attached** — `scheduleReminders` bails on zero reminders and the future-guard drops past dates. Not a code bug. The Apple Watch remains a real-world factor for everyday locked-phone use (it pulls the alert to the wrist).
 
 **Stale-fact note (still true, carried forward):** `scheduleReminders` ignores the `recurring` field — it ALWAYS builds a one-shot DATE trigger from `dueDate`+`dueTime`. A To-Do "daily" task fires ONCE on its date and does not truly repeat (on completion it reschedules to a now-past date → dropped by the future-guard). To-Do's `recurring` (daily/weekly/monthly/yearly) drives **only the Week-view display**, never notifications. (Tracked for a design decision in `parked-items.md`.)
 
@@ -57,7 +59,7 @@ Type-check clean except the known pre-existing `settings.tsx:165` error.
 - **To-Do schedules a reminder ONLY if:** `taskType !== 'background'` AND `dueDate` set AND `reminders.length > 0` AND fire time is still in the future (`scheduleReminders`, `todo.tsx:346`). Due date + time alone schedule nothing — there must be a reminder entry.
 - To-Do reminder entry is one-tap presets (`REMINDER_PRESETS`); "At time" is amount 0 → fires at the due time. **Add-path To-Do DATE delivery CONFIRMED on device this session.**
 - **`updateTask` cancels + reschedules** (cancel + reschedule, mirroring the Add path). **COMMITTED.** `deleteTask` still does NOT cancel — a deleted task can still fire (UNFIXED, parked).
-- **Notification sound:** content needs an explicit `sound` field; the handler's `shouldPlaySound: true` alone is not enough. `sound: 'default'` now set in `todo.tsx` (`scheduleReminders`, `scheduleBackgroundReminder`) and `myday.tsx` (`scheduleAllNotifications`); Timer already used `sound: true`. **UNCOMMITTED (this session).**
+- **Notification sound:** content needs an explicit `sound` field; the handler's `shouldPlaySound: true` alone is not enough. `sound: 'default'` set in `todo.tsx` (`scheduleReminders`, `scheduleBackgroundReminder`) and `myday.tsx` (`scheduleAllNotifications`); Timer already used `sound: true`. **COMMITTED and DEVICE-VALIDATED 2026-06-15** (My Day, To-Do Add + Edit, locked-phone sound + banner, screen-level tap-routing).
 - To-Do uses a one-shot **DATE** trigger; My Day and the To-Do "Background Tasks" reminder use a repeating **DAILY** trigger (`hour`/`minute`, no date).
 - My Day's `scheduleAllNotifications` (`myday.tsx:127`) runs on screen load and on every meal/med save; it cancels only `data.source === 'myday'` (committed fix) and reschedules from storage, so To-Do/Timer are untouched.
 - My Day Meals and Meds are the **same `ScheduleItem` type** (`id/label/hour/minute/completed`) and are already scheduled together (`myday.tsx:143`, `allItems = [...meals, ...medsList]`). They differ only by separate state, separate storage keys (`my_schedule` / `my_meds`), separate sections, and an `editingMeds` flag.
@@ -76,16 +78,18 @@ iOS caps an app at **64 pending scheduled local notifications**; beyond that it 
 
 ## Active next step
 
-- **Commit + build the sound fix, then validate on device** (phone unlocked first). That's the only open thread from this session.
+- **My Day & Pets Day restructure** — the next live goal (Patrick named it; not yet scoped). Related parked item: merge My Day's Meals + Meds into one card-styled list (tiles like the To-Do cards), with cautions on naming (avoid "Tasks"), the `my_schedule` + `my_meds` storage-key migration, and the food-specific log wording. Pets Day = `mollie.tsx` (no notification code today). Read the relevant code and scope it WITH Patrick before any edits — nothing decided yet.
 
 Everything else — `deleteTask` not cancelling, the Timer cancel bug, the To-Do recurring/daily design decision, the merge-Medication redesign, To-Do due-time display, My Day time formatting, tap-routing, the `settings.tsx:165` TS error, the dormant Planner — now lives in **`docs/parked-items.md`** (the eventual-work backlog). Pull from there when one becomes the live goal.
 
-## Files touched (this session — 2026-06-15)
+## Files touched (sound fix — committed earlier 2026-06-15)
 
-- `app/todo.tsx` — added `sound: 'default'` to content in `scheduleReminders` and `scheduleBackgroundReminder`. **UNCOMMITTED.** (`updateTask` cancel+reschedule from the prior session is COMMITTED.)
-- `app/myday.tsx` — added `sound: 'default'` to content in `scheduleAllNotifications`. **UNCOMMITTED.**
-- `docs/parked-items.md` — NEW. Eventual-work backlog (bugs / design / UI polish), moved out of this note.
-- `docs/handoff.md` — this note, refreshed for the sound-fix session.
+- `app/todo.tsx` — `sound: 'default'` in `scheduleReminders` and `scheduleBackgroundReminder`. **COMMITTED + device-validated.**
+- `app/myday.tsx` — `sound: 'default'` in `scheduleAllNotifications`. **COMMITTED + device-validated.**
+
+## This session (2026-06-15, later — device validation only)
+
+- No app code changed. Verified the sound fix and edit path on device (see above) and refreshed `docs/handoff.md`. Nothing to commit except this doc.
 
 ---
 
@@ -95,6 +99,6 @@ You're picking up the "Remember When" app (Expo / React Native, runs on my iPhon
 
 1. The `elderlyassistant` folder must be connected via Cowork's folder picker — if you can't see it, give me the folder-request button; don't ask me to upload files.
 2. Open and read `docs/handoff.md` first (full state, standing rules, next step), then skim `docs/parked-items.md` (the eventual-work backlog) so you know what's deferred.
-3. First thing, ask me whether the notification-sound fix has been committed/built yet (top box of the handoff).
+3. The notification work is DONE and device-validated — don't re-open it. Today's goal is the **My Day & Pets Day restructure** (see Active next step). Read `app/myday.tsx` and `app/mollie.tsx` before proposing anything.
 
-Then tell me how heavy today's goal looks and wait for my "go." I'll give you the one goal.
+Then tell me how heavy the goal looks and wait for my "go." I'll give you the specifics — nothing is scoped yet.
