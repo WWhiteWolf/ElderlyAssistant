@@ -2,9 +2,11 @@
 
 ## FIRST THING TO ASK PATRICK
 
-FOUR edits from the 2026-06-15 (session 2) work are **DONE in the files but NOT yet committed or device-tested** — Patrick will commit + build + load via TestFlight and test on the phone. Confirm that happened (the previous session's work should already be committed at the start of the next one). The four edits: **(1) To-Do tiles now show the due time; (2) Pets Day heading renamed "Feeding Schedule" → "Routine"; (3) `deleteTask` now cancels its reminders; (4) `settings.tsx:165` `pin` typed as `string`.** The named goal for next session is already scoped and ready to build: **Pets Day routine reminders (Snooze like My Day)** — full plan in "Active next step" below.
+The session-2 edits are now **COMMITTED** (2026-06-15, commit `d7b4e81`) but **still awaiting device test** — Patrick will build + load via TestFlight and test on the phone. Confirm that device test happened. The committed edits: **(1) To-Do tiles now show the due time; (2) Pets Day heading renamed "Feeding Schedule" → "Routine"; (3) `deleteTask` now cancels its reminders; (4) `settings.tsx:165` `pin` typed as `pin?: string`.** The named goal for next session is already scoped and ready to build: **Pets Day routine reminders (Snooze like My Day)** — full plan in "Active next step" below.
 
 Note on process (Patrick, 2026-06-15): one-change-at-a-time is the default, but for very small, low-risk edits it's fine to group them and still stop for review. Keep strict one-at-a-time for anything bigger or with logic changes.
+
+**Git/sandbox note (session 3):** never run `git status` (or any index-refreshing git command) from the assistant's Linux sandbox — it creates `.git/index.lock` and can't clean it up, which then BLOCKS Patrick's commits ("Another git process seems to be running…"). Use only read-only commands that don't touch the index: `git show :path`, `git log`, `git diff`, plus `sed`/`ls`. If a lock does appear, Patrick clears it with `rm -f .git/index.lock` (or by closing & reopening the folder in Cowork, which also worked).
 
 ## To the next session: what I need to be fresh and synced (read this first)
 
@@ -37,14 +39,18 @@ Remember When (elderlyassistant) — Expo / React Native app in `Projects/elderl
 - "Set up Push Notifications?" during build → always **No** (app uses only LOCAL notifications, no remote push/APNs).
 - Local testing: dev build into iOS Simulator via `npm run ios`. Metro picks up edits live.
 
-## Latest session — 2026-06-15 (session 2: To-Do due-time, Pets rename, 2 bug fixes)
+## Latest session — 2026-06-15 (session 3: finish settings.tsx:165, commit session-2 work)
 
-Four edits, scoped with Patrick then made. **NOT yet committed or device-tested** (Patrick handles that). Pets Day reminders were scoped but deferred to next session (Patrick's call — clean break, edits the shared router).
+Short session. The named goal was `deleteTask` + `settings.tsx:165` — both were already written in session 2 but uncommitted. Found that session 2's `settings.tsx:165` "fix" (`pin: string`) was itself a **type error** (TS2322): `Alert.prompt`'s `onPress` value is `string | undefined`, so `string` is too narrow, and the failing pre-commit type check was what blocked the commit. Corrected to **`onPress: async (pin?: string)`** (one-char change, agreed with Patrick), `tsc` clean. Also hit a `.git/index.lock` snag (caused by the assistant running `git status` in its sandbox — see the Git/sandbox note up top); Patrick cleared it by closing/reopening the folder, then committed all session-2 work as **`d7b4e81`**. Working tree clean. Still awaiting device test. Pets Day reminders remain the next goal, untouched.
+
+### Prior session — 2026-06-15 (session 2: To-Do due-time, Pets rename, 2 bug fixes)
+
+Four edits, scoped with Patrick then made. **Committed in session 3 (`d7b4e81`); awaiting device test.** Pets Day reminders were scoped but deferred to next session (Patrick's call — clean break, edits the shared router).
 
 - **To-Do (`app/todo.tsx`) — show the due time on tiles.** Both render spots (main list line 515, Week-ahead line 554) were identical `Due: {task.dueDate}`; changed via one replace-all to `Due: {task.dueDate}{task.dueTime ? ' at ' + task.dueTime : ''}`. Shows the time exactly as the user typed it (the field at line 758 is free text), matching the existing reminder-body pattern at line 365. No time set → still just `Due: {date}`.
 - **Pets Day (`app/mollie.tsx`) — heading rename.** Line 267 `sectionTitle` text changed from "Feeding Schedule" to "Routine". Text only, no logic. (Patrick plans to use this list for walks + other routines, not just feeding — keep that in mind for the reminder wording, which is generic.)
 - **To-Do (`app/todo.tsx`) — `deleteTask` cancels reminders.** Added `cancelReminders(id);` in the Delete handler (~line 239), mirroring `completeTask` (line 250). Clears the parked "deleteTask doesn't cancel reminders" bug.
-- **Settings (`app/settings.tsx:165`) — TS fix.** `onPress: async (pin)` → `(pin: string)`. Clears the parked implicit-`any` item. (NOTE: the old `settings.tsx:165` "only known TS error" reference elsewhere in this doc is now resolved.)
+- **Settings (`app/settings.tsx:165`) — TS fix.** `onPress: async (pin)` → `(pin?: string)`. (Session 2 first tried `pin: string`, which itself caused TS2322 since `Alert.prompt`'s callback value is `string | undefined`; session 3 corrected it to the optional `pin?: string`.) Clears the parked implicit-`any` item. (NOTE: the old `settings.tsx:165` "only known TS error" reference elsewhere in this doc is now resolved.)
 
 ### Prior session — 2026-06-15 (session 1: My Day & Pets Day restructure)
 
