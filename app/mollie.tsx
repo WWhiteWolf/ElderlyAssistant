@@ -1,4 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
+import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -59,7 +61,23 @@ export default function PetsScreen() {
     const [editWhat, setEditWhat] = useState('');
 
     useEffect(() => {
-        loadData();
+        const setup = async () => {
+            const { status } = await Notifications.requestPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Permission Needed', 'Please enable notifications in settings.');
+            }
+            Notifications.setNotificationHandler({
+                handleNotification: async () => ({
+                    shouldShowAlert: true,
+                    shouldPlaySound: true,
+                    shouldSetBadge: false,
+                    shouldShowBanner: true,
+                    shouldShowList: true,
+                }),
+            });
+            await loadData();
+        };
+        setup();
     }, []);
 
     const loadData = async () => {
@@ -78,6 +96,7 @@ export default function PetsScreen() {
             } else {
                 setFeeds(parsedFeeds);
             }
+            await scheduleAllPetsNotifications();
         } catch (e) {
             console.error(e);
         }
@@ -86,6 +105,42 @@ export default function PetsScreen() {
     const saveData = async (f: FeedItem[], h: HistoryEntry[]) => {
         await AsyncStorage.setItem('pets_feeds', JSON.stringify(f));
         await AsyncStorage.setItem('pets_history', JSON.stringify(h));
+        await scheduleAllPetsNotifications();
+    };
+
+    const scheduleAllPetsNotifications = async () => {
+        // Cancel only Pets Day's own notifications (tagged source: 'pets'),
+        // leaving My Day, To-Do and Timer reminders untouched.
+        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+        for (const notif of scheduled) {
+            if (notif.content.data?.source === 'pets') {
+                await Notifications.cancelScheduledNotificationAsync(notif.identifier);
+            }
+        }
+        // Read the saved feeds list from storage (source of truth) so we never
+        // schedule from a stale in-memory copy of state.
+        const saved = await AsyncStorage.getItem('pets_feeds');
+        const items: FeedItem[] = saved ? JSON.parse(saved) : INITIAL_FEEDS;
+        for (const item of items) {
+            if (!item.completed) {
+                await Notifications.scheduleNotificationAsync({
+                    content: {
+                        title: 'Pets Routine',
+                        body: `Time for ${item.label}!`,
+                        // Carry the item id + label so a Snooze button tap can
+                        // reschedule just this item; category adds the buttons.
+                        data: { source: 'pets', itemId: item.id, label: item.label },
+                        categoryIdentifier: 'petssnooze',
+                        sound: 'default',
+                    },
+                    trigger: {
+                        type: SchedulableTriggerInputTypes.DAILY,
+                        hour: item.hour,
+                        minute: item.minute,
+                    } as Notifications.DailyTriggerInput,
+                });
+            }
+        }
     };
 
     const format12Hour = (h: number, m: number) => {

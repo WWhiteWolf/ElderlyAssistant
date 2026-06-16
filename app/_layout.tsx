@@ -16,6 +16,11 @@ export default function RootLayout() {
       { identifier: 'snooze30', buttonTitle: 'Snooze 30 min' },
       { identifier: 'snooze60', buttonTitle: 'Snooze 60 min' },
     ]);
+    Notifications.setNotificationCategoryAsync('petssnooze', [
+      { identifier: 'snooze15', buttonTitle: 'Snooze 15 min' },
+      { identifier: 'snooze30', buttonTitle: 'Snooze 30 min' },
+      { identifier: 'snooze60', buttonTitle: 'Snooze 60 min' },
+    ]);
   }, []);
 
   useEffect(() => {
@@ -35,14 +40,17 @@ export default function RootLayout() {
     if (action === 'snooze15' || action === 'snooze30' || action === 'snooze60') {
       const minutes = action === 'snooze15' ? 15 : action === 'snooze30' ? 30 : 60;
       const label = (data?.label as string) || 'your reminder';
+      const source = data?.source as string | undefined;
+      const isPets = source === 'pets' || source === 'petssnooze';
       Notifications.scheduleNotificationAsync({
         content: {
-          title: 'Daily Routine',
+          title: isPets ? 'Pets Routine' : 'Daily Routine',
           body: `Time for ${label}!`,
-          // Tag as 'mydaysnooze' (not 'myday') so My Day's reschedule-on-load,
-          // which only cancels source === 'myday', won't wipe this snooze.
-          data: { source: 'mydaysnooze', itemId: data?.itemId, label },
-          categoryIdentifier: 'mydaysnooze',
+          // Tag with the snooze source (not 'myday'/'pets') so each screen's
+          // reschedule-on-load, which only cancels its own base source, won't
+          // wipe this snooze.
+          data: { source: isPets ? 'petssnooze' : 'mydaysnooze', itemId: data?.itemId, label },
+          categoryIdentifier: isPets ? 'petssnooze' : 'mydaysnooze',
         },
         trigger: {
           type: SchedulableTriggerInputTypes.TIME_INTERVAL,
@@ -60,6 +68,8 @@ export default function RootLayout() {
       router.push('/todo');
     } else if (source === 'myday' || source === 'mydaysnooze') {
       router.push('/myday');
+    } else if (source === 'pets' || source === 'petssnooze') {
+      router.push('/mollie');
     }
   }, [response]);
 
