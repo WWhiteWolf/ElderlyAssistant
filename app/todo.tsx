@@ -512,7 +512,7 @@ export default function TodoScreen() {
                                     <View style={styles.taskBottomRow}>
                                         <Text style={[styles.priorityLabel, { color: PRIORITY_COLORS[task.priority] }]}>{task.priority}</Text>
                                         <Text style={[styles.priorityLabel, { color: getCategoryColor(task.categoryId) }]}>{getCategoryName(task.categoryId)}</Text>
-                                        {task.dueDate ? <Text style={styles.dueDateText}>Due: {task.dueDate}</Text> : null}
+                                        {task.dueDate ? <Text style={styles.dueDateText}>Due: {task.dueDate}{task.dueTime ? ' at ' + task.dueTime : ''}</Text> : null}
                                         {task.recurring !== 'none' ? <Text style={styles.recurringText}>🔁 {task.recurring}</Text> : null}
                                     </View>
                                 </View>
@@ -551,7 +551,7 @@ export default function TodoScreen() {
                                     <View style={styles.taskBottomRow}>
                                         <Text style={[styles.priorityLabel, { color: PRIORITY_COLORS[task.priority] }]}>{task.priority}</Text>
                                         <Text style={[styles.priorityLabel, { color: getCategoryColor(task.categoryId) }]}>{getCategoryName(task.categoryId)}</Text>
-                                        {task.dueDate ? <Text style={styles.dueDateText}>Due: {task.dueDate}</Text> : null}
+                                        {task.dueDate ? <Text style={styles.dueDateText}>Due: {task.dueDate}{task.dueTime ? ' at ' + task.dueTime : ''}</Text> : null}
                                         {task.recurring !== 'none' ? <Text style={styles.recurringText}>🔁 {task.recurring}</Text> : null}
                                     </View>
 

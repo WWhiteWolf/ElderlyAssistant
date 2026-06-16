@@ -20,10 +20,10 @@ Last updated: 2026-06-15
 
 ## UI polish
 
-- **To-Do tiles should show the due TIME** (`app/todo.tsx:513` and `:552`). Currently show `Due: {dueDate}` only; `dueTime` is stored but not displayed. Add it, e.g. "Due: 06/14/26 at 7:58 PM". Two render spots: Week-ahead view + main list.
 - **Project Planner schedules nothing** (`app/planner.tsx`). Has reminder UI/fields but wires up no notifications. Dormant, low priority.
 
 ## Done (recently cleared from this list)
 
+- **To-Do tiles show the due TIME** — DONE 2026-06-15 (session 2). Both render spots (`app/todo.tsx` lines 515 + 554) now append `' at ' + task.dueTime` when set, shown exactly as typed (free-text field), matching the reminder body. Awaiting Patrick's commit + device test.
 - **Merge My Day Meals + Meds into one card-styled list** — DONE 2026-06-15. Now one "Routine" list of Entries under `my_routine` (migrated from `my_schedule` + `my_meds`), single common Log, "+ Add Entry" in header.
 - **My Day tile time formatting (AM/PM)** — DONE 2026-06-15. `format12Hour` now outputs real 12-hour AM/PM on tiles, and the time picker is Hour(1–12)/Minute/AM-PM on both My Day and Pets Day.

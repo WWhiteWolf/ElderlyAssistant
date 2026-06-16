@@ -264,7 +264,7 @@ export default function PetsScreen() {
             <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }} scrollEventThrottle={16} directionalLockEnabled={true}>
 
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Feeding Schedule</Text>
+                    <Text style={styles.sectionTitle}>Routine</Text>
                     <Text style={styles.hintText}>Tap to select for reorder · Edit to change · Swipe to delete</Text>
                     {feeds.map(item => (
                         <Swipeable
