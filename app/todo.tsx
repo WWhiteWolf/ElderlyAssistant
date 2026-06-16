@@ -236,6 +236,7 @@ export default function TodoScreen() {
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Delete', style: 'destructive', onPress: () => {
+                    cancelReminders(id);
                     saveTasks(tasks.filter(t => t.id !== id));
                 },
             },

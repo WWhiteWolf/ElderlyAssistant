@@ -162,7 +162,7 @@ export default function SettingsScreen() {
                             [
                                 { text: 'Cancel', style: 'cancel' },
                                 {
-                                    text: 'Reset', style: 'destructive', onPress: async (pin) => {
+                                    text: 'Reset', style: 'destructive', onPress: async (pin?: string) => {
                                         if (pin === savedPin) {
                                             await AsyncStorage.clear();
                                             router.replace('/setup-pin');
