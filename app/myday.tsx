@@ -113,13 +113,21 @@ export default function MyDayScreen() {
             const savedHist = await AsyncStorage.getItem('my_history');
             if (savedHist) setHistory(JSON.parse(savedHist));
             const parsedRoutine = await getMigratedRoutine();
+            const savedCoffee = await AsyncStorage.getItem('my_coffee');
+            const savedWater = await AsyncStorage.getItem('my_water');
             if (savedDate !== today) {
                 const resetRoutine = parsedRoutine.map((s: ScheduleItem) => ({ ...s, completed: false }));
                 setRoutine(resetRoutine);
+                setCoffeeCount(0);
+                setWaterCount(0);
                 await AsyncStorage.setItem('my_last_date', today);
+                await AsyncStorage.setItem('my_coffee', '0');
+                await AsyncStorage.setItem('my_water', '0');
                 await saveData(resetRoutine, savedHist ? JSON.parse(savedHist) : []);
             } else {
                 setRoutine(parsedRoutine);
+                setCoffeeCount(savedCoffee ? parseInt(savedCoffee, 10) : 0);
+                setWaterCount(savedWater ? parseInt(savedWater, 10) : 0);
             }
             await scheduleAllNotifications();
         } catch (e) {
@@ -242,6 +250,7 @@ export default function MyDayScreen() {
         const updatedHist = [newEntry, ...history].slice(0, 50);
         const newCount = coffeeCount + 1;
         setCoffeeCount(newCount);
+        AsyncStorage.setItem('my_coffee', String(newCount));
         setHistory(updatedHist);
         saveData(routine, updatedHist);
         setShowCoffeeModal(false);
@@ -249,7 +258,11 @@ export default function MyDayScreen() {
     };
 
     const decrementCoffee = () => {
-        if (coffeeCount > 0) setCoffeeCount(coffeeCount - 1);
+        if (coffeeCount > 0) {
+            const newCount = coffeeCount - 1;
+            setCoffeeCount(newCount);
+            AsyncStorage.setItem('my_coffee', String(newCount));
+        }
     };
 
     const confirmWater = () => {
@@ -263,7 +276,9 @@ export default function MyDayScreen() {
             note: '',
         };
         const updatedHist = [newEntry, ...history].slice(0, 50);
-        setWaterCount(waterCount + 1);
+        const newCount = waterCount + 1;
+        setWaterCount(newCount);
+        AsyncStorage.setItem('my_water', String(newCount));
         setHistory(updatedHist);
         saveData(routine, updatedHist);
         setShowWaterModal(false);
@@ -513,7 +528,11 @@ export default function MyDayScreen() {
                     <Text style={styles.counterTitle}>Water</Text>
                     <View style={styles.counterControls}>
                         <TouchableOpacity style={styles.minusBtn} onPress={() => {
-                            if (waterCount > 0) setWaterCount(waterCount - 1);
+                            if (waterCount > 0) {
+                                const newCount = waterCount - 1;
+                                setWaterCount(newCount);
+                                AsyncStorage.setItem('my_water', String(newCount));
+                            }
                         }}>
                             <Text style={styles.counterBtnText}>-</Text>
                         </TouchableOpacity>

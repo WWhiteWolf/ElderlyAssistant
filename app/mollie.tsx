@@ -88,13 +88,17 @@ export default function PetsScreen() {
             if (savedHist) setHistory(JSON.parse(savedHist));
             const savedFeeds = await AsyncStorage.getItem('pets_feeds');
             const parsedFeeds: FeedItem[] = savedFeeds ? JSON.parse(savedFeeds) : INITIAL_FEEDS;
+            const savedTreats = await AsyncStorage.getItem('pets_treats');
             if (savedDate !== today) {
                 const resetFeeds = parsedFeeds.map(f => ({ ...f, completed: false }));
                 setFeeds(resetFeeds);
+                setTreatCount(0);
                 await AsyncStorage.setItem('pets_last_date', today);
+                await AsyncStorage.setItem('pets_treats', '0');
                 await saveData(resetFeeds, savedHist ? JSON.parse(savedHist) : []);
             } else {
                 setFeeds(parsedFeeds);
+                setTreatCount(savedTreats ? parseInt(savedTreats, 10) : 0);
             }
             await scheduleAllPetsNotifications();
         } catch (e) {
@@ -191,7 +195,9 @@ export default function PetsScreen() {
             note: '',
         };
         const updatedHist = [newEntry, ...history].slice(0, 50);
-        setTreatCount(treatCount + 1);
+        const newCount = treatCount + 1;
+        setTreatCount(newCount);
+        AsyncStorage.setItem('pets_treats', String(newCount));
         setHistory(updatedHist);
         saveData(feeds, updatedHist);
         setShowTreatModal(false);
@@ -430,7 +436,11 @@ export default function PetsScreen() {
                     <Text style={styles.counterTitle}>Treats</Text>
                     <View style={styles.counterControls}>
                         <TouchableOpacity style={styles.minusBtn} onPress={() => {
-                            if (treatCount > 0) setTreatCount(treatCount - 1);
+                            if (treatCount > 0) {
+                                const newCount = treatCount - 1;
+                                setTreatCount(newCount);
+                                AsyncStorage.setItem('pets_treats', String(newCount));
+                            }
                         }}>
                             <Text style={styles.counterBtnText}>-</Text>
                         </TouchableOpacity>
