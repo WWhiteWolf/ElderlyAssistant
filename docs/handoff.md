@@ -2,7 +2,7 @@
 
 ## FIRST THING TO ASK PATRICK
 
-The session-2 edits are now **COMMITTED** (2026-06-15, commit `d7b4e81`) but **still awaiting device test** — Patrick will build + load via TestFlight and test on the phone. Confirm that device test happened. The committed edits: **(1) To-Do tiles now show the due time; (2) Pets Day heading renamed "Feeding Schedule" → "Routine"; (3) `deleteTask` now cancels its reminders; (4) `settings.tsx:165` `pin` typed as `pin?: string`.** The named goal for next session is already scoped and ready to build: **Pets Day routine reminders (Snooze like My Day)** — full plan in "Active next step" below.
+Everything through session 4 is **COMMITTED and DEVICE-VALIDATED on build 18** (2026-06-17): Pets Day routine reminders (fire on the phone, Snooze works), My Day + Pets Day counter persistence (Coffee/Water/Treats hold through page turns and reset daily), AND the four session-2 edits (To-Do tiles show the due time, Pets heading reads "Routine", `deleteTask` cancels reminders, `settings.tsx:165` `pin?: string`). Nothing is left awaiting a device test. There is **no pre-scoped goal** — ask Patrick for the next one and pull candidates from `docs/parked-items.md` (shortlist in "Active next step" below).
 
 Note on process (Patrick, 2026-06-15): one-change-at-a-time is the default, but for very small, low-risk edits it's fine to group them and still stop for review. Keep strict one-at-a-time for anything bigger or with logic changes.
 
@@ -39,7 +39,15 @@ Remember When (elderlyassistant) — Expo / React Native app in `Projects/elderl
 - "Set up Push Notifications?" during build → always **No** (app uses only LOCAL notifications, no remote push/APNs).
 - Local testing: dev build into iOS Simulator via `npm run ios`. Metro picks up edits live.
 
-## Latest session — 2026-06-15 (session 3: finish settings.tsx:165, commit session-2 work)
+## Latest session — 2026-06-17 (session 4: Pets Day reminders + counter persistence)
+
+Two goals, both built one step at a time and **device-validated on build 18** (Patrick committed, built via EAS, loaded through TestFlight, tested on the phone — Pets reminders fire, Snooze works, counters hold). The four session-2 edits were also confirmed good on the same build.
+
+- **Pets Day routine reminders (`app/mollie.tsx` + `app/_layout.tsx`).** Pets Day had NO notification code; now it mirrors My Day. `mollie.tsx`: `expo-notifications` imports, permission + handler on mount, `scheduleAllPetsNotifications` (cancels only `source: 'pets'`, reads `pets_feeds` from storage, schedules a repeating DAILY trigger per incomplete feed — title "Pets Routine", body `Time for ${label}!`, `petssnooze` category, `sound: 'default'`), called at the end of `loadData` and inside `saveData`. `_layout.tsx`: registered a second `petssnooze` category; the shared snooze handler now branches on `data.source` (pets → "Pets Routine" / `petssnooze`); tap-routing adds `pets`/`petssnooze` → `/mollie`.
+- **Counter persistence (`app/myday.tsx` + `app/mollie.tsx`).** Coffee/Water (My Day) and Treats (Pets Day) were in-memory only and reset to 0 on every page return. Now each is stored in AsyncStorage (`my_coffee`, `my_water`, `pets_treats`), loaded in `loadData`, reset to 0 on the existing daily-rollover check, and saved on every + (log) and − (button). Mirrors how the routine/feeds lists already reset daily.
+- `tsc --noEmit` ran clean after each step.
+
+### Prior session — 2026-06-15 (session 3: finish settings.tsx:165, commit session-2 work)
 
 Short session. The named goal was `deleteTask` + `settings.tsx:165` — both were already written in session 2 but uncommitted. Found that session 2's `settings.tsx:165` "fix" (`pin: string`) was itself a **type error** (TS2322): `Alert.prompt`'s `onPress` value is `string | undefined`, so `string` is too narrow, and the failing pre-commit type check was what blocked the commit. Corrected to **`onPress: async (pin?: string)`** (one-char change, agreed with Patrick), `tsc` clean. Also hit a `.git/index.lock` snag (caused by the assistant running `git status` in its sandbox — see the Git/sandbox note up top); Patrick cleared it by closing/reopening the folder, then committed all session-2 work as **`d7b4e81`**. Working tree clean. Still awaiting device test. Pets Day reminders remain the next goal, untouched.
 
@@ -75,8 +83,8 @@ Restructured My Day and Pets Day so each is one continuous, always-visible list 
 
 ## Verified code facts (don't re-derive)
 
-- **My Day list is now `routine`** (single `ScheduleItem[]`), persisted under **`my_routine`**, reset `completed:false` daily. `scheduleAllNotifications` reads `my_routine`, cancels only `data.source === 'myday'`, and schedules a repeating **DAILY** trigger per incomplete item with `sound: 'default'`. (Sound fix from earlier 2026-06-15 is committed + device-validated.)
-- **Pets Day is `feeds`** (single `FeedItem[]`), persisted under **`pets_feeds`**, reset daily. No notification code at all. Treats counter is state-only (like My Day's Coffee/Water — not persisted), but logging a Treat writes a history entry.
+- **My Day list is now `routine`** (single `ScheduleItem[]`), persisted under **`my_routine`**, reset `completed:false` daily. `scheduleAllNotifications` reads `my_routine`, cancels only `data.source === 'myday'`, and schedules a repeating **DAILY** trigger per incomplete item with `sound: 'default'`. (Sound fix from earlier 2026-06-15 is committed + device-validated.) Coffee/Water counters are **now persisted** under `my_coffee` / `my_water`, reset daily (session 4).
+- **Pets Day is `feeds`** (single `FeedItem[]`), persisted under **`pets_feeds`**, reset daily. **Now HAS notifications** (session 4): `scheduleAllPetsNotifications` cancels only `source: 'pets'`, reads `pets_feeds` from storage, schedules a repeating DAILY trigger per incomplete feed (title "Pets Routine", body `Time for ${label}!`, `petssnooze` category, `sound: 'default'`); permission + handler requested on mount. Treats counter is **now persisted** under `pets_treats`, reset daily; logging a Treat still writes a history entry.
 - **Both screens' time picker** stores 24h internally; the UI shows/edit in AM/PM. `format12Hour` (both files) outputs real 12-hour AM/PM.
 - **To-Do (`todo.tsx`) is unchanged this session.** It schedules a one-shot DATE reminder ONLY if `taskType !== 'background'` AND `dueDate` set AND `reminders.length > 0` AND fire time is still future. `updateTask` cancels+reschedules (committed); `deleteTask` still does NOT cancel (parked). `recurring` drives only the Week-view display, never notifications (parked).
 - iOS caps an app at **64 pending scheduled local notifications** (a DAILY/repeating trigger counts as ONE). Keep this in mind if Pets Day notifications get added.
@@ -86,32 +94,16 @@ Restructured My Day and Pets Day so each is one continuous, always-visible list 
 - **Don't type into Simulator text fields with the assistant's tools** — triggers iOS accent popups and mangles input. Have Patrick type directly.
 - **Assistant swipe/tap gestures on the Simulator are unreliable.** Patrick does direct manipulation/typing on the device; Claude reasons/guides, reads code, does menu-level actions.
 
-## Active next step (the named goal for next session) — Pets Day routine reminders
+## Active next step (the named goal for next session)
 
-Add daily notifications to Pets Day, mirroring My Day exactly, WITH Snooze. Scoped + agreed with Patrick on 2026-06-15; verified against the code. Decisions: title **"Pets Routine"**, body **`Time for ${label}!`** (item's own name — generic, since the list holds walks/routines not just feeding), Snooze buttons like My Day (15/30/60). Keep internal names as-is (`pets_feeds`, `FeedItem`) — Patrick declined a rename; storage-key rename would risk saved data.
+**Nothing is pre-scoped** — the Pets Day reminders goal is done and device-validated (session 4). At the next session Patrick names the goal; pull candidates from `docs/parked-items.md`. Open ones there: the possible **Timer-cancel bug** (unconfirmed — `cancelTimer` may use the wrong identifier; needs a device check), **To-Do "recurring" never schedules repeating notifications** (a "Daily" To-Do fires once then drops — tied to the daily-reminders design decision), the orphaned **`pets_data` cleanup**, **item-level tap-routing** (notifications open the screen but not the specific item), and **Project Planner reminders** (UI present, wires up nothing — dormant).
 
-**Build touches TWO files** (Snooze is handled centrally in `_layout.tsx`):
+## Files touched this session (session 4 — 2026-06-17)
 
-`app/mollie.tsx` (currently imports NO notification code — verified):
-- Add `import * as Notifications from 'expo-notifications';` and `import { SchedulableTriggerInputTypes } from 'expo-notifications';`.
-- Request permission on mount (mirror `myday.tsx` lines 77–80: `requestPermissionsAsync`, alert if not granted).
-- Add `scheduleAllPetsNotifications` mirroring `myday.tsx` `scheduleAllNotifications` (lines 136–168): cancel only `data?.source === 'pets'`, read `pets_feeds` from storage (source of truth), and for each feed with `completed === false` schedule a **DAILY** trigger (`hour`/`minute`) with content `{ title: 'Pets Routine', body: \`Time for ${item.label}!\`, data: { source: 'pets', itemId: item.id, label: item.label }, categoryIdentifier: 'petssnooze', sound: 'default' }`.
-- Call `scheduleAllPetsNotifications()` after every feeds mutation: end of `loadData`, `confirmLog`, add-entry, edit-time save, delete, and the daily reset. (My Day calls its version in the same spots.)
-
-`app/_layout.tsx`:
-- Register a SECOND category `petssnooze` in the existing `setNotificationCategoryAsync` effect (same snooze15/30/60 buttons as `mydaysnooze`).
-- In the Snooze handler (lines 35–53): the action ids `snooze15/30/60` are shared, so disambiguate by the incoming `data?.source`. If source is `'pets'` or `'petssnooze'`, reschedule the TIME_INTERVAL snooze tagged `source: 'petssnooze'`, `categoryIdentifier: 'petssnooze'`, `title: 'Pets Routine'`; otherwise keep the existing `mydaysnooze`/'Daily Routine' path.
-- Routing (lines 58–63): add `else if (source === 'pets' || source === 'petssnooze') router.push('/mollie');`.
-
-Notes: ~2 feeds, so the 64-notification iOS cap is a non-issue. Tap-routing lands on the SCREEN only (the existing parked limitation), not the specific item. After this, pull the next from `docs/parked-items.md`.
-
-## Files touched this session (session 2)
-
-- `app/todo.tsx` — (a) tiles now append the due time when set (lines 515 + 554); (b) `deleteTask` now calls `cancelReminders(id)` (~line 239). **Edited, NOT yet committed/device-tested.**
-- `app/mollie.tsx` — `sectionTitle` text "Feeding Schedule" → "Routine" (line 267). **Edited, NOT yet committed/device-tested.**
-- `app/settings.tsx` — line 165 `pin` typed as `string`. **Edited, NOT yet committed/device-tested.**
-- `docs/parked-items.md` — moved To-Do due-time, `deleteTask` cancel, and the `settings.tsx:165` TS item to Done.
-- `docs/handoff.md` — refreshed at session close (this version). **Patrick commits.**
+- `app/mollie.tsx` — added Pets Day notifications (imports, permission + handler on mount, `scheduleAllPetsNotifications`, wired into `loadData` + `saveData`) AND Treats counter persistence under `pets_treats` (load in `loadData`, reset daily, save on every +/−). **Committed + device-validated on build 18.**
+- `app/_layout.tsx` — `petssnooze` category; snooze handler branches by `data.source`; tap-routing `pets`/`petssnooze` → `/mollie`. **Committed + device-validated.**
+- `app/myday.tsx` — Coffee/Water counter persistence under `my_coffee` / `my_water` (load in `loadData`, reset daily, save on every +/−). **Committed + device-validated.**
+- `docs/handoff.md` + `docs/parked-items.md` — refreshed at session close (this version). **Patrick commits.**
 
 ---
 
@@ -121,6 +113,6 @@ You're picking up the "Remember When" app (Expo / React Native, runs on my iPhon
 
 1. The `elderlyassistant` folder must be connected via Cowork's folder picker — if you can't see it, give me the folder-request button; don't ask me to upload files.
 2. Open and read `docs/handoff.md` first (full state, standing rules, next step), then skim `docs/parked-items.md` (the eventual-work backlog) so you know what's deferred.
-3. Recent work is DONE: the My Day + Pets Day restructure (committed + device-tested, works good), plus four session-2 edits (To-Do due-time, Pets "Routine" rename, `deleteTask` cancel, `settings.tsx:165` type) — edited, awaiting Patrick's commit + device test. Confirm those four are committed + device-tested. The named next goal is **Pets Day routine reminders (Snooze like My Day)** — full build plan is in "Active next step." Don't re-open finished work.
+3. Recent work is DONE and device-validated on build 18 (2026-06-17): the My Day + Pets Day restructure, the four session-2 edits (To-Do due-time, Pets "Routine" rename, `deleteTask` cancel, `settings.tsx:165` type), **Pets Day routine reminders with Snooze**, and **counter persistence** (Coffee/Water/Treats). Nothing is awaiting a device test. There is no pre-scoped goal — ask me for one and pull candidates from `docs/parked-items.md`. Don't re-open finished work.
 
-Tell me how heavy it looks (it's already scoped) and wait for my "go" before changing anything.
+Tell me how heavy the goal I pick looks, and wait for my "go" before changing anything.
