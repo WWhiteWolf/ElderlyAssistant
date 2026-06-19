@@ -2,9 +2,13 @@
 
 ## FIRST THING TO ASK PATRICK
 
-Everything through session 5 is **COMMITTED and DEVICE-VALIDATED** (2026-06-19): the notification enhancements — a **Done** action button on the My Day + Pets Day reminder banners (marks the item complete in storage and cancels the fired reminder), and an on-page **Snooze** button on every My Day + Pets Day tile that pops up 15/30/60. Patrick committed, built, submitted, loaded, and tested on the phone — all good. Nothing is left awaiting a device test.
+**Session 6 (2026-06-19) is DONE IN THE WORKING TREE — awaiting Patrick's commit + build + phone test.** First ask Patrick whether he committed, built, and tested session 6 on the phone. The session 6 work (all in `app/todo.tsx` + `app/_layout.tsx`, `tsc --noEmit` clean, NOT yet committed):
 
-There **IS a pre-scoped goal for next session** (Patrick named it 2026-06-19): the **To-Do side of these same enhancements** — add the Done banner action + on-page Snooze to To-Do (deferred this session, Patrick will tackle separately) — **plus** two To-Do recurring changes: **remove 'Daily'** as a To-Do recurring option, and **remove the date requirement for the 'Weekly'** category. See "Active next step" below.
+- **Removed 'Daily'** from the To-Do recurring picker (left in the type + week-view handler so any already-saved Daily task still displays).
+- **Weekly To-Dos now work with NO date.** The tile shows the day + set time (e.g. "Tue at 20:00"), and `scheduleReminders` fires a true **repeating WEEKLY** alert on the chosen day at the set time (no "before" offsets — just the time, per Patrick's trash-night example).
+- **To-Do reminders now have a Done + Snooze banner.** New `todosnooze` notification category (Done + Snooze 15/30/60) attached to all To-Do reminders (weekly + dated). **Done** logic: a *repeating* task (weekly/monthly/3mo/6mo/yearly) is logged to To-Do history and left running; a *one-time* task is logged, removed, and all its alerts cancelled. **Snooze** reschedules a one-off N-min-out alert, leaving the repeating weekly alert intact.
+
+Everything through session 5 is **COMMITTED and DEVICE-VALIDATED** (2026-06-19): the My Day + Pets Day notification enhancements — a **Done** banner action and an on-page **Snooze** (15/30/60) on every My Day + Pets Day tile. Nothing there awaits a device test.
 
 Note on process (Patrick, 2026-06-15): one-change-at-a-time is the default, but for very small, low-risk edits it's fine to group them and still stop for review. Keep strict one-at-a-time for anything bigger or with logic changes.
 
@@ -41,7 +45,16 @@ Remember When (elderlyassistant) — Expo / React Native app in `Projects/elderl
 - "Set up Push Notifications?" during build → always **No** (app uses only LOCAL notifications, no remote push/APNs).
 - Local testing: dev build into iOS Simulator via `npm run ios`. Metro picks up edits live.
 
-## Latest session — 2026-06-19 (session 5: notification Done action + on-page Snooze)
+## Latest session — 2026-06-19 (session 6: To-Do recurring + Done/Snooze)
+
+Goal: the To-Do recurring changes + bring Done/Snooze to To-Do. Patrick approved doing steps 2–4 together (after step 1 alone); built in sequence with `tsc` clean after each. **Awaiting Patrick's commit + build + phone test.**
+
+- **Step 1 — removed 'Daily'** from the recurring picker array (`app/todo.tsx` ~line 679). Left `'daily'` in `RecurType` and the week-view filter so any already-saved Daily task still renders (Patrick: no saved data to migrate).
+- **Step 2 — Weekly tile display (`app/todo.tsx`).** New `scheduleLabel(task)` helper + `DAY_NAMES`. A Weekly task shows day + time with no date (e.g. "Tue at 20:00"); dated tasks still show "Due: …". Replaced both tile render spots (main list + week-ahead).
+- **Step 3 — Weekly scheduling (`app/todo.tsx`, `scheduleReminders`).** Split the old guard: `background` still returns early; a new **weekly** branch parses `dueTime` ("HH:MM", defaults 9:00) and schedules a repeating **WEEKLY** trigger (`weekday: recurDay + 1` — Expo is 1=Sun…7=Sat, recurDay is 0=Sun) at that time, then returns; the dated one-shot path is unchanged below the `if (!dueDate || reminders.length === 0) return`. All To-Do notifications now carry `data: { taskId, itemId, label, source:'todo' }` + `categoryIdentifier: 'todosnooze'`.
+- **Step 4 — Done + Snooze for To-Do (`app/_layout.tsx`).** Registered the `todosnooze` category (Done + Snooze 15/30/60). Snooze handler branches on `source==='todo'` (title `📋 Reminder: {label}`, body `{label}`, re-tagged `todo`/`todosnooze`, one-off TIME_INTERVAL). Done handler branches on `source==='todo'`: logs to `todo_log`; if `recurring && !== 'none'` leaves the schedule + task in place (repeats on its own), else removes the task from `todo_tasks` and cancels all alerts matching `taskId` (mirrors on-screen `completeTask`).
+
+### Prior session — 2026-06-19 (session 5: notification Done action + on-page Snooze)
 
 Goal: notification enhancements on My Day + Pets Day. Built one step at a time, **no commit between steps** (Patrick's call), then committed once and **device-validated** (built via EAS, loaded through TestFlight, tested on the phone — all good). `tsc --noEmit` clean after each step. To-Do was explicitly **parked** for a separate session.
 
@@ -95,8 +108,8 @@ Restructured My Day and Pets Day so each is one continuous, always-visible list 
 - **My Day list is now `routine`** (single `ScheduleItem[]`), persisted under **`my_routine`**, reset `completed:false` daily. `scheduleAllNotifications` reads `my_routine`, cancels only `data.source === 'myday'`, and schedules a repeating **DAILY** trigger per incomplete item with `sound: 'default'`. (Sound fix from earlier 2026-06-15 is committed + device-validated.) Coffee/Water counters are **now persisted** under `my_coffee` / `my_water`, reset daily (session 4).
 - **Pets Day is `feeds`** (single `FeedItem[]`), persisted under **`pets_feeds`**, reset daily. **Now HAS notifications** (session 4): `scheduleAllPetsNotifications` cancels only `source: 'pets'`, reads `pets_feeds` from storage, schedules a repeating DAILY trigger per incomplete feed (title "Pets Routine", body `Time for ${label}!`, `petssnooze` category, `sound: 'default'`); permission + handler requested on mount. Treats counter is **now persisted** under `pets_treats`, reset daily; logging a Treat still writes a history entry.
 - **Both screens' time picker** stores 24h internally; the UI shows/edit in AM/PM. `format12Hour` (both files) outputs real 12-hour AM/PM.
-- **To-Do (`todo.tsx`) is unchanged this session (parked for a separate session).** It schedules a one-shot DATE reminder ONLY if `taskType !== 'background'` AND `dueDate` set AND `reminders.length > 0` AND fire time is still future. To-Do notifications carry only `data: { taskId, source: 'todo' }` — **no `categoryIdentifier`**, so To-Do banners currently show **no action buttons** (unlike My Day/Pets Day). `updateTask` and `deleteTask` both cancel via `cancelReminders` (committed `d7b4e81`). `recurring` (daily/weekly/monthly/yearly) drives only the Week-view display, never notifications (parked). `scheduleBackgroundReminder` fires a DAILY 8am reminder for all `background` tasks with no per-item id.
-- **Notification action handling lives in `app/_layout.tsx`.** Categories `mydaysnooze` + `petssnooze` each have **Done + Snooze 15/30/60**. The response effect (on `useLastNotificationResponse`) handles: `snooze15/30/60` (reschedule that item N min out), `done` (mark `completed:true` in `my_routine`/`pets_feeds` by `itemId`, cancel the fired notif), and a plain tap (route by `source` to the screen). All run via the foreground effect, so action taps bring the app forward. On-page Snooze in `myday.tsx`/`mollie.tsx` reuses the same TIME_INTERVAL + tagging scheme.
+- **To-Do (`todo.tsx`) — UPDATED session 6 (awaiting commit/device test).** `scheduleReminders`: `background` returns early; **weekly** tasks schedule a repeating WEEKLY trigger (`weekday: recurDay + 1`, `dueTime` parsed as HH:MM / default 9:00) with **NO date** and no "before" offsets; otherwise the dated one-shot path runs ONLY if `dueDate` set AND `reminders.length > 0` AND fire time still future. All To-Do notifications now carry `data: { taskId, itemId, label, source:'todo' }` + `categoryIdentifier: 'todosnooze'`, so banners show **Done + Snooze 15/30/60**. 'Daily' removed from the picker (still in the type + week-view handler for legacy tasks). `recurring` **monthly / every3months / every6months / yearly** still drive only the Week-view display, NOT notifications (only weekly schedules) — but the Done/Snooze logic already keys off `recurring !== 'none'`, so it'll cover those automatically the day they get scheduling. `updateTask`/`deleteTask` cancel via `cancelReminders`. **To-Do `loadData` does NOT reschedule on load** (the weekly alert survives restarts via the OS repeating trigger). `scheduleBackgroundReminder` fires a DAILY 8am reminder for all `background` tasks, no per-item id.
+- **Notification action handling lives in `app/_layout.tsx`.** Categories `mydaysnooze` + `petssnooze` + **`todosnooze`** (session 6) each have **Done + Snooze 15/30/60**. The response effect (on `useLastNotificationResponse`) handles `snooze15/30/60`, `done`, and a plain tap (route by `source`). **Snooze** branches: `todo` → re-tagged `todo`/`todosnooze` one-off; pets → `petssnooze`; else `mydaysnooze`. **Done** branches: `todo` → log to `todo_log`, then if `recurring !== 'none'` leave schedule+task (repeats on its own) else remove from `todo_tasks` + cancel all alerts matching `taskId`; pets/myday → mark `completed:true` in `pets_feeds`/`my_routine` by `itemId` + cancel the fired notif. All run via the foreground effect, so action taps bring the app forward. On-page Snooze in `myday.tsx`/`mollie.tsx` reuses the same TIME_INTERVAL + tagging scheme.
 - iOS caps an app at **64 pending scheduled local notifications** (a DAILY/repeating trigger counts as ONE). Keep this in mind if Pets Day notifications get added.
 
 ## Tooling notes
@@ -106,19 +119,19 @@ Restructured My Day and Pets Day so each is one continuous, always-visible list 
 
 ## Active next step (the named goal for next session)
 
-**PRE-SCOPED by Patrick (2026-06-19) — the To-Do side of this session's work, plus two recurring changes:**
+**Session 6's goal is COMPLETE in the working tree — first confirm Patrick committed, built, and tested it on the phone.** What to test: (a) make a Weekly To-Do with a day + evening time and NO date → tile shows "Day at HH:MM", and the weekly reminder fires on that day with **Done + Snooze** buttons; (b) tap **Snooze** → re-alerts in 15/30/60; (c) tap **Done** on the weekly → it logs to To-Do history and still fires again next week; (d) a one-time dated To-Do's **Done** removes it for good; (e) 'Daily' is gone from the recurring picker.
 
-1. **Add the Done banner action + on-page Snooze to To-Do**, mirroring what My Day/Pets Day now have. NOTE the structural differences (verify before building): To-Do reminders are one-shot DATE alerts carrying only `{ taskId, source: 'todo' }` with **no category** — so adding banner buttons means creating a To-Do category, attaching it to the scheduled reminders, and carrying the task title/label through. "Done" for a To-Do = mark the task complete + cancel its reminder (reuse the existing `completeTask` / `cancelReminders`). The daily "Background Tasks" reminder has no single item, so per-item Done/Snooze won't apply to it — leave it as-is.
-2. **Remove 'Daily'** as a To-Do recurring option (daily-repeating reminders live in My Day — this is the long-parked design decision, now decided).
-3. **Remove the date requirement for the 'Weekly'** category (a Weekly To-Do should not require a due date).
+**No goal is pre-scoped for the next session.** Likely candidates (let Patrick name the one goal):
 
-(All three are one screen — `app/todo.tsx` — likely touching the recurring UI/options and `scheduleReminders`/validation. Still do it one change at a time; discuss each before building.) Other parked candidates remain in `docs/parked-items.md` (Timer-cancel bug, `pets_data` cleanup, item-level tap-routing, Project Planner reminders) but are NOT the named goal.
+1. **Schedule the other recurring types** — monthly / **every3months / every6months** / yearly currently drive only the Week-view display, not notifications. Only weekly schedules. (The Done/Snooze logic already handles any `recurring !== 'none'`, so it'll work once scheduling is added. Note: monthly/yearly need a `recurDay`/`recurMonth` → trigger mapping like weekly's.)
+2. Other parked items in `docs/parked-items.md`: Timer-cancel bug, `pets_data` cleanup, item-level tap-routing, Project Planner reminders.
 
-## Files touched this session (session 5 — 2026-06-19)
+Still do it one change at a time; discuss each before building.
 
-- `app/_layout.tsx` — added `AsyncStorage` import; added `done` action to `mydaysnooze` + `petssnooze` categories; added the `done` branch in the response handler (mark complete in `my_routine`/`pets_feeds` by `itemId`, cancel the fired notif). **Committed + device-validated.**
-- `app/myday.tsx` — `snoozeItemId` state, `snoozeItem(minutes)`, on-tile Snooze button (editBtn marginRight 28→8), 15/30/60 popup modal + styles. **Committed + device-validated.**
-- `app/mollie.tsx` — same on-page Snooze changes as `myday.tsx`. **Committed + device-validated.**
+## Files touched this session (session 6 — 2026-06-19)
+
+- `app/todo.tsx` — removed 'Daily' from the recurring picker; added `DAY_NAMES` + `scheduleLabel(task)` helper; replaced both tile render spots to use it; rewrote `scheduleReminders` (early `background` return, new weekly WEEKLY-trigger branch, dated path unchanged below); added `itemId`/`label` + `categoryIdentifier: 'todosnooze'` to all To-Do notification data. **`tsc` clean. Awaiting Patrick commit + build + device test.**
+- `app/_layout.tsx` — registered `todosnooze` category; added `todo` branch to the Snooze handler; added `todo` branch to the Done handler (log + recurring-vs-one-time logic). **`tsc` clean. Awaiting Patrick commit + build + device test.**
 - `docs/handoff.md` + `docs/parked-items.md` — refreshed at session close (this version). **Patrick commits.**
 
 ---
@@ -129,5 +142,5 @@ You're picking up the "Remember When" app (Expo / React Native, runs on my iPhon
 
 1. The `elderlyassistant` folder must be connected via Cowork's folder picker — if you can't see it, give me the folder-request button; don't ask me to upload files.
 2. Open and read `docs/handoff.md` first (full state, standing rules, next step), then skim `docs/parked-items.md` (the eventual-work backlog) so you know what's deferred.
-3. Recent work is DONE and device-validated: session 5 (2026-06-19) added a **Done** action to the My Day + Pets Day reminder banners and an **on-page Snooze** (15/30/60 popup) on every My Day + Pets Day tile. Earlier validated work: My Day + Pets Day restructure, the four session-2 edits, Pets Day routine reminders with Snooze, counter persistence. Nothing is awaiting a device test. Don't re-open finished work.
-4. **The next goal IS pre-scoped** (see "Active next step"): bring the Done + on-page Snooze enhancements to **To-Do**, **remove 'Daily'** as a To-Do recurring option, and **remove the date requirement for 'Weekly'**. Confirm with me, tell me how heavy it looks, and wait for my "go" before changing anything — one change at a time.
+3. **Session 6 (2026-06-19) is done in the working tree but awaiting my commit + build + phone test** — first ask whether I committed/built/tested it. It: removed **Daily** from the To-Do recurring picker; made **Weekly** To-Dos work with NO date (tile shows day+time, fires a repeating weekly alert); and gave To-Do reminders a **Done + Snooze 15/30/60** banner. Earlier work is committed + device-validated (My Day/Pets restructure, session-2 edits, Pets reminders+Snooze, counters, session-5 My Day/Pets Done+on-page Snooze). Don't re-open finished work.
+4. **No goal is pre-scoped for next session.** Likely next: schedule the other recurring types (monthly / 3 months / 6 months / yearly — only Weekly schedules so far), or a parked item. Wait for me to name the one goal, tell me how heavy it looks, and wait for my "go" — one change at a time.

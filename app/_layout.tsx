@@ -24,6 +24,12 @@ export default function RootLayout() {
       { identifier: 'snooze30', buttonTitle: 'Snooze 30 min' },
       { identifier: 'snooze60', buttonTitle: 'Snooze 60 min' },
     ]);
+    Notifications.setNotificationCategoryAsync('todosnooze', [
+      { identifier: 'done', buttonTitle: 'Done' },
+      { identifier: 'snooze15', buttonTitle: 'Snooze 15 min' },
+      { identifier: 'snooze30', buttonTitle: 'Snooze 30 min' },
+      { identifier: 'snooze60', buttonTitle: 'Snooze 60 min' },
+    ]);
   }, []);
 
   useEffect(() => {
@@ -44,16 +50,19 @@ export default function RootLayout() {
       const minutes = action === 'snooze15' ? 15 : action === 'snooze30' ? 30 : 60;
       const label = (data?.label as string) || 'your reminder';
       const source = data?.source as string | undefined;
+      const isTodo = source === 'todo';
       const isPets = source === 'pets' || source === 'petssnooze';
       Notifications.scheduleNotificationAsync({
         content: {
-          title: isPets ? 'Pets Routine' : 'Daily Routine',
-          body: `Time for ${label}!`,
+          title: isTodo ? `📋 Reminder: ${label}` : isPets ? 'Pets Routine' : 'Daily Routine',
+          body: isTodo ? label : `Time for ${label}!`,
           // Tag with the snooze source (not 'myday'/'pets') so each screen's
           // reschedule-on-load, which only cancels its own base source, won't
-          // wipe this snooze.
-          data: { source: isPets ? 'petssnooze' : 'mydaysnooze', itemId: data?.itemId, label },
-          categoryIdentifier: isPets ? 'petssnooze' : 'mydaysnooze',
+          // wipe this snooze. To-Do has no reschedule-on-load, so it keeps 'todo'.
+          data: isTodo
+            ? { source: 'todo', taskId: data?.itemId, itemId: data?.itemId, label }
+            : { source: isPets ? 'petssnooze' : 'mydaysnooze', itemId: data?.itemId, label },
+          categoryIdentifier: isTodo ? 'todosnooze' : isPets ? 'petssnooze' : 'mydaysnooze',
         },
         trigger: {
           type: SchedulableTriggerInputTypes.TIME_INTERVAL,
@@ -69,6 +78,40 @@ export default function RootLayout() {
     if (action === 'done') {
       const source = data?.source as string | undefined;
       const itemId = data?.itemId as string | undefined;
+
+      // To-Do "Done": log the completion. A repeating task (weekly/monthly/
+      // yearly) fires again on its own, so leave its schedule and the task in
+      // place — just record it as handled this time. A one-time task is finished
+      // for good: remove it and cancel all of its alerts. Mirrors completeTask.
+      if (source === 'todo') {
+        (async () => {
+          const raw = await AsyncStorage.getItem('todo_tasks');
+          const tasks = raw ? (JSON.parse(raw) as any[]) : [];
+          const task = tasks.find((t) => t.id === itemId);
+          if (task) {
+            const logRaw = await AsyncStorage.getItem('todo_log');
+            const log = logRaw ? (JSON.parse(logRaw) as any[]) : [];
+            const entry = {
+              id: Date.now().toString(),
+              taskTitle: task.title,
+              completedDate: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' }),
+              notes: task.notes,
+            };
+            await AsyncStorage.setItem('todo_log', JSON.stringify([entry, ...log].slice(0, 100)));
+            if (!task.recurring || task.recurring === 'none') {
+              await AsyncStorage.setItem('todo_tasks', JSON.stringify(tasks.filter((t) => t.id !== itemId)));
+              const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+              for (const n of scheduled) {
+                if (n.content.data?.taskId === itemId) {
+                  await Notifications.cancelScheduledNotificationAsync(n.identifier);
+                }
+              }
+            }
+          }
+        })();
+        return;
+      }
+
       const isPets = source === 'pets' || source === 'petssnooze';
       const storageKey = isPets ? 'pets_feeds' : 'my_routine';
       (async () => {

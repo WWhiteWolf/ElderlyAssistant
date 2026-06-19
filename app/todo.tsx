@@ -150,6 +150,20 @@ export default function TodoScreen() {
         await AsyncStorage.setItem('todo_log', JSON.stringify(l));
     };
 
+    const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    // Text shown under a task's title. A Weekly task shows its day + set time
+    // (no calendar date needed); any other task with a date shows the date.
+    const scheduleLabel = (task: Task) => {
+        if (task.recurring === 'weekly') {
+            return `${DAY_NAMES[task.recurDay] ?? ''}${task.dueTime ? ' at ' + task.dueTime : ''}`;
+        }
+        if (task.dueDate) {
+            return `Due: ${task.dueDate}${task.dueTime ? ' at ' + task.dueTime : ''}`;
+        }
+        return '';
+    };
+
     const resetForm = () => {
         setNewTitle('');
         setNewCategory('c1');
@@ -347,8 +361,37 @@ export default function TodoScreen() {
     };
 
     const scheduleReminders = async (task: Task) => {
-        console.log('scheduleReminders called', task.taskType, task.dueDate, task.reminders.length);
-        if (task.taskType === 'background' || !task.dueDate || task.reminders.length === 0) return;
+        console.log('scheduleReminders called', task.taskType, task.recurring, task.dueDate, task.reminders.length);
+        if (task.taskType === 'background') return;
+
+        // Weekly recurring task: one repeating weekly alert on the chosen day at
+        // the set time. No calendar date needed, and no "X before" offsets — just
+        // the time you set (e.g. trash night every Tuesday at 8 PM).
+        if (task.recurring === 'weekly') {
+            const [hStr, mStr] = (task.dueTime || '09:00').split(':');
+            let hour = parseInt(hStr, 10);
+            let minute = parseInt(mStr ?? '0', 10);
+            if (isNaN(hour)) hour = 9;
+            if (isNaN(minute)) minute = 0;
+            await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: `📋 Reminder: ${task.title}`,
+                    body: `${DAY_NAMES[task.recurDay] ?? ''}${task.dueTime ? ' at ' + task.dueTime : ''}`,
+                    data: { taskId: task.id, itemId: task.id, label: task.title, source: 'todo' },
+                    categoryIdentifier: 'todosnooze',
+                    sound: 'default',
+                },
+                trigger: {
+                    type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
+                    weekday: (task.recurDay ?? 0) + 1, // Expo: 1=Sun … 7=Sat; recurDay is 0=Sun
+                    hour,
+                    minute,
+                } as Notifications.WeeklyTriggerInput,
+            });
+            return;
+        }
+
+        if (!task.dueDate || task.reminders.length === 0) return;
         for (const reminder of task.reminders) {
             const [month, day, year] = task.dueDate.split('/');
             const fullYear = year.length === 2 ? `20${year}` : year;
@@ -364,7 +407,8 @@ export default function TodoScreen() {
                     content: {
                         title: `📋 Reminder: ${task.title}`,
                         body: task.dueDate ? `Due: ${task.dueDate}${task.dueTime ? ' at ' + task.dueTime : ''}` : '',
-                        data: { taskId: task.id, source: 'todo' },
+                        data: { taskId: task.id, itemId: task.id, label: task.title, source: 'todo' },
+                        categoryIdentifier: 'todosnooze',
                         sound: 'default',
                     },
                     trigger: {
@@ -513,7 +557,7 @@ export default function TodoScreen() {
                                     <View style={styles.taskBottomRow}>
                                         <Text style={[styles.priorityLabel, { color: PRIORITY_COLORS[task.priority] }]}>{task.priority}</Text>
                                         <Text style={[styles.priorityLabel, { color: getCategoryColor(task.categoryId) }]}>{getCategoryName(task.categoryId)}</Text>
-                                        {task.dueDate ? <Text style={styles.dueDateText}>Due: {task.dueDate}{task.dueTime ? ' at ' + task.dueTime : ''}</Text> : null}
+                                        {scheduleLabel(task) ? <Text style={styles.dueDateText}>{scheduleLabel(task)}</Text> : null}
                                         {task.recurring !== 'none' ? <Text style={styles.recurringText}>🔁 {task.recurring}</Text> : null}
                                     </View>
                                 </View>
@@ -552,7 +596,7 @@ export default function TodoScreen() {
                                     <View style={styles.taskBottomRow}>
                                         <Text style={[styles.priorityLabel, { color: PRIORITY_COLORS[task.priority] }]}>{task.priority}</Text>
                                         <Text style={[styles.priorityLabel, { color: getCategoryColor(task.categoryId) }]}>{getCategoryName(task.categoryId)}</Text>
-                                        {task.dueDate ? <Text style={styles.dueDateText}>Due: {task.dueDate}{task.dueTime ? ' at ' + task.dueTime : ''}</Text> : null}
+                                        {scheduleLabel(task) ? <Text style={styles.dueDateText}>{scheduleLabel(task)}</Text> : null}
                                         {task.recurring !== 'none' ? <Text style={styles.recurringText}>🔁 {task.recurring}</Text> : null}
                                     </View>
 
@@ -676,7 +720,7 @@ export default function TodoScreen() {
 
                                     <Text style={styles.inputLabel}>Recurring</Text>
                                     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
-                                        {(['none', 'daily', 'weekly', 'monthly', 'every3months', 'every6months', 'yearly'] as RecurType[]).map(r => (
+                                        {(['none', 'weekly', 'monthly', 'every3months', 'every6months', 'yearly'] as RecurType[]).map(r => (
                                             <TouchableOpacity
                                                 key={r}
                                                 style={[styles.recurBtn, newRecurring === r && styles.recurBtnActive]}
