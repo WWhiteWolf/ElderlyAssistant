@@ -71,6 +71,7 @@ export default function MyDayScreen() {
     const [tempWaterNote, setTempWaterNote] = useState('');
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [snoozeItemId, setSnoozeItemId] = useState<string | null>(null);
 
     useEffect(() => {
         const setup = async () => {
@@ -215,6 +216,30 @@ export default function MyDayScreen() {
         saveData(updatedRoutine, updatedHist);
         setShowLogModal(false);
         setPendingLogId(null);
+    };
+
+    // On-page Snooze: schedule a one-off reminder for this item N minutes from
+    // now, tagged 'mydaysnooze' so the daily reschedule-on-load won't wipe it.
+    // Same mechanism the notification banner's Snooze buttons use.
+    const snoozeItem = async (minutes: number) => {
+        if (!snoozeItemId) return;
+        const item = routine.find(i => i.id === snoozeItemId);
+        if (!item) { setSnoozeItemId(null); return; }
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: 'Daily Routine',
+                body: `Time for ${item.label}!`,
+                data: { source: 'mydaysnooze', itemId: item.id, label: item.label },
+                categoryIdentifier: 'mydaysnooze',
+                sound: 'default',
+            },
+            trigger: {
+                type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+                seconds: minutes * 60,
+            } as Notifications.TimeIntervalTriggerInput,
+        });
+        setSnoozeItemId(null);
+        Alert.alert('Snoozed', `${item.label} reminder set for ${minutes} minutes from now.`);
     };
 
     const addEntry = () => {
@@ -417,6 +442,12 @@ export default function MyDayScreen() {
                                     <Text style={styles.editBtnText}>Edit</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
+                                    style={styles.snoozeRowBtn}
+                                    onPress={() => setSnoozeItemId(item.id)}
+                                >
+                                    <Text style={styles.snoozeRowBtnText}>Snooze</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
                                     style={[styles.logBtn, item.completed && styles.loggedBtn]}
                                     onPress={() => openLogModal(item.id)}
                                 >
@@ -576,6 +607,33 @@ export default function MyDayScreen() {
                         <Text style={styles.arrowText}>▼</Text>
                     </TouchableOpacity>
                 </View>
+            )}
+
+            {snoozeItemId && (
+                <Modal transparent={true} animationType="fade" visible={!!snoozeItemId}>
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.pickerModal}>
+                            <Text style={styles.modalTitle}>Snooze Reminder</Text>
+                            <Text style={styles.inputLabel}>
+                                {routine.find(i => i.id === snoozeItemId)?.label} — remind me again in:
+                            </Text>
+                            <View style={styles.snoozeOptionRow}>
+                                <TouchableOpacity style={styles.snoozeOption} onPress={() => snoozeItem(15)}>
+                                    <Text style={styles.snoozeOptionText}>15 min</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.snoozeOption} onPress={() => snoozeItem(30)}>
+                                    <Text style={styles.snoozeOptionText}>30 min</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.snoozeOption} onPress={() => snoozeItem(60)}>
+                                    <Text style={styles.snoozeOptionText}>60 min</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <TouchableOpacity style={styles.cancelBtn} onPress={() => setSnoozeItemId(null)}>
+                                <Text style={styles.cancelBtnText}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </Modal>
             )}
 
             {showEditModal && (
@@ -975,9 +1033,31 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         paddingHorizontal: 10,
         borderRadius: 8,
-        marginRight: 28,
+        marginRight: 8,
     },
     editBtnText: { color: Colors.bridge, fontSize: 13, fontWeight: '600' },
+    snoozeRowBtn: {
+        backgroundColor: '#FF9500',
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        borderRadius: 8,
+        marginRight: 8,
+    },
+    snoozeRowBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
+    snoozeOptionRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 12,
+    },
+    snoozeOption: {
+        flex: 1,
+        backgroundColor: '#FF9500',
+        paddingVertical: 14,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginHorizontal: 4,
+    },
+    snoozeOptionText: { color: Colors.white, fontWeight: '600', fontSize: 16 },
     historyHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
