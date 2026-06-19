@@ -6,7 +6,7 @@
 - **No "boxed" multiple-choice questions.** Don't use button/option-card questions — they feel like being locked into Claude's choices. Ask open questions in plain prose and let Patrick answer in his own words.
 - **Verify before asserting.** Read the actual code before describing behavior. When unsure, say so and offer to look.
 - **One change at a time.** Discuss before building; make one edit, stop, let Patrick review before the next.
-- **Patrick commits at the END of each session.** So at the next session's start, the previous session's work should already be committed — confirm it, don't assume otherwise.
+- **Patrick commits at the END of each session** (and sometimes mid-session to trigger a build — see "Build-and-test commit rhythm" below). At the next session's start the previous session's **code** should already be committed, but the **docs may still be pending a post-test commit — confirm, don't assume**.
 
 ---
 
@@ -25,6 +25,15 @@ Patrick names the session (shows in the left panel) and says **"read session-sta
 
 - Refresh **`docs/handoff.md`** so the next session stays on course, and move any new eventual-work into **`docs/parked-items.md`**.
 - Patrick commits.
+
+## Build-and-test commit rhythm (two commits, not one)
+
+When a session's work needs a device test, Patrick splits it into **two commits at two different times:**
+
+1. **Code commit (now, before the build).** Patrick commits just the code he needs so EAS builds the right state, then triggers the build and tests on the phone. (Code first — EAS captures git state when the build is triggered.)
+2. **Docs commit (later, after testing).** Once the phone test confirms the work, Patrick tells Claude the result; Claude refreshes `handoff.md` + `parked-items.md` (recording it as device-validated, or noting what failed), and Patrick commits the docs **separately** — often in a later session.
+
+**What this means at a session start:** the previous session's **code** should already be committed, but the **docs may lag** — they get their own commit after the device test. So if the docs still say "awaiting build/device test," confirm with Patrick how the test went before assuming the work shipped clean.
 
 ## The tracking docs (different jobs)
 
