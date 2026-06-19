@@ -80,26 +80,13 @@ type ReminderPreset = {
 };
 const REMINDER_PRESETS: ReminderPreset[] = [
     { label: 'At time', kind: 'offset', amount: 0, unit: 'minutes' },
-    { label: '1 hour before', kind: 'offset', amount: 1, unit: 'hours' },
-    { label: '2 hours before', kind: 'offset', amount: 2, unit: 'hours' },
+    { label: '1 hour', kind: 'offset', amount: 1, unit: 'hours' },
+    { label: '2 hours', kind: 'offset', amount: 2, unit: 'hours' },
     { label: 'Morning of', kind: 'clock', daysBefore: 0, timeOfDay: 'morning' },
-    { label: 'Day before', kind: 'clock', daysBefore: 1, timeOfDay: 'evening' },
-    { label: 'Week before', kind: 'clock', daysBefore: 7, timeOfDay: 'evening' },
-    { label: 'Month before', kind: 'clock', daysBefore: 30, timeOfDay: 'evening' },
+    { label: 'Day', kind: 'clock', daysBefore: 1, timeOfDay: 'evening' },
+    { label: 'Week', kind: 'clock', daysBefore: 7, timeOfDay: 'evening' },
+    { label: 'Month', kind: 'clock', daysBefore: 30, timeOfDay: 'evening' },
 ];
-
-// Human label for a saved reminder chip.
-const reminderLabel = (r: Reminder): string => {
-    if (r.kind === 'clock') {
-        if (r.daysBefore === 0) return 'Morning of';
-        if (r.daysBefore === 1) return 'Day before';
-        if (r.daysBefore === 7) return 'Week before';
-        if (r.daysBefore === 30) return 'Month before';
-        return `${r.daysBefore} days before`;
-    }
-    if (r.amount === 0) return 'At time of event';
-    return `${r.amount} ${r.unit} before`;
-};
 
 const DEFAULT_CATEGORIES: Category[] = [
     { id: 'c1', name: 'General', color: '#1a6e8a' },
@@ -496,10 +483,24 @@ export default function TodoScreen() {
         });
     };
 
-    const addPresetReminder = (p: ReminderPreset) => {
+    // Does the current selection already contain this preset?
+    const isPresetSelected = (p: ReminderPreset): boolean => {
         if (p.kind === 'clock') {
-            // Skip if this exact clock reminder is already in the list.
-            if (newReminders.some(r => r.kind === 'clock' && r.daysBefore === p.daysBefore)) return;
+            return newReminders.some(r => r.kind === 'clock' && r.daysBefore === p.daysBefore);
+        }
+        return newReminders.some(r => r.kind !== 'clock' && r.amount === p.amount && r.unit === p.unit);
+    };
+
+    // Tapping a preset button toggles it on/off.
+    const togglePreset = (p: ReminderPreset) => {
+        if (isPresetSelected(p)) {
+            setNewReminders(newReminders.filter(r => {
+                if (p.kind === 'clock') return !(r.kind === 'clock' && r.daysBefore === p.daysBefore);
+                return !(r.kind !== 'clock' && r.amount === p.amount && r.unit === p.unit);
+            }));
+            return;
+        }
+        if (p.kind === 'clock') {
             setNewReminders([...newReminders, {
                 id: Date.now().toString(),
                 amount: 0,
@@ -510,18 +511,12 @@ export default function TodoScreen() {
             }]);
             return;
         }
-        // Offset preset. Skip if this exact reminder is already in the list.
-        if (newReminders.some(r => r.kind !== 'clock' && r.amount === p.amount && r.unit === p.unit)) return;
         setNewReminders([...newReminders, {
             id: Date.now().toString(),
             amount: p.amount ?? 0,
             unit: p.unit ?? 'minutes',
             kind: 'offset',
         }]);
-    };
-
-    const removeReminder = (id: string) => {
-        setNewReminders(newReminders.filter(r => r.id !== id));
     };
 
 
@@ -866,28 +861,18 @@ export default function TodoScreen() {
 
                                     {newTaskType === 'scheduled' && (
                                         <>
-                                            <Text style={styles.inputLabel}>Reminders — tap to add</Text>
+                                            <Text style={styles.inputLabel}>Reminders before</Text>
                                             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
                                                 {REMINDER_PRESETS.map(p => (
                                                     <TouchableOpacity
                                                         key={p.label}
-                                                        style={[styles.recurBtn, { marginRight: 0 }]}
-                                                        onPress={() => addPresetReminder(p)}
+                                                        style={[styles.recurBtn, { marginRight: 0 }, isPresetSelected(p) && styles.recurBtnActive]}
+                                                        onPress={() => togglePreset(p)}
                                                     >
-                                                        <Text style={styles.recurBtnText}>{p.label}</Text>
+                                                        <Text style={[styles.recurBtnText, isPresetSelected(p) && styles.recurBtnTextActive]}>{p.label}</Text>
                                                     </TouchableOpacity>
                                                 ))}
                                             </View>
-                                            {newReminders.map(r => (
-                                                <View key={r.id} style={styles.reminderRow}>
-                                                    <Text style={styles.reminderText}>
-                                                        {reminderLabel(r)}
-                                                    </Text>
-                                                    <TouchableOpacity onPress={() => removeReminder(r.id)}>
-                                                        <Text style={styles.catDeleteBtn}>✕</Text>
-                                                    </TouchableOpacity>
-                                                </View>
-                                            ))}
                                         </>
                                     )}
 
@@ -1279,19 +1264,6 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     hintText: { fontSize: 11, color: '#aaa', marginBottom: 8 },
-    reminderRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingVertical: 6,
-        paddingHorizontal: 10,
-        backgroundColor: Colors.background,
-        borderRadius: 8,
-        marginBottom: 4,
-        borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
-    },
-    reminderText: { fontSize: 14, color: Colors.primary },
     backgroundBanner: {
         backgroundColor: Colors.bridge,
         padding: 10,
