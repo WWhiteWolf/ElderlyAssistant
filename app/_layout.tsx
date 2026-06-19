@@ -29,6 +29,9 @@ export default function RootLayout() {
       { identifier: 'snooze15', buttonTitle: 'Snooze 15 min' },
       { identifier: 'snooze30', buttonTitle: 'Snooze 30 min' },
       { identifier: 'snooze60', buttonTitle: 'Snooze 60 min' },
+      // OK = acknowledge & dismiss just this alert. Doesn't open the app, mark
+      // the task done, or touch the task's other scheduled reminders.
+      { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
     ]);
   }, []);
 
@@ -43,6 +46,10 @@ export default function RootLayout() {
     handledId.current = handledKey;
 
     const data = response.notification.request.content.data;
+
+    // "OK" action: just acknowledge this one alert. iOS already clears the
+    // tapped notification; we do nothing else (no done, no snooze, no routing).
+    if (action === 'ok') return;
 
     // Snooze action buttons: reschedule ONLY this item, N minutes out, and leave
     // every other reminder (To-Do, Timer, other My Day items) untouched.

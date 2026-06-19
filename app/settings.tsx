@@ -4,6 +4,9 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
     Alert,
+    KeyboardAvoidingView,
+    Modal,
+    Platform,
     ScrollView,
     StyleSheet,
     Switch,
@@ -28,6 +31,11 @@ export default function SettingsScreen() {
     const [confirmPIN, setConfirmPIN] = useState('');
     const [pinStep, setPinStep] = useState<'current' | 'new' | 'confirm'>('current');
     const [editingName, setEditingName] = useState(false);
+    const [morningTime, setMorningTime] = useState('08:00');
+    const [eveningTime, setEveningTime] = useState('17:00');
+    const [showTimeModal, setShowTimeModal] = useState(false);
+    const [editingWhich, setEditingWhich] = useState<'morning' | 'evening'>('morning');
+    const [pendingTime, setPendingTime] = useState<Date | null>(null);
 
     useEffect(() => {
         loadSettings();
@@ -39,12 +47,46 @@ export default function SettingsScreen() {
             const name = await AsyncStorage.getItem('user_name');
             const biometric = await AsyncStorage.getItem('biometric_enabled');
             const vaultPin = await AsyncStorage.getItem('vault_pin_enabled');
+            const morning = await AsyncStorage.getItem('reminder_morning_time');
+            const evening = await AsyncStorage.getItem('reminder_evening_time');
             if (name) { setUserName(name); setNewUserName(name); }
             if (biometric) setBiometricEnabled(biometric === 'true');
             if (vaultPin) setVaultPinEnabled(vaultPin === 'true');
+            if (morning) setMorningTime(morning);
+            if (evening) setEveningTime(evening);
         } catch (e) {
             console.error(e);
         }
+    };
+
+    // "HH:MM" (24h) -> "h:MM AM/PM" for display.
+    const format12Hour = (hhmm: string) => {
+        const [hStr, mStr] = hhmm.split(':');
+        const h = parseInt(hStr, 10);
+        const period = h < 12 ? 'AM' : 'PM';
+        let h12 = h % 12; if (h12 === 0) h12 = 12;
+        return `${h12}:${mStr} ${period}`;
+    };
+
+    const openTimeEditor = (which: 'morning' | 'evening') => {
+        const hhmm = which === 'morning' ? morningTime : eveningTime;
+        const [h, m] = hhmm.split(':').map(n => parseInt(n, 10));
+        setPendingTime(new Date(new Date().setHours(h, m, 0, 0)));
+        setEditingWhich(which);
+        setShowTimeModal(true);
+    };
+
+    const saveTime = async () => {
+        const t = pendingTime || new Date(new Date().setHours(8, 0, 0, 0));
+        const hhmm = `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`;
+        if (editingWhich === 'morning') {
+            setMorningTime(hhmm);
+            await AsyncStorage.setItem('reminder_morning_time', hhmm);
+        } else {
+            setEveningTime(hhmm);
+            await AsyncStorage.setItem('reminder_evening_time', hhmm);
+        }
+        setShowTimeModal(false);
     };
 
     //const checkBiometric = async () => {
@@ -223,6 +265,7 @@ export default function SettingsScreen() {
                     </TouchableOpacity>
                 </View>
             ) : (
+                <>
                 <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
 
                     <Text style={styles.sectionHeader}>Profile</Text>
@@ -247,6 +290,24 @@ export default function SettingsScreen() {
                                 </TouchableOpacity>
                             )}
                         </View>
+                    </View>
+
+                    <Text style={styles.sectionHeader}>Reminders</Text>
+                    <View style={styles.settingCard}>
+                        <TouchableOpacity style={styles.settingRow} onPress={() => openTimeEditor('morning')}>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.settingLabel}>Morning Reminder Time</Text>
+                                <Text style={styles.settingHint}>Used by "Morning of" appointment alerts</Text>
+                            </View>
+                            <Text style={styles.settingValue}>{format12Hour(morningTime)}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.settingRow, styles.settingRowBorder]} onPress={() => openTimeEditor('evening')}>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.settingLabel}>Evening Reminder Time</Text>
+                                <Text style={styles.settingHint}>Used by day / week / month before alerts</Text>
+                            </View>
+                            <Text style={styles.settingValue}>{format12Hour(eveningTime)}</Text>
+                        </TouchableOpacity>
                     </View>
 
                     <Text style={styles.sectionHeader}>Security</Text>
@@ -296,6 +357,103 @@ export default function SettingsScreen() {
                     <Text style={styles.versionText}>Remember When v1.0</Text>
 
                 </ScrollView>
+
+                <Modal transparent={true} animationType="fade" visible={showTimeModal}>
+                    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+                        <View style={styles.modalOverlay}>
+                            <View style={styles.pickerModal}>
+                                <Text style={styles.modalTitle}>
+                                    {editingWhich === 'morning' ? 'Morning Reminder Time' : 'Evening Reminder Time'}
+                                </Text>
+
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 20, marginVertical: 10 }}>
+                                    <View style={{ alignItems: 'center' }}>
+                                        <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
+                                            const next = new Date(pendingTime || new Date());
+                                            const h = next.getHours();
+                                            const isPM = h >= 12;
+                                            let h12 = h % 12; if (h12 === 0) h12 = 12;
+                                            h12 = h12 === 12 ? 1 : h12 + 1;
+                                            next.setHours(isPM ? (h12 % 12) + 12 : h12 % 12);
+                                            setPendingTime(next);
+                                        }}>
+                                            <Text style={styles.timeAdjText}>▲</Text>
+                                        </TouchableOpacity>
+                                        <Text style={styles.timeDisplayText}>
+                                            {(() => { const h = (pendingTime || new Date()).getHours(); let h12 = h % 12; if (h12 === 0) h12 = 12; return String(h12).padStart(2, '0'); })()}
+                                        </Text>
+                                        <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
+                                            const next = new Date(pendingTime || new Date());
+                                            const h = next.getHours();
+                                            const isPM = h >= 12;
+                                            let h12 = h % 12; if (h12 === 0) h12 = 12;
+                                            h12 = h12 === 1 ? 12 : h12 - 1;
+                                            next.setHours(isPM ? (h12 % 12) + 12 : h12 % 12);
+                                            setPendingTime(next);
+                                        }}>
+                                            <Text style={styles.timeAdjText}>▼</Text>
+                                        </TouchableOpacity>
+                                        <Text style={{ color: Colors.primary, fontSize: 13 }}>Hour</Text>
+                                    </View>
+
+                                    <Text style={styles.timeDisplayText}>:</Text>
+
+                                    <View style={{ alignItems: 'center' }}>
+                                        <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
+                                            const next = new Date(pendingTime || new Date());
+                                            next.setMinutes((next.getMinutes() + 1) % 60);
+                                            setPendingTime(next);
+                                        }}>
+                                            <Text style={styles.timeAdjText}>▲</Text>
+                                        </TouchableOpacity>
+                                        <Text style={styles.timeDisplayText}>
+                                            {String((pendingTime || new Date()).getMinutes()).padStart(2, '0')}
+                                        </Text>
+                                        <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
+                                            const next = new Date(pendingTime || new Date());
+                                            next.setMinutes((next.getMinutes() + 59) % 60);
+                                            setPendingTime(next);
+                                        }}>
+                                            <Text style={styles.timeAdjText}>▼</Text>
+                                        </TouchableOpacity>
+                                        <Text style={{ color: Colors.primary, fontSize: 13 }}>Minute</Text>
+                                    </View>
+
+                                    <View style={{ alignItems: 'center' }}>
+                                        <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
+                                            const next = new Date(pendingTime || new Date());
+                                            next.setHours((next.getHours() + 12) % 24);
+                                            setPendingTime(next);
+                                        }}>
+                                            <Text style={styles.timeAdjText}>▲</Text>
+                                        </TouchableOpacity>
+                                        <Text style={[styles.timeDisplayText, { fontSize: 28 }]}>
+                                            {(pendingTime || new Date()).getHours() < 12 ? 'AM' : 'PM'}
+                                        </Text>
+                                        <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
+                                            const next = new Date(pendingTime || new Date());
+                                            next.setHours((next.getHours() + 12) % 24);
+                                            setPendingTime(next);
+                                        }}>
+                                            <Text style={styles.timeAdjText}>▼</Text>
+                                        </TouchableOpacity>
+                                        <Text style={{ color: Colors.primary, fontSize: 13 }}>AM/PM</Text>
+                                    </View>
+                                </View>
+
+                                <View style={styles.modalBtns}>
+                                    <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowTimeModal(false)}>
+                                        <Text style={styles.cancelBtnText}>Cancel</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.confirmBtn} onPress={saveTime}>
+                                        <Text style={styles.confirmBtnText}>Save</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </KeyboardAvoidingView>
+                </Modal>
+                </>
             )}
         </View>
     );
@@ -424,4 +582,50 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     headerBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
+
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    pickerModal: {
+        backgroundColor: Colors.white,
+        borderRadius: 12,
+        padding: 16,
+        borderWidth: 0.5,
+        borderColor: Colors.lightBlue,
+        width: '100%',
+    },
+    modalTitle: { fontSize: 18, fontWeight: '600', color: Colors.primary, marginBottom: 10, textAlign: 'center' },
+    timeAdjBtn: {
+        backgroundColor: Colors.primary,
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginVertical: 6,
+    },
+    timeAdjText: { color: Colors.white, fontSize: 22, fontWeight: '600' },
+    timeDisplayText: { fontSize: 40, fontWeight: '600', color: Colors.primary, marginVertical: 4 },
+    modalBtns: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 },
+    cancelBtn: {
+        backgroundColor: '#ccc',
+        padding: 10,
+        borderRadius: 8,
+        flex: 1,
+        alignItems: 'center',
+        marginRight: 8,
+    },
+    cancelBtnText: { color: '#333', fontWeight: '600' },
+    confirmBtn: {
+        backgroundColor: Colors.primary,
+        padding: 10,
+        borderRadius: 8,
+        flex: 1,
+        alignItems: 'center',
+    },
+    confirmBtnText: { color: Colors.white, fontWeight: '600' },
 });

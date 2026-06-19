@@ -32,6 +32,12 @@ interface Reminder {
     id: string;
     amount: number;
     unit: 'minutes' | 'hours' | 'days';
+    // kind 'offset' (or undefined, for legacy) fires `amount`/`unit` before the
+    // appointment's own time. kind 'clock' fires at a fixed time of day (the
+    // global morning/evening setting) on the day `daysBefore` earlier.
+    kind?: 'offset' | 'clock';
+    daysBefore?: number;              // clock only: 0 = morning of, 1 / 7 / 30
+    timeOfDay?: 'morning' | 'evening'; // clock only: which global time to use
     notifId?: string;
 }
 
@@ -61,15 +67,39 @@ interface LogEntry {
     notes: string;
 }
 
-// One-tap reminder presets. amount 0 = fire at the due time ("At time").
-const REMINDER_PRESETS: { label: string; amount: number; unit: 'minutes' | 'hours' | 'days' }[] = [
-    { label: 'At time', amount: 0, unit: 'minutes' },
-    { label: '5 min', amount: 5, unit: 'minutes' },
-    { label: '15 min', amount: 15, unit: 'minutes' },
-    { label: '30 min', amount: 30, unit: 'minutes' },
-    { label: '1 hour', amount: 1, unit: 'hours' },
-    { label: '1 day', amount: 1, unit: 'days' },
+// One-tap reminder presets. 'offset' presets fire `amount`/`unit` before the
+// appointment time; 'clock' presets fire at the global morning/evening time on
+// the day `daysBefore` earlier (0 = morning of the appointment day).
+type ReminderPreset = {
+    label: string;
+    kind: 'offset' | 'clock';
+    amount?: number;
+    unit?: 'minutes' | 'hours' | 'days';
+    daysBefore?: number;
+    timeOfDay?: 'morning' | 'evening';
+};
+const REMINDER_PRESETS: ReminderPreset[] = [
+    { label: 'At time', kind: 'offset', amount: 0, unit: 'minutes' },
+    { label: '1 hour before', kind: 'offset', amount: 1, unit: 'hours' },
+    { label: '2 hours before', kind: 'offset', amount: 2, unit: 'hours' },
+    { label: 'Morning of', kind: 'clock', daysBefore: 0, timeOfDay: 'morning' },
+    { label: 'Day before', kind: 'clock', daysBefore: 1, timeOfDay: 'evening' },
+    { label: 'Week before', kind: 'clock', daysBefore: 7, timeOfDay: 'evening' },
+    { label: 'Month before', kind: 'clock', daysBefore: 30, timeOfDay: 'evening' },
 ];
+
+// Human label for a saved reminder chip.
+const reminderLabel = (r: Reminder): string => {
+    if (r.kind === 'clock') {
+        if (r.daysBefore === 0) return 'Morning of';
+        if (r.daysBefore === 1) return 'Day before';
+        if (r.daysBefore === 7) return 'Week before';
+        if (r.daysBefore === 30) return 'Month before';
+        return `${r.daysBefore} days before`;
+    }
+    if (r.amount === 0) return 'At time of event';
+    return `${r.amount} ${r.unit} before`;
+};
 
 const DEFAULT_CATEGORIES: Category[] = [
     { id: 'c1', name: 'General', color: '#1a6e8a' },
@@ -392,15 +422,31 @@ export default function TodoScreen() {
         }
 
         if (!task.dueDate || task.reminders.length === 0) return;
+
+        // Global morning/evening times (set in Settings) drive 'clock' reminders.
+        const morningTime = (await AsyncStorage.getItem('reminder_morning_time')) || '08:00';
+        const eveningTime = (await AsyncStorage.getItem('reminder_evening_time')) || '17:00';
+
         for (const reminder of task.reminders) {
             const [month, day, year] = task.dueDate.split('/');
             const fullYear = year.length === 2 ? `20${year}` : year;
             const dueDateTime = new Date(`${fullYear}-${month}-${day}T${task.dueTime || '09:00'}:00`);
-            let msOffset = 0;
-            if (reminder.unit === 'minutes') msOffset = reminder.amount * 60 * 1000;
-            if (reminder.unit === 'hours') msOffset = reminder.amount * 60 * 60 * 1000;
-            if (reminder.unit === 'days') msOffset = reminder.amount * 24 * 60 * 60 * 1000;
-            const fireTime = new Date(dueDateTime.getTime() - msOffset);
+
+            let fireTime: Date;
+            if (reminder.kind === 'clock') {
+                // Fire at the chosen global time, `daysBefore` days before the date.
+                const which = reminder.timeOfDay === 'evening' ? eveningTime : morningTime;
+                const [chStr, cmStr] = which.split(':');
+                fireTime = new Date(`${fullYear}-${month}-${day}T00:00:00`);
+                fireTime.setDate(fireTime.getDate() - (reminder.daysBefore ?? 0));
+                fireTime.setHours(parseInt(chStr, 10) || 0, parseInt(cmStr, 10) || 0, 0, 0);
+            } else {
+                let msOffset = 0;
+                if (reminder.unit === 'minutes') msOffset = reminder.amount * 60 * 1000;
+                if (reminder.unit === 'hours') msOffset = reminder.amount * 60 * 60 * 1000;
+                if (reminder.unit === 'days') msOffset = reminder.amount * 24 * 60 * 60 * 1000;
+                fireTime = new Date(dueDateTime.getTime() - msOffset);
+            }
             console.log('Fire time:', fireTime, 'Now:', new Date(), 'Future?', fireTime > new Date());
             if (fireTime > new Date()) {
                 await Notifications.scheduleNotificationAsync({
@@ -450,15 +496,28 @@ export default function TodoScreen() {
         });
     };
 
-    const addPresetReminder = (amount: number, unit: 'minutes' | 'hours' | 'days') => {
-        // Skip if this exact reminder is already in the list.
-        if (newReminders.some(r => r.amount === amount && r.unit === unit)) return;
-        const reminder: Reminder = {
+    const addPresetReminder = (p: ReminderPreset) => {
+        if (p.kind === 'clock') {
+            // Skip if this exact clock reminder is already in the list.
+            if (newReminders.some(r => r.kind === 'clock' && r.daysBefore === p.daysBefore)) return;
+            setNewReminders([...newReminders, {
+                id: Date.now().toString(),
+                amount: 0,
+                unit: 'days',
+                kind: 'clock',
+                daysBefore: p.daysBefore,
+                timeOfDay: p.timeOfDay,
+            }]);
+            return;
+        }
+        // Offset preset. Skip if this exact reminder is already in the list.
+        if (newReminders.some(r => r.kind !== 'clock' && r.amount === p.amount && r.unit === p.unit)) return;
+        setNewReminders([...newReminders, {
             id: Date.now().toString(),
-            amount,
-            unit,
-        };
-        setNewReminders([...newReminders, reminder]);
+            amount: p.amount ?? 0,
+            unit: p.unit ?? 'minutes',
+            kind: 'offset',
+        }]);
     };
 
     const removeReminder = (id: string) => {
@@ -813,7 +872,7 @@ export default function TodoScreen() {
                                                     <TouchableOpacity
                                                         key={p.label}
                                                         style={[styles.recurBtn, { marginRight: 0 }]}
-                                                        onPress={() => addPresetReminder(p.amount, p.unit)}
+                                                        onPress={() => addPresetReminder(p)}
                                                     >
                                                         <Text style={styles.recurBtnText}>{p.label}</Text>
                                                     </TouchableOpacity>
@@ -822,7 +881,7 @@ export default function TodoScreen() {
                                             {newReminders.map(r => (
                                                 <View key={r.id} style={styles.reminderRow}>
                                                     <Text style={styles.reminderText}>
-                                                        {r.amount === 0 ? 'At time of event' : `${r.amount} ${r.unit} before`}
+                                                        {reminderLabel(r)}
                                                     </Text>
                                                     <TouchableOpacity onPress={() => removeReminder(r.id)}>
                                                         <Text style={styles.catDeleteBtn}>✕</Text>
