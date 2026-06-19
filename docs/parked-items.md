@@ -2,7 +2,7 @@
 
 Future / deferred work for "Remember When." Not for the current session — the active goal lives in `handoff.md`. Pull an item from here when you're ready to take it on; move it back into `handoff.md` once it's the live goal. Add new ideas as they come up.
 
-Last updated: 2026-06-17
+Last updated: 2026-06-19
 
 ---
 
@@ -13,7 +13,9 @@ This is the "someday" list: things worth doing eventually, but not what we're wo
 **Things that are a bit broken (Bugs / correctness):**
 
 - **Timer cancel might not work.** When you cancel a Timer, the alert it set might still go off, because the app may be using the wrong tag to call it back. Not confirmed yet — needs a test on the phone.
-- **"Repeating" To-Dos don't actually repeat.** If you mark a To-Do as Daily/Weekly/etc., its reminder only fires once and then stops. Right now that repeat setting only changes how the To-Do looks in the Week view — it doesn't create a recurring reminder.
+- **"Repeating" To-Dos don't actually repeat.** If you mark a To-Do as Daily/Weekly/etc., its reminder only fires once and then stops. Right now that repeat setting only changes how the To-Do looks in the Week view — it doesn't create a recurring reminder. **(Now the NEXT GOAL — see handoff. Decided 2026-06-19: remove 'Daily' from To-Do entirely since daily lives in My Day, and remove the date requirement for 'Weekly'.)**
+
+- **To-Do banner Done + on-page Snooze.** The Done banner action and on-page Snooze added to My Day + Pets Day in session 5 were **deferred for To-Do** (Patrick's call). **Now the NEXT GOAL — see handoff.**
 - **Leftover old pet data.** When Pets Day was rebuilt, it switched to new storage and left the old pet data behind, sitting unused in the app. It's harmless, but a small cleanup would tidy it away.
 
 **Decisions to make (Design decisions):**
@@ -38,7 +40,7 @@ The **"Done"** section at the very bottom is just a record of recently finished 
 
 ## Design decisions
 
-- **Where do daily-repeating reminders live?** My Day is already the daily engine (DAILY trigger, time-only, daily reset + history). Decide whether To-Do drops "Daily" entirely (and what happens to weekly/monthly/yearly, which also don't schedule notifications). Likely direction: daily-repeating reminders live in My Day; To-Do is for dated one-offs.
+- **Where do daily-repeating reminders live? → DECIDED 2026-06-19.** My Day is the daily engine; To-Do drops "Daily" entirely. Also decided: the "Weekly" category no longer requires a due date. (Now part of the named next goal in handoff. Weekly/monthly/yearly still don't schedule recurring notifications — revisit separately if needed.)
 - **Pets Day routine reminders → DONE (2026-06-17).** Built in session 4: daily "Pets Routine" reminders with Snooze 15/30/60, touching `mollie.tsx` + `_layout.tsx`. Committed and device-validated on build 18. (See Done section.)
 - **Tap-routing is screen-only and untested** (`app/_layout.tsx`). Routes by `data.source` to the right SCREEN but never lands on the specific item, and has never been confirmed with a real tap. To-Do reminders carry `taskId` (landing on the task is feasible); My Day and To-Do "Background" reminders carry no item id. (If Pets Day notifications land, decide its `data.source` routing too.)
 
@@ -48,6 +50,7 @@ The **"Done"** section at the very bottom is just a record of recently finished 
 
 ## Done (recently cleared from this list)
 
+- **Notification "Done" action + on-page Snooze (My Day + Pets Day)** — DONE 2026-06-19 (session 5). Added a **Done** button to the `mydaysnooze`/`petssnooze` banner categories (marks the item complete in `my_routine`/`pets_feeds` by `itemId` and cancels the fired notif, in `app/_layout.tsx`), and an on-page **Snooze** button on every My Day + Pets Day tile that pops up 15/30/60 (`app/myday.tsx` + `app/mollie.tsx`, reusing the TIME_INTERVAL snooze scheme). **Committed + device-validated.** (To-Do equivalent deferred → now the next goal.)
 - **Pets Day routine reminders (with Snooze)** — DONE 2026-06-17 (session 4). Pets Day had no notification code; now mirrors My Day. `mollie.tsx` got permission + handler on mount and `scheduleAllPetsNotifications` (DAILY trigger per incomplete feed, title "Pets Routine", `petssnooze` category); `_layout.tsx` got the `petssnooze` category, source-based snooze branching, and `pets`/`petssnooze` → `/mollie` routing. **Committed + device-validated on build 18.**
 - **Counters reset on page return (My Day + Pets Day)** — DONE 2026-06-17 (session 4). Coffee/Water/Treats were in-memory only and reset to 0 whenever you left and came back. Now stored in AsyncStorage (`my_coffee`, `my_water`, `pets_treats`), loaded on open, saved on every +/−, and reset on the existing daily rollover. **Committed + device-validated on build 18.**
 - **To-Do tiles show the due TIME** — DONE 2026-06-15 (session 2). Both render spots (`app/todo.tsx` lines 515 + 554) now append `' at ' + task.dueTime` when set, shown exactly as typed (free-text field), matching the reminder body. **Committed 2026-06-15 (`d7b4e81`); awaiting device test.**
