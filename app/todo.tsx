@@ -408,6 +408,63 @@ export default function TodoScreen() {
             return;
         }
 
+        // Monthly recurring task: one repeating alert on the chosen day of the
+        // month (1–28) at the set time — e.g. a bill due on the 1st. No date and
+        // no "before" offsets, same pattern as weekly.
+        if (task.recurring === 'monthly') {
+            const [hStr, mStr] = (task.dueTime || '09:00').split(':');
+            let hour = parseInt(hStr, 10);
+            let minute = parseInt(mStr ?? '0', 10);
+            if (isNaN(hour)) hour = 9;
+            if (isNaN(minute)) minute = 0;
+            await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: `📋 Reminder: ${task.title}`,
+                    body: `Day ${task.recurDay} each month${task.dueTime ? ' at ' + task.dueTime : ''}`,
+                    data: { taskId: task.id, itemId: task.id, label: task.title, source: 'todo' },
+                    categoryIdentifier: 'todosnooze',
+                    sound: 'default',
+                },
+                trigger: {
+                    type: Notifications.SchedulableTriggerInputTypes.MONTHLY,
+                    day: task.recurDay || 1, // 1-based day of month (picker caps at 28)
+                    hour,
+                    minute,
+                } as Notifications.MonthlyTriggerInput,
+            });
+            return;
+        }
+
+        // Yearly recurring task: one repeating alert on the chosen month + day at
+        // the set time — e.g. furnace filter every Oct 15, smoke-detector batteries
+        // every Jan 1. NOTE: Expo wants month 0-based (Jan=0), so recurMonth (1–12)
+        // minus 1; day is 1-based.
+        if (task.recurring === 'yearly') {
+            const [hStr, mStr] = (task.dueTime || '09:00').split(':');
+            let hour = parseInt(hStr, 10);
+            let minute = parseInt(mStr ?? '0', 10);
+            if (isNaN(hour)) hour = 9;
+            if (isNaN(minute)) minute = 0;
+            const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: `📋 Reminder: ${task.title}`,
+                    body: `${MONTH_NAMES[(task.recurMonth || 1) - 1]} ${task.recurDay}${task.dueTime ? ' at ' + task.dueTime : ''}`,
+                    data: { taskId: task.id, itemId: task.id, label: task.title, source: 'todo' },
+                    categoryIdentifier: 'todosnooze',
+                    sound: 'default',
+                },
+                trigger: {
+                    type: Notifications.SchedulableTriggerInputTypes.YEARLY,
+                    month: (task.recurMonth || 1) - 1, // Expo months are 0-based (Jan=0)
+                    day: task.recurDay || 1,
+                    hour,
+                    minute,
+                } as Notifications.YearlyTriggerInput,
+            });
+            return;
+        }
+
         if (!task.dueDate || task.reminders.length === 0) return;
 
         // Global morning/evening times (set in Settings) drive 'clock' reminders.
