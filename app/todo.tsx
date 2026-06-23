@@ -109,7 +109,6 @@ export default function TodoScreen() {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
     const [log, setLog] = useState<LogEntry[]>([]);
-    const [sortBy, setSortBy] = useState<'priority' | 'dueDate' | 'category'>('priority');
     const [filterCategory, setFilterCategory] = useState<string>('all');
     const [showAddTask, setShowAddTask] = useState(false);
     const [showAddCategory, setShowAddCategory] = useState(false);
@@ -355,18 +354,18 @@ export default function TodoScreen() {
 
         filtered = filtered.filter(t => !t.completed);
 
-        if (sortBy === 'priority') {
-            const order: Record<Priority, number> = { Urgent: 0, Normal: 1, Someday: 2 };
-            return [...filtered].sort((a, b) => order[a.priority] - order[b.priority]);
-        } else if (sortBy === 'dueDate') {
-            return [...filtered].sort((a, b) => {
-                if (!a.dueDate) return 1;
-                if (!b.dueDate) return -1;
-                return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-            });
-        } else {
-            return [...filtered].sort((a, b) => a.categoryId.localeCompare(b.categoryId));
-        }
+        // Fixed sort: by due date + time, soonest on top. Tasks with no due
+        // date (including recurring weekly/monthly/yearly) fall to the bottom.
+        const stamp = (t: Task) => {
+            const [month, day, year] = t.dueDate.split('/');
+            const fullYear = year.length === 2 ? `20${year}` : year;
+            return new Date(`${fullYear}-${month}-${day}T${t.dueTime || '00:00'}:00`).getTime();
+        };
+        return [...filtered].sort((a, b) => {
+            if (!a.dueDate) return 1;
+            if (!b.dueDate) return -1;
+            return stamp(a) - stamp(b);
+        });
     };
 
     const getCategoryName = (id: string) => {
@@ -611,21 +610,6 @@ export default function TodoScreen() {
                         </TouchableOpacity>
                     ))}
                 </ScrollView>
-
-                <View style={styles.sortRow}>
-                    <Text style={styles.sortLabel}>Sort:</Text>
-                    {(['priority', 'dueDate', 'category'] as const).map(s => (
-                        <TouchableOpacity
-                            key={s}
-                            style={[styles.sortBtn, sortBy === s && styles.sortBtnActive]}
-                            onPress={() => setSortBy(s)}
-                        >
-                            <Text style={[styles.sortBtnText, sortBy === s && styles.sortBtnTextActive]}>
-                                {s === 'priority' ? 'Priority' : s === 'dueDate' ? 'Due Date' : 'Category'}
-                            </Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
             </View>
 
             {tasks.filter(t => t.taskType === 'background').length > 0 && (
@@ -1090,24 +1074,6 @@ const styles = StyleSheet.create({
     },
     filterBtnText: { fontSize: 13, color: Colors.primary, fontWeight: '500' },
     filterBtnTextActive: { color: Colors.white },
-    sortRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 12,
-        gap: 8,
-    },
-    sortLabel: { fontSize: 13, color: Colors.primary, fontWeight: '600' },
-    sortBtn: {
-        paddingVertical: 4,
-        paddingHorizontal: 10,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: Colors.lightBlue,
-        backgroundColor: Colors.white,
-    },
-    sortBtnActive: { backgroundColor: Colors.bridge, borderColor: Colors.bridge },
-    sortBtnText: { fontSize: 12, color: Colors.primary },
-    sortBtnTextActive: { color: Colors.white },
     scroll: { flex: 1, padding: 12 },
     emptyText: { textAlign: 'center', color: '#aaa', marginTop: 40, fontSize: 16 },
     taskCard: {

@@ -1,6 +1,22 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #10 (2026-06-23): fixed the My Day after-midnight med bug (code written, tsc clean, AWAITING COMMIT + DEVICE TEST)
+## THIS SESSION — #11 (2026-06-23): To-Do list now sorts soonest-first — one fixed sort, buttons removed (code done, tsc clean, COMMITTED — AWAITING BUILD + DEVICE TEST)
+
+The long-parked "sort To-Do by soonest time on top" enhancement is built. **The To-Do list now has ONE fixed sort — by due date + time, soonest on top.** Patrick's decisions this session: no manual reorder in To-Do (unlike My Day — appointments have moving dates, so automatic self-maintains the "next thing on top"); recurring tasks don't need sorting (he positions them); and Due-Date sort should just be the permanent default, so the sort buttons are gone entirely.
+
+What changed, all in **`app/todo.tsx`**:
+
+- `getSortedTasks` collapsed from three branches (priority/dueDate/category) to **one fixed sort**: it builds a date+time stamp per task (`dueDate` `MM/DD/YYYY` + `dueTime` `HH:MM`, mirroring the scheduler's own parse) and sorts ascending. **Same-day tasks order by time, earliest first.** A dated task with **no time** sorts as `00:00` (start of its day). **Undated + recurring (weekly/monthly/yearly) tasks fall to the bottom**, where Patrick's manual positioning stands.
+- Removed the `sortRow` UI block (the "Sort:" label + the 3 buttons), the `sortBy` state, and the orphaned `sortRow`/`sortLabel`/`sortBtn*` styles.
+- The category **filter** row (All + category chips) is **untouched** — that's filtering, not sorting; Patrick said leave it as is.
+
+`tsc --noEmit` clean. **Patrick is committing this and building it now in its OWN build** — deliberately segregated from other changes so this sort can be tested in isolation. **Device test once built:** add a few dated To-Dos with different dates/times → list shows the soonest at the top, and same-day items order by their time.
+
+**▶ NEXT SESSION — the design change Patrick wants: a "My Week" page.** Add a new **"My Week"** screen that **mirrors the other "My" pages** (My Day = `myday.tsx`; Pets Day = `mollie.tsx` already mirrors it) **but for weekly recurrences** — a single always-visible list of weekly-recurring routine items with the same structure and interactions as My Day (tiles, edit modal, Done/Snooze, manual ▲▼ reorder, history/log), scoped to things that recur weekly rather than daily. **Not yet scoped in detail** — Patrick will name it as the goal and we scope it together before building (one change at a time). This connects to the long-parked design question "where do weekly/recurring reminders live": My Week would become the weekly engine, the way My Day is the daily engine.
+
+---
+
+## LAST SESSION — #10 (2026-06-23): fixed the My Day after-midnight med bug (code COMMITTED, AWAITING DEVICE TEST)
 
 The raised-priority bug — a My Day item marked **Done from the notification banner** left no durable record and (when any record was written) was dated wrong after midnight — is now fixed in code. **One edit, `app/_layout.tsx`, the `action === 'done'` non-To-Do branch.** Patrick will commit.
 
@@ -120,14 +136,19 @@ History of finished work, kept short. The "Verified code facts" below are the li
 
 ## Active next step (the named goal for next session)
 
-**Two things are in flight, both awaiting a device test:**
+**THE NAMED NEXT GOAL: build the "My Week" page** (see the ▶ NEXT SESSION note under "THIS SESSION — #11" at the top). Mirror My Day's structure/interactions for weekly-recurring items. Scope it with Patrick before building.
 
-1. **Session #10 fix (My Day + Pets after-midnight banner Done) — code written, tsc clean, awaiting commit + device test.** See "THIS SESSION" at the top for the test steps. Mark each piece validated (or log the bug) once Patrick reports the phone result.
-2. **The 2026-06-19 build's PARTIAL test is still ongoing.** Confirmed: 7 reminder buttons toggle/light; banner OK clears without deleting. Still untested: Morning-of/Day/Week/Month timing, 1hr/2hr/At-time offsets, Settings time changes, and Monthly + Yearly recurring firing (Yearly month especially). See "TEST RESULTS" up top.
+**Three things are also in flight, all awaiting a device test:**
 
-**Still parked:** To-Do "Done" stamps today's date on stale banners (Bugs/correctness — separate from the now-fixed My Day bug); sort To-Do by soonest time on top (UI polish).
+1. **Session #11 sort (To-Do soonest-first) — code committed, tsc clean, awaiting build + device test.** Add a few dated To-Dos with different dates/times → soonest on top, same-day items ordered by time.
+2. **Session #10 fix (My Day + Pets after-midnight banner Done) — code committed, awaiting device test.** See "LAST SESSION — #10" for the test steps. Mark each piece validated (or log the bug) once Patrick reports the phone result.
+3. **The 2026-06-19 build's PARTIAL test is still ongoing.** Confirmed: 7 reminder buttons toggle/light; banner OK clears without deleting. Still untested: Morning-of/Day/Week/Month timing, 1hr/2hr/At-time offsets, Settings time changes, and Monthly + Yearly recurring firing (Yearly month especially). See "TEST RESULTS" up top.
+
+**Still parked:** To-Do "Done" stamps today's date on stale banners (Bugs/correctness — separate from the now-fixed My Day bug). (The "sort To-Do by soonest" item is now BUILT — session #11 — so it's no longer parked.)
 
 **Likely next goals (let Patrick name one):**
+
+- **▶ "My Week" page** (Patrick's stated next goal — mirror the "My" pages for weekly recurrences; scope first).
 
 - **Fix the separate To-Do "Done" wrong-date bug** — carry the reminder's intended date in the notification `data` (or stamp `completedDate` from it) instead of `new Date()` at tap-time. (`app/_layout.tsx`.)
 - **Sort the To-Do list by closest due time on top** (`app/todo.tsx`).
@@ -140,7 +161,12 @@ History of finished work, kept short. The "Verified code facts" below are the li
 - Small parked spin-off: the Yearly day picker offers 1–31 for every month (Feb 30 would throw at schedule time) — tighten it.
 - **Parked, not planned:** per-appointment reminder time override. **Resolved/dropped:** "where do daily-repeating reminders live" (decided — My Day is the daily engine, To-Do dropped Daily).
 
-## Files touched this session (#10 — 2026-06-23)
+## Files touched this session (#11 — 2026-06-23)
+
+- `app/todo.tsx` — `getSortedTasks` reduced to one fixed sort by due date + time (soonest on top; undated/recurring at the bottom); removed the sort-button UI block, the `sortBy` state, and the `sortRow`/`sortLabel`/`sortBtn*` styles. Category filter row untouched. **`tsc` clean. Patrick committing + building this now in its own segregated build to test in isolation.**
+- `docs/handoff.md` — this update (records the sort change; names the "My Week" page as the next goal). **Patrick commits.**
+
+## Files touched in session #10 (#10 — 2026-06-23)
 
 - `app/_layout.tsx` — `action === 'done'` non-To-Do branch now writes a dated history entry (`my_history` for My Day, `pets_history` for Pets) stamped from `response.notification.date`×1000, in addition to marking the item complete + cancelling the notif. Fixes the after-midnight med bug; mirrors it to Pets per Patrick. **`tsc` clean. Awaiting commit + device test.**
 - `docs/handoff.md` + `docs/parked-items.md` — refreshed at session close (this version). **Patrick commits.**
@@ -165,8 +191,9 @@ You're picking up the "Remember When" app (Expo / React Native, runs on my iPhon
 
 1. The `elderlyassistant` folder must be connected via Cowork's folder picker — if you can't see it, give me the folder-request button; don't ask me to upload files.
 2. Open and read `docs/handoff.md` first (full state, standing rules, next step), then skim `docs/parked-items.md` (the eventual-work backlog) so you know what's deferred.
-3. **TWO things are awaiting a device test — ASK ME HOW TESTING WENT FIRST**, then mark each piece validated (or log the bug):
-   - **Session #10 (2026-06-23): the My Day + Pets after-midnight banner-Done fix** — banner Done now writes a dated history entry stamped from when the reminder fired, so a dose/feed marked just after midnight files under the right day. Code written + tsc clean; check whether I committed and built it. Test: mark a My Day item Done from the banner after midnight → My Day log shows it under the prior day; same for a Pets feed.
+3. **THREE things are awaiting a device test — ASK ME HOW TESTING WENT FIRST**, then mark each piece validated (or log the bug):
+   - **Session #11 (2026-06-23): To-Do soonest-first sort** — the To-Do list now has one fixed sort by due date + time (soonest on top), sort buttons removed. Code committed + tsc clean; check whether I built it. Test: add a few dated To-Dos with different dates/times → soonest on top, same-day items ordered by time.
+   - **Session #10 (2026-06-23): the My Day + Pets after-midnight banner-Done fix** — banner Done now writes a dated history entry stamped from when the reminder fired, so a dose/feed marked just after midnight files under the right day. Code committed + tsc clean; check whether I built it. Test: mark a My Day item Done from the banner after midnight → My Day log shows it under the prior day; same for a Pets feed.
    - **The 2026-06-19 build** (bundles "Reminder Options" + Group 1) was still in partial testing: (a) **"Reminder Options"** — editable global Morning (8 AM) / Evening (5 PM) times in Settings + seven "Reminders before" buttons in To-Do + silent OK dismiss; (b) **Group 1** — Monthly + Yearly recurring To-Dos fire. Still untested: reminder timing, Settings time changes, Monthly/Yearly firing (Yearly month especially). 3-month/6-month recurring stays parked. Everything before these is committed + device-validated; don't re-open finished work.
-4. **No new goal pre-scoped.** After the test results, likely next: the parked To-Do "Done" wrong-date bug, Group 2 (on-tile To-Do Snooze), the parked 3/6-month recurring, or another parked item. Wait for me to name one, tell me how heavy it looks, and wait for my "go" — one change at a time.
+4. **The named next goal is the "My Week" page** — a new screen mirroring the "My" pages (My Day / Pets Day) but for **weekly** recurrences. Not yet scoped; help me scope it before building, then wait for my "go" — one change at a time. (Other parked options if I change my mind: the To-Do "Done" wrong-date bug, Group 2 on-tile To-Do Snooze, the parked 3/6-month recurring.)
 5. **Build economy:** I want to minimize EAS builds. Batch related edits across a session, I commit, then ONE build tests them together. Docs get their own commit AFTER the phone test (see "Build-and-test commit rhythm" in `session-start.md`).
