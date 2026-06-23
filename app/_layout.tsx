@@ -121,6 +121,7 @@ export default function RootLayout() {
 
       const isPets = source === 'pets' || source === 'petssnooze';
       const storageKey = isPets ? 'pets_feeds' : 'my_routine';
+      const historyKey = isPets ? 'pets_history' : 'my_history';
       (async () => {
         if (itemId) {
           const raw = await AsyncStorage.getItem(storageKey);
@@ -132,6 +133,28 @@ export default function RootLayout() {
             await AsyncStorage.setItem(storageKey, JSON.stringify(updated));
           }
         }
+        // Write a dated history entry so the item leaves a durable record. The
+        // daily reset clears the `completed` flag overnight, so without this an
+        // item marked from the banner would vanish. Applies to both My Day
+        // (my_history) and Pets Day (pets_history) — same HistoryEntry shape and
+        // 50-entry cap their on-screen Log uses. Date + time come from when the
+        // reminder FIRED (notification.date), not when Done was tapped — so an
+        // item marked just after midnight is filed under the day the reminder
+        // was issued, not the next day. iOS reports notification.date in SECONDS
+        // (timeIntervalSince1970), so multiply by 1000 to build a JS Date.
+        const label = (data?.label as string) || 'Reminder';
+        const fired = new Date(response.notification.date * 1000);
+        const histRaw = await AsyncStorage.getItem(historyKey);
+        const hist = histRaw ? (JSON.parse(histRaw) as any[]) : [];
+        const newEntry = {
+          id: Date.now().toString(),
+          date: fired.toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
+          sched: label,
+          actual: fired.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false }),
+          what: '',
+          note: '',
+        };
+        await AsyncStorage.setItem(historyKey, JSON.stringify([newEntry, ...hist].slice(0, 50)));
         await Notifications.cancelScheduledNotificationAsync(notifId);
       })();
       return;
