@@ -1,13 +1,20 @@
 # Hand-off note — paste at the start of the next session
 
-## FIRST THING TO ASK PATRICK
+## TEST RESULTS — partial (logged 2026-06-22, session #9)
 
-**One TestFlight build (committed 2026-06-19) bundles TWO sessions of work and was IN DEVICE TESTING when this session ended — results not yet reported. First ask Patrick how the phone test went** (what worked, what didn't), then update these docs to mark each piece device-validated or note the bug. The bundled, committed, `tsc`-clean work:
+The TestFlight build (committed 2026-06-19) bundling "Reminder Options" + Group 1 was device-tested. Patrick reported a **partial** set of findings — several pieces are still untested, so the docs commit (this update) records what's confirmed and leaves the rest pending. Code stays committed; this is a docs-only logging pass.
 
-- **"Reminder Options" — appointment reminders.** Settings (`app/settings.tsx`) got a "Reminders" section with editable global **Morning (8 AM)** + **Evening (5 PM)** times (`reminder_morning_time`/`reminder_evening_time`). To-Do (`app/todo.tsx`) got the `Reminder` `kind: 'offset'|'clock'`/`daysBefore`/`timeOfDay` model and seven toggle-highlight **"Reminders before"** buttons (At time / 1 hour / 2 hours / Morning of / Day / Week / Month): "Morning of" = morning time on the day, "Day/Week/Month" = evening time 1/7/30 days before, the rest are offsets. `_layout.tsx` got a silent **OK** dismiss on the `todosnooze` banner.
-- **Group 1 (this session) — Monthly + Yearly recurring To-Dos now fire.** `scheduleReminders` (`app/todo.tsx`) got a **monthly** branch (native repeating MONTHLY trigger on `recurDay` 1–28 at the Due Time) and a **yearly** branch (native YEARLY trigger on `recurMonth`−1 [Expo months are 0-based] + `recurDay` at the Due Time), both mirroring the existing weekly branch and carrying the Done/Snooze/OK banner. **every3months / every6months remain parked** (no native trigger + no anchor-date UI).
+**Confirmed working (device-validated 2026-06-22):**
 
-**What to test:** (Reminder Options) the seven buttons toggle/light; "Morning of" fires ~8 AM that day; "Day/Week/Month" fire ~5 PM 1/7/30 days before; "1 hour/2 hours/At time" fire off the appointment time; Settings time changes take effect; the banner OK just clears the alert. (Group 1) a Monthly To-Do (e.g. day 1) fires that day each month; a Yearly To-Do (e.g. Oct 15) fires on the right month+day — **double-check the Yearly month lands correctly**, since Expo's 0-based month was the one risky spot.
+- **The seven "Reminders before" buttons toggle/light correctly** (Reminder Options, `app/todo.tsx`).
+- **The banner OK button clears the alert without deleting the event** (`app/_layout.tsx` `action === 'ok'` no-op).
+- (Implicit) a **"Day" reminder fired and produced a banner** with Done/OK actions — so that preset schedules + displays. Its *timing accuracy* (~5 PM, 1 day before) is NOT yet confirmed.
+
+**Bug found (device-observed 2026-06-22) — My Day medication logs on the wrong day after midnight. RAISED PRIORITY.** Patrick's medication is a **My Day daily routine item** (when he said "recurring Day tasks" he meant My Day daily, NOT the To-Do "Day" reminder preset). He takes it before bed, sometimes after midnight, and marks it done via the **banner Done on the notification popup**. **Verified in code:** banner Done (`_layout.tsx` ~122–137, `source !== 'todo'`) writes NO `my_history` entry and only sets `completed:true`, which the next-day reset (`myday.tsx` ~119) then clears → no durable record of the dose. (The on-screen Log does write history, but dates it from `new Date()` at tap-time — `myday.tsx` ~204 — still wrong after midnight.) **Open before fixing:** the desired late-night rule, and whether banner Done should write a dated history entry. A *separate* verified To-Do "Done" date bug also exists (not where meds live). Both parked under Bugs/correctness; see `parked-items.md`.
+
+**Enhancement requested (2026-06-22) — sort the To-Do list by time, soonest/"closest" on top.** New behavior, not part of this build's scope. Parked under UI polish.
+
+**Still UNTESTED (leave marked device-test-pending, do NOT mark validated):** "Morning of" firing ~8 AM that day; "Day/Week/Month" firing ~5 PM at 1/7/30 days before (timing); "1 hour/2 hours/At time" offsets off the appointment time; Settings Morning/Evening time changes taking effect; **Monthly** recurring firing each month; **Yearly** recurring firing on the right month+day (**Expo's 0-based month is the risky spot — still needs a real check**).
 
 Everything before these two sessions is **COMMITTED and DEVICE-VALIDATED**: the "Remove Daily & Date for weekly" session (Weekly To-Dos fire a dateless repeating weekly alert; To-Do Done + Snooze banner), plus the My Day + Pets Day Done/Snooze enhancements, Pets reminders, and counter persistence. Don't re-open finished work.
 
@@ -48,7 +55,11 @@ Remember When (elderlyassistant) — Expo / React Native app in `Projects/elderl
 - "Set up Push Notifications?" during build → always **No** (app uses only LOCAL notifications, no remote push/APNs).
 - Local testing: dev build into iOS Simulator via `npm run ios`. Metro picks up edits live.
 
-## Latest session — 2026-06-19 (#8, "Group 1": Monthly + Yearly recurring To-Dos)
+## Latest session — 2026-06-22 (#9, log partial device-test results)
+
+Docs-only session: logged Patrick's partial phone-test findings for the 2026-06-19 build. No code changed; read `app/_layout.tsx` to verify the Done-date bug. Confirmed working: the 7 reminder buttons toggle/light, banner OK clears without deleting. New bug: To-Do "Done" on a stale banner logs today's date (cause verified in code — `completedDate` from `new Date()` at tap-time, no fire-date in payload). New enhancement: sort To-Do by soonest time on top. Untested still pending: reminder timing, Settings time changes, Monthly + Yearly recurring. Patrick commits the docs.
+
+## Prior session — 2026-06-19 (#8, "Group 1": Monthly + Yearly recurring To-Dos)
 
 Goal: make Monthly and Yearly recurring To-Dos actually fire (only Weekly did). Patrick scoped Group 1 down — **3-month / 6-month parked** (no native repeating trigger, and they have no anchor-date picker in the form), Monthly + Yearly are enough for now. Built one step at a time, `tsc` clean after each. **Committed; built into a TestFlight build that also carries the prior "Reminder Options" work; Patrick was device-testing as the session ended (results pending).**
 
@@ -95,9 +106,13 @@ History of finished work, kept short. The "Verified code facts" below are the li
 
 ## Active next step (the named goal for next session)
 
-**FIRST: get the device-test results for the current build (Reminder Options + Group 1 Monthly/Yearly).** Ask Patrick what worked / what didn't, then mark each piece device-validated in these docs (or log the bug as the next goal). Test checklist is in "FIRST THING TO ASK PATRICK" up top. Only once that's settled, pick the next goal below.
+**Device test was PARTIAL (logged 2026-06-22) — finish testing before closing out this build.** Confirmed: 7 reminder buttons toggle/light; banner OK clears without deleting. Still untested: Morning-of/Day/Week/Month timing, 1hr/2hr/At-time offsets, Settings time changes, and Monthly + Yearly recurring firing (Yearly month especially). See "TEST RESULTS" up top. **New bug surfaced:** To-Do "Done" stamps today's date on stale banners (parked, Bugs/correctness). **New enhancement:** sort To-Do by soonest time on top (parked, UI polish).
 
 **Likely next goals (let Patrick name one):**
+
+- **Fix the My Day after-midnight medication date bug (raised priority).** Meds are a My Day daily item. Decide the late-night rule (does a dose marked just after midnight count for the prior day?), make banner Done write a history entry too, and date completion by the intended day rather than the tap moment. (`app/myday.tsx` + `app/_layout.tsx`.)
+- **Fix the separate To-Do "Done" wrong-date bug** — carry the reminder's intended date in the notification `data` (or stamp `completedDate` from it) instead of `new Date()` at tap-time. (`app/_layout.tsx`.)
+- **Sort the To-Do list by closest due time on top** (`app/todo.tsx`).
 
 - **Group 2 — To-Do convenience:** add an on-tile Snooze button to To-Do (My Day + Pets Day have one; To-Do only has the banner Snooze).
 - **3-month / 6-month recurring** (the parked half of Group 1): needs a design decision (reschedule-on-fire vs pre-scheduling the next few one-shots, within the iOS 64-notification cap) AND a new anchor-date picker in the form. Heavier; its own session.
@@ -107,7 +122,11 @@ History of finished work, kept short. The "Verified code facts" below are the li
 - Small parked spin-off: the Yearly day picker offers 1–31 for every month (Feb 30 would throw at schedule time) — tighten it.
 - **Parked, not planned:** per-appointment reminder time override. **Resolved/dropped:** "where do daily-repeating reminders live" (decided — My Day is the daily engine, To-Do dropped Daily).
 
-## Files touched this session (#8, "Group 1: Monthly + Yearly" — 2026-06-19)
+## Files touched this session (#9 — 2026-06-22, docs only)
+
+- `docs/handoff.md` + `docs/parked-items.md` — logged partial device-test results: validated the 7 reminder buttons + banner OK; recorded the To-Do "Done" wrong-date bug (verified in `app/_layout.tsx`) and the "sort To-Do by closest time" enhancement; left reminder timing + Monthly/Yearly recurring marked pending. **No code touched. Patrick commits the docs.**
+
+## Files touched in session #8 ("Group 1: Monthly + Yearly" — 2026-06-19)
 
 - `app/todo.tsx` — `scheduleReminders` gained a **monthly** branch (MONTHLY trigger, `day recurDay`) and a **yearly** branch (YEARLY trigger, `month recurMonth−1`, `day recurDay`), both at `dueTime`/default 9:00 with the `todosnooze` banner, each returning before the dated path. **`tsc` clean. Committed; in the current build, device test pending.**
 - `docs/session-start.md` — added the **"Build-and-test commit rhythm"** section (code committed before the build, docs committed separately after the device test) and tweaked the matching standing rule. **Patrick commits.**

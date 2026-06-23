@@ -2,7 +2,7 @@
 
 Future / deferred work for "Remember When." Not for the current session — the active goal lives in `handoff.md`. Pull an item from here when you're ready to take it on; move it back into `handoff.md` once it's the live goal. Add new ideas as they come up.
 
-Last updated: 2026-06-19
+Last updated: 2026-06-22
 
 ---
 
@@ -13,6 +13,7 @@ This is the "someday" list: things worth doing eventually, but not what we're wo
 **Things that are a bit broken (Bugs / correctness):**
 
 - **Timer cancel might not work.** When you cancel a Timer, the alert it set might still go off, because the app may be using the wrong tag to call it back. Not confirmed yet — needs a test on the phone.
+- **Medication taken after midnight is recorded on the wrong day — My Day (device-confirmed 2026-06-22, RAISED PRIORITY).** Patrick's medication is a **My Day** daily routine item, taken before bed, sometimes after midnight. Because My Day records completion at the moment you act (using that moment's calendar date), a dose taken late at night lands on the *next* day, not the day it was meant for. **Patrick confirmed he uses the banner Done on the notification popup** — which is the worse path: it writes **no** history line at all, only flips the item complete, and the next-day reset then clears even that, so a bedtime dose marked after midnight leaves no durable record in My Day history. (The on-screen Log does write a history line, but under the tap-day's date — still wrong after midnight.) For a medication log this is a real accuracy problem. **Open question for the fix:** what's the desired rule — should a dose marked just after midnight count for the previous day, and should banner Done write a dated history entry like Log does? (The earlier-logged To-Do "Done" date bug below is a separate, real bug, but it is NOT where the meds live.)
 - **"Repeating" To-Dos — Weekly/Monthly/Yearly now repeat; only 3 & 6 Months remain.** Weekly (session 6), then **Monthly + Yearly** (session #8, 2026-06-19) now fire true repeating alerts. **Only "3 Months" and "6 Months" still do nothing** — iOS has no native every-3/6-month alarm, and those two options have no date picker in the form to anchor them. (Monthly/Yearly committed, device test pending; see handoff.)
 
 - **To-Do banner Done + Snooze — DONE (banner). On-tile Snooze button still open.** Session 6 (2026-06-19) gave To-Do reminders a **Done + Snooze 15/30/60 banner** (new `todosnooze` category). NOT yet added: an **on-page Snooze button on each To-Do tile** like My Day/Pets have — do that if Patrick wants it. (Awaiting device test.)
@@ -27,6 +28,7 @@ This is the "someday" list: things worth doing eventually, but not what we're wo
 
 **Nice-to-have later (UI polish):**
 
+- **Sort the To-Do list by soonest first (requested 2026-06-22).** Patrick wants the To-Do list ordered by time, with the closest/soonest item on top so the next thing is always at the top.
 - **Project Planner reminders do nothing yet.** That screen has reminder fields, but they aren't wired up to anything. Low priority.
 
 The **"Done"** section at the very bottom is just a record of recently finished work, kept for reference — nothing there is waiting on you.
@@ -37,6 +39,11 @@ The **"Done"** section at the very bottom is just a record of recently finished 
 
 - **Possible Timer cancel bug — unconfirmed** (`app/timer.tsx`, `cancelTimer`). Cancels using `timer.id` (a `Date.now()` string), not the identifier returned by `scheduleNotificationAsync`, so the cancel may silently fail. Needs a device check.
 - **To-Do "recurring" — Weekly/Monthly/Yearly now schedule; only every3months/every6months remain** (`scheduleReminders`, `app/todo.tsx`). WEEKLY (session 6), MONTHLY (`day recurDay`), and YEARLY (`month recurMonth−1` [Expo 0-based], `day recurDay`) branches all fire native repeating triggers at `dueTime` with the `todosnooze` banner (session #8 added monthly/yearly — committed, device test pending). **every3months / every6months build nothing**: no native trigger AND no anchor-date picker in the form. Approach to design later: add a "starting date" picker, then either reschedule-on-fire (only runs when the app is opened/tapped — shaky for a memory aid) or pre-schedule the next few one-shots and top up on app open (sounder; respect the iOS 64-pending cap).
+- **My Day completion is dated at action-time → after-midnight doses log on the wrong day — device-confirmed 2026-06-22, RAISED PRIORITY (Patrick's medication).** Code-verified paths in `app/myday.tsx` + `app/_layout.tsx`:
+  - On-screen **Log** (`confirmLog`, `myday.tsx` ~line 204): history entry `date: new Date().toLocaleDateString()` — the tap moment, so a dose marked after midnight is filed under the next day.
+  - Banner **Done** (`_layout.tsx` `action === 'done'`, `source !== 'todo'` branch, ~lines 122–137): only sets `completed: true` in `my_routine` by `itemId` and cancels the notif — writes **no** `my_history` entry. The daily reset (`loadData`, `myday.tsx` ~line 119: if `my_last_date !== today` → all items `completed:false`) then clears that flag on the next-day open, so the dose can vanish from the record.
+  - **Patrick confirmed (2026-06-22) he uses the banner Done on the popup** — so for meds, the no-history path is the active one: the dose is marked complete, no `my_history` line is written, and the next-day reset clears the flag → no durable record. **Open questions before fixing:** (a) desired rule for late-night doses (count for the prior day?); (b) should banner Done write a dated `my_history` entry for parity with on-screen Log? Verified by reading code this session; not yet fixed.
+- **To-Do "Done" logs tap-date, not the reminder's date — device-confirmed 2026-06-22** (`app/_layout.tsx`, `action === 'done'` → `source === 'todo'` branch, ~line 104). Separate from the My Day med bug above (meds are My Day, not To-Do). The completion entry's `completedDate` is built from `new Date()` at the moment Done is tapped, and the notification `data` payload carries no original fire date — so a Done tapped on a stale banner records the completion under **today**. Observed on recurring "Day"-reminder tasks. Fix: include the intended fire date in the notification `data` and stamp `completedDate` from that (fall back to `new Date()` only if absent). (Bug verified by reading the code this session; not yet fixed.)
 - **Yearly day picker allows invalid dates** (`app/todo.tsx`, New/Edit Task form). The Yearly "Day" picker offers 1–31 for every month, so e.g. Feb 30 would throw a RangeError when `scheduleReminders` builds the YEARLY trigger (Expo validates day ≤ days-in-month). Low priority; tighten the picker to the selected month's length.
 - **Old `pets_data` storage key is orphaned** (`app/mollie.tsx`). The Pets Day single-page rewrite (2026-06-15) switched to new keys (`pets_feeds` / `pets_history` / `pets_last_date`) and no longer reads the old multi-pet `pets_data`. That key still sits in AsyncStorage, unused and harmless. Add a one-time cleanup that removes `pets_data` so nothing stale lingers.
 
@@ -48,6 +55,7 @@ The **"Done"** section at the very bottom is just a record of recently finished 
 
 ## UI polish
 
+- **Sort To-Do list by soonest due time on top** (`app/todo.tsx`, requested 2026-06-22). Order the rendered task list by due date/time ascending so the closest item is first. Decide how undated / recurring (weekly/monthly/yearly) tasks sort relative to dated ones.
 - **Project Planner schedules nothing** (`app/planner.tsx`). Has reminder UI/fields but wires up no notifications. Dormant, low priority.
 
 ## Done (recently cleared from this list)
