@@ -628,9 +628,11 @@ export default function MyDayScreen() {
                                     <Text style={styles.snoozeOptionText}>60 min</Text>
                                 </TouchableOpacity>
                             </View>
-                            <TouchableOpacity style={styles.cancelBtn} onPress={() => setSnoozeItemId(null)}>
-                                <Text style={styles.cancelBtnText}>Cancel</Text>
-                            </TouchableOpacity>
+                            <View style={styles.modalBtns}>
+                                <TouchableOpacity style={styles.cancelBtn} onPress={() => setSnoozeItemId(null)}>
+                                    <Text style={styles.cancelBtnText}>Cancel</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
                 </Modal>
@@ -1069,10 +1071,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         borderRadius: 6,
         borderWidth: 0.5,
-        borderColor: '#e74c3c',
+        borderColor: '#999',
     },
     clearAllBtnText: {
-        color: '#e74c3c',
+        color: '#666',
         fontSize: 13,
         fontWeight: '600',
     },
