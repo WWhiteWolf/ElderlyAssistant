@@ -1,6 +1,38 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #12 (2026-06-23): logged device-test results — #11 sort VALIDATED; Morning-of/1hr/2hr reminders VALIDATED; scoping "My Week"
+## THIS SESSION — #13 (2026-06-23): My Week banner-buttons device fix + popup Cancel-button + "Clear All" UI fixes (`tsc` clean, not yet committed)
+
+Two things this session: (A) the **My Week notification-banner buttons not appearing on the phone** (worked in the Simulator) — root-caused and fixed; and (B) pure-UI cleanup of the Cancel buttons and "Clear All" pills. The UI changes (B) are Simulator-validated by Patrick; the banner fix (A) is `tsc`-clean but **needs a phone build to confirm** (it's a device-only timing bug, not reproducible in the Simulator). `tsc --noEmit` clean throughout. **Not yet committed.**
+
+### (A) My Week banner buttons missing on device — FIXED (awaiting phone confirm)
+
+**Symptom.** My Week banner's **Done / "+1 Day"** buttons appeared and worked in the Simulator but **not on the phone** — on the device a banner just opened the My Week page with no action buttons.
+
+**Root cause (verified in native code).** All four notification categories were registered in one `useEffect` (`_layout.tsx`) with the four `setNotificationCategoryAsync(...)` calls fired **concurrently (no `await`)**. Expo registers a category via a **read-modify-write of the whole category set** (`node_modules/expo-notifications/ios/.../CategoriesModule.swift`: load current set → add this one → write back). The manager is a Swift `actor` but `await`s a fetch mid-method (`loadCategories()`), and on a **cold first-launch cache** that `await` is a reentrancy point — so four concurrent calls can each read the same initial set, each add only their own category, and the **last write wins**, dropping the others. `myweekactions` is registered **last**, so it's the one most likely dropped on device. The Simulator's timing happened to register all four; the phone's slower first-launch fetch widened the race window.
+
+**Fix.** Made the effect register the categories **sequentially** — wrapped them in an `async` IIFE and `await`ed each `setNotificationCategoryAsync` so every read-modify-write completes before the next starts. Same four categories, same actions; only timing changed. Also hardens the other three. (`app/_layout.tsx`.)
+
+**Phone test to run:** long-press / pull down a My Week reminder banner on the device → **Done** and **+1 Day** should now appear and work (Done logs to My Week's Log; +1 Day pushes to tomorrow). If still missing on device, the race wasn't the only factor — investigate further.
+
+### (B) Popup Cancel-button + "Clear All" UI cleanup (SIMULATOR-VALIDATED)
+
+`tsc --noEmit` clean. Simulator-validated by Patrick.
+
+**What was wrong.** The shared `cancelBtn` style (grey `#ccc`, `flex: 1`, `marginRight: 8`) was built to sit in a **row** next to a Save/Confirm button (the Edit popups, via `modalBtns`). When reused for a **lone** Cancel button it collapsed into a thin, unlabeled grey bar — Patrick literally couldn't see it (screenshot confirmed). This affected three popups: **My Week Postpone**, **My Day snooze**, **Pets Day snooze**.
+
+**The fix (3 files).** Wrapped each lone Cancel in a `<View style={styles.modalBtns}>` row, so it now renders exactly like the Edit popup's Cancel (a proper grey labeled button) — Patrick's stated preference. In a row, `flex: 1` governs width (full-width button) instead of collapsing height, so the "Cancel" label shows.
+
+- `app/myweek.tsx` — Postpone popup Cancel wrapped in `modalBtns`.
+- `app/myday.tsx` — snooze popup Cancel wrapped in `modalBtns`.
+- `app/mollie.tsx` — snooze popup Cancel wrapped in `modalBtns`.
+
+**Also (Patrick's request): "Clear All" pill above the log greyed on all three screens.** Was red (`borderColor`/text `#e74c3c`); now grey (`borderColor: '#999'`, text `#666`) to match the other buttons. Changed in `myweek.tsx`, `myday.tsx`, `mollie.tsx` (`clearAllBtn` / `clearAllBtnText`). (The Clear-All *action* still uses iOS's native destructive-styled confirm alert — unchanged.)
+
+**▶ Banner fix applied this session — see section (A) above.** The "no banner buttons on device" issue was root-caused (concurrent category registration racing on a cold cache, dropping `myweekactions`) and fixed by registering the categories sequentially. **Awaiting a phone build to confirm** (device-only timing bug; the Simulator already showed the buttons, so it can't validate the fix).
+
+---
+
+## SESSION — #12 (2026-06-23): logged device-test results — #11 sort VALIDATED; Morning-of/1hr/2hr reminders VALIDATED; scoping "My Week"
 
 **Device-test results logged this session (from Patrick's phone):**
 
@@ -179,6 +211,8 @@ History of finished work, kept short. The "Verified code facts" below are the li
 
 ## Active next step (the named goal for next session)
 
+**FIRST: confirm the session #13 My Week banner fix on the phone.** The banner-buttons bug (Done/"+1 Day" missing on device, present in Simulator) was root-caused to a category-registration race and fixed by registering the four notification categories **sequentially** in `_layout.tsx` (full detail in section (A) of "THIS SESSION — #13"). It's `tsc`-clean but can't be validated in the Simulator (the sim already showed the buttons), so it needs a **phone build**. Phone test: long-press / pull down a My Week banner → **Done** and **+1 Day** should appear and work. If still missing on device, the race wasn't the whole story — dig further. (The session #13 Cancel-button + Clear-All UI fixes are Simulator-validated, `tsc` clean; all of #13 awaits Patrick's commit + build.)
+
 **MY WEEK IS BUILT (session #12) — code-complete, `tsc` clean, Simulator-validated through the banner buttons.** Full per-stage detail is in the **"▶ MY WEEK — AGREED SPEC"** block near the top. **Patrick is committing + building + submitting + loading a TestFlight build at the end of session #12, and will report the phone results next session.** So the FIRST thing next session: **ask how the My Week phone test went** (checklist in in-flight item #0 below), mark each piece validated or log a bug. Then Patrick names the next goal (likely a parked item — see list below).
 
 **In flight, awaiting a device test:**
@@ -202,6 +236,14 @@ History of finished work, kept short. The "Verified code facts" below are the li
 - **Group 5 — Project Planner reminders:** wire up its dormant reminder fields to actually schedule alerts.
 - Small parked spin-off: the Yearly day picker offers 1–31 for every month (Feb 30 would throw at schedule time) — tighten it.
 - **Parked, not planned:** per-appointment reminder time override. **Resolved/dropped:** "where do daily-repeating reminders live" (decided — My Day is the daily engine, To-Do dropped Daily).
+
+## Files touched this session (#13 — 2026-06-23)
+
+- `app/myweek.tsx` — Postpone popup Cancel wrapped in `modalBtns` row (renders as a proper labeled grey button, not the thin bar); `clearAllBtn`/`clearAllBtnText` greyed (`#999`/`#666`).
+- `app/myday.tsx` — snooze popup Cancel wrapped in `modalBtns` row; `clearAllBtn`/`clearAllBtnText` greyed.
+- `app/mollie.tsx` — snooze popup Cancel wrapped in `modalBtns` row; `clearAllBtn`/`clearAllBtnText` greyed.
+- `app/_layout.tsx` — **banner fix:** category-registration `useEffect` now registers the four notification categories **sequentially** (async IIFE, `await` each `setNotificationCategoryAsync`) instead of firing them concurrently — fixes the cold-cache read-modify-write race that dropped `myweekactions` on device. No change to action handlers.
+- **`tsc --noEmit` clean.** UI changes (Cancel buttons, Clear All) Simulator-validated by Patrick; the `_layout.tsx` banner fix needs a **phone build** to confirm (device-only timing bug). Awaiting commit + build.
 
 ## Files touched this session (#12 — 2026-06-23)
 

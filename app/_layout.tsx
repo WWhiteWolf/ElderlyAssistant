@@ -12,32 +12,39 @@ export default function RootLayout() {
   // Register the My Day snooze category once, so its notifications can show
   // Snooze buttons (15 / 30 / 60 min). Category id has no ':' or '-' per Expo docs.
   useEffect(() => {
-    Notifications.setNotificationCategoryAsync('mydaysnooze', [
-      { identifier: 'done', buttonTitle: 'Done' },
-      { identifier: 'snooze15', buttonTitle: 'Snooze 15 min' },
-      { identifier: 'snooze30', buttonTitle: 'Snooze 30 min' },
-      { identifier: 'snooze60', buttonTitle: 'Snooze 60 min' },
-    ]);
-    Notifications.setNotificationCategoryAsync('petssnooze', [
-      { identifier: 'done', buttonTitle: 'Done' },
-      { identifier: 'snooze15', buttonTitle: 'Snooze 15 min' },
-      { identifier: 'snooze30', buttonTitle: 'Snooze 30 min' },
-      { identifier: 'snooze60', buttonTitle: 'Snooze 60 min' },
-    ]);
-    Notifications.setNotificationCategoryAsync('todosnooze', [
-      { identifier: 'done', buttonTitle: 'Done' },
-      { identifier: 'snooze15', buttonTitle: 'Snooze 15 min' },
-      { identifier: 'snooze30', buttonTitle: 'Snooze 30 min' },
-      { identifier: 'snooze60', buttonTitle: 'Snooze 60 min' },
-      // OK = acknowledge & dismiss just this alert. Doesn't open the app, mark
-      // the task done, or touch the task's other scheduled reminders.
-      { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
-    ]);
-    // My Week reminders: mark Done, or push the reminder one day forward.
-    Notifications.setNotificationCategoryAsync('myweekactions', [
-      { identifier: 'done', buttonTitle: 'Done' },
-      { identifier: 'postpone1', buttonTitle: '+1 Day' },
-    ]);
+    // Register the categories SEQUENTIALLY (await each). Expo registers a
+    // category via a read-modify-write of the whole category set; firing all
+    // four concurrently can race on a cold first-launch cache and drop some
+    // (worked in the Simulator, lost myweekactions on device). Awaiting each
+    // call makes every read-modify-write finish before the next begins.
+    (async () => {
+      await Notifications.setNotificationCategoryAsync('mydaysnooze', [
+        { identifier: 'done', buttonTitle: 'Done' },
+        { identifier: 'snooze15', buttonTitle: 'Snooze 15 min' },
+        { identifier: 'snooze30', buttonTitle: 'Snooze 30 min' },
+        { identifier: 'snooze60', buttonTitle: 'Snooze 60 min' },
+      ]);
+      await Notifications.setNotificationCategoryAsync('petssnooze', [
+        { identifier: 'done', buttonTitle: 'Done' },
+        { identifier: 'snooze15', buttonTitle: 'Snooze 15 min' },
+        { identifier: 'snooze30', buttonTitle: 'Snooze 30 min' },
+        { identifier: 'snooze60', buttonTitle: 'Snooze 60 min' },
+      ]);
+      await Notifications.setNotificationCategoryAsync('todosnooze', [
+        { identifier: 'done', buttonTitle: 'Done' },
+        { identifier: 'snooze15', buttonTitle: 'Snooze 15 min' },
+        { identifier: 'snooze30', buttonTitle: 'Snooze 30 min' },
+        { identifier: 'snooze60', buttonTitle: 'Snooze 60 min' },
+        // OK = acknowledge & dismiss just this alert. Doesn't open the app, mark
+        // the task done, or touch the task's other scheduled reminders.
+        { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
+      ]);
+      // My Week reminders: mark Done, or push the reminder one day forward.
+      await Notifications.setNotificationCategoryAsync('myweekactions', [
+        { identifier: 'done', buttonTitle: 'Done' },
+        { identifier: 'postpone1', buttonTitle: '+1 Day' },
+      ]);
+    })();
   }, []);
 
   useEffect(() => {
