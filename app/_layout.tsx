@@ -33,6 +33,11 @@ export default function RootLayout() {
       // the task done, or touch the task's other scheduled reminders.
       { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
     ]);
+    // My Week reminders: mark Done, or push the reminder one day forward.
+    Notifications.setNotificationCategoryAsync('myweekactions', [
+      { identifier: 'done', buttonTitle: 'Done' },
+      { identifier: 'postpone1', buttonTitle: '+1 Day' },
+    ]);
   }, []);
 
   useEffect(() => {
@@ -79,6 +84,50 @@ export default function RootLayout() {
       return;
     }
 
+    // My Week "+1 Day" action: push this chore's reminder to tomorrow at its
+    // own time, without opening the app. Replaces any pending postpone for the
+    // chore and stamps postponedTo so the tile shows "moved to <day>" next open.
+    // We do NOT cancel the fired notification's identifier — for the base WEEKLY
+    // reminder that would kill the repeat; iOS auto-clears the shown banner when
+    // an action is tapped.
+    if (action === 'postpone1') {
+      const itemId = data?.itemId as string | undefined;
+      if (!itemId) return;
+      (async () => {
+        const raw = await AsyncStorage.getItem('week_routine');
+        const chores = raw ? (JSON.parse(raw) as any[]) : [];
+        const chore = chores.find((c) => c.id === itemId);
+        if (!chore) return;
+        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+        for (const n of scheduled) {
+          if (n.content.data?.source === 'myweekpostpone' && n.content.data?.itemId === itemId) {
+            await Notifications.cancelScheduledNotificationAsync(n.identifier);
+          }
+        }
+        const target = new Date();
+        target.setDate(target.getDate() + 1);
+        target.setHours(chore.hour, chore.minute, 0, 0);
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: 'Weekly Chore',
+            body: `Time for ${chore.label}!`,
+            data: { source: 'myweekpostpone', itemId, label: chore.label },
+            categoryIdentifier: 'myweekactions',
+            sound: 'default',
+          },
+          trigger: {
+            type: SchedulableTriggerInputTypes.DATE,
+            date: target,
+          } as Notifications.DateTriggerInput,
+        });
+        const updated = chores.map((c) =>
+          c.id === itemId ? { ...c, postponedTo: target.getTime() } : c
+        );
+        await AsyncStorage.setItem('week_routine', JSON.stringify(updated));
+      })();
+      return;
+    }
+
     // "Done" action button: mark this item complete in storage and cancel the
     // fired reminder, the banner equivalent of the on-screen Log (✓) button.
     // The screen's daily reset + reschedule-on-load brings it back tomorrow.
@@ -113,6 +162,43 @@ export default function RootLayout() {
                   await Notifications.cancelScheduledNotificationAsync(n.identifier);
                 }
               }
+            }
+          }
+        })();
+        return;
+      }
+
+      // My Week "Done": mark the chore complete for the week + log it, and clear
+      // any pending postpone. We do NOT cancel the fired notification's id — the
+      // base reminder is a WEEKLY repeat that must fire again next week; iOS
+      // auto-clears the shown banner on an action tap. (The weekly reset clears
+      // the ✓ when the chore's day comes around again.)
+      if (source === 'myweek' || source === 'myweekpostpone') {
+        (async () => {
+          const raw = await AsyncStorage.getItem('week_routine');
+          const chores = raw ? (JSON.parse(raw) as any[]) : [];
+          const updated = chores.map((c) =>
+            c.id === itemId ? { ...c, completed: true, doneAt: Date.now(), postponedTo: undefined } : c
+          );
+          await AsyncStorage.setItem('week_routine', JSON.stringify(updated));
+          const label = (data?.label as string) || 'Chore';
+          const fired = new Date(response.notification.date * 1000);
+          const histRaw = await AsyncStorage.getItem('week_history');
+          const hist = histRaw ? (JSON.parse(histRaw) as any[]) : [];
+          const newEntry = {
+            id: Date.now().toString(),
+            date: fired.toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
+            sched: label,
+            actual: fired.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false }),
+            what: '',
+            note: '',
+          };
+          await AsyncStorage.setItem('week_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
+          // Clear any pending postpone one-off for this chore.
+          const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+          for (const n of scheduled) {
+            if (n.content.data?.source === 'myweekpostpone' && n.content.data?.itemId === itemId) {
+              await Notifications.cancelScheduledNotificationAsync(n.identifier);
             }
           }
         })();
@@ -168,6 +254,8 @@ export default function RootLayout() {
       router.push('/todo');
     } else if (source === 'myday' || source === 'mydaysnooze') {
       router.push('/myday');
+    } else if (source === 'myweek' || source === 'myweekpostpone') {
+      router.push('/myweek');
     } else if (source === 'pets' || source === 'petssnooze') {
       router.push('/mollie');
     }
@@ -182,6 +270,7 @@ export default function RootLayout() {
       <Stack.Screen name="shopping" options={{ headerShown: false }} />
       <Stack.Screen name="timer" options={{ headerShown: false }} />
       <Stack.Screen name="myday" options={{ headerShown: false }} />
+      <Stack.Screen name="myweek" options={{ headerShown: false }} />
       <Stack.Screen name="mollie" options={{ headerShown: false }} />
       <Stack.Screen name="todo" options={{ headerShown: false }} />
       <Stack.Screen name="planner" options={{ headerShown: false }} />

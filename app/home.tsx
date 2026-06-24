@@ -15,6 +15,7 @@ const modules = [
   { id: 'shopping', label: 'Shopping List', icon: '🛒' },
   { id: 'timer', label: 'Timer Alerts', icon: '⏰' },
   { id: 'myday', label: 'My Day', icon: '☀️' },
+  { id: 'myweek', label: 'My Week', icon: '🗓️' },
   { id: 'mollie', label: 'Pets Day', icon: '🐾' },
   { id: 'todo', label: 'To-Do', icon: '✅' },
   { id: 'planner', label: 'Project Planner', icon: '📋' },
@@ -40,6 +41,7 @@ export default function HomeScreen() {
         if (id === 'shopping') router.push('/shopping');
         if (id === 'timer') router.push('/timer');
         if (id === 'myday') router.push('/myday');
+        if (id === 'myweek') router.push('/myweek');
         if (id === 'mollie') router.push('/mollie');
         if (id === 'todo') router.push('/todo');
         if (id === 'planner') router.push('/planner');

@@ -28,7 +28,7 @@ This is the "someday" list: things worth doing eventually, but not what we're wo
 
 **Nice-to-have later (UI polish):**
 
-- **Sort the To-Do list by soonest first (requested 2026-06-22).** Patrick wants the To-Do list ordered by time, with the closest/soonest item on top so the next thing is always at the top.
+- **Sort the To-Do list by soonest first — DONE + DEVICE-VALIDATED 2026-06-23.** Built session #11 (one fixed sort by due date+time, sort buttons removed), validated on the phone session #12: the list shows the soonest item on top, with its time. Cleared.
 - **Project Planner reminders do nothing yet.** That screen has reminder fields, but they aren't wired up to anything. Low priority.
 
 The **"Done"** section at the very bottom is just a record of recently finished work, kept for reference — nothing there is waiting on you.
@@ -42,6 +42,7 @@ The **"Done"** section at the very bottom is just a record of recently finished 
 - **My Day after-midnight doses logged on the wrong day — FIXED IN CODE 2026-06-23 (session #10), awaiting commit + device test.** Was: banner **Done** (`_layout.tsx` `action === 'done'`, non-To-Do branch) only set `completed: true` and wrote **no** `my_history` entry; the daily reset (`loadData`, `myday.tsx` ~line 119) then cleared the flag → the dose vanished. (On-screen **Log**, `confirmLog` ~line 204, did write history but dated from `new Date()` at tap-time → wrong after midnight.) **Fix:** the banner Done branch now writes a dated history entry to `my_history` (and `pets_history` for Pets), date+time from `response.notification.date`×1000 — the moment the reminder FIRED, not the tap moment, so a late-night dose files under the reminder's day. iOS reports `notification.date` in SECONDS (verified `EXNotificationSerializer.m`), hence ×1000. **Not changed:** on-screen Log still uses tap-time (deferred; would need a cutoff-hour rule). **Edge:** a Snooze crossing midnight files under the new day. `tsc` clean; device test pending.
 - **To-Do "Done" logs tap-date, not the reminder's date — device-confirmed 2026-06-22** (`app/_layout.tsx`, `action === 'done'` → `source === 'todo'` branch, ~line 104). Separate from the My Day med bug above (meds are My Day, not To-Do). The completion entry's `completedDate` is built from `new Date()` at the moment Done is tapped, and the notification `data` payload carries no original fire date — so a Done tapped on a stale banner records the completion under **today**. Observed on recurring "Day"-reminder tasks. Fix: include the intended fire date in the notification `data` and stamp `completedDate` from that (fall back to `new Date()` only if absent). (Bug verified by reading the code this session; not yet fixed.)
 - **Yearly day picker allows invalid dates** (`app/todo.tsx`, New/Edit Task form). The Yearly "Day" picker offers 1–31 for every month, so e.g. Feb 30 would throw a RangeError when `scheduleReminders` builds the YEARLY trigger (Expo validates day ≤ days-in-month). Low priority; tighten the picker to the selected month's length.
+- **My Week on-screen "Done" stamps tap-time date, not the chore's due date** (`app/myweek.tsx`, `confirmLog`). Minor, and identical to My Day's accepted limitation: the in-app Done (Log modal) dates the history entry from `new Date()` at the tap moment. The *banner* Done is correct (it uses the fired time). Only matters if he logs a chore in the app well after its day. Low priority; same fix shape as the My Day on-screen Log would need (a cutoff-hour rule). Built session #12.
 - **Old `pets_data` storage key is orphaned** (`app/mollie.tsx`). The Pets Day single-page rewrite (2026-06-15) switched to new keys (`pets_feeds` / `pets_history` / `pets_last_date`) and no longer reads the old multi-pet `pets_data`. That key still sits in AsyncStorage, unused and harmless. Add a one-time cleanup that removes `pets_data` so nothing stale lingers.
 
 ## Design decisions
@@ -52,7 +53,6 @@ The **"Done"** section at the very bottom is just a record of recently finished 
 
 ## UI polish
 
-- **Sort To-Do list by soonest due time on top** (`app/todo.tsx`, requested 2026-06-22). Order the rendered task list by due date/time ascending so the closest item is first. Decide how undated / recurring (weekly/monthly/yearly) tasks sort relative to dated ones.
 - **Project Planner schedules nothing** (`app/planner.tsx`). Has reminder UI/fields but wires up no notifications. Dormant, low priority.
 
 ## Done (recently cleared from this list)

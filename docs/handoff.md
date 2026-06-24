@@ -1,6 +1,48 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #11 (2026-06-23): To-Do list now sorts soonest-first — one fixed sort, buttons removed (code done, tsc clean, COMMITTED — AWAITING BUILD + DEVICE TEST)
+## THIS SESSION — #12 (2026-06-23): logged device-test results — #11 sort VALIDATED; Morning-of/1hr/2hr reminders VALIDATED; scoping "My Week"
+
+**Device-test results logged this session (from Patrick's phone):**
+
+- **Session #11 To-Do soonest-first sort — DEVICE-VALIDATED.** The list shows the soonest item at the top, with its time. Done.
+- **2026-06-19 build — three more reminders confirmed firing:** **Morning of**, **1 hour**, and **2 hours** all fire. Still untested: **At time** offset, **Day/Week/Month** timing (~5 PM at 1/7/30 days before), Settings Morning/Evening time changes, and **Monthly + Yearly** recurring firing (Yearly month especially).
+- **Session #10 after-midnight banner-Done fix — STILL PENDING.** Patrick can't test it quickly (needs a real late-night/after-midnight run). Leave marked device-test-pending; do not mark validated.
+
+### ▶ MY WEEK — AGREED SPEC (locked with Patrick 2026-06-23, session #12; NOT yet built)
+
+A new **My Week** screen (`app/myweek.tsx`), mirroring My Day's single-page structure and interactions, for **weekly** chores. Scoped in full with Patrick before any building.
+
+**What it is.** One always-visible list of every weekly chore (trash, laundry, groceries, yard work, cleaning, etc.) — the chores never disappear from the page, the same way My Day shows the daily routine. Mirrors My Day's UI: tiles, an Add/Edit modal, reorder ▲▼ arrows, a history **Log**, swipe-to-delete. **No Coffee/Water counters** (those stay My Day–only).
+
+**Each chore has** a label, a **day of the week**, and a **time** (so the Edit modal gets a Sun–Sat day picker added next to My Day's existing Hour/Minute/AM-PM time picker). Tiles show day + time + label.
+
+**The reminder model (REVISED 2026-06-23, session #12 — replaces the earlier "nag daily automatically" idea).** A chore reminds **once** on its day at its set time, then automatically returns next week on its normal day. There is **NO automatic daily nagging.** The only thing that makes a chore keep reminding on following days is Patrick pressing **Postpone** — that pushes the reminder to the next day (or a day he picks), and from that pushed reminder he can Done it or Postpone again. **No postpone, no continuing nag.** Marking **Done** ends it for the week. (Patrick's words: "Have the nag follow the postpone push only. No postpone no continuing nag.")
+
+**Why this is better (and kills the 64-slot worry).** The earlier auto-daily-nag idea needed the app to pre-schedule a week of reminders, because iOS won't run app code when a notification merely fires in the background — so it couldn't reschedule itself day to day. Postpone sidesteps that entirely: it's a deliberate button tap, so the app is awake at that moment and can reliably schedule the pushed reminder right then. Net effect: just ONE base weekly alert per chore (plus at most one live postpone), so the iOS 64-pending cap is no longer a concern.
+
+**Postpone (per-occurrence, repeatable).** Each tile has a **Postpone** action separate from Done: either a one-tap **+1 day** (bump to tomorrow) or **pick a particular day**. Postpone keeps the chore nagging on the new day (never forgotten) and **stays available every day** so Patrick can keep pushing it. Postpone affects **only the current week** — a chore's *home* day/time never changes from postponing. Covers both "tired today, do it tomorrow" and "holiday week, trash is Wednesday this once."
+
+**Weekly reset.** A chore's home day/time is permanent; postpone only moves the current week's reminders. Next week the chore is automatically back on its normal day. If a chore is never marked Done, when its normal day comes around again the new week simply **starts fresh** (the old, un-done cycle is dropped/"forgotten").
+
+**Editing vs postponing.** **Edit** changes a chore's permanent day/time/label. **Postpone** is temporary (current week only). Two different actions.
+
+**Honest note on weight / the hard part.** Nag-until-done + per-occurrence Postpone + weekly reset is genuinely new logic, NOT a straight copy of My Day's single DAILY trigger. iOS's plain "daily at 7 PM" repeating alarm has no built-in notion of "don't start until Tuesday," "stop when done," or "reset next week," so the scheduling needs custom logic on top. This is the careful part.
+
+**AGREED BUILD ORDER (smallest-risk first, one stage per edit, Patrick commits + tests between):**
+
+1. **The page itself — ✅ BUILT + SIMULATOR-VALIDATED 2026-06-23 (session #12).** `app/myweek.tsx` created mirroring My Day: always-visible "Weekly Chores" list (each tile shows day + time + name), Edit / Done / reorder ▲▼ / "My Log" history / swipe-delete; Add/Edit modal has a **Sun–Sat day-chip picker** above the Hour/Minute/AM-PM time picker; **no Coffee/Water counters**; seeds 3 starter chores (Trash Tue 7 PM, Laundry Sat 9 AM, Groceries Sat 10 AM). Home got a "My Week" 🗓️ tile + route; `_layout.tsx` registers the `myweek` screen. `tsc --noEmit` clean. Patrick tested reorder, add, edit, clear-all, delete-chore, delete-log in the Simulator — **all work as expected.** NOT yet committed/built to phone (no reminders yet — fine to keep testing locally).
+2. **The base reminder — ✅ BUILT + SIMULATOR-VALIDATED 2026-06-23 (session #12).** Each chore fires **once** on its day/time via a native **WEEKLY repeating trigger** (1 per chore, weekday = `day + 1` — verified against the working To-Do weekly code: `(recurDay ?? 0) + 1`, 0=Sun; auto-returns next week, survives restarts), tagged `source:'myweek'`, tap routes to `/myweek`. Plus a per-chore **weekly reset** of the `completed`/✓ flag (helpers `lastOccurrence` + `applyWeeklyReset`, tracked via a `doneAt` epoch-ms on each chore; on load, clears ✓ once a new occurrence has passed since completion). `_layout.tsx` got `source:'myweek'` → `/myweek` tap routing. `tsc` clean. Patrick tested in the Simulator — permission prompt, add/edit/delete, Done ✓, no crash — **all working.** (Live once-a-week fire timing not separately stress-tested; code matches the proven To-Do/My Day pattern.)
+3. **Postpone + Done banner** — split into 3a (tile) + 3b (banner).
+   - **3a — tile Postpone — ✅ BUILT + SIMULATOR-VALIDATED 2026-06-23 (session #12).** Each tile got a **Postpone** button → popup with **"Tomorrow (+1 day)"** + a Sun–Sat pick-a-day row; schedules a one-off **DATE** reminder (`source:'myweekpostpone'`) at the chore's same time, stamps `postponedTo` (tile shows "▶ moved to <day>"). Re-postpone replaces the prior one (`cancelPostpone`); Done + delete clear it; the weekly reset drops a stale postpone. Helpers: `cancelPostpone`, `nextDateForWeekday`, `schedulePostpone`, `postponeTomorrow`, `postponeToDay`. `_layout.tsx` routes `myweekpostpone` taps → `/myweek`. `tsc` clean. Patrick tested the popup, both choices, the "moved to" label, and Done/re-postpone clearing — **all worked well.** (Live postpone *firing* is ≥1 day out → phone-test only.)
+   - **3b — banner Done / +1 Day — ✅ BUILT + SIMULATOR-VALIDATED 2026-06-23 (session #12), `tsc` clean. Banner fired and its buttons worked in the Simulator; AWAITING PHONE BUILD for final confirmation.** New `myweekactions` notification category (Done + +1 Day) registered in `_layout.tsx`, attached to BOTH the base weekly and the postpone notifications (myweek.tsx). `_layout.tsx` handlers: **postpone1** ("+1 Day") pushes the chore's reminder to tomorrow at its time (cancels any prior postpone, writes `postponedTo` to `week_routine`); **done** marks the chore complete + logs to `week_history` (dated from the fired time, `response.notification.date`×1000) + clears any pending postpone. **Important:** the done/postpone1 handlers deliberately do NOT cancel the fired notification's identifier — for the base WEEKLY reminder that would kill the repeat; iOS auto-clears the shown banner on an action tap. Like My Day's banner buttons, tapping Done/+1 Day briefly brings the app to the foreground (that's what makes the reschedule run reliably — a fully-silent action wouldn't run JS until next app open). **Whole My Week feature is now code-complete; needs one phone build to test live firing + banner actions.**
+
+**Stage 1 storage + model (for stage 2 to build on):** chores live under **`week_routine`** as `Chore[]` = `{ id, label, day (0=Sun…6=Sat), hour, minute, completed }`; the log under **`week_history`** (same `HistoryEntry` shape + 50-cap as My Day). Stage 1 does NOT schedule notifications and does NOT do any daily/weekly reset yet — both are stage 2's job. `DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']`. "Done" writes a history entry + sets `completed:true` (via the Log modal).
+
+**TESTING NOTE (Patrick, session #12): test in the iOS Simulator FIRST, before the phone.** Local dev build via `npm run ios`; Metro picks up edits live. So each stage gets a Simulator check before any EAS/TestFlight build. (Reminder: the assistant must NOT type into Simulator fields — accent-popup bug; Patrick types directly. Assistant swipe/tap on the Simulator is unreliable — Patrick does direct manipulation.)
+
+---
+
+## PRIOR SESSION — #11 (2026-06-23): To-Do list now sorts soonest-first — one fixed sort, buttons removed (code done, tsc clean, COMMITTED — sort DEVICE-VALIDATED #12)
 
 The long-parked "sort To-Do by soonest time on top" enhancement is built. **The To-Do list now has ONE fixed sort — by due date + time, soonest on top.** Patrick's decisions this session: no manual reorder in To-Do (unlike My Day — appointments have moving dates, so automatic self-maintains the "next thing on top"); recurring tasks don't need sorting (he positions them); and Due-Date sort should just be the permanent default, so the sort buttons are gone entirely.
 
@@ -39,12 +81,13 @@ The TestFlight build (committed 2026-06-19) bundling "Reminder Options" + Group 
 - **The seven "Reminders before" buttons toggle/light correctly** (Reminder Options, `app/todo.tsx`).
 - **The banner OK button clears the alert without deleting the event** (`app/_layout.tsx` `action === 'ok'` no-op).
 - (Implicit) a **"Day" reminder fired and produced a banner** with Done/OK actions — so that preset schedules + displays. Its *timing accuracy* (~5 PM, 1 day before) is NOT yet confirmed.
+- **Morning of, 1 hour, and 2 hours reminders fire (device-validated 2026-06-23, session #12).** The two offset presets (1hr/2hr before the appointment time) and "Morning of" (morning clock time on the appointment day) all produced alerts.
 
 **Bug found (device-observed 2026-06-22) — My Day medication logs on the wrong day after midnight. RAISED PRIORITY.** Patrick's medication is a **My Day daily routine item** (when he said "recurring Day tasks" he meant My Day daily, NOT the To-Do "Day" reminder preset). He takes it before bed, sometimes after midnight, and marks it done via the **banner Done on the notification popup**. **Verified in code:** banner Done (`_layout.tsx` ~122–137, `source !== 'todo'`) writes NO `my_history` entry and only sets `completed:true`, which the next-day reset (`myday.tsx` ~119) then clears → no durable record of the dose. (The on-screen Log does write history, but dates it from `new Date()` at tap-time — `myday.tsx` ~204 — still wrong after midnight.) **Open before fixing:** the desired late-night rule, and whether banner Done should write a dated history entry. A *separate* verified To-Do "Done" date bug also exists (not where meds live). Both parked under Bugs/correctness; see `parked-items.md`. **UPDATE (session #10, 2026-06-23): the My Day med bug is now FIXED in code — see "THIS SESSION" at the top. The To-Do "Done" date bug remains parked, unfixed.**
 
 **Enhancement requested (2026-06-22) — sort the To-Do list by time, soonest/"closest" on top.** New behavior, not part of this build's scope. Parked under UI polish.
 
-**Still UNTESTED (leave marked device-test-pending, do NOT mark validated):** "Morning of" firing ~8 AM that day; "Day/Week/Month" firing ~5 PM at 1/7/30 days before (timing); "1 hour/2 hours/At time" offsets off the appointment time; Settings Morning/Evening time changes taking effect; **Monthly** recurring firing each month; **Yearly** recurring firing on the right month+day (**Expo's 0-based month is the risky spot — still needs a real check**).
+**Still UNTESTED (leave marked device-test-pending, do NOT mark validated):** "Day/Week/Month" firing ~5 PM at 1/7/30 days before (timing); the **"At time"** offset firing exactly at the appointment time; Settings Morning/Evening time changes taking effect; **Monthly** recurring firing each month; **Yearly** recurring firing on the right month+day (**Expo's 0-based month is the risky spot — still needs a real check**). (**Validated 2026-06-23, session #12:** "Morning of", "1 hour", "2 hours" all fire.)
 
 Everything before these two sessions is **COMMITTED and DEVICE-VALIDATED**: the "Remove Daily & Date for weekly" session (Weekly To-Dos fire a dateless repeating weekly alert; To-Do Done + Snooze banner), plus the My Day + Pets Day Done/Snooze enhancements, Pets reminders, and counter persistence. Don't re-open finished work.
 
@@ -136,19 +179,18 @@ History of finished work, kept short. The "Verified code facts" below are the li
 
 ## Active next step (the named goal for next session)
 
-**THE NAMED NEXT GOAL: build the "My Week" page** (see the ▶ NEXT SESSION note under "THIS SESSION — #11" at the top). Mirror My Day's structure/interactions for weekly-recurring items. Scope it with Patrick before building.
+**MY WEEK IS BUILT (session #12) — code-complete, `tsc` clean, Simulator-validated through the banner buttons.** Full per-stage detail is in the **"▶ MY WEEK — AGREED SPEC"** block near the top. **Patrick is committing + building + submitting + loading a TestFlight build at the end of session #12, and will report the phone results next session.** So the FIRST thing next session: **ask how the My Week phone test went** (checklist in in-flight item #0 below), mark each piece validated or log a bug. Then Patrick names the next goal (likely a parked item — see list below).
 
-**Three things are also in flight, all awaiting a device test:**
+**In flight, awaiting a device test:**
 
-1. **Session #11 sort (To-Do soonest-first) — code committed, tsc clean, awaiting build + device test.** Add a few dated To-Dos with different dates/times → soonest on top, same-day items ordered by time.
-2. **Session #10 fix (My Day + Pets after-midnight banner Done) — code committed, awaiting device test.** See "LAST SESSION — #10" for the test steps. Mark each piece validated (or log the bug) once Patrick reports the phone result.
-3. **The 2026-06-19 build's PARTIAL test is still ongoing.** Confirmed: 7 reminder buttons toggle/light; banner OK clears without deleting. Still untested: Morning-of/Day/Week/Month timing, 1hr/2hr/At-time offsets, Settings time changes, and Monthly + Yearly recurring firing (Yearly month especially). See "TEST RESULTS" up top.
+0. **MY WEEK (session #12) — CODE-COMPLETE, `tsc` clean, SIMULATOR-validated through 3b (incl. the banner firing + its buttons in the sim); needs ONE phone build for final confirmation of live firing + banner Done/+1 Day on a real device.** Phone tests: (a) a chore fires on its day/time and returns next week; (b) banner **Done** logs it to My Week's Log and the ✓ clears when its day comes around again; (c) banner **+1 Day** pushes the reminder to tomorrow and the tile shows "moved to <day>" next open; (d) tile Postpone (Tomorrow / pick-a-day) fires on the chosen day. (Weekday mapping `day+1` matches the working To-Do weekly code.)
+1. **Session #11 sort (To-Do soonest-first) — DEVICE-VALIDATED 2026-06-23 (session #12).** List shows soonest on top, with time. Done — no longer pending.
+2. **Session #10 fix (My Day + Pets after-midnight banner Done) — code committed, STILL awaiting device test.** Patrick can't test it quickly (needs a real after-midnight run). See "LAST SESSION — #10" for the test steps. Mark validated (or log the bug) once he reports the phone result.
+3. **The 2026-06-19 build's PARTIAL test is still ongoing.** Confirmed: 7 reminder buttons toggle/light; banner OK clears without deleting; **Morning-of / 1hr / 2hr fire (session #12)**. Still untested: At-time offset, Day/Week/Month timing, Settings time changes, and Monthly + Yearly recurring firing (Yearly month especially). See "TEST RESULTS" up top.
 
 **Still parked:** To-Do "Done" stamps today's date on stale banners (Bugs/correctness — separate from the now-fixed My Day bug). (The "sort To-Do by soonest" item is now BUILT — session #11 — so it's no longer parked.)
 
 **Likely next goals (let Patrick name one):**
-
-- **▶ "My Week" page** (Patrick's stated next goal — mirror the "My" pages for weekly recurrences; scope first).
 
 - **Fix the separate To-Do "Done" wrong-date bug** — carry the reminder's intended date in the notification `data` (or stamp `completedDate` from it) instead of `new Date()` at tap-time. (`app/_layout.tsx`.)
 - **Sort the To-Do list by closest due time on top** (`app/todo.tsx`).
@@ -161,10 +203,17 @@ History of finished work, kept short. The "Verified code facts" below are the li
 - Small parked spin-off: the Yearly day picker offers 1–31 for every month (Feb 30 would throw at schedule time) — tighten it.
 - **Parked, not planned:** per-appointment reminder time override. **Resolved/dropped:** "where do daily-repeating reminders live" (decided — My Day is the daily engine, To-Do dropped Daily).
 
-## Files touched this session (#11 — 2026-06-23)
+## Files touched this session (#12 — 2026-06-23)
 
-- `app/todo.tsx` — `getSortedTasks` reduced to one fixed sort by due date + time (soonest on top; undated/recurring at the bottom); removed the sort-button UI block, the `sortBy` state, and the `sortRow`/`sortLabel`/`sortBtn*` styles. Category filter row untouched. **`tsc` clean. Patrick committing + building this now in its own segregated build to test in isolation.**
-- `docs/handoff.md` — this update (records the sort change; names the "My Week" page as the next goal). **Patrick commits.**
+- `app/myweek.tsx` — **NEW.** The whole My Week feature: weekly-chore list mirroring My Day (`week_routine` / `week_history`); `Chore` model `{ id, label, day 0=Sun…6=Sat, hour, minute, completed, doneAt?, postponedTo? }`; Add/Edit modal with Sun–Sat day picker + time picker; **base WEEKLY reminder** per chore (`scheduleAllNotifications`, weekday `day+1`, `source:'myweek'`, category `myweekactions`); **weekly reset** (`lastOccurrence` + `applyWeeklyReset`); **tile Postpone** (`schedulePostpone`/`postponeTomorrow`/`postponeToDay`/`cancelPostpone`/`nextDateForWeekday`, one-off `DATE` reminder `source:'myweekpostpone'`, `postponedTo` → "▶ moved to <day>"). No Coffee/Water counters.
+- `app/_layout.tsx` — registered `myweekactions` category (Done + +1 Day); added handlers: **postpone1** (push reminder to tomorrow at chore time, rewrite `postponedTo`), **done** for `myweek`/`myweekpostpone` (mark complete + log to `week_history` from fired time + clear pending postpone; deliberately does NOT cancel the WEEKLY identifier); tap-routing `myweek`/`myweekpostpone` → `/myweek`.
+- `app/home.tsx` — "My Week" 🗓️ tile + `/myweek` route.
+- `docs/handoff.md` + `docs/parked-items.md` — refreshed at session close (this version); parked one minor item (My Week in-app Done dates from tap-time, like My Day). **`tsc` clean throughout. Patrick commits the code (then builds/submits/loads); docs commit can follow the phone test.**
+
+## Files touched in session #11 (#11 — 2026-06-23)
+
+- `app/todo.tsx` — `getSortedTasks` reduced to one fixed sort by due date + time (soonest on top; undated/recurring at the bottom); removed the sort-button UI block, the `sortBy` state, and the `sortRow`/`sortLabel`/`sortBtn*` styles. Category filter row untouched. **`tsc` clean — DEVICE-VALIDATED session #12.**
+- `docs/handoff.md` — recorded the sort change. **Patrick commits.**
 
 ## Files touched in session #10 (#10 — 2026-06-23)
 
@@ -191,9 +240,9 @@ You're picking up the "Remember When" app (Expo / React Native, runs on my iPhon
 
 1. The `elderlyassistant` folder must be connected via Cowork's folder picker — if you can't see it, give me the folder-request button; don't ask me to upload files.
 2. Open and read `docs/handoff.md` first (full state, standing rules, next step), then skim `docs/parked-items.md` (the eventual-work backlog) so you know what's deferred.
-3. **THREE things are awaiting a device test — ASK ME HOW TESTING WENT FIRST**, then mark each piece validated (or log the bug):
-   - **Session #11 (2026-06-23): To-Do soonest-first sort** — the To-Do list now has one fixed sort by due date + time (soonest on top), sort buttons removed. Code committed + tsc clean; check whether I built it. Test: add a few dated To-Dos with different dates/times → soonest on top, same-day items ordered by time.
-   - **Session #10 (2026-06-23): the My Day + Pets after-midnight banner-Done fix** — banner Done now writes a dated history entry stamped from when the reminder fired, so a dose/feed marked just after midnight files under the right day. Code committed + tsc clean; check whether I built it. Test: mark a My Day item Done from the banner after midnight → My Day log shows it under the prior day; same for a Pets feed.
-   - **The 2026-06-19 build** (bundles "Reminder Options" + Group 1) was still in partial testing: (a) **"Reminder Options"** — editable global Morning (8 AM) / Evening (5 PM) times in Settings + seven "Reminders before" buttons in To-Do + silent OK dismiss; (b) **Group 1** — Monthly + Yearly recurring To-Dos fire. Still untested: reminder timing, Settings time changes, Monthly/Yearly firing (Yearly month especially). 3-month/6-month recurring stays parked. Everything before these is committed + device-validated; don't re-open finished work.
-4. **The named next goal is the "My Week" page** — a new screen mirroring the "My" pages (My Day / Pets Day) but for **weekly** recurrences. Not yet scoped; help me scope it before building, then wait for my "go" — one change at a time. (Other parked options if I change my mind: the To-Do "Done" wrong-date bug, Group 2 on-tile To-Do Snooze, the parked 3/6-month recurring.)
+3. **ASK ME HOW THE MY WEEK PHONE TEST WENT FIRST**, then mark each piece validated (or log a bug). **My Week is the big thing from session #12** — fully built, `tsc` clean, Simulator-validated through the banner; I built/submitted/loaded a TestFlight build at the end of #12. Phone checklist: (a) a chore fires on its day/time and returns next week; (b) banner **Done** logs it to My Week's Log and the ✓ clears when its day comes around again; (c) banner **+1 Day** pushes to tomorrow and the tile shows "moved to <day>"; (d) tile **Postpone** (Tomorrow / pick-a-day) fires on the chosen day. Other still-pending device tests:
+   - **Session #11 To-Do soonest-first sort — already DEVICE-VALIDATED #12** (soonest on top, with time). Done; don't re-test.
+   - **Session #10 My Day + Pets after-midnight banner-Done fix** — code committed; STILL needs a real after-midnight run. Test: mark a My Day item Done from the banner after midnight → My Day log shows it under the prior day; same for a Pets feed.
+   - **The 2026-06-19 build** (Reminder Options + Group 1): validated so far — 7 reminder buttons, banner OK, and Morning-of/1hr/2hr firing. Still untested: At-time offset, Day/Week/Month timing, Settings time changes, Monthly/Yearly firing (Yearly month especially). 3-month/6-month recurring stays parked. Everything before these is committed + device-validated; don't re-open finished work.
+4. **After the My Week phone results, I'll name the next goal** — likely a parked item: the To-Do "Done" wrong-date bug, Group 2 on-tile To-Do Snooze, the parked 3/6-month recurring, or housekeeping. Scope it with me before building, then wait for my "go" — one change at a time.
 5. **Build economy:** I want to minimize EAS builds. Batch related edits across a session, I commit, then ONE build tests them together. Docs get their own commit AFTER the phone test (see "Build-and-test commit rhythm" in `session-start.md`).
