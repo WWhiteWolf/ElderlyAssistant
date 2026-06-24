@@ -1,5 +1,9 @@
 # Session start — how we begin
 
+> **Cross-project note:** The overarching business/publishing strategy and learning
+> tracker for all my apps lives in **OneDrive → App-Pubs** as `Publishing-Strategy.docx`.
+> Connect that folder to read or update it — it's no longer kept in the Projects folder.
+
 ## Standing rules (read these first, every session)
 
 - **Patrick does all git commits.** Claude must never run `git commit` or any git write command on this project — there are possible lockout problems if Claude does it. Claude makes the edits and leaves them for Patrick to review and commit himself.

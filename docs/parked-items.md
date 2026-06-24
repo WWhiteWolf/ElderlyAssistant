@@ -2,7 +2,7 @@
 
 Future / deferred work for "Remember When." Not for the current session — the active goal lives in `handoff.md`. Pull an item from here when you're ready to take it on; move it back into `handoff.md` once it's the live goal. Add new ideas as they come up.
 
-Last updated: 2026-06-23
+Last updated: 2026-06-24 (added Audio input as a candidate / likely next goal)
 
 ---
 
@@ -31,9 +31,17 @@ This is the "someday" list: things worth doing eventually, but not what we're wo
 - **Sort the To-Do list by soonest first — DONE + DEVICE-VALIDATED 2026-06-23.** Built session #11 (one fixed sort by due date+time, sort buttons removed), validated on the phone session #12: the list shows the soonest item on top, with its time. Cleared.
 - **Project Planner reminders do nothing yet.** That screen has reminder fields, but they aren't wired up to anything. Low priority.
 
+**New feature being considered (likely next goal):**
+
+- **Audio input — talking to the app instead of typing.** The idea: speak a reminder, appointment, or routine item out loud and have the app enter it, rather than typing it in. Aimed squarely at making the app easier for older users. Patrick is leaning toward this as the **next build goal** (added 2026-06-24). Exactly what it covers still needs to be worked out together before any building.
+
 The **"Done"** section at the very bottom is just a record of recently finished work, kept for reference — nothing there is waiting on you.
 
 ---
+
+## New features (to scope)
+
+- **Audio input / voice entry — CANDIDATE, Patrick's likely next goal (added 2026-06-24).** Patrick wants the app to accept spoken input, not only typing — a natural fit for a memory aid used by older people. **Not yet scoped — discuss and scope with Patrick before any building.** Open questions to settle first: (a) **scope** — which screens get it (To-Do? My Day? everywhere)? (b) **what it does** — voice-to-text that fills the item fields, or a spoken phrase parsed into a reminder, or both? (c) **read-aloud** — should reminders also be spoken back (text-to-speech), or is that a separate item? (d) **feasibility on Expo/iOS** — needs a check on the available speech-to-text path (native iOS speech vs. an Expo-compatible library), permissions, and whether it works in a TestFlight build. Treat as a **larger item** — likely heavier than a normal session and may need its own build. Scope first, then one change at a time.
 
 ## Bugs / correctness
 

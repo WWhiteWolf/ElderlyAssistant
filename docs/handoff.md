@@ -2,9 +2,12 @@
 
 ## THIS SESSION — #13 (2026-06-23): My Week banner-buttons device fix + popup Cancel-button + "Clear All" UI fixes (`tsc` clean, not yet committed)
 
-Two things this session: (A) the **My Week notification-banner buttons not appearing on the phone** (worked in the Simulator) — root-caused and fixed; and (B) pure-UI cleanup of the Cancel buttons and "Clear All" pills. The UI changes (B) are Simulator-validated by Patrick; the banner fix (A) is `tsc`-clean but **needs a phone build to confirm** (it's a device-only timing bug, not reproducible in the Simulator). `tsc --noEmit` clean throughout. **Not yet committed.**
+Two things this session: (A) the **My Week notification-banner buttons not appearing on the phone** (worked in the Simulator) — root-caused, fixed, and **DEVICE-VALIDATED on Patrick's phone**; and (B) pure-UI cleanup of the Cancel buttons and "Clear All" pills (Simulator-validated, and shipped in the same phone build). `tsc --noEmit` clean throughout. **Code committed + built to the phone this session; docs commit (this update) can follow.**
 
-### (A) My Week banner buttons missing on device — FIXED (awaiting phone confirm)
+### (A) My Week banner buttons missing on device — FIXED + DEVICE-VALIDATED 2026-06-23 (session #13)
+
+**✅ PHONE TEST PASSED (Patrick, 2026-06-23):** on the device he postponed from the **banner** and from **in the page**, and tapped **Done on the banner** — it checked the tile and logged the event. The banner buttons now appear and work on the phone. The sequential-registration fix resolved it.
+
 
 **Symptom.** My Week banner's **Done / "+1 Day"** buttons appeared and worked in the Simulator but **not on the phone** — on the device a banner just opened the My Week page with no action buttons.
 
@@ -211,13 +214,15 @@ History of finished work, kept short. The "Verified code facts" below are the li
 
 ## Active next step (the named goal for next session)
 
-**FIRST: confirm the session #13 My Week banner fix on the phone.** The banner-buttons bug (Done/"+1 Day" missing on device, present in Simulator) was root-caused to a category-registration race and fixed by registering the four notification categories **sequentially** in `_layout.tsx` (full detail in section (A) of "THIS SESSION — #13"). It's `tsc`-clean but can't be validated in the Simulator (the sim already showed the buttons), so it needs a **phone build**. Phone test: long-press / pull down a My Week banner → **Done** and **+1 Day** should appear and work. If still missing on device, the race wasn't the whole story — dig further. (The session #13 Cancel-button + Clear-All UI fixes are Simulator-validated, `tsc` clean; all of #13 awaits Patrick's commit + build.)
+**Session #13 is DONE + DEVICE-VALIDATED** — the My Week banner-buttons fix (sequential category registration) passed on Patrick's phone: postpone from banner + from page + banner Done (checks the tile and logs) all work. The Cancel-button + Clear-All UI fixes shipped in the same build. Code is committed + on the phone; the docs commit (this update) can follow. **So next session: Patrick names a new goal** — likely a parked item (see "Likely next goals" below) or one of the remaining device tests still in flight.
+
+**▶ Patrick's current lean for the next build goal: Audio input (voice entry) — added 2026-06-24.** Let the app take spoken input instead of only typing. **Not yet scoped** — see the "Audio input / voice entry" entry under "New features (to scope)" in `parked-items.md` for the open questions (scope, what it does, read-aloud, Expo/iOS feasibility). Likely a larger item; scope it together before building, one change at a time.
 
 **MY WEEK IS BUILT (session #12) — code-complete, `tsc` clean, Simulator-validated through the banner buttons.** Full per-stage detail is in the **"▶ MY WEEK — AGREED SPEC"** block near the top. **Patrick is committing + building + submitting + loading a TestFlight build at the end of session #12, and will report the phone results next session.** So the FIRST thing next session: **ask how the My Week phone test went** (checklist in in-flight item #0 below), mark each piece validated or log a bug. Then Patrick names the next goal (likely a parked item — see list below).
 
 **In flight, awaiting a device test:**
 
-0. **MY WEEK (session #12) — CODE-COMPLETE, `tsc` clean, SIMULATOR-validated through 3b (incl. the banner firing + its buttons in the sim); needs ONE phone build for final confirmation of live firing + banner Done/+1 Day on a real device.** Phone tests: (a) a chore fires on its day/time and returns next week; (b) banner **Done** logs it to My Week's Log and the ✓ clears when its day comes around again; (c) banner **+1 Day** pushes the reminder to tomorrow and the tile shows "moved to <day>" next open; (d) tile Postpone (Tomorrow / pick-a-day) fires on the chosen day. (Weekday mapping `day+1` matches the working To-Do weekly code.)
+0. **MY WEEK — banner actions now DEVICE-VALIDATED 2026-06-23 (session #13).** On the phone, Patrick postponed **from the banner** and **from the page**, and tapped **Done on the banner** → it checked the tile and logged the event. (This required the session #13 sequential-category-registration fix — see "THIS SESSION — #13" (A).) **Still not separately confirmed on device (low priority, time-based):** (a) the long-run weekly cycle — a chore fires on its day and auto-returns the *following* week, and the ✓ clears when its day comes around again; (c) the tile shows "moved to <day>" persists across reopen; (d) a tile Postpone scheduled days out actually fires on the chosen day. These are days/weeks out so they'll just confirm in normal use; the action plumbing itself is now proven on device.
 1. **Session #11 sort (To-Do soonest-first) — DEVICE-VALIDATED 2026-06-23 (session #12).** List shows soonest on top, with time. Done — no longer pending.
 2. **Session #10 fix (My Day + Pets after-midnight banner Done) — code committed, STILL awaiting device test.** Patrick can't test it quickly (needs a real after-midnight run). See "LAST SESSION — #10" for the test steps. Mark validated (or log the bug) once he reports the phone result.
 3. **The 2026-06-19 build's PARTIAL test is still ongoing.** Confirmed: 7 reminder buttons toggle/light; banner OK clears without deleting; **Morning-of / 1hr / 2hr fire (session #12)**. Still untested: At-time offset, Day/Week/Month timing, Settings time changes, and Monthly + Yearly recurring firing (Yearly month especially). See "TEST RESULTS" up top.
@@ -226,6 +231,7 @@ History of finished work, kept short. The "Verified code facts" below are the li
 
 **Likely next goals (let Patrick name one):**
 
+- **▶ Audio input (voice entry) — Patrick's current lean (added 2026-06-24).** Speak to add/update items instead of typing. **Not yet scoped**; see "New features (to scope)" in `parked-items.md`. Likely heavier than a normal session — scope first, may need its own build.
 - **Fix the separate To-Do "Done" wrong-date bug** — carry the reminder's intended date in the notification `data` (or stamp `completedDate` from it) instead of `new Date()` at tap-time. (`app/_layout.tsx`.)
 - **Sort the To-Do list by closest due time on top** (`app/todo.tsx`).
 
@@ -243,7 +249,7 @@ History of finished work, kept short. The "Verified code facts" below are the li
 - `app/myday.tsx` — snooze popup Cancel wrapped in `modalBtns` row; `clearAllBtn`/`clearAllBtnText` greyed.
 - `app/mollie.tsx` — snooze popup Cancel wrapped in `modalBtns` row; `clearAllBtn`/`clearAllBtnText` greyed.
 - `app/_layout.tsx` — **banner fix:** category-registration `useEffect` now registers the four notification categories **sequentially** (async IIFE, `await` each `setNotificationCategoryAsync`) instead of firing them concurrently — fixes the cold-cache read-modify-write race that dropped `myweekactions` on device. No change to action handlers.
-- **`tsc --noEmit` clean.** UI changes (Cancel buttons, Clear All) Simulator-validated by Patrick; the `_layout.tsx` banner fix needs a **phone build** to confirm (device-only timing bug). Awaiting commit + build.
+- **`tsc --noEmit` clean. DEVICE-VALIDATED 2026-06-23** — banner fix passed on Patrick's phone (postpone from banner + page, banner Done checks tile + logs). UI changes (Cancel buttons, Clear All) Simulator-validated and shipped in the same build. **Code committed + built to phone this session; docs commit can follow.**
 
 ## Files touched this session (#12 — 2026-06-23)
 
@@ -286,5 +292,5 @@ You're picking up the "Remember When" app (Expo / React Native, runs on my iPhon
    - **Session #11 To-Do soonest-first sort — already DEVICE-VALIDATED #12** (soonest on top, with time). Done; don't re-test.
    - **Session #10 My Day + Pets after-midnight banner-Done fix** — code committed; STILL needs a real after-midnight run. Test: mark a My Day item Done from the banner after midnight → My Day log shows it under the prior day; same for a Pets feed.
    - **The 2026-06-19 build** (Reminder Options + Group 1): validated so far — 7 reminder buttons, banner OK, and Morning-of/1hr/2hr firing. Still untested: At-time offset, Day/Week/Month timing, Settings time changes, Monthly/Yearly firing (Yearly month especially). 3-month/6-month recurring stays parked. Everything before these is committed + device-validated; don't re-open finished work.
-4. **After the My Week phone results, I'll name the next goal** — likely a parked item: the To-Do "Done" wrong-date bug, Group 2 on-tile To-Do Snooze, the parked 3/6-month recurring, or housekeeping. Scope it with me before building, then wait for my "go" — one change at a time.
+4. **After the My Week phone results, I'll name the next goal** — **my current lean is Audio input (voice entry), to be scoped together (added 2026-06-24; see "New features (to scope)" in `parked-items.md`)**; other candidates: the To-Do "Done" wrong-date bug, Group 2 on-tile To-Do Snooze, the parked 3/6-month recurring, or housekeeping. Scope it with me before building, then wait for my "go" — one change at a time.
 5. **Build economy:** I want to minimize EAS builds. Batch related edits across a session, I commit, then ONE build tests them together. Docs get their own commit AFTER the phone test (see "Build-and-test commit rhythm" in `session-start.md`).
