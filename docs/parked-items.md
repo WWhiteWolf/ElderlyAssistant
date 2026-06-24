@@ -2,7 +2,7 @@
 
 Future / deferred work for "Remember When." Not for the current session — the active goal lives in `handoff.md`. Pull an item from here when you're ready to take it on; move it back into `handoff.md` once it's the live goal. Add new ideas as they come up.
 
-Last updated: 2026-06-24 (added Audio input as a candidate / likely next goal)
+Last updated: 2026-06-24 (session #14 — Audio input direction set: hands-free via Siri App Intents; custom mic + wake word ruled out)
 
 ---
 
@@ -33,7 +33,7 @@ This is the "someday" list: things worth doing eventually, but not what we're wo
 
 **New feature being considered (likely next goal):**
 
-- **Audio input — talking to the app instead of typing.** The idea: speak a reminder, appointment, or routine item out loud and have the app enter it, rather than typing it in. Aimed squarely at making the app easier for older users. Patrick is leaning toward this as the **next build goal** (added 2026-06-24). Exactly what it covers still needs to be worked out together before any building.
+- **Audio input — talking to the app instead of typing. DIRECTION SET 2026-06-24 (session #14).** Goal is **hands-free** control. Decided: the custom in-app mic is dropped (iPhone's keyboard dictation mic already types by voice); a custom "wake word" inside our app is impossible on iPhone (Apple lets only Siri listen in the background). So hands-free goes **through Siri** — which already opens the app today. The build to come is **Siri App Intents** (a small piece of native Swift) so Siri can do in-app actions like "mark early text done." Still to scope: which commands first.
 
 The **"Done"** section at the very bottom is just a record of recently finished work, kept for reference — nothing there is waiting on you.
 
@@ -41,7 +41,14 @@ The **"Done"** section at the very bottom is just a record of recently finished 
 
 ## New features (to scope)
 
-- **Audio input / voice entry — CANDIDATE, Patrick's likely next goal (added 2026-06-24).** Patrick wants the app to accept spoken input, not only typing — a natural fit for a memory aid used by older people. **Not yet scoped — discuss and scope with Patrick before any building.** Open questions to settle first: (a) **scope** — which screens get it (To-Do? My Day? everywhere)? (b) **what it does** — voice-to-text that fills the item fields, or a spoken phrase parsed into a reminder, or both? (c) **read-aloud** — should reminders also be spoken back (text-to-speech), or is that a separate item? (d) **feasibility on Expo/iOS** — needs a check on the available speech-to-text path (native iOS speech vs. an Expo-compatible library), permissions, and whether it works in a TestFlight build. Treat as a **larger item** — likely heavier than a normal session and may need its own build. Scope first, then one change at a time.
+- **Audio input / voice entry — DIRECTION SET 2026-06-24 (session #14); next is to scope the Siri command set.** Priority is **hands-free**. Decisions made this session:
+  - **Custom in-app mic button: DROPPED.** iOS keyboard dictation already does voice-to-text in any field; a custom button would just duplicate it.
+  - **Custom always-listening wake word ("Remember When, Open") inside our app: RULED OUT (verified).** Apple reserves background always-on mic for Siri only (battery + privacy); a third-party app can only listen while open and on-screen.
+  - **Hands-free path = SIRI.** "Hey Siri / side-button → open Remember When" already opens the app today, no code (confirmed live). Enable Settings → Siri voice activation for fully button-free.
+  - **Build goal = Siri App Intents.** A small native-Swift slice (Expo config plugin / local module + App Group shared container) so Siri can run in-app actions: "mark early text done in Remember When," "add a task …". Heavier native lift; its own scoping session + its own build.
+  - **Feasibility facts (don't re-derive):** in-app STT = `expo-speech-recognition` (jamsch, SDK-54 build, wraps `SFSpeechRecognizer`, config plugin, needs dev/EAS build, mic+speech perms); read-aloud = `expo-speech` (official, trivial); App Intents = pure Swift (iOS 16+), needs the native bridge, community helper `@config-plugins/react-native-siri-shortcut` exists.
+  - **Native-Swift pros/cons (decided):** only route to App Intents, best reliability — but Swift is new to Patrick, separate native piece + bridge, Xcode debugging, API churn. **Agreed: do NOT rewrite the app; add only a walled-off Swift slice for Siri, keep the rest in React Native.**
+  - **Open to scope next session:** which command(s) first (likely "open" + one action), how a spoken phrase names an item, and a small feasibility spike before a full build. One change at a time.
 
 ## Bugs / correctness
 

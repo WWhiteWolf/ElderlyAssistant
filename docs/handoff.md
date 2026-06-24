@@ -1,5 +1,28 @@
 # Hand-off note — paste at the start of the next session
 
+## THIS SESSION — #14 (2026-06-24): Audio input — INITIAL PLANNING ONLY (no app code changed; direction decided)
+
+Planning/scoping session for the audio-input feature. **No production code changed.** A throwaway UI experiment (a mic button in My Day's New-Entry popup) was added and then **fully reverted** — `app/myday.tsx` is back to its committed state, `tsc --noEmit` clean. Nothing to commit in `app/`; only the docs changed this session.
+
+**What we decided (the heart of it):**
+
+- **Custom in-app mic button — DROPPED.** iOS's built-in **keyboard dictation mic** already turns speech into text in any field (Patrick noticed it appears when he taps a text box), so a custom "dictate into the Name box" button just duplicates it. Not worth building.
+- **Patrick's real priority is HANDS-FREE.** He wants to talk to the app without tapping in first. His examples: "Remember When, Open" and "mark early text done."
+- **A custom always-listening wake word inside our app is NOT POSSIBLE on iPhone (verified this session).** Apple reserves always-on background microphone for **Siri only** (battery + privacy). A third-party app can only listen while it's open and on-screen — it can never sit in the background waiting to hear its own name. So "Remember When, Open" as *our* listener is ruled out.
+- **Hands-free therefore runs THROUGH SIRI, not our own listener.** Confirmed live: side-button → Siri → "open Remember When" **already opens the app today, zero code.** (Tip given Patrick: Settings → Siri, enable voice activation so no button press is needed — fully hands-free "Siri, open Remember When.")
+- **The build goal, when Patrick is ready: Siri App Intents.** Teach Siri a small set of commands ("mark early text done in Remember When," "add a task …") so he can act on items hands-free. Needs **native Swift** wired into the Expo app via a config plugin / local Expo module, plus an **App Group shared container** to pass data between Siri and the app. The heavier native lift — its OWN scoping session and its OWN build.
+
+**Feasibility facts gathered (don't re-derive):**
+- **In-app speech-to-text** (if a foreground mic is ever wanted): `expo-speech-recognition` (jamsch) has an **SDK-54** build, wraps iOS `SFSpeechRecognizer`, installs via config plugin, needs a dev/EAS build (not Expo Go), asks mic + speech-recognition permissions. Fits the app's setup (SDK 54, New Arch) — New-Arch compat unproven until a test build.
+- **Read-aloud (text-to-speech):** `expo-speech`, official Expo module, trivial, no special permission — available whenever wanted.
+- **Siri App Intents:** pure Swift (iOS 16+), unreachable from RN directly; needs the config-plugin/native-module bridge above. Community helper exists (`@config-plugins/react-native-siri-shortcut`); App Intents proper may need custom Swift.
+
+**Pros/cons of the native-Swift step (discussed with Patrick):** Pro — it's the *only* route to Siri App Intents; best reliability; Apple's tooling is first-class. Con — Swift is a new language for Patrick (not in his studied list); the Siri code sits in a separate native piece with a shared-storage bridge (more moving parts); native debugging needs Xcode; Apple API churn across iOS versions. **Agreed approach: do NOT rewrite the app in Swift — add a small, walled-off Swift slice via Expo's plugin system for the Siri feature only, keep everything else in React Native.**
+
+**NEXT SESSION:** scope the Siri App Intents build — which command(s) first (likely "open" + one action like "mark <item> done"), how the spoken phrase names an item, and a small feasibility spike before committing to a full build. One change at a time; Patrick decides the command list.
+
+---
+
 ## THIS SESSION — #13 (2026-06-23): My Week banner-buttons device fix + popup Cancel-button + "Clear All" UI fixes (`tsc` clean, not yet committed)
 
 Two things this session: (A) the **My Week notification-banner buttons not appearing on the phone** (worked in the Simulator) — root-caused, fixed, and **DEVICE-VALIDATED on Patrick's phone**; and (B) pure-UI cleanup of the Cancel buttons and "Clear All" pills (Simulator-validated, and shipped in the same phone build). `tsc --noEmit` clean throughout. **Code committed + built to the phone this session; docs commit (this update) can follow.**
@@ -216,7 +239,7 @@ History of finished work, kept short. The "Verified code facts" below are the li
 
 **Session #13 is DONE + DEVICE-VALIDATED** — the My Week banner-buttons fix (sequential category registration) passed on Patrick's phone: postpone from banner + from page + banner Done (checks the tile and logs) all work. The Cancel-button + Clear-All UI fixes shipped in the same build. Code is committed + on the phone; the docs commit (this update) can follow. **So next session: Patrick names a new goal** — likely a parked item (see "Likely next goals" below) or one of the remaining device tests still in flight.
 
-**▶ Patrick's current lean for the next build goal: Audio input (voice entry) — added 2026-06-24.** Let the app take spoken input instead of only typing. **Not yet scoped** — see the "Audio input / voice entry" entry under "New features (to scope)" in `parked-items.md` for the open questions (scope, what it does, read-aloud, Expo/iOS feasibility). Likely a larger item; scope it together before building, one change at a time.
+**▶ Audio input — DIRECTION SET (session #14, 2026-06-24).** Hands-free is the priority. Custom in-app mic dropped (keyboard dictation already covers it); custom wake word ruled out (iOS bars background listening for third-party apps). **Path = Siri App Intents** (small native-Swift slice via Expo config plugin). Siri already opens the app today. Next session scopes the App Intents command set + a feasibility spike before a build. Full detail in "THIS SESSION — #14" at the top and the Audio entry in `parked-items.md`.
 
 **MY WEEK IS BUILT (session #12) — code-complete, `tsc` clean, Simulator-validated through the banner buttons.** Full per-stage detail is in the **"▶ MY WEEK — AGREED SPEC"** block near the top. **Patrick is committing + building + submitting + loading a TestFlight build at the end of session #12, and will report the phone results next session.** So the FIRST thing next session: **ask how the My Week phone test went** (checklist in in-flight item #0 below), mark each piece validated or log a bug. Then Patrick names the next goal (likely a parked item — see list below).
 
@@ -231,7 +254,7 @@ History of finished work, kept short. The "Verified code facts" below are the li
 
 **Likely next goals (let Patrick name one):**
 
-- **▶ Audio input (voice entry) — Patrick's current lean (added 2026-06-24).** Speak to add/update items instead of typing. **Not yet scoped**; see "New features (to scope)" in `parked-items.md`. Likely heavier than a normal session — scope first, may need its own build.
+- **▶ Audio input → Siri App Intents — DIRECTION SET (session #14).** Hands-free via Siri (custom mic + wake word ruled out). Next: scope the command set + native-Swift feasibility spike, then its own build. See "THIS SESSION — #14" and `parked-items.md`.
 - **Fix the separate To-Do "Done" wrong-date bug** — carry the reminder's intended date in the notification `data` (or stamp `completedDate` from it) instead of `new Date()` at tap-time. (`app/_layout.tsx`.)
 - **Sort the To-Do list by closest due time on top** (`app/todo.tsx`).
 
