@@ -7,12 +7,12 @@
 // plugin is the only durable way to get the App Intent into the build.
 //
 // This plugin does three things:
-//   1. Copies plugins/ios/OpenRememberWhenIntent.swift into the iOS app
-//      target's source folder.
-//   2. Registers that Swift file in the Xcode project's app target so it
-//      actually compiles.
-//   3. Adds the App Group entitlement (so a LATER stage can pass a note
-//      between Siri and the app — harmless on the Simulator, which doesn't
+//   1. Copies EVERY Swift file in plugins/ios/ into the iOS app target's
+//      source folder.
+//   2. Registers each of those Swift files in the Xcode project's app target
+//      so they actually compile.
+//   3. Adds the App Group entitlement (so Siri and the app can pass a note
+//      through a shared container — harmless on the Simulator, which doesn't
 //      enforce entitlements/provisioning).
 //
 // NOTE for Stage 2 (the eventual EAS device build): the App Group capability
@@ -29,43 +29,52 @@ const {
 const fs = require('fs');
 const path = require('path');
 
-const SWIFT_FILENAME = 'OpenRememberWhenIntent.swift';
 const APP_GROUP = 'group.com.molliedog.ElderlyAssistant';
 
-// 1. Copy the Swift source into ios/<ProjectName>/.
+// Every .swift file in plugins/ios/ gets injected. Drop a new Siri intent file
+// in there and it's picked up automatically — no need to edit this plugin.
+const swiftFilenames = (projectRoot) =>
+  fs
+    .readdirSync(path.join(projectRoot, 'plugins', 'ios'))
+    .filter((f) => f.endsWith('.swift'));
+
+// 1. Copy every Swift source into ios/<ProjectName>/.
 const withSiriIntentSource = (config) =>
   withDangerousMod(config, [
     'ios',
     async (cfg) => {
       const { projectRoot, platformProjectRoot, projectName } = cfg.modRequest;
-      const src = path.join(projectRoot, 'plugins', 'ios', SWIFT_FILENAME);
       const destDir = path.join(platformProjectRoot, projectName);
       fs.mkdirSync(destDir, { recursive: true });
-      fs.copyFileSync(src, path.join(destDir, SWIFT_FILENAME));
+      for (const filename of swiftFilenames(projectRoot)) {
+        const src = path.join(projectRoot, 'plugins', 'ios', filename);
+        fs.copyFileSync(src, path.join(destDir, filename));
+      }
       return cfg;
     },
   ]);
 
-// 2. Add the Swift file to the Xcode app target so it compiles.
+// 2. Add each Swift file to the Xcode app target so it compiles.
 const withSiriIntentXcode = (config) =>
   withXcodeProject(config, (cfg) => {
     const proj = cfg.modResults;
-    const projectName = cfg.modRequest.projectName;
-    const relPath = `${projectName}/${SWIFT_FILENAME}`;
-
-    if (proj.hasFile(relPath)) {
-      return cfg; // already added (idempotent across re-runs)
-    }
+    const { projectName, projectRoot } = cfg.modRequest;
 
     const groupKey =
       proj.findPBXGroupKey({ name: projectName }) ||
       proj.getFirstProject().firstProject.mainGroup;
 
-    proj.addSourceFile(
-      relPath,
-      { target: proj.getFirstTarget().uuid },
-      groupKey
-    );
+    for (const filename of swiftFilenames(projectRoot)) {
+      const relPath = `${projectName}/${filename}`;
+      if (proj.hasFile(relPath)) {
+        continue; // already added (idempotent across re-runs)
+      }
+      proj.addSourceFile(
+        relPath,
+        { target: proj.getFirstTarget().uuid },
+        groupKey
+      );
+    }
     return cfg;
   });
 

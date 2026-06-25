@@ -19,6 +19,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/Colors';
+import * as AppGroup from '../modules/app-group';
 
 interface ScheduleItem {
     id: string;
@@ -129,6 +130,9 @@ export default function MyDayScreen() {
                 setRoutine(parsedRoutine);
                 setCoffeeCount(savedCoffee ? parseInt(savedCoffee, 10) : 0);
                 setWaterCount(savedWater ? parseInt(savedWater, 10) : 0);
+                // Same-day load doesn't go through saveData, so publish here too
+                // to keep Siri's live item list fresh.
+                AppGroup.setMyDayItems(parsedRoutine.map(i => ({ id: i.id, label: i.label })));
             }
             await scheduleAllNotifications();
         } catch (e) {
@@ -139,6 +143,9 @@ export default function MyDayScreen() {
     const saveData = async (r: ScheduleItem[], h: HistoryEntry[]) => {
         await AsyncStorage.setItem('my_routine', JSON.stringify(r));
         await AsyncStorage.setItem('my_history', JSON.stringify(h));
+        // Publish the current items to the shared App Group box so Siri can offer
+        // them by voice (live list). Only id + label are needed on the Siri side.
+        AppGroup.setMyDayItems(r.map(i => ({ id: i.id, label: i.label })));
         await scheduleAllNotifications();
     };
 

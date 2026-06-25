@@ -25,8 +25,13 @@ struct OpenRememberWhenIntent: AppIntent {
     }
 }
 
-// Makes the intent discoverable by Siri voice and the Shortcuts app with a
-// spoken phrase. \(.applicationName) expands to the app's display name.
+// Makes the intents discoverable by Siri voice and the Shortcuts app with
+// spoken phrases. \(.applicationName) expands to the app's display name, and
+// \(\.$item) is the spoken item Siri matches against the live My Day list.
+//
+// An app may have only ONE AppShortcutsProvider, so every voice command is
+// listed here. MarkItemDoneIntent and MyDayItemEntity are defined in
+// MarkItemDoneIntent.swift — same build target, so they're visible here.
 @available(iOS 16.0, *)
 struct RememberWhenShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
@@ -38,6 +43,16 @@ struct RememberWhenShortcuts: AppShortcutsProvider {
             ],
             shortTitle: "Open Remember When",
             systemImageName: "app.badge"
+        )
+        AppShortcut(
+            intent: MarkItemDoneIntent(),
+            phrases: [
+                "Mark \(\.$item) done in \(.applicationName)",
+                "Mark \(\.$item) complete in \(.applicationName)",
+                "Complete \(\.$item) in \(.applicationName)"
+            ],
+            shortTitle: "Mark item done",
+            systemImageName: "checkmark.circle"
         )
     }
 }

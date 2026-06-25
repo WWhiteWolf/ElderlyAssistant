@@ -3,11 +3,82 @@ import * as Notifications from 'expo-notifications';
 import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { Stack, useRouter } from 'expo-router';
 import { useEffect, useRef } from 'react';
+import { AppState } from 'react-native';
+import * as AppGroup from '../modules/app-group';
 
 export default function RootLayout() {
   const router = useRouter();
   const response = Notifications.useLastNotificationResponse();
   const handledId = useRef<string | null>(null);
+  const applyingNote = useRef(false);
+
+  // Siri "mark item done" (Approach B). The Swift App Intent drops a tiny note
+  // into the shared App Group box and wakes the app; here we read that note,
+  // apply it with My Day's existing done-logic, and clear it. We also republish
+  // the current My Day items every time the app becomes active, so Siri's voice
+  // list stays fresh even if the My Day screen hasn't been opened this session.
+  // Runs on mount (cold launch straight from Siri) and on every foreground.
+  useEffect(() => {
+    const applyPendingNote = async () => {
+      if (applyingNote.current) return;
+      applyingNote.current = true;
+      try {
+        const routineRaw = await AsyncStorage.getItem('my_routine');
+        const routine = routineRaw ? (JSON.parse(routineRaw) as { id: string; label: string; completed: boolean }[]) : [];
+        // Keep Siri's view of the list current.
+        AppGroup.setMyDayItems(routine.map((i) => ({ id: i.id, label: i.label })));
+
+        const note = AppGroup.getPendingNote();
+        if (!note || note.action !== 'markDone') return;
+
+        // Find the item: prefer the id Siri handed back, else match the label.
+        let item = note.itemId ? routine.find((i) => i.id === note.itemId) : undefined;
+        if (!item && note.label) {
+          const spoken = note.label.trim().toLowerCase();
+          item = routine.find((i) => i.label.trim().toLowerCase() === spoken);
+        }
+        if (!item) {
+          AppGroup.clearPendingNote();
+          return;
+        }
+        const target = item;
+
+        // Mark complete in my_routine.
+        const updatedRoutine = routine.map((i) =>
+          i.id === target.id ? { ...i, completed: true } : i
+        );
+        await AsyncStorage.setItem('my_routine', JSON.stringify(updatedRoutine));
+
+        // Durable history entry, dated from when Siri ran (firedAt) — same shape,
+        // 50-cap, and fire-time dating as the banner-Done path, so an after-
+        // midnight "mark done" still files under the right day.
+        const fired = note.firedAt ? new Date(note.firedAt) : new Date();
+        const histRaw = await AsyncStorage.getItem('my_history');
+        const hist = histRaw ? (JSON.parse(histRaw) as any[]) : [];
+        const newEntry = {
+          id: Date.now().toString(),
+          date: fired.toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
+          sched: target.label,
+          actual: fired.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false }),
+          what: '',
+          note: '',
+        };
+        await AsyncStorage.setItem('my_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
+
+        AppGroup.clearPendingNote();
+        // Land on My Day so the checked tile is visible (same as a banner tap).
+        router.push('/myday');
+      } finally {
+        applyingNote.current = false;
+      }
+    };
+
+    applyPendingNote();
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') applyPendingNote();
+    });
+    return () => sub.remove();
+  }, []);
 
   // Register the My Day snooze category once, so its notifications can show
   // Snooze buttons (15 / 30 / 60 min). Category id has no ':' or '-' per Expo docs.
