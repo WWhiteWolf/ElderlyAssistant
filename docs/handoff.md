@@ -1,6 +1,33 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #16 (2026-06-25): Audio input Stage 2 — the REAL "mark item done" Siri intent BUILT (Steps 1–3, code-complete, tsc clean). NOT committed, NOT yet runtime-confirmed.
+## THIS SESSION — #17 (2026-06-25): "Cannot find native module 'AppGroup'" ROOT-CAUSED + FIXED (podspec deployment target). Simulator launches clean. App Group capability created in Apple portal.
+
+**The crash is fixed — verified end to end.** Root cause: the local module's podspec `modules/app-group/ios/AppGroup.podspec` declared `:ios => '16.4'` (plus a stray `:tvos => '16.4'`), but the app's iOS deployment target is **15.1** (`ios/Podfile`: `podfile_properties['ios.deploymentTarget'] || '15.1'`). During `pod install`, `use_expo_modules!` (`node_modules/expo-modules-autolinking/scripts/ios/autolinking_manager.rb`, the `unless pod.supports_platform?(@target_definition.platform)` guard, ~line 62) decides the pod "doesn't support" the 15.1 target and **silently skips it** — a yellow warning, NOT an error, so pod install still reports success. Result: the AppGroup pod is never installed → it's absent from `Pods-RememberWhen/ExpoModulesProvider.swift` and `Podfile.lock` → `requireNativeModule('AppGroup')` throws "Cannot find native module 'AppGroup'". This happened **identically on the Simulator AND on EAS** — so build #25's device crash (an uncaught abort at launch) was this SAME root cause in production form, not a separate bug.
+
+**Why it hid for a whole session:** `expo-modules-autolinking resolve`/`search` find the module fine (they don't check deployment targets), so every diagnostic said "the module is there." Only the actual pod-install platform check dropped it. The `package.json` that #16 added was necessary but was NOT the fix; **this podspec line was.**
+
+**THE FIX (one line, `modules/app-group/ios/AppGroup.podspec`):** changed `:ios => '16.4'` → `:ios => '15.1'` and removed the `:tvos` line, so the pod matches the app and CocoaPods includes it. Safe: `AppGroupModule.swift` uses only `UserDefaults` (available far below iOS 15); the iOS-16-only Siri App Intent Swift lives in the `plugins/ios/*.swift` files and is already `@available(iOS 16.0)`-guarded.
+
+**VERIFIED:** after `rm -rf ios && npx expo prebuild -p ios`, the regenerated `ExpoModulesProvider.swift` now has `import AppGroup` + `AppGroupModule.self` (both configs), and `Podfile.lock` lists `AppGroup (1.0.0)` with a checksum. `npm run ios` → **the app opens to the home page, no red screen.** "Cannot find native module 'AppGroup'" is gone, Simulator-confirmed.
+
+**App Group capability set up in Apple's Developer portal (device-build prerequisite — done this session):** created the App Group identifier **`group.com.molliedog.ElderlyAssistant`** and assigned it to App ID `com.molliedog.ElderlyAssistant`. (A stray duplicate `group.group.com.molliedog.ElderlyAssistant` was created by accident and left unchecked/inert — delete later.) During the EAS build this session, answered "reuse original profile? → **No**" so the provisioning profile regenerated with the new capability.
+
+**DOC CORRECTION:** the #16 entry below says its work is "NOT committed" — that was STALE. Everything #16 built was already committed in `7c698d0 "Siri sim failures."` *before* this session (working tree was clean). Patrick commits the #17 podspec fix now.
+
+**CLEANUP NOTED:** a stray junk file **`Pods-RememberWhen`** (an empty generated module-provider, ~795 bytes) sits committed at the **repo root** — leftover from autolinking debugging. Harmless but should be `git rm`'d.
+
+**NEXT SESSION (resume here, one step at a time):**
+1. **Shortcuts smoke test (Simulator, free):** open My Day once (that publishes items to the App Group), then open the **Shortcuts** app — confirm both "Open Remember When" and "Mark item done" appear, and "Mark item done" lists the real My Day items.
+2. **One EAS device build** to confirm the actual goal — "Mark \<item\> done in Remember When" by voice wakes the app, marks it done in My Day, and logs it. The App Group capability is now enabled, so signing will carry the entitlement. (Build economy: this is the single build that tests the whole Siri feature.)
+3. Optional cleanup: `git rm Pods-RememberWhen`; delete the duplicate App Group in the portal.
+
+**Files touched this session (#17):**
+- `modules/app-group/ios/AppGroup.podspec` — platform `:ios 16.4`→`15.1`, removed `:tvos`. **THE fix. Patrick commits.**
+- `docs/handoff.md` + `docs/parked-items.md` — this update (corrects the stale "not committed" claim + records the real root cause).
+
+---
+
+## SESSION — #16 (2026-06-25): Audio input Stage 2 — the REAL "mark item done" Siri intent BUILT (Steps 1–3, code-complete, tsc clean). Committed in `7c698d0`; the AppGroup link issue is root-caused + FIXED in #17 above.
 
 Built the real Siri "mark item done" feature end-to-end in code. **Decisions locked with Patrick:** keep the app display name **"Remember When" for now** (his coined name **"Elyfont" / "Ely Font"** is **TABLED, not dropped** — revisit later; a short distinctive name can modestly help Siri voice recognition because "Remember When" is itself an English phrase, but it means renaming the app's *display* name, bundle id unchanged); use a **LIVE** item list (the app shares its current My Day items so new items become speakable with no rebuild); **My Day only** first (To-Do later). Data bridge is the #15-chosen **Approach B** ("Siri drops a note," RN applies it). **Patrick commits everything; nothing committed yet.**
 
@@ -299,7 +326,7 @@ History of finished work, kept short. The "Verified code facts" below are the li
 
 ## Active next step (the named goal for next session)
 
-**THE NAMED GOAL FOR NEXT SESSION: finish Audio input Stage 2 — confirm the "mark item done" Siri intent on the Simulator, then the EAS device build.** Session #16 BUILT the real feature in code (Steps 1–3, tsc clean; see "THIS SESSION — #16" at top) and fixed the local-module `package.json` bug; the app now compiles/links/installs but has NOT been seen launching (Simulator auto-open died on the benign LSApplicationWorkspaceErrorDomain error 115). **Resume:** (1) open the app manually on the Simulator, confirm NO "Cannot find native module 'AppGroup'" crash; (2) Shortcuts smoke test (open My Day once → Shortcuts shows "Open Remember When" + "Mark item done" with the real items); (3) Patrick commits the code; (4) single EAS **device** build to confirm voice "Mark \<item\> done in Remember When" → wakes app, marks done, logs — after enabling the App Group capability in Apple's portal. One change at a time. Full detail in "THIS SESSION — #16."
+**THE NAMED GOAL FOR NEXT SESSION: finish Audio input Stage 2 — Shortcuts smoke test, then the one EAS device build.** The "Cannot find native module 'AppGroup'" blocker is **FIXED + Simulator-confirmed launching clean** (session #17 — podspec deployment target was `:ios 16.4` vs the app's `15.1`, so CocoaPods silently skipped the pod; lowered to `15.1`). The App Group capability is now **created in Apple's portal** (`group.com.molliedog.ElderlyAssistant` assigned to the App ID). **Resume:** (1) **Shortcuts smoke test** on the Simulator — open My Day once (publishes items to the App Group) → open Shortcuts → confirm "Open Remember When" + "Mark item done" appear and "Mark item done" lists the real My Day items; (2) **one EAS device build** to confirm voice "Mark \<item\> done in Remember When" → wakes app, marks done in My Day, logs it (signing now carries the App Group entitlement); (3) optional cleanup — `git rm Pods-RememberWhen` (stray junk at repo root) + delete the duplicate App Group in the portal. One change at a time. Full detail in "THIS SESSION — #17" at top.
 
 **▶ Audio input → Siri App Intents — SPIKE PROVEN (session #15, 2026-06-25). NEXT = Stage 2 device build.** Hands-free is the priority; custom mic + wake word ruled out (#14). Data bridge decided: **Approach B — "Siri drops a note,"** the existing RN code applies it. **Feasibility spike PASSED** — a config plugin injects a compiling, Shortcuts-discoverable Swift App Intent into this gitignored-`ios/` (CNG) app. Spike scaffolding committed this session (`plugins/withSiriIntent.js`, `plugins/ios/OpenRememberWhenIntent.swift`, `app.json`). **Next session: Stage 2** — one EAS device build to confirm voice invocation ("Hey Siri, open Remember When") + app-wake; then build the real `MarkItemDoneIntent` + App Group note + RN reader. Full detail in "THIS SESSION — #15 (B)" at the top and the Audio entry in `parked-items.md`.
 
