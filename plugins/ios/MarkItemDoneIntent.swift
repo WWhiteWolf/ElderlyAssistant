@@ -80,7 +80,7 @@ struct MyDayItemQuery: EntityStringQuery {
 @available(iOS 16.0, *)
 struct MarkItemDoneIntent: AppIntent {
     static var title: LocalizedStringResource = "Mark Item Done"
-    static var description = IntentDescription("Marks one of your My Day items done in Remember When.")
+    static var description = IntentDescription("Marks one of your My Day items done in Elyfont.")
 
     // Bring the app forward so the React Native side wakes and applies the note.
     static var openAppWhenRun: Bool = true

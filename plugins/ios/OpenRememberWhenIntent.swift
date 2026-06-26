@@ -12,8 +12,8 @@ import Foundation
 
 @available(iOS 16.0, *)
 struct OpenRememberWhenIntent: AppIntent {
-    static var title: LocalizedStringResource = "Open Remember When"
-    static var description = IntentDescription("Opens the Remember When app.")
+    static var title: LocalizedStringResource = "Open Elyfont"
+    static var description = IntentDescription("Opens the Elyfont app.")
 
     // Bring the app to the foreground when this intent runs. This is the
     // "wake the app" behaviour Stage 1 / Stage 2 will confirm.
@@ -41,15 +41,17 @@ struct RememberWhenShortcuts: AppShortcutsProvider {
                 "Open \(.applicationName)",
                 "Show \(.applicationName)"
             ],
-            shortTitle: "Open Remember When",
+            shortTitle: "Open Elyfont",
             systemImageName: "app.badge"
         )
         AppShortcut(
             intent: MarkItemDoneIntent(),
             phrases: [
+                "Mark \(\.$item) done with \(.applicationName)",
+                "Mark \(\.$item) complete with \(.applicationName)",
                 "Mark \(\.$item) done in \(.applicationName)",
-                "Mark \(\.$item) complete in \(.applicationName)",
-                "Complete \(\.$item) in \(.applicationName)"
+                "Mark \(\.$item) done in the \(.applicationName) app",
+                "Complete \(\.$item) with \(.applicationName)"
             ],
             shortTitle: "Mark item done",
             systemImageName: "checkmark.circle"
