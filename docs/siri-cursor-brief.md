@@ -225,3 +225,83 @@ Shortcuts UI tiles, but the spoken-parameter path fails and Siri falls back to A
 - Bundle id `com.molliedog.ElderlyAssistant` and App Group `group.com.molliedog.ElderlyAssistant`
   stay fixed. `ios/` is CNG (gitignored). Patrick commits all git. Propose before coding.
   Favor certainty over another guess-and-build.
+
+---
+
+## UPDATE 3 — research findings (session #20, 2026-06-26): answered the three UPDATE 2 questions; recommend cheaper tests BEFORE the native Shopping List build
+
+Research pass against current Apple docs/WWDC + developer reports, grounded in the actual
+`plugins/ios/MarkItemDoneIntent.swift`. No code changed. Sources listed at the bottom.
+
+### Q1 — Can a fully dynamic `AppEntity` parameter voice-match at all, or is `IndexedEntity`/Spotlight required?
+**Yes, it can — `IndexedEntity` is NOT strictly required for voice to work.** Apple's own
+documented pattern is exactly ours (dynamic `AppEntity` + `EntityStringQuery` +
+`updateAppShortcutParameters()`, spoken value bound as `\(\.$item)`). Create with Swift's
+"BooksShelf" tutorial (Mar 2025) shows this voice-matching on a real device — structurally
+identical to "Mark \<item\> done in Elyfont."
+
+**But it's a historically fragile path.** An Apple Developer Forums thread documents our exact
+symptom across multiple developers: the parameterized dynamic-entity shortcut registers a tile
++ runs by tap, but Siri **voice** fails. Documented contributing causes:
+- **`DisplayRepresentation` string-interpolation bug:** `DisplayRepresentation(title: "\(title)")`
+  could corrupt the spoken grammar even while tap works. **Our entity uses exactly that form**
+  (`MarkItemDoneIntent.swift` line 30: `DisplayRepresentation(title: "\(label)")`). Forum fix:
+  `DisplayRepresentation(stringLiteral: label)` or `LocalizedStringResource("%@", defaultValue: …)`.
+  **Caveat:** that bug usually also prints a literal `%@` in the tile title; ours shows real
+  names (Breakfast/Lunch/Snack), so it may already be fine on iOS 26 — but it's a one-line thing
+  worth ruling out cheaply.
+- An **iOS 17 window where parameterized Siri shortcuts were broken at the OS level** regardless of code.
+- Phrases must include `\(.applicationName)` — ours do.
+
+Apple's robust current direction for *dynamic* values matched by voice/meaning is **iOS 18+
+`IndexedEntity` + `CSSearchableIndex.indexAppEntities()`** (donate items to Spotlight's semantic
+index). For a *finite* set, a fixed **`AppEnum`** is the documented "well-known values" pattern
+and the single most reliable voice match.
+
+### Q2 — Could the Expo/CNG/config-plugin setup register the tile but not the voice grammar? Would clean native differ?
+**Plausibly yes, with one honest qualifier.** App Shortcut *voice phrases* are built from
+**build-time metadata**: Xcode's `appintentsmetadataprocessor` generates a `Metadata.appintents`
+store in the app bundle. If that step is incomplete, Siri has no spoken grammar while runtime
+`suggestedEntities()` can still fill the Shortcuts-app tiles — which maps onto "tiles appear,
+voice fails." Documented Expo gotchas: Swift must be in the Xcode **Sources build phase** (ours
+is); files inside an Expo *module* subproject can hide the provider from indexing (ours are at
+the app-target root — good); and `EnableAppIntents = YES` "is occasionally clobbered by Podfile
+post-install scripts" that RN/Expo projects inherit. EAS/prebuild regenerating `ios/` each build
+is exactly where these can silently break.
+
+**Qualifier:** our per-item tiles DO expand (one per live item), so the phrase-template metadata
+is at least partially extracted — it's not a clean "no metadata at all." That weakens the pure
+pipeline theory and keeps the Q1 dynamic-entity fragility in play. A clean native project runs
+metadata extraction + sets `EnableAppIntents` automatically, so the Shopping List proof IS
+informative — but the research already answers its core question on paper (clean native dynamic-
+entity voice does work), and two cheaper checks target the same uncertainty first.
+
+### Q3 — Ranking, confidence, smallest validating step (for THIS app: iOS-only, small/stable routine, Patrick learning Swift/Xcode, build economy)
+Sequence cheapest → most expensive rather than jump to native:
+1. **FREE diagnostic (no build):** pull the last EAS build log; check for `appintentsmetadataprocessor`
+   warnings, confirm `Metadata.appintents` is in the built `.app`, and that `EnableAppIntents = YES`
+   survives prebuild. Tests the Q2 pipeline theory at zero cost.
+2. **Fixed `AppEnum`** — *highest confidence* the voice actually matches (Apple's documented finite-
+   set pattern). Cost: items become compile-time (adding one needs a rebuild) — acceptable for a
+   stable routine. One edit, one build. If it works → it was the dynamic-entity path. If it ALSO
+   fails → strong evidence the Expo/CNG pipeline is the culprit.
+3. **`IndexedEntity` + Spotlight** — keeps the live list with robust semantic voice matching, but
+   more complex, iOS 18+, and STILL rides the same Expo build pipeline (shares Q2 risk). Round two.
+4. **Native Swift Shopping List proof** — the only option that fully removes the Expo/CNG variable,
+   so it's worth doing — but AFTER 1–2: biggest effort (new toolchain for Patrick) and does NOT
+   auto-fix Apple-side issues (`DisplayRepresentation` form, OS quirks reproduce natively too).
+
+**RECOMMENDATION:** the cheap `AppEnum` test (after the free build-log check) is the highest
+confidence-per-effort path to a yes/no answer. If `AppEnum` voice-matches, it's essentially solved
+for a stable routine. If it doesn't, THAT is the moment the native Shopping List proof earns its
+build — the dynamic-entity path is ruled out and the pipeline is isolated. Net: the native Shopping
+List is a legitimate experiment, but two much cheaper tests answer the same question first.
+
+### Sources
+- Create with Swift — App Shortcuts Provider tutorial: https://www.createwithswift.com/performing-your-app-actions-with-siri-through-app-shortcuts-provider/
+- Apple Developer Forums — parameterized phrases not working (thread 713178): https://developer.apple.com/forums/thread/713178
+- Apple — App Intents framework docs: https://developer.apple.com/documentation/appintents
+- WWDC22 — Dive into App Intents (build-time metadata extraction): https://developer.apple.com/videos/play/wwdc2022/10032/
+- WWDC24 — What's new in App Intents (IndexedEntity / Spotlight): https://developer.apple.com/videos/play/wwdc2024/10134/
+- Rork Lab — App Intents with Expo, without the pitfalls: https://rorklab.net/en/articles/rork-dev/rork-app-intents-siri-shortcuts-implementation-guide
+- Medium — iOS App Shortcuts/Intents on a React Native project (sudoplz): https://medium.com/@sudoplz/ios-app-shortcuts-intents-on-a-react-native-project-to-enable-voice-commands-with-siri-and-95fa9fc29a34

@@ -27,7 +27,7 @@ struct MyDayItemEntity: AppEntity, Identifiable {
     let label: String
 
     static var typeDisplayRepresentation: TypeDisplayRepresentation = "My Day Item"
-    var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(label)") }
+    var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: LocalizedStringResource(stringLiteral: label)) }
 
     static var defaultQuery = MyDayItemQuery()
 }
