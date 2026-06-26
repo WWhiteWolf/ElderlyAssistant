@@ -33,8 +33,12 @@ struct MyDayItemEntity: AppEntity, Identifiable {
 }
 
 // Reads the live item list out of the App Group box the RN side writes.
+// Conforms to EntityStringQuery (not just EntityQuery): a parameterized App
+// Shortcut phrase ("Mark <item> done in …") only registers if the entity's
+// query can resolve a spoken/typed string to an entity. Without
+// entities(matching:) iOS silently drops the whole "Mark item done" shortcut.
 @available(iOS 16.0, *)
-struct MyDayItemQuery: EntityQuery {
+struct MyDayItemQuery: EntityStringQuery {
     private struct RawItem: Decodable {
         let id: String
         let label: String
@@ -57,6 +61,14 @@ struct MyDayItemQuery: EntityQuery {
     func entities(for identifiers: [String]) async throws -> [MyDayItemEntity] {
         let all = loadItems()
         return all.filter { identifiers.contains($0.id) }
+    }
+
+    // Match a spoken/typed word against the live item labels so Siri can resolve
+    // e.g. "Mark medication done" to the medication entity. Required by
+    // EntityStringQuery; without it the parameterized phrase won't register.
+    func entities(matching string: String) async throws -> [MyDayItemEntity] {
+        let needle = string.lowercased()
+        return loadItems().filter { $0.label.lowercased().contains(needle) }
     }
 
     // The list Siri offers by voice and in the Shortcuts app.
