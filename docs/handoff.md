@@ -1,5 +1,36 @@
 # Hand-off note — paste at the start of the next session
 
+## THIS SESSION — #20 (2026-06-26): Siri voice — researched the real fix, tried the cheapest one (DisplayRepresentation), it did NOT fix voice. Patrick DECIDED TO PARK voice recognition. Code one-liner committed + built (`2118681`); these docs pending his commit.
+
+**Correction to #19's note:** the "Swift Shopping List" native proof was **never built — it doesn't exist.** This session did the research that was meant to precede it (the Cursor-prompt research), now captured in `docs/siri-cursor-brief.md` "**UPDATE 3 — research findings**."
+
+**Patrick's hard requirement (locked this session):** *without live, no-rebuild command recognition, voice isn't worth doing.* This **kills the fixed `AppEnum` option** (a compile-time set = no live recognition), and the native-rewrite-for-AppEnum idea with it.
+
+**Diagnostic done — the Expo/CNG pipeline is NOT the problem (so a native rewrite would not differ on this axis):** confirmed `Metadata.appintents` **IS generated** in the built app (`find` in DerivedData on Patrick's Mac returned it), both intent `.swift` files are in the Xcode **Sources** build phase (pbxproj 345–346), Podfile `post_install` doesn't clobber settings, `EnableAppIntents` is at its default. Plus per-item tiles already register on device + tap works. So build-time metadata extraction works; #19's "native proof to isolate the pipeline" is effectively answered (pipeline fine).
+
+**Tried the cheap fix — FAILED.** Changed `MyDayItemEntity.displayRepresentation` (line 30) from `DisplayRepresentation(title: "\(label)")` to `DisplayRepresentation(title: LocalizedStringResource(stringLiteral: label))` — matches a known-working live-list sample (Apple forum 759909) and the `%@`-interpolation fix (forum 713178). Patrick committed (`2118681`) + EAS-built + TestFlight-installed + **rebooted**, then spoke the full correct phrase "mark breakfast done in Elyfont." **Still App-Store fallback.** DisplayRepresentation theory disproven for his case. (The one-liner is left in — harmless / arguably more correct.)
+
+**The blocker is unchanged from #19 and now well-characterized:** Siri won't VOICE-match the dynamic parameterized phrase — the whole phrase misses Siri's grammar ("I don't see an app… Search the App Store"), while the tile registers, tap works, and metadata generates.
+
+**Research conclusions (full detail in `siri-cursor-brief.md` UPDATE 3):**
+- A dynamic `AppEntity` CAN voice-match in principle (Apple's own "BooksShelf" sample) but it's fragile.
+- Apple DTS (forum 759909): App Shortcut voice params must be **learned** from `suggestedEntities()` at `updateAppShortcutParameters()` time; there is **no freeform spoken-parameter capture** in an App Shortcut.
+- `IndexedEntity` (iOS 18+) targets Spotlight/semantic **search + resolution**, NOT clearly the fix for this phrase-grammar-miss / App-Store-fallback symptom — a genuine **maybe**, not a confirmed fix.
+- Documented **iOS 26.4 App Intents regression**; Patrick is on **26.5** — some of this may be Apple-side, outside our code's control.
+
+**DECISION (Patrick): PARK voice recognition.** "Either there will be a way at a later date, or I will go without it." Tap-from-Shortcuts already works on device. All Siri scaffolding stays in place, inert (`plugins/ios/*.swift`, `plugins/withSiriIntent.js`, `modules/app-group/`, the `app.json` plugin entry, the App Group capability).
+
+**➤ SINGLE RESUME DOC: `docs/siri-voice-resume.md`** — self-contained (goal, constraints, full architecture as built, everything tried + ruled out, exact next steps). Read it first to pick the feature back up; it supersedes the scattered #14–#20 entries.
+
+**IF REVISITED LATER — the smartest next move (cheap, decisive):** run Apple's existing dynamic-entity sample (Create with Swift "BooksShelf" final project) on the device. If Apple's own sample ALSO can't voice-match a dynamic item on this iOS → it's the OS/device, so stop building on our side. If it works → something specific to our Expo app differs → dig there. (Needs Xcode on the Mac — new for Patrick; Claude can guide.) Alternatives: take the `IndexedEntity` swing (genuine maybe); or watch for an iOS update fixing the 26.x regression.
+
+**Files touched this session (#20):**
+- `plugins/ios/MarkItemDoneIntent.swift` — line 30 `DisplayRepresentation` → `LocalizedStringResource(stringLiteral: label)`. **Committed `2118681` + EAS-built + device-tested by Patrick — did NOT fix voice.**
+- `docs/siri-cursor-brief.md` — NEW "UPDATE 3 — research findings." **Committed `2118681`.**
+- `docs/handoff.md` + `docs/parked-items.md` — this update. **Pending Patrick's commit.**
+
+---
+
 ## THIS SESSION — #19 (2026-06-26): Siri voice — REGISTRATION solved (a phone REBOOT did it), and the REAL blocker isolated: Siri won't VOICE-match the dynamic item parameter. Renamed the app to "Elyfont" (built + device-tested) — did NOT fix voice. NEXT: use Cursor to choose IndexedEntity vs fixed AppEnum vs a native-Swift rewrite. Code (rename) committed + built by Patrick; docs (this + the Cursor brief) pending his commit.
 
 **Brought in Cursor as a second tool this session.** Created `docs/siri-cursor-brief.md` — a standalone brief that hands the whole Siri problem to Cursor's AI so it starts caught up. Keep it; it's the working hand-off to Cursor and was updated twice (see "UPDATE" and "UPDATE 2" inside it).
@@ -394,6 +425,8 @@ History of finished work, kept short. The "Verified code facts" below are the li
 - **Assistant swipe/tap gestures on the Simulator are unreliable.** Patrick does direct manipulation/typing on the device; Claude reasons/guides, reads code, does menu-level actions.
 
 ## Active next step (the named goal for next session)
+
+**⏸ VOICE RECOGNITION IS PARKED as of session #20 (Patrick's decision).** No high-confidence fix was found; the App-Store-fallback may be partly an iOS 26.x Apple-side regression. If revisited, the cheapest decisive test is running Apple's "BooksShelf" dynamic-entity sample on the device — see "THIS SESSION — #20" up top + `siri-cursor-brief.md` UPDATE 3. **There is NO named goal for next session — Patrick will name one.** The Audio/Siri text below is retained for reference only; it is no longer the active goal.
 
 **THE NAMED GOAL FOR NEXT SESSION: finish Audio input Stage 2 — Shortcuts smoke test, then the one EAS device build.** The "Cannot find native module 'AppGroup'" blocker is **FIXED + Simulator-confirmed launching clean** (session #17 — podspec deployment target was `:ios 16.4` vs the app's `15.1`, so CocoaPods silently skipped the pod; lowered to `15.1`). The App Group capability is now **created in Apple's portal** (`group.com.molliedog.ElderlyAssistant` assigned to the App ID). **Resume:** (1) **Shortcuts smoke test** on the Simulator — open My Day once (publishes items to the App Group) → open Shortcuts → confirm "Open Remember When" + "Mark item done" appear and "Mark item done" lists the real My Day items; (2) **one EAS device build** to confirm voice "Mark \<item\> done in Remember When" → wakes app, marks done in My Day, logs it (signing now carries the App Group entitlement); (3) optional cleanup — `git rm Pods-RememberWhen` (stray junk at repo root) + delete the duplicate App Group in the portal. One change at a time. Full detail in "THIS SESSION — #17" at top.
 
