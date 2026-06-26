@@ -25,6 +25,7 @@ const {
   withDangerousMod,
   withXcodeProject,
   withEntitlementsPlist,
+  withAppDelegate,
 } = require('@expo/config-plugins');
 const fs = require('fs');
 const path = require('path');
@@ -89,9 +90,44 @@ const withAppGroupEntitlement = (config) =>
     return cfg;
   });
 
+// 4. Refresh App Shortcut parameters at launch so Siri re-reads the live My Day
+// item list. A parameterized App Shortcut ("Mark <item> done") only switches on
+// once the system has the item values in hand. iOS reads them when it registers
+// the app's shortcuts — at install, while our shared box is still empty — and
+// never re-reads on its own. updateAppShortcutParameters() forces that re-read;
+// the items persist in the App Group between launches, so from the next launch
+// on, the parameterized command registers. Apple's recommended call site is the
+// app delegate's didFinishLaunchingWithOptions.
+const withShortcutRefresh = (config) =>
+  withAppDelegate(config, (cfg) => {
+    let contents = cfg.modResults.contents;
+
+    if (!contents.includes('import AppIntents')) {
+      contents = contents.replace(
+        /import Expo\n/,
+        'import Expo\nimport AppIntents\n'
+      );
+    }
+
+    if (!contents.includes('updateAppShortcutParameters')) {
+      const anchor =
+        'return super.application(application, didFinishLaunchingWithOptions: launchOptions)';
+      const injected =
+        'if #available(iOS 16.0, *) {\n' +
+        '      RememberWhenShortcuts.updateAppShortcutParameters()\n' +
+        '    }\n\n    ' +
+        anchor;
+      contents = contents.replace(anchor, injected);
+    }
+
+    cfg.modResults.contents = contents;
+    return cfg;
+  });
+
 module.exports = (config) => {
   config = withSiriIntentSource(config);
   config = withSiriIntentXcode(config);
   config = withAppGroupEntitlement(config);
+  config = withShortcutRefresh(config);
   return config;
 };
