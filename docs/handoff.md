@@ -1,6 +1,38 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #17 (2026-06-25): "Cannot find native module 'AppGroup'" ROOT-CAUSED + FIXED (podspec deployment target). Simulator launches clean. App Group capability created in Apple portal.
+## THIS SESSION — #18 (2026-06-25): Audio Stage 2 device test — "Mark item done" Siri command STILL won't register on device after two fixes + two EAS builds. Root cause NOT yet found; next step is a diagnostic build. Code committed (`ffc2f27`, `f57def6`); docs pending Patrick's commit.
+
+**Where we are: the parameterized "Mark item done" intent does not register on the phone; the no-parameter "Open" intent does.** On the device (TestFlight), the Shortcuts app shows ONLY the "Open Remember When" tile. "Mark item done" has **no tile**, and saying "Hey Siri, mark <item> done in Remember When" returns **"I don't see the app you asked for."** Two code fixes this session did not change that.
+
+**IMPORTANT reasoning correction (Patrick's catch — don't repeat my error):** "Hey Siri, open Remember When" working by voice proves NOTHING about our code — iOS opens any app by name natively, zero code (this predates all the Siri work). The only *meaningful* evidence our intents register is the **tile in the Shortcuts app**: a plain "open app" capability does NOT create a tile in the app's Shortcuts section. So: "Open Remember When" **tile present** = our `OpenRememberWhenIntent` registered. "Mark item done" **tile absent** + Siri "I don't see the app" = our `MarkItemDoneIntent` did NOT register.
+
+**What we tried this session (both committed, both built to device, neither fixed it):**
+1. **`EntityStringQuery` fix (`ffc2f27`, `plugins/ios/MarkItemDoneIntent.swift`).** `MyDayItemQuery` now conforms to `EntityStringQuery` (added `entities(matching:)` that filters the live list by label, case-insensitive contains) — a parameterized App Shortcut phrase needs the query to resolve a spoken string. Necessary, but alone did NOT surface the command (verified the fix WAS in both the Simulator rebuild and the device build).
+2. **`updateAppShortcutParameters()` at launch (`f57def6`, `plugins/withSiriIntent.js`).** Extended the plugin with a `withAppDelegate` mod (`withShortcutRefresh`) that injects `import AppIntents` + `if #available(iOS 16.0,*) { RememberWhenShortcuts.updateAppShortcutParameters() }` into `AppDelegate.didFinishLaunchingWithOptions`. Idempotent; verified the string-patch transforms the real `AppDelegate.swift` correctly. Theory: iOS registers shortcuts once (at install, shared box empty) and never re-reads, so force a re-read at launch (items persist in the App Group between launches). **Built + device-tested with a fresh My-Day-visit → full quit → relaunch → voice. Same "I don't see the app."** So this was not the (whole) fix.
+
+**Free steps already ruled out:** clean delete + reinstall from TestFlight changed nothing. (A full phone REBOOT was suggested but NOT yet tried — Patrick stopped for the day. Try it first next session: App Shortcut registration / Siri vocabulary sometimes only refreshes after a reboot, which reinstall doesn't flush.)
+
+**Simulator is a dead end for this — confirmed.** It can't run App Shortcuts ("Unable to run App Shortcut" on the no-op Open intent) and its App Group isn't provisioned, so it can't validate the Siri side. Only the device counts (matches #15's conclusion). Don't burn time re-testing Siri on the Simulator.
+
+**TWO LIVE HYPOTHESES (next session must isolate, not guess again):**
+- **(A) Siri can't read the item list on device** — the App Group shared box isn't readable by the system/Siri process that builds the command, so `suggestedEntities()` returns empty → the parameterized command is dropped. Would be a provisioning/entitlement problem, not the Swift. (Note from #17: a stray duplicate App Group `group.group.com.molliedog.ElderlyAssistant` exists in the portal, left unchecked — worth ruling out it's interfering.) Data path itself is verified correct in code: My Day publishes `{id,label}` to suite `group.com.molliedog.ElderlyAssistant`; the Swift query reads the same shape from the same suite. We have NEVER actually confirmed the App Group works end-to-end on device in either direction (Siri has never managed to write a note back either).
+- **(B) The parameterized App Shortcut is rejected structurally** regardless of data (a metadata-extraction / App Intents registration issue specific to the entity+parameter shortcut).
+
+**NEXT SESSION — the decisive diagnostic build (agreed plan):** in `plugins/ios/MarkItemDoneIntent.swift`, temporarily make `suggestedEntities()` (and `entities(matching:)`) return a **hardcoded** static pair of items that does NOT touch the App Group. Build to device.
+- If "Mark item done" then **appears** → it's hypothesis **(A)**, the App Group read on device → fix provisioning/entitlement (check the profile actually carries `group.com.molliedog.ElderlyAssistant`; delete the stray duplicate group).
+- If it **still doesn't appear** → hypothesis **(B)**, structural → rework the intent (e.g., reconsider the dynamic-entity-in-AppShortcut approach; App Shortcuts favor finite/enumerable parameter sets).
+Also worth a (free-ish) look: the EAS build logs for App Intents metadata-extraction warnings on `MarkItemDoneIntent` / `MyDayItemEntity`.
+
+**Build economy note:** this effort has now cost two device builds with no win. The diagnostic build above is justified (no Simulator path exists), but try the **phone reboot first** (free) before building.
+
+**Files touched this session (#18):**
+- `plugins/ios/MarkItemDoneIntent.swift` — `EntityStringQuery` + `entities(matching:)`. **Committed `ffc2f27`.**
+- `plugins/withSiriIntent.js` — `withShortcutRefresh` (`withAppDelegate` patch calling `updateAppShortcutParameters()` at launch). **Committed `f57def6`.**
+- `docs/handoff.md` + `docs/parked-items.md` — this update. **Pending Patrick's commit.**
+
+---
+
+## SESSION — #17 (2026-06-25): "Cannot find native module 'AppGroup'" ROOT-CAUSED + FIXED (podspec deployment target). Simulator launches clean. App Group capability created in Apple portal.
 
 **The crash is fixed — verified end to end.** Root cause: the local module's podspec `modules/app-group/ios/AppGroup.podspec` declared `:ios => '16.4'` (plus a stray `:tvos => '16.4'`), but the app's iOS deployment target is **15.1** (`ios/Podfile`: `podfile_properties['ios.deploymentTarget'] || '15.1'`). During `pod install`, `use_expo_modules!` (`node_modules/expo-modules-autolinking/scripts/ios/autolinking_manager.rb`, the `unless pod.supports_platform?(@target_definition.platform)` guard, ~line 62) decides the pod "doesn't support" the 15.1 target and **silently skips it** — a yellow warning, NOT an error, so pod install still reports success. Result: the AppGroup pod is never installed → it's absent from `Pods-RememberWhen/ExpoModulesProvider.swift` and `Podfile.lock` → `requireNativeModule('AppGroup')` throws "Cannot find native module 'AppGroup'". This happened **identically on the Simulator AND on EAS** — so build #25's device crash (an uncaught abort at launch) was this SAME root cause in production form, not a separate bug.
 
