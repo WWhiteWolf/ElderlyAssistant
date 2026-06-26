@@ -166,3 +166,62 @@ even though it registers fine and runs correctly by tap.
 - **Build economy:** each EAS device build is costly. We want the plan to be high-confidence
   enough that ONE build fixes it — so favor the option Apple actually documents as correct
   over a guess.
+
+---
+
+## UPDATE 2 — the Elyfont rename was built + tested, and it did NOT fix voice
+
+We applied the rename (display name → **Elyfont**, intent titles/descriptions/shortTitles →
+Elyfont, expanded the "Mark item done" phrases to lead with "with \(.applicationName)" plus
+"in" and "in the … app" variants). Kept the dynamic entity, App Group, bundle id, and App
+Group id unchanged. Built on EAS, installed via TestFlight. Device results:
+
+- **Tiles register under the new name.** The Shortcuts app shows "Open Elyfont" plus per-item
+  tiles (Breakfast, Lunch, Snack) — and they appear even after a reboot, before opening the app.
+- **Tap still works** end to end (marks the item done + logs).
+- **"Hey Siri, open Elyfont" opens the app** → Siri recognizes/transcribes the name fine.
+  (Caveat: iOS opens any app by name natively, so this only proves the name is recognized.)
+- **"Hey Siri, mark snack done with Elyfont" (and "…in Elyfont") STILL FAILS** — identical to
+  before: "I don't see an app for that. You'll need to download one," then "Search the App
+  Store." No item disambiguation.
+
+### What this proves
+The "Remember When is an English phrase" theory is **DISPROVEN** — a distinctive coined name
+fails identically. The failure is now isolated to ONE thing: **Siri will not VOICE-match the
+parameterized command's DYNAMIC `AppEntity` item parameter.** Name, transcription,
+registration, App Group read, tap, and app-wake all work. `suggestedEntities()` populates the
+Shortcuts UI tiles, but the spoken-parameter path fails and Siri falls back to App-Store search.
+
+### Three options now on the table
+1. **`IndexedEntity` + Spotlight donation** — keep the live/dynamic list, but make the items
+   part of Siri's semantic index so spoken values are matchable. (Cursor flagged this as
+   round-two.)
+2. **Switch the item parameter to a fixed `AppEnum`** — lose the live list (adding an item
+   needs a rebuild), but it's Apple's documented "fixed set of well-known values" pattern and
+   the most likely to actually voice-match. The owner's routine is small and stable.
+3. **Rebuild natively in Swift** — the owner is considering this. Proposed cheap proof: a tiny
+   native Swift "Shopping List" app (items with a name + a `need`/`stocked` status) with ONE
+   App Intent, "mark \<item\> stocked," backed by a DYNAMIC list — to test whether Siri
+   voice-matches a dynamic list in a CLEAN native project, removing the Expo / CNG /
+   config-plugin scaffolding as a variable. (Shopping List is the simplest, most stable screen
+   in the current app — model in `app/shopping.tsx`: `Item { id, name, status }`.)
+
+### Questions for Cursor (research current Apple docs / WWDC + real-world reports)
+1. Can a parameterized App Shortcut with a **fully dynamic `AppEntity`** parameter be matched
+   by Siri **voice** at all? If `suggestedEntities()` fills the Shortcuts UI but voice fails
+   with an App-Store fallback, is that a known limitation? What builds Siri's spoken-parameter
+   grammar — and does reliable voice matching require **`IndexedEntity`** (iOS 18+) /
+   `CSSearchableIndex` donation / `EntityPropertyQuery`? Cite sources and iOS versions.
+2. Could our **Expo + Continuous-Native-Generation + config-plugin** setup (Swift injected via
+   `withDangerousMod`, target added via `withXcodeProject`, AppDelegate string-patched) cause
+   App Intents to register the **tile** but not the **voice grammar** — i.e., would a clean
+   native Swift project plausibly behave differently? This decides whether option 3's native
+   test is worth the effort.
+3. Rank the three options for THIS app (live list is nice but the routine is small/stable;
+   iOS-only; owner is learning Swift/Xcode): give the recommended path, a confidence level,
+   and the smallest validating step for each.
+
+### Constraints (unchanged)
+- Bundle id `com.molliedog.ElderlyAssistant` and App Group `group.com.molliedog.ElderlyAssistant`
+  stay fixed. `ios/` is CNG (gitignored). Patrick commits all git. Propose before coding.
+  Favor certainty over another guess-and-build.

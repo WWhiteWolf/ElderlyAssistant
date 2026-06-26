@@ -1,6 +1,43 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #18 (2026-06-25): Audio Stage 2 device test — "Mark item done" Siri command STILL won't register on device after two fixes + two EAS builds. Root cause NOT yet found; next step is a diagnostic build. Code committed (`ffc2f27`, `f57def6`); docs pending Patrick's commit.
+## THIS SESSION — #19 (2026-06-26): Siri voice — REGISTRATION solved (a phone REBOOT did it), and the REAL blocker isolated: Siri won't VOICE-match the dynamic item parameter. Renamed the app to "Elyfont" (built + device-tested) — did NOT fix voice. NEXT: use Cursor to choose IndexedEntity vs fixed AppEnum vs a native-Swift rewrite. Code (rename) committed + built by Patrick; docs (this + the Cursor brief) pending his commit.
+
+**Brought in Cursor as a second tool this session.** Created `docs/siri-cursor-brief.md` — a standalone brief that hands the whole Siri problem to Cursor's AI so it starts caught up. Keep it; it's the working hand-off to Cursor and was updated twice (see "UPDATE" and "UPDATE 2" inside it).
+
+**BREAKTHROUGH 1 — a phone REBOOT fixed registration (the #18 blocker).** After a full power-cycle, the parameterized "Mark item done" shortcut NOW registers on device: the Shortcuts app shows the "Open" tile PLUS one tile per live My Day item (Breakfast, Lunch, Snack), and they survive a reboot and appear before opening the app. This **DISPROVES both #18 hypotheses**: (A) App-Group-read-fails — DISPROVEN (the tiles show the user's REAL items, so the shared box IS read on device); (B) structural rejection — DISPROVEN (it registers). The #18 "no tile" symptom was a stale Siri registration cache that only a reboot clears (delete+reinstall did NOT). **Lesson: after any App Shortcut change, reboot the phone before concluding anything.**
+
+**BREAKTHROUGH 2 — tap works end-to-end.** Tapping a per-item tile (e.g. Snack) in the Shortcuts app foregrounds the app, marks the item done in My Day, and logs it. So the intent, the App Group note bridge, `openAppWhenRun`, and the RN done-logic ALL function on device. The whole machine works — except voice.
+
+**THE REMAINING BLOCKER (now precisely isolated): Siri will not VOICE-match the parameterized command's DYNAMIC `AppEntity` item parameter.** "Hey Siri, mark snack done in <app>" → Siri transcribes the words PERFECTLY but answers "I don't see an app for that. You'll need to download one" + "Search the App Store" (it gives up matching the shortcut and treats the tail as an app to find). Isolation tests: "Hey Siri, open <app>" OPENS the app (name + transcription are fine — though iOS opens any app by name natively, so that alone isn't proof of our intent); tap works; tiles register. The ONLY failing piece is the spoken dynamic-item parameter. `suggestedEntities()` fills the Shortcuts UI tiles but the spoken-parameter path fails.
+
+**Decided with Patrick: pursue a REAL permanent fix (NOT user-created canned Shortcuts phrases — those work by voice but aren't the goal), AND consolidate the app's many names at the same time.**
+
+**RENAME to "Elyfont" — BUILT + DEVICE-TESTED — did NOT fix voice.** Theory (mine + Cursor's research): "Remember When" is an ordinary English phrase, so Siri mis-segments "…in Remember When" and falls back to App-Store search. One coordinated change set, committed + EAS-built + TestFlight-installed by Patrick:
+- `app.json`: display name "Remember When" → **"Elyfont"** (drives `\(.applicationName)` + the home-screen label — the name Siri reads). **Bundle id + App Group deliberately UNCHANGED** (changing them = a new app to Apple).
+- `plugins/ios/OpenRememberWhenIntent.swift`: intent title/description + Open `shortTitle` → Elyfont; expanded the "Mark item done" phrases 3 → 5, leading with "Mark \<item\> done **with** \(.applicationName)" plus "in" and "in the … app" variants. Kept the struct name `RememberWhenShortcuts` so the AppDelegate refresh call still matches.
+- `plugins/ios/MarkItemDoneIntent.swift`: description string → Elyfont. No change to the entity/query/perform.
+**RESULT (device):** tiles register under "Elyfont" (survive reboot). "Hey Siri, open Elyfont" opens the app. BUT "Hey Siri, mark snack done with/in Elyfont" STILL fails identically. So the **English-phrase-name theory is DISPROVEN** — a distinctive coined name fails the same way. The rename still served the naming goal (Patrick likes "Elyfont"), but did NOT fix Siri.
+
+**THREE OPTIONS for the real fix (next session decides, via Cursor):**
+1. **`IndexedEntity` + Spotlight donation** — keep the live/dynamic My Day list but put items in Siri's semantic index so spoken values are matchable (iOS 18+). More complex; another build; uncertain.
+2. **Fixed `AppEnum`** — hardcode the routine items as a finite enumerated set. Apple's documented "fixed set of well-known values" pattern → most likely to actually voice-match. Cost: the spoken list updates only on a rebuild (tap stays live). Routine is small/stable, so maybe acceptable.
+3. **Rebuild natively in Swift** — Patrick raised this; real option since the app is iOS-only (RN's cross-platform benefit is unused) and native makes App Intents first-class (no CNG/config-plugin friction, real Xcode debugging). **Honest caveat: native does NOT auto-fix this Apple-API limit** — it gives clean tools to apply it. **Agreed cheap proof before any rewrite:** a tiny native Swift "Shopping List" app (items + `need`/`stocked`, ONE "mark \<item\> stocked" App Intent over a DYNAMIC list) to test whether Siri voice-matches a dynamic list in a CLEAN native project — isolating whether our Expo/CNG/plugin scaffolding contributes. Workflow note: native = Xcode on the Mac (unfamiliar to Patrick), Claude authors Swift, Patrick builds/runs with guidance.
+
+**NEXT SESSION — Cursor FIRST (Patrick's call), before any build or Xcode work.** Point Cursor at `docs/siri-cursor-brief.md` (esp. "UPDATE 2") to answer: (1) can a fully dynamic `AppEntity` parameter voice-match at all, or is `IndexedEntity`/Spotlight donation required (which iOS)? (2) could our CNG/config-plugin setup register the TILE but not the VOICE grammar — i.e., would clean native behave differently (decides if the Swift proof is worth it)? (3) rank the three options with confidence + the smallest validating step. Then bring Patrick a recommendation to approve. Don't build until confident — build economy (this effort has now cost several device builds).
+
+**Cosmetic / parked (NOT Siri-relevant, left as-is on purpose):**
+- The **in-app home-screen header still says "Remember When"** ("Good to see you…") — that's hardcoded greeting text in the home screen code, NOT the app name; zero Siri effect. Update when doing the tagline.
+- **TestFlight / App Store Connect listing name still "Remember When"** — an App Store Connect setting, separate from the build; rename there manually if/when wanted.
+- **Tagline "Elyfont – Memory Assist"** — Patrick wants this. It CANNOT go in the app name (it would truncate on the home screen AND re-introduce the English-words-in-the-name Siri risk). Park as: an in-app subtitle on the home screen (big "Elyfont", "Memory Assist" beneath) and/or the App Store subtitle field.
+
+**Files touched this session (#19):**
+- `app.json`, `plugins/ios/OpenRememberWhenIntent.swift`, `plugins/ios/MarkItemDoneIntent.swift` — Elyfont rename + phrase revisions. **Committed + EAS-built + TestFlight-installed by Patrick.**
+- `docs/siri-cursor-brief.md` — NEW (brief for Cursor; two UPDATE sections). **Pending Patrick's commit.**
+- `docs/handoff.md` + `docs/parked-items.md` — this update. **Pending Patrick's commit.**
+
+---
+
+## SESSION — #18 (2026-06-25): Audio Stage 2 device test — "Mark item done" Siri command STILL won't register on device after two fixes + two EAS builds. Root cause NOT yet found; next step is a diagnostic build. Code committed (`ffc2f27`, `f57def6`); docs pending Patrick's commit.
 
 **Where we are: the parameterized "Mark item done" intent does not register on the phone; the no-parameter "Open" intent does.** On the device (TestFlight), the Shortcuts app shows ONLY the "Open Remember When" tile. "Mark item done" has **no tile**, and saying "Hey Siri, mark <item> done in Remember When" returns **"I don't see the app you asked for."** Two code fixes this session did not change that.
 
