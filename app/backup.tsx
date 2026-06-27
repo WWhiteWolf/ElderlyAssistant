@@ -1,6 +1,7 @@
 import 'react-native-get-random-values'; // must load before crypto-js so AES has a secure RNG
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
+import * as DocumentPicker from 'expo-document-picker';
 import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { useRouter } from 'expo-router';
@@ -189,9 +190,152 @@ export default function BackupScreen() {
         }
     };
 
-    const handleImport = () => {
-        // Real logic comes in a later step.
-        Alert.alert('Import Backup', 'Not built yet — coming in a later step.');
+    // Final step: overwrite storage with the backup, then go Home.
+    // For a TRUE replace, any key not present in the backup is removed,
+    // so nothing from the old data lingers.
+    const applyRestore = async (
+        data: Record<string, string | null>,
+        vaultValue: string | null,
+    ) => {
+        try {
+            const toSet: [string, string][] = [];
+            const toRemove: string[] = [];
+
+            READABLE_KEYS.forEach((key) => {
+                const v = data[key];
+                if (typeof v === 'string') toSet.push([key, v]);
+                else toRemove.push(key);
+            });
+
+            if (typeof vaultValue === 'string' && vaultValue.length > 0) {
+                toSet.push([VAULT_KEY, vaultValue]);
+            } else {
+                toRemove.push(VAULT_KEY);
+            }
+
+            if (toSet.length) await AsyncStorage.multiSet(toSet);
+            if (toRemove.length) await AsyncStorage.multiRemove(toRemove);
+
+            Alert.alert('Restore complete', 'Your backup has been restored.', [
+                { text: 'OK', onPress: () => router.replace('/home') },
+            ]);
+        } catch {
+            Alert.alert(
+                'Restore failed',
+                'Something went wrong while restoring. Your data may be incomplete — you can try the import again.',
+            );
+        }
+    };
+
+    // The "are you sure" gate — nothing is overwritten until this is confirmed.
+    const confirmAndRestore = (
+        data: Record<string, string | null>,
+        vaultValue: string | null,
+    ) => {
+        Alert.alert(
+            'Replace Everything?',
+            'This will replace everything currently in the app — your lists, routines, settings, and Vault — with the contents of this backup. This cannot be undone.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Replace',
+                    style: 'destructive',
+                    onPress: () => applyRestore(data, vaultValue),
+                },
+            ],
+        );
+    };
+
+    // Encrypted Vault: ask once for the backup password and decrypt.
+    // A wrong password yields empty/garbage, which we catch — and change nothing.
+    const promptImportPassword = (parsed: any) => {
+        Alert.prompt(
+            'Backup Password',
+            'Enter the backup password you set when you exported this file, to unlock its Vault.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Unlock',
+                    onPress: (password?: string) => {
+                        if (!password) {
+                            Alert.alert(
+                                'No password',
+                                'No password was entered, so nothing was changed.',
+                            );
+                            return;
+                        }
+                        let vaultValue: string;
+                        try {
+                            const bytes = CryptoJS.AES.decrypt(parsed.vault.payload, password);
+                            const text = bytes.toString(CryptoJS.enc.Utf8);
+                            if (!text) throw new Error('empty');
+                            JSON.parse(text); // sanity-check it's real Vault data
+                            vaultValue = text;
+                        } catch {
+                            Alert.alert(
+                                'Wrong password',
+                                'That password did not unlock the backup’s Vault, so nothing was changed. Please try Import again.',
+                            );
+                            return;
+                        }
+                        confirmAndRestore(parsed.data, vaultValue);
+                    },
+                },
+            ],
+            'secure-text',
+        );
+    };
+
+    const handleImport = async () => {
+        try {
+            const result = await DocumentPicker.getDocumentAsync({
+                type: 'application/json',
+                copyToCacheDirectory: true,
+            });
+            if (result.canceled || !result.assets || !result.assets[0]) return;
+
+            const raw = await new File(result.assets[0].uri).text();
+
+            let parsed: any;
+            try {
+                parsed = JSON.parse(raw);
+            } catch {
+                Alert.alert(
+                    'Not a valid backup',
+                    'That file could not be read as an Elyfont backup. Nothing was changed.',
+                );
+                return;
+            }
+
+            if (!parsed || parsed.type !== 'elyfont-backup' || !parsed.data) {
+                Alert.alert(
+                    'Not an Elyfont backup',
+                    'That file is not an Elyfont backup file. Nothing was changed.',
+                );
+                return;
+            }
+            if (typeof parsed.version === 'number' && parsed.version > BACKUP_VERSION) {
+                Alert.alert(
+                    'Newer backup',
+                    'This backup was made by a newer version of the app. Please update the app before importing it. Nothing was changed.',
+                );
+                return;
+            }
+
+            const vault = parsed.vault || { encrypted: false, payload: null };
+            if (vault.encrypted && vault.payload) {
+                promptImportPassword(parsed);
+            } else {
+                const vaultValue =
+                    typeof vault.payload === 'string' ? vault.payload : null;
+                confirmAndRestore(parsed.data, vaultValue);
+            }
+        } catch {
+            Alert.alert(
+                'Import failed',
+                'Something went wrong while reading the file. Nothing was changed.',
+            );
+        }
     };
 
     return (
