@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as LocalAuthentication from 'expo-local-authentication';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -43,7 +44,15 @@ export default function VaultScreen() {
         const checkSecurity = async () => {
             const vaultPinEnabled = await AsyncStorage.getItem('vault_pin_enabled');
             if (vaultPinEnabled === 'true' && !params?.verified) {
-                router.replace('/vaultpin');
+                const result = await LocalAuthentication.authenticateAsync({
+                    promptMessage: 'Unlock your Vault',
+                    fallbackLabel: 'Use Passcode',
+                });
+                if (result.success) {
+                    setReady(true);
+                } else {
+                    router.replace('/home');
+                }
             } else {
                 setReady(true);
             }

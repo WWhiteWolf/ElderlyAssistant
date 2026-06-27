@@ -343,6 +343,17 @@ export default function SettingsScreen() {
                         </View>
                     </View>
 
+                    <Text style={styles.sectionHeader}>Backup</Text>
+                    <View style={styles.settingCard}>
+                        <TouchableOpacity style={styles.settingRow} onPress={() => router.push('/backup')}>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.settingLabel}>Backup & Restore</Text>
+                                <Text style={styles.settingHint}>Save or restore all your data</Text>
+                            </View>
+                            <Text style={styles.settingArrow}>›</Text>
+                        </TouchableOpacity>
+                    </View>
+
                     <Text style={styles.sectionHeader}>Danger Zone</Text>
                     <View style={styles.settingCard}>
                         <TouchableOpacity style={styles.settingRow} onPress={resetApp}>

@@ -54,7 +54,7 @@ export default function SetupPin() {
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.greeting}>Welcome!</Text>
-                <Text style={styles.subgreeting}>Let's take a moment to set up your app.</Text>
+                <Text style={styles.subgreeting}>Let us take a moment to set up your app.</Text>
                 <Text style={styles.instruction}>
                     {step === 'create' ? 'Create a 6-digit PIN' : 'Confirm your PIN'}
                 </Text>
