@@ -1,5 +1,32 @@
 # Hand-off note — paste at the start of the next session
 
+## THIS SESSION — #24 (2026-06-27): BACKUP COMPLETE — the **Import** half is BUILT and Simulator-validated across all cases. Export (#23) + Import together = the whole local-backup feature works end to end. Code in the working tree; Patrick to commit. Docs pending his commit.
+
+**Goal = finish Elyfont local data backup (Import).** Built Import one decision at a time (continuing the same backup session as #23); Patrick tested every combination on the iPhone 17 Simulator — **all work.**
+
+**ONE app file changed — `app/backup.tsx`** (added `handleImport` + helpers; the only new import is `expo-document-picker`). Flow:
+1. `DocumentPicker.getDocumentAsync({ type:'application/json', copyToCacheDirectory:true })` → pick a file; cancel does nothing.
+2. Read the file with the SDK-54 `new File(uri).text()`, then `JSON.parse`. Unreadable → "Not a valid backup", changes nothing.
+3. **Validate**: must have `type === 'elyfont-backup'` and a `data` object, and `version` must not be newer than this app's `BACKUP_VERSION` (1). Otherwise a plain message, changes nothing.
+4. If `vault.encrypted`: **one-entry** password prompt → `CryptoJS.AES.decrypt(payload, password)` → `toString(enc.Utf8)` → `JSON.parse` as a sanity check. Empty/garbage (i.e. **wrong password**) is caught → "Wrong password", changes nothing. (One entry, not two — on a restore a wrong password just fails harmlessly.)
+5. **"Replace Everything?"** confirm dialog (destructive). Nothing is overwritten until this is confirmed.
+6. **True replace** via `AsyncStorage.multiSet` for keys present in the backup **and `multiRemove` for keys absent** (so nothing old lingers); Vault is set, or removed if the backup's Vault was empty.
+7. `router.replace('/home')` + "Restore complete" — Home reloads on focus (verified `useFocusEffect` in `home.tsx`; list screens load on mount, e.g. `myday.tsx` `useEffect`→`loadData`), so restored data shows.
+
+**⚠ Another first-time native module — `expo-document-picker` (already in package.json since #21).** First real use, so Import needs a **rebuild** (`npm run ios`); a Metro reload isn't enough. (Same situation as `react-native-get-random-values` in #23 — both must be in any future rebuild/EAS build.)
+
+**HOW IT WAS TESTED (Simulator) — Patrick tried "all combinations," all pass:** correct password restores the Vault item; wrong password refuses and changes nothing; a non-backup file is rejected as not an Elyfont backup; the unencrypted/empty-Vault file imports too. `tsc --noEmit` clean (EXIT 0).
+
+**STATUS: the local backup feature (Export + Import) is code-complete and Simulator-validated end to end.** Two app commits' worth of code sit in the working tree across #23–#24 (all in `app/backup.tsx`) plus the new dep `react-native-get-random-values`. Patrick to commit.
+
+**Still open / next candidates (none urgent):**
+- **NEW — add a "merge" Import option (Patrick requested, end of #24).** Today Import only **replaces**. Patrick wants the *choice* of merging a backup into existing data. **Deferred to its own session** — merge is NOT a small add: it needs a **per-list rule decided with Patrick**, because each data type combines differently. Sketch we discussed: ID-keyed arrays (`todo_tasks`, `vault_items`, `planner_projects`, routine lists) → add items whose IDs aren't already present, and decide what happens when the same ID exists in both; append-only logs (`my_history`, `week_history`, `pets_history`, `todo_log`, `planner_log`) → concatenate + de-dupe; counters (`my_coffee`, `my_water`, `pets_treats`) → pick higher / sum / keep current (Patrick's call); single-value settings (`user_name`, reminder times, flags) → backup-wins vs current-wins. Likely UI: after picking a file, ask "Replace or Merge?" Scope each rule with Patrick before building. Full per-list design lives in `parked-items.md`.
+- **Real-device pass** — especially the real **iCloud** round-trip on Patrick's actual phone (Simulator isn't signed into his iCloud; "On My iPhone" proved the mechanism). Export a file to iCloud on the phone, reinstall or wipe, Import it back.
+- **#22 security cleanup (non-exposure, still parked) — VERIFIED this session what the forgotten PIN actually blocks:** read `settings.tsx` + `index.tsx` — the ONLY thing the forgotten `user_pin` blocks is **Reset All Data** (`resetApp` ~line 217 checks `pin === savedPin`) and the dead **Change PIN** keypad (~line 153). App launch has NO PIN gate (`index.tsx` just redirects to `/home`) and the Vault is Face ID (#22), so Patrick is NOT locked out of anything day-to-day and no data is at risk. **Cleanup = switch Reset All Data to Face ID + remove the dead Change PIN row/keypad** (then also: orphaned `vaultpin.tsx`/`login.tsx`/`setup-pin.tsx` — note `resetApp` routes to `/setup-pin` on success, line 219; and reword the stale "Require PIN to open Vault" hint). Small, self-contained — good short next session. See parked-items.
+- Optional backup polish (parked): date-only filename collides on same-day re-export (could append a time).
+
+---
+
 ## THIS SESSION — #23 (2026-06-27): BACKUP RESUMED — the **Export** half is BUILT and Simulator-validated on BOTH paths (empty Vault + encrypted Vault). Code in the working tree; Patrick to commit. Docs pending his commit.
 
 **Goal this session = Elyfont local data backup (Export first).** Backup resumed after the security detour (#21/#22). Built Export one decision at a time; Patrick tested on the iPhone 17 Simulator (iOS 26.5).
