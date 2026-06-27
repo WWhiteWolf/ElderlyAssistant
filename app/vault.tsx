@@ -184,7 +184,13 @@ export default function VaultScreen() {
                     <Text style={styles.title}>
                         {selectedCategory ? getCategoryData(selectedCategory)?.name : 'Vault 🔒'}
                     </Text>
-                    <View style={styles.settingsBtn} />
+                    {selectedCategory ? (
+                        <TouchableOpacity onPress={() => { resetForm(); setShowAddItem(true); }} style={styles.headerBtn}>
+                            <Text style={styles.headerBtnText}>+ Add</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <View style={styles.settingsBtn} />
+                    )}
                 </View>
             </SafeAreaView>
 
@@ -251,12 +257,6 @@ export default function VaultScreen() {
                         </Swipeable>
                     ))}
                 </ScrollView>
-            )}
-
-            {selectedCategory && (
-                <TouchableOpacity style={styles.fab} onPress={() => { resetForm(); setShowAddItem(true); }}>
-                    <Text style={styles.fabText}>+ Add</Text>
-                </TouchableOpacity>
             )}
 
             {showAddItem && (

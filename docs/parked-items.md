@@ -85,6 +85,8 @@ The **"Done"** section at the very bottom is just a record of recently finished 
 
 ## UI polish
 
+- **Two "+Task" buttons — only need one (Patrick, session #24).** A screen (To-Do, by his description — NOT yet verified in code) shows two "+Task" buttons; remove the redundant one. Confirm which screen + which button to keep when taken on.
+- **Vault "+ Add" should move to the header (Patrick, session #24).** The Vault's "+ Add" control should sit in the header (matching the pattern other screens use, e.g. My Day's "+ Add Entry" in the header) rather than wherever it is now. Verify current placement in `app/vault.tsx` before moving.
 - **Backup filename is date-only — same-day re-export collides (session #23).** Export writes `Elyfont-Backup-YYYY-MM-DD.json`, so a second export on the same day triggers the Files "Replace / Keep Both" prompt. Fine for normal use (latest backup is usually what's wanted). Optional later tweak: append a time (e.g. `…-1356`) so multiple same-day backups keep distinct names. Low priority. (`app/backup.tsx`.)
 - **Project Planner schedules nothing** (`app/planner.tsx`). Has reminder UI/fields but wires up no notifications. Dormant, low priority.
 

@@ -710,10 +710,6 @@ export default function TodoScreen() {
                 <TouchableOpacity style={styles.fabSecondary} onPress={() => setShowLog(!showLog)}>
                     <Text style={styles.fabText}>📋 Log</Text>
                 </TouchableOpacity>
-
-                <TouchableOpacity style={styles.fab} onPress={() => { resetForm(); setShowAddTask(true); }}>
-                    <Text style={styles.fabMainText}>+ Task</Text>
-                </TouchableOpacity>
             </View>
 
             {showLog && (
