@@ -1,5 +1,28 @@
 # Hand-off note — paste at the start of the next session
 
+## THIS SESSION — #22 (2026-06-27): Security — the two real Vault exposures CLOSED and verified on the Simulator with simulated Face ID. Code committed by Patrick (`a8511c3`, `3bd445e`); these docs pending his commit.
+
+**Goal this session = PIN / Face ID / security** (the focused session #21 said to open). Verified the actual code FIRST (no assuming), fixed two things, Patrick tested both on the Simulator, both pass.
+
+**FIX 1 — the toggle bypass is closed.** `app/settings.tsx`: uncommented the `expo-local-authentication` import (it was commented out at line 2) and added an auth gate to `toggleVaultPin` — turning **"Extra Vault Security" OFF now requires Face ID / passcode** (`authenticateAsync`; on failure/cancel it returns early so the Switch snaps back ON). Turning it ON stays free. Closes the "anyone holding the phone can disable Vault security and read the Vault" hole. **Committed `a8511c3` "expo-local-authentication".**
+
+**FIX 2 — the Vault Face ID gate was looping; fixed.** `app/vault.tsx`: the gate's `useEffect` depended on `[params]`, whose object identity changes on every redraw, so it **re-fired Face ID in an endless loop** (auth → redraw → re-prompt → …) AND let the category list show through between prompts. Changed it to run **once on open** — added a `didCheck` `useRef` guard + `[]` deps (and added `useRef` to the React import). Now: one clean prompt; on success the Vault shows and stays; on failure it routes to `/home`; no peek-through. **Committed `3bd445e` — ⚠ its commit message reads "The settings.tsx toggle fix" but it actually contains `app/vault.tsx`, not settings.tsx. Don't be misled.**
+
+**Both `tsc --noEmit` clean (EXIT 0). Working tree clean — both fixes committed.**
+
+**HOW THEY WERE TESTED — and an important note: Face ID DOES work on the Simulator.** iPhone 17 Simulator, iOS 26.5. Unlike the Siri/App Group work (which genuinely needed a real device), the Simulator can **simulate Face ID**: menu bar **Features → Face ID → Enrolled**, then **Matching Face** / **Non-matching Face** to fake success/failure. Patrick rebuilt (`npm run ios`) for FIX 1 (first run of the native module); FIX 2 was pure JS so a Metro reload picked it up. He confirmed live: toggle-off prompts Face ID, and the Vault opens with a single prompt — no loop, no peek-through. **For real-world use, Face ID must be ENROLLED on Patrick's actual iPhone (iOS Settings) for the gate to protect the Vault on the phone — that's separate from the Simulator's simulated Face ID.**
+
+**KEY FACT established with Patrick this session:** he does **NOT** remember the app's custom 6-digit PIN / passcode, and there is **NO stored data at risk**. So the custom PIN can be **fully retired with no recovery path to build** — nothing to rescue.
+
+**REMAINING security cleanup — NOT exposures, non-urgent (fold into the backup session or its own small pass):**
+- `app/settings.tsx`: **Reset All Data** still demands the old `user_pin` (which Patrick forgot) → switch it to Face ID. The dead **Change PIN** row + keypad (`startChangePIN` / `handlePinDigit`, all keyed off `user_pin`) → remove.
+- **Orphaned screens — verified by grep that NOTHING navigates to them:** `app/vaultpin.tsx` (vault.tsx now calls Face ID directly) and `app/login.tsx`. `app/setup-pin.tsx` is reachable ONLY via Reset All Data (`settings.tsx` ~line 210). Decide delete vs keep. (All three still registered in `_layout.tsx`.)
+- Cosmetic: the Vault toggle hint still reads "Require PIN to open Vault" (`settings.tsx` ~line 335) — it's Face ID now; reword.
+
+**➤ NEXT SESSION — likely back to the ORIGINAL goal: BACKUP STORAGE.** This whole security detour began when session #21's backup goal surfaced these holes. The exposures are now closed, so backup can resume. The backup **design is already decided** and the **screen shell already exists** — see the #21 entry below: `app/backup.tsx` shell + the Settings "Backup" row + the `_layout.tsx` registration are committed in `90f8b5d`; **Export / Import logic is what remains to build.** Data keys to back up and the Vault-encryption decision are all spelled out in #21.
+
+---
+
 ## THIS SESSION — #21 (2026-06-27): Goal was "Elyfont local data backup." Designed it, built the Backup screen shell + Settings entry, and STARTED reworking Vault security to Face ID. Session stopped early — Patrick will open a NEW session dedicated to PIN / Face ID / security. All code below is UNCOMMITTED and UNTESTED; docs pending his commit.
 
 **Why we stopped:** the session got tangled — repeated bad assumptions on Claude's part (notably driving the Simulator directly, which the standing notes say NOT to do, and assuming the Simulator had been rebuilt). Patrick halted and chose to handle PIN / ID / security as its own focused session. **➤ Next session's named goal = PIN / Face ID / security.** The backup feature is paused mid-build behind it.
