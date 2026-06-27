@@ -1,3 +1,7 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import CryptoJS from 'crypto-js';
+import { File, Paths } from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import { useRouter } from 'expo-router';
 import {
     Alert,
@@ -10,12 +14,178 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/Colors';
 
+// Format the backup file. Bump VERSION only if the shape changes,
+// so a future Import can tell how to read an older file.
+const BACKUP_VERSION = 1;
+
+// Everything that travels in the backup in plain (readable) form.
+// Deliberately EXCLUDES user_pin and pin_set (the retired PIN), and
+// vault_items (handled separately, encrypted).
+const READABLE_KEYS = [
+    'my_routine', 'my_history', 'my_last_date', 'my_coffee', 'my_water',
+    'week_routine', 'week_history',
+    'pets_feeds', 'pets_history', 'pets_last_date', 'pets_treats',
+    'todo_tasks', 'todo_categories', 'todo_log',
+    'shopping_items',
+    'planner_projects', 'planner_log',
+    'user_name', 'biometric_enabled', 'vault_pin_enabled',
+    'reminder_morning_time', 'reminder_evening_time',
+];
+
+const VAULT_KEY = 'vault_items';
+
 export default function BackupScreen() {
     const router = useRouter();
 
-    const handleExport = () => {
-        // Real logic comes in the next step.
-        Alert.alert('Export Backup', 'Not built yet — coming in the next step.');
+    // Step 4 + 5: build the JSON, write the file, open the share sheet.
+    const finishExport = async (
+        data: Record<string, string | null>,
+        encryptedVault: string | null,
+    ) => {
+        try {
+            const backup = {
+                app: 'Elyfont',
+                type: 'elyfont-backup',
+                version: BACKUP_VERSION,
+                exportedAt: new Date().toISOString(),
+                vaultEncrypted: !!encryptedVault,
+                data,
+                vault: encryptedVault
+                    ? { encrypted: true, payload: encryptedVault }
+                    : { encrypted: false, payload: null },
+            };
+            const json = JSON.stringify(backup, null, 2);
+
+            const now = new Date();
+            const stamp =
+                `${now.getFullYear()}-` +
+                `${String(now.getMonth() + 1).padStart(2, '0')}-` +
+                `${String(now.getDate()).padStart(2, '0')}`;
+            const fileName = `Elyfont-Backup-${stamp}.json`;
+
+            const file = new File(Paths.cache, fileName);
+            if (file.exists) file.delete();
+            file.create();
+            file.write(json);
+
+            const canShare = await Sharing.isAvailableAsync();
+            if (!canShare) {
+                Alert.alert(
+                    'Sharing unavailable',
+                    `Your backup was saved as ${fileName}, but this device can't open the share screen.`,
+                );
+                return;
+            }
+
+            await Sharing.shareAsync(file.uri, {
+                mimeType: 'application/json',
+                UTI: 'public.json',
+                dialogTitle: 'Save your Elyfont backup',
+            });
+        } catch {
+            Alert.alert(
+                'Export failed',
+                'The backup file could not be created. No file was saved.',
+            );
+        }
+    };
+
+    // Second password entry — must match the first, or nothing is saved.
+    const confirmPassword = (
+        firstPassword: string,
+        vaultRaw: string,
+        data: Record<string, string | null>,
+    ) => {
+        Alert.prompt(
+            'Confirm Password',
+            'Type the same backup password again.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Confirm',
+                    onPress: (second?: string) => {
+                        if (second !== firstPassword) {
+                            Alert.alert(
+                                'Passwords did not match',
+                                'The two entries were different, so no file was created. Please tap Export and try again.',
+                            );
+                            return;
+                        }
+                        const encrypted = CryptoJS.AES.encrypt(
+                            vaultRaw,
+                            firstPassword,
+                        ).toString();
+                        finishExport(data, encrypted);
+                    },
+                },
+            ],
+            'secure-text',
+        );
+    };
+
+    // First password entry (only reached when the Vault has items).
+    const promptForPassword = (
+        vaultRaw: string,
+        data: Record<string, string | null>,
+    ) => {
+        Alert.prompt(
+            'Backup Password',
+            'Create a password to lock your Vault inside this backup. You will need this same password to restore the Vault later, so keep it somewhere safe.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Next',
+                    onPress: (first?: string) => {
+                        if (!first || first.length < 4) {
+                            Alert.alert(
+                                'Password too short',
+                                'Please use at least 4 characters. No file was created.',
+                            );
+                            return;
+                        }
+                        confirmPassword(first, vaultRaw, data);
+                    },
+                },
+            ],
+            'secure-text',
+        );
+    };
+
+    const handleExport = async () => {
+        try {
+            // Step 1: gather the readable data.
+            const pairs = await AsyncStorage.multiGet(READABLE_KEYS);
+            const data: Record<string, string | null> = {};
+            pairs.forEach(([key, value]) => {
+                data[key] = value;
+            });
+
+            // Step 2: does the Vault actually hold anything?
+            const vaultRaw = await AsyncStorage.getItem(VAULT_KEY);
+            let vaultHasItems = false;
+            if (vaultRaw) {
+                try {
+                    const parsed = JSON.parse(vaultRaw);
+                    vaultHasItems = Array.isArray(parsed)
+                        ? parsed.length > 0
+                        : !!parsed;
+                } catch {
+                    vaultHasItems = vaultRaw.trim().length > 0;
+                }
+            }
+
+            // Step 3: password only when there's something to protect.
+            if (vaultHasItems && vaultRaw) {
+                promptForPassword(vaultRaw, data);
+            } else {
+                await finishExport(data, null);
+            }
+        } catch {
+            Alert.alert(
+                'Export failed',
+                'Something went wrong while preparing your backup. No file was created.',
+            );
+        }
     };
 
     const handleImport = () => {
@@ -57,7 +227,8 @@ export default function BackupScreen() {
                 </TouchableOpacity>
 
                 <Text style={styles.note}>
-                    Your Vault is protected with your PIN inside the backup file.
+                    If your Vault has items, you'll be asked for a backup password to lock
+                    that part of the file.
                 </Text>
             </ScrollView>
         </View>
@@ -127,4 +298,3 @@ const styles = StyleSheet.create({
     headerBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
     headerSpacer: { width: 90 },
 });
-
