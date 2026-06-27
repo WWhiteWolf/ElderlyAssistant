@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
     Alert,
     Modal,
@@ -39,8 +39,15 @@ export default function VaultScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
     const [ready, setReady] = useState(false);
+    const didCheck = useRef(false);
 
     useEffect(() => {
+        // Run the Face ID gate exactly ONCE when the Vault opens. (Previously this
+        // depended on [params], whose object identity changes on every redraw, so
+        // it re-fired Face ID in a loop — auth, redraw, re-prompt, forever — and
+        // let the category list show through between prompts.)
+        if (didCheck.current) return;
+        didCheck.current = true;
         const checkSecurity = async () => {
             const vaultPinEnabled = await AsyncStorage.getItem('vault_pin_enabled');
             if (vaultPinEnabled === 'true' && !params?.verified) {
@@ -58,7 +65,7 @@ export default function VaultScreen() {
             }
         };
         checkSecurity();
-    }, [params]);
+    }, []);
 
     const [items, setItems] = useState<VaultItem[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
