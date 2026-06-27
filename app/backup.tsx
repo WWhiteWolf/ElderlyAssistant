@@ -62,7 +62,9 @@ export default function BackupScreen() {
             const stamp =
                 `${now.getFullYear()}-` +
                 `${String(now.getMonth() + 1).padStart(2, '0')}-` +
-                `${String(now.getDate()).padStart(2, '0')}`;
+                `${String(now.getDate()).padStart(2, '0')}-` +
+                `${String(now.getHours()).padStart(2, '0')}` +
+                `${String(now.getMinutes()).padStart(2, '0')}`;
             const fileName = `Elyfont-Backup-${stamp}.json`;
 
             const file = new File(Paths.cache, fileName);

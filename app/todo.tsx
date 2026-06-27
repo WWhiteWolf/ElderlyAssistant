@@ -22,6 +22,9 @@ import { Colors } from '../constants/Colors';
 type Priority = 'Urgent' | 'Normal' | 'Someday';
 type RecurType = 'none' | 'daily' | 'weekly' | 'monthly' | 'every3months' | 'every6months' | 'yearly';
 
+// Max day-of-month per month (1-based index via month-1). Feb allows 29 (leap).
+const DAYS_IN_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
 interface Category {
     id: string;
     name: string;
@@ -866,7 +869,11 @@ export default function TodoScreen() {
                                                     <TouchableOpacity
                                                         key={m}
                                                         style={[styles.recurBtn, newRecurMonth === index + 1 && styles.recurBtnActive]}
-                                                        onPress={() => setNewRecurMonth(index + 1)}
+                                                        onPress={() => {
+                                                            const m = index + 1;
+                                                            setNewRecurMonth(m);
+                                                            if (newRecurDay > DAYS_IN_MONTH[m - 1]) setNewRecurDay(DAYS_IN_MONTH[m - 1]);
+                                                        }}
                                                     >
                                                         <Text style={[styles.recurBtnText, newRecurMonth === index + 1 && styles.recurBtnTextActive]}>{m}</Text>
                                                     </TouchableOpacity>
@@ -874,7 +881,7 @@ export default function TodoScreen() {
                                             </ScrollView>
                                             <Text style={styles.inputLabel}>Day</Text>
                                             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                                                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31].map(d => (
+                                                {Array.from({ length: DAYS_IN_MONTH[(newRecurMonth || 1) - 1] }, (_, i) => i + 1).map(d => (
                                                     <TouchableOpacity
                                                         key={d}
                                                         style={[styles.recurBtn, newRecurDay === d && styles.recurBtnActive]}

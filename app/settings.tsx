@@ -341,7 +341,7 @@ export default function SettingsScreen() {
                         <View style={[styles.settingRow, styles.settingRowBorder]}>
                             <View style={{ flex: 1 }}>
                                 <Text style={styles.settingLabel}>Extra Vault Security</Text>
-                                <Text style={styles.settingHint}>Require PIN to open Vault</Text>
+                                <Text style={styles.settingHint}>Require Face ID to open Vault</Text>
                             </View>
                             <Switch
                                 value={vaultPinEnabled}

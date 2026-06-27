@@ -83,6 +83,9 @@ export default function PetsScreen() {
 
     const loadData = async () => {
         try {
+            // One-time cleanup: remove the orphaned legacy key from the old
+            // multi-pet storage (no longer read anywhere). No-op if absent.
+            await AsyncStorage.removeItem('pets_data');
             const savedDate = await AsyncStorage.getItem('pets_last_date');
             const today = new Date().toLocaleDateString();
             const savedHist = await AsyncStorage.getItem('pets_history');

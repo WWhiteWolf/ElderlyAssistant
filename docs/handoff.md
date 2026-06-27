@@ -1,6 +1,34 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #24 (2026-06-27): BACKUP COMPLETE — the **Import** half is BUILT and Simulator-validated across all cases. Export (#23) + Import together = the whole local-backup feature works end to end. Code in the working tree; Patrick to commit. Docs pending his commit.
+## THIS SESSION — #24 bug-fix pass (2026-06-27): SIX easy accumulated bugs/cleanups fixed, `tsc` clean, Simulator-eyeballed for two of them. All UNCOMMITTED — Patrick to commit. Docs (this entry) pending his commit.
+
+**Goal = clean up as many easy accumulated problems as possible.** Did six, one at a time, each verified in code before editing. All are **JS/TSX only — no native modules touched**, so a Metro reload shows them (no rebuild needed for these six).
+
+**The six fixes:**
+1. **`app/todo.tsx` — removed the duplicate "+ Task" button.** To-Do had TWO controls opening the same New Task modal: a header "New Task" (line ~588) and a bottom floating "+ Task". Removed the floating one; kept the **header** button (Patrick wants add-actions in the header for consistency across pages). **Eyeballed in Simulator — good.**
+2. **`app/vault.tsx` — moved "+ Add" into the header.** Was a bottom floating button (shown only inside a category); now a header top-right "+ Add" (shown when `selectedCategory` is set, so the category-list title stays centered). Floating button removed. **Eyeballed in Simulator — good.**
+3. **`app/backup.tsx` — export filename now includes the time.** Stamp went from `YYYY-MM-DD` to `YYYY-MM-DD-HHMM` (e.g. `Elyfont-Backup-2026-06-27-1604.json`), so same-day re-exports no longer collide. **Eyeballed in Simulator — good.**
+4. **`app/settings.tsx` — reworded the stale Vault toggle hint** "Require PIN to open Vault" → "Require Face ID to open Vault" (it's been Face ID since #22). Text only.
+5. **`app/mollie.tsx` — one-time cleanup of the orphaned `pets_data` key.** Grep confirmed `pets_data` is read/written NOWHERE in `app/`; added `await AsyncStorage.removeItem('pets_data')` at the top of `loadData` (no-op if absent, so no migration flag needed).
+6. **`app/todo.tsx` — Yearly day picker no longer offers invalid dates.** Was hardcoded 1–31 for every month (Feb 30 / Apr 31 would throw in `scheduleReminders`). Added module-level `DAYS_IN_MONTH = [31,29,31,30,31,30,31,31,30,31,30,31]`; the Yearly **Day** list is now `Array.from({length: DAYS_IN_MONTH[month-1]})`, and switching to a shorter month clamps `newRecurDay`. **Edge left in deliberately:** Feb **29** is still selectable (Feb's real max) — a Feb-29 yearly reminder is unusual; revisit only if Patrick wants Feb capped at 28.
+
+**`tsc --noEmit` clean (EXIT 0)** after all six.
+
+**Two small open choices Patrick can decide anytime (not blockers):**
+- Label consistency: To-Do header says **"New Task"**, Vault header now says **"+ Add"** — left mismatched on purpose; match them if wanted.
+- The Feb-29 yearly edge above.
+
+**➤ NEXT SESSION — #25: the two bigger BUGS we deliberately set aside this session.**
+1. **To-Do "Done" logs the tap-date, not the reminder's fire date** (`app/_layout.tsx`, `action === 'done'` → `source === 'todo'` branch, ~line 104; bug device-confirmed 2026-06-22). A Done tapped on a stale banner records `completedDate` from `new Date()` at tap-time; the notification `data` carries no original fire date. **Fix shape:** include the intended fire date in the notification `data` when scheduling, and stamp `completedDate` from that (fall back to `new Date()` only if absent). Touches `todo.tsx` scheduling + `_layout.tsx` Done handler — moderate, needs a device test.
+2. **Timer cancel may silently fail** (`app/timer.tsx`, `cancelTimer`). Cancels using `timer.id` (a `Date.now()` string) instead of the identifier returned by `scheduleNotificationAsync`, so the scheduled alert may still fire. **UNCONFIRMED** — first step next session is to read the schedule/cancel paths and decide if it's real before changing anything; likely needs a device test to confirm.
+
+**Also still parked (NOT the #25 goal, but available):** the #22 security cleanup (Reset All Data → Face ID + remove the dead Change PIN row/keypad + decide orphaned `vaultpin.tsx`/`login.tsx`/`setup-pin.tsx`), and the **merge** Import option (its own session — per-list rules to decide with Patrick). Both detailed in `parked-items.md`.
+
+---
+
+## THIS SESSION — #24 (2026-06-27): BACKUP COMPLETE — the **Import** half is BUILT and DEVICE-VERIFIED. Export (#23) + Import together = the whole local-backup feature works end to end. Code in the working tree; Patrick to commit. Docs pending his commit.
+
+> **CORRECTION (added during the session #24 bug-fix pass):** The "#24" label here is a docs artifact — Export *and* Import were both built in the **single real session named "Elyfont local data backup restart #23"** (this entry itself notes Import was built "continuing the same backup session as #23"). Patrick **device-verified the whole feature in that #23 build, including the real iCloud round-trip** — he exported a file to his actual iCloud on the phone and imported it back. So Import is **device-verified, not Simulator-only**, and there is **no real-device pass still pending**. The "Simulator-validated" / "Real-device pass" wording further down this entry is stale and superseded by this note.
 
 **Goal = finish Elyfont local data backup (Import).** Built Import one decision at a time (continuing the same backup session as #23); Patrick tested every combination on the iPhone 17 Simulator — **all work.**
 
@@ -17,11 +45,11 @@
 
 **HOW IT WAS TESTED (Simulator) — Patrick tried "all combinations," all pass:** correct password restores the Vault item; wrong password refuses and changes nothing; a non-backup file is rejected as not an Elyfont backup; the unencrypted/empty-Vault file imports too. `tsc --noEmit` clean (EXIT 0).
 
-**STATUS: the local backup feature (Export + Import) is code-complete and Simulator-validated end to end.** Two app commits' worth of code sit in the working tree across #23–#24 (all in `app/backup.tsx`) plus the new dep `react-native-get-random-values`. Patrick to commit.
+**STATUS: the local backup feature (Export + Import) is code-complete and DEVICE-VERIFIED end to end (including the real iCloud round-trip — see the correction note at the top of this entry).** Two app commits' worth of code sit in the working tree across #23–#24 (all in `app/backup.tsx`) plus the new dep `react-native-get-random-values`. Patrick to commit.
 
 **Still open / next candidates (none urgent):**
 - **NEW — add a "merge" Import option (Patrick requested, end of #24).** Today Import only **replaces**. Patrick wants the *choice* of merging a backup into existing data. **Deferred to its own session** — merge is NOT a small add: it needs a **per-list rule decided with Patrick**, because each data type combines differently. Sketch we discussed: ID-keyed arrays (`todo_tasks`, `vault_items`, `planner_projects`, routine lists) → add items whose IDs aren't already present, and decide what happens when the same ID exists in both; append-only logs (`my_history`, `week_history`, `pets_history`, `todo_log`, `planner_log`) → concatenate + de-dupe; counters (`my_coffee`, `my_water`, `pets_treats`) → pick higher / sum / keep current (Patrick's call); single-value settings (`user_name`, reminder times, flags) → backup-wins vs current-wins. Likely UI: after picking a file, ask "Replace or Merge?" Scope each rule with Patrick before building. Full per-list design lives in `parked-items.md`.
-- **Real-device pass** — especially the real **iCloud** round-trip on Patrick's actual phone (Simulator isn't signed into his iCloud; "On My iPhone" proved the mechanism). Export a file to iCloud on the phone, reinstall or wipe, Import it back.
+- ~~**Real-device pass** — the real **iCloud** round-trip on Patrick's actual phone.~~ **✅ DONE in the #23 device build** — Patrick exported to iCloud and imported back from iCloud on the phone. No longer open.
 - **#22 security cleanup (non-exposure, still parked) — VERIFIED this session what the forgotten PIN actually blocks:** read `settings.tsx` + `index.tsx` — the ONLY thing the forgotten `user_pin` blocks is **Reset All Data** (`resetApp` ~line 217 checks `pin === savedPin`) and the dead **Change PIN** keypad (~line 153). App launch has NO PIN gate (`index.tsx` just redirects to `/home`) and the Vault is Face ID (#22), so Patrick is NOT locked out of anything day-to-day and no data is at risk. **Cleanup = switch Reset All Data to Face ID + remove the dead Change PIN row/keypad** (then also: orphaned `vaultpin.tsx`/`login.tsx`/`setup-pin.tsx` — note `resetApp` routes to `/setup-pin` on success, line 219; and reword the stale "Require PIN to open Vault" hint). Small, self-contained — good short next session. See parked-items.
 - Optional backup polish (parked): date-only filename collides on same-day re-export (could append a time).
 
