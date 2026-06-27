@@ -5,6 +5,7 @@ import {
     Alert,
     ScrollView,
     StyleSheet,
+    Switch,
     Text,
     TextInput,
     TouchableOpacity,
@@ -23,12 +24,15 @@ Notifications.setNotificationHandler({
     }),
 });
 
+type NagStyle = 'gentle' | 'urgent';
+
 interface ActiveTimer {
     id: string;
     label: string;
     endsAt: number;
-    notifId: string;
-    followUpId?: string;
+    style: NagStyle;
+    loud: boolean;
+    notifIds: string[];
 }
 
 const PRESETS = [
@@ -40,6 +44,14 @@ const PRESETS = [
 
 const QUICK_LABELS = ['Coffee', 'Oven', 'Water', 'Custom'];
 
+// How insistently a finished timer nags until it's acknowledged.
+// gentle: a reminder every 60s, 3 times (~3 min) — e.g. coffee.
+// urgent: a reminder every 30s, 10 times (~5 min) — e.g. boiling water.
+const NAG_PROFILES: Record<NagStyle, { interval: number; count: number }> = {
+    gentle: { interval: 60, count: 3 },
+    urgent: { interval: 30, count: 10 },
+};
+
 export default function TimerScreen() {
     const router = useRouter();
     const [activeTimers, setActiveTimers] = useState<ActiveTimer[]>([]);
@@ -48,6 +60,8 @@ export default function TimerScreen() {
     const [selectedLabel, setSelectedLabel] = useState('Coffee');
     const [customLabel, setCustomLabel] = useState('');
     const [now, setNow] = useState(Date.now());
+    const [selectedStyle, setSelectedStyle] = useState<NagStyle>('gentle');
+    const [loudEnabled, setLoudEnabled] = useState(false);
 
     useEffect(() => {
         const interval = setInterval(() => setNow(Date.now()), 1000);
@@ -62,6 +76,10 @@ export default function TimerScreen() {
             }
         };
         requestPermissions();
+        Notifications.setNotificationCategoryAsync('timer', [
+            { identifier: 'snooze', buttonTitle: 'Snooze 1 min' },
+            { identifier: 'dismiss', buttonTitle: 'Dismiss' },
+        ]);
     }, []);
 
     useEffect(() => {
@@ -70,12 +88,80 @@ export default function TimerScreen() {
             const timerId = response.notification.request.content.data?.timerId as string;
             if (action === 'snooze' && timerId) {
                 snoozeTimer(timerId);
-            } else if (action === Notifications.DEFAULT_ACTION_IDENTIFIER && timerId) {
+            } else if ((action === 'dismiss' || action === Notifications.DEFAULT_ACTION_IDENTIFIER) && timerId) {
                 dismissTimer(timerId);
             }
         });
         return () => subscription.remove();
     }, [activeTimers]);
+
+    // Schedule a finished timer's full alert set and return every scheduled id
+    // so they can all be cancelled together when the timer is acknowledged.
+    // `startIn` = seconds from now until the main "done" alert (the timer's
+    // remaining time, or 60 for a snooze). After the main alert it adds a nag
+    // every `interval`s, `count` times (gentle or urgent), and — if `loud` —
+    // one final louder backup alert one interval after the last nag.
+    const scheduleTimerAlerts = async (
+        timerId: string,
+        label: string,
+        startIn: number,
+        style: NagStyle,
+        loud: boolean,
+    ): Promise<string[]> => {
+        const ids: string[] = [];
+        const { interval, count } = NAG_PROFILES[style];
+
+        const mainId = await Notifications.scheduleNotificationAsync({
+            content: {
+                title: `⏱ ${label} Timer Done!`,
+                body: `Your ${label} timer has finished.`,
+                sound: true,
+                data: { timerId },
+                categoryIdentifier: 'timer',
+            },
+            trigger: {
+                type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+                seconds: startIn,
+            },
+        });
+        ids.push(mainId);
+
+        for (let i = 1; i <= count; i++) {
+            const nagId = await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: `⏱ ${label} — Still waiting!`,
+                    body: `Your ${label} timer is done. Tap to stop the reminders.`,
+                    sound: true,
+                    data: { timerId },
+                    categoryIdentifier: 'timer',
+                },
+                trigger: {
+                    type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+                    seconds: startIn + i * interval,
+                },
+            });
+            ids.push(nagId);
+        }
+
+        if (loud) {
+            const loudId = await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: `🔊 ${label} — Please respond!`,
+                    body: `Your ${label} timer has been waiting. Tap to stop.`,
+                    sound: true,
+                    data: { timerId },
+                    categoryIdentifier: 'timer',
+                },
+                trigger: {
+                    type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+                    seconds: startIn + (count + 1) * interval,
+                },
+            });
+            ids.push(loudId);
+        }
+
+        return ids;
+    };
 
     const startTimer = async () => {
         const minutes = selectedMinutes ?? parseInt(customMinutes);
@@ -88,40 +174,9 @@ export default function TimerScreen() {
         const endsAt = Date.now() + seconds * 1000;
         const timerId = Date.now().toString();
 
-        const notifId = await Notifications.scheduleNotificationAsync({
-            content: {
-                title: `⏱ ${label} Timer Done!`,
-                body: `Your ${label} timer has finished.`,
-                sound: true,
-                data: { timerId },
-                categoryIdentifier: 'timer',
-            },
-            trigger: {
-                type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-                seconds,
-            },
-        });
+        const notifIds = await scheduleTimerAlerts(timerId, label, seconds, selectedStyle, loudEnabled);
 
-        const followUpId = await Notifications.scheduleNotificationAsync({
-            content: {
-                title: `⏱ ${label} — Still waiting!`,
-                body: `Your ${label} timer finished 1 minute ago.`,
-                sound: true,
-                data: { timerId },
-                categoryIdentifier: 'timer',
-            },
-            trigger: {
-                type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-                seconds: seconds + 60,
-            },
-        });
-
-        await Notifications.setNotificationCategoryAsync('timer', [
-            { identifier: 'snooze', buttonTitle: 'Snooze 1 min' },
-            { identifier: 'dismiss', buttonTitle: 'Dismiss' },
-        ]);
-
-        setActiveTimers(prev => [...prev, { id: timerId, label, endsAt, notifId, followUpId }]);
+        setActiveTimers(prev => [...prev, { id: timerId, label, endsAt, style: selectedStyle, loud: loudEnabled, notifIds }]);
         setSelectedMinutes(null);
         setCustomMinutes('');
     };
@@ -129,22 +184,26 @@ export default function TimerScreen() {
     const snoozeTimer = async (timerId: string) => {
         const timer = activeTimers.find(t => t.id === timerId);
         if (!timer) return;
-        await Notifications.scheduleNotificationAsync({
-            content: {
-                title: `⏱ ${timer.label} — Snoozed!`,
-                body: `Your ${timer.label} snooze is up.`,
-                sound: true,
-                data: { timerId },
-                categoryIdentifier: 'timer',
-            },
-            trigger: {
-                type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-                seconds: 60,
-            },
-        });
+        // Stop the current reminders and start a fresh set 1 minute out, keeping
+        // the same gentle/urgent style and loud setting.
+        for (const id of timer.notifIds) {
+            await Notifications.cancelScheduledNotificationAsync(id);
+        }
+        const notifIds = await scheduleTimerAlerts(timer.id, timer.label, 60, timer.style, timer.loud);
+        setActiveTimers(prev =>
+            prev.map(t => (t.id === timer.id ? { ...t, endsAt: Date.now() + 60 * 1000, notifIds } : t))
+        );
     };
 
-    const dismissTimer = (timerId: string) => {
+    // Acknowledge a timer: cancel every alert still pending for it (main, all
+    // nags, and the loud backup) and remove its card.
+    const dismissTimer = async (timerId: string) => {
+        const timer = activeTimers.find(t => t.id === timerId);
+        if (timer) {
+            for (const id of timer.notifIds) {
+                await Notifications.cancelScheduledNotificationAsync(id);
+            }
+        }
         setActiveTimers(prev => prev.filter(t => t.id !== timerId));
     };
 
@@ -153,11 +212,10 @@ export default function TimerScreen() {
             { text: 'No', style: 'cancel' },
             {
                 text: 'Yes', style: 'destructive', onPress: async () => {
-                    await Notifications.cancelScheduledNotificationAsync(timer.notifId);
-                    if (timer.followUpId) {
-                        await Notifications.cancelScheduledNotificationAsync(timer.followUpId);
+                    for (const id of timer.notifIds) {
+                        await Notifications.cancelScheduledNotificationAsync(id);
                     }
-                    dismissTimer(timer.id);
+                    setActiveTimers(prev => prev.filter(t => t.id !== timer.id));
                 },
             },
         ]);
@@ -238,6 +296,36 @@ export default function TimerScreen() {
                         keyboardType="numeric"
                     />
                     <Text style={styles.minLabel}>min</Text>
+                </View>
+
+                <Text style={styles.sectionLabel}>How should it remind you?</Text>
+                <View style={styles.presetRow}>
+                    <TouchableOpacity
+                        style={[styles.styleBtn, selectedStyle === 'gentle' && styles.styleBtnActive]}
+                        onPress={() => setSelectedStyle('gentle')}
+                    >
+                        <Text style={[styles.styleBtnText, selectedStyle === 'gentle' && styles.styleBtnTextActive]}>Gentle</Text>
+                        <Text style={[styles.styleBtnHint, selectedStyle === 'gentle' && styles.styleBtnTextActive]}>every minute · 3 min</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.styleBtn, selectedStyle === 'urgent' && styles.styleBtnActive]}
+                        onPress={() => setSelectedStyle('urgent')}
+                    >
+                        <Text style={[styles.styleBtnText, selectedStyle === 'urgent' && styles.styleBtnTextActive]}>Urgent</Text>
+                        <Text style={[styles.styleBtnHint, selectedStyle === 'urgent' && styles.styleBtnTextActive]}>every 30 sec · 5 min</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.switchRow}>
+                    <View style={{ flex: 1 }}>
+                        <Text style={styles.switchLabel}>Loud alert if no response</Text>
+                        <Text style={styles.switchHint}>One last insistent alert after the reminders</Text>
+                    </View>
+                    <Switch
+                        value={loudEnabled}
+                        onValueChange={setLoudEnabled}
+                        trackColor={{ true: Colors.primary, false: '#ccc' }}
+                    />
                 </View>
 
                 <TouchableOpacity style={styles.startBtn} onPress={startTimer}>
@@ -335,6 +423,32 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.white,
     },
     minLabel: { fontSize: 16, color: Colors.primary, fontWeight: '500' },
+    styleBtn: {
+        flex: 1,
+        paddingVertical: 12,
+        paddingHorizontal: 12,
+        borderRadius: 12,
+        borderWidth: 1.5,
+        borderColor: Colors.primary,
+        backgroundColor: Colors.white,
+        alignItems: 'center',
+    },
+    styleBtnActive: { backgroundColor: Colors.primary },
+    styleBtnText: { color: Colors.primary, fontWeight: '600', fontSize: 16 },
+    styleBtnHint: { color: Colors.primary, fontSize: 12, marginTop: 2 },
+    styleBtnTextActive: { color: Colors.white },
+    switchRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: Colors.white,
+        borderRadius: 12,
+        padding: 14,
+        borderWidth: 0.5,
+        borderColor: Colors.lightBlue,
+        gap: 10,
+    },
+    switchLabel: { fontSize: 16, fontWeight: '600', color: Colors.primary },
+    switchHint: { fontSize: 12, color: '#888', marginTop: 2 },
     input: {
         borderWidth: 0.5,
         borderColor: Colors.lightBlue,
