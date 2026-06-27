@@ -1,5 +1,32 @@
 # Hand-off note — paste at the start of the next session
 
+## THIS SESSION — #23 (2026-06-27): BACKUP RESUMED — the **Export** half is BUILT and Simulator-validated on BOTH paths (empty Vault + encrypted Vault). Code in the working tree; Patrick to commit. Docs pending his commit.
+
+**Goal this session = Elyfont local data backup (Export first).** Backup resumed after the security detour (#21/#22). Built Export one decision at a time; Patrick tested on the iPhone 17 Simulator (iOS 26.5).
+
+**ONE app file changed — `app/backup.tsx`** (the shell from #21 was just placeholders). `handleExport` now:
+1. Reads all backup keys via `AsyncStorage.multiGet` — **EXCLUDES `user_pin` + `pin_set`** (the retired PIN; decided with Patrick) and handles `vault_items` separately.
+2. Checks if the Vault has items. **Password is requested ONLY when the Vault is non-empty** (decided with Patrick — nothing to protect when empty).
+3. If non-empty: **two-step password prompt** (type, then confirm — decided with Patrick; a mismatch or <4 chars aborts with no file). Encrypts **only** `vault_items` with `CryptoJS.AES.encrypt(vaultRaw, password)`.
+4. Assembles one JSON: `{ app:'Elyfont', type:'elyfont-backup', version:1, exportedAt, vaultEncrypted, data:{…readable keys…}, vault:{ encrypted, payload } }`. (Import will read `type`/`version` to recognize the file and `vault.encrypted` to know whether to decrypt.)
+5. Writes `Elyfont-Backup-YYYY-MM-DD.json` to `Paths.cache` (SDK-54 `File`/`Paths` API) and opens the iOS **share sheet** (`expo-sharing`) → user saves to Files / iCloud / Drive.
+On any failure it shows a plain message and makes **no** file. Also reworded the on-screen note (was "protected with your PIN" → now explains the backup password).
+
+**⚠ NEW REQUIRED DEPENDENCY — `react-native-get-random-values` (Patrick installed via `npx expo install`).** crypto-js needs a secure RNG to make the AES salt; Hermes doesn't provide one, so `CryptoJS.AES.encrypt` threw **"Native crypto module could not be used to get secure random number"** the first time a Vault item was exported. Fix: `import 'react-native-get-random-values';` as the **FIRST import in `backup.tsx`** (above the crypto-js import), which supplies the RNG. **This is a native module — any future rebuild / EAS build must include it, or Vault encryption breaks again.**
+
+**HOW IT WAS TESTED (Simulator, iPhone 17 / iOS 26.5):**
+- **Empty-Vault path:** Export → no password asked → file created → share sheet → saved via "Save to Files" (proved on "On My iPhone"). ✅
+- **Encrypted-Vault path:** added a Vault item, rebuilt (`npm run ios`, needed for the new native module), Export → two password prompts → **ran with no error**, file created. ✅ (This is what surfaced + then confirmed the RNG fix.)
+- `tsc --noEmit` clean (EXIT 0) after both edits.
+
+**Notes / small parked items from this session:**
+- **Real iCloud save** is best confirmed on Patrick's **actual phone** (the Simulator isn't signed into his real iCloud; "On My iPhone" proved the save mechanism, which is enough to trust it).
+- **Filename is date-only**, so a second export on the **same day** triggers Files' "Replace / Keep Both" prompt. Fine for normal use (latest is usually wanted). Possible future tweak: append a time (e.g. `…-1356`) if he ever wants multiple same-day backups. (Parked.)
+
+**➤ NEXT — build the IMPORT half.** The screen shell + the "Import Backup" button already exist (`handleImport` is still a placeholder Alert). Import should: pick a file (`expo-document-picker`, already installed) → parse + verify it's an Elyfont backup (`type==='elyfont-backup'`, check `version`) → if `vault.encrypted`, prompt for the backup password and `CryptoJS.AES.decrypt` the `vault` payload back to `vault_items` (handle a wrong password gracefully — decrypt yields empty/garbage) → **confirm dialog ("replace everything?")** → write all keys back via `AsyncStorage.multiSet` (and `vault_items`). Design was decided in #21: replace current data. Discuss the exact flow with Patrick before building.
+
+---
+
 ## THIS SESSION — #22 (2026-06-27): Security — the two real Vault exposures CLOSED and verified on the Simulator with simulated Face ID. Code committed by Patrick (`a8511c3`, `3bd445e`); these docs pending his commit.
 
 **Goal this session = PIN / Face ID / security** (the focused session #21 said to open). Verified the actual code FIRST (no assuming), fixed two things, Patrick tested both on the Simulator, both pass.

@@ -1,3 +1,4 @@
+import 'react-native-get-random-values'; // must load before crypto-js so AES has a secure RNG
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 import { File, Paths } from 'expo-file-system';
