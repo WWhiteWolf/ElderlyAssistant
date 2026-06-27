@@ -27,6 +27,7 @@ interface ActiveTimer {
     id: string;
     label: string;
     endsAt: number;
+    notifId: string;
     followUpId?: string;
 }
 
@@ -120,7 +121,7 @@ export default function TimerScreen() {
             { identifier: 'dismiss', buttonTitle: 'Dismiss' },
         ]);
 
-        setActiveTimers(prev => [...prev, { id: timerId, label, endsAt, followUpId }]);
+        setActiveTimers(prev => [...prev, { id: timerId, label, endsAt, notifId, followUpId }]);
         setSelectedMinutes(null);
         setCustomMinutes('');
     };
@@ -152,7 +153,7 @@ export default function TimerScreen() {
             { text: 'No', style: 'cancel' },
             {
                 text: 'Yes', style: 'destructive', onPress: async () => {
-                    await Notifications.cancelScheduledNotificationAsync(timer.id);
+                    await Notifications.cancelScheduledNotificationAsync(timer.notifId);
                     if (timer.followUpId) {
                         await Notifications.cancelScheduledNotificationAsync(timer.followUpId);
                     }
