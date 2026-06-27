@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-//import * as LocalAuthentication from 'expo-local-authentication';
+import * as LocalAuthentication from 'expo-local-authentication';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -124,6 +124,15 @@ export default function SettingsScreen() {
     };*/
 
     const toggleVaultPin = async (value: boolean) => {
+        if (!value) {
+            // Turning protection OFF — require Face ID / passcode first, so a
+            // person holding the phone can't silently disable Vault security.
+            const result = await LocalAuthentication.authenticateAsync({
+                promptMessage: 'Authenticate to turn off Vault security',
+                fallbackLabel: 'Use Passcode',
+            });
+            if (!result.success) return;   // auth failed/cancelled — leave it ON
+        }
         setVaultPinEnabled(value);
         await AsyncStorage.setItem('vault_pin_enabled', value.toString());
     };
