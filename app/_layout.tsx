@@ -225,10 +225,16 @@ export default function RootLayout() {
           if (task) {
             const logRaw = await AsyncStorage.getItem('todo_log');
             const log = logRaw ? (JSON.parse(logRaw) as any[]) : [];
+            // Stamp the date from when the reminder FIRED, not when Done was
+            // tapped — so a Done tapped on a stale banner files under the
+            // reminder's day, not today. Matches the My Day / My Week / Pets
+            // paths (notification.date is in SECONDS, so ×1000). The on-screen
+            // Done in todo.tsx keeps tap-time (it has no fired notification).
+            const firedTodo = new Date(response.notification.date * 1000);
             const entry = {
               id: Date.now().toString(),
               taskTitle: task.title,
-              completedDate: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' }),
+              completedDate: firedTodo.toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' }),
               notes: task.notes,
             };
             await AsyncStorage.setItem('todo_log', JSON.stringify([entry, ...log].slice(0, 100)));
