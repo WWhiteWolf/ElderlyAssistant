@@ -1,5 +1,22 @@
 # Hand-off note — paste at the start of the next session
 
+## THIS SESSION — #27 (2026-06-28): To-Do "Done" date — RESOLVED + DEVICE-VALIDATED on Patrick's phone. The To-Do log now records BOTH the task's **original set date/time** AND **when Done was tapped**; the reminder's fire time is no longer logged. To-Do ONLY. Code in `app/_layout.tsx` + `app/todo.tsx`, UNCOMMITTED, `tsc` clean (EXIT 0); Patrick commits.
+
+**Start-of-session fact:** Patrick confirmed **all of #26 is committed.** (So the #26 timer-nag work shipped.)
+
+**Goal = #27, the To-Do "Done" date.** Decided with Patrick one step at a time: he wanted the To-Do log to carry the **original set date/time** of the task **plus when it was marked Done** — and he does **not** care about the reminder's fire time. This **reverses the #25 approach** (which had stamped `completedDate` from the FIRE time in `_layout.tsx`): the completion stamp is now **tap time** again, and a new `scheduledFor` field carries the original set date/time. Keeping both means a Done tapped on a stale banner shows that later day under "Done" while the original day is preserved under "Set" — exactly what Patrick asked for. **Scope is To-Do only — My Day / My Week / Pets were NOT touched** (Patrick confirmed explicitly).
+
+**Three edits, `tsc --noEmit` clean (EXIT 0), DEVICE-VALIDATED ("this session's changes work on my phone"):**
+1. **`app/_layout.tsx`** — banner Done, `source === 'todo'` branch: `completedDate` now stamps **`new Date()` (tap time)** instead of `new Date(response.notification.date * 1000)` (fire time); added a **`scheduledFor`** field = `task.dueDate` (+ ` at <dueTime>`), falling back to the recurring pattern when there's no due date (weekly → `Sun..Sat`, monthly → `Day N`, yearly → `Mon DD`).
+2. **`app/todo.tsx`** — added optional **`scheduledFor?: string`** to the `LogEntry` type; the on-screen ✓ Done (`completeTask`) now computes the same `scheduledFor` and stores it (it already used tap time); the log display now reads **`Set <scheduledFor> | Done <completedDate> | <title> | <notes>`**.
+3. **Old log entries** have no `scheduledFor`, so they just display `Done <date> | …` (the `Set …` part is omitted when absent).
+
+**Files touched (#27):**
+- `app/_layout.tsx` + `app/todo.tsx` — the changes above. UNCOMMITTED, `tsc` clean, DEVICE-VALIDATED.
+- `docs/handoff.md` + `docs/parked-items.md` — this update. Pending Patrick's commit.
+
+---
+
 ## THIS SESSION — #26 (2026-06-28): The #25 timer-nag BLOCKING BUG is FIXED + DEVICE-VALIDATED on Patrick's phone — tapping "Done" now reliably stops the nags. Also made Gentle/Urgent optional + deselectable. All code in `app/timer.tsx`, UNCOMMITTED, `tsc` clean; Patrick commits + ends the session.
 
 **Goal = the #25 known-unresolved bug: tapping the banner / "Done" didn't stop the timer nags.** Root cause found by READING the code (not assumed): the cancel logic in `app/timer.tsx` looked the timer up in the **Timer screen's in-memory `activeTimers` list** to find which notification ids to cancel. When that list was wiped — a Metro reload, the screen remounting, or the app restarting — BOTH symptoms followed at once: the active-timer **tile disappeared** AND `dismissTimer` found no record, so it **cancelled nothing** and the nags kept firing. One cause behind both.

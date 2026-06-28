@@ -66,7 +66,8 @@ interface Task {
 interface LogEntry {
     id: string;
     taskTitle: string;
-    completedDate: string;
+    completedDate: string;   // when Done was tapped
+    scheduledFor?: string;   // task's original set date/time (optional: older entries lack it)
     notes: string;
 }
 
@@ -283,10 +284,20 @@ export default function TodoScreen() {
                 text: 'Done', onPress: () => {
                     cancelReminders(task.id);
                     const completedDate = new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' });
+                    // Original set date/time, matching the banner Done in _layout.tsx (#27).
+                    const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                    const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    let scheduledFor = '';
+                    if (task.dueDate) scheduledFor = task.dueDate;
+                    else if (task.recurring === 'weekly') scheduledFor = DAYS[task.recurDay] ?? '';
+                    else if (task.recurring === 'monthly') scheduledFor = `Day ${task.recurDay}`;
+                    else if (task.recurring === 'yearly') scheduledFor = `${MONTHS[(task.recurMonth || 1) - 1]} ${task.recurDay}`;
+                    if (task.dueTime) scheduledFor += (scheduledFor ? ' at ' : '') + task.dueTime;
                     const logEntry: LogEntry = {
                         id: Date.now().toString(),
                         taskTitle: task.title,
                         completedDate,
+                        scheduledFor,
                         notes: task.notes,
                     };
                     const updatedLog = [logEntry, ...log].slice(0, 100);
@@ -727,7 +738,7 @@ export default function TodoScreen() {
                         {log.length === 0 && <Text style={styles.emptyText}>No completed tasks yet.</Text>}
                         {log.map(l => (
                             <View key={l.id} style={styles.logItem}>
-                                <Text style={styles.logItemText}>{l.completedDate} | {l.taskTitle}{l.notes ? ` | ${l.notes}` : ''}</Text>
+                                <Text style={styles.logItemText}>{l.scheduledFor ? `Set ${l.scheduledFor} | ` : ''}Done {l.completedDate} | {l.taskTitle}{l.notes ? ` | ${l.notes}` : ''}</Text>
                             </View>
                         ))}
                     </ScrollView>

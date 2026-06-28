@@ -225,16 +225,23 @@ export default function RootLayout() {
           if (task) {
             const logRaw = await AsyncStorage.getItem('todo_log');
             const log = logRaw ? (JSON.parse(logRaw) as any[]) : [];
-            // Stamp the date from when the reminder FIRED, not when Done was
-            // tapped — so a Done tapped on a stale banner files under the
-            // reminder's day, not today. Matches the My Day / My Week / Pets
-            // paths (notification.date is in SECONDS, so ×1000). The on-screen
-            // Done in todo.tsx keeps tap-time (it has no fired notification).
-            const firedTodo = new Date(response.notification.date * 1000);
+            // To-Do log records the task's ORIGINAL set date/time plus when
+            // Done was TAPPED (Patrick, #27). The reminder's fire time is not
+            // recorded here. scheduledFor = the due date/time, falling back to
+            // the recurring pattern (weekly day / monthly day / yearly month).
+            const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            let scheduledFor = '';
+            if (task.dueDate) scheduledFor = task.dueDate;
+            else if (task.recurring === 'weekly') scheduledFor = DAYS[task.recurDay] ?? '';
+            else if (task.recurring === 'monthly') scheduledFor = `Day ${task.recurDay}`;
+            else if (task.recurring === 'yearly') scheduledFor = `${MONTHS[(task.recurMonth || 1) - 1]} ${task.recurDay}`;
+            if (task.dueTime) scheduledFor += (scheduledFor ? ' at ' : '') + task.dueTime;
             const entry = {
               id: Date.now().toString(),
               taskTitle: task.title,
-              completedDate: firedTodo.toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' }),
+              completedDate: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' }),
+              scheduledFor,
               notes: task.notes,
             };
             await AsyncStorage.setItem('todo_log', JSON.stringify([entry, ...log].slice(0, 100)));
