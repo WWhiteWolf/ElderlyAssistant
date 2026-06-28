@@ -1,5 +1,5 @@
 PENDING WORK — plain-language list
-Last updated: 2026-06-28 (after session #27)
+Last updated: 2026-06-28 (after session #28)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -26,14 +26,15 @@ STILL BROKEN OR UNFINISHED (small bugs)
   item, and this has never actually been tried with a real tap.
 
 
-SECURITY TIDY-UP (no data is at risk — just housekeeping)
----------------------------------------------------------
-- "Reset All Data" still asks for the old PIN you no longer have. It should
-  use Face ID instead, like the Vault now does.
-- There's a dead "Change PIN" button and keypad left over that should be
-  removed.
-- Three old unused screens (the old PIN/login screens) are still in the app
-  doing nothing. Decide whether to delete them or leave them.
+SECURITY TIDY-UP — ✅ ALL DONE (session #28), pending your commit
+-----------------------------------------------------------------
+- DONE: "Reset All Data" now uses Face ID / passcode (no more old PIN), and
+  sends you to Home after wiping. Tested on your phone, went as expected.
+- DONE: the dead "Change PIN" button and keypad were removed.
+- DONE: the three old unused PIN/login screens were deleted from the app.
+  The 6-digit PIN is now gone everywhere — security is all Face ID.
+  (Note: after a reset, My Day shows its default starter items again —
+  that's expected fresh-start behavior, not leftover data. You said leave it.)
 
 
 DECISIONS TO MAKE WHEN YOU'RE READY

@@ -25,11 +25,6 @@ export default function SettingsScreen() {
     const [biometricAvailable, setBiometricAvailable] = useState(false);
     const [biometricEnabled, setBiometricEnabled] = useState(false);
     const [vaultPinEnabled, setVaultPinEnabled] = useState(false);
-    const [showChangePIN, setShowChangePIN] = useState(false);
-    const [currentPIN, setCurrentPIN] = useState('');
-    const [newPIN, setNewPIN] = useState('');
-    const [confirmPIN, setConfirmPIN] = useState('');
-    const [pinStep, setPinStep] = useState<'current' | 'new' | 'confirm'>('current');
     const [editingName, setEditingName] = useState(false);
     const [morningTime, setMorningTime] = useState('08:00');
     const [eveningTime, setEveningTime] = useState('17:00');
@@ -137,94 +132,26 @@ export default function SettingsScreen() {
         await AsyncStorage.setItem('vault_pin_enabled', value.toString());
     };
 
-    const startChangePIN = () => {
-        setCurrentPIN('');
-        setNewPIN('');
-        setConfirmPIN('');
-        setPinStep('current');
-        setShowChangePIN(true);
-    };
-
-    const handlePinDigit = async (digit: string) => {
-        if (pinStep === 'current') {
-            const updated = currentPIN + digit;
-            setCurrentPIN(updated);
-            if (updated.length === 6) {
-                const saved = await AsyncStorage.getItem('user_pin');
-                if (updated === saved) {
-                    setPinStep('new');
-                    setCurrentPIN('');
-                } else {
-                    Alert.alert('Incorrect PIN', 'That PIN is incorrect.');
-                    setCurrentPIN('');
-                }
-            }
-        } else if (pinStep === 'new') {
-            const updated = newPIN + digit;
-            setNewPIN(updated);
-            if (updated.length === 6) {
-                setPinStep('confirm');
-            }
-        } else {
-            const updated = confirmPIN + digit;
-            setConfirmPIN(updated);
-            if (updated.length === 6) {
-                if (updated === newPIN) {
-                    await AsyncStorage.setItem('user_pin', updated);
-                    Alert.alert('Success', 'Your PIN has been changed.');
-                    setShowChangePIN(false);
-                    setCurrentPIN('');
-                    setNewPIN('');
-                    setConfirmPIN('');
-                } else {
-                    Alert.alert('Mismatch', 'PINs do not match. Try again.');
-                    setNewPIN('');
-                    setConfirmPIN('');
-                    setPinStep('new');
-                }
-            }
-        }
-    };
-
-    const handlePinDelete = () => {
-        if (pinStep === 'current') setCurrentPIN(p => p.slice(0, -1));
-        else if (pinStep === 'new') setNewPIN(p => p.slice(0, -1));
-        else setConfirmPIN(p => p.slice(0, -1));
-    };
-
-    const getCurrentPinDisplay = () => {
-        if (pinStep === 'current') return currentPIN;
-        if (pinStep === 'new') return newPIN;
-        return confirmPIN;
-    };
-
     const resetApp = async () => {
-        const savedPin = await AsyncStorage.getItem('user_pin');
         Alert.alert(
             'Reset All Data',
-            'This will delete ALL your data. Enter your PIN to confirm.',
+            'This will permanently delete ALL your data. This cannot be undone.',
             [
                 { text: 'Cancel', style: 'cancel' },
                 {
-                    text: 'Continue', style: 'destructive', onPress: () => {
-                        Alert.prompt(
-                            'Enter PIN',
-                            'Type your 6-digit PIN to confirm reset',
-                            [
-                                { text: 'Cancel', style: 'cancel' },
-                                {
-                                    text: 'Reset', style: 'destructive', onPress: async (pin?: string) => {
-                                        if (pin === savedPin) {
-                                            await AsyncStorage.clear();
-                                            router.replace('/setup-pin');
-                                        } else {
-                                            Alert.alert('Incorrect PIN', 'Reset cancelled.');
-                                        }
-                                    }
-                                }
-                            ],
-                            'secure-text'
-                        );
+                    text: 'Continue', style: 'destructive', onPress: async () => {
+                        // Confirm identity with Face ID / passcode before wiping,
+                        // matching the Vault gate (no more 6-digit PIN).
+                        const result = await LocalAuthentication.authenticateAsync({
+                            promptMessage: 'Authenticate to reset all data',
+                            fallbackLabel: 'Use Passcode',
+                        });
+                        if (result.success) {
+                            await AsyncStorage.clear();
+                            router.replace('/home');
+                        } else {
+                            Alert.alert('Reset Cancelled', 'Your data was not deleted.');
+                        }
                     }
                 },
             ]
@@ -245,36 +172,6 @@ export default function SettingsScreen() {
 
             <View style={styles.bridge} />
 
-            {showChangePIN ? (
-                <View style={styles.pinContainer}>
-                    <Text style={styles.pinInstruction}>
-                        {pinStep === 'current' ? 'Enter your current PIN' :
-                            pinStep === 'new' ? 'Enter your new PIN' :
-                                'Confirm your new PIN'}
-                    </Text>
-                    <View style={styles.dotsContainer}>
-                        {[...Array(6)].map((_, i) => (
-                            <View key={i} style={[styles.dot, i < getCurrentPinDisplay().length && styles.dotFilled]} />
-                        ))}
-                    </View>
-                    <View style={styles.keypad}>
-                        {['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'].map((key, index) => (
-                            <TouchableOpacity
-                                key={index}
-                                style={[styles.key, key === '' && styles.keyEmpty]}
-                                onPress={() => { if (key === '⌫') handlePinDelete(); else if (key !== '') handlePinDigit(key); }}
-                                disabled={key === ''}
-                            >
-                                <Text style={styles.keyText}>{key}</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                    <TouchableOpacity style={styles.cancelPinBtn} onPress={() => setShowChangePIN(false)}>
-                        <Text style={styles.cancelPinText}>Cancel</Text>
-                    </TouchableOpacity>
-                </View>
-            ) : (
-                <>
                 <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
 
                     <Text style={styles.sectionHeader}>Profile</Text>
@@ -321,24 +218,7 @@ export default function SettingsScreen() {
 
                     <Text style={styles.sectionHeader}>Security</Text>
                     <View style={styles.settingCard}>
-                        <TouchableOpacity style={styles.settingRow} onPress={startChangePIN}>
-                            <Text style={styles.settingLabel}>Change PIN</Text>
-                            <Text style={styles.settingArrow}>›</Text>
-                        </TouchableOpacity>
-
-                        {/*{biometricAvailable && (
-                            <View style={[styles.settingRow, styles.settingRowBorder]}>
-                                <Text style={styles.settingLabel}>Face ID / Touch ID</Text>
-                                <Switch
-                                    value={biometricEnabled}
-                                    onValueChange={toggleBiometric}
-                                    trackColor={{ false: '#ccc', true: Colors.bridge }}
-                                    thumbColor={biometricEnabled ? Colors.primary : '#fff'}
-                                />
-                            </View>
-                        )}*/}
-
-                        <View style={[styles.settingRow, styles.settingRowBorder]}>
+                        <View style={styles.settingRow}>
                             <View style={{ flex: 1 }}>
                                 <Text style={styles.settingLabel}>Extra Vault Security</Text>
                                 <Text style={styles.settingHint}>Require Face ID to open Vault</Text>
@@ -473,8 +353,6 @@ export default function SettingsScreen() {
                         </View>
                     </KeyboardAvoidingView>
                 </Modal>
-                </>
-            )}
         </View>
     );
 }
@@ -556,44 +434,6 @@ const styles = StyleSheet.create({
         marginTop: 30,
         fontStyle: 'italic',
     },
-    pinContainer: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 20,
-        backgroundColor: Colors.background,
-    },
-    pinInstruction: {
-        fontSize: 20,
-        fontWeight: '500',
-        color: Colors.primary,
-        marginBottom: 24,
-        textAlign: 'center',
-    },
-    dotsContainer: { flexDirection: 'row', marginBottom: 40, gap: 15 },
-    dot: {
-        width: 20, height: 20, borderRadius: 10,
-        borderWidth: 2, borderColor: Colors.primary,
-        backgroundColor: 'transparent',
-    },
-    dotFilled: { backgroundColor: Colors.primary },
-    keypad: {
-        flexDirection: 'row', flexWrap: 'wrap',
-        justifyContent: 'center', width: 300, gap: 15,
-    },
-    key: {
-        width: 80, height: 80, borderRadius: 40,
-        backgroundColor: Colors.white,
-        alignItems: 'center', justifyContent: 'center',
-        elevation: 2, shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1, shadowRadius: 2,
-    },
-    keyEmpty: { backgroundColor: 'transparent', elevation: 0, shadowOpacity: 0 },
-    keyText: { fontSize: 28, fontWeight: '500', color: Colors.primary },
-    cancelPinBtn: { marginTop: 20, padding: 12 },
-    cancelPinText: { color: Colors.bridge, fontSize: 16 },
-
     headerBtn: {
         borderWidth: 1,
         borderColor: Colors.white,

@@ -1,5 +1,29 @@
 # Hand-off note — paste at the start of the next session
 
+## THIS SESSION — #28 (2026-06-28): SECURITY TIDY-UP — all three items DONE + DEVICE-VALIDATED on Patrick's phone. The 6-digit PIN is now fully retired app-wide; security is entirely Face ID / passcode. Code in `app/settings.tsx` + `app/_layout.tsx` + three file deletions, UNCOMMITTED, `tsc` clean (EXIT 0); Patrick commits everything in one commit after the (now-passed) test.
+
+**Start-of-session fact:** working tree was clean — all of #27 (To-Do two-timestamp work) plus docs already committed (`03786bc`). Nothing hanging from last session.
+
+**Goal = the Security Tidy-up** (housekeeping; no data was ever exposed). Three leftovers from retiring the old PIN in favor of Face ID, done one at a time with Patrick's go each time:
+
+1. **Reset All Data → Face ID.** `resetApp` (`app/settings.tsx`) previously read `user_pin` and made you type the 6-digit PIN in an `Alert.prompt`, then navigated to `/setup-pin` after clearing. Now it shows a confirm alert, then runs `LocalAuthentication.authenticateAsync({ promptMessage: 'Authenticate to reset all data', fallbackLabel: 'Use Passcode' })` — same shape as the Vault gate and the `toggleVaultPin` switch. On success: `AsyncStorage.clear()` then `router.replace('/home')` (no more `/setup-pin`). On fail/cancel: "Reset Cancelled — Your data was not deleted."
+
+2. **Change PIN removed entirely** (`app/settings.tsx`). Deleted the Change PIN row, the whole keypad view, the four handlers (`startChangePIN`, `handlePinDigit`, `handlePinDelete`, `getCurrentPinDisplay`), the five PIN state vars, and the now-dead keypad styles. Those handlers were the only things reading/writing `user_pin`, so **nothing reads or writes a PIN anywhere now.** Also dropped the leftover top-border style on the Extra Vault Security row so it doesn't show a stray line as the first item in the Security card.
+
+3. **Three orphaned screens deleted.** Verified nothing navigates to them (app opens via `index.tsx` → `Redirect href="/home"`; after the Reset change, the last pointer `/setup-pin` was gone). Deleted `app/setup-pin.tsx`, `app/login.tsx`, `app/vaultpin.tsx` and removed their three `Stack.Screen` registrations from `app/_layout.tsx`. (Deletion needed the Cowork file-delete permission — sandbox `rm` returned "Operation not permitted" first.)
+
+**DEVICE TEST (Patrick's phone): "went as expected."** Reset → Face ID prompt → data wiped → lands on Home. **One thing observed + explained, NOT a bug:** after a reset, **My Day shows the default starter items again** (Breakfast, Lunch, Snack, Dinner, Morning Medication). Cause (verified by reading `getMigratedRoutine`, `app/myday.tsx` ~98–109): on an empty `my_routine` it re-seeds `INITIAL_MEALS` + `INITIAL_MEDS` — intended first-run behavior, and the old PIN-based reset did the same. The wipe genuinely worked; these are factory defaults, not survivors. **Patrick decided this is FINE — leave it** (a reset returns My Day to its fresh-start routine rather than a blank screen). No change made.
+
+**Build/commit note:** Patrick builds via EAS with `requireCommit` UNSET in `eas.json` (defaults to false), so **EAS bundles the working tree including uncommitted changes** — confirmed by reading `eas.json` and by his last two builds. (Claude initially mis-stated that EAS needs a commit first; corrected.) So he tested these changes uncommitted, and will commit code + docs together now that the test passed.
+
+**Files touched (#28):**
+- `app/settings.tsx` — Reset→Face ID + full Change-PIN removal. UNCOMMITTED, `tsc` clean, device-validated.
+- `app/_layout.tsx` — removed 3 `Stack.Screen` registrations. UNCOMMITTED, `tsc` clean.
+- Deleted: `app/setup-pin.tsx`, `app/login.tsx`, `app/vaultpin.tsx`.
+- `docs/handoff.md` + `docs/parked-items.md` + `docs/pending.txt` — this update. Pending Patrick's commit.
+
+---
+
 ## THIS SESSION — #27 (2026-06-28): To-Do "Done" date — RESOLVED + DEVICE-VALIDATED on Patrick's phone. The To-Do log now records BOTH the task's **original set date/time** AND **when Done was tapped**; the reminder's fire time is no longer logged. To-Do ONLY. Code in `app/_layout.tsx` + `app/todo.tsx`, UNCOMMITTED, `tsc` clean (EXIT 0); Patrick commits.
 
 **Start-of-session fact:** Patrick confirmed **all of #26 is committed.** (So the #26 timer-nag work shipped.)
@@ -17,38 +41,4 @@
 
 ---
 
-## THIS SESSION — #26 (2026-06-28): The #25 timer-nag BLOCKING BUG is FIXED + DEVICE-VALIDATED on Patrick's phone — tapping "Done" now reliably stops the nags. Also made Gentle/Urgent optional + deselectable. All code in `app/timer.tsx`, UNCOMMITTED, `tsc` clean; Patrick commits + ends the session.
-
-**Goal = the #25 known-unresolved bug: tapping the banner / "Done" didn't stop the timer nags.** Root cause found by READING the code (not assumed): the cancel logic in `app/timer.tsx` looked the timer up in the **Timer screen's in-memory `activeTimers` list** to find which notification ids to cancel. When that list was wiped — a Metro reload, the screen remounting, or the app restarting — BOTH symptoms followed at once: the active-timer **tile disappeared** AND `dismissTimer` found no record, so it **cancelled nothing** and the nags kept firing. One cause behind both.
-
-**THE FIX — device-validated on Patrick's phone ("everything working as expected"):** made `dismissTimer` **query-based** — `getAllScheduledNotificationsAsync()`, filter by `content.data.timerId`, cancel each — so Done cancels the timer's pending alerts straight from iOS, regardless of in-memory state. Same dependable pattern the To-Do / My Week paths already use.
-
-**Five edits this session, ALL in `app/timer.tsx`, `tsc --noEmit` clean (EXIT 0):**
-1. **Green "Done" button** added to each active-timer card (beside the red Cancel); calls `dismissTimer(timer.id)` immediately (no confirm). Cancel keeps its confirm dialog.
-2. **Banner action relabeled "Dismiss" → "Done"** (`timer` category; identifier `done`, still accepts the old `dismiss` harmlessly). Listener handles `done`.
-3. **Plain banner tap no longer acknowledges/removes the timer** — removed `DEFAULT_ACTION_IDENTIFIER` from the cancel branch, so only an explicit Done (or Snooze) acts; a tapped-but-not-Done timer stays nagging/visible.
-4. **`dismissTimer` made query-based** (the actual fix, above).
-5. **Gentle/Urgent no longer default-selected, and are optional + deselectable.** `selectedStyle` starts `null` (neither highlighted); the two buttons toggle on/off (tap a selected one to clear it); the user is NOT forced to pick. With **no style**, `scheduleTimerAlerts` schedules ONLY the single "Timer Done!" alert — no nags, and the loud backup is skipped (`loud && profile`). `count`/`interval` derive from `profile = style ? NAG_PROFILES[style] : null` (0 when none). `ActiveTimer.style` is now `NagStyle | null`. (Patrick: "if the user does not want nags then they do not want loud alerts.")
-
-**DEVICE TEST (Patrick's phone): nag-cancel fix + popups working as expected; Urgent confirmed firing every 30s for ~5 min.**
-
-**STILL OPEN / accepted limitations (parked, NOT blockers):**
-- **Missing tile after a reload / app restart** — active timers are **in-memory only** (`useState`, no AsyncStorage). The tile won't reappear once the screen remounts. Patrick ACCEPTED this — Done now stops the nags reliably whether or not the tile shows. To make the tile survive later would need: persist `activeTimers` to AsyncStorage on change, and on Timer-page focus reload them + reconcile against `getAllScheduledNotificationsAsync` (keep only timers that still have pending alerts; drop acknowledged/finished). Parked.
-- **"Loud alert" isn't actually louder** — it's one extra alert with the STANDARD tone, fired one interval after the last nag (~5½ min for Urgent). Patrick had it on and heard nothing distinct — expected, nothing broken. A genuinely louder/distinct alarm needs a **custom sound file bundled** → a REBUILD (deferred since #25); overriding Silent / Do-Not-Disturb at full volume needs Apple's **Critical Alerts** entitlement (heavy, deferred). Both stay parked.
-
-**Tree state for Patrick's commit:** `app/timer.tsx` only (this session's five edits) — UNCOMMITTED, `tsc` clean, DEVICE-VALIDATED. It stacks on the still-uncommitted #25 nag-feature rewrite of the same file. **NOTE:** I did NOT touch `app/_layout.tsx` this session — the #25 **To-Do "Done" date fix** in `_layout.tsx` may still be uncommitted + untested; confirm when committing.
-
-**Docs standing-rules added this session (in `docs/session-start.md`, pending commit), at Patrick's request:**
-- **One question at a time.**
-- **Ask if Patrick wants to say something first, before questioning him.**
-- **No unnecessary urgency** — Patrick is retired and in no hurry; go at his pace, don't rush toward building.
-(Process note: I built one small change — the Gentle/Urgent deselect — before asking; Patrick corrected me. The ask-first rule now stands explicitly in session-start.)
-
-**Files touched (#26):**
-- `app/timer.tsx` — the five edits above. UNCOMMITTED, `tsc` clean, device-validated.
-- `docs/session-start.md` — three new standing rules. Pending commit.
-- `docs/handoff.md` + `docs/parked-items.md` — this update. Pending commit.
-
----
-
-*Older sessions (#25 and earlier) have been moved to [`handoff-archive.md`](handoff-archive.md) to keep this file short.*
+*Older sessions (#26 and earlier) have been moved to [`handoff-archive.md`](handoff-archive.md) to keep this file short.*
