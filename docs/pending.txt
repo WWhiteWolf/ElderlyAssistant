@@ -1,10 +1,10 @@
 PENDING WORK — plain-language list
-Last updated: 2026-06-28 (after session #28)
+Last updated: 2026-06-28 (after session #29 — parked-items tidy-up)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
-reading the technical docs. Nothing here is urgent. Newest concerns first
-within each group.
+reading the technical docs. Nothing here is urgent. Finished work now lives
+in parked-archive.md, so this list stays short.
 
 
 NEEDS A PHONE TEST (built and committed, just not confirmed on the phone yet)
@@ -26,15 +26,16 @@ STILL BROKEN OR UNFINISHED (small bugs)
   item, and this has never actually been tried with a real tap.
 
 
-SECURITY TIDY-UP — ✅ ALL DONE (session #28), pending your commit
------------------------------------------------------------------
-- DONE: "Reset All Data" now uses Face ID / passcode (no more old PIN), and
-  sends you to Home after wiping. Tested on your phone, went as expected.
-- DONE: the dead "Change PIN" button and keypad were removed.
-- DONE: the three old unused PIN/login screens were deleted from the app.
-  The 6-digit PIN is now gone everywhere — security is all Face ID.
-  (Note: after a reset, My Day shows its default starter items again —
-  that's expected fresh-start behavior, not leftover data. You said leave it.)
+CODE CLEANUP — retire To-Do's old Daily & Weekly (added session #29)
+--------------------------------------------------------------------
+- Daily reminders are now their own page (My Day) and weekly ones are now
+  their own page (My Week), so the leftover bits in To-Do should come out.
+- Remove the few leftover "Daily" traces in To-Do. Daily is mostly gone
+  already (you can't pick it), just a couple of dead references remain.
+- Remove the Weekly option from To-Do. Heads up: unlike Daily, Weekly is
+  still a working feature there (it's in the picker and sets real weekly
+  reminders), so pulling it out is a real change, not just cleanup — its
+  own session, and we'll decide what happens to any existing weekly To-Dos.
 
 
 DECISIONS TO MAKE WHEN YOU'RE READY
@@ -59,6 +60,8 @@ NICE-TO-HAVE LATER (polish, low priority)
   (it can't go in the app's name).
 - Make the button labels match: To-Do says "New Task" while Vault says
   "+ Add."
+- Add a Snooze button on each To-Do item itself. My Day and Pets Day already
+  have one on every tile; To-Do only has Snooze on the notification banner.
 
 
 PARKED ON PURPOSE (bigger items, on hold for now)
@@ -73,3 +76,9 @@ PARKED ON PURPOSE (bigger items, on hold for now)
 - A running Timer's tile disappears if the app reloads or restarts (the list
   of active timers is only held in memory). Accepted as-is: tapping "Done"
   still stops the alerts whether or not the tile is showing.
+
+
+HOUSEKEEPING (docs)
+-------------------
+- The hand-off archive (handoff-archive.md) needs its own tidy-up later —
+  the bottom third is an old hand-off that got pasted in and never trimmed.

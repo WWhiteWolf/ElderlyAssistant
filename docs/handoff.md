@@ -1,6 +1,29 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #28 (2026-06-28): SECURITY TIDY-UP — all three items DONE + DEVICE-VALIDATED on Patrick's phone. The 6-digit PIN is now fully retired app-wide; security is entirely Face ID / passcode. Code in `app/settings.tsx` + `app/_layout.tsx` + three file deletions, UNCOMMITTED, `tsc` clean (EXIT 0); Patrick commits everything in one commit after the (now-passed) test.
+## THIS SESSION — #29 (2026-06-28): PARKED-ITEMS TIDY-UP — docs only, no code touched. Split the bloated `parked-items.md` into a lean open-work list plus a new themed `docs/parked-archive.md` for finished work; updated `pending.txt` to match. All UNCOMMITTED, Patrick commits.
+
+**Start-of-session fact:** working tree was clean — all of #28 (Security Tidy-up, code + docs) committed in `0d5de31`. Nothing hanging.
+
+**Goal = tidy up `parked-items.md`,** which had grown into a wall of finished items, a dense run-on "Last updated" blob, and a "Done (recently cleared)" section. Decided with Patrick: move finished work into a NEW archive, grouped intelligently by theme (not dumped), and shrink `parked-items.md` to only still-open work.
+
+**What was done (docs only — no app code changed):**
+1. **NEW `docs/parked-archive.md`** — all completed/resolved items, grouped by theme (Security, Timer, Backup, Notifications & reminders, My Week, UI polish, settled design decisions). Each condensed to a one-line entry with session # + committed/validated status.
+2. **`parked-items.md` rewritten** to hold only open work; retired the run-on "Last updated" blob; kept a short plain-English overview. Added a pointer to `parked-archive.md`.
+3. **`pending.txt`** brought back in step — dropped the now-done Security Tidy-up section; added the new cleanup items in plain words.
+
+**New backlog items added this session (Patrick's call):**
+- **Retire To-Do's old Daily & Weekly** now that My Day owns daily and My Week owns weekly. Verified in `app/todo.tsx`: **Daily** is nearly gone already (not in the picker, no schedule branch) — only two dead traces remain (`'daily'` in the `RecurType` union ~line 23; a `t.recurring === 'daily'` line in the Week-Ahead filter ~line 1003). **Weekly is still FULLY LIVE** (in the picker, own Sun–Sat day picker, tile display, real repeating weekly notification ~lines 400–419) — so removing it is a real functional change, its own session, and we must decide what happens to any existing weekly To-Dos. Both parked as **code** work, not done this session.
+- **To-Do on-tile Snooze button** (recovered during verification — nearly dropped). My Day/Pets have on-page Snooze; To-Do only has banner Snooze.
+
+**Verification:** cross-checked the trimmed `parked-items.md` + `pending.txt` against the original so no still-open item was lost — caught and restored the To-Do on-tile Snooze item.
+
+**Files touched (#29):** `docs/parked-archive.md` (new), `docs/parked-items.md`, `docs/pending.txt`, `docs/handoff.md` (this entry). All UNCOMMITTED; Patrick commits.
+
+**➤ NEXT SESSION — Handoff archive tidy-up.** `handoff-archive.md`'s top portion (per-session write-ups #26 → ~#8) is fine, but the bottom third (~line 523 onward) is a whole stale *old `handoff.md`* pasted in and never trimmed: an "Active next step" still pointing at the #21 security goal, a "PASTE THIS AT THE START OF THE NEXT SESSION" block, "Likely next goals," several "Files touched this session" blocks, and duplicate Standing rules. (Note: per the "last 2 sessions" rule #27 would normally move to the archive now, but we deliberately LEFT it here to fold in during that cleanup rather than add to a file about to be reworked.)
+
+---
+
+## SESSION — #28 (2026-06-28): SECURITY TIDY-UP — all three items DONE + DEVICE-VALIDATED on Patrick's phone. The 6-digit PIN is now fully retired app-wide; security is entirely Face ID / passcode. Code in `app/settings.tsx` + `app/_layout.tsx` + three file deletions, UNCOMMITTED, `tsc` clean (EXIT 0); Patrick commits everything in one commit after the (now-passed) test.
 
 **Start-of-session fact:** working tree was clean — all of #27 (To-Do two-timestamp work) plus docs already committed (`03786bc`). Nothing hanging from last session.
 
