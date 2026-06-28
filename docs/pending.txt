@@ -1,10 +1,25 @@
 PENDING WORK — plain-language list
-Last updated: 2026-06-28 (after session #29 — parked-items tidy-up)
+Last updated: 2026-06-28 (session #30 — added the "Where things stand" snapshot)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
-reading the technical docs. Nothing here is urgent. Finished work now lives
-in parked-archive.md, so this list stays short.
+reading the technical docs. Nothing here is urgent. Finished work isn't
+tracked here — git history keeps the full record — so this list stays short.
+
+
+WHERE THINGS STAND RIGHT NOW (read this first)
+----------------------------------------------
+- The app ("Remember When") is stable and on your phone via TestFlight.
+  Nothing is half-built or broken in a way that's holding you up.
+- Most recently finished and committed: the Security Tidy-up (the old
+  6-digit PIN is fully retired — security is now Face ID / passcode), then
+  a docs cleanup that split the old backlog into this list plus a separate
+  archive of finished work.
+- The one thing still unconfirmed: whether the Monthly and Yearly repeating
+  To-Do reminders actually fire on the phone (see "NEEDS A PHONE TEST"
+  below). Everything else in recent sessions has been tested on the phone.
+- To decide what's next: read the lists below and pick one. Nothing here is
+  urgent.
 
 
 NEEDS A PHONE TEST (built and committed, just not confirmed on the phone yet)
@@ -76,9 +91,3 @@ PARKED ON PURPOSE (bigger items, on hold for now)
 - A running Timer's tile disappears if the app reloads or restarts (the list
   of active timers is only held in memory). Accepted as-is: tapping "Done"
   still stops the alerts whether or not the tile is showing.
-
-
-HOUSEKEEPING (docs)
--------------------
-- The hand-off archive (handoff-archive.md) needs its own tidy-up later —
-  the bottom third is an old hand-off that got pasted in and never trimmed.

@@ -4,11 +4,11 @@ Future / deferred work for "Remember When." Not for the current session — the 
 goal lives in `handoff.md`. Pull an item from here when you're ready to take it on;
 move it back into `handoff.md` once it's the live goal. Add new ideas as they come up.
 
-**Finished work has moved to [`parked-archive.md`](parked-archive.md)** (grouped by
-theme) — this file now holds only what's still open.
+This file holds only still-open work. Finished items aren't archived in the docs —
+git history keeps the full record.
 
-Last updated: 2026-06-28 (session #29 — parked-items tidy-up: finished items moved to
-`parked-archive.md`; added the To-Do Daily/Weekly cleanup items).
+Last updated: 2026-06-28 (session #30 — removed the doc archives; this file holds
+open work only).
 
 ---
 
@@ -115,12 +115,3 @@ editing.
   in memory only). Accepted as-is: tapping Done still stops the alerts whether or not the
   tile is showing. To make it survive: persist `activeTimers` to AsyncStorage + reconcile
   on Timer-page focus against `getAllScheduledNotificationsAsync`.
-
-## Docs
-
-- **`handoff-archive.md` needs its own tidy-up.** The per-session write-ups (#26 down to
-  ~#8) are fine, but the bottom third is a whole stale *old `handoff.md`* that got pasted
-  in and never trimmed — it still has an "Active next step" pointing at the session #21
-  security goal, a "PASTE THIS AT THE START OF THE NEXT SESSION" block, "Likely next goals,"
-  several "Files touched this session" blocks, and duplicate Standing rules. Its own
-  future session.
