@@ -1,6 +1,27 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #30 (2026-06-28): HAND-OFF ARCHIVE TIDY-UP — grew into a docs-system simplification. Docs only, no app code touched. Moved #27 into the archive, then on Patrick's call REMOVED both archive files entirely (`handoff-archive.md` + `parked-archive.md`) — git history keeps the full record — and added a plain-text "Where things stand" snapshot to `pending.txt`. All UNCOMMITTED, Patrick commits.
+## THIS SESSION — #31 (2026-06-28): CREATED THE PROJECT ROADMAP — docs only, no app code touched. New `docs/roadmap.md`: vision, current state, full feature inventory, road-ahead phases, a Deployment & distribution (long-range) section, guiding principles, and a tools/stack appendix. UNCOMMITTED, Patrick commits.
+
+**Start-of-session fact:** working tree was clean — all of #30 (docs simplification) committed in `33d0db3`. Nothing hanging.
+
+**Goal = create a roadmap.** Patrick realized the project had no big-picture roadmap and wanted one. He chose the broader form: vision + what's already built + milestones + what's ahead (not just a forward task list).
+
+**What was done (docs only):**
+1. **NEW `docs/roadmap.md`** — built from verified facts, not guesses: stack from `package.json`/`app.json`/`eas.json`/`.vscode/extensions.json`, the eleven screens from `app/`, and open work from the tracking docs. Sections: Vision; Where it stands today; What's already built; The road ahead (4 phases + parked); Deployment & distribution (long-range); Guiding principles; Tools & stack appendix.
+2. **Patrick's corrections, applied:**
+   - Not "nothing in the cloud" — an exported **backup file** can be saved to a cloud location (iCloud Drive). Reworded both spots.
+   - Added the **Deployment & distribution (long-range)** section — current path is EAS Build → TestFlight → (eventually) App Store; an *optional, uncommitted* web version of Elyfont on GitHub Pages at **elyfont.com** (already owned), same approach as MysteryTracker's web build; the **two-app picture** (MysteryTracker: mobile + web **both done, web published live**; Elyfont: mobile working, web a maybe). Points to OneDrive `Publishing-Strategy.docx` + the MysteryTracker deployment doc rather than duplicating steps.
+   - Added a sub-idea under Elyfont: offering the individual pages (To-Do, My Day, …) as **optional tailored modules**. Marked not committed.
+
+**Verified detail worth keeping:** `app.json` already carries the new name **"Elyfont"**, but the in-app home greeting and the TestFlight listing still say **"Remember When"** — so the rename is partly underway (recorded in the roadmap's Identity/renaming milestone).
+
+**Files touched (#31):** `docs/roadmap.md` (new); `docs/handoff.md` + `docs/pending.txt` (end-of-session refresh). No new backlog items to park. All UNCOMMITTED; Patrick commits.
+
+**➤ NEXT SESSION — Patrick's pick from `pending.txt`.** No docs cleanup pending. Open code items include the Monthly/Yearly phone test, retiring To-Do's Daily/Weekly, and the To-Do on-tile Snooze button.
+
+---
+
+## SESSION — #30 (2026-06-28): HAND-OFF ARCHIVE TIDY-UP — grew into a docs-system simplification. Docs only, no app code touched. Moved #27 into the archive, then on Patrick's call REMOVED both archive files entirely (`handoff-archive.md` + `parked-archive.md`) — git history keeps the full record — and added a plain-text "Where things stand" snapshot to `pending.txt`. All UNCOMMITTED, Patrick commits.
 
 **Start-of-session fact:** working tree was clean — all of #29 (parked-items tidy-up) committed in `ff33cf9`. Nothing hanging.
 
@@ -19,25 +40,6 @@
 **Files touched (#30):** deleted `docs/handoff-archive.md` + `docs/parked-archive.md`; edited `docs/handoff.md` (this entry), `docs/parked-items.md`, `docs/pending.txt`, `docs/session-start.md`. All UNCOMMITTED; Patrick commits.
 
 **➤ NEXT SESSION — Patrick's pick from `pending.txt`.** No docs cleanup is pending. Open code items on the menu include retiring To-Do's old Daily/Weekly, adding the To-Do on-tile Snooze button, and the Monthly/Yearly recurring-reminder phone test.
-
----
-
-## SESSION — #29 (2026-06-28): PARKED-ITEMS TIDY-UP — docs only, no code touched. Split the bloated `parked-items.md` into a lean open-work list plus a new themed `docs/parked-archive.md` for finished work; updated `pending.txt` to match. (NOTE: `parked-archive.md` was later removed in #30.) Committed by Patrick in `ff33cf9`.
-
-**Start-of-session fact:** working tree was clean — all of #28 (Security Tidy-up, code + docs) committed in `0d5de31`. Nothing hanging.
-
-**Goal = tidy up `parked-items.md`,** which had grown into a wall of finished items, a dense run-on "Last updated" blob, and a "Done (recently cleared)" section. Decided with Patrick: move finished work into a NEW archive, grouped intelligently by theme (not dumped), and shrink `parked-items.md` to only still-open work.
-
-**What was done (docs only — no app code changed):**
-1. **NEW `docs/parked-archive.md`** — all completed/resolved items, grouped by theme. (Removed in #30 — git keeps it.)
-2. **`parked-items.md` rewritten** to hold only open work; retired the run-on "Last updated" blob; kept a short plain-English overview.
-3. **`pending.txt`** brought back in step — dropped the now-done Security Tidy-up section; added the new cleanup items in plain words.
-
-**New backlog items added (Patrick's call):**
-- **Retire To-Do's old Daily & Weekly** now that My Day owns daily and My Week owns weekly. Verified in `app/todo.tsx`: **Daily** is nearly gone already (not in the picker, no schedule branch) — only two dead traces remain (`'daily'` in the `RecurType` union ~line 23; a `t.recurring === 'daily'` line in the Week-Ahead filter ~line 1003). **Weekly is still FULLY LIVE** (in the picker, own Sun–Sat day picker, tile display, real repeating weekly notification ~lines 400–419) — so removing it is a real functional change, its own session, and we must decide what happens to any existing weekly To-Dos.
-- **To-Do on-tile Snooze button.** My Day/Pets have on-page Snooze; To-Do only has banner Snooze.
-
-**Files touched (#29):** `docs/parked-archive.md` (new, later removed in #30), `docs/parked-items.md`, `docs/pending.txt`, `docs/handoff.md`. Committed in `ff33cf9`.
 
 ---
 
