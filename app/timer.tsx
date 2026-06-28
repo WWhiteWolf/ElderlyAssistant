@@ -200,10 +200,15 @@ export default function TimerScreen() {
     // Acknowledge a timer: cancel every alert still pending for it (main, all
     // nags, and the loud backup) and remove its card.
     const dismissTimer = async (timerId: string) => {
-        const timer = activeTimers.find(t => t.id === timerId);
-        if (timer) {
-            for (const id of timer.notifIds) {
-                await Notifications.cancelScheduledNotificationAsync(id);
+        // Cancel every still-pending alert tagged with this timer by asking iOS
+        // directly — NOT from the screen's in-memory list, which may be empty
+        // if the screen reloaded or the app restarted since the timer started.
+        // (That stale-memory case is why tapping Done sometimes left the nags
+        // running.)
+        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+        for (const n of scheduled) {
+            if (n.content.data?.timerId === timerId) {
+                await Notifications.cancelScheduledNotificationAsync(n.identifier);
             }
         }
         setActiveTimers(prev => prev.filter(t => t.id !== timerId));
@@ -304,14 +309,14 @@ export default function TimerScreen() {
                 <View style={styles.presetRow}>
                     <TouchableOpacity
                         style={[styles.styleBtn, selectedStyle === 'gentle' && styles.styleBtnActive]}
-                        onPress={() => setSelectedStyle('gentle')}
+                        onPress={() => setSelectedStyle(s => (s === 'gentle' ? null : 'gentle'))}
                     >
                         <Text style={[styles.styleBtnText, selectedStyle === 'gentle' && styles.styleBtnTextActive]}>Gentle</Text>
                         <Text style={[styles.styleBtnHint, selectedStyle === 'gentle' && styles.styleBtnTextActive]}>every minute · 3 min</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.styleBtn, selectedStyle === 'urgent' && styles.styleBtnActive]}
-                        onPress={() => setSelectedStyle('urgent')}
+                        onPress={() => setSelectedStyle(s => (s === 'urgent' ? null : 'urgent'))}
                     >
                         <Text style={[styles.styleBtnText, selectedStyle === 'urgent' && styles.styleBtnTextActive]}>Urgent</Text>
                         <Text style={[styles.styleBtnHint, selectedStyle === 'urgent' && styles.styleBtnTextActive]}>every 30 sec · 5 min</Text>
