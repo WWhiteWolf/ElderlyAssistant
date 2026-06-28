@@ -30,7 +30,7 @@ interface ActiveTimer {
     id: string;
     label: string;
     endsAt: number;
-    style: NagStyle;
+    style: NagStyle | null;
     loud: boolean;
     notifIds: string[];
 }
@@ -60,7 +60,7 @@ export default function TimerScreen() {
     const [selectedLabel, setSelectedLabel] = useState('Coffee');
     const [customLabel, setCustomLabel] = useState('');
     const [now, setNow] = useState(Date.now());
-    const [selectedStyle, setSelectedStyle] = useState<NagStyle>('gentle');
+    const [selectedStyle, setSelectedStyle] = useState<NagStyle | null>(null);
     const [loudEnabled, setLoudEnabled] = useState(false);
 
     useEffect(() => {
@@ -78,7 +78,7 @@ export default function TimerScreen() {
         requestPermissions();
         Notifications.setNotificationCategoryAsync('timer', [
             { identifier: 'snooze', buttonTitle: 'Snooze 1 min' },
-            { identifier: 'dismiss', buttonTitle: 'Dismiss' },
+            { identifier: 'done', buttonTitle: 'Done' },
         ]);
     }, []);
 
@@ -88,7 +88,7 @@ export default function TimerScreen() {
             const timerId = response.notification.request.content.data?.timerId as string;
             if (action === 'snooze' && timerId) {
                 snoozeTimer(timerId);
-            } else if ((action === 'dismiss' || action === Notifications.DEFAULT_ACTION_IDENTIFIER) && timerId) {
+            } else if ((action === 'done' || action === 'dismiss') && timerId) {
                 dismissTimer(timerId);
             }
         });
@@ -105,11 +105,13 @@ export default function TimerScreen() {
         timerId: string,
         label: string,
         startIn: number,
-        style: NagStyle,
+        style: NagStyle | null,
         loud: boolean,
     ): Promise<string[]> => {
         const ids: string[] = [];
-        const { interval, count } = NAG_PROFILES[style];
+        const profile = style ? NAG_PROFILES[style] : null;
+        const interval = profile?.interval ?? 0;
+        const count = profile?.count ?? 0;
 
         const mainId = await Notifications.scheduleNotificationAsync({
             content: {
@@ -143,7 +145,7 @@ export default function TimerScreen() {
             ids.push(nagId);
         }
 
-        if (loud) {
+        if (loud && profile) {
             const loudId = await Notifications.scheduleNotificationAsync({
                 content: {
                     title: `🔊 ${label} — Please respond!`,
@@ -341,12 +343,20 @@ export default function TimerScreen() {
                                     <Text style={styles.timerLabel}>{timer.label}</Text>
                                     <Text style={styles.timerCountdown}>{formatTimeLeft(timer.endsAt)}</Text>
                                 </View>
-                                <TouchableOpacity
-                                    style={styles.cancelBtn}
-                                    onPress={() => cancelTimer(timer)}
-                                >
-                                    <Text style={styles.cancelBtnText}>Cancel</Text>
-                                </TouchableOpacity>
+                                <View style={styles.timerBtnRow}>
+                                    <TouchableOpacity
+                                        style={styles.doneBtn}
+                                        onPress={() => dismissTimer(timer.id)}
+                                    >
+                                        <Text style={styles.doneBtnText}>Done</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={styles.cancelBtn}
+                                        onPress={() => cancelTimer(timer)}
+                                    >
+                                        <Text style={styles.cancelBtnText}>Cancel</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         ))}
                     </>
@@ -479,6 +489,14 @@ const styles = StyleSheet.create({
     timerInfo: { gap: 4 },
     timerLabel: { fontSize: 18, fontWeight: '600', color: Colors.primary },
     timerCountdown: { fontSize: 28, fontWeight: '700', color: Colors.bridge },
+    timerBtnRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    doneBtn: {
+        backgroundColor: '#27ae60',
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+    },
+    doneBtnText: { color: Colors.white, fontWeight: '600' },
     cancelBtn: {
         backgroundColor: '#e74c3c',
         paddingVertical: 8,
