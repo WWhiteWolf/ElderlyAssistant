@@ -213,8 +213,8 @@ export default function RootLayout() {
       const source = data?.source as string | undefined;
       const itemId = data?.itemId as string | undefined;
 
-      // To-Do "Done": log the completion. A repeating task (weekly/monthly/
-      // yearly) fires again on its own, so leave its schedule and the task in
+      // To-Do "Done": log the completion. A repeating task (monthly/yearly)
+      // fires again on its own, so leave its schedule and the task in
       // place — just record it as handled this time. A one-time task is finished
       // for good: remove it and cancel all of its alerts. Mirrors completeTask.
       if (source === 'todo') {
@@ -228,12 +228,10 @@ export default function RootLayout() {
             // To-Do log records the task's ORIGINAL set date/time plus when
             // Done was TAPPED (Patrick, #27). The reminder's fire time is not
             // recorded here. scheduledFor = the due date/time, falling back to
-            // the recurring pattern (weekly day / monthly day / yearly month).
-            const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            // the recurring pattern (monthly day / yearly month).
             const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             let scheduledFor = '';
             if (task.dueDate) scheduledFor = task.dueDate;
-            else if (task.recurring === 'weekly') scheduledFor = DAYS[task.recurDay] ?? '';
             else if (task.recurring === 'monthly') scheduledFor = `Day ${task.recurDay}`;
             else if (task.recurring === 'yearly') scheduledFor = `${MONTHS[(task.recurMonth || 1) - 1]} ${task.recurDay}`;
             if (task.dueTime) scheduledFor += (scheduledFor ? ' at ' : '') + task.dueTime;

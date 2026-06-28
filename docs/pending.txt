@@ -1,5 +1,5 @@
 PENDING WORK — plain-language list
-Last updated: 2026-06-28 (session #31 — created docs/roadmap.md)
+Last updated: 2026-06-28 (session #32 — retired To-Do's Daily & Weekly)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -11,14 +11,14 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- Most recently finished and committed: the Security Tidy-up (the old
-  6-digit PIN is fully retired — security is now Face ID / passcode), then
-  a docs cleanup that split the old backlog into this list plus a separate
-  archive of finished work.
-- Just done (this session, not yet committed): a new big-picture project
-  roadmap, docs/roadmap.md — vision, what's built, the road ahead in phases,
-  a long-range Deployment & distribution section, guiding principles, and a
-  tools/stack appendix. No app code changed; nothing new added to this list.
+- Most recently finished: the big-picture project roadmap (docs/roadmap.md,
+  committed), and before that the Security Tidy-up (the old 6-digit PIN is
+  fully retired — security is now Face ID / passcode).
+- Just done (this session, code not yet committed): retired To-Do's old
+  Daily and Weekly options. Daily and Weekly are gone from the To-Do
+  recurring picker — you confirmed on the phone. My Day still owns daily and
+  My Week still owns weekly, so nothing was lost. Code is ready for you to
+  commit and build; no new items added to this list.
 - The one thing still unconfirmed: whether the Monthly and Yearly repeating
   To-Do reminders actually fire on the phone (see "NEEDS A PHONE TEST"
   below). Everything else in recent sessions has been tested on the phone.
@@ -43,18 +43,6 @@ STILL BROKEN OR UNFINISHED (small bugs)
   Minor — only matters if you log a chore well after its day.
 - Tapping a reminder takes you to the right screen but not to the exact
   item, and this has never actually been tried with a real tap.
-
-
-CODE CLEANUP — retire To-Do's old Daily & Weekly (added session #29)
---------------------------------------------------------------------
-- Daily reminders are now their own page (My Day) and weekly ones are now
-  their own page (My Week), so the leftover bits in To-Do should come out.
-- Remove the few leftover "Daily" traces in To-Do. Daily is mostly gone
-  already (you can't pick it), just a couple of dead references remain.
-- Remove the Weekly option from To-Do. Heads up: unlike Daily, Weekly is
-  still a working feature there (it's in the picker and sets real weekly
-  reminders), so pulling it out is a real change, not just cleanup — its
-  own session, and we'll decide what happens to any existing weekly To-Dos.
 
 
 DECISIONS TO MAKE WHEN YOU'RE READY

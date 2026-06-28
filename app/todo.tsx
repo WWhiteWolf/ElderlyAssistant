@@ -20,7 +20,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/Colors';
 
 type Priority = 'Urgent' | 'Normal' | 'Someday';
-type RecurType = 'none' | 'daily' | 'weekly' | 'monthly' | 'every3months' | 'every6months' | 'yearly';
+type RecurType = 'none' | 'monthly' | 'every3months' | 'every6months' | 'yearly';
 
 // Max day-of-month per month (1-based index via month-1). Feb allows 29 (leap).
 const DAYS_IN_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -50,7 +50,7 @@ interface Task {
     categoryId: string;
     priority: Priority;
     recurring: RecurType;
-    recurDay: number;      // 0-6 for weekly (0=Sunday), 1-31 for monthly
+    recurDay: number;      // 1-31 for monthly (day of month)
     recurMonth: number;    // 1-12 for yearly only
     taskType: 'scheduled' | 'background';
     dueDate: string;
@@ -170,14 +170,8 @@ export default function TodoScreen() {
         await AsyncStorage.setItem('todo_log', JSON.stringify(l));
     };
 
-    const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-    // Text shown under a task's title. A Weekly task shows its day + set time
-    // (no calendar date needed); any other task with a date shows the date.
+    // Text shown under a task's title. A task with a date shows the date + time.
     const scheduleLabel = (task: Task) => {
-        if (task.recurring === 'weekly') {
-            return `${DAY_NAMES[task.recurDay] ?? ''}${task.dueTime ? ' at ' + task.dueTime : ''}`;
-        }
         if (task.dueDate) {
             return `Due: ${task.dueDate}${task.dueTime ? ' at ' + task.dueTime : ''}`;
         }
@@ -285,11 +279,9 @@ export default function TodoScreen() {
                     cancelReminders(task.id);
                     const completedDate = new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' });
                     // Original set date/time, matching the banner Done in _layout.tsx (#27).
-                    const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
                     const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                     let scheduledFor = '';
                     if (task.dueDate) scheduledFor = task.dueDate;
-                    else if (task.recurring === 'weekly') scheduledFor = DAYS[task.recurDay] ?? '';
                     else if (task.recurring === 'monthly') scheduledFor = `Day ${task.recurDay}`;
                     else if (task.recurring === 'yearly') scheduledFor = `${MONTHS[(task.recurMonth || 1) - 1]} ${task.recurDay}`;
                     if (task.dueTime) scheduledFor += (scheduledFor ? ' at ' : '') + task.dueTime;
@@ -369,7 +361,7 @@ export default function TodoScreen() {
         filtered = filtered.filter(t => !t.completed);
 
         // Fixed sort: by due date + time, soonest on top. Tasks with no due
-        // date (including recurring weekly/monthly/yearly) fall to the bottom.
+        // date (including recurring monthly/yearly) fall to the bottom.
         const stamp = (t: Task) => {
             const [month, day, year] = t.dueDate.split('/');
             const fullYear = year.length === 2 ? `20${year}` : year;
@@ -394,36 +386,9 @@ export default function TodoScreen() {
         console.log('scheduleReminders called', task.taskType, task.recurring, task.dueDate, task.reminders.length);
         if (task.taskType === 'background') return;
 
-        // Weekly recurring task: one repeating weekly alert on the chosen day at
-        // the set time. No calendar date needed, and no "X before" offsets — just
-        // the time you set (e.g. trash night every Tuesday at 8 PM).
-        if (task.recurring === 'weekly') {
-            const [hStr, mStr] = (task.dueTime || '09:00').split(':');
-            let hour = parseInt(hStr, 10);
-            let minute = parseInt(mStr ?? '0', 10);
-            if (isNaN(hour)) hour = 9;
-            if (isNaN(minute)) minute = 0;
-            await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: `📋 Reminder: ${task.title}`,
-                    body: `${DAY_NAMES[task.recurDay] ?? ''}${task.dueTime ? ' at ' + task.dueTime : ''}`,
-                    data: { taskId: task.id, itemId: task.id, label: task.title, source: 'todo' },
-                    categoryIdentifier: 'todosnooze',
-                    sound: 'default',
-                },
-                trigger: {
-                    type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
-                    weekday: (task.recurDay ?? 0) + 1, // Expo: 1=Sun … 7=Sat; recurDay is 0=Sun
-                    hour,
-                    minute,
-                } as Notifications.WeeklyTriggerInput,
-            });
-            return;
-        }
-
         // Monthly recurring task: one repeating alert on the chosen day of the
         // month (1–28) at the set time — e.g. a bill due on the 1st. No date and
-        // no "before" offsets, same pattern as weekly.
+        // no "before" offsets.
         if (task.recurring === 'monthly') {
             const [hStr, mStr] = (task.dueTime || '09:00').split(':');
             let hour = parseInt(hStr, 10);
@@ -825,7 +790,7 @@ export default function TodoScreen() {
 
                                     <Text style={styles.inputLabel}>Recurring</Text>
                                     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
-                                        {(['none', 'weekly', 'monthly', 'every3months', 'every6months', 'yearly'] as RecurType[]).map(r => (
+                                        {(['none', 'monthly', 'every3months', 'every6months', 'yearly'] as RecurType[]).map(r => (
                                             <TouchableOpacity
                                                 key={r}
                                                 style={[styles.recurBtn, newRecurring === r && styles.recurBtnActive]}
@@ -837,23 +802,6 @@ export default function TodoScreen() {
                                             </TouchableOpacity>
                                         ))}
                                     </ScrollView>
-
-                                    {newRecurring === 'weekly' && (
-                                        <View style={{ marginBottom: 10 }}>
-                                            <Text style={styles.inputLabel}>Which day?</Text>
-                                            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                                                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
-                                                    <TouchableOpacity
-                                                        key={day}
-                                                        style={[styles.recurBtn, newRecurDay === index && styles.recurBtnActive]}
-                                                        onPress={() => setNewRecurDay(index)}
-                                                    >
-                                                        <Text style={[styles.recurBtnText, newRecurDay === index && styles.recurBtnTextActive]}>{day}</Text>
-                                                    </TouchableOpacity>
-                                                ))}
-                                            </ScrollView>
-                                        </View>
-                                    )}
 
                                     {newRecurring === 'monthly' && (
                                         <View style={{ marginBottom: 10 }}>
@@ -992,7 +940,6 @@ export default function TodoScreen() {
                             date.setDate(date.getDate() + dayOffset);
                             const dateStr = date.toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' });
                             const dayName = dayOffset === 0 ? 'Today' : dayOffset === 1 ? 'Tomorrow' : date.toLocaleDateString([], { weekday: 'long' });
-                            const dayOfWeek = date.getDay();
                             const dayOfMonth = date.getDate();
                             const monthOfYear = date.getMonth() + 1;
 
@@ -1000,8 +947,6 @@ export default function TodoScreen() {
                                 if (t.completed) return false;
                                 if (t.taskType === 'background') return false;
                                 if (t.recurring === 'none' && t.dueDate === dateStr) return true;
-                                if (t.recurring === 'daily') return true;
-                                if (t.recurring === 'weekly' && t.recurDay === dayOfWeek) return true;
                                 if (t.recurring === 'monthly' && t.recurDay === dayOfMonth) return true;
                                 if (t.recurring === 'yearly' && t.recurDay === dayOfMonth && t.recurMonth === monthOfYear) return true;
                                 return false;

@@ -7,8 +7,8 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-06-28 (session #30 — removed the doc archives; this file holds
-open work only).
+Last updated: 2026-06-28 (session #32 — retired To-Do's Daily & Weekly; removed that
+cleanup item).
 
 ---
 
@@ -18,11 +18,10 @@ This is the "someday" list: things worth doing eventually, not what we're workin
 right now. Nothing here is urgent.
 
 The still-open work falls into: a few **small bugs / unfinished bits** (the 3- and
-6-month repeats, a Monthly/Yearly firing test, a couple of minor logging quirks), some
-**code cleanup** (pulling the old Daily and Weekly bits out of To-Do now that My Day
-and My Week own them), a few **decisions to make** (Backup Merge, per-appointment
-reminder times), some **nice-to-have polish**, and a couple of **bigger items parked
-on purpose** (Siri voice, the louder timer alarm).
+6-month repeats, a Monthly/Yearly firing test, a couple of minor logging quirks), a few
+**decisions to make** (Backup Merge, per-appointment reminder times), some
+**nice-to-have polish**, and a couple of **bigger items parked on purpose** (Siri voice,
+the louder timer alarm).
 
 ---
 
@@ -45,27 +44,6 @@ on purpose** (Siri voice, the louder timer alarm).
   by `data.source` to the right screen but never lands on the specific item, and has
   never been confirmed with a real tap. To-Do reminders carry `taskId` (landing on the
   task is feasible); My Day / "Background" reminders carry no item id.
-
-## Code cleanup — retire To-Do's Daily & Weekly (new, session #29)
-
-Daily reminders are now **My Day** (its own page, the most-used part of the app) and
-weekly recurrences are now **My Week**. The matching machinery should come out of To-Do.
-These are code changes — their own session, one at a time; verify in the file before
-editing.
-
-- **Delete the leftover "Daily" references in To-Do** (`app/todo.tsx`). Daily is already
-  mostly gone — it's *not* in the recurring picker and `scheduleReminders` has no daily
-  branch — but two traces remain: `'daily'` is still in the `RecurType` union (line ~23),
-  and the "Week Ahead" preview still has a `t.recurring === 'daily'` filter line
-  (line ~1003). Small, safe cleanup.
-- **Remove the Weekly feature from To-Do** (`app/todo.tsx` + `app/_layout.tsx`). Unlike
-  Daily, Weekly is still **fully live** in To-Do: it's in the recurring picker, has its
-  own Sun–Sat day picker, tiles show day + time, and it schedules a real repeating weekly
-  notification (the `task.recurring === 'weekly'` branch, ~lines 400–419). Since My Week
-  now owns weekly chores, this working feature should be pulled out — a real functional
-  change, not just a stray reference. Decide what happens to any existing weekly To-Dos
-  before removing. Touches the picker UI, the day picker, the tile/`scheduledFor` display,
-  the weekly scheduling branch, and the Week-Ahead filter.
 
 ## Design decisions to make
 
