@@ -1,0 +1,74 @@
+PENDING WORK — plain-language list
+Last updated: 2026-06-28 (after session #27)
+
+This is the "what's still left" list in everyday words. It's pulled from
+parked-items.md and the hand-off notes so you can glance at it without
+reading the technical docs. Nothing here is urgent. Newest concerns first
+within each group.
+
+
+NEEDS A PHONE TEST (built and committed, just not confirmed on the phone yet)
+----------------------------------------------------------------------------
+- Monthly and Yearly repeating To-Do reminders. The code is in and should
+  fire on schedule (e.g. a monthly bill, a yearly furnace-filter reminder),
+  but you haven't watched one actually go off on the phone yet.
+
+
+STILL BROKEN OR UNFINISHED (small bugs)
+---------------------------------------
+- The "3 Months" and "6 Months" repeat options on a To-Do do nothing yet.
+  The phone has no built-in every-3-or-6-month alarm, and those two options
+  don't have a starting-date picker, so there's nothing to anchor them to.
+- My Week: if you mark a chore done from inside the app (not from the
+  notification), it records today's date instead of the chore's own day.
+  Minor — only matters if you log a chore well after its day.
+- Tapping a reminder takes you to the right screen but not to the exact
+  item, and this has never actually been tried with a real tap.
+
+
+SECURITY TIDY-UP (no data is at risk — just housekeeping)
+---------------------------------------------------------
+- "Reset All Data" still asks for the old PIN you no longer have. It should
+  use Face ID instead, like the Vault now does.
+- There's a dead "Change PIN" button and keypad left over that should be
+  removed.
+- Three old unused screens (the old PIN/login screens) are still in the app
+  doing nothing. Decide whether to delete them or leave them.
+
+
+DECISIONS TO MAKE WHEN YOU'RE READY
+-----------------------------------
+- Backup "Merge" option. Right now restoring a backup REPLACES everything on
+  the phone. You wanted the choice to MERGE a backup into what's already
+  there instead. That needs its own session because each kind of data
+  (tasks, logs, counters, settings) has to combine by its own rule, and
+  those are your calls.
+- Per-appointment reminder time. The morning/evening reminder times are set
+  once in Settings and apply to everything. A possible add-on: let a single
+  appointment use different times. Parked — not currently planned.
+
+
+NICE-TO-HAVE LATER (polish, low priority)
+-----------------------------------------
+- Project Planner has reminder fields on screen, but they aren't connected
+  to anything yet.
+- Finish the "Elyfont" renaming: the in-app home greeting still says
+  "Remember When"; the TestFlight / App Store listing is still named
+  "Remember When"; and the "Memory Assist" tagline still needs a home
+  (it can't go in the app's name).
+- Make the button labels match: To-Do says "New Task" while Vault says
+  "+ Add."
+
+
+PARKED ON PURPOSE (bigger items, on hold for now)
+-------------------------------------------------
+- Voice control through Siri. It gets you to the app and tapping works, but
+  Siri won't recognize spoken item names ("mark snack done"). After a lot of
+  effort this was set aside. Revisit if a future iPhone update fixes it.
+- The Timer "Loud alert" isn't actually louder — it's the normal alert tone.
+  A genuinely louder, distinct alarm needs a custom sound file built into the
+  app (a full rebuild), and breaking through Silent / Do-Not-Disturb needs a
+  special Apple permission meant for medical/safety apps. Heavy — deferred.
+- A running Timer's tile disappears if the app reloads or restarts (the list
+  of active timers is only held in memory). Accepted as-is: tapping "Done"
+  still stops the alerts whether or not the tile is showing.

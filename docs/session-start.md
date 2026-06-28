@@ -15,6 +15,7 @@
 - **No unnecessary urgency.** Patrick is retired and in no hurry. Go at his pace, discuss fully, and don't rush toward building or push to "finish." There's no clock on any of this.
 - **One change at a time.** Discuss before building; make one edit, stop, let Patrick review before the next.
 - **Patrick commits at the END of each session** (and sometimes mid-session to trigger a build — see "Build-and-test commit rhythm" below). At the next session's start the previous session's **code** should already be committed, but the **docs may still be pending a post-test commit — confirm, don't assume**.
+- **Keep `handoff.md` short — only the last 2 sessions.** At session end, when refreshing the docs, move any session entry older than the most recent two into `docs/handoff-archive.md` (newest archived entry first). Nothing is lost — the archive keeps full detail and git keeps everything — but the working hand-off stays easy to read.
 
 ---
 
@@ -26,12 +27,14 @@ Patrick names the session (shows in the left panel) and says **"read session-sta
 
 1. Read **`docs/handoff.md`** first — current state, the active next step, decisions, standing rules.
 2. Skim **`docs/parked-items.md`** — the eventual-work backlog (bugs / design / UI polish), so I know what's deferred and don't re-raise it as new.
-3. Confirm the previous session's work was committed (Patrick commits at session end).
-4. Wait for Patrick's **one goal**, tell him roughly how heavy it looks, and wait for his "go" before changing anything.
+3. Skim **`docs/pending.txt`** — Patrick's plain-language pending list, the menu he picks the session goal from. If he names an item from it (e.g. "Security Tidy-up"), pull that item into `handoff.md` as the active goal.
+4. Confirm the previous session's work was committed (Patrick commits at session end).
+5. Wait for Patrick's **one goal**, tell him roughly how heavy it looks, and wait for his "go" before changing anything.
 
 ## What I'll do at the end
 
 - Refresh **`docs/handoff.md`** so the next session stays on course, and move any new eventual-work into **`docs/parked-items.md`**.
+- Update **`docs/pending.txt`** — tick off anything finished this session, add anything new that came up, so its plain-language list stays in step with the handoff.
 - Patrick commits.
 
 ## Build-and-test commit rhythm (two commits, not one)
@@ -45,5 +48,7 @@ When a session's work needs a device test, Patrick splits it into **two commits 
 
 ## The tracking docs (different jobs)
 
-- **`handoff.md`** — keeps us on course session to session: current state, the active goal, decisions, what just changed.
+- **`handoff.md`** — keeps us on course session to session: current state, the active goal, decisions, what just changed. **Holds only the last 2 sessions** (older entries live in `handoff-archive.md`).
+- **`handoff-archive.md`** — the trimmed-out older session write-ups (#25 and earlier), newest first. Reference only; not read at session start.
 - **`parked-items.md`** — the backlog: things to do eventually, not the current goal. When a parked item becomes the live goal, it moves into the handoff; new spin-off work gets parked here.
+- **`pending.txt`** — Patrick's plain-language version of the backlog, the menu he picks the next session's goal from. Keep it in step with `parked-items.md`: tick off finished items and add new ones at session end.
