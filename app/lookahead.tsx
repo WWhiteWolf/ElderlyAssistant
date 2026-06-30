@@ -1,4 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
+import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -40,6 +42,12 @@ interface LookAheadItem {
     hour: number;
     minute: number;
     interval: Interval;
+    // Set when a reminder is delayed (banner button, or the on-tile button later).
+    // delayedUntil = epoch ms the delayed reminder will fire (used to auto-clear the
+    // line once it's passed); delayedLabel = "1 day" | "1 week" | "1 month" shown on
+    // the tile. Both clear when the item is marked done or the delay time passes.
+    delayedUntil?: number;
+    delayedLabel?: string;
 }
 
 interface HistoryEntry {
@@ -54,6 +62,26 @@ interface HistoryEntry {
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
+
+// How many months each repeat interval advances by.
+const INTERVAL_MONTHS: Record<Interval, number> = { monthly: 1, '3month': 3, '6month': 6, yearly: 12 };
+
+// Roll an item forward to its NEXT occurrence that lands in the future. Adds the
+// interval (in months) repeatedly so a long-overdue item still ends up future-dated.
+// Clamps to the original anchor day when a target month is shorter (e.g. day 31 → 30).
+const advanceItem = (item: LookAheadItem): LookAheadItem => {
+    const step = INTERVAL_MONTHS[item.interval];
+    let d = new Date(item.year, item.month, item.day, item.hour, item.minute, 0, 0);
+    const now = new Date();
+    do {
+        const tmi = d.getMonth() + step;
+        const y = d.getFullYear() + Math.floor(tmi / 12);
+        const m = ((tmi % 12) + 12) % 12;
+        d = new Date(y, m, Math.min(item.day, daysInMonth(y, m)), item.hour, item.minute, 0, 0);
+    } while (d <= now);
+    // Rolling forward = this occurrence is done, so any pending delay no longer applies.
+    return { ...item, year: d.getFullYear(), month: d.getMonth(), day: d.getDate(), delayedUntil: undefined, delayedLabel: undefined };
+};
 
 export default function LookAheadScreen() {
     const router = useRouter();
@@ -73,17 +101,48 @@ export default function LookAheadScreen() {
 
     const [editEntry, setEditEntry] = useState<HistoryEntry | null>(null);
     const [editWhat, setEditWhat] = useState('');
+    const [delayItemId, setDelayItemId] = useState<string | null>(null);
 
     useEffect(() => {
-        loadData();
+        const setup = async () => {
+            const { status } = await Notifications.requestPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Permission Needed', 'Please enable notifications in settings.');
+            }
+            Notifications.setNotificationHandler({
+                handleNotification: async () => ({
+                    shouldShowAlert: true,
+                    shouldPlaySound: true,
+                    shouldSetBadge: false,
+                    shouldShowBanner: true,
+                    shouldShowList: true,
+                }),
+            });
+            await loadData();
+        };
+        setup();
     }, []);
 
     const loadData = async () => {
         try {
             const savedItems = await AsyncStorage.getItem('lookahead_items');
-            if (savedItems) setItems(JSON.parse(savedItems));
+            const parsedItems: LookAheadItem[] = savedItems ? JSON.parse(savedItems) : [];
+            // Drop a delay stamp once its reminder time has passed, so the tile line
+            // doesn't linger after the delayed reminder has already fired.
+            const nowMs = Date.now();
+            const cleaned = parsedItems.map(it =>
+                it.delayedUntil != null && it.delayedUntil < nowMs
+                    ? { ...it, delayedUntil: undefined, delayedLabel: undefined }
+                    : it
+            );
+            setItems(cleaned);
             const savedHist = await AsyncStorage.getItem('lookahead_history');
             if (savedHist) setHistory(JSON.parse(savedHist));
+            if (JSON.stringify(cleaned) !== JSON.stringify(parsedItems)) {
+                await AsyncStorage.setItem('lookahead_items', JSON.stringify(cleaned));
+            }
+            // Self-heal: re-arm this page's reminders from the saved items every open.
+            await scheduleAll(cleaned);
         } catch (e) {
             console.error(e);
         }
@@ -92,6 +151,83 @@ export default function LookAheadScreen() {
     const saveData = async (i: LookAheadItem[], h: HistoryEntry[]) => {
         await AsyncStorage.setItem('lookahead_items', JSON.stringify(i));
         await AsyncStorage.setItem('lookahead_history', JSON.stringify(h));
+    };
+
+    // Cancel only THIS page's base reminders (source 'lookahead'), then schedule one
+    // dated reminder per item whose due date/time is still in the future. Leaves
+    // delayed reminders (source 'lookaheaddelay') and every other screen untouched.
+    const scheduleAll = async (its: LookAheadItem[]) => {
+        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+        for (const n of scheduled) {
+            if (n.content.data?.source === 'lookahead') {
+                await Notifications.cancelScheduledNotificationAsync(n.identifier);
+            }
+        }
+        const now = new Date();
+        for (const item of its) {
+            const due = new Date(item.year, item.month, item.day, item.hour, item.minute, 0, 0);
+            if (due > now) {
+                await Notifications.scheduleNotificationAsync({
+                    content: {
+                        title: '🔭 Look Ahead',
+                        body: `Time for ${item.label}!`,
+                        data: { source: 'lookahead', itemId: item.id, label: item.label },
+                        categoryIdentifier: 'lookaheadactions',
+                        sound: 'default',
+                    },
+                    trigger: {
+                        type: SchedulableTriggerInputTypes.DATE,
+                        date: due,
+                    } as Notifications.DateTriggerInput,
+                });
+            }
+        }
+    };
+
+    // Drop any pending delayed reminder for one item (used when it's logged, edited,
+    // or deleted, so a stale delay can't fire after the item has moved on).
+    const cancelDelays = async (itemId: string) => {
+        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+        for (const n of scheduled) {
+            if (n.content.data?.source === 'lookaheaddelay' && n.content.data?.itemId === itemId) {
+                await Notifications.cancelScheduledNotificationAsync(n.identifier);
+            }
+        }
+    };
+
+    // On-tile Delay: schedule a one-off reminder for this item a day / week / month
+    // from now (tagged 'lookaheaddelay' so reschedule-on-load leaves it alone), replace
+    // any prior delay, and stamp the item so the "▶ Delayed <amount>" line shows. Same
+    // mechanism the notification banner's Delay buttons use.
+    const delayItem = async (unit: '1 day' | '1 week' | '1 month') => {
+        if (!delayItemId) return;
+        const item = items.find(it => it.id === delayItemId);
+        if (!item) { setDelayItemId(null); return; }
+        const target = new Date();
+        if (unit === '1 day') target.setDate(target.getDate() + 1);
+        else if (unit === '1 week') target.setDate(target.getDate() + 7);
+        else target.setMonth(target.getMonth() + 1);
+        await cancelDelays(item.id);
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: '🔭 Look Ahead',
+                body: `Time for ${item.label}!`,
+                data: { source: 'lookaheaddelay', itemId: item.id, label: item.label },
+                categoryIdentifier: 'lookaheadactions',
+                sound: 'default',
+            },
+            trigger: {
+                type: SchedulableTriggerInputTypes.DATE,
+                date: target,
+            } as Notifications.DateTriggerInput,
+        });
+        const updated = items.map(it =>
+            it.id === item.id ? { ...it, delayedUntil: target.getTime(), delayedLabel: unit } : it
+        );
+        setItems(updated);
+        saveData(updated, history);
+        setDelayItemId(null);
+        Alert.alert('Delayed', `${item.label} reminder set for ${unit} from now.`);
     };
 
     const format12Hour = (h: number, m: number) => {
@@ -148,14 +284,18 @@ export default function LookAheadScreen() {
             interval: pendingInterval,
         };
         if (activeId) {
-            const updated = items.map(it => (it.id === activeId ? { ...it, ...fields } : it));
+            const editedId = activeId;
+            const updated = items.map(it => (it.id === editedId ? { ...it, ...fields, delayedUntil: undefined, delayedLabel: undefined } : it));
             setItems(updated);
             saveData(updated, history);
+            // The date may have changed; drop any stale delay and re-arm from the new date.
+            cancelDelays(editedId).then(() => scheduleAll(updated));
         } else {
             const newItem: LookAheadItem = { id: Date.now().toString(), ...fields };
             const updated = [...items, newItem];
             setItems(updated);
             saveData(updated, history);
+            scheduleAll(updated);
         }
         closeEdit();
     };
@@ -168,6 +308,8 @@ export default function LookAheadScreen() {
                     const updated = items.filter(it => it.id !== id);
                     setItems(updated);
                     saveData(updated, history);
+                    // Remove this item's reminders so a deleted item can't still fire.
+                    cancelDelays(id).then(() => scheduleAll(updated));
                 },
             },
         ]);
@@ -216,8 +358,14 @@ export default function LookAheadScreen() {
             note: '',
         };
         const updatedHist = [newEntry, ...history].slice(0, 50);
+        // Mark-done = log it AND roll this item forward to its next future date, then
+        // re-arm. Nothing else on the list moves; the item is never removed.
+        const advanced = advanceItem(item);
+        const updatedItems = items.map(it => (it.id === item.id ? advanced : it));
         setHistory(updatedHist);
-        saveData(items, updatedHist);
+        setItems(updatedItems);
+        saveData(updatedItems, updatedHist);
+        cancelDelays(item.id).then(() => scheduleAll(updatedItems));
         setShowLogModal(false);
         setPendingLogId(null);
     };
@@ -340,9 +488,15 @@ export default function LookAheadScreen() {
                                             <TouchableOpacity style={styles.labelArea} onPress={() => toggleSelect(item.id)}>
                                                 <Text style={styles.itemLabel}>{item.label}</Text>
                                                 <Text style={styles.itemSub}>{formatDate(item)} · {format12Hour(item.hour, item.minute)}</Text>
+                                                {item.delayedUntil != null && (
+                                                    <Text style={styles.delayedLabel}>▶ Delayed {item.delayedLabel}</Text>
+                                                )}
                                             </TouchableOpacity>
                                             <TouchableOpacity style={styles.editBtn} onPress={() => openEdit(item)}>
                                                 <Text style={styles.editBtnText}>Edit</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity style={styles.delayRowBtn} onPress={() => setDelayItemId(item.id)}>
+                                                <Text style={styles.delayRowBtnText}>Delay</Text>
                                             </TouchableOpacity>
                                             <TouchableOpacity style={styles.logBtn} onPress={() => openLogModal(item.id)}>
                                                 <Text style={styles.logBtnText}>Log</Text>
@@ -421,6 +575,35 @@ export default function LookAheadScreen() {
                         </TouchableOpacity>
                     </View>
                 </View>
+            )}
+
+            {delayItemId && (
+                <Modal transparent={true} animationType="fade" visible={!!delayItemId}>
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.pickerModal}>
+                            <Text style={styles.modalTitle}>Delay Reminder</Text>
+                            <Text style={styles.inputLabel}>
+                                {items.find(it => it.id === delayItemId)?.label} — remind me again in:
+                            </Text>
+                            <View style={styles.delayOptionRow}>
+                                <TouchableOpacity style={styles.delayOption} onPress={() => delayItem('1 day')}>
+                                    <Text style={styles.delayOptionText}>1 Day</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.delayOption} onPress={() => delayItem('1 week')}>
+                                    <Text style={styles.delayOptionText}>1 Week</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.delayOption} onPress={() => delayItem('1 month')}>
+                                    <Text style={styles.delayOptionText}>1 Month</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={styles.modalBtns}>
+                                <TouchableOpacity style={styles.cancelBtn} onPress={() => setDelayItemId(null)}>
+                                    <Text style={styles.cancelBtnText}>Cancel</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
             )}
 
             {selectedItemId && (
@@ -610,6 +793,7 @@ const styles = StyleSheet.create({
     labelArea: { flex: 1, marginRight: 10 },
     itemLabel: { fontSize: 17, color: Colors.primary, fontWeight: '500' },
     itemSub: { fontSize: 13, color: '#888', marginTop: 2 },
+    delayedLabel: { fontSize: 13, color: '#FF9500', fontWeight: '600', marginTop: 2 },
     editBtn: {
         backgroundColor: Colors.background,
         borderWidth: 0.5,
@@ -620,6 +804,28 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
     editBtnText: { color: Colors.bridge, fontSize: 13, fontWeight: '600' },
+    delayRowBtn: {
+        backgroundColor: '#FF9500',
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        borderRadius: 8,
+        marginRight: 8,
+    },
+    delayRowBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
+    delayOptionRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 12,
+    },
+    delayOption: {
+        flex: 1,
+        backgroundColor: '#FF9500',
+        paddingVertical: 14,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginHorizontal: 4,
+    },
+    delayOptionText: { color: Colors.white, fontWeight: '600', fontSize: 16 },
     logBtn: {
         backgroundColor: Colors.primary,
         paddingVertical: 8,

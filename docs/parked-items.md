@@ -7,8 +7,9 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-06-30 (session #36 — Step 2 done: built the Look Ahead page,
-Simulator-validated; reminders/re-arm are Step 3, next).
+Last updated: 2026-06-30 (session #37 — Step 3 done: Look Ahead reminders + re-arm,
+plus a "▶ Delayed …" tile line and an on-tile Delay button; Simulator-validated.
+Next: PHONE CHECKPOINT A and/or Step 4 popup consolidation).
 
 ---
 
@@ -27,14 +28,21 @@ pages. Take ONE piece per session. **Order: pages first, then the popup consolid
   Monthly / 3 Months / 6 Months / Yearly; add/edit form (name + first-due date + time +
   repeat interval); own history log; reorder within group; swipe-delete. `tsc` clean.
   **No notification code yet** — that's Step 3 below.
-- **Look Ahead reminders + re-arm.** ← **NEXT (Step 3).** Wire notifications for Look Ahead
-  items: Monthly & Yearly use iOS native repeats; 3/6-month have no native trigger → app
-  re-arms a DATE one-shot each cycle from the item's due date. Make Log/Done advance the
-  item to the next cycle. Add the **Delay = Day / Week / Month** control (long-lead items,
-  not the 15/30/60 min used by daily/weekly). Test firing with near-future / shortened
-  intervals in the Simulator → then **PHONE CHECKPOINT A** (To-Do one-shots + Look Ahead
-  reminders fire + route on the real device).
-- **Popup reminder consolidation (popups only this round; Timer excluded).** One shared
+- **✅ DONE (#37, Simulator-validated) — Look Ahead reminders + re-arm**
+  (`app/lookahead.tsx`, `app/_layout.tsx`). Patrick chose ONE uniform mechanism for all
+  four intervals (not the spec's native-repeat / re-arm split): every item is a single
+  dated reminder the app re-arms; the page self-heals on load; items advance only when
+  marked done. Log/Done rolls the item to its next future date and logs it. Added the
+  **Delay = Day / Week / Month** control on the notification banner AND as an on-tile
+  button (orange, Pets-Snooze style), plus an orange **"▶ Delayed …"** line on the tile
+  that clears on done / edit / once the delay time passes. `tsc` clean. Real-device check
+  is **PHONE CHECKPOINT A**, still pending.
+- **PHONE CHECKPOINT A (1 cloud build) — still owed.** ← the device gate Steps 1–3 have
+  deferred. On the real phone confirm: To-Do one-shots + Look Ahead reminders fire, route
+  on tap, and the Look Ahead Done / Delay buttons behave. Batch it whenever Patrick wants
+  a build (can ride along with other work).
+- **Popup reminder consolidation (popups only this round; Timer excluded).** ← **NEXT
+  (Step 4).** One shared
   approach across To-Do / My Day / My Week / Pets: same buttons everywhere — OK (silence
   this popup), Skip (this occurrence only), Delay, Done (log original + done time;
   past-day banner doesn't check off today's). Fixes the silent-snooze, the To-Do
@@ -51,11 +59,12 @@ pages. Take ONE piece per session. **Order: pages first, then the popup consolid
 This is the "someday" list: things worth doing eventually, not what we're working on
 right now. Nothing here is urgent.
 
-The still-open work falls into: a few **small bugs / unfinished bits** (the 3- and
-6-month repeats, a Monthly/Yearly firing test, a couple of minor logging quirks), a few
+The still-open work falls into: a few **small bugs / unfinished bits** (a couple of
+minor logging quirks, the To-Do Custom-Category cancel, tap-to-exact-item), a few
 **decisions to make** (Backup Merge, per-appointment reminder times), some
 **nice-to-have polish**, and a couple of **bigger items parked on purpose** (Siri voice,
-the louder timer alarm).
+the louder timer alarm). (The old 3/6-month + Monthly/Yearly To-Do repeat items are done
+— recurrence moved to the Look Ahead page, finished in #37.)
 
 ---
 

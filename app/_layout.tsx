@@ -115,6 +115,14 @@ export default function RootLayout() {
         { identifier: 'done', buttonTitle: 'Done' },
         { identifier: 'postpone1', buttonTitle: '+1 Day' },
       ]);
+      // Look Ahead (long-lead) reminders: mark Done, or delay this one reminder by a
+      // day / week / month. Delay only pushes this alert out — no log, no date change.
+      await Notifications.setNotificationCategoryAsync('lookaheadactions', [
+        { identifier: 'done', buttonTitle: 'Done' },
+        { identifier: 'delayday', buttonTitle: 'Delay 1 Day' },
+        { identifier: 'delayweek', buttonTitle: 'Delay 1 Week' },
+        { identifier: 'delaymonth', buttonTitle: 'Delay 1 Month' },
+      ]);
     })();
   }, []);
 
@@ -159,6 +167,54 @@ export default function RootLayout() {
           seconds: minutes * 60,
         } as Notifications.TimeIntervalTriggerInput,
       });
+      return;
+    }
+
+    // Look Ahead "Delay" buttons: push just THIS reminder out by a day / week /
+    // month from now. No log, no change to the item's real due date — tagged
+    // 'lookaheaddelay' so the page's reschedule-on-load (which only clears the base
+    // 'lookahead' source) leaves it alone.
+    if (action === 'delayday' || action === 'delayweek' || action === 'delaymonth') {
+      const label = (data?.label as string) || 'your reminder';
+      const itemId = data?.itemId as string | undefined;
+      const target = new Date();
+      let delayedLabel = '1 day';
+      if (action === 'delayday') { target.setDate(target.getDate() + 1); delayedLabel = '1 day'; }
+      else if (action === 'delayweek') { target.setDate(target.getDate() + 7); delayedLabel = '1 week'; }
+      else { target.setMonth(target.getMonth() + 1); delayedLabel = '1 month'; }
+      (async () => {
+        // One pending delay per item: drop any prior delayed reminder first.
+        if (itemId) {
+          const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+          for (const n of scheduled) {
+            if (n.content.data?.source === 'lookaheaddelay' && n.content.data?.itemId === itemId) {
+              await Notifications.cancelScheduledNotificationAsync(n.identifier);
+            }
+          }
+        }
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: '🔭 Look Ahead',
+            body: `Time for ${label}!`,
+            data: { source: 'lookaheaddelay', itemId, label },
+            categoryIdentifier: 'lookaheadactions',
+            sound: 'default',
+          },
+          trigger: {
+            type: SchedulableTriggerInputTypes.DATE,
+            date: target,
+          } as Notifications.DateTriggerInput,
+        });
+        // Stamp the item so the page shows "▶ Delayed <amount>" under its name.
+        if (itemId) {
+          const raw = await AsyncStorage.getItem('lookahead_items');
+          const its = raw ? (JSON.parse(raw) as any[]) : [];
+          const updated = its.map((i) =>
+            i.id === itemId ? { ...i, delayedUntil: target.getTime(), delayedLabel } : i
+          );
+          await AsyncStorage.setItem('lookahead_items', JSON.stringify(updated));
+        }
+      })();
       return;
     }
 
@@ -286,6 +342,69 @@ export default function RootLayout() {
         return;
       }
 
+      // Look Ahead "Done": log the completion (dated from when the reminder fired),
+      // roll the item forward to its next future date, cancel this item's base +
+      // delayed reminders, and arm the next one. The item stays on the list.
+      if (source === 'lookahead' || source === 'lookaheaddelay') {
+        (async () => {
+          const raw = await AsyncStorage.getItem('lookahead_items');
+          const its = raw ? (JSON.parse(raw) as any[]) : [];
+          const item = its.find((i) => i.id === itemId);
+          if (!item) return;
+          // Durable, fire-time-dated history entry (same shape/cap as the on-screen Log).
+          const fired = new Date(response.notification.date * 1000);
+          const histRaw = await AsyncStorage.getItem('lookahead_history');
+          const hist = histRaw ? (JSON.parse(histRaw) as any[]) : [];
+          const newEntry = {
+            id: Date.now().toString(),
+            date: fired.toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
+            sched: item.label,
+            actual: fired.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false }),
+            what: '',
+            note: '',
+          };
+          await AsyncStorage.setItem('lookahead_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
+          // Advance to the next occurrence that lands in the future (mirrors the
+          // page's advanceItem): add the interval's months, clamping to the anchor day.
+          const months = item.interval === 'monthly' ? 1 : item.interval === '3month' ? 3 : item.interval === '6month' ? 6 : 12;
+          const dim = (y: number, m: number) => new Date(y, m + 1, 0).getDate();
+          let d = new Date(item.year, item.month, item.day, item.hour, item.minute, 0, 0);
+          const now = new Date();
+          do {
+            const tmi = d.getMonth() + months;
+            const y = d.getFullYear() + Math.floor(tmi / 12);
+            const m = ((tmi % 12) + 12) % 12;
+            d = new Date(y, m, Math.min(item.day, dim(y, m)), item.hour, item.minute, 0, 0);
+          } while (d <= now);
+          const advanced = { ...item, year: d.getFullYear(), month: d.getMonth(), day: d.getDate(), delayedUntil: undefined, delayedLabel: undefined };
+          await AsyncStorage.setItem('lookahead_items', JSON.stringify(its.map((i) => (i.id === itemId ? advanced : i))));
+          // Clear this item's base + delayed reminders, then arm the next one.
+          const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+          for (const n of scheduled) {
+            if ((n.content.data?.source === 'lookahead' || n.content.data?.source === 'lookaheaddelay') && n.content.data?.itemId === itemId) {
+              await Notifications.cancelScheduledNotificationAsync(n.identifier);
+            }
+          }
+          const due = new Date(advanced.year, advanced.month, advanced.day, advanced.hour, advanced.minute, 0, 0);
+          if (due > new Date()) {
+            await Notifications.scheduleNotificationAsync({
+              content: {
+                title: '🔭 Look Ahead',
+                body: `Time for ${advanced.label}!`,
+                data: { source: 'lookahead', itemId, label: advanced.label },
+                categoryIdentifier: 'lookaheadactions',
+                sound: 'default',
+              },
+              trigger: {
+                type: SchedulableTriggerInputTypes.DATE,
+                date: due,
+              } as Notifications.DateTriggerInput,
+            });
+          }
+        })();
+        return;
+      }
+
       const isPets = source === 'pets' || source === 'petssnooze';
       const storageKey = isPets ? 'pets_feeds' : 'my_routine';
       const historyKey = isPets ? 'pets_history' : 'my_history';
@@ -339,6 +458,8 @@ export default function RootLayout() {
       router.push('/myweek');
     } else if (source === 'pets' || source === 'petssnooze') {
       router.push('/mollie');
+    } else if (source === 'lookahead' || source === 'lookaheaddelay') {
+      router.push('/lookahead');
     }
   }, [response]);
 

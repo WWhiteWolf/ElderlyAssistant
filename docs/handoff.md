@@ -1,35 +1,38 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #36 (2026-06-30) "Rebuild Step 2": BUILT THE "LOOK AHEAD" PAGE. New `app/lookahead.tsx` + home tile/route + `_layout.tsx` Stack.Screen; `tsc` clean; Simulator-validated. NO notification code (reminders + re-arm are STEP 3). Code UNCOMMITTED → Patrick commits.
+## THIS SESSION — #37 (2026-06-30) "Rebuild Step 3": WIRED LOOK AHEAD REMINDERS + RE-ARM, plus a delay tile-line and an on-tile Delay button. Code in `app/lookahead.tsx` + `app/_layout.tsx`; `tsc` clean; Simulator-validated. Code UNCOMMITTED → Patrick commits.
 
-**Start-of-session fact:** working tree clean — all of #35 committed (`c05da9a Rebuild Step 1 Done.`). Confirmed at session start.
+**Start-of-session fact:** working tree clean — all of #36 committed (`434845c Rebuild Step 2 #36 Done`). Confirmed at session start.
 
-**Goal = STEP 2 of the Reminder Rebuild #34 BUILD PLAN** (`docs/reminder-audit.md`): build the new **Look Ahead** home-screen page — page + home tile + route + add/edit form + Monthly / 3 Months / 6 Months / Yearly subheadings + its own history. Simulator-first. Reminders are explicitly NOT part of this step.
+**Goal = STEP 3 of the Reminder Rebuild #34 BUILD PLAN** (`docs/reminder-audit.md`): give the Look Ahead page its reminders — schedule notifications, make Done roll each item to its next date, and add a long-lead Delay (Day / Week / Month). Simulator-first; the real-device gate is **PHONE CHECKPOINT A** (still pending).
 
-**What was done (code, three files):**
-1. **`app/lookahead.tsx`** (new) — built in the Pets (`mollie.tsx`) style: header (← Home / "Look Ahead 🔭" / + Add Entry), items grouped under four subheadings shortest-first (**Monthly → 3 Months → 6 Months → Yearly**), each row = label + first-due date + time, with Edit / Log / swipe-to-delete / tap-to-select reorder (reorder swaps only within the item's own interval group). Add/Edit modal = Name + a **Date** stepper (Month/Day/Year, same ▲/▼ style as the time picker) + the **Time** stepper + a **Repeat Every** selector (Monthly / 3 Months / 6 Months / Yearly). Own **Look Ahead Log** history section + Clear All + per-entry swipe-delete + note-edit. Item model: `{id,label,year,month,day,hour,minute,interval}`. Storage keys `lookahead_items` + `lookahead_history`. **No `expo-notifications` import at all.**
-2. **`app/home.tsx`** — added a `{ id: 'lookahead', label: 'Look Ahead', icon: '🔭' }` tile (after Pets) + its `router.push('/lookahead')` route.
-3. **`app/_layout.tsx`** — added `<Stack.Screen name="lookahead" ... />`.
+**Key decision (Patrick, this session):** use ONE uniform mechanism for all four intervals — NOT the spec's split (native repeats for Monthly/Yearly, re-arm for 3/6-month). Every item is a single dated reminder that the app re-arms; the page self-heals on load. **Items only advance when marked done — never auto-roll on load.**
 
-**Decision held to:** in Step 2 the **Log** button only writes to history (date/time/label/note). **Advancing the due date to the next cycle (re-arm) is STEP 3** — Log does not move the date yet.
+**What was done (code, two files):**
+1. **`app/lookahead.tsx`** — on open: request permission + set the handler (mirrors Pets) + `scheduleAll` (cancel this page's own `source:'lookahead'` reminders, then schedule one `DATE` reminder per item whose due date/time is still future). Reschedules on add / edit / delete so the page stays self-healing. The on-screen **Log** button now also rolls the item forward (`advanceItem` adds the interval's months, repeating until the date is in the future, clamping to the anchor day) and re-arms — in Step 2 Log only wrote history. New `lookaheadactions` category buttons handled.
+2. **`app/_layout.tsx`** — registered the **`lookaheadactions`** category (Done, Delay 1 Day / 1 Week / 1 Month). **Done** (source `lookahead`/`lookaheaddelay`): logs the completion fire-time-dated, advances the item to its next future date, cancels that item's base + delayed reminders, arms the next one. **Delay** buttons: push just that one reminder out a day/week/month from now (tagged `lookaheaddelay` so reschedule-on-load leaves it alone), replacing any prior delay. Plain tap routes to `/lookahead`.
+3. **Delay add-ons (Patrick asked mid-session):** item gained `delayedUntil` + `delayedLabel`. Both the banner Delay (handled in `_layout.tsx`) and a new **on-tile Delay button** (orange, between Edit and Log, with a Day/Week/Month picker mirroring Pets' Snooze) stamp them, and the tile shows an orange **"▶ Delayed 1 day/1 week/1 month"** line. The stamp clears when the item is marked done, when it's edited, or once the delayed time has passed (swept on load).
 
-**Verification:** `tsc --noEmit` clean (0 errors). Simulator: Patrick added items across all four intervals (Phone Bill / Test 3 M → Monthly, Scripts Refilled → 3 Months, Heart Checkup → 6 Months, Furnace Filter → Yearly) and confirmed grouping, the add/edit modal, date/time steppers, and Repeat Every all render and work. Not exercised on a real device (no reminders in this step; first device gate is still **PHONE CHECKPOINT A** after Step 3).
+**Verification:** `tsc --noEmit` clean (0 errors). Simulator (Patrick): a Look Ahead reminder fired showing Done + the three Delay buttons; **Done** logged it and rolled Phone Bill Jun 30 → **Jul 30** (stayed on the list, logged from fire time); **Delay 1 Day** from the banner dismissed without logging; the **"▶ Delayed …"** line appears from both the banner and the on-tile button; the three row buttons (Edit / Delay / Log) fit even on the wrapped "Furnace Filter Replacement". Not yet on a real device — first device gate is **PHONE CHECKPOINT A**.
 
-**Files touched (#36):** `app/lookahead.tsx` (new), `app/home.tsx`, `app/_layout.tsx` (code); `docs/handoff.md` + `docs/parked-items.md` + `docs/pending.txt` (end-of-session refresh). Code + docs UNCOMMITTED → Patrick commits.
+**Files touched (#37):** `app/lookahead.tsx`, `app/_layout.tsx` (code); `docs/handoff.md` + `docs/parked-items.md` + `docs/pending.txt` (end-of-session refresh). Code + docs UNCOMMITTED → Patrick commits.
 
-**➤ NEXT SESSION = "#37 Rebuild Step 3"** — STEP 3 of the BUILD PLAN: **Look Ahead reminders + re-arm.** Wire notifications for Look Ahead items (Monthly & Yearly can use iOS native repeats; 3/6-month have no native trigger → app re-arms a DATE one-shot each cycle from the item's due date), make Log/Done advance to the next cycle, and add the Delay = Day / Week / Month control. Test firing with near-future / shortened intervals in the Simulator. Then **PHONE CHECKPOINT A** (1 cloud build): To-Do one-shots + Look Ahead reminders fire and route on the real device.
+**➤ NEXT SESSION** — two things outstanding from the BUILD PLAN, Patrick's pick:
+- **PHONE CHECKPOINT A** (1 cloud build): confirm on the real device that To-Do one-shots + Look Ahead reminders fire, route on tap, and the Done/Delay buttons behave. This is the device gate that Steps 1–3 have been deferring.
+- **STEP 4 "Unified popups"** [Simulator]: one shared helper + the same OK / Skip / Delay / Done behavior across To-Do, My Day, My Week, Pets (popups only; Timer excluded) → then **PHONE CHECKPOINT B**.
 
 ---
 
-## SESSION — #35 (2026-06-30) "Rebuild Step 1": STRIPPED RECURRENCE FROM TO-DO → one-time only. Code changed in `app/todo.tsx` + `app/_layout.tsx`; `tsc` clean; Simulator-validated. Committed (`c05da9a Rebuild Step 1 Done.`).
+## SESSION — #36 (2026-06-30) "Rebuild Step 2": BUILT THE "LOOK AHEAD" PAGE. New `app/lookahead.tsx` + home tile/route + `_layout.tsx` Stack.Screen; `tsc` clean; Simulator-validated. NO notification code (reminders + re-arm were STEP 3, now done in #37). Committed (`434845c Rebuild Step 2 #36 Done`).
 
-**Goal = STEP 1 of the Reminder Rebuild #34 BUILD PLAN** (`docs/reminder-audit.md`): make To-Do one-time only by removing all recurrence. No data to migrate (Patrick re-confirmed: no existing Monthly/Yearly tasks).
+**Goal = STEP 2 of the Reminder Rebuild #34 BUILD PLAN:** build the new **Look Ahead** home-screen page — page + home tile + route + add/edit form + Monthly / 3 Months / 6 Months / Yearly subheadings + its own history. Simulator-first. Reminders explicitly NOT part of this step.
 
-**What was done (code, two files):**
-1. **`app/todo.tsx`** — removed the `RecurType` type, the `DAYS_IN_MONTH` constant, the `recurring`/`recurDay`/`recurMonth` Task fields + their form state + resets, the **Recurring picker UI** and its Monthly day-picker / Yearly month+day pickers, the **Monthly & Yearly blocks** in `scheduleReminders` (only the one-time DATE path remains), the **🔁 tile badge** (+ its now-dead `recurringText` style), and the recurrence matching in the **Week-Ahead** view. `completeTask` now always logs then removes the task (the recurring "keep + re-arm" branch is gone).
-2. **`app/_layout.tsx`** — the To-Do **"Done"** notification handler dropped the monthly/yearly `scheduledFor` fallback and the "only delete if not recurring" guard; a To-Do Done now always logs + removes the task + cancels its alerts.
+**What was done (code, three files):**
+1. **`app/lookahead.tsx`** (new) — built in the Pets (`mollie.tsx`) style: header, items grouped under four subheadings shortest-first (Monthly → 3 Months → 6 Months → Yearly), each row = label + first-due date + time, with Edit / Log / swipe-to-delete / tap-to-select reorder (reorder swaps only within the item's own interval group). Add/Edit modal = Name + a Date stepper + Time stepper + Repeat-Every selector. Own Look Ahead Log + Clear All + per-entry swipe-delete + note-edit. Item model `{id,label,year,month,day,hour,minute,interval}`; storage keys `lookahead_items` + `lookahead_history`.
+2. **`app/home.tsx`** — added a `{ id: 'lookahead', label: 'Look Ahead', icon: '🔭' }` tile + its route.
+3. **`app/_layout.tsx`** — added `<Stack.Screen name="lookahead" ... />`.
 
-**Verification:** `tsc --noEmit` clean. Simulator: Patrick confirmed the New Task form shows **no Recurring row** and tiles show no 🔁 badge. Real-device check folded into **PHONE CHECKPOINT A**.
+**Verification:** `tsc` clean. Simulator: Patrick added items across all four intervals and confirmed grouping, the add/edit modal, date/time steppers, and Repeat Every. (Reminders were added in #37.)
 
 ---
 

@@ -1,5 +1,6 @@
 PENDING WORK — plain-language list
-Last updated: 2026-06-30 (session #36 — Step 2 done: the new Look Ahead page is built)
+Last updated: 2026-06-30 (session #37 — Step 3 done: the Look Ahead page now sends
+reminders, rolls items forward when you mark them done, and has Delay (Day/Week/Month))
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -11,25 +12,26 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- This session (#36) finished Step 2 of the reminder rebuild: the new "Look
-  Ahead" page is built. It sits on the home screen (telescope icon 🔭) and works
-  like My Day / Pets — you add items grouped under Monthly / 3 Months / 6 Months
-  / Yearly, each with its own first-due date, time, and repeat choice, plus its
-  own log. Checked in the Simulator (added items across all four groups). NOTE:
-  it doesn't send reminders yet — that's Step 3 on purpose. The code
-  (lookahead.tsx + home.tsx + _layout.tsx) and these docs are ready for you to
-  commit.
-- Step 1 (session #35) took all the repeating options OUT of To-Do, so To-Do is
-  now just one-time tasks (committed).
-- Session #34 was PLANNING: we mapped out why reminders behave inconsistently and
-  wrote the full plan in docs/reminder-audit.md (committed).
+- This session (#37) finished Step 3: the "Look Ahead" page now actually sends
+  reminders. Each item nags on its date; when you mark it done (the Log button or
+  the Done button on the pop-up), it logs it and rolls the item forward to its
+  next date. You can also Delay a reminder by 1 Day / 1 Week / 1 Month — either
+  from the pop-up or from a new orange "Delay" button on the item itself — and the
+  tile shows an orange "▶ Delayed 1 day" line until it's done or the delay passes.
+  All checked in the Simulator. The code (lookahead.tsx + _layout.tsx) and these
+  docs are ready for you to commit.
+- Step 2 (session #36) built the Look Ahead page itself; Step 1 (#35) took the
+  repeating options OUT of To-Do (both committed).
+- Session #34 was PLANNING: the full plan is in docs/reminder-audit.md (committed).
 - The plan, in a nutshell: (1) ✅ DONE — take repeating options OUT of To-Do;
-  (2) ✅ DONE — build the new "Look Ahead" home-screen page; (3) NEXT — make
-  Look Ahead actually send reminders and roll each item forward to its next date;
-  (4) then make every reminder popup behave the same everywhere (same OK / Skip /
-  Delay / Done buttons); and separately (5) fold in your "Watch List" movie/TV app
-  as another page. ONE per session.
-- What's next: Step 3 — give the Look Ahead page its reminders. Nothing here is urgent.
+  (2) ✅ DONE — build the "Look Ahead" page; (3) ✅ DONE — Look Ahead reminders +
+  roll-forward + Delay; (4) NEXT — make every reminder pop-up behave the same
+  everywhere (same OK / Skip / Delay / Done buttons); and separately (5) fold in
+  your "Watch List" movie/TV app as another page. ONE per session.
+- What's next, your pick: a PHONE CHECK (one cloud build) to confirm To-Do and
+  Look Ahead reminders fire and behave on the real phone — this is the device test
+  the last three steps have been saving up — and/or starting Step 4 (the shared
+  pop-up buttons) in the Simulator. Nothing here is urgent.
 
 
 BIG PLANNED WORK (the #34 plan — ONE effort, pages first, Simulator-first)
@@ -43,12 +45,14 @@ ordered build checklist live in docs/reminder-audit.md. The four pieces:
   months) so To-Do is just one-time tasks. Done, Simulator-checked.
 - [DONE #36] Build the new "Look Ahead" page (home screen, like My Day): items
   grouped Monthly / 3 Months / 6 Months / Yearly, each with first-due date, time,
-  repeat choice, and its own log. Done, Simulator-checked. Reminders come next.
-- [NEXT] Give Look Ahead its reminders: each item nags on schedule and rolls
+  repeat choice, and its own log. Done, Simulator-checked.
+- [DONE #37] Give Look Ahead its reminders: each item nags on schedule and rolls
   forward to its next date when you mark it done; Delay choices of Day / Week /
-  Month. Then a phone check (Checkpoint A) for To-Do + Look Ahead reminders.
-- Make every reminder popup behave the same across To-Do, My Day, My Week and
-  Pets: same buttons everywhere — OK (silence just this popup), Skip (skip this
+  Month (on the pop-up and as an on-tile button), with a "▶ Delayed …" line.
+  Done, Simulator-checked. The real-phone test for this is Checkpoint A (below),
+  still owed.
+- [NEXT] Make every reminder popup behave the same across To-Do, My Day, My Week
+  and Pets: same buttons everywhere — OK (silence just this popup), Skip (skip this
   one time only), Delay, and Done (logs it; an old popup from a past day won't
   check off today's). Timer is left out on purpose.
 - Fold your "Watch List" movie/TV app in as another home-screen page (it's
@@ -70,9 +74,9 @@ STILL BROKEN OR UNFINISHED (small bugs)
   if you open the Custom Category second popup and tap Cancel, BOTH popups
   close and the task you were entering is lost. Cancel should only back out of
   the category popup and return you to the task you were filling in.
-- (Folded into the #34 plan) The "3 Months" / "6 Months" To-Do options that do
-  nothing yet aren't worth fixing in To-Do — all the repeating options are
-  moving out to the new Look Ahead page anyway.
+- (DONE — folded into the #34 plan) The old "3 Months" / "6 Months" To-Do options
+  that did nothing are gone: all the repeating options moved out to the Look Ahead
+  page, which now handles them with real reminders (finished in #37).
 - My Week: if you mark a chore done from inside the app (not from the
   notification), it records today's date instead of the chore's own day.
   Minor — only matters if you log a chore well after its day.
