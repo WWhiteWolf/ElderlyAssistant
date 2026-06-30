@@ -7,8 +7,8 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-06-30 (session #35 — Step 1 done: stripped recurrence from
-To-Do, one-time only, Simulator-validated; device check folded into Checkpoint A).
+Last updated: 2026-06-30 (session #36 — Step 2 done: built the Look Ahead page,
+Simulator-validated; reminders/re-arm are Step 3, next).
 
 ---
 
@@ -22,10 +22,18 @@ pages. Take ONE piece per session. **Order: pages first, then the popup consolid
   3/6-month stubs; To-Do is now one-time tasks only. `tsc` clean. Real-device check is
   folded into Checkpoint A. (Superseded the old "3/6-month" + "Monthly/Yearly firing
   test" items below — nothing left to do there.)
-- **Build the new "Look Ahead" home-screen page.** ← **NEXT (Step 2).** Works like My Day/Week/Pets. Items
-  grouped under Monthly / 3 Months / 6 Months / Yearly; each = label + first due date +
-  time + repeat interval; nags, Done logs + re-arms next cycle; own history; Delay =
-  Day / Week / Month. 3/6-month re-armed as DATE one-shots (no native iOS trigger).
+- **✅ DONE (#36, Simulator-validated) — Built the "Look Ahead" home-screen page**
+  (`app/lookahead.tsx` + home tile/route + `_layout.tsx` Stack.Screen). Items grouped under
+  Monthly / 3 Months / 6 Months / Yearly; add/edit form (name + first-due date + time +
+  repeat interval); own history log; reorder within group; swipe-delete. `tsc` clean.
+  **No notification code yet** — that's Step 3 below.
+- **Look Ahead reminders + re-arm.** ← **NEXT (Step 3).** Wire notifications for Look Ahead
+  items: Monthly & Yearly use iOS native repeats; 3/6-month have no native trigger → app
+  re-arms a DATE one-shot each cycle from the item's due date. Make Log/Done advance the
+  item to the next cycle. Add the **Delay = Day / Week / Month** control (long-lead items,
+  not the 15/30/60 min used by daily/weekly). Test firing with near-future / shortened
+  intervals in the Simulator → then **PHONE CHECKPOINT A** (To-Do one-shots + Look Ahead
+  reminders fire + route on the real device).
 - **Popup reminder consolidation (popups only this round; Timer excluded).** One shared
   approach across To-Do / My Day / My Week / Pets: same buttons everywhere — OK (silence
   this popup), Skip (this occurrence only), Delay, Done (log original + done time;

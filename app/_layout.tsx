@@ -351,6 +351,7 @@ export default function RootLayout() {
       <Stack.Screen name="myday" options={{ headerShown: false }} />
       <Stack.Screen name="myweek" options={{ headerShown: false }} />
       <Stack.Screen name="mollie" options={{ headerShown: false }} />
+      <Stack.Screen name="lookahead" options={{ headerShown: false }} />
       <Stack.Screen name="todo" options={{ headerShown: false }} />
       <Stack.Screen name="planner" options={{ headerShown: false }} />
       <Stack.Screen name="settings" options={{ headerShown: false }} />

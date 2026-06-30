@@ -1,5 +1,5 @@
 PENDING WORK — plain-language list
-Last updated: 2026-06-30 (session #35 — Step 1 done: To-Do is now one-time only)
+Last updated: 2026-06-30 (session #36 — Step 2 done: the new Look Ahead page is built)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -11,21 +11,25 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- This session (#35) finished Step 1 of the reminder rebuild: all the repeating
-  options (Monthly, Yearly, 3 & 6 months) are now OUT of To-Do — it's just
-  one-time tasks. Checked in the Simulator (the New Task form no longer shows a
-  Recurring choice). The code (todo.tsx + _layout.tsx) and these docs are ready
-  for you to commit. A real-phone check of To-Do reminders is bundled into
-  "Checkpoint A" later, after the Look Ahead page is built.
-- Before that, session #34 was PLANNING: we mapped out why reminders behave
-  inconsistently and wrote the full plan in docs/reminder-audit.md (committed).
+- This session (#36) finished Step 2 of the reminder rebuild: the new "Look
+  Ahead" page is built. It sits on the home screen (telescope icon 🔭) and works
+  like My Day / Pets — you add items grouped under Monthly / 3 Months / 6 Months
+  / Yearly, each with its own first-due date, time, and repeat choice, plus its
+  own log. Checked in the Simulator (added items across all four groups). NOTE:
+  it doesn't send reminders yet — that's Step 3 on purpose. The code
+  (lookahead.tsx + home.tsx + _layout.tsx) and these docs are ready for you to
+  commit.
+- Step 1 (session #35) took all the repeating options OUT of To-Do, so To-Do is
+  now just one-time tasks (committed).
+- Session #34 was PLANNING: we mapped out why reminders behave inconsistently and
+  wrote the full plan in docs/reminder-audit.md (committed).
 - The plan, in a nutshell: (1) ✅ DONE — take repeating options OUT of To-Do;
-  (2) NEXT — build a new home-screen page "Look Ahead" for the repeating stuff
-  (monthly / every 3 months / every 6 months / yearly), working like My Day with
-  its own reminders and history; (3) then make every reminder popup behave the
-  same everywhere (same OK / Skip / Delay / Done buttons); and separately (4)
-  fold in your "Watch List" movie/TV app as another page. ONE per session.
-- What's next: Step 2 — build the Look Ahead page. Nothing here is urgent.
+  (2) ✅ DONE — build the new "Look Ahead" home-screen page; (3) NEXT — make
+  Look Ahead actually send reminders and roll each item forward to its next date;
+  (4) then make every reminder popup behave the same everywhere (same OK / Skip /
+  Delay / Done buttons); and separately (5) fold in your "Watch List" movie/TV app
+  as another page. ONE per session.
+- What's next: Step 3 — give the Look Ahead page its reminders. Nothing here is urgent.
 
 
 BIG PLANNED WORK (the #34 plan — ONE effort, pages first, Simulator-first)
@@ -37,9 +41,12 @@ the real-phone tests are batched into two checkpoints. Full details + the
 ordered build checklist live in docs/reminder-audit.md. The four pieces:
 - [DONE #35] Strip the repeating options out of To-Do (Monthly, Yearly, 3 & 6
   months) so To-Do is just one-time tasks. Done, Simulator-checked.
-- [NEXT] Build the new "Look Ahead" page (home screen, like My Day): all the repeating
-  reminders, grouped Monthly / 3 Months / 6 Months / Yearly, each with its own
-  time and history, and Delay choices of Day / Week / Month.
+- [DONE #36] Build the new "Look Ahead" page (home screen, like My Day): items
+  grouped Monthly / 3 Months / 6 Months / Yearly, each with first-due date, time,
+  repeat choice, and its own log. Done, Simulator-checked. Reminders come next.
+- [NEXT] Give Look Ahead its reminders: each item nags on schedule and rolls
+  forward to its next date when you mark it done; Delay choices of Day / Week /
+  Month. Then a phone check (Checkpoint A) for To-Do + Look Ahead reminders.
 - Make every reminder popup behave the same across To-Do, My Day, My Week and
   Pets: same buttons everywhere — OK (silence just this popup), Skip (skip this
   one time only), Delay, and Done (logs it; an old popup from a past day won't

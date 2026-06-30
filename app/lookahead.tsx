@@ -1,0 +1,778 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import {
+    Alert,
+    KeyboardAvoidingView,
+    Modal,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '../constants/Colors';
+
+// Look Ahead — long-lead reminders grouped by repeat interval.
+// STEP 2 (#36): page + add/edit + subheadings + history ONLY.
+// No notification code here — reminders + re-arm are STEP 3.
+
+type Interval = 'monthly' | '3month' | '6month' | 'yearly';
+
+const INTERVALS: { key: Interval; label: string }[] = [
+    { key: 'monthly', label: 'Monthly' },
+    { key: '3month', label: '3 Months' },
+    { key: '6month', label: '6 Months' },
+    { key: 'yearly', label: 'Yearly' },
+];
+
+interface LookAheadItem {
+    id: string;
+    label: string;
+    year: number;
+    month: number; // 0-11
+    day: number;   // 1-31
+    hour: number;
+    minute: number;
+    interval: Interval;
+}
+
+interface HistoryEntry {
+    id: string;
+    date: string;
+    actual: string;
+    sched: string;
+    what?: string;
+    note?: string;
+}
+
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
+
+export default function LookAheadScreen() {
+    const router = useRouter();
+    const [items, setItems] = useState<LookAheadItem[]>([]);
+    const [history, setHistory] = useState<HistoryEntry[]>([]);
+
+    const [activeId, setActiveId] = useState<string | null>(null);
+    const [tempName, setTempName] = useState('');
+    const [pendingDate, setPendingDate] = useState<Date | null>(null);
+    const [pendingInterval, setPendingInterval] = useState<Interval>('monthly');
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+
+    const [showLogModal, setShowLogModal] = useState(false);
+    const [pendingLogId, setPendingLogId] = useState<string | null>(null);
+    const [tempWhat, setTempWhat] = useState('');
+
+    const [editEntry, setEditEntry] = useState<HistoryEntry | null>(null);
+    const [editWhat, setEditWhat] = useState('');
+
+    useEffect(() => {
+        loadData();
+    }, []);
+
+    const loadData = async () => {
+        try {
+            const savedItems = await AsyncStorage.getItem('lookahead_items');
+            if (savedItems) setItems(JSON.parse(savedItems));
+            const savedHist = await AsyncStorage.getItem('lookahead_history');
+            if (savedHist) setHistory(JSON.parse(savedHist));
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const saveData = async (i: LookAheadItem[], h: HistoryEntry[]) => {
+        await AsyncStorage.setItem('lookahead_items', JSON.stringify(i));
+        await AsyncStorage.setItem('lookahead_history', JSON.stringify(h));
+    };
+
+    const format12Hour = (h: number, m: number) => {
+        const period = h < 12 ? 'AM' : 'PM';
+        let hr = h % 12;
+        if (hr === 0) hr = 12;
+        return `${hr}:${m.toString().padStart(2, '0')} ${period}`;
+    };
+
+    const formatDate = (item: LookAheadItem) =>
+        `${MONTH_NAMES[item.month]} ${item.day}, ${item.year}`;
+
+    // ----- Add / Edit -----
+    const addEntry = () => {
+        setActiveId(null);
+        setTempName('');
+        const d = new Date();
+        d.setHours(12, 0, 0, 0);
+        setPendingDate(d);
+        setPendingInterval('monthly');
+        setShowEditModal(true);
+    };
+
+    const openEdit = (item: LookAheadItem) => {
+        setActiveId(item.id);
+        setTempName(item.label);
+        const d = new Date(item.year, item.month, item.day, item.hour, item.minute, 0, 0);
+        setPendingDate(d);
+        setPendingInterval(item.interval);
+        setShowEditModal(true);
+    };
+
+    const closeEdit = () => {
+        setShowEditModal(false);
+        setActiveId(null);
+        setTempName('');
+        setPendingDate(null);
+    };
+
+    const saveEdit = () => {
+        const name = tempName.trim();
+        if (!name) {
+            Alert.alert('Missing Name', 'Please enter a name.');
+            return;
+        }
+        const d = pendingDate || new Date(new Date().setHours(12, 0, 0, 0));
+        const fields = {
+            label: name,
+            year: d.getFullYear(),
+            month: d.getMonth(),
+            day: d.getDate(),
+            hour: d.getHours(),
+            minute: d.getMinutes(),
+            interval: pendingInterval,
+        };
+        if (activeId) {
+            const updated = items.map(it => (it.id === activeId ? { ...it, ...fields } : it));
+            setItems(updated);
+            saveData(updated, history);
+        } else {
+            const newItem: LookAheadItem = { id: Date.now().toString(), ...fields };
+            const updated = [...items, newItem];
+            setItems(updated);
+            saveData(updated, history);
+        }
+        closeEdit();
+    };
+
+    const deleteEntry = (id: string) => {
+        Alert.alert('Delete', 'Remove this entry?', [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Delete', style: 'destructive', onPress: () => {
+                    const updated = items.filter(it => it.id !== id);
+                    setItems(updated);
+                    saveData(updated, history);
+                },
+            },
+        ]);
+    };
+
+    const toggleSelect = (id: string) => {
+        setSelectedItemId(prev => (prev === id ? null : id));
+    };
+
+    // Reorder swaps the selected item with the nearest item OF THE SAME INTERVAL.
+    const moveItem = (direction: 'up' | 'down') => {
+        if (!selectedItemId) return;
+        const sel = items.find(it => it.id === selectedItemId);
+        if (!sel) return;
+        const index = items.findIndex(it => it.id === selectedItemId);
+        const step = direction === 'up' ? -1 : 1;
+        let swap = -1;
+        for (let j = index + step; j >= 0 && j < items.length; j += step) {
+            if (items[j].interval === sel.interval) { swap = j; break; }
+        }
+        if (swap === -1) return;
+        const updated = [...items];
+        [updated[index], updated[swap]] = [updated[swap], updated[index]];
+        setItems(updated);
+        saveData(updated, history);
+    };
+
+    // ----- Log -----
+    const openLogModal = (id: string) => {
+        setPendingLogId(id);
+        setTempWhat('');
+        setShowLogModal(true);
+    };
+
+    const confirmLog = () => {
+        if (!pendingLogId) return;
+        const item = items.find(it => it.id === pendingLogId);
+        if (!item) return;
+        const now = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false });
+        const newEntry: HistoryEntry = {
+            id: Date.now().toString(),
+            date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
+            sched: item.label,
+            actual: now,
+            what: tempWhat || '',
+            note: '',
+        };
+        const updatedHist = [newEntry, ...history].slice(0, 50);
+        setHistory(updatedHist);
+        saveData(items, updatedHist);
+        setShowLogModal(false);
+        setPendingLogId(null);
+    };
+
+    const deleteHistoryEntry = (id: string) => {
+        const updated = history.filter(h => h.id !== id);
+        setHistory(updated);
+        saveData(items, updated);
+    };
+
+    const clearAllHistory = () => {
+        Alert.alert('Clear All', 'Delete all log entries? This cannot be undone.', [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Clear All', style: 'destructive', onPress: () => {
+                    setHistory([]);
+                    saveData(items, []);
+                },
+            },
+        ]);
+    };
+
+    // ----- Date stepper helpers -----
+    const adjustMonth = (delta: number) => {
+        const cur = pendingDate || new Date(new Date().setHours(12, 0, 0, 0));
+        const next = new Date(cur);
+        const m = (next.getMonth() + delta + 12) % 12;
+        const maxDay = daysInMonth(next.getFullYear(), m);
+        next.setMonth(m, Math.min(next.getDate(), maxDay));
+        setPendingDate(next);
+    };
+
+    const adjustDay = (delta: number) => {
+        const cur = pendingDate || new Date(new Date().setHours(12, 0, 0, 0));
+        const next = new Date(cur);
+        const max = daysInMonth(next.getFullYear(), next.getMonth());
+        let day = next.getDate() + delta;
+        if (day < 1) day = max;
+        if (day > max) day = 1;
+        next.setDate(day);
+        setPendingDate(next);
+    };
+
+    const adjustYear = (delta: number) => {
+        const cur = pendingDate || new Date(new Date().setHours(12, 0, 0, 0));
+        const next = new Date(cur);
+        const y = next.getFullYear() + delta;
+        const maxDay = daysInMonth(y, next.getMonth());
+        next.setFullYear(y, next.getMonth(), Math.min(next.getDate(), maxDay));
+        setPendingDate(next);
+    };
+
+    // ----- Time stepper helpers (mirrors Pets) -----
+    const adjustHour = (dir: 'up' | 'down') => {
+        const cur = pendingDate || new Date(new Date().setHours(12, 0, 0, 0));
+        const next = new Date(cur);
+        const h = next.getHours();
+        const isPM = h >= 12;
+        let h12 = h % 12; if (h12 === 0) h12 = 12;
+        h12 = dir === 'up' ? (h12 === 12 ? 1 : h12 + 1) : (h12 === 1 ? 12 : h12 - 1);
+        next.setHours(isPM ? (h12 % 12) + 12 : h12 % 12);
+        setPendingDate(next);
+    };
+
+    const adjustMinute = (delta: number) => {
+        const cur = pendingDate || new Date(new Date().setHours(12, 0, 0, 0));
+        const next = new Date(cur);
+        next.setMinutes((next.getMinutes() + delta + 60) % 60);
+        setPendingDate(next);
+    };
+
+    const toggleAmPm = () => {
+        const cur = pendingDate || new Date(new Date().setHours(12, 0, 0, 0));
+        const next = new Date(cur);
+        next.setHours((next.getHours() + 12) % 24);
+        setPendingDate(next);
+    };
+
+    const pd = pendingDate || new Date(new Date().setHours(12, 0, 0, 0));
+
+    return (
+        <GestureHandlerRootView style={styles.container}>
+            <SafeAreaView style={{ backgroundColor: Colors.primary }} edges={['top']}>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
+                        <Text style={styles.headerBtnText}>← Home</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.title}>Look Ahead 🔭</Text>
+                    <TouchableOpacity onPress={addEntry} style={styles.headerBtn}>
+                        <Text style={styles.headerBtnText}>+ Add Entry</Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+
+            <View style={styles.bridge} />
+
+            <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }} scrollEventThrottle={16} directionalLockEnabled={true}>
+
+                <View style={styles.section}>
+                    <Text style={styles.hintText}>Tap to select for reorder · Edit to change · Swipe to delete</Text>
+                    {items.length === 0 && (
+                        <Text style={styles.emptyText}>No items yet. Tap “+ Add Entry” to add one.</Text>
+                    )}
+                    {INTERVALS.map(group => {
+                        const groupItems = items.filter(it => it.interval === group.key);
+                        if (groupItems.length === 0) return null;
+                        return (
+                            <View key={group.key} style={styles.group}>
+                                <Text style={styles.groupTitle}>{group.label}</Text>
+                                {groupItems.map(item => (
+                                    <Swipeable
+                                        key={item.id}
+                                        renderRightActions={() => (
+                                            <TouchableOpacity style={styles.swipeDelete} onPress={() => deleteEntry(item.id)}>
+                                                <Text style={styles.swipeDeleteText}>Delete</Text>
+                                            </TouchableOpacity>
+                                        )}
+                                    >
+                                        <View style={[styles.row, selectedItemId === item.id && styles.rowSelected]}>
+                                            <TouchableOpacity style={styles.labelArea} onPress={() => toggleSelect(item.id)}>
+                                                <Text style={styles.itemLabel}>{item.label}</Text>
+                                                <Text style={styles.itemSub}>{formatDate(item)} · {format12Hour(item.hour, item.minute)}</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity style={styles.editBtn} onPress={() => openEdit(item)}>
+                                                <Text style={styles.editBtnText}>Edit</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity style={styles.logBtn} onPress={() => openLogModal(item.id)}>
+                                                <Text style={styles.logBtnText}>Log</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </Swipeable>
+                                ))}
+                            </View>
+                        );
+                    })}
+                </View>
+
+                <View style={styles.historySection}>
+                    <View style={styles.historyHeader}>
+                        <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>Look Ahead Log</Text>
+                        {history.length > 0 && (
+                            <TouchableOpacity style={styles.clearAllBtn} onPress={clearAllHistory}>
+                                <Text style={styles.clearAllBtnText}>Clear All</Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
+                    <ScrollView style={styles.historyScroll} nestedScrollEnabled={true}>
+                        {history.map(l => (
+                            <Swipeable
+                                key={l.id}
+                                renderRightActions={() => (
+                                    <TouchableOpacity style={styles.swipeDelete} onPress={() => deleteHistoryEntry(l.id)}>
+                                        <Text style={styles.swipeDeleteText}>Delete</Text>
+                                    </TouchableOpacity>
+                                )}
+                            >
+                                <TouchableOpacity style={styles.historyItem} onPress={() => { setEditEntry(l); setEditWhat(l.what || ''); }}>
+                                    <Text style={styles.historyText}>
+                                        {l.date} | {l.actual} | {l.sched}{l.what ? ` | ${l.what}` : ''}
+                                    </Text>
+                                </TouchableOpacity>
+                            </Swipeable>
+                        ))}
+                    </ScrollView>
+                </View>
+
+            </ScrollView>
+
+            {showLogModal && (
+                <View style={styles.modal}>
+                    <Text style={styles.modalTitle}>Log Entry</Text>
+                    <Text style={styles.inputLabel}>Notes (optional)</Text>
+                    <TextInput style={styles.input} value={tempWhat} onChangeText={setTempWhat} placeholder="Add a note about this entry..." />
+                    <View style={styles.modalBtns}>
+                        <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowLogModal(false)}>
+                            <Text style={styles.cancelBtnText}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.confirmBtn} onPress={confirmLog}>
+                            <Text style={styles.confirmBtnText}>Log</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
+
+            {editEntry && (
+                <View style={styles.modal}>
+                    <Text style={styles.modalTitle}>Edit Log Entry</Text>
+                    <Text style={styles.inputLabel}>Notes (optional)</Text>
+                    <TextInput style={styles.input} value={editWhat} onChangeText={setEditWhat} placeholder="Add a note about this entry..." />
+                    <View style={styles.modalBtns}>
+                        <TouchableOpacity style={styles.cancelBtn} onPress={() => setEditEntry(null)}>
+                            <Text style={styles.cancelBtnText}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.confirmBtn} onPress={() => {
+                            const updated = history.map(h => (h.id === editEntry.id ? { ...h, what: editWhat } : h));
+                            setHistory(updated);
+                            saveData(items, updated);
+                            setEditEntry(null);
+                        }}>
+                            <Text style={styles.confirmBtnText}>Save</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
+
+            {selectedItemId && (
+                <View style={styles.arrowOverlay}>
+                    <TouchableOpacity style={styles.arrowBtn} onPress={() => moveItem('up')}>
+                        <Text style={styles.arrowText}>▲</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.arrowBtn} onPress={() => moveItem('down')}>
+                        <Text style={styles.arrowText}>▼</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+
+            {showEditModal && (
+                <Modal transparent={true} animationType="fade" visible={showEditModal}>
+                    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+                    <ScrollView contentContainerStyle={styles.modalOverlay} keyboardShouldPersistTaps="handled">
+                        <View style={styles.pickerModal}>
+                            <Text style={styles.modalTitle}>{activeId ? 'Edit Entry' : 'New Entry'}</Text>
+
+                            <Text style={styles.inputLabel}>Name</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={tempName}
+                                onChangeText={setTempName}
+                                placeholder="e.g. Replace smoke alarm battery"
+                                autoFocus={!activeId}
+                            />
+
+                            <Text style={styles.inputLabel}>First Due Date</Text>
+                            <View style={styles.stepperRow}>
+                                <View style={{ alignItems: 'center' }}>
+                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustMonth(1)}>
+                                        <Text style={styles.timeAdjText}>▲</Text>
+                                    </TouchableOpacity>
+                                    <Text style={styles.dateDisplayText}>{MONTH_NAMES[pd.getMonth()]}</Text>
+                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustMonth(-1)}>
+                                        <Text style={styles.timeAdjText}>▼</Text>
+                                    </TouchableOpacity>
+                                    <Text style={styles.stepperCaption}>Month</Text>
+                                </View>
+                                <View style={{ alignItems: 'center' }}>
+                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustDay(1)}>
+                                        <Text style={styles.timeAdjText}>▲</Text>
+                                    </TouchableOpacity>
+                                    <Text style={styles.dateDisplayText}>{String(pd.getDate()).padStart(2, '0')}</Text>
+                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustDay(-1)}>
+                                        <Text style={styles.timeAdjText}>▼</Text>
+                                    </TouchableOpacity>
+                                    <Text style={styles.stepperCaption}>Day</Text>
+                                </View>
+                                <View style={{ alignItems: 'center' }}>
+                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustYear(1)}>
+                                        <Text style={styles.timeAdjText}>▲</Text>
+                                    </TouchableOpacity>
+                                    <Text style={styles.dateDisplayText}>{pd.getFullYear()}</Text>
+                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustYear(-1)}>
+                                        <Text style={styles.timeAdjText}>▼</Text>
+                                    </TouchableOpacity>
+                                    <Text style={styles.stepperCaption}>Year</Text>
+                                </View>
+                            </View>
+
+                            <Text style={styles.inputLabel}>Time</Text>
+                            <View style={styles.stepperRow}>
+                                <View style={{ alignItems: 'center' }}>
+                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustHour('up')}>
+                                        <Text style={styles.timeAdjText}>▲</Text>
+                                    </TouchableOpacity>
+                                    <Text style={styles.timeDisplayText}>
+                                        {(() => { const h = pd.getHours(); let h12 = h % 12; if (h12 === 0) h12 = 12; return String(h12).padStart(2, '0'); })()}
+                                    </Text>
+                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustHour('down')}>
+                                        <Text style={styles.timeAdjText}>▼</Text>
+                                    </TouchableOpacity>
+                                    <Text style={styles.stepperCaption}>Hour</Text>
+                                </View>
+
+                                <Text style={styles.timeDisplayText}>:</Text>
+
+                                <View style={{ alignItems: 'center' }}>
+                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustMinute(1)}>
+                                        <Text style={styles.timeAdjText}>▲</Text>
+                                    </TouchableOpacity>
+                                    <Text style={styles.timeDisplayText}>{String(pd.getMinutes()).padStart(2, '0')}</Text>
+                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustMinute(-1)}>
+                                        <Text style={styles.timeAdjText}>▼</Text>
+                                    </TouchableOpacity>
+                                    <Text style={styles.stepperCaption}>Minute</Text>
+                                </View>
+
+                                <View style={{ alignItems: 'center' }}>
+                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={toggleAmPm}>
+                                        <Text style={styles.timeAdjText}>▲</Text>
+                                    </TouchableOpacity>
+                                    <Text style={[styles.timeDisplayText, { fontSize: 28 }]}>
+                                        {pd.getHours() < 12 ? 'AM' : 'PM'}
+                                    </Text>
+                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={toggleAmPm}>
+                                        <Text style={styles.timeAdjText}>▼</Text>
+                                    </TouchableOpacity>
+                                    <Text style={styles.stepperCaption}>AM/PM</Text>
+                                </View>
+                            </View>
+
+                            <Text style={styles.inputLabel}>Repeat Every</Text>
+                            <View style={styles.intervalRow}>
+                                {INTERVALS.map(opt => (
+                                    <TouchableOpacity
+                                        key={opt.key}
+                                        style={[styles.intervalOption, pendingInterval === opt.key && styles.intervalOptionActive]}
+                                        onPress={() => setPendingInterval(opt.key)}
+                                    >
+                                        <Text style={[styles.intervalOptionText, pendingInterval === opt.key && styles.intervalOptionTextActive]}>
+                                            {opt.label}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+
+                            <View style={styles.modalBtns}>
+                                <TouchableOpacity style={styles.cancelBtn} onPress={closeEdit}>
+                                    <Text style={styles.cancelBtnText}>Cancel</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.confirmBtn} onPress={saveEdit}>
+                                    <Text style={styles.confirmBtnText}>Save</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </ScrollView>
+                    </KeyboardAvoidingView>
+                </Modal>
+            )}
+
+        </GestureHandlerRootView>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: Colors.background },
+    header: {
+        paddingTop: 20,
+        paddingHorizontal: 16,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingBottom: 8,
+    },
+    title: {
+        fontSize: 26,
+        fontWeight: '500',
+        color: Colors.textLight,
+        fontStyle: 'italic',
+        fontFamily: 'Georgia',
+        flex: 1,
+        textAlign: 'center',
+    },
+    bridge: { height: 8, backgroundColor: Colors.bridge },
+    scroll: { flex: 1 },
+    section: {
+        backgroundColor: Colors.white,
+        borderRadius: 12,
+        padding: 15,
+        margin: 12,
+        borderWidth: 0.5,
+        borderColor: Colors.lightBlue,
+    },
+    sectionTitle: { fontSize: 18, fontWeight: '600', color: Colors.primary, marginBottom: 10 },
+    hintText: { fontSize: 11, color: '#aaa', marginTop: 2, marginBottom: 8 },
+    emptyText: { fontSize: 15, color: '#999', fontStyle: 'italic', paddingVertical: 12, textAlign: 'center' },
+    group: { marginBottom: 6 },
+    groupTitle: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: Colors.bridge,
+        marginTop: 8,
+        marginBottom: 8,
+        borderBottomWidth: 0.5,
+        borderBottomColor: Colors.lightBlue,
+        paddingBottom: 4,
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    labelArea: { flex: 1, marginRight: 10 },
+    itemLabel: { fontSize: 17, color: Colors.primary, fontWeight: '500' },
+    itemSub: { fontSize: 13, color: '#888', marginTop: 2 },
+    editBtn: {
+        backgroundColor: Colors.background,
+        borderWidth: 0.5,
+        borderColor: Colors.bridge,
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        borderRadius: 8,
+        marginRight: 8,
+    },
+    editBtnText: { color: Colors.bridge, fontSize: 13, fontWeight: '600' },
+    logBtn: {
+        backgroundColor: Colors.primary,
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+    },
+    logBtnText: { color: Colors.white, fontWeight: '600' },
+    historySection: { marginHorizontal: 12, marginBottom: 12 },
+    historyHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    historyScroll: {
+        height: 300,
+        backgroundColor: Colors.white,
+        borderRadius: 8,
+        padding: 8,
+        borderWidth: 0.5,
+        borderColor: Colors.lightBlue,
+    },
+    historyItem: { borderBottomWidth: 0.5, borderBottomColor: '#eee', paddingVertical: 6 },
+    historyText: { fontSize: 13, color: Colors.text, lineHeight: 18 },
+    clearAllBtn: {
+        paddingVertical: 4,
+        paddingHorizontal: 10,
+        borderRadius: 6,
+        borderWidth: 0.5,
+        borderColor: '#999',
+    },
+    clearAllBtnText: { color: '#666', fontSize: 13, fontWeight: '600' },
+    modal: {
+        position: 'absolute',
+        top: 100,
+        left: 20,
+        right: 20,
+        backgroundColor: Colors.white,
+        borderRadius: 12,
+        padding: 16,
+        borderWidth: 0.5,
+        borderColor: Colors.lightBlue,
+        elevation: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 4,
+        zIndex: 999,
+    },
+    modalOverlay: {
+        flexGrow: 1,
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    pickerModal: { backgroundColor: Colors.white, borderRadius: 12, padding: 16, width: '100%' },
+    modalTitle: { fontSize: 18, fontWeight: '600', color: Colors.primary, marginBottom: 10 },
+    inputLabel: { fontSize: 14, color: '#666', marginBottom: 4, marginTop: 6 },
+    input: {
+        borderWidth: 0.5,
+        borderColor: Colors.lightBlue,
+        borderRadius: 8,
+        padding: 10,
+        fontSize: 16,
+        backgroundColor: Colors.background,
+        marginBottom: 10,
+        color: Colors.text,
+    },
+    stepperRow: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 16,
+        marginVertical: 10,
+    },
+    stepperCaption: { color: Colors.primary, fontSize: 13 },
+    modalBtns: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 },
+    cancelBtn: {
+        backgroundColor: '#ccc',
+        padding: 10,
+        borderRadius: 8,
+        flex: 1,
+        alignItems: 'center',
+        marginRight: 8,
+    },
+    cancelBtnText: { color: '#333', fontWeight: '600' },
+    confirmBtn: { backgroundColor: Colors.primary, padding: 10, borderRadius: 8, flex: 1, alignItems: 'center' },
+    confirmBtnText: { color: Colors.white, fontWeight: '600' },
+    swipeDelete: {
+        backgroundColor: '#e74c3c',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 80,
+        borderRadius: 10,
+        marginBottom: 12,
+    },
+    swipeDeleteText: { color: '#fff', fontWeight: '600', fontSize: 15 },
+    timeAdjBtn: {
+        backgroundColor: Colors.primary,
+        width: 50, height: 50,
+        borderRadius: 25,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginVertical: 6,
+    },
+    timeAdjText: { color: Colors.white, fontSize: 22, fontWeight: '600' },
+    timeDisplayText: { fontSize: 40, fontWeight: '600', color: Colors.primary, marginVertical: 4 },
+    dateDisplayText: { fontSize: 26, fontWeight: '600', color: Colors.primary, marginVertical: 4 },
+    headerBtn: {
+        borderWidth: 1,
+        borderColor: Colors.white,
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderRadius: 20,
+    },
+    headerBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
+    rowSelected: { backgroundColor: '#d6eef8', borderRadius: 8 },
+    arrowOverlay: {
+        position: 'absolute',
+        right: 16,
+        bottom: 140,
+        backgroundColor: Colors.primary,
+        borderRadius: 12,
+        padding: 8,
+        gap: 8,
+        elevation: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        zIndex: 1000,
+    },
+    arrowBtn: { padding: 10, alignItems: 'center' },
+    arrowText: { color: Colors.white, fontSize: 22, fontWeight: '600' },
+    intervalRow: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        gap: 8,
+        marginBottom: 4,
+    },
+    intervalOption: {
+        flexGrow: 1,
+        flexBasis: '47%',
+        backgroundColor: Colors.background,
+        borderWidth: 0.5,
+        borderColor: Colors.lightBlue,
+        paddingVertical: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    intervalOptionActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
+    intervalOptionText: { color: Colors.primary, fontWeight: '600', fontSize: 15 },
+    intervalOptionTextActive: { color: Colors.white },
+});
