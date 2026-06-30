@@ -27,9 +27,10 @@ export default function SettingsScreen() {
     const [vaultPinEnabled, setVaultPinEnabled] = useState(false);
     const [editingName, setEditingName] = useState(false);
     const [morningTime, setMorningTime] = useState('08:00');
+    const [middayTime, setMiddayTime] = useState('12:00');
     const [eveningTime, setEveningTime] = useState('17:00');
     const [showTimeModal, setShowTimeModal] = useState(false);
-    const [editingWhich, setEditingWhich] = useState<'morning' | 'evening'>('morning');
+    const [editingWhich, setEditingWhich] = useState<'morning' | 'midday' | 'evening'>('morning');
     const [pendingTime, setPendingTime] = useState<Date | null>(null);
 
     useEffect(() => {
@@ -43,11 +44,13 @@ export default function SettingsScreen() {
             const biometric = await AsyncStorage.getItem('biometric_enabled');
             const vaultPin = await AsyncStorage.getItem('vault_pin_enabled');
             const morning = await AsyncStorage.getItem('reminder_morning_time');
+            const midday = await AsyncStorage.getItem('reminder_midday_time');
             const evening = await AsyncStorage.getItem('reminder_evening_time');
             if (name) { setUserName(name); setNewUserName(name); }
             if (biometric) setBiometricEnabled(biometric === 'true');
             if (vaultPin) setVaultPinEnabled(vaultPin === 'true');
             if (morning) setMorningTime(morning);
+            if (midday) setMiddayTime(midday);
             if (evening) setEveningTime(evening);
         } catch (e) {
             console.error(e);
@@ -63,8 +66,8 @@ export default function SettingsScreen() {
         return `${h12}:${mStr} ${period}`;
     };
 
-    const openTimeEditor = (which: 'morning' | 'evening') => {
-        const hhmm = which === 'morning' ? morningTime : eveningTime;
+    const openTimeEditor = (which: 'morning' | 'midday' | 'evening') => {
+        const hhmm = which === 'morning' ? morningTime : which === 'midday' ? middayTime : eveningTime;
         const [h, m] = hhmm.split(':').map(n => parseInt(n, 10));
         setPendingTime(new Date(new Date().setHours(h, m, 0, 0)));
         setEditingWhich(which);
@@ -77,6 +80,9 @@ export default function SettingsScreen() {
         if (editingWhich === 'morning') {
             setMorningTime(hhmm);
             await AsyncStorage.setItem('reminder_morning_time', hhmm);
+        } else if (editingWhich === 'midday') {
+            setMiddayTime(hhmm);
+            await AsyncStorage.setItem('reminder_midday_time', hhmm);
         } else {
             setEveningTime(hhmm);
             await AsyncStorage.setItem('reminder_evening_time', hhmm);
@@ -207,10 +213,17 @@ export default function SettingsScreen() {
                             </View>
                             <Text style={styles.settingValue}>{format12Hour(morningTime)}</Text>
                         </TouchableOpacity>
+                        <TouchableOpacity style={[styles.settingRow, styles.settingRowBorder]} onPress={() => openTimeEditor('midday')}>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.settingLabel}>Midday Reminder Time</Text>
+                                <Text style={styles.settingHint}>Used by "Day Before" / "2 Days Before" alerts</Text>
+                            </View>
+                            <Text style={styles.settingValue}>{format12Hour(middayTime)}</Text>
+                        </TouchableOpacity>
                         <TouchableOpacity style={[styles.settingRow, styles.settingRowBorder]} onPress={() => openTimeEditor('evening')}>
                             <View style={{ flex: 1 }}>
                                 <Text style={styles.settingLabel}>Evening Reminder Time</Text>
-                                <Text style={styles.settingHint}>Used by day / week / month before alerts</Text>
+                                <Text style={styles.settingHint}>Used by "Night Before" / week / month alerts</Text>
                             </View>
                             <Text style={styles.settingValue}>{format12Hour(eveningTime)}</Text>
                         </TouchableOpacity>
@@ -263,7 +276,7 @@ export default function SettingsScreen() {
                         <View style={styles.modalOverlay}>
                             <View style={styles.pickerModal}>
                                 <Text style={styles.modalTitle}>
-                                    {editingWhich === 'morning' ? 'Morning Reminder Time' : 'Evening Reminder Time'}
+                                    {editingWhich === 'morning' ? 'Morning Reminder Time' : editingWhich === 'midday' ? 'Midday Reminder Time' : 'Evening Reminder Time'}
                                 </Text>
 
                                 <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 20, marginVertical: 10 }}>

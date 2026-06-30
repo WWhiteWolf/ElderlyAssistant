@@ -31,7 +31,7 @@ const READABLE_KEYS = [
     'shopping_items',
     'planner_projects', 'planner_log',
     'user_name', 'biometric_enabled', 'vault_pin_enabled',
-    'reminder_morning_time', 'reminder_evening_time',
+    'reminder_morning_time', 'reminder_midday_time', 'reminder_evening_time',
 ];
 
 const VAULT_KEY = 'vault_items';
