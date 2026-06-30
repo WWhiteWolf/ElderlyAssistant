@@ -7,8 +7,33 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-06-29 (session #33 — added To-Do on-tile Done + My Week Done toggle;
-parked 3 new issues from testing).
+Last updated: 2026-06-30 (session #34 — planned the Reminder Notification
+Consolidation; added the Look Ahead + Watch List pages as planned work).
+
+---
+
+## BIG PLANNED WORK from #34 (master spec: `docs/reminder-audit.md`)
+
+A multi-session effort to make reminders behave the same everywhere, plus two new
+pages. Take ONE piece per session. **Order: pages first, then the popup consolidation.**
+
+- **Strip recurrence out of To-Do → one-time only** (`app/todo.tsx`, `app/_layout.tsx`).
+  Remove Monthly + Yearly (live code) and the 3/6-month stubs. No data to migrate
+  (confirmed). This supersedes the old "3/6-month" and "Monthly/Yearly firing test"
+  items below.
+- **Build the new "Look Ahead" home-screen page.** Works like My Day/Week/Pets. Items
+  grouped under Monthly / 3 Months / 6 Months / Yearly; each = label + first due date +
+  time + repeat interval; nags, Done logs + re-arms next cycle; own history; Delay =
+  Day / Week / Month. 3/6-month re-armed as DATE one-shots (no native iOS trigger).
+- **Popup reminder consolidation (popups only this round; Timer excluded).** One shared
+  approach across To-Do / My Day / My Week / Pets: same buttons everywhere — OK (silence
+  this popup), Skip (this occurrence only), Delay, Done (log original + done time;
+  past-day banner doesn't check off today's). Fixes the silent-snooze, the To-Do
+  missing-permission/handler, and the divergent log shapes. Full audit + table in spec.
+- **Integrate the "Watch List" page** (independent of reminders). Already built as a
+  standalone Expo app in `Projects/WatchList` (movie/TV tracker, no notifications). Fold
+  in as a new home-screen page: `app/watchlist.tsx` + home tile + route; port `App.js` /
+  `useWatchListState.js` / `types.js` into this app's TS/expo-router structure.
 
 ---
 
@@ -39,14 +64,13 @@ the louder timer alarm).
   opening the "Custom Category" second popup and tapping **Cancel** closes BOTH popups and
   loses the in-progress task. Cancel on the category popup should close only that popup and
   return to the New Task form with entries intact.
-- **"3 Months" and "6 Months" repeat options do nothing yet** (`app/todo.tsx`). iOS has
-  no native every-3/6-month trigger, and those two options have no anchor-date picker in
-  the form. Approach to design later: add a "starting date" picker, then pre-schedule the
-  next few one-shots and top up on app open (respecting the iOS 64-pending cap).
-- **Monthly + Yearly recurring To-Do firing — needs a phone test.** The code is in and
-  committed (session #8) and should fire on schedule (a monthly bill, a yearly
-  furnace-filter reminder), but a real reminder hasn't been watched go off on the phone
-  yet — Yearly's month especially (Expo months are 0-based).
+- **[SUPERSEDED by #34 plan] To-Do recurrence (Monthly / Yearly / 3 / 6 Months).**
+  These were all open To-Do items (3/6-month stubs did nothing; Monthly/Yearly needed a
+  phone test). Per #34, **recurrence leaves To-Do entirely** and moves to the new Look
+  Ahead page. So don't fix them in To-Do — handle them as part of "Strip recurrence out
+  of To-Do" + "Build Look Ahead" above. The 3/6-month anchor-date approach (a starting
+  date, pre-schedule one-shots, top up on open within the iOS 64-pending cap) and the
+  Yearly 0-based-month gotcha both carry over to Look Ahead.
 - **My Week on-screen "Done" stamps tap-time, not the chore's day** (`app/myweek.tsx`,
   `confirmLog`). Minor, identical to My Day's accepted limitation: the *banner* Done is
   correct (fired time); only the in-app Log modal dates from `new Date()`. Only matters

@@ -1,5 +1,5 @@
 PENDING WORK — plain-language list
-Last updated: 2026-06-29 (session #33 — To-Do Done button + My Week Done toggle)
+Last updated: 2026-06-30 (session #34 — planned the reminder rebuild + two new pages)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -11,26 +11,45 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- Most recently finished: retired To-Do's old Daily and Weekly options
-  (committed), and before that the project roadmap.
-- Just done (this session #33, tested good, not yet committed): two fixes from
-  your testing. (1) To-Do now has a "Done" button right on each task tile, next
-  to Edit — no more digging into the Edit form to finish a task. (2) My Week's
-  Done button is now a toggle: tap the green checkmark to "un-do" a chore and
-  make it active again early (out of food, need clean pants); doing it again
-  logs a fresh entry. Both confirmed working on the phone — ready for you to
-  commit.
-- Still unconfirmed on the phone: whether the Monthly/Yearly repeating To-Do
-  reminders fire (see "NEEDS A PHONE TEST" below).
-- To decide what's next: read the lists below and pick one. Nothing here is
-  urgent.
+- Most recently finished in code: To-Do on-tile "Done" button + My Week "Done"
+  toggle (#33, committed), and before that retiring To-Do's Daily/Weekly.
+- This session (#34) was PLANNING — no app code changed. We mapped out why the
+  reminders behave inconsistently and agreed a full plan to rebuild them, plus
+  two new pages. It's all written up in docs/reminder-audit.md (the master plan).
+  Only the docs changed this session — ready for you to commit.
+- The plan, in a nutshell: (1) take all the repeating options OUT of To-Do so
+  To-Do is just one-time tasks; (2) build a new home-screen page "Look Ahead"
+  for the repeating stuff (monthly / every 3 months / every 6 months / yearly),
+  working like My Day with its own reminders and history; (3) then make every
+  reminder popup behave the same everywhere (same OK / Skip / Delay / Done
+  buttons); and separately (4) fold in your "Watch List" movie/TV app as another
+  page. We'll do ONE of these per session, pages first.
+- To decide what's next: pick one piece from "BIG PLANNED WORK" below. Nothing
+  here is urgent.
+
+
+BIG PLANNED WORK (the #34 plan — ONE effort, pages first, Simulator-first)
+----------------------------------------------------------------------------
+These are kept together as one initiative ("Reminder Rebuild #34") so they get
+done as a set and don't get lost among other items. As much as practical is
+built and checked in the Simulator first (free) before spending a phone build;
+the real-phone tests are batched into two checkpoints. Full details + the
+ordered build checklist live in docs/reminder-audit.md. The four pieces:
+- Strip the repeating options out of To-Do (Monthly, Yearly, 3 & 6 months) so
+  To-Do is just one-time tasks. Nothing of yours to move over.
+- Build the new "Look Ahead" page (home screen, like My Day): all the repeating
+  reminders, grouped Monthly / 3 Months / 6 Months / Yearly, each with its own
+  time and history, and Delay choices of Day / Week / Month.
+- Make every reminder popup behave the same across To-Do, My Day, My Week and
+  Pets: same buttons everywhere — OK (silence just this popup), Skip (skip this
+  one time only), Delay, and Done (logs it; an old popup from a past day won't
+  check off today's). Timer is left out on purpose.
+- Fold your "Watch List" movie/TV app in as another home-screen page (it's
+  built already, in its own folder). Separate from the reminder work.
 
 
 NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
 ----------------------------------------------------------------------------
-- Monthly and Yearly repeating To-Do reminders. The code is in and should
-  fire on schedule (e.g. a monthly bill, a yearly furnace-filter reminder),
-  but you haven't watched one actually go off on the phone yet.
 - A To-Do reminder that seemed to fire early. You recall setting one for
   23:30 and it went off around 21:15. Checking the code found no bug — that's
   exactly 2 hours before a 23:15 time, so it was most likely the "2 hours"
@@ -44,9 +63,9 @@ STILL BROKEN OR UNFINISHED (small bugs)
   if you open the Custom Category second popup and tap Cancel, BOTH popups
   close and the task you were entering is lost. Cancel should only back out of
   the category popup and return you to the task you were filling in.
-- The "3 Months" and "6 Months" repeat options on a To-Do do nothing yet.
-  The phone has no built-in every-3-or-6-month alarm, and those two options
-  don't have a starting-date picker, so there's nothing to anchor them to.
+- (Folded into the #34 plan) The "3 Months" / "6 Months" To-Do options that do
+  nothing yet aren't worth fixing in To-Do — all the repeating options are
+  moving out to the new Look Ahead page anyway.
 - My Week: if you mark a chore done from inside the app (not from the
   notification), it records today's date instead of the chore's own day.
   Minor — only matters if you log a chore well after its day.
