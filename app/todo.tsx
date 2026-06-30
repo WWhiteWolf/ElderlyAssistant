@@ -33,10 +33,10 @@ interface Reminder {
     unit: 'minutes' | 'hours' | 'days';
     // kind 'offset' (or undefined, for legacy) fires `amount`/`unit` before the
     // appointment's own time. kind 'clock' fires at a fixed time of day (the
-    // global morning/evening setting) on the day `daysBefore` earlier.
+    // global morning/midday/evening setting) on the day `daysBefore` earlier.
     kind?: 'offset' | 'clock';
-    daysBefore?: number;              // clock only: 0 = morning of, 1 / 7 / 30
-    timeOfDay?: 'morning' | 'evening'; // clock only: which global time to use
+    daysBefore?: number;                          // clock only: 0 = morning of, 1 / 2 / 7 / 30
+    timeOfDay?: 'morning' | 'midday' | 'evening'; // clock only: which global time to use
     notifId?: string;
 }
 
@@ -65,22 +65,23 @@ interface LogEntry {
 }
 
 // One-tap reminder presets. 'offset' presets fire `amount`/`unit` before the
-// appointment time; 'clock' presets fire at the global morning/evening time on
-// the day `daysBefore` earlier (0 = morning of the appointment day).
+// appointment time; 'clock' presets fire at the global morning/midday/evening
+// time on the day `daysBefore` earlier (0 = morning of the appointment day).
 type ReminderPreset = {
     label: string;
     kind: 'offset' | 'clock';
     amount?: number;
     unit?: 'minutes' | 'hours' | 'days';
     daysBefore?: number;
-    timeOfDay?: 'morning' | 'evening';
+    timeOfDay?: 'morning' | 'midday' | 'evening';
 };
 const REMINDER_PRESETS: ReminderPreset[] = [
-    { label: 'At time', kind: 'offset', amount: 0, unit: 'minutes' },
     { label: '1 hour', kind: 'offset', amount: 1, unit: 'hours' },
     { label: '2 hours', kind: 'offset', amount: 2, unit: 'hours' },
     { label: 'Morning of', kind: 'clock', daysBefore: 0, timeOfDay: 'morning' },
-    { label: 'Day', kind: 'clock', daysBefore: 1, timeOfDay: 'evening' },
+    { label: 'Day Before', kind: 'clock', daysBefore: 1, timeOfDay: 'midday' },
+    { label: 'Night Before', kind: 'clock', daysBefore: 1, timeOfDay: 'evening' },
+    { label: '2 Days Before', kind: 'clock', daysBefore: 2, timeOfDay: 'midday' },
     { label: 'Week', kind: 'clock', daysBefore: 7, timeOfDay: 'evening' },
     { label: 'Month', kind: 'clock', daysBefore: 30, timeOfDay: 'evening' },
 ];
@@ -354,8 +355,9 @@ export default function TodoScreen() {
 
         if (!task.dueDate || task.reminders.length === 0) return;
 
-        // Global morning/evening times (set in Settings) drive 'clock' reminders.
+        // Global morning/midday/evening times (set in Settings) drive 'clock' reminders.
         const morningTime = (await AsyncStorage.getItem('reminder_morning_time')) || '08:00';
+        const middayTime = (await AsyncStorage.getItem('reminder_midday_time')) || '12:00';
         const eveningTime = (await AsyncStorage.getItem('reminder_evening_time')) || '17:00';
 
         for (const reminder of task.reminders) {
@@ -366,7 +368,9 @@ export default function TodoScreen() {
             let fireTime: Date;
             if (reminder.kind === 'clock') {
                 // Fire at the chosen global time, `daysBefore` days before the date.
-                const which = reminder.timeOfDay === 'evening' ? eveningTime : morningTime;
+                const which = reminder.timeOfDay === 'evening' ? eveningTime
+                    : reminder.timeOfDay === 'midday' ? middayTime
+                    : morningTime;
                 const [chStr, cmStr] = which.split(':');
                 fireTime = new Date(`${fullYear}-${month}-${day}T00:00:00`);
                 fireTime.setDate(fireTime.getDate() - (reminder.daysBefore ?? 0));
@@ -430,7 +434,7 @@ export default function TodoScreen() {
     // Does the current selection already contain this preset?
     const isPresetSelected = (p: ReminderPreset): boolean => {
         if (p.kind === 'clock') {
-            return newReminders.some(r => r.kind === 'clock' && r.daysBefore === p.daysBefore);
+            return newReminders.some(r => r.kind === 'clock' && r.daysBefore === p.daysBefore && r.timeOfDay === p.timeOfDay);
         }
         return newReminders.some(r => r.kind !== 'clock' && r.amount === p.amount && r.unit === p.unit);
     };
@@ -439,7 +443,7 @@ export default function TodoScreen() {
     const togglePreset = (p: ReminderPreset) => {
         if (isPresetSelected(p)) {
             setNewReminders(newReminders.filter(r => {
-                if (p.kind === 'clock') return !(r.kind === 'clock' && r.daysBefore === p.daysBefore);
+                if (p.kind === 'clock') return !(r.kind === 'clock' && r.daysBefore === p.daysBefore && r.timeOfDay === p.timeOfDay);
                 return !(r.kind !== 'clock' && r.amount === p.amount && r.unit === p.unit);
             }));
             return;
