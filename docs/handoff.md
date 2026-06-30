@@ -1,38 +1,39 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #37 (2026-06-30) "Rebuild Step 3": WIRED LOOK AHEAD REMINDERS + RE-ARM, plus a delay tile-line and an on-tile Delay button. Code in `app/lookahead.tsx` + `app/_layout.tsx`; `tsc` clean; Simulator-validated. Code UNCOMMITTED → Patrick commits.
+## THIS SESSION — #38 (2026-06-30) "Rebuild Step 4 (To-Do half)": To-Do given its OWN self-contained reminder structure — not folded into the unified popup. New settable **Midday** time; rebuilt To-Do reminder presets; To-Do now sets up its own permission + handler; To-Do popup trimmed to **OK + Done**. `tsc` clean; Simulator-checked the new preset buttons. Steps 1–3 committed; **Step 4 code (`_layout.tsx`) + docs UNCOMMITTED → Patrick commits.**
 
-**Start-of-session fact:** working tree clean — all of #36 committed (`434845c Rebuild Step 2 #36 Done`). Confirmed at session start.
+**Start-of-session fact:** working tree clean — all of #37 committed (`75e29ba Rebuild Step 3 #37`). Confirmed at session start.
 
-**Goal = STEP 3 of the Reminder Rebuild #34 BUILD PLAN** (`docs/reminder-audit.md`): give the Look Ahead page its reminders — schedule notifications, make Done roll each item to its next date, and add a long-lead Delay (Day / Week / Month). Simulator-first; the real-device gate is **PHONE CHECKPOINT A** (still pending).
+**Goal = STEP 4 of the Reminder Rebuild #34 BUILD PLAN** ("Unified popups"). After discussion it was **reshaped** (see decision below): this session did the **To-Do half**. The routine-page consolidation is still ahead.
 
-**Key decision (Patrick, this session):** use ONE uniform mechanism for all four intervals — NOT the spec's split (native repeats for Monthly/Yearly, re-arm for 3/6-month). Every item is a single dated reminder that the app re-arms; the page self-heals on load. **Items only advance when marked done — never auto-roll on load.**
+**KEY DECISION (Patrick, #38) — To-Do is NOT unified with the others.** A To-Do is a fixed one-time appointment: it can't be "done late," and it can't be delayed — if the time changes you delete it and make a new one. Patrick's past trouble came from To-Do *riding on* the other pages' notification setup (To-Do never requested permission or set the handler — confirmed in code; My Day/Pets did it). So To-Do gets its **own** complete reminder structure (own permission + handler, **no Delay/Snooze**, just **OK + Done**). The unified-popup consolidation now applies only to the three repeating pages — **My Day, My Week, Pets** (Timer still excluded).
 
-**What was done (code, two files):**
-1. **`app/lookahead.tsx`** — on open: request permission + set the handler (mirrors Pets) + `scheduleAll` (cancel this page's own `source:'lookahead'` reminders, then schedule one `DATE` reminder per item whose due date/time is still future). Reschedules on add / edit / delete so the page stays self-healing. The on-screen **Log** button now also rolls the item forward (`advanceItem` adds the interval's months, repeating until the date is in the future, clamping to the anchor day) and re-arms — in Step 2 Log only wrote history. New `lookaheadactions` category buttons handled.
-2. **`app/_layout.tsx`** — registered the **`lookaheadactions`** category (Done, Delay 1 Day / 1 Week / 1 Month). **Done** (source `lookahead`/`lookaheaddelay`): logs the completion fire-time-dated, advances the item to its next future date, cancels that item's base + delayed reminders, arms the next one. **Delay** buttons: push just that one reminder out a day/week/month from now (tagged `lookaheaddelay` so reschedule-on-load leaves it alone), replacing any prior delay. Plain tap routes to `/lookahead`.
-3. **Delay add-ons (Patrick asked mid-session):** item gained `delayedUntil` + `delayedLabel`. Both the banner Delay (handled in `_layout.tsx`) and a new **on-tile Delay button** (orange, between Edit and Log, with a Day/Week/Month picker mirroring Pets' Snooze) stamp them, and the tile shows an orange **"▶ Delayed 1 day/1 week/1 month"** line. The stamp clears when the item is marked done, when it's edited, or once the delayed time has passed (swept on load).
+**What was done (4 small changes, built + reviewed one at a time):**
+1. **Settings + backup** (`app/settings.tsx`, `app/backup.tsx`) — added a third settable time **"Midday"** (`reminder_midday_time`, default 12:00) between Morning and Evening, with its own picker + hint; included in backups. **[committed]**
+2. **To-Do presets** (`app/todo.tsx`) — removed **"At time"**; new list = **1 hour · 2 hours · Morning of · Day Before (midday) · Night Before (evening) · 2 Days Before (midday) · Week · Month**. Added `'midday'` to the `timeOfDay` types and wired it into `scheduleReminders` (reads `reminder_midday_time`). Fixed preset match/toggle to key on `timeOfDay` too, since **Day Before** and **Night Before** share `daysBefore: 1` — they now toggle independently (Patrick confirmed via screenshot). **[committed]**
+3. **To-Do own permission + handler** (`app/todo.tsx`) — the load `useEffect` now calls `requestPermissionsAsync` + `setNotificationHandler` (mirrors `lookahead.tsx`), so opening To-Do directly no longer depends on My Day/Pets. **[committed]**
+4. **To-Do popup** (`app/_layout.tsx`) — `todosnooze` category trimmed to **OK + Done** (Snooze 15/30/60 removed). Category id kept as `todosnooze` (now a misnomer — cosmetic, could rename later). The shared snooze handler is left intact for My Day/Pets; To-Do's `done`/`ok` handlers unchanged (Done still logs + removes the one-time task). **[UNCOMMITTED → Patrick commits]**
 
-**Verification:** `tsc --noEmit` clean (0 errors). Simulator (Patrick): a Look Ahead reminder fired showing Done + the three Delay buttons; **Done** logged it and rolled Phone Bill Jun 30 → **Jul 30** (stayed on the list, logged from fire time); **Delay 1 Day** from the banner dismissed without logging; the **"▶ Delayed …"** line appears from both the banner and the on-tile button; the three row buttons (Edit / Delay / Log) fit even on the wrapped "Furnace Filter Replacement". Not yet on a real device — first device gate is **PHONE CHECKPOINT A**.
+**Verification:** `tsc --noEmit` clean after every step. Simulator (Patrick): new reminder buttons render and Day Before / Night Before toggle independently (screenshots). **NOT device-tested:** notification firing, the OK/Done buttons on a real lock screen, sound, tap-routing. Note: with "At time" gone, a quick-fire Simulator test isn't easy (soonest preset is 1 hour before) — **Patrick will test on his phone.**
 
-**Files touched (#37):** `app/lookahead.tsx`, `app/_layout.tsx` (code); `docs/handoff.md` + `docs/parked-items.md` + `docs/pending.txt` (end-of-session refresh). Code + docs UNCOMMITTED → Patrick commits.
+**Files touched (#38):** `app/settings.tsx`, `app/backup.tsx`, `app/todo.tsx`, `app/_layout.tsx` (code); `docs/handoff.md` + `docs/parked-items.md` + `docs/pending.txt` (end-of-session refresh). Step 4 code + docs UNCOMMITTED → Patrick commits.
 
-**➤ NEXT SESSION** — two things outstanding from the BUILD PLAN, Patrick's pick:
-- **PHONE CHECKPOINT A** (1 cloud build): confirm on the real device that To-Do one-shots + Look Ahead reminders fire, route on tap, and the Done/Delay buttons behave. This is the device gate that Steps 1–3 have been deferring.
-- **STEP 4 "Unified popups"** [Simulator]: one shared helper + the same OK / Skip / Delay / Done behavior across To-Do, My Day, My Week, Pets (popups only; Timer excluded) → then **PHONE CHECKPOINT B**.
+**➤ NEXT SESSION** — Patrick's pick:
+- **PHONE CHECKPOINTS A + B** (cloud build): the big device test Patrick is about to do — confirm To-Do one-shots + Look Ahead reminders fire and route, and that the To-Do popup's OK/Done behave on a real lock screen. Patrick said he "has a lot of testing to do."
+- **STEP 4, routine half** [Simulator]: fold **My Day / My Week / Pets** onto one shared popup helper (OK / Skip / Delay / Done). To-Do is now deliberately out of this.
+- **STEP 5 — Integrate Watch List** as a home page (no notifications).
 
 ---
 
-## SESSION — #36 (2026-06-30) "Rebuild Step 2": BUILT THE "LOOK AHEAD" PAGE. New `app/lookahead.tsx` + home tile/route + `_layout.tsx` Stack.Screen; `tsc` clean; Simulator-validated. NO notification code (reminders + re-arm were STEP 3, now done in #37). Committed (`434845c Rebuild Step 2 #36 Done`).
+## SESSION — #37 (2026-06-30) "Rebuild Step 3": WIRED LOOK AHEAD REMINDERS + RE-ARM, plus a delay tile-line and an on-tile Delay button. Code in `app/lookahead.tsx` + `app/_layout.tsx`; `tsc` clean; Simulator-validated. Committed (`75e29ba Rebuild Step 3 #37`).
 
-**Goal = STEP 2 of the Reminder Rebuild #34 BUILD PLAN:** build the new **Look Ahead** home-screen page — page + home tile + route + add/edit form + Monthly / 3 Months / 6 Months / Yearly subheadings + its own history. Simulator-first. Reminders explicitly NOT part of this step.
+**Goal = STEP 3 of the Reminder Rebuild #34 BUILD PLAN:** give the Look Ahead page its reminders — schedule notifications, make Done roll each item to its next date, and add a long-lead Delay (Day / Week / Month).
 
-**What was done (code, three files):**
-1. **`app/lookahead.tsx`** (new) — built in the Pets (`mollie.tsx`) style: header, items grouped under four subheadings shortest-first (Monthly → 3 Months → 6 Months → Yearly), each row = label + first-due date + time, with Edit / Log / swipe-to-delete / tap-to-select reorder (reorder swaps only within the item's own interval group). Add/Edit modal = Name + a Date stepper + Time stepper + Repeat-Every selector. Own Look Ahead Log + Clear All + per-entry swipe-delete + note-edit. Item model `{id,label,year,month,day,hour,minute,interval}`; storage keys `lookahead_items` + `lookahead_history`.
-2. **`app/home.tsx`** — added a `{ id: 'lookahead', label: 'Look Ahead', icon: '🔭' }` tile + its route.
-3. **`app/_layout.tsx`** — added `<Stack.Screen name="lookahead" ... />`.
+**Key decision (Patrick, #37):** use ONE uniform mechanism for all four intervals — every item is a single dated reminder the app re-arms; the page self-heals on load. **Items only advance when marked done — never auto-roll on load.**
 
-**Verification:** `tsc` clean. Simulator: Patrick added items across all four intervals and confirmed grouping, the add/edit modal, date/time steppers, and Repeat Every. (Reminders were added in #37.)
+**What was done:** `app/lookahead.tsx` — on open: request permission + set the handler + `scheduleAll`; reschedules on add/edit/delete; the Log button now also rolls the item forward (`advanceItem`) and re-arms. `app/_layout.tsx` — registered the `lookaheadactions` category (Done, Delay 1 Day/Week/Month); Done logs + advances + re-arms; Delay buttons push just that one reminder out (tagged `lookaheaddelay`). Item gained `delayedUntil`/`delayedLabel` + an on-tile orange Delay button and a "▶ Delayed …" tile line that clears on done/edit/once passed.
+
+**Verification:** `tsc` clean. Simulator (Patrick): a Look Ahead reminder fired with Done + three Delay buttons; Done rolled Phone Bill Jun 30 → Jul 30; the "▶ Delayed …" line appears from both the banner and the on-tile button. Not yet on a real device — first device gate is **PHONE CHECKPOINT A**.
 
 ---
 

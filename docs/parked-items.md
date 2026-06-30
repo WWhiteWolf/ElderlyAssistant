@@ -7,9 +7,10 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-06-30 (session #37 — Step 3 done: Look Ahead reminders + re-arm,
-plus a "▶ Delayed …" tile line and an on-tile Delay button; Simulator-validated.
-Next: PHONE CHECKPOINT A and/or Step 4 popup consolidation).
+Last updated: 2026-06-30 (session #38 — Step 4 To-Do half done: To-Do given its OWN
+self-contained reminder structure (own permission+handler, OK+Done only, no Delay), a
+new settable Midday time, and rebuilt presets; Simulator-checked. Next: phone testing
+(Checkpoints A+B) and/or Step 4 routine half — My Day/My Week/Pets shared popup).
 
 ---
 
@@ -37,16 +38,25 @@ pages. Take ONE piece per session. **Order: pages first, then the popup consolid
   button (orange, Pets-Snooze style), plus an orange **"▶ Delayed …"** line on the tile
   that clears on done / edit / once the delay time passes. `tsc` clean. Real-device check
   is **PHONE CHECKPOINT A**, still pending.
-- **PHONE CHECKPOINT A (1 cloud build) — still owed.** ← the device gate Steps 1–3 have
-  deferred. On the real phone confirm: To-Do one-shots + Look Ahead reminders fire, route
-  on tap, and the Look Ahead Done / Delay buttons behave. Batch it whenever Patrick wants
-  a build (can ride along with other work).
-- **Popup reminder consolidation (popups only this round; Timer excluded).** ← **NEXT
-  (Step 4).** One shared
-  approach across To-Do / My Day / My Week / Pets: same buttons everywhere — OK (silence
-  this popup), Skip (this occurrence only), Delay, Done (log original + done time;
-  past-day banner doesn't check off today's). Fixes the silent-snooze, the To-Do
-  missing-permission/handler, and the divergent log shapes. Full audit + table in spec.
+- **✅ DONE (#38, Simulator-checked) — Step 4, To-Do half: To-Do gets its OWN reminder
+  structure** (`app/settings.tsx`, `app/backup.tsx`, `app/todo.tsx`, `app/_layout.tsx`).
+  **Decision (Patrick): To-Do is NOT unified with the others** — it's a fixed one-time
+  appointment (can't be done late, can't be delayed; a change = a new appointment), and
+  its old trouble was *riding on* the other pages' notification setup. So: To-Do now
+  requests its own permission + sets its own handler; its popup is **OK + Done only** (no
+  Snooze/Delay); presets rebuilt (dropped "At time", added Day Before/Night Before/2 Days
+  Before, plus a new settable **Midday** time). `tsc` clean. Real-device check is part of
+  the checkpoints below.
+- **PHONE CHECKPOINTS A + B (cloud build) — owed.** Patrick is about to do a big round of
+  device testing. On the real phone confirm: To-Do one-shots + Look Ahead reminders fire,
+  route on tap, the Look Ahead Done/Delay buttons behave, AND the To-Do popup's OK/Done
+  behave on a real lock screen (sound, past-day rule). Batch whenever Patrick builds.
+- **Popup reminder consolidation — ROUTINE pages only now (Step 4, routine half).** ←
+  **NEXT.** One shared approach across **My Day / My Week / Pets** (To-Do now excluded by
+  the #38 decision; Timer excluded): same buttons everywhere — OK (silence this popup),
+  Skip (this occurrence only), Delay, Done (log original + done time; past-day banner
+  doesn't check off today's). Fixes the silent-snooze and the divergent log shapes. Full
+  audit + table in spec.
 - **Integrate the "Watch List" page** (independent of reminders). Already built as a
   standalone Expo app in `Projects/WatchList` (movie/TV tracker, no notifications). Fold
   in as a new home-screen page: `app/watchlist.tsx` + home tile + route; port `App.js` /
@@ -131,6 +141,13 @@ the louder timer alarm). (The old 3/6-month + Monthly/Yearly To-Do repeat items 
   tagline still needs a home (an in-app subtitle and/or the App Store subtitle field — it
   can't go in the app name).
 - **Match the button labels.** To-Do's header says "New Task" while Vault's says "+ Add."
+- **Rename the `todosnooze` notification category (cosmetic).** After #38 it holds only
+  OK + Done — no snooze — so the id is a misnomer. Renaming touches `_layout.tsx` (the
+  category registration) and `app/todo.tsx` (`categoryIdentifier: 'todosnooze'` in
+  `scheduleReminders`). Purely internal; no behavior change.
+- **"At time" reminder option, possibly revisit.** Removed from To-Do in #38 (Patrick's
+  call — soonest preset is now "1 hour" before). If after phone testing Patrick misses an
+  exact-time alert, it can be added back as a preset.
 - **Add an on-tile Snooze button to To-Do** (`app/todo.tsx`). My Day and Pets Day each have
   an on-page Snooze (15/30/60) on every tile; To-Do only has Snooze on the notification
   banner. Add the same on-tile control for consistency.

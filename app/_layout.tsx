@@ -101,14 +101,14 @@ export default function RootLayout() {
         { identifier: 'snooze30', buttonTitle: 'Snooze 30 min' },
         { identifier: 'snooze60', buttonTitle: 'Snooze 60 min' },
       ]);
+      // To-Do is one-time appointments only — no Snooze/Delay (Patrick, #38). A
+      // To-Do popup offers just OK and Done. (Category id kept as 'todosnooze' so
+      // todo.tsx's scheduling doesn't need to change; the name is now a misnomer.)
       await Notifications.setNotificationCategoryAsync('todosnooze', [
-        { identifier: 'done', buttonTitle: 'Done' },
-        { identifier: 'snooze15', buttonTitle: 'Snooze 15 min' },
-        { identifier: 'snooze30', buttonTitle: 'Snooze 30 min' },
-        { identifier: 'snooze60', buttonTitle: 'Snooze 60 min' },
         // OK = acknowledge & dismiss just this alert. Doesn't open the app, mark
         // the task done, or touch the task's other scheduled reminders.
         { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
+        { identifier: 'done', buttonTitle: 'Done' },
       ]);
       // My Week reminders: mark Done, or push the reminder one day forward.
       await Notifications.setNotificationCategoryAsync('myweekactions', [
