@@ -129,7 +129,26 @@ export default function TodoScreen() {
     const [showToday, setShowToday] = useState(false);
 
     useEffect(() => {
-        loadData();
+        const setup = async () => {
+            // To-Do owns its own notification setup so it never depends on another
+            // page (My Day / Pets) having been opened first to grant permission or
+            // register the handler.
+            const { status } = await Notifications.requestPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Permission Needed', 'Please enable notifications in settings.');
+            }
+            Notifications.setNotificationHandler({
+                handleNotification: async () => ({
+                    shouldShowAlert: true,
+                    shouldPlaySound: true,
+                    shouldSetBadge: false,
+                    shouldShowBanner: true,
+                    shouldShowList: true,
+                }),
+            });
+            await loadData();
+        };
+        setup();
     }, []);
 
 
