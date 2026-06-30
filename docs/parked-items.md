@@ -7,8 +7,8 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-06-28 (session #32 — retired To-Do's Daily & Weekly; removed that
-cleanup item).
+Last updated: 2026-06-29 (session #33 — added To-Do on-tile Done + My Week Done toggle;
+parked 3 new issues from testing).
 
 ---
 
@@ -27,6 +27,18 @@ the louder timer alarm).
 
 ## Bugs / correctness (still open)
 
+- **To-Do reminder fired early — needs a clean phone re-test** (`app/todo.tsx`). A To-Do
+  Patrick recalls setting for 23:30 fired around 21:15. Reading the scheduling code found
+  **no bug**: the only thing that produces an early fire is the "2 hours" before-reminder
+  preset, and 21:15 is exactly 2h before a 23:15 due time — so this is most likely the
+  preset working as designed, not a fault. Confirm before chasing it: on the phone, make a
+  new task due a few minutes out, tap **only "At time"** (no before-offset), and watch
+  whether it fires on the minute. If that fires on time, the original was just the 2-hour
+  preset and there's nothing to fix.
+- **To-Do Custom Category cancel wipes the new task** (`app/todo.tsx`). In New Task,
+  opening the "Custom Category" second popup and tapping **Cancel** closes BOTH popups and
+  loses the in-progress task. Cancel on the category popup should close only that popup and
+  return to the New Task form with entries intact.
 - **"3 Months" and "6 Months" repeat options do nothing yet** (`app/todo.tsx`). iOS has
   no native every-3/6-month trigger, and those two options have no anchor-date picker in
   the form. Approach to design later: add a "starting date" picker, then pre-schedule the
@@ -68,6 +80,8 @@ the louder timer alarm).
 
 ## Nice-to-have later (UI polish)
 
+- **Name the backup folder** (`app/backup.tsx`). Give the exported backup folder/file a
+  clear, recognizable name so it's easy to find where it's saved (e.g. iCloud Drive).
 - **Project Planner reminders do nothing yet** (`app/planner.tsx`). The screen has reminder
   fields, but they aren't wired to any notifications. Low priority.
 - **Finish the "Elyfont" renaming.** The in-app home greeting still says "Remember When";

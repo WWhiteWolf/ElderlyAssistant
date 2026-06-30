@@ -1,5 +1,5 @@
 PENDING WORK — plain-language list
-Last updated: 2026-06-28 (session #32 — retired To-Do's Daily & Weekly)
+Last updated: 2026-06-29 (session #33 — To-Do Done button + My Week Done toggle)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -11,30 +11,39 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- Most recently finished: the big-picture project roadmap (docs/roadmap.md,
-  committed), and before that the Security Tidy-up (the old 6-digit PIN is
-  fully retired — security is now Face ID / passcode).
-- Just done (this session, code not yet committed): retired To-Do's old
-  Daily and Weekly options. Daily and Weekly are gone from the To-Do
-  recurring picker — you confirmed on the phone. My Day still owns daily and
-  My Week still owns weekly, so nothing was lost. Code is ready for you to
-  commit and build; no new items added to this list.
-- The one thing still unconfirmed: whether the Monthly and Yearly repeating
-  To-Do reminders actually fire on the phone (see "NEEDS A PHONE TEST"
-  below). Everything else in recent sessions has been tested on the phone.
+- Most recently finished: retired To-Do's old Daily and Weekly options
+  (committed), and before that the project roadmap.
+- Just done (this session #33, tested good, not yet committed): two fixes from
+  your testing. (1) To-Do now has a "Done" button right on each task tile, next
+  to Edit — no more digging into the Edit form to finish a task. (2) My Week's
+  Done button is now a toggle: tap the green checkmark to "un-do" a chore and
+  make it active again early (out of food, need clean pants); doing it again
+  logs a fresh entry. Both confirmed working on the phone — ready for you to
+  commit.
+- Still unconfirmed on the phone: whether the Monthly/Yearly repeating To-Do
+  reminders fire (see "NEEDS A PHONE TEST" below).
 - To decide what's next: read the lists below and pick one. Nothing here is
   urgent.
 
 
-NEEDS A PHONE TEST (built and committed, just not confirmed on the phone yet)
+NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
 ----------------------------------------------------------------------------
 - Monthly and Yearly repeating To-Do reminders. The code is in and should
   fire on schedule (e.g. a monthly bill, a yearly furnace-filter reminder),
   but you haven't watched one actually go off on the phone yet.
+- A To-Do reminder that seemed to fire early. You recall setting one for
+  23:30 and it went off around 21:15. Checking the code found no bug — that's
+  exactly 2 hours before a 23:15 time, so it was most likely the "2 hours"
+  before-reminder option doing its job. To be sure: make a new task due a few
+  minutes out, pick ONLY "At time," and watch if it fires on the minute.
 
 
 STILL BROKEN OR UNFINISHED (small bugs)
 ---------------------------------------
+- To-Do "Custom Category" cancel wipes the new task. When adding a New Task,
+  if you open the Custom Category second popup and tap Cancel, BOTH popups
+  close and the task you were entering is lost. Cancel should only back out of
+  the category popup and return you to the task you were filling in.
 - The "3 Months" and "6 Months" repeat options on a To-Do do nothing yet.
   The phone has no built-in every-3-or-6-month alarm, and those two options
   don't have a starting-date picker, so there's nothing to anchor them to.
@@ -59,6 +68,8 @@ DECISIONS TO MAKE WHEN YOU'RE READY
 
 NICE-TO-HAVE LATER (polish, low priority)
 -----------------------------------------
+- Name the backup folder. Give the exported backup folder/file a clear name
+  so it's easy to spot wherever it's saved (e.g. iCloud Drive).
 - Project Planner has reminder fields on screen, but they aren't connected
   to anything yet.
 - Finish the "Elyfont" renaming: the in-app home greeting still says

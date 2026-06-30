@@ -295,6 +295,28 @@ export default function MyWeekScreen() {
         setPendingLogId(null);
     };
 
+    // Un-done / reset: clear the ✓ so a chore goes active again before its next
+    // scheduled day (e.g. out of food, need clean pants). Only the checkmark is
+    // cleared — the weekly reminder and the existing log entry are left alone, so
+    // when the chore is actually done again it logs a fresh entry.
+    const undoDone = (id: string) => {
+        const item = chores.find(i => i.id === id);
+        if (!item) return;
+        Alert.alert('Reactivate Chore', `Mark "${item.label}" as not done?`, [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Mark not done',
+                onPress: () => {
+                    const updated = chores.map(s =>
+                        s.id === id ? { ...s, completed: false, doneAt: undefined } : s
+                    );
+                    setChores(updated);
+                    saveData(updated, history);
+                },
+            },
+        ]);
+    };
+
     const addEntry = () => {
         setActiveId(null);
         setTempName('');
@@ -462,7 +484,7 @@ export default function MyWeekScreen() {
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={[styles.logBtn, item.completed && styles.loggedBtn]}
-                                    onPress={() => openLogModal(item.id)}
+                                    onPress={() => item.completed ? undoDone(item.id) : openLogModal(item.id)}
                                 >
                                     <Text style={styles.logBtnText}>{item.completed ? '✓' : 'Done'}</Text>
                                 </TouchableOpacity>

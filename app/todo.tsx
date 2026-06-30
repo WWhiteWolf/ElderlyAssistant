@@ -662,9 +662,14 @@ export default function TodoScreen() {
                             <View style={styles.taskContent}>
                                 <View style={styles.taskTopRow}>
                                     <Text style={styles.taskTitle}>{task.title}</Text>
-                                    <TouchableOpacity onPress={() => openEditTask(task)} style={styles.editBtn}>
-                                        <Text style={styles.editBtnText}>Edit</Text>
-                                    </TouchableOpacity>
+                                    <View style={styles.taskBtnRow}>
+                                        <TouchableOpacity onPress={() => completeTask(task)} style={styles.doneBtn}>
+                                            <Text style={styles.doneBtnText}>Done</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => openEditTask(task)} style={styles.editBtn}>
+                                            <Text style={styles.editBtnText}>Edit</Text>
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <View style={styles.taskBottomRow}>
@@ -1261,6 +1266,15 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     pressToEdit: { fontSize: 11, color: '#aaa', fontStyle: 'italic' },
+    taskBtnRow: { flexDirection: 'row', alignItems: 'center' },
+    doneBtn: {
+        backgroundColor: Colors.bridge,
+        paddingVertical: 5,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+        marginRight: 6,
+    },
+    doneBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
     editBtn: {
         backgroundColor: Colors.background,
         borderWidth: 0.5,
