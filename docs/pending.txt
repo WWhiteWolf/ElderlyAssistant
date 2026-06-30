@@ -1,5 +1,5 @@
 PENDING WORK — plain-language list
-Last updated: 2026-06-30 (session #34 — planned the reminder rebuild + two new pages)
+Last updated: 2026-06-30 (session #35 — Step 1 done: To-Do is now one-time only)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -11,21 +11,21 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- Most recently finished in code: To-Do on-tile "Done" button + My Week "Done"
-  toggle (#33, committed), and before that retiring To-Do's Daily/Weekly.
-- This session (#34) was PLANNING — no app code changed. We mapped out why the
-  reminders behave inconsistently and agreed a full plan to rebuild them, plus
-  two new pages. It's all written up in docs/reminder-audit.md (the master plan).
-  Only the docs changed this session — ready for you to commit.
-- The plan, in a nutshell: (1) take all the repeating options OUT of To-Do so
-  To-Do is just one-time tasks; (2) build a new home-screen page "Look Ahead"
-  for the repeating stuff (monthly / every 3 months / every 6 months / yearly),
-  working like My Day with its own reminders and history; (3) then make every
-  reminder popup behave the same everywhere (same OK / Skip / Delay / Done
-  buttons); and separately (4) fold in your "Watch List" movie/TV app as another
-  page. We'll do ONE of these per session, pages first.
-- To decide what's next: pick one piece from "BIG PLANNED WORK" below. Nothing
-  here is urgent.
+- This session (#35) finished Step 1 of the reminder rebuild: all the repeating
+  options (Monthly, Yearly, 3 & 6 months) are now OUT of To-Do — it's just
+  one-time tasks. Checked in the Simulator (the New Task form no longer shows a
+  Recurring choice). The code (todo.tsx + _layout.tsx) and these docs are ready
+  for you to commit. A real-phone check of To-Do reminders is bundled into
+  "Checkpoint A" later, after the Look Ahead page is built.
+- Before that, session #34 was PLANNING: we mapped out why reminders behave
+  inconsistently and wrote the full plan in docs/reminder-audit.md (committed).
+- The plan, in a nutshell: (1) ✅ DONE — take repeating options OUT of To-Do;
+  (2) NEXT — build a new home-screen page "Look Ahead" for the repeating stuff
+  (monthly / every 3 months / every 6 months / yearly), working like My Day with
+  its own reminders and history; (3) then make every reminder popup behave the
+  same everywhere (same OK / Skip / Delay / Done buttons); and separately (4)
+  fold in your "Watch List" movie/TV app as another page. ONE per session.
+- What's next: Step 2 — build the Look Ahead page. Nothing here is urgent.
 
 
 BIG PLANNED WORK (the #34 plan — ONE effort, pages first, Simulator-first)
@@ -35,9 +35,9 @@ done as a set and don't get lost among other items. As much as practical is
 built and checked in the Simulator first (free) before spending a phone build;
 the real-phone tests are batched into two checkpoints. Full details + the
 ordered build checklist live in docs/reminder-audit.md. The four pieces:
-- Strip the repeating options out of To-Do (Monthly, Yearly, 3 & 6 months) so
-  To-Do is just one-time tasks. Nothing of yours to move over.
-- Build the new "Look Ahead" page (home screen, like My Day): all the repeating
+- [DONE #35] Strip the repeating options out of To-Do (Monthly, Yearly, 3 & 6
+  months) so To-Do is just one-time tasks. Done, Simulator-checked.
+- [NEXT] Build the new "Look Ahead" page (home screen, like My Day): all the repeating
   reminders, grouped Monthly / 3 Months / 6 Months / Yearly, each with its own
   time and history, and Delay choices of Day / Week / Month.
 - Make every reminder popup behave the same across To-Do, My Day, My Week and

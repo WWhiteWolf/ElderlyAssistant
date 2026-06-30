@@ -213,10 +213,9 @@ export default function RootLayout() {
       const source = data?.source as string | undefined;
       const itemId = data?.itemId as string | undefined;
 
-      // To-Do "Done": log the completion. A repeating task (monthly/yearly)
-      // fires again on its own, so leave its schedule and the task in
-      // place — just record it as handled this time. A one-time task is finished
-      // for good: remove it and cancel all of its alerts. Mirrors completeTask.
+      // To-Do "Done": log the completion, then remove the task and cancel all of
+      // its alerts. Every To-Do is a one-time task now (recurrence removed, #35),
+      // so a Done always finishes the task for good. Mirrors completeTask.
       if (source === 'todo') {
         (async () => {
           const raw = await AsyncStorage.getItem('todo_tasks');
@@ -227,13 +226,8 @@ export default function RootLayout() {
             const log = logRaw ? (JSON.parse(logRaw) as any[]) : [];
             // To-Do log records the task's ORIGINAL set date/time plus when
             // Done was TAPPED (Patrick, #27). The reminder's fire time is not
-            // recorded here. scheduledFor = the due date/time, falling back to
-            // the recurring pattern (monthly day / yearly month).
-            const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            let scheduledFor = '';
-            if (task.dueDate) scheduledFor = task.dueDate;
-            else if (task.recurring === 'monthly') scheduledFor = `Day ${task.recurDay}`;
-            else if (task.recurring === 'yearly') scheduledFor = `${MONTHS[(task.recurMonth || 1) - 1]} ${task.recurDay}`;
+            // recorded here.
+            let scheduledFor = task.dueDate || '';
             if (task.dueTime) scheduledFor += (scheduledFor ? ' at ' : '') + task.dueTime;
             const entry = {
               id: Date.now().toString(),
@@ -243,13 +237,11 @@ export default function RootLayout() {
               notes: task.notes,
             };
             await AsyncStorage.setItem('todo_log', JSON.stringify([entry, ...log].slice(0, 100)));
-            if (!task.recurring || task.recurring === 'none') {
-              await AsyncStorage.setItem('todo_tasks', JSON.stringify(tasks.filter((t) => t.id !== itemId)));
-              const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-              for (const n of scheduled) {
-                if (n.content.data?.taskId === itemId) {
-                  await Notifications.cancelScheduledNotificationAsync(n.identifier);
-                }
+            await AsyncStorage.setItem('todo_tasks', JSON.stringify(tasks.filter((t) => t.id !== itemId)));
+            const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+            for (const n of scheduled) {
+              if (n.content.data?.taskId === itemId) {
+                await Notifications.cancelScheduledNotificationAsync(n.identifier);
               }
             }
           }

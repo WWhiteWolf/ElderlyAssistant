@@ -7,8 +7,8 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-06-30 (session #34 — planned the Reminder Notification
-Consolidation; added the Look Ahead + Watch List pages as planned work).
+Last updated: 2026-06-30 (session #35 — Step 1 done: stripped recurrence from
+To-Do, one-time only, Simulator-validated; device check folded into Checkpoint A).
 
 ---
 
@@ -17,11 +17,12 @@ Consolidation; added the Look Ahead + Watch List pages as planned work).
 A multi-session effort to make reminders behave the same everywhere, plus two new
 pages. Take ONE piece per session. **Order: pages first, then the popup consolidation.**
 
-- **Strip recurrence out of To-Do → one-time only** (`app/todo.tsx`, `app/_layout.tsx`).
-  Remove Monthly + Yearly (live code) and the 3/6-month stubs. No data to migrate
-  (confirmed). This supersedes the old "3/6-month" and "Monthly/Yearly firing test"
-  items below.
-- **Build the new "Look Ahead" home-screen page.** Works like My Day/Week/Pets. Items
+- **✅ DONE (#35, Simulator-validated) — Stripped recurrence out of To-Do → one-time
+  only** (`app/todo.tsx`, `app/_layout.tsx`). Removed Monthly + Yearly live code and the
+  3/6-month stubs; To-Do is now one-time tasks only. `tsc` clean. Real-device check is
+  folded into Checkpoint A. (Superseded the old "3/6-month" + "Monthly/Yearly firing
+  test" items below — nothing left to do there.)
+- **Build the new "Look Ahead" home-screen page.** ← **NEXT (Step 2).** Works like My Day/Week/Pets. Items
   grouped under Monthly / 3 Months / 6 Months / Yearly; each = label + first due date +
   time + repeat interval; nags, Done logs + re-arms next cycle; own history; Delay =
   Day / Week / Month. 3/6-month re-armed as DATE one-shots (no native iOS trigger).

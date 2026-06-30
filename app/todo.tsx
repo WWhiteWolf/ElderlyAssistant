@@ -20,10 +20,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/Colors';
 
 type Priority = 'Urgent' | 'Normal' | 'Someday';
-type RecurType = 'none' | 'monthly' | 'every3months' | 'every6months' | 'yearly';
-
-// Max day-of-month per month (1-based index via month-1). Feb allows 29 (leap).
-const DAYS_IN_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
 interface Category {
     id: string;
@@ -49,9 +45,6 @@ interface Task {
     title: string;
     categoryId: string;
     priority: Priority;
-    recurring: RecurType;
-    recurDay: number;      // 1-31 for monthly (day of month)
-    recurMonth: number;    // 1-12 for yearly only
     taskType: 'scheduled' | 'background';
     dueDate: string;
     dueTime: string;
@@ -121,7 +114,6 @@ export default function TodoScreen() {
     const [newTitle, setNewTitle] = useState('');
     const [newCategory, setNewCategory] = useState('c1');
     const [newPriority, setNewPriority] = useState<Priority>('Normal');
-    const [newRecurring, setNewRecurring] = useState<RecurType>('none');
     const [newDueDate, setNewDueDate] = useState('');
     const [newDueTime, setNewDueTime] = useState('');
     const [newNotes, setNewNotes] = useState('');
@@ -133,8 +125,6 @@ export default function TodoScreen() {
     const [newTaskStatus, setNewTaskStatus] = useState<'Active' | 'On Hold' | 'Completed'>('Active');
     const [newTaskOnHoldNote, setNewTaskOnHoldNote] = useState('');
     const [showWeekAhead, setShowWeekAhead] = useState(false);
-    const [newRecurDay, setNewRecurDay] = useState(0);
-    const [newRecurMonth, setNewRecurMonth] = useState(1);
     const [showToday, setShowToday] = useState(false);
 
     useEffect(() => {
@@ -182,9 +172,6 @@ export default function TodoScreen() {
         setNewTitle('');
         setNewCategory('c1');
         setNewPriority('Normal');
-        setNewRecurring('none');
-        setNewRecurDay(0);
-        setNewRecurMonth(1);
         setNewTaskType('scheduled');
         setNewDueDate('');
         setNewDueTime('');
@@ -205,9 +192,6 @@ export default function TodoScreen() {
             title: newTitle.trim(),
             categoryId: newCategory,
             priority: newPriority,
-            recurring: newRecurring,
-            recurDay: newRecurDay,
-            recurMonth: newRecurMonth,
             taskType: newTaskType,
             dueDate: newDueDate,
             dueTime: newDueTime,
@@ -237,9 +221,6 @@ export default function TodoScreen() {
             title: newTitle.trim(),
             categoryId: newCategory,
             priority: newPriority,
-            recurring: newRecurring,
-            recurDay: newRecurDay,
-            recurMonth: newRecurMonth,
             taskType: newTaskType,
             dueDate: newDueDate,
             dueTime: newDueTime,
@@ -279,11 +260,7 @@ export default function TodoScreen() {
                     cancelReminders(task.id);
                     const completedDate = new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' });
                     // Original set date/time, matching the banner Done in _layout.tsx (#27).
-                    const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                    let scheduledFor = '';
-                    if (task.dueDate) scheduledFor = task.dueDate;
-                    else if (task.recurring === 'monthly') scheduledFor = `Day ${task.recurDay}`;
-                    else if (task.recurring === 'yearly') scheduledFor = `${MONTHS[(task.recurMonth || 1) - 1]} ${task.recurDay}`;
+                    let scheduledFor = task.dueDate || '';
                     if (task.dueTime) scheduledFor += (scheduledFor ? ' at ' : '') + task.dueTime;
                     const logEntry: LogEntry = {
                         id: Date.now().toString(),
@@ -294,15 +271,7 @@ export default function TodoScreen() {
                     };
                     const updatedLog = [logEntry, ...log].slice(0, 100);
                     saveLog(updatedLog);
-                    if (task.recurring !== 'none') {
-                        const updated = tasks.map(t =>
-                            t.id === task.id ? { ...t, completed: false } : t
-                        );
-                        saveTasks(updated);
-                        scheduleReminders({ ...task, completed: false });
-                    } else {
-                        saveTasks(tasks.filter(t => t.id !== task.id));
-                    }
+                    saveTasks(tasks.filter(t => t.id !== task.id));
                 },
             },
         ]);
@@ -340,9 +309,6 @@ export default function TodoScreen() {
         setNewTitle(task.title);
         setNewCategory(task.categoryId);
         setNewPriority(task.priority);
-        setNewRecurring(task.recurring);
-        setNewRecurDay(task.recurDay || 0);
-        setNewRecurMonth(task.recurMonth || 1);
         setNewTaskType(task.taskType || 'scheduled');
         setNewDueDate(task.dueDate);
         setNewDueTime(task.dueTime);
@@ -361,7 +327,7 @@ export default function TodoScreen() {
         filtered = filtered.filter(t => !t.completed);
 
         // Fixed sort: by due date + time, soonest on top. Tasks with no due
-        // date (including recurring monthly/yearly) fall to the bottom.
+        // date fall to the bottom.
         const stamp = (t: Task) => {
             const [month, day, year] = t.dueDate.split('/');
             const fullYear = year.length === 2 ? `20${year}` : year;
@@ -383,65 +349,8 @@ export default function TodoScreen() {
     };
 
     const scheduleReminders = async (task: Task) => {
-        console.log('scheduleReminders called', task.taskType, task.recurring, task.dueDate, task.reminders.length);
+        console.log('scheduleReminders called', task.taskType, task.dueDate, task.reminders.length);
         if (task.taskType === 'background') return;
-
-        // Monthly recurring task: one repeating alert on the chosen day of the
-        // month (1–28) at the set time — e.g. a bill due on the 1st. No date and
-        // no "before" offsets.
-        if (task.recurring === 'monthly') {
-            const [hStr, mStr] = (task.dueTime || '09:00').split(':');
-            let hour = parseInt(hStr, 10);
-            let minute = parseInt(mStr ?? '0', 10);
-            if (isNaN(hour)) hour = 9;
-            if (isNaN(minute)) minute = 0;
-            await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: `📋 Reminder: ${task.title}`,
-                    body: `Day ${task.recurDay} each month${task.dueTime ? ' at ' + task.dueTime : ''}`,
-                    data: { taskId: task.id, itemId: task.id, label: task.title, source: 'todo' },
-                    categoryIdentifier: 'todosnooze',
-                    sound: 'default',
-                },
-                trigger: {
-                    type: Notifications.SchedulableTriggerInputTypes.MONTHLY,
-                    day: task.recurDay || 1, // 1-based day of month (picker caps at 28)
-                    hour,
-                    minute,
-                } as Notifications.MonthlyTriggerInput,
-            });
-            return;
-        }
-
-        // Yearly recurring task: one repeating alert on the chosen month + day at
-        // the set time — e.g. furnace filter every Oct 15, smoke-detector batteries
-        // every Jan 1. NOTE: Expo wants month 0-based (Jan=0), so recurMonth (1–12)
-        // minus 1; day is 1-based.
-        if (task.recurring === 'yearly') {
-            const [hStr, mStr] = (task.dueTime || '09:00').split(':');
-            let hour = parseInt(hStr, 10);
-            let minute = parseInt(mStr ?? '0', 10);
-            if (isNaN(hour)) hour = 9;
-            if (isNaN(minute)) minute = 0;
-            const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: `📋 Reminder: ${task.title}`,
-                    body: `${MONTH_NAMES[(task.recurMonth || 1) - 1]} ${task.recurDay}${task.dueTime ? ' at ' + task.dueTime : ''}`,
-                    data: { taskId: task.id, itemId: task.id, label: task.title, source: 'todo' },
-                    categoryIdentifier: 'todosnooze',
-                    sound: 'default',
-                },
-                trigger: {
-                    type: Notifications.SchedulableTriggerInputTypes.YEARLY,
-                    month: (task.recurMonth || 1) - 1, // Expo months are 0-based (Jan=0)
-                    day: task.recurDay || 1,
-                    hour,
-                    minute,
-                } as Notifications.YearlyTriggerInput,
-            });
-            return;
-        }
 
         if (!task.dueDate || task.reminders.length === 0) return;
 
@@ -632,7 +541,6 @@ export default function TodoScreen() {
                                         <Text style={[styles.priorityLabel, { color: PRIORITY_COLORS[task.priority] }]}>{task.priority}</Text>
                                         <Text style={[styles.priorityLabel, { color: getCategoryColor(task.categoryId) }]}>{getCategoryName(task.categoryId)}</Text>
                                         {scheduleLabel(task) ? <Text style={styles.dueDateText}>{scheduleLabel(task)}</Text> : null}
-                                        {task.recurring !== 'none' ? <Text style={styles.recurringText}>🔁 {task.recurring}</Text> : null}
                                     </View>
                                 </View>
                             </TouchableOpacity>
@@ -676,7 +584,6 @@ export default function TodoScreen() {
                                         <Text style={[styles.priorityLabel, { color: PRIORITY_COLORS[task.priority] }]}>{task.priority}</Text>
                                         <Text style={[styles.priorityLabel, { color: getCategoryColor(task.categoryId) }]}>{getCategoryName(task.categoryId)}</Text>
                                         {scheduleLabel(task) ? <Text style={styles.dueDateText}>{scheduleLabel(task)}</Text> : null}
-                                        {task.recurring !== 'none' ? <Text style={styles.recurringText}>🔁 {task.recurring}</Text> : null}
                                     </View>
 
                                 </View>
@@ -793,71 +700,6 @@ export default function TodoScreen() {
                                         </>
                                     )}
 
-                                    <Text style={styles.inputLabel}>Recurring</Text>
-                                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
-                                        {(['none', 'monthly', 'every3months', 'every6months', 'yearly'] as RecurType[]).map(r => (
-                                            <TouchableOpacity
-                                                key={r}
-                                                style={[styles.recurBtn, newRecurring === r && styles.recurBtnActive]}
-                                                onPress={() => setNewRecurring(r)}
-                                            >
-                                                <Text style={[styles.recurBtnText, newRecurring === r && styles.recurBtnTextActive]}>
-                                                    {r === 'none' ? 'Once' : r === 'every3months' ? '3 Months' : r === 'every6months' ? '6 Months' : r.charAt(0).toUpperCase() + r.slice(1)}
-                                                </Text>
-                                            </TouchableOpacity>
-                                        ))}
-                                    </ScrollView>
-
-                                    {newRecurring === 'monthly' && (
-                                        <View style={{ marginBottom: 10 }}>
-                                            <Text style={styles.inputLabel}>Which date?</Text>
-                                            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                                                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].map(d => (
-                                                    <TouchableOpacity
-                                                        key={d}
-                                                        style={[styles.recurBtn, newRecurDay === d && styles.recurBtnActive]}
-                                                        onPress={() => setNewRecurDay(d)}
-                                                    >
-                                                        <Text style={[styles.recurBtnText, newRecurDay === d && styles.recurBtnTextActive]}>{d}</Text>
-                                                    </TouchableOpacity>
-                                                ))}
-                                            </ScrollView>
-                                        </View>
-                                    )}
-
-                                    {newRecurring === 'yearly' && (
-                                        <View style={{ marginBottom: 10 }}>
-                                            <Text style={styles.inputLabel}>Month</Text>
-                                            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                                                {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((m, index) => (
-                                                    <TouchableOpacity
-                                                        key={m}
-                                                        style={[styles.recurBtn, newRecurMonth === index + 1 && styles.recurBtnActive]}
-                                                        onPress={() => {
-                                                            const m = index + 1;
-                                                            setNewRecurMonth(m);
-                                                            if (newRecurDay > DAYS_IN_MONTH[m - 1]) setNewRecurDay(DAYS_IN_MONTH[m - 1]);
-                                                        }}
-                                                    >
-                                                        <Text style={[styles.recurBtnText, newRecurMonth === index + 1 && styles.recurBtnTextActive]}>{m}</Text>
-                                                    </TouchableOpacity>
-                                                ))}
-                                            </ScrollView>
-                                            <Text style={styles.inputLabel}>Day</Text>
-                                            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                                                {Array.from({ length: DAYS_IN_MONTH[(newRecurMonth || 1) - 1] }, (_, i) => i + 1).map(d => (
-                                                    <TouchableOpacity
-                                                        key={d}
-                                                        style={[styles.recurBtn, newRecurDay === d && styles.recurBtnActive]}
-                                                        onPress={() => setNewRecurDay(d)}
-                                                    >
-                                                        <Text style={[styles.recurBtnText, newRecurDay === d && styles.recurBtnTextActive]}>{d}</Text>
-                                                    </TouchableOpacity>
-                                                ))}
-                                            </ScrollView>
-                                        </View>
-                                    )}
-
                                     <Text style={styles.inputLabel}>Due Date (MM/DD/YY)</Text>
                                     <TextInput style={styles.input} value={newDueDate} onChangeText={setNewDueDate} placeholder="e.g. 04/15/26" keyboardType="numbers-and-punctuation" />
 
@@ -945,16 +787,11 @@ export default function TodoScreen() {
                             date.setDate(date.getDate() + dayOffset);
                             const dateStr = date.toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' });
                             const dayName = dayOffset === 0 ? 'Today' : dayOffset === 1 ? 'Tomorrow' : date.toLocaleDateString([], { weekday: 'long' });
-                            const dayOfMonth = date.getDate();
-                            const monthOfYear = date.getMonth() + 1;
 
                             const dayTasks = tasks.filter(t => {
                                 if (t.completed) return false;
                                 if (t.taskType === 'background') return false;
-                                if (t.recurring === 'none' && t.dueDate === dateStr) return true;
-                                if (t.recurring === 'monthly' && t.recurDay === dayOfMonth) return true;
-                                if (t.recurring === 'yearly' && t.recurDay === dayOfMonth && t.recurMonth === monthOfYear) return true;
-                                return false;
+                                return t.dueDate === dateStr;
                             });
 
                             return (
@@ -1071,7 +908,6 @@ const styles = StyleSheet.create({
     },
     priorityLabel: { fontSize: 12, fontWeight: '600' },
     dueDateText: { fontSize: 12, color: '#888' },
-    recurringText: { fontSize: 12, color: Colors.bridge },
     taskNotes: { fontSize: 12, color: '#999', marginTop: 4, fontStyle: 'italic' },
     fabRow: {
         position: 'absolute',
