@@ -7,10 +7,11 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-06-30 (session #38 — Step 4 To-Do half done: To-Do given its OWN
-self-contained reminder structure (own permission+handler, OK+Done only, no Delay), a
-new settable Midday time, and rebuilt presets; Simulator-checked. Next: phone testing
-(Checkpoints A+B) and/or Step 4 routine half — My Day/My Week/Pets shared popup).
+Last updated: 2026-07-01 (session #39 — Step 4 routine half done: My Day / My Week /
+Pets now share ONE popup (OK / Skip / Delay 15·30·60 / Done); silent-snooze fixed;
+past-day Done guard added; My Week's banner "+1 Day" dropped. Simulator-checked.
+Next session (Patrick's pick): STRUCTURED REMINDER TESTS — one organized checklist
+for every reminder kind, folding in Phone Checkpoints A+B).
 
 ---
 
@@ -47,16 +48,23 @@ pages. Take ONE piece per session. **Order: pages first, then the popup consolid
   Snooze/Delay); presets rebuilt (dropped "At time", added Day Before/Night Before/2 Days
   Before, plus a new settable **Midday** time). `tsc` clean. Real-device check is part of
   the checkpoints below.
-- **PHONE CHECKPOINTS A + B (cloud build) — owed.** Patrick is about to do a big round of
-  device testing. On the real phone confirm: To-Do one-shots + Look Ahead reminders fire,
-  route on tap, the Look Ahead Done/Delay buttons behave, AND the To-Do popup's OK/Done
-  behave on a real lock screen (sound, past-day rule). Batch whenever Patrick builds.
-- **Popup reminder consolidation — ROUTINE pages only now (Step 4, routine half).** ←
-  **NEXT.** One shared approach across **My Day / My Week / Pets** (To-Do now excluded by
-  the #38 decision; Timer excluded): same buttons everywhere — OK (silence this popup),
-  Skip (this occurrence only), Delay, Done (log original + done time; past-day banner
-  doesn't check off today's). Fixes the silent-snooze and the divergent log shapes. Full
-  audit + table in spec.
+- **✅ DONE (#39, Simulator-checked) — Step 4, routine half: ONE shared popup for
+  My Day / My Week / Pets** (`app/_layout.tsx`, `app/myday.tsx`, `app/mollie.tsx`,
+  `app/myweek.tsx`). New `routineactions` category: OK / Skip / Delay 15·30·60 / Done.
+  Skip = dismiss + cancel the item's pending one-offs, nothing marked/logged. Done got
+  the past-day guard (logs a past completion, doesn't check off today's / this cycle's).
+  Silent-snooze fixed (banner snoozes now carry sound). My Week's banner "+1 Day"
+  dropped (Patrick's call — postpone stays on the page). Real-device check owed below.
+- **STRUCTURED REMINDER TESTS — ← NEXT (Patrick's pick, #39).** One organized test
+  checklist covering every reminder kind: To-Do one-shots (own OK+Done popup), My Day /
+  Pets daily, My Week weekly + postpone, Look Ahead long-lead + Delay, the shared
+  routine popup's six buttons, past-day/past-cycle guards, sound, tap-routing. Work
+  through it Simulator-first; batch the device-only parts into the checkpoints below.
+- **PHONE CHECKPOINTS A + B (cloud build) — owed; likely folded into the structured
+  test session.** On the real phone confirm: To-Do one-shots + Look Ahead reminders
+  fire, route on tap, the Look Ahead Done/Delay buttons behave, the To-Do popup's
+  OK/Done behave on a real lock screen (sound, past-day rule), AND the new shared
+  routine popup (#39): six buttons, Skip, past-day guard, snooze sound.
 - **Integrate the "Watch List" page** (independent of reminders). Already built as a
   standalone Expo app in `Projects/WatchList` (movie/TV tracker, no notifications). Fold
   in as a new home-screen page: `app/watchlist.tsx` + home tile + route; port `App.js` /
@@ -126,9 +134,6 @@ the louder timer alarm). (The old 3/6-month + Monthly/Yearly To-Do repeat items 
   - Likely UX: after a file is picked + validated (and Vault decrypted), ask "Replace or
     Merge?", then run the chosen path. Replace already exists (`applyRestore` in
     `app/backup.tsx`); merge would be a sibling. Scope each rule first; build one at a time.
-- **Per-appointment reminder time override.** Morning/evening reminder times are global
-  (set once in Settings). Patrick chose to keep it global only. Possible later add-on: let
-  a single appointment use different times. Parked, not planned.
 
 ## Nice-to-have later (UI polish)
 
@@ -145,6 +150,12 @@ the louder timer alarm). (The old 3/6-month + Monthly/Yearly To-Do repeat items 
   OK + Done — no snooze — so the id is a misnomer. Renaming touches `_layout.tsx` (the
   category registration) and `app/todo.tsx` (`categoryIdentifier: 'todosnooze'` in
   `scheduleReminders`). Purely internal; no behavior change.
+- **Retire the leftover pre-#39 popup plumbing (cosmetic, after device validation).**
+  `_layout.tsx` still registers the now-unused `mydaysnooze` / `petssnooze` /
+  `myweekactions` categories and keeps the old `postpone1` (+1 Day) handler — left in
+  place on purpose so banners scheduled before the #39 switch still work. Once the
+  shared popup is device-validated and old banners have cycled out, both can be
+  removed. Purely internal; no behavior change.
 - **"At time" reminder option, possibly revisit.** Removed from To-Do in #38 (Patrick's
   call — soonest preset is now "1 hour" before). If after phone testing Patrick misses an
   exact-time alert, it can be added back as a preset.
@@ -166,3 +177,7 @@ the louder timer alarm). (The old 3/6-month + Monthly/Yearly To-Do repeat items 
   in memory only). Accepted as-is: tapping Done still stops the alerts whether or not the
   tile is showing. To make it survive: persist `activeTimers` to AsyncStorage + reconcile
   on Timer-page focus against `getAllScheduledNotificationsAsync`.
+- **Reminder times stay global — DECIDED, nothing to do.** Morning / Midday / Evening
+  times are set once in Settings and apply to everything. Patrick considered a
+  per-appointment override and chose global only. Kept here solely in case it's ever
+  revisited.

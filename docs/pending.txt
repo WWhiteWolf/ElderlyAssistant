@@ -1,7 +1,8 @@
 PENDING WORK — plain-language list
-Last updated: 2026-06-30 (session #38 — Step 4 (To-Do half): To-Do now has its OWN
-reminders that don't lean on other pages; a new settable Midday time; rebuilt reminder
-options; and a simpler To-Do pop-up with just OK and Done. Ready for phone testing.)
+Last updated: 2026-07-01 (session #39 — Step 4 (routine half): My Day, My Week and
+Pets now share ONE pop-up — OK / Skip / Delay 15/30/60 / Done. Snoozed reminders got
+their sound back; an old pop-up from a past day no longer checks off today's item.
+Next session: build a structured test plan for ALL the reminders.)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -13,32 +14,30 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- This session (#38) did the To-Do part of Step 4. The big idea: To-Do is for
-  fixed one-time appointments you can't do late and can't push (if it changes,
-  you make a new one). So instead of forcing To-Do to behave like the repeating
-  pages, we gave To-Do its OWN reminder setup that no longer leans on My Day or
-  Pets being opened first — which is what was causing earlier trouble. Concretely:
-    * To-Do's pop-up is now just OK and Done (the Snooze/Delay buttons are gone).
-    * There's a new third settable time, "Midday," in Settings (next to Morning
-      and Evening), and it's saved in your backups.
-    * The To-Do reminder options were rebuilt: "At time" removed; now you have
-      1 hour, 2 hours, Morning of, Day Before (midday), Night Before (evening),
-      2 Days Before (midday), Week, Month.
-  All checked in the Simulator. Heads-up: with "At time" gone, the soonest option
-  is "1 hour" before, so you'll do the real test on your phone.
-- Steps 1–3 of this session are committed; Step 4 (the pop-up trim) plus these
-  docs are ready for you to commit.
-- Earlier: Step 3 (#37) gave Look Ahead its reminders + Delay; Step 2 (#36) built
-  the Look Ahead page; Step 1 (#35) took repeating options out of To-Do. Session
-  #34 was the PLANNING (full plan in docs/reminder-audit.md). All committed.
-- The plan, in a nutshell: (1) ✅ DONE — repeating options out of To-Do; (2) ✅ DONE
-  — build "Look Ahead"; (3) ✅ DONE — Look Ahead reminders + Delay; (4) IN PROGRESS
-  — same pop-up everywhere: the To-Do half is DONE (its own way, OK + Done), and
-  the routine half (My Day / My Week / Pets sharing one pop-up) is still to come;
-  (5) fold in your "Watch List" app as another page. ONE per session.
-- What's next, your pick: the big PHONE TEST you're about to do (a cloud build) to
-  confirm To-Do and Look Ahead reminders fire and behave on the real phone — and/or
-  the routine half of Step 4 in the Simulator. Nothing here is urgent.
+- This session (#39) finished Step 4: the routine half. My Day, My Week and
+  Pets now all show the SAME pop-up when a reminder fires, with six buttons:
+    * OK — dismiss just this pop-up, nothing else changes.
+    * Skip — skip this one occurrence: it stops nagging today, nothing is
+      marked done or logged, and it comes back on its normal schedule.
+    * Delay 15 / 30 / 60 min — snooze just this one reminder.
+    * Done — check off and log. NEW GUARD: if the pop-up is left over from a
+      past day, it logs that old completion but no longer checks off today's.
+  Also fixed: snoozed reminders from the banner were re-firing silently — they
+  have their sound back. My Week's pop-up lost its "+1 Day" button (your call);
+  postponing still works from the page itself.
+  All three pages checked in the Simulator (screenshots). What the Simulator
+  can't prove — sound, the past-day guard, real lock-screen behavior — waits
+  for the phone.
+- All of session #39 (code + these docs) is ready for you to commit.
+- The plan, in a nutshell: (1) ✅ DONE — repeating options out of To-Do; (2) ✅
+  DONE — build "Look Ahead"; (3) ✅ DONE — Look Ahead reminders + Delay; (4) ✅
+  DONE — same pop-up everywhere (To-Do its own way in #38, the three routine
+  pages sharing one in #39); (5) fold in your "Watch List" app as another page.
+- What's next — YOUR DECLARED PICK: a session devoted to STRUCTURED REMINDER
+  TESTS. There are too many reminder kinds to keep track of by memory, so
+  we'll build one organized checklist (every page, every button, every rule)
+  and work through it — Simulator first, with the phone-only parts batched
+  into the cloud-build checkpoints. Nothing here is urgent.
 
 
 BIG PLANNED WORK (the #34 plan — ONE effort, pages first, Simulator-first)
@@ -58,12 +57,15 @@ ordered build checklist live in docs/reminder-audit.md. The four pieces:
   Month (on the pop-up and as an on-tile button), with a "▶ Delayed …" line.
   Done, Simulator-checked. The real-phone test for this is Checkpoint A (below),
   still owed.
-- [IN PROGRESS] Make the reminder popups behave consistently. To-Do half is DONE
-  (#38): To-Do stands on its own with a simple OK + Done popup, no Delay — because
-  a To-Do is a fixed one-time appointment, not a repeating routine. Still to come:
-  the routine half — My Day, My Week and Pets sharing one popup with OK / Skip /
-  Delay / Done (an old popup from a past day won't check off today's). Timer is
-  left out on purpose, and To-Do is now intentionally separate too.
+- [DONE #38 + #39] Make the reminder popups behave consistently. To-Do stands on
+  its own with a simple OK + Done popup (#38) — a To-Do is a fixed one-time
+  appointment, not a repeating routine. My Day, My Week and Pets share one popup
+  with OK / Skip / Delay 15/30/60 / Done (#39), with the past-day guard so an old
+  popup can't check off today's item. Timer left out on purpose. Done,
+  Simulator-checked; the real-phone confirmation is batched into the checkpoints.
+- NEXT (your pick, #39): STRUCTURED REMINDER TESTS. One organized checklist
+  covering every reminder kind and button, worked through methodically —
+  Simulator first, phone-only parts batched into the cloud-build checkpoints.
 - Fold your "Watch List" movie/TV app in as another home-screen page (it's
   built already, in its own folder). Separate from the reminder work.
 
@@ -100,9 +102,6 @@ DECISIONS TO MAKE WHEN YOU'RE READY
   there instead. That needs its own session because each kind of data
   (tasks, logs, counters, settings) has to combine by its own rule, and
   those are your calls.
-- Per-appointment reminder time. The morning/evening reminder times are set
-  once in Settings and apply to everything. A possible add-on: let a single
-  appointment use different times. Parked — not currently planned.
 
 
 NICE-TO-HAVE LATER (polish, low priority)
@@ -133,3 +132,7 @@ PARKED ON PURPOSE (bigger items, on hold for now)
 - A running Timer's tile disappears if the app reloads or restarts (the list
   of active timers is only held in memory). Accepted as-is: tapping "Done"
   still stops the alerts whether or not the tile is showing.
+- Reminder times stay global — already decided, nothing to do. The Morning /
+  Midday / Evening times are set once in Settings and apply to everything.
+  You considered letting a single appointment use its own times and chose
+  not to. This note only exists in case you ever want to revisit that.

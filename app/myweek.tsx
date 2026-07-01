@@ -170,8 +170,11 @@ export default function MyWeekScreen() {
                 content: {
                     title: 'Weekly Chore',
                     body: `Time for ${item.label}!`,
+                    // 'routineactions' = the shared routine popup (#39):
+                    // OK / Skip / Delay 15-30-60 / Done. (The banner's old
+                    // "+1 Day" is gone — postpone lives on the page itself.)
                     data: { source: 'myweek', itemId: item.id, label: item.label },
-                    categoryIdentifier: 'myweekactions',
+                    categoryIdentifier: 'routineactions',
                     sound: 'default',
                 },
                 trigger: {
@@ -216,7 +219,7 @@ export default function MyWeekScreen() {
                 title: 'Weekly Chore',
                 body: `Time for ${chore.label}!`,
                 data: { source: 'myweekpostpone', itemId: chore.id, label: chore.label },
-                categoryIdentifier: 'myweekactions',
+                categoryIdentifier: 'routineactions',
                 sound: 'default',
             },
             trigger: {

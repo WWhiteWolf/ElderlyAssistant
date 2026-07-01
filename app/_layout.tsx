@@ -123,6 +123,21 @@ export default function RootLayout() {
         { identifier: 'delayweek', buttonTitle: 'Delay 1 Week' },
         { identifier: 'delaymonth', buttonTitle: 'Delay 1 Month' },
       ]);
+      // Shared ROUTINE popup (Step 4 routine half, #39): ONE button set for
+      // My Day / My Week / Pets, replacing their three separate categories.
+      // Registered here first; each page starts using it only when its
+      // scheduling code switches categoryIdentifier to 'routineactions'.
+      // OK = silence just this popup; Skip = this occurrence only (cancels the
+      // item's pending one-offs, nothing marked/logged); Delay = snooze this one
+      // reminder; Done = check off + log (with a past-day guard).
+      await Notifications.setNotificationCategoryAsync('routineactions', [
+        { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
+        { identifier: 'skip', buttonTitle: 'Skip', options: { opensAppToForeground: false } },
+        { identifier: 'snooze15', buttonTitle: 'Delay 15 min' },
+        { identifier: 'snooze30', buttonTitle: 'Delay 30 min' },
+        { identifier: 'snooze60', buttonTitle: 'Delay 60 min' },
+        { identifier: 'done', buttonTitle: 'Done' },
+      ]);
     })();
   }, []);
 
@@ -142,6 +157,26 @@ export default function RootLayout() {
     // tapped notification; we do nothing else (no done, no snooze, no routing).
     if (action === 'ok') return;
 
+    // "Skip" (shared routine popup): skip THIS occurrence only. Cancels the
+    // item's still-pending one-off reminders (snoozes / a My Week postpone) so
+    // it stops nagging this round — but nothing is marked done and nothing is
+    // logged; the base repeat brings the item back next cycle. The base DAILY /
+    // WEEKLY reminder is deliberately NOT touched.
+    if (action === 'skip') {
+      const itemId = data?.itemId as string | undefined;
+      if (!itemId) return;
+      (async () => {
+        const oneOffSources = ['mydaysnooze', 'petssnooze', 'myweeksnooze', 'myweekpostpone'];
+        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+        for (const n of scheduled) {
+          if (oneOffSources.includes(n.content.data?.source as string) && n.content.data?.itemId === itemId) {
+            await Notifications.cancelScheduledNotificationAsync(n.identifier);
+          }
+        }
+      })();
+      return;
+    }
+
     // Snooze action buttons: reschedule ONLY this item, N minutes out, and leave
     // every other reminder (To-Do, Timer, other My Day items) untouched.
     if (action === 'snooze15' || action === 'snooze30' || action === 'snooze60') {
@@ -150,17 +185,26 @@ export default function RootLayout() {
       const source = data?.source as string | undefined;
       const isTodo = source === 'todo';
       const isPets = source === 'pets' || source === 'petssnooze';
+      const isWeek = source === 'myweek' || source === 'myweekpostpone' || source === 'myweeksnooze';
       Notifications.scheduleNotificationAsync({
         content: {
-          title: isTodo ? `📋 Reminder: ${label}` : isPets ? 'Pets Routine' : 'Daily Routine',
+          title: isTodo ? `📋 Reminder: ${label}` : isPets ? 'Pets Routine' : isWeek ? 'Weekly Chore' : 'Daily Routine',
           body: isTodo ? label : `Time for ${label}!`,
-          // Tag with the snooze source (not 'myday'/'pets') so each screen's
-          // reschedule-on-load, which only cancels its own base source, won't
-          // wipe this snooze. To-Do has no reschedule-on-load, so it keeps 'todo'.
+          // Tag with the snooze source (not 'myday'/'pets'/'myweek') so each
+          // screen's reschedule-on-load, which only cancels its own base source,
+          // won't wipe this snooze. To-Do has no reschedule-on-load, keeps 'todo'.
           data: isTodo
             ? { source: 'todo', taskId: data?.itemId, itemId: data?.itemId, label }
-            : { source: isPets ? 'petssnooze' : 'mydaysnooze', itemId: data?.itemId, label },
-          categoryIdentifier: isTodo ? 'todosnooze' : isPets ? 'petssnooze' : 'mydaysnooze',
+            : { source: isPets ? 'petssnooze' : isWeek ? 'myweeksnooze' : 'mydaysnooze', itemId: data?.itemId, label },
+          // Keep whatever button set the fired popup had, so a delayed popup
+          // re-appears with the same buttons (old per-page category before a
+          // page is switched over, 'routineactions' after).
+          categoryIdentifier:
+            response.notification.request.content.categoryIdentifier ||
+            (isTodo ? 'todosnooze' : isPets ? 'petssnooze' : isWeek ? 'routineactions' : 'mydaysnooze'),
+          // Same sound rule as the on-page Snooze buttons — a banner-tapped
+          // snooze was silently rescheduled without this (audit item #1).
+          sound: 'default',
         },
         trigger: {
           type: SchedulableTriggerInputTypes.TIME_INTERVAL,
@@ -310,16 +354,33 @@ export default function RootLayout() {
       // base reminder is a WEEKLY repeat that must fire again next week; iOS
       // auto-clears the shown banner on an action tap. (The weekly reset clears
       // the ✓ when the chore's day comes around again.)
-      if (source === 'myweek' || source === 'myweekpostpone') {
+      if (source === 'myweek' || source === 'myweekpostpone' || source === 'myweeksnooze') {
         (async () => {
           const raw = await AsyncStorage.getItem('week_routine');
           const chores = raw ? (JSON.parse(raw) as any[]) : [];
-          const updated = chores.map((c) =>
-            c.id === itemId ? { ...c, completed: true, doneAt: Date.now(), postponedTo: undefined } : c
-          );
-          await AsyncStorage.setItem('week_routine', JSON.stringify(updated));
-          const label = (data?.label as string) || 'Chore';
           const fired = new Date(response.notification.date * 1000);
+          // PAST-CYCLE GUARD (spec #34): if this banner fired BEFORE the chore's
+          // most recent scheduled occurrence, it's left over from a previous
+          // cycle — log that past completion below, but do NOT check off the
+          // current cycle's occurrence.
+          const chore = chores.find((c) => c.id === itemId);
+          let stale = false;
+          if (chore) {
+            const now = new Date();
+            const d = new Date(now);
+            d.setHours(chore.hour, chore.minute, 0, 0);
+            let diff = (now.getDay() - chore.day + 7) % 7;
+            if (diff === 0 && d.getTime() > now.getTime()) diff = 7;
+            d.setDate(d.getDate() - diff);
+            stale = fired.getTime() < d.getTime();
+          }
+          if (!stale) {
+            const updated = chores.map((c) =>
+              c.id === itemId ? { ...c, completed: true, doneAt: Date.now(), postponedTo: undefined } : c
+            );
+            await AsyncStorage.setItem('week_routine', JSON.stringify(updated));
+          }
+          const label = (data?.label as string) || 'Chore';
           const histRaw = await AsyncStorage.getItem('week_history');
           const hist = histRaw ? (JSON.parse(histRaw) as any[]) : [];
           const newEntry = {
@@ -331,11 +392,15 @@ export default function RootLayout() {
             note: '',
           };
           await AsyncStorage.setItem('week_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
-          // Clear any pending postpone one-off for this chore.
-          const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-          for (const n of scheduled) {
-            if (n.content.data?.source === 'myweekpostpone' && n.content.data?.itemId === itemId) {
-              await Notifications.cancelScheduledNotificationAsync(n.identifier);
+          // Clear any pending postpone/delay one-offs for this chore — but only
+          // when the Done actually checked off the current cycle; a stale
+          // banner's Done must leave this cycle's pending reminders alone.
+          if (!stale) {
+            const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+            for (const n of scheduled) {
+              if ((n.content.data?.source === 'myweekpostpone' || n.content.data?.source === 'myweeksnooze') && n.content.data?.itemId === itemId) {
+                await Notifications.cancelScheduledNotificationAsync(n.identifier);
+              }
             }
           }
         })();
@@ -409,7 +474,12 @@ export default function RootLayout() {
       const storageKey = isPets ? 'pets_feeds' : 'my_routine';
       const historyKey = isPets ? 'pets_history' : 'my_history';
       (async () => {
-        if (itemId) {
+        // PAST-DAY GUARD (spec #34): if this banner fired on a PAST day, log
+        // that past completion below, but do NOT check off TODAY's occurrence —
+        // yesterday's leftover popup mustn't silence today's routine.
+        const firedAt = new Date(response.notification.date * 1000);
+        const firedOnPastDay = firedAt.toLocaleDateString() !== new Date().toLocaleDateString();
+        if (itemId && !firedOnPastDay) {
           const raw = await AsyncStorage.getItem(storageKey);
           if (raw) {
             const items = JSON.parse(raw) as { id: string; completed: boolean }[];
@@ -454,7 +524,7 @@ export default function RootLayout() {
       router.push('/todo');
     } else if (source === 'myday' || source === 'mydaysnooze') {
       router.push('/myday');
-    } else if (source === 'myweek' || source === 'myweekpostpone') {
+    } else if (source === 'myweek' || source === 'myweekpostpone' || source === 'myweeksnooze') {
       router.push('/myweek');
     } else if (source === 'pets' || source === 'petssnooze') {
       router.push('/mollie');

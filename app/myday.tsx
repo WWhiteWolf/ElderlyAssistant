@@ -169,8 +169,10 @@ export default function MyDayScreen() {
                         body: `Time for ${item.label}!`,
                         // Carry the item id + label so a Snooze button tap can
                         // reschedule just this item; category adds the buttons.
+                        // 'routineactions' = the shared routine popup (#39):
+                        // OK / Skip / Delay 15-30-60 / Done.
                         data: { source: 'myday', itemId: item.id, label: item.label },
-                        categoryIdentifier: 'mydaysnooze',
+                        categoryIdentifier: 'routineactions',
                         sound: 'default',
                     },
                     trigger: {
@@ -237,7 +239,7 @@ export default function MyDayScreen() {
                 title: 'Daily Routine',
                 body: `Time for ${item.label}!`,
                 data: { source: 'mydaysnooze', itemId: item.id, label: item.label },
-                categoryIdentifier: 'mydaysnooze',
+                categoryIdentifier: 'routineactions',
                 sound: 'default',
             },
             trigger: {

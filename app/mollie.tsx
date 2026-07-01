@@ -137,8 +137,10 @@ export default function PetsScreen() {
                         body: `Time for ${item.label}!`,
                         // Carry the item id + label so a Snooze button tap can
                         // reschedule just this item; category adds the buttons.
+                        // 'routineactions' = the shared routine popup (#39):
+                        // OK / Skip / Delay 15-30-60 / Done.
                         data: { source: 'pets', itemId: item.id, label: item.label },
-                        categoryIdentifier: 'petssnooze',
+                        categoryIdentifier: 'routineactions',
                         sound: 'default',
                     },
                     trigger: {
@@ -220,7 +222,7 @@ export default function PetsScreen() {
                 title: 'Pets Routine',
                 body: `Time for ${item.label}!`,
                 data: { source: 'petssnooze', itemId: item.id, label: item.label },
-                categoryIdentifier: 'petssnooze',
+                categoryIdentifier: 'routineactions',
                 sound: 'default',
             },
             trigger: {
