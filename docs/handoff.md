@@ -1,70 +1,37 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #44 (2026-07-02) "Home page dark theme — BUILT": **`home.tsx` now has the approved dark theme; `tsc` clean; Patrick confirmed it in the Simulator.** Also confirmed the #43 open question (theme applies to ALL 13 pages, not Home-only) and agreed a 9-session build order to get there.
+## THIS SESSION — #45 (2026-07-02) "Two-theme foundation + light Home — BUILT": **Big scope clarification from Patrick: the light theme is NOT going away — the app keeps BOTH themes.** Built the shared two-theme foundation (`constants/Themes.ts`), rewired `home.tsx` onto it, and designed + built the light Home look with Patrick (mockup rounds, one color at a time). `tsc` clean throughout; Patrick Simulator-checked BOTH themes.
 
-**Start-of-session facts:** Confirmed git was clean at session start (last commit: "Home page #43 polish & dark theme add - plan" — that session's docs).
+**Start-of-session facts:** git was clean; #44's code + docs were committed together ("Session 44 (now) — home.tsx.").
 
-**Scope confirmed:** Patrick confirmed the theme is not Home-only — it goes on all 13 pages, one file per session.
+**The scope change (supersedes "dark theme rollout" framing):** Patrick keeps both themes, shared across pages for consistency, with the future Settings toggle switching them. Rules agreed:
+- **Each theme has ONE uniform tile-circle color** (dark: `#c9622e` as built; light: chosen this session — see spec).
+- **Typography differs per theme on purpose** (Patrick's call): light keeps the ORIGINAL sizes; dark keeps its #43 look — EXCEPT the header title/subtitle sizes, which Patrick wants the SAME in both themes (original 28/22) so nothing jumps when themes switch.
 
-**Build order agreed, in this sequence (files sharing a session are paired for a reason — see why below):**
-1. ✅ **Home** — `home.tsx` (this session).
-2. **#45 — `backup.tsx` + `watchlist.tsx`.** Both small, no modals, low risk — a good pair to work out the "list page" pattern (vs. Home's tile grid).
-3. **#46 — `shopping.tsx` + `vault.tsx`.** Medium size, same list/card pattern as #45.
-4. **#47 — `timer.tsx` + `settings.tsx`.** Paired because both use native `Switch` toggles that need explicit `trackColor`/`thumbColor` values — doesn't come free from a style change.
-5. **#48 — `todo.tsx`.** Standalone — its colors are injected from a `PRIORITY_COLORS` JS object in the code, not just the stylesheet, so this needs logic edits.
-6. **#49 — `planner.tsx`.** Standalone — same color-map situation as todo (`PRIORITY_COLORS` + `STATUS_COLORS`), plus the most structurally complex file (projects, tasks, progress bars).
-7. **#50 — `lookahead.tsx`.** Grouped sections, swipe-to-delete, modals — a smaller preview of the pattern myday/myweek/mollie all share.
-8. **#51 — `myday.tsx`.** The biggest file (5 modals, ~340 lines of styles) — sets the pattern for the routine-tracker trio.
-9. **#52 — `myweek.tsx` + `mollie.tsx`.** Copy myday's pattern onto both — near-duplicate files, should go fast.
+**What was built:**
+1. **`constants/Themes.ts` (new).** Both themes, identical keys: colors + per-theme typography (title/subtitle/label sizes, label font) + `iconShadow` flag (on in dark, off in light). `DEFAULT_THEME` near the bottom is a one-word switch (`'light'`/`'dark'`) until the Settings toggle exists. Pages call `useTheme()`; the future toggle upgrades that function's insides only — converted pages won't need edits.
+2. **`app/home.tsx` rewired.** Local `Theme` object removed; styles now built by `makeStyles(theme)` at render — **this is the pattern every converted page copies.** Gear color = theme `settingsGear`, cart = theme `cartIcon`. Dark looks as approved in #44 (except header sizes, below).
+3. **Light Home spec (approved, Simulator-confirmed):** header `#1a6e8a`; title white 28px/500 Georgia italic; subtitle `#a8d4e0` 22px; bridge `#2d9e8f`; page `#e8f4f8`; tile circles **`#4caba1`** ("3a" soft teal, picked from blend mockups between light blue and bridge teal) with `1.5px #348f86` border, 44px; labels 18px/600 SYSTEM font (not Georgia) `#1a6e8a`; cart icon **`#eaeff2`** (iterated: silver too dim → white too bright → landed between); gear `#4caba1` (= tile circle, same rule as dark); **no emoji shadow** in light. Planner pad 📋 stays an emoji in both themes (Patrick declined a vector swap after seeing a mockup).
+4. **Dark header sizes changed:** title 17→28, subtitle 13→22 (weight 600 kept). Patrick saw the title size jump between themes and wants the original sizes in both.
 
-**What was built — `home.tsx` (exact #43 values, Simulator-confirmed by Patrick):**
-1. Added a `Theme` object local to `home.tsx` — header `#f0a83a`, page background `#3a3024`, bridge `#c9622e`, tile-circle fill `#c9622e` / border `#a3481f`, tile label `#f0d9a8`, title `#4a1f0c`, subtitle `#6b3418`. Kept **local to this file on purpose** — `constants/Colors.ts` isn't touched yet, since the other 12 pages still read its light-theme values until their own sessions convert them.
-2. Header: title 17px/600 `#4a1f0c`, subtitle 13px/500 `#6b3418`, both still Georgia italic (font unchanged). Bridge stripe `#c9622e`.
-3. Tiles: removed the white card/shadow/border. Each module is now a 44px icon circle (`#c9622e` fill, 1.5px `#a3481f` border) with the label directly on the page background — Georgia 13px/600, `#f0d9a8`. Emoji icons got a subtle drop shadow for definition against the dark background.
-4. **Two things found and fixed that weren't in the original #43 spec:**
-   - **Shopping cart (🛒)** swapped for `Ionicons name="cart"`, `#d8dde3` — as planned.
-   - **Settings gear (⚙️)** turned out to have the same problem as the cart: checking the raw file bytes showed the ⚙️ character carries the VS16 emoji-style marker, so RN's `color` style is silently ignored on iOS (it stayed grey no matter what color was set). Swapped to `Ionicons name="settings"`. Patrick first said white was fine, then asked for it to match "the divider/border" — turned out he meant the tile-circle/bridge color once we compared (`#c9622e` — the tile-circle fill and bridge stripe are already the same color; `#a3481f` is a separate, darker circle-*border* color he hadn't meant). Set to `#c9622e`.
-5. `npx tsc --noEmit` clean throughout, exit 0 each time.
+**Known quirk, accepted:** at 28px the title "Remember When" WRAPS to two lines on the Simulator's narrower device (both themes); on Patrick's real phone it fits one line. Offered the RN one-line auto-shrink fix (`numberOfLines={1}` + `adjustsFontSizeToFit`); **Patrick declined — "if it is just a simulator thing, let it be."** Revisit only if it wraps on the real phone.
 
-**New parked item:** Patrick wants a **Theme toggle button in Settings**, eventually — no scope or urgency yet. Added to `parked-items.md`.
+**Commit note:** `DEFAULT_THEME` is committed as **`'light'`** (where Patrick left it after testing; he was told and did not ask to change it). Flip the one word in `Themes.ts` to change the shipped look.
 
-**Nothing else touched this session** — only `app/home.tsx` changed. Not yet committed; Patrick commits at session end.
+**Files touched:** `constants/Themes.ts` (new), `app/home.tsx`. `constants/Colors.ts` untouched — the other 12 pages still read it until converted.
 
 **➤ NEXT SESSION — pick up here:**
-1. Build `backup.tsx` + `watchlist.tsx` (#45 in the order above) — same "colored icon circle / no white card" theme as Home, adapted to their list layouts (not a tile grid).
-2. Confirm Patrick's still happy with the 9-session order above before starting, in case anything's changed.
-3. Everything still queued from #42/#43 remains open and untouched: item 1 (name the backup folder), item 3 (Vault import — needs a discussion session), item 4 (My Day past-day banner), the backup-keys bug, structured reminder tests, phone checkpoints A + B.
+1. **#46 — `backup.tsx` + `watchlist.tsx`** (the pair bumped from this session, Patrick's call). Now includes a small design pass FIRST: their list rows/buttons need an approved treatment in BOTH themes (nothing exists yet for either), then wire both files to `Themes.ts` with the `makeStyles(theme)` pattern, adding the new keys to BOTH palettes.
+2. The rest of the rollout order (see parked-items.md) shifts down one session accordingly.
+3. Still open and untouched from #42/#43: item 1 (name the backup folder), item 3 (Vault import — needs a discussion session), item 4 (My Day past-day banner), the backup-keys bug, structured reminder tests, phone checkpoints A + B.
 
 ---
 
-## SESSION — #43 (2026-07-02) "Polish the Home page — dark theme mocked up, NOT built": **Design-only session, nothing committed.** Patrick's goal: the Home page tiles felt "blah" (plain white backgrounds). Worked through several rounds of chat mockups (no app files touched) and landed on an approved warm dark theme for Home. Session ended before building — Patrick switched to a different model (Fable 5) for the next session, and asked for the decisions written up here first so nothing gets lost or re-litigated.
+## SESSION — #44 (2026-07-02) "Home page dark theme — BUILT": **`home.tsx` got the approved dark theme; `tsc` clean; Patrick confirmed it in the Simulator.** Also confirmed the #43 open question (theme applies to ALL 13 pages, not Home-only) and agreed a 9-session build order. (**#45 note:** the "dark rollout" framing is superseded — both themes now ship, see above — but the page order still stands, shifted one session.)
 
-**Start-of-session facts:** Confirmed #42 was already committed — `git status` showed a clean working tree at session start (last commit: "New list of 7 from #41 session"). Patrick also flagged he'd accidentally deleted the **#41 chat session** a while back and is renumbering going forward — this session is **#43** (the docs' own session numbers for #41/#42 content stay as originally recorded; only the live numbering going forward changes).
+**What was built — `home.tsx` (exact #43 values):** local `Theme` object (now replaced by `Themes.ts` in #45) — header `#f0a83a`, page `#3a3024`, bridge/tile-circle `#c9622e`, circle border `#a3481f`, labels `#f0d9a8` Georgia 13px, title 17px/600 `#4a1f0c`, subtitle 13px/500 `#6b3418` (title/subtitle sizes changed to 28/22 in #45). Tiles became 44px icon circles, no white card. Cart ⚙️→`Ionicons cart` `#d8dde3`; settings gear had the same VS16 emoji problem → `Ionicons settings` `#c9622e`.
 
-**What was done — mockup rounds, all in chat only, nothing built:**
-1. Read `app/home.tsx` + `constants/Colors.ts` to describe the actual current look accurately before proposing anything (2-column grid, 10 white rounded tiles, blue header `#1a6e8a`, Georgia italic title).
-2. Mocked 3 tile-background directions (color-by-category tint, one uniform warm tint, white tile + colored icon-circle badge). Patrick liked the icon-circle idea, specifically **without** the white card behind it — just the colored circle + label sitting directly on the page background.
-3. Patrick asked for a dark theme "like Mystery Clues Tracker." Read that project's actual `mystery-clues-tracker.html` `:root` CSS variables (not guessed) and mocked a dark version using its real palette.
-4. Iterated color by color, one change at a time, each confirmed before the next: lightened the near-black page background → matched tile-circle color to the header gold → brightened/warmed that gold → tuned the header lettering weight (too bold, then too plain, landed in between) → made tile labels use Georgia serif instead of sans-serif → swapped tile-circle color from gold to a reddish-orange (Patrick wanted it warmer, not the blue complementary color first tried) → matched the bridge stripe under the header to the new tile color → fixed the shopping-cart icon getting lost against the background → deepened/enriched the header gold because it felt dull next to the richer tile color.
-5. Compared the final dark theme side-by-side against the original light theme — **approved**.
-
-**Approved design (exact values, ready to build):**
-- Layout: no white card behind tiles — colored icon circle + label directly on the page background.
-- Header background `#f0a83a`; title text `#4a1f0c` weight 600, size 17; subtitle `#6b3418` weight 500, size 13; both Georgia italic (unchanged font).
-- Page background `#3a3024`. Bridge stripe under header `#c9622e` (matches tile circles).
-- Tile icon circles: background `#c9622e`, border `1.5px solid #a3481f`, 44px diameter.
-- Tile labels: Georgia serif (not sans-serif), 13px, weight 600, color `#f0d9a8`.
-- Icon shadow: emoji icons get a subtle `textShadow` (`0 1px 3px rgba(0,0,0,0.5)`) for definition against the warm background — this works in real React Native, confirmed, not just the chat mockup.
-- **Shopping List icon exception:** the 🛒 emoji reads poorly against the warm tile color and can't be recolored (system emoji glyphs, no filter support on RN `Text`). Agreed fix: swap just this one icon for a vector icon from `@expo/vector-icons` (already a package.json dependency, confirmed **not currently used anywhere** in `app/`), colored light silver-gray `#d8dde3`. All other tiles keep their emoji.
-
-**Open question — scope, NOT yet resolved:** `constants/Colors.ts` is shared by 13 files (`home.tsx`, `myday.tsx`, `myweek.tsx`, `mollie.tsx`, `todo.tsx`, `lookahead.tsx`, `planner.tsx`, `watchlist.tsx`, `vault.tsx`, `shopping.tsx`, `timer.tsx`, `settings.tsx`, `backup.tsx`). Patrick was asked: scope the new theme to just `home.tsx` (local colors, other 12 pages untouched), or apply it everywhere via the shared file. He said **"No"** to Home-only, but the session ended before confirming "apply to all pages" explicitly — **do not assume; confirm this first, next session.**
-
-**Nothing to commit.** No app files were changed this session — everything above lived in chat-only visual mockups.
-
-**➤ NEXT SESSION — pick up here:**
-1. **Confirm the scope question above** before writing any code — Home-only was ruled out, but "all pages" hasn't been explicitly confirmed.
-2. Build the approved dark theme (exact values above), one file at a time, `tsc` clean and Simulator-checked before moving to the next.
-3. Everything queued from #42 is still open, untouched: item 1 (name the backup folder), item 3 (Vault import — needs a discussion session first), item 4 (My Day past-day banner Done — folded into structured tests), the backup-keys bug, structured reminder tests, phone checkpoints A + B.
+**New parked item:** Theme toggle button in Settings (foundation for it now exists after #45 — the toggle just upgrades `useTheme()` + adds the Settings control).
 
 ---
 

@@ -7,31 +7,40 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-02 (session #44 — Home page dark theme BUILT and
-Simulator-confirmed; scope confirmed for all 13 pages; 9-session build order
-agreed — see "DARK THEME ROLLOUT" below. New idea parked: Theme toggle button
-in Settings.)
+Last updated: 2026-07-02 (session #45 — SCOPE CHANGE: the app keeps BOTH
+themes, light and dark, shared across pages. Two-theme foundation
+`constants/Themes.ts` built; `home.tsx` converted to it; light Home design
+approved and Simulator-confirmed. The #44 "dark rollout" below is now a
+"two-theme rollout"; same page order, shifted one session.)
 
 ---
 
-## DARK THEME ROLLOUT (started #43 design, #44 build) — all 13 pages
+## TWO-THEME ROLLOUT (was "dark theme rollout"; rescoped #45) — all 13 pages
 
-Patrick confirmed (#44) the new warm dark theme isn't Home-only — it goes on
-all 13 pages that currently share `constants/Colors.ts`. Being done one file
-(or small pair) per session, `tsc` clean + Simulator-checked before moving on.
-Exact Home values are in `handoff.md`'s #43/#44 entries. Agreed order:
+Patrick's call (#45): the light theme is NOT going away — every page gets
+BOTH themes, shared via `constants/Themes.ts` (both palettes, same keys),
+switched later by a Settings toggle (see Nice-to-have). Converting a page
+now means: agree its light + dark treatment (mockups first if it has new
+elements), wire it to `useTheme()` + the `makeStyles(theme)` pattern that
+`home.tsx` demonstrates, and add any new keys to BOTH palettes. One file
+(or small pair) per session, `tsc` clean + Simulator-checked in BOTH themes
+before moving on. Until the toggle exists, the active theme is the
+`DEFAULT_THEME` one-word switch in `Themes.ts` (committed as `'light'`).
 
-1. ✅ **DONE (#44, Simulator-confirmed) — `home.tsx`.** Icon-circle tiles (no
-   white card), amber header, dark page background. Two follow-on fixes found
-   during build: the shopping cart and the settings gear emoji both ignore RN
-   `color` styling (VS16 emoji-presentation glyphs) — both swapped for
-   `@expo/vector-icons` instead (cart in `#d8dde3`, gear in `#c9622e`, matching
-   the tile-circle/bridge color).
+1. ✅ **DONE — `home.tsx`** (#44 dark build; #45 converted to `Themes.ts`
+   + light design approved). Dark: as #44 (cart/gear swapped to
+   `@expo/vector-icons` — VS16 emoji glyphs ignore RN `color`). Light:
+   soft-teal circles `#4caba1`/`#348f86`, cart `#eaeff2`, gear `#4caba1`,
+   original typography. Header title/subtitle are 28/22 in BOTH themes
+   (Patrick wants no size jump between themes). Known accepted quirk:
+   28px title wraps on the Simulator's narrower screen, fits on the real
+   phone — auto-shrink fix offered and declined ("simulator thing").
 2. **`backup.tsx` + `watchlist.tsx`** — small, no modals; works out the
-   "list page" pattern (vs. Home's tile grid).
+   "list page" pattern (vs. Home's tile grid). Needs a light + dark
+   design pass for list rows/buttons before wiring.
 3. **`shopping.tsx` + `vault.tsx`** — medium, same list/card pattern.
 4. **`timer.tsx` + `settings.tsx`** — paired: both use native `Switch`
-   toggles needing explicit `trackColor`/`thumbColor` values.
+   toggles needing explicit `trackColor`/`thumbColor` values (per theme).
 5. **`todo.tsx`** — standalone; colors come from a `PRIORITY_COLORS` JS
    object in the code, not just the stylesheet — needs logic edits.
 6. **`planner.tsx`** — standalone; same color-map situation
@@ -43,9 +52,9 @@ Exact Home values are in `handoff.md`'s #43/#44 entries. Agreed order:
 9. **`myweek.tsx` + `mollie.tsx`** — copy myday's pattern; near-duplicate
    files, should go fastest.
 
-Once all 13 are converted, the new theme's values can move from per-file
-locals into `constants/Colors.ts` itself — not done yet on purpose, so the
-unconverted pages keep working in the old light theme in the meantime.
+Once all 13 are converted, `constants/Colors.ts` can be retired — its
+values already live on as the light palette in `Themes.ts`. Not removed
+yet on purpose: unconverted pages still read it.
 
 ---
 
@@ -218,9 +227,12 @@ categories from To-Do entirely.)
 
 ## Nice-to-have later (UI polish)
 
-- **Theme toggle button in Settings (Patrick, #44).** Once the dark theme
-  rollout above is done (or partway through), add a toggle in Settings to
-  switch between light and dark. Not scoped yet — no rush.
+- **Theme toggle button in Settings (Patrick, #44; foundation built #45).**
+  Add a toggle in Settings to switch between light and dark. The plumbing
+  now exists: the toggle session upgrades `useTheme()` in
+  `constants/Themes.ts` (stored choice + live switching) and adds the
+  Settings control — converted pages won't need edits. Makes most sense
+  once more pages are converted. No rush.
 - **Name the backup folder — PROMOTED (#41, see Patrick's list above)**
   (`app/backup.tsx`). Give the exported backup folder/file a clear, recognizable name
   so it's easy to find where it's saved (e.g. iCloud Drive). (The file itself is

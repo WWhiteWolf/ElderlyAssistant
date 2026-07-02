@@ -10,20 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-
-// Dark theme for the Home page (approved #43, built #44).
-// Kept local to this file for now — the other 12 pages still use
-// constants/Colors.ts until each gets its own reskin session.
-const Theme = {
-    header: '#f0a83a',
-    titleText: '#4a1f0c',
-    subtitleText: '#6b3418',
-    pageBackground: '#3a3024',
-    bridge: '#c9622e',
-    tileCircle: '#c9622e',
-    tileCircleBorder: '#a3481f',
-    tileLabel: '#f0d9a8',
-};
+import { Theme, useTheme } from '../constants/Themes';
 
 const modules = [
   { id: 'shopping', label: 'Shopping List', icon: '🛒' },
@@ -40,6 +27,8 @@ const modules = [
 
 export default function HomeScreen() {
     const router = useRouter();
+    const theme = useTheme();
+    const styles = makeStyles(theme);
 
     const [userName, setUserName] = useState('');
 
@@ -68,7 +57,7 @@ export default function HomeScreen() {
 
     return (
         <View style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: Theme.header }} edges={['top']}>
+            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
                     <View style={{ width: 70 }} />
                     <View style={{ flex: 1, alignItems: 'center' }}>
@@ -76,7 +65,7 @@ export default function HomeScreen() {
                         <Text style={styles.subtitle}>Good to see you{userName ? `, ${userName}` : ''}!</Text>
                     </View>
                     <TouchableOpacity onPress={() => router.push('/settings')} style={{ width: 70, alignItems: 'flex-end' }}>
-                        <Ionicons name="settings" size={22} color={Theme.tileCircle} />
+                        <Ionicons name="settings" size={22} color={theme.settingsGear} />
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
@@ -90,7 +79,7 @@ export default function HomeScreen() {
                     >
                         <View style={styles.iconCircle}>
                             {mod.id === 'shopping' ? (
-                                <Ionicons name="cart" size={22} color="#d8dde3" />
+                                <Ionicons name="cart" size={22} color={theme.cartIcon} />
                             ) : (
                                 <Text style={styles.tileIcon}>{mod.icon}</Text>
                             )}
@@ -103,73 +92,81 @@ export default function HomeScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Theme.pageBackground,
-    },
-    header: {
-        backgroundColor: Theme.header,
-        paddingBottom: 12,
-        paddingHorizontal: 16,
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    title: {
-        fontSize: 17,
-        fontWeight: '600',
-        color: Theme.titleText,
-        fontStyle: 'italic',
-        fontFamily: 'Georgia',
-        textAlign: 'center',
-    },
-    subtitle: {
-        fontSize: 13,
-        paddingBottom: 12,
-        color: Theme.subtitleText,
-        fontWeight: '500',
-        fontStyle: 'italic',
-        fontFamily: 'Georgia',
-        marginTop: 4,
-    },
-    bridge: {
-        height: 8,
-        backgroundColor: Theme.bridge,
-    },
-    grid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        padding: 16,
-        gap: 12,
-        justifyContent: 'space-between',
-    },
-    tile: {
-        width: '47%',
-        alignItems: 'center',
-        paddingVertical: 12,
-    },
-    iconCircle: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        backgroundColor: Theme.tileCircle,
-        borderWidth: 1.5,
-        borderColor: Theme.tileCircleBorder,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 8,
-    },
-    tileIcon: {
-        fontSize: 22,
-        textShadowColor: 'rgba(0,0,0,0.5)',
-        textShadowOffset: { width: 0, height: 1 },
-        textShadowRadius: 3,
-    },
-    tileLabel: {
-        fontSize: 13,
-        fontWeight: '600',
-        fontFamily: 'Georgia',
-        color: Theme.tileLabel,
-        textAlign: 'center',
-    },
-});
+// Styles are built from the active theme when the page draws (not at
+// load), so colors AND typography follow whichever theme is active.
+// This is the pattern every converted page copies.
+const makeStyles = (t: Theme) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: t.pageBackground,
+        },
+        header: {
+            backgroundColor: t.header,
+            paddingBottom: 12,
+            paddingHorizontal: 16,
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        title: {
+            fontSize: t.titleSize,
+            fontWeight: t.titleWeight,
+            color: t.titleText,
+            fontStyle: 'italic',
+            fontFamily: 'Georgia',
+            textAlign: 'center',
+        },
+        subtitle: {
+            fontSize: t.subtitleSize,
+            paddingBottom: 12,
+            color: t.subtitleText,
+            fontWeight: t.subtitleWeight,
+            fontStyle: 'italic',
+            fontFamily: 'Georgia',
+            marginTop: 4,
+        },
+        bridge: {
+            height: 8,
+            backgroundColor: t.bridge,
+        },
+        grid: {
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            padding: 16,
+            gap: 12,
+            justifyContent: 'space-between',
+        },
+        tile: {
+            width: '47%',
+            alignItems: 'center',
+            paddingVertical: 12,
+        },
+        iconCircle: {
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: t.tileCircle,
+            borderWidth: 1.5,
+            borderColor: t.tileCircleBorder,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 8,
+        },
+        tileIcon: {
+            fontSize: 22,
+            ...(t.iconShadow
+                ? {
+                      textShadowColor: 'rgba(0,0,0,0.5)',
+                      textShadowOffset: { width: 0, height: 1 },
+                      textShadowRadius: 3,
+                  }
+                : null),
+        },
+        tileLabel: {
+            fontSize: t.tileLabelSize,
+            fontWeight: '600',
+            fontFamily: t.tileLabelFont,
+            color: t.tileLabel,
+            textAlign: 'center',
+        },
+    });

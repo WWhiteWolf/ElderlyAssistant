@@ -1,9 +1,8 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-02 (session #44 — Home page dark theme BUILT and you
-confirmed it looks right. You also confirmed the new theme goes on all 13
-pages, not just Home, and we worked out the order to build them in, one
-file (or small pair) per session. Full order is in parked-items.md under
-"DARK THEME ROLLOUT.")
+Last updated: 2026-07-02 (session #45 — you made clear BOTH themes stay,
+light and dark. The shared two-theme foundation was built, the Home page
+now runs on it, and you designed and approved the light Home look. Full
+rollout order is in parked-items.md under "TWO-THEME ROLLOUT.")
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -15,23 +14,21 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- Session #44: the Home page now has the warm dark theme we designed in #43
-  — colored icon circles with no white card behind them, amber header,
-  reddish-orange tile circles. You checked it in the Simulator and confirmed
-  it looks right. Along the way we found the shopping-cart AND the settings-
-  gear icons both had the same quirk (a special "emoji" marker that blocks
-  color changes on iPhone) — both got swapped for proper colorable icons.
-- You confirmed the new theme isn't Home-only — it's going on all 13 pages
-  that share the app's color file, one file (or small pair) per session.
-  The build order is written down in parked-items.md so nothing has to be
-  re-decided next time.
-- New idea you raised: a Theme toggle button in Settings, eventually, once
-  more of the dark theme is built. Not scoped yet — added to the someday list
-  below.
-- Not yet committed — you commit this session's docs + the home.tsx change
-  when ready.
-- Next session: build backup.tsx + watchlist.tsx (the next pair in the
-  order), or pick something else from the list below.
+- Session #45: you made clear the light theme is staying — the app keeps
+  BOTH themes. A shared theme file now holds both color sets side by side,
+  and the Home page reads from it. You designed the light Home look with
+  mockups and approved it: soft teal icon circles, a brighter cart, the
+  original big header. You checked BOTH themes in the Simulator.
+- The header title is now the same size in both themes (the original big
+  size), so it doesn't jump when the theme changes. On the Simulator's
+  narrower screen the title wraps to two lines — on your real phone it
+  fits on one. You chose to leave that alone ("a simulator thing").
+- Until the Settings toggle is built, the active theme is one word in
+  constants/Themes.ts (DEFAULT_THEME) — currently set to 'light'. Flip it
+  to 'dark' and save to switch the whole app.
+- Not yet committed — you commit this session's code + docs when ready.
+- Next session: backup.tsx + watchlist.tsx (bumped from this session) —
+  first agree how lists/buttons look in both themes, then build.
 
 
 YOUR #41 LIST — WHAT'S STILL OPEN (items 2, 5, 6, 7 done in #42)
@@ -86,8 +83,8 @@ DECISIONS TO MAKE WHEN YOU'RE READY
 NICE-TO-HAVE LATER (polish, low priority)
 -----------------------------------------
 - A Theme toggle button in Settings, so you can switch between light and
-  dark. Makes most sense once more pages have the dark theme built. Not
-  scoped yet, no rush.
+  dark. The groundwork now exists (#45's shared theme file) — the toggle
+  itself is a small session once more pages are converted. No rush.
 - Project Planner has reminder fields on screen, but they aren't connected
   to anything yet.
 - Finish the "Elyfont" renaming: the in-app home greeting still says
