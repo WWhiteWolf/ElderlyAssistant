@@ -25,6 +25,15 @@ export interface Theme {
     tileLabel: string;
     cartIcon: string;
     settingsGear: string;
+    // page furniture (added #46: backup + watchlist conversion)
+    card: string;        // card / list-row background
+    cardBorder: string;  // card / list-row border
+    cardTitle: string;   // main text on a card button
+    bodyText: string;    // paragraphs on the page background
+    mutedText: string;   // secondary / hint text
+    headerButton: string; // header pill button border + text
+    buttonPrimary: string;     // solid action buttons + selected chip
+    buttonPrimaryText: string; // text on those buttons
     // typography (the two themes deliberately differ — Patrick's call, #45)
     titleSize: number;
     titleWeight: '500' | '600';
@@ -48,8 +57,16 @@ export const Themes: Record<ThemeName, Theme> = {
         tileCircle: '#4caba1',
         tileCircleBorder: '#348f86',
         tileLabel: '#1a6e8a',
-        cartIcon: '#eaeff2',
+        cartIcon: '#d8dde3',
         settingsGear: '#4caba1',
+        card: '#ffffff',
+        cardBorder: '#a8d4e0',
+        cardTitle: '#1a6e8a',
+        bodyText: '#1a6e8a',
+        mutedText: '#888888',
+        headerButton: '#ffffff',
+        buttonPrimary: '#1a6e8a',
+        buttonPrimaryText: '#ffffff',
         titleSize: 28,
         titleWeight: '500',
         subtitleSize: 22,
@@ -70,9 +87,17 @@ export const Themes: Record<ThemeName, Theme> = {
         tileLabel: '#f0d9a8',
         cartIcon: '#d8dde3',
         settingsGear: '#c9622e',
-        titleSize: 17,
+        card: '#4a3e30',
+        cardBorder: '#a3481f',
+        cardTitle: '#f0a83a',
+        bodyText: '#f0d9a8',
+        mutedText: '#c9b896',
+        headerButton: '#4a1f0c',
+        buttonPrimary: '#c9622e',
+        buttonPrimaryText: '#f0d9a8',
+        titleSize: 28,
         titleWeight: '600',
-        subtitleSize: 13,
+        subtitleSize: 22,
         subtitleWeight: '500',
         tileLabelSize: 13,
         tileLabelFont: 'Georgia',
@@ -81,7 +106,7 @@ export const Themes: Record<ThemeName, Theme> = {
 };
 
 // Flip this one word to switch themes until the Settings toggle exists.
-export const DEFAULT_THEME: ThemeName = 'light';
+export const DEFAULT_THEME: ThemeName = 'dark';
 
 // Pages call this to get the active theme. For now it just returns the
 // default; the future Settings toggle upgrades this function's insides

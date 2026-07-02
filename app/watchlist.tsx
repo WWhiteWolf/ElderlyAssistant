@@ -10,7 +10,7 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../constants/Colors';
+import { Theme, useTheme } from '../constants/Themes';
 
 // Ported from the standalone WatchList app (Projects/WatchList) in Rebuild Step 5.
 // Behavior unchanged; styling matched to the rest of the app. No notifications.
@@ -53,6 +53,8 @@ type ListItem =
 
 export default function WatchListScreen() {
     const router = useRouter();
+    const theme = useTheme();
+    const styles = makeStyles(theme);
 
     const [movies, setMovies] = useState<Movie[]>([]);
     const [tvShows, setTvShows] = useState<TvShow[]>([]);
@@ -152,7 +154,7 @@ export default function WatchListScreen() {
 
     return (
         <View style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: Colors.primary }} edges={['top']}>
+            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
                         <Text style={styles.headerBtnText}>← Home</Text>
@@ -169,7 +171,7 @@ export default function WatchListScreen() {
                 <TextInput
                     style={styles.input}
                     placeholder="Enter Movie or TV Show Title"
-                    placeholderTextColor="#aaa"
+                    placeholderTextColor={theme.mutedText}
                     value={title}
                     onChangeText={setTitle}
                 />
@@ -259,141 +261,144 @@ export default function WatchListScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: Colors.background },
-    header: {
-        backgroundColor: Colors.primary,
-        paddingTop: 20,
-        paddingBottom: 12,
-        paddingHorizontal: 20,
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    headerBtn: {
-        borderWidth: 1,
-        borderColor: Colors.white,
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 20,
-    },
-    headerBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
-    title: {
-        fontSize: 26,
-        fontWeight: '500',
-        color: Colors.textLight,
-        fontStyle: 'italic',
-        fontFamily: 'Georgia',
-        flex: 1,
-        textAlign: 'center',
-    },
-    bridge: { height: 8, backgroundColor: Colors.bridge },
-    formContainer: {
-        padding: 12,
-        backgroundColor: Colors.white,
-        borderBottomWidth: 0.5,
-        borderBottomColor: Colors.lightBlue,
-    },
-    input: {
-        borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
-        borderRadius: 8,
-        padding: 10,
-        fontSize: 16,
-        color: Colors.text,
-        backgroundColor: Colors.background,
-        marginBottom: 8,
-    },
-    subLabel: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: Colors.text,
-        marginBottom: 5,
-    },
-    providerSelectorRow: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        marginBottom: 4,
-    },
-    providerButton: {
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 15,
-        borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
-        marginRight: 8,
-        marginBottom: 8,
-        backgroundColor: Colors.background,
-    },
-    providerButtonSelected: {
-        backgroundColor: Colors.primary,
-        borderColor: Colors.primary,
-    },
-    textUnselected: { color: Colors.text },
-    textSelected: { color: Colors.white, fontWeight: 'bold' },
-    buttonRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        gap: 8,
-    },
-    addBtn: {
-        flex: 1,
-        backgroundColor: Colors.primary,
-        paddingVertical: 10,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    addBtnText: { color: Colors.white, fontWeight: '600', fontSize: 16 },
-    list: { flex: 1, padding: 12 },
-    emptyText: { textAlign: 'center', color: '#aaa', marginTop: 40, fontSize: 16 },
-    itemRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: Colors.white,
-        borderRadius: 10,
-        padding: 12,
-        marginBottom: 8,
-        borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
-    },
-    infoColumn: { flex: 1 },
-    titleRow: { flexDirection: 'row', alignItems: 'center' },
-    itemText: {
-        fontSize: 18,
-        fontWeight: '500',
-        color: Colors.text,
-        flexShrink: 1,
-    },
-    itemSubtext: { fontSize: 14, color: '#666', marginTop: 2 },
-    statusBadge: { fontSize: 12, color: '#888', marginLeft: 8 },
-    controlRow: { marginLeft: 10, alignItems: 'flex-end' },
-    movieBtn: {
-        backgroundColor: Colors.primary,
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-        borderRadius: 8,
-    },
-    movieBtnText: { color: Colors.white, fontWeight: '600', fontSize: 14 },
-    tvControls: { alignItems: 'center' },
-    progressText: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: Colors.primary,
-        marginBottom: 4,
-    },
-    actionButtons: { flexDirection: 'row' },
-    smallButton: {
-        backgroundColor: Colors.background,
-        borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
-        paddingHorizontal: 10,
-        paddingVertical: 6,
-        borderRadius: 6,
-        marginLeft: 4,
-    },
-    smallButtonText: {
-        fontSize: 13,
-        fontWeight: '600',
-        color: Colors.text,
-    },
-});
+// Styles are built from the active theme when the page draws — the
+// makeStyles(theme) pattern from home.tsx (#45).
+const makeStyles = (t: Theme) =>
+    StyleSheet.create({
+        container: { flex: 1, backgroundColor: t.pageBackground },
+        header: {
+            backgroundColor: t.header,
+            paddingTop: 20,
+            paddingBottom: 12,
+            paddingHorizontal: 20,
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        headerBtn: {
+            borderWidth: 1,
+            borderColor: t.headerButton,
+            paddingVertical: 6,
+            paddingHorizontal: 12,
+            borderRadius: 20,
+        },
+        headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
+        title: {
+            fontSize: 26,
+            fontWeight: '500',
+            color: t.titleText,
+            fontStyle: 'italic',
+            fontFamily: 'Georgia',
+            flex: 1,
+            textAlign: 'center',
+        },
+        bridge: { height: 8, backgroundColor: t.bridge },
+        formContainer: {
+            padding: 12,
+            backgroundColor: t.card,
+            borderBottomWidth: 0.5,
+            borderBottomColor: t.cardBorder,
+        },
+        input: {
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+            borderRadius: 8,
+            padding: 10,
+            fontSize: 16,
+            color: t.bodyText,
+            backgroundColor: t.pageBackground,
+            marginBottom: 8,
+        },
+        subLabel: {
+            fontSize: 14,
+            fontWeight: '600',
+            color: t.bodyText,
+            marginBottom: 5,
+        },
+        providerSelectorRow: {
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            marginBottom: 4,
+        },
+        providerButton: {
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+            borderRadius: 15,
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+            marginRight: 8,
+            marginBottom: 8,
+            backgroundColor: t.pageBackground,
+        },
+        providerButtonSelected: {
+            backgroundColor: t.buttonPrimary,
+            borderColor: t.buttonPrimary,
+        },
+        textUnselected: { color: t.bodyText },
+        textSelected: { color: t.buttonPrimaryText, fontWeight: 'bold' },
+        buttonRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            gap: 8,
+        },
+        addBtn: {
+            flex: 1,
+            backgroundColor: t.buttonPrimary,
+            paddingVertical: 10,
+            borderRadius: 8,
+            alignItems: 'center',
+        },
+        addBtnText: { color: t.buttonPrimaryText, fontWeight: '600', fontSize: 16 },
+        list: { flex: 1, padding: 12 },
+        emptyText: { textAlign: 'center', color: t.mutedText, marginTop: 40, fontSize: 16 },
+        itemRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            backgroundColor: t.card,
+            borderRadius: 10,
+            padding: 12,
+            marginBottom: 8,
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+        },
+        infoColumn: { flex: 1 },
+        titleRow: { flexDirection: 'row', alignItems: 'center' },
+        itemText: {
+            fontSize: 18,
+            fontWeight: '500',
+            color: t.bodyText,
+            flexShrink: 1,
+        },
+        itemSubtext: { fontSize: 14, color: t.mutedText, marginTop: 2 },
+        statusBadge: { fontSize: 12, color: t.mutedText, marginLeft: 8 },
+        controlRow: { marginLeft: 10, alignItems: 'flex-end' },
+        movieBtn: {
+            backgroundColor: t.buttonPrimary,
+            paddingVertical: 8,
+            paddingHorizontal: 12,
+            borderRadius: 8,
+        },
+        movieBtnText: { color: t.buttonPrimaryText, fontWeight: '600', fontSize: 14 },
+        tvControls: { alignItems: 'center' },
+        progressText: {
+            fontSize: 14,
+            fontWeight: 'bold',
+            color: t.cardTitle,
+            marginBottom: 4,
+        },
+        actionButtons: { flexDirection: 'row' },
+        smallButton: {
+            backgroundColor: t.pageBackground,
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+            paddingHorizontal: 10,
+            paddingVertical: 6,
+            borderRadius: 6,
+            marginLeft: 4,
+        },
+        smallButtonText: {
+            fontSize: 13,
+            fontWeight: '600',
+            color: t.bodyText,
+        },
+    });

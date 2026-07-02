@@ -14,7 +14,7 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../constants/Colors';
+import { Theme, useTheme } from '../constants/Themes';
 
 // Format the backup file. Bump VERSION only if the shape changes,
 // so a future Import can tell how to read an older file.
@@ -38,6 +38,8 @@ const VAULT_KEY = 'vault_items';
 
 export default function BackupScreen() {
     const router = useRouter();
+    const theme = useTheme();
+    const styles = makeStyles(theme);
 
     // Step 4 + 5: build the JSON, write the file, open the share sheet.
     const finishExport = async (
@@ -342,10 +344,10 @@ export default function BackupScreen() {
 
     return (
         <View style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: Colors.primary }}>
+            <SafeAreaView style={{ backgroundColor: theme.header }}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>← Settings</Text>
+                        <Text style={styles.headerBtnText}>← Back</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>Backup & Restore</Text>
                     <View style={styles.headerSpacer} />
@@ -382,66 +384,79 @@ export default function BackupScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: Colors.background },
-    header: {
-        backgroundColor: Colors.primary,
-        paddingTop: 20,
-        paddingHorizontal: 20,
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    title: {
-        fontSize: 26,
-        fontWeight: '500',
-        color: Colors.textLight,
-        fontStyle: 'italic',
-        fontFamily: 'Georgia',
-        flex: 1,
-        textAlign: 'center',
-    },
-    bridge: { height: 8, backgroundColor: Colors.bridge },
-    body: { padding: 20 },
-    intro: {
-        fontSize: 17,
-        color: Colors.text,
-        lineHeight: 24,
-        marginBottom: 28,
-        textAlign: 'center',
-    },
-    bigBtn: {
-        backgroundColor: Colors.white,
-        borderRadius: 14,
-        borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
-        paddingVertical: 24,
-        paddingHorizontal: 16,
-        alignItems: 'center',
-        marginBottom: 18,
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-    },
-    bigBtnIcon: { fontSize: 34, marginBottom: 8 },
-    bigBtnText: { fontSize: 22, fontWeight: '600', color: Colors.primary },
-    bigBtnSub: { fontSize: 15, color: '#888', marginTop: 4 },
-    note: {
-        fontSize: 14,
-        color: '#888',
-        textAlign: 'center',
-        marginTop: 12,
-        fontStyle: 'italic',
-    },
-    headerBtn: {
-        width: 90,
-        borderWidth: 1,
-        borderColor: Colors.white,
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 20,
-    },
-    headerBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
-    headerSpacer: { width: 90 },
-});
+// Styles are built from the active theme when the page draws — the
+// makeStyles(theme) pattern from home.tsx (#45).
+const makeStyles = (t: Theme) =>
+    StyleSheet.create({
+        container: { flex: 1, backgroundColor: t.pageBackground },
+        header: {
+            backgroundColor: t.header,
+            paddingTop: 20,
+            paddingHorizontal: 20,
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        title: {
+            fontSize: 26,
+            fontWeight: '500',
+            color: t.titleText,
+            fontStyle: 'italic',
+            fontFamily: 'Georgia',
+            flex: 1,
+            textAlign: 'center',
+        },
+        bridge: { height: 8, backgroundColor: t.bridge },
+        body: { padding: 20 },
+        intro: {
+            fontSize: 17,
+            color: t.bodyText,
+            lineHeight: 24,
+            marginBottom: 28,
+            textAlign: 'center',
+        },
+        bigBtn: {
+            backgroundColor: t.card,
+            borderRadius: 14,
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+            paddingVertical: 24,
+            paddingHorizontal: 16,
+            alignItems: 'center',
+            marginBottom: 18,
+            elevation: 2,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.1,
+            shadowRadius: 2,
+        },
+        bigBtnIcon: {
+            fontSize: 34,
+            marginBottom: 8,
+            ...(t.iconShadow
+                ? {
+                      textShadowColor: 'rgba(0,0,0,0.5)',
+                      textShadowOffset: { width: 0, height: 1 },
+                      textShadowRadius: 3,
+                  }
+                : null),
+        },
+        bigBtnText: { fontSize: 22, fontWeight: '600', color: t.cardTitle },
+        bigBtnSub: { fontSize: 15, color: t.mutedText, marginTop: 4 },
+        note: {
+            fontSize: 14,
+            color: t.mutedText,
+            textAlign: 'center',
+            marginTop: 12,
+            fontStyle: 'italic',
+        },
+        headerBtn: {
+            width: 90,
+            borderWidth: 1,
+            borderColor: t.headerButton,
+            paddingVertical: 6,
+            paddingHorizontal: 12,
+            borderRadius: 20,
+        },
+        headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
+        headerSpacer: { width: 90 },
+    });

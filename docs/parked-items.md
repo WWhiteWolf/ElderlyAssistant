@@ -7,11 +7,12 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-02 (session #45 — SCOPE CHANGE: the app keeps BOTH
-themes, light and dark, shared across pages. Two-theme foundation
-`constants/Themes.ts` built; `home.tsx` converted to it; light Home design
-approved and Simulator-confirmed. The #44 "dark rollout" below is now a
-"two-theme rollout"; same page order, shifted one session.)
+Last updated: 2026-07-02 (session #46 — backup.tsx + watchlist.tsx
+converted to `Themes.ts`, both themes approved in the Simulator. Eight
+new shared keys now exist: card, cardBorder, cardTitle, bodyText,
+mutedText, headerButton, buttonPrimary, buttonPrimaryText — so later
+pages have most of their vocabulary ready. Also fixed the #45 loose end:
+dark header is now 28/22 as decided.)
 
 ---
 
@@ -35,9 +36,12 @@ before moving on. Until the toggle exists, the active theme is the
    (Patrick wants no size jump between themes). Known accepted quirk:
    28px title wraps on the Simulator's narrower screen, fits on the real
    phone — auto-shrink fix offered and declined ("simulator thing").
-2. **`backup.tsx` + `watchlist.tsx`** — small, no modals; works out the
-   "list page" pattern (vs. Home's tile grid). Needs a light + dark
-   design pass for list rows/buttons before wiring.
+2. ✅ **DONE (#46) — `backup.tsx` + `watchlist.tsx`.** Mockup-first design
+   pass approved for both themes; both files on `makeStyles(theme)`;
+   eight new keys in both palettes (see Themes.ts comments). backup's
+   back pill now says "← Back" (the old "← Settings" wrapped to two
+   lines in the fixed-width pill — Patrick chose the shorter word).
+   Light `cartIcon` changed to `#d8dde3` (Patrick, supersedes #45).
 3. **`shopping.tsx` + `vault.tsx`** — medium, same list/card pattern.
 4. **`timer.tsx` + `settings.tsx`** — paired: both use native `Switch`
    toggles needing explicit `trackColor`/`thumbColor` values (per theme).
@@ -227,6 +231,13 @@ categories from To-Do entirely.)
 
 ## Nice-to-have later (UI polish)
 
+- **System light/dark vs app theme — decide at the toggle session (#46).**
+  `app.json` has `userInterfaceStyle: "automatic"`, so iOS-drawn pieces
+  (Alert popups, share sheet, file picker, keyboard) follow the PHONE's
+  light/dark setting while the app's own pages follow `DEFAULT_THEME` —
+  they can mismatch. Patrick knows and is fine for now. Options when the
+  Settings toggle is built: pin the system style, or make the app theme
+  follow the phone automatically.
 - **Theme toggle button in Settings (Patrick, #44; foundation built #45).**
   Add a toggle in Settings to switch between light and dark. The plumbing
   now exists: the toggle session upgrades `useTheme()` in

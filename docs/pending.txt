@@ -1,8 +1,8 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-02 (session #45 — you made clear BOTH themes stay,
-light and dark. The shared two-theme foundation was built, the Home page
-now runs on it, and you designed and approved the light Home look. Full
-rollout order is in parked-items.md under "TWO-THEME ROLLOUT.")
+Last updated: 2026-07-02 (session #46 — Backup and Watch List now have
+both themes, designed with mockups and checked by you in the Simulator.
+Three pages done, ten to go. Full rollout order is in parked-items.md
+under "TWO-THEME ROLLOUT.")
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -14,21 +14,23 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- Session #45: you made clear the light theme is staying — the app keeps
-  BOTH themes. A shared theme file now holds both color sets side by side,
-  and the Home page reads from it. You designed the light Home look with
-  mockups and approved it: soft teal icon circles, a brighter cart, the
-  original big header. You checked BOTH themes in the Simulator.
-- The header title is now the same size in both themes (the original big
-  size), so it doesn't jump when the theme changes. On the Simulator's
-  narrower screen the title wraps to two lines — on your real phone it
-  fits on one. You chose to leave that alone ("a simulator thing").
+- Session #46: the Backup page and the Watch List page now follow both
+  themes, matching Home. You approved each page's look from mockups
+  first, then checked both themes in the Simulator. The Backup page's
+  back button now says "← Back" so it fits on one line.
+- Also fixed: the dark theme's header title/subtitle are now the big
+  original sizes (28/22), same as light — that was decided in #45 but
+  hadn't actually made it into the file.
+- One thing to know: iPhone Settings light/dark does NOT change your
+  app's colors — only the one word in constants/Themes.ts does. But
+  Apple's own popups inside the app (alerts, share sheet, keyboard)
+  DO follow the iPhone setting, so they can look different from the
+  app around them. Decision parked for the Settings-toggle session.
 - Until the Settings toggle is built, the active theme is one word in
-  constants/Themes.ts (DEFAULT_THEME) — currently set to 'light'. Flip it
-  to 'dark' and save to switch the whole app.
+  constants/Themes.ts (DEFAULT_THEME) — currently set to 'dark' from
+  your testing. Set it to the one you want before committing.
 - Not yet committed — you commit this session's code + docs when ready.
-- Next session: backup.tsx + watchlist.tsx (bumped from this session) —
-  first agree how lists/buttons look in both themes, then build.
+- Next session (#47): shopping.tsx + vault.tsx, same mockup-first drill.
 
 
 YOUR #41 LIST — WHAT'S STILL OPEN (items 2, 5, 6, 7 done in #42)
