@@ -1,9 +1,9 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-02 (session #43 — design-only session, nothing built.
-You said the Home page tiles looked "blah"; we mocked up a warm dark theme
-in chat (colors borrowed from Mystery Clues Tracker) and you approved it.
-Exact colors are recorded in handoff.md. One open question before it gets
-built: whether the new theme applies to just Home or to all the pages.)
+Last updated: 2026-07-02 (session #44 — Home page dark theme BUILT and you
+confirmed it looks right. You also confirmed the new theme goes on all 13
+pages, not just Home, and we worked out the order to build them in, one
+file (or small pair) per session. Full order is in parked-items.md under
+"DARK THEME ROLLOUT.")
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -15,20 +15,23 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- Session #42 (Look Ahead popup buttons, Categories out of To-Do, My Day/Pets
-  un-check) is already committed — confirmed at the start of #43.
-- Session #43 was design-only: no code was touched. We worked out a warm
-  dark theme for the Home page tiles (mocked up in chat, not in the app) —
-  colored icon circles with no white card behind them, a rich amber header,
-  reddish-orange tile circles, a vector cart icon so the shopping-cart icon
-  doesn't get lost. You approved the final look. Full color values are in
-  handoff.md so the next session can build straight from them.
-- BEFORE building: confirm whether this new theme is just for the Home page
-  or all the pages (the colors are currently shared by 13 files, so that
-  decision matters). You said "not just Home" but hadn't confirmed "all
-  pages" when we wrapped up.
-- Next session: build the approved Home page theme (after settling the scope
-  question), or pick something else from the list below.
+- Session #44: the Home page now has the warm dark theme we designed in #43
+  — colored icon circles with no white card behind them, amber header,
+  reddish-orange tile circles. You checked it in the Simulator and confirmed
+  it looks right. Along the way we found the shopping-cart AND the settings-
+  gear icons both had the same quirk (a special "emoji" marker that blocks
+  color changes on iPhone) — both got swapped for proper colorable icons.
+- You confirmed the new theme isn't Home-only — it's going on all 13 pages
+  that share the app's color file, one file (or small pair) per session.
+  The build order is written down in parked-items.md so nothing has to be
+  re-decided next time.
+- New idea you raised: a Theme toggle button in Settings, eventually, once
+  more of the dark theme is built. Not scoped yet — added to the someday list
+  below.
+- Not yet committed — you commit this session's docs + the home.tsx change
+  when ready.
+- Next session: build backup.tsx + watchlist.tsx (the next pair in the
+  order), or pick something else from the list below.
 
 
 YOUR #41 LIST — WHAT'S STILL OPEN (items 2, 5, 6, 7 done in #42)
@@ -82,6 +85,9 @@ DECISIONS TO MAKE WHEN YOU'RE READY
 
 NICE-TO-HAVE LATER (polish, low priority)
 -----------------------------------------
+- A Theme toggle button in Settings, so you can switch between light and
+  dark. Makes most sense once more pages have the dark theme built. Not
+  scoped yet, no rush.
 - Project Planner has reminder fields on screen, but they aren't connected
   to anything yet.
 - Finish the "Elyfont" renaming: the in-app home greeting still says

@@ -1,0 +1,1 @@
+Start each session with sending me a folder picker and the readinf session-start.md.

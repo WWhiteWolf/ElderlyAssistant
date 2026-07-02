@@ -7,10 +7,45 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-01 (session #42 — items 5, 6, 7 from Patrick's #41 list DONE,
-Simulator-validated: Look Ahead popup buttons moved up; Categories removed from
-To-Do (killing item 2's cancel bug); Done un-check in My Day + Pets. Remaining
-from the list: items 1, 3, 4. Next session: Patrick picks.)
+Last updated: 2026-07-02 (session #44 — Home page dark theme BUILT and
+Simulator-confirmed; scope confirmed for all 13 pages; 9-session build order
+agreed — see "DARK THEME ROLLOUT" below. New idea parked: Theme toggle button
+in Settings.)
+
+---
+
+## DARK THEME ROLLOUT (started #43 design, #44 build) — all 13 pages
+
+Patrick confirmed (#44) the new warm dark theme isn't Home-only — it goes on
+all 13 pages that currently share `constants/Colors.ts`. Being done one file
+(or small pair) per session, `tsc` clean + Simulator-checked before moving on.
+Exact Home values are in `handoff.md`'s #43/#44 entries. Agreed order:
+
+1. ✅ **DONE (#44, Simulator-confirmed) — `home.tsx`.** Icon-circle tiles (no
+   white card), amber header, dark page background. Two follow-on fixes found
+   during build: the shopping cart and the settings gear emoji both ignore RN
+   `color` styling (VS16 emoji-presentation glyphs) — both swapped for
+   `@expo/vector-icons` instead (cart in `#d8dde3`, gear in `#c9622e`, matching
+   the tile-circle/bridge color).
+2. **`backup.tsx` + `watchlist.tsx`** — small, no modals; works out the
+   "list page" pattern (vs. Home's tile grid).
+3. **`shopping.tsx` + `vault.tsx`** — medium, same list/card pattern.
+4. **`timer.tsx` + `settings.tsx`** — paired: both use native `Switch`
+   toggles needing explicit `trackColor`/`thumbColor` values.
+5. **`todo.tsx`** — standalone; colors come from a `PRIORITY_COLORS` JS
+   object in the code, not just the stylesheet — needs logic edits.
+6. **`planner.tsx`** — standalone; same color-map situation
+   (`PRIORITY_COLORS` + `STATUS_COLORS`), most structurally complex file.
+7. **`lookahead.tsx`** — grouped sections/swipe/modal pattern, a smaller
+   preview of the myday/myweek/mollie trio below.
+8. **`myday.tsx`** — biggest file (5 modals, ~340 lines of styles); sets the
+   pattern for the routine-tracker trio.
+9. **`myweek.tsx` + `mollie.tsx`** — copy myday's pattern; near-duplicate
+   files, should go fastest.
+
+Once all 13 are converted, the new theme's values can move from per-file
+locals into `constants/Colors.ts` itself — not done yet on purpose, so the
+unconverted pages keep working in the old light theme in the meantime.
 
 ---
 
@@ -183,6 +218,9 @@ categories from To-Do entirely.)
 
 ## Nice-to-have later (UI polish)
 
+- **Theme toggle button in Settings (Patrick, #44).** Once the dark theme
+  rollout above is done (or partway through), add a toggle in Settings to
+  switch between light and dark. Not scoped yet — no rush.
 - **Name the backup folder — PROMOTED (#41, see Patrick's list above)**
   (`app/backup.tsx`). Give the exported backup folder/file a clear, recognizable name
   so it's easy to find where it's saved (e.g. iCloud Drive). (The file itself is
