@@ -7,11 +7,10 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-01 (session #40 — design review of every page's reminder
-machinery: To-Do banners now carry NO buttons (Patrick: every set reminder should
-fire; Done happens in-app after the appointment); My Day / My Week / Pets reviewed
-and kept as-is. Look Ahead / Timer / Planner not reviewed. Next session (Patrick's
-pick): STEP 5 — integrate Watch List.)
+Last updated: 2026-07-01 (session #41 — STEP 5 DONE: Watch List integrated as a
+home page, Simulator-validated. Patrick then listed 7 items he wants addressed —
+see "Patrick's #41 list" below. Also found while checking: backups miss Look Ahead
+AND Watch List data (new bug below). Next session: Patrick picks.)
 
 ---
 
@@ -67,18 +66,53 @@ pages. Take ONE piece per session. **Order: pages first, then the popup consolid
   one-shots (now buttonless banners), My Day / Pets daily, My Week weekly + postpone,
   Look Ahead long-lead + Delay, the shared routine popup's six buttons,
   past-day/past-cycle guards, sound, tap-routing. Work through it Simulator-first;
-  batch the device-only parts into the checkpoints below.
+  batch the device-only parts into the checkpoints below. **Add (#41, Patrick's
+  item 4): he saw a banner Done on YESTERDAY'S My Day reminder check off TODAY'S —
+  almost certainly the phone's older TestFlight build (the #39 past-day guard isn't
+  device-tested yet), but verify the guard explicitly. Patrick is tracking it.**
 - **PHONE CHECKPOINTS A + B (cloud build) — owed; likely folded into the structured
   test session.** On the real phone confirm: To-Do one-shots + Look Ahead reminders
   fire, route on tap, the Look Ahead Done/Delay buttons behave, **the To-Do banner is
   buttonless (#40)** — swipe dismisses, tap opens the app, no OK/Done (banners
   scheduled before #40 may still show the old buttons until they cycle out) — AND the
-  shared routine popup (#39): six buttons, Skip, past-day guard, snooze sound.
-- **Integrate the "Watch List" page — ← NEXT (Patrick's pick, #40)** (independent of
-  reminders). Already built as a
-  standalone Expo app in `Projects/WatchList` (movie/TV tracker, no notifications). Fold
-  in as a new home-screen page: `app/watchlist.tsx` + home tile + route; port `App.js` /
-  `useWatchListState.js` / `types.js` into this app's TS/expo-router structure.
+  shared routine popup (#39): six buttons, Skip, past-day guard, snooze sound. **Plus
+  a quick Watch List once-over (#41): tile, add movie/show, buttons, data survives
+  an app restart.**
+- **✅ DONE (#41, Simulator-validated) — Watch List integrated as a home page**
+  (`app/watchlist.tsx` new + home tile/route + `_layout.tsx` Stack.Screen). The
+  standalone `Projects/WatchList` app's three files combined into one TS page,
+  restyled to the app's blue look; behavior unchanged (movies To Watch/Watched,
+  shows +Ep/+Seas); same storage keys (`watchlist_movies`, `watchlist_shows`); no
+  notifications. `tsc` clean. Phone once-over batched into the checkpoints above.
+  **This closes the #34 plan's five steps** (device validation still owed).
+
+---
+
+## Patrick's #41 list — items he wants addressed (next-session candidates)
+
+Raised by Patrick at the end of #41, clarified one by one. None built yet; pick
+from here (or the older backlog) as session goals.
+
+1. **Name the backup folder — PROMOTED from nice-to-have.** Give the exported
+   backup folder/file a clear, recognizable name so it's easy to find where it's
+   saved. (Detail still in "Nice-to-have" below; it's now wanted, not just nice.)
+2. **To-Do Custom-Category cancel bug** — already tracked under Bugs below;
+   expected to VANISH via item 6 (no categories → no category popup). Handle the
+   two together.
+3. **NEW — Import files/docs into Vault.** Bring outside files/documents into the
+   Vault. Scope is undefined (file types? where from? how shown/stored/encrypted?)
+   — needs a discussion session before any build.
+4. **My Day past-day banner Done** — folded into the STRUCTURED REMINDER TESTS
+   entry above. Patrick is tracking whether it recurs.
+5. **NEW — Look Ahead New/Edit popups: move Cancel & Save up near the input**
+   (like To-Do's form), instead of sitting low under the input box. Small UI fix.
+6. **NEW — Remove Categories from To-Do entirely.** Patrick's call. Takes the
+   category picker + Custom-Category popup (and its cancel bug) out of New Task;
+   existing saved tasks' category data and the `todo_categories` storage key need
+   a look during the work.
+7. **NEW — Done button toggles back (un-check) in My Day, Pets, AND My Week.**
+   Tapping Done on an already-done item should un-do it (currently one-way).
+   Needs a rule for what happens to the history log entry when un-checked.
 
 ---
 
@@ -98,6 +132,12 @@ the louder timer alarm). (The old 3/6-month + Monthly/Yearly To-Do repeat items 
 
 ## Bugs / correctness (still open)
 
+- **Backup misses Look Ahead and Watch List data (found #41)** (`app/backup.tsx`).
+  `READABLE_KEYS` doesn't include `lookahead_items` / `lookahead_history` (a gap
+  since #36 built the page) nor the new `watchlist_movies` / `watchlist_shows`
+  (#41). Export/restore silently skips those pages' data. Fix: add the four keys —
+  but note a restored backup from BEFORE the fix won't contain them; verify
+  restore handles the missing keys gracefully.
 - **To-Do reminder fired early — needs a clean phone re-test** (`app/todo.tsx`). A To-Do
   Patrick recalls setting for 23:30 fired around 21:15. Reading the scheduling code found
   **no bug**: the only thing that produces an early fire is the "2 hours" before-reminder
@@ -109,7 +149,8 @@ the louder timer alarm). (The old 3/6-month + Monthly/Yearly To-Do repeat items 
 - **To-Do Custom Category cancel wipes the new task** (`app/todo.tsx`). In New Task,
   opening the "Custom Category" second popup and tapping **Cancel** closes BOTH popups and
   loses the in-progress task. Cancel on the category popup should close only that popup and
-  return to the New Task form with entries intact.
+  return to the New Task form with entries intact. **[#41: expected to VANISH via
+  "Remove Categories from To-Do" — Patrick's #41 list, item 6. Handle together.]**
 - **[SUPERSEDED by #34 plan] To-Do recurrence (Monthly / Yearly / 3 / 6 Months).**
   These were all open To-Do items (3/6-month stubs did nothing; Monthly/Yearly needed a
   phone test). Per #34, **recurrence leaves To-Do entirely** and moves to the new Look
@@ -147,8 +188,11 @@ the louder timer alarm). (The old 3/6-month + Monthly/Yearly To-Do repeat items 
 
 ## Nice-to-have later (UI polish)
 
-- **Name the backup folder** (`app/backup.tsx`). Give the exported backup folder/file a
-  clear, recognizable name so it's easy to find where it's saved (e.g. iCloud Drive).
+- **Name the backup folder — PROMOTED (#41, see Patrick's list above)**
+  (`app/backup.tsx`). Give the exported backup folder/file a clear, recognizable name
+  so it's easy to find where it's saved (e.g. iCloud Drive). (The file itself is
+  already named `Elyfont-Backup-<date>.json`; this is about where it lands / how
+  findable it is.)
 - **Project Planner reminders do nothing yet** (`app/planner.tsx`). The screen has reminder
   fields, but they aren't wired to any notifications. Low priority.
 - **Finish the "Elyfont" renaming.** The in-app home greeting still says "Remember When";

@@ -542,6 +542,7 @@ export default function RootLayout() {
       <Stack.Screen name="lookahead" options={{ headerShown: false }} />
       <Stack.Screen name="todo" options={{ headerShown: false }} />
       <Stack.Screen name="planner" options={{ headerShown: false }} />
+      <Stack.Screen name="watchlist" options={{ headerShown: false }} />
       <Stack.Screen name="settings" options={{ headerShown: false }} />
       <Stack.Screen name="vault" options={{ headerShown: false }} />
       <Stack.Screen name="backup" options={{ headerShown: false }} />

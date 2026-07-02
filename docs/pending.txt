@@ -1,9 +1,7 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-01 (session #40 — reviewed every page's reminder machinery
-page by page. Your calls: To-Do banners now have NO buttons at all — every set
-reminder fires, and "Done" happens inside the app after the appointment. My Day,
-My Week and Pets stay exactly as they are. Next session: Step 5 — fold in the
-Watch List app.)
+Last updated: 2026-07-01 (session #41 — Step 5 done: the Watch List app is now a
+page inside "Remember When," checked in the Simulator. You then gave me a list of
+7 things you want addressed — they're all recorded below. Next session: your pick.)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -15,62 +13,41 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- This session (#40) was a design review: we went page by page through how
-  each page's reminders actually work, and you decided per page whether to
-  keep or reshape. The outcomes:
-    * To-Do — RESHAPED: banners now have NO buttons at all. Your reasoning: a
-      To-Do is a one-time appointment; you want every reminder you set to
-      fire, the banner's only job is reminding, and you mark it Done inside
-      the app after the appointment. (The old banner "Done" was actually
-      risky — tapping it on an early reminder cancelled the later ones.)
-      Swipe dismisses a banner; tapping it opens the app. Banners set BEFORE
-      this change may still show the old buttons until they've cycled out.
-    * My Week — stays as-is (we clarified: OK and Skip act the same unless a
-      snooze/postpone is pending — Skip also wipes those).
-    * My Day and Pets — stay as-is.
-    * Look Ahead, Timer, Project Planner — not reviewed this session.
-- All of session #40 (code + these docs) is ready for you to commit.
-- The plan, in a nutshell: (1) ✅ DONE — repeating options out of To-Do; (2) ✅
-  DONE — build "Look Ahead"; (3) ✅ DONE — Look Ahead reminders + Delay; (4) ✅
-  DONE — pop-ups settled everywhere (To-Do buttonless per #40; the three
-  routine pages share one pop-up per #39); (5) fold in your "Watch List" app
-  as another page.
-- What's next — YOUR DECLARED PICK: STEP 5, integrating the Watch List
-  movie/TV app as another home-screen page. The structured reminder tests and
-  the phone checkpoints are still owed and stay queued behind it. Nothing
-  here is urgent.
+- This session (#41): the Watch List movie/TV tracker is now a page in the
+  main app — 🎬 tile on the home screen, restyled to match the app's blue
+  look, working exactly like the standalone version. You checked it all in
+  the Simulator: adding, Mark Seen / Watch Again, +Ep / +Seas. A quick
+  real-phone check is batched with the other phone tests.
+- The big #34 plan is now COMPLETE on the Simulator: (1) ✅ repeating options
+  out of To-Do; (2) ✅ "Look Ahead" built; (3) ✅ its reminders; (4) ✅ popups
+  settled everywhere; (5) ✅ Watch List folded in. What's left from it is
+  real-phone confirmation (the checkpoints) and the structured reminder tests.
+- One new bug found while updating these docs: BACKUPS currently skip the
+  Look Ahead page's data (and now Watch List's too) — restoring a backup
+  would lose those lists. On the bug list below.
+- All of session #41 (code + these docs) is ready for you to commit.
+- Next session: YOUR PICK — likely from your new list just below, or the
+  structured reminder tests / phone checkpoints.
 
 
-BIG PLANNED WORK (the #34 plan — ONE effort, pages first, Simulator-first)
+YOUR #41 LIST (the 7 things you asked to address)
 ----------------------------------------------------------------------------
-These are kept together as one initiative ("Reminder Rebuild #34") so they get
-done as a set and don't get lost among other items. As much as practical is
-built and checked in the Simulator first (free) before spending a phone build;
-the real-phone tests are batched into two checkpoints. Full details + the
-ordered build checklist live in docs/reminder-audit.md. The four pieces:
-- [DONE #35] Strip the repeating options out of To-Do (Monthly, Yearly, 3 & 6
-  months) so To-Do is just one-time tasks. Done, Simulator-checked.
-- [DONE #36] Build the new "Look Ahead" page (home screen, like My Day): items
-  grouped Monthly / 3 Months / 6 Months / Yearly, each with first-due date, time,
-  repeat choice, and its own log. Done, Simulator-checked.
-- [DONE #37] Give Look Ahead its reminders: each item nags on schedule and rolls
-  forward to its next date when you mark it done; Delay choices of Day / Week /
-  Month (on the pop-up and as an on-tile button), with a "▶ Delayed …" line.
-  Done, Simulator-checked. The real-phone test for this is Checkpoint A (below),
-  still owed.
-- [DONE #38 + #39 + #40] Make the reminder popups behave consistently. To-Do
-  stands alone — a fixed one-time appointment, not a repeating routine — and
-  after the #40 review its banners carry NO buttons at all (every set reminder
-  fires; Done happens in-app afterward). My Day, My Week and Pets share one
-  popup with OK / Skip / Delay 15/30/60 / Done (#39), with the past-day guard
-  so an old popup can't check off today's item. Timer left out on purpose.
-  Real-phone confirmation is batched into the checkpoints.
-- NEXT (your pick, #40): STEP 5 — fold your "Watch List" movie/TV app in as
-  another home-screen page (it's built already, in its own folder). Separate
-  from the reminder work.
-- Still owed after that: STRUCTURED REMINDER TESTS — one organized checklist
-  covering every reminder kind and button, worked through methodically —
-  Simulator first, phone-only parts batched into the cloud-build checkpoints.
+1. Name the backup folder — moved up from "someday" to "wanted."
+2. The To-Do Custom Category cancel bug — see the bug list below; it will
+   disappear on its own when we do number 6.
+3. NEW: Import files/documents into the Vault. Needs a talk-through first
+   (what kinds of files, from where, how they're shown and protected).
+4. My Day: a banner "Done" on YESTERDAY'S reminder checked off TODAY'S.
+   Most likely your phone is still running the older build from before the
+   fix (#39) — the fix just hasn't been phone-tested yet. You're tracking
+   whether it happens again; it's on the structured-test checklist.
+5. NEW: On Look Ahead's New and Edit popups, move the Cancel & Save buttons
+   up near the input box (like To-Do's), not sitting low under it.
+6. NEW: Remove Categories from To-Do entirely (takes the category picker,
+   the custom-category popup, and its cancel bug all out in one go).
+7. NEW: In My Day, Pets, and My Week, tapping Done on an already-done item
+   should UN-check it (right now Done is one-way). We'll need to decide
+   what happens to the history entry when you un-check.
 
 
 NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
@@ -80,17 +57,20 @@ NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
   exactly 2 hours before a 23:15 time, so it was most likely the "2 hours"
   before-reminder option doing its job. To be sure: make a new task due a few
   minutes out, pick ONLY "At time," and watch if it fires on the minute.
+- The buttonless To-Do banner (#40), the shared routine popup (#39), Look
+  Ahead's reminders (#37), and a Watch List once-over (#41) — all batched
+  into the phone checkpoints.
 
 
 STILL BROKEN OR UNFINISHED (small bugs)
 ---------------------------------------
+- NEW (found #41): Backups skip Look Ahead and Watch List. The backup code
+  has a fixed list of what to save, and those pages' data was never added.
+  Until fixed, restoring a backup loses the Look Ahead and Watch List lists.
 - To-Do "Custom Category" cancel wipes the new task. When adding a New Task,
   if you open the Custom Category second popup and tap Cancel, BOTH popups
-  close and the task you were entering is lost. Cancel should only back out of
-  the category popup and return you to the task you were filling in.
-- (DONE — folded into the #34 plan) The old "3 Months" / "6 Months" To-Do options
-  that did nothing are gone: all the repeating options moved out to the Look Ahead
-  page, which now handles them with real reminders (finished in #37).
+  close and the task you were entering is lost. (Goes away with your item 6 —
+  removing categories.)
 - My Week: if you mark a chore done from inside the app (not from the
   notification), it records today's date instead of the chore's own day.
   Minor — only matters if you log a chore well after its day.
@@ -105,12 +85,11 @@ DECISIONS TO MAKE WHEN YOU'RE READY
   there instead. That needs its own session because each kind of data
   (tasks, logs, counters, settings) has to combine by its own rule, and
   those are your calls.
+- Vault import (your item 3 above) — scope it out before building.
 
 
 NICE-TO-HAVE LATER (polish, low priority)
 -----------------------------------------
-- Name the backup folder. Give the exported backup folder/file a clear name
-  so it's easy to spot wherever it's saved (e.g. iCloud Drive).
 - Project Planner has reminder fields on screen, but they aren't connected
   to anything yet.
 - Finish the "Elyfont" renaming: the in-app home greeting still says
@@ -121,6 +100,7 @@ NICE-TO-HAVE LATER (polish, low priority)
   "+ Add."
 - Add a Snooze button on each To-Do item itself. My Day and Pets Day already
   have one on every tile; To-Do only has Snooze on the notification banner.
+  (The "Name the backup folder" item moved UP to your #41 list.)
 
 
 PARKED ON PURPOSE (bigger items, on hold for now)

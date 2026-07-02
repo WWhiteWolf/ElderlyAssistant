@@ -1,58 +1,45 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #40 (2026-07-01) "Reminder organization & Test": DESIGN REVIEW of each page's reminder machinery (goal corrected at session start — NOT the test-checklist build the #39 notes predicted). Result: **To-Do banners now carry NO buttons**; My Day / My Week / Pets reviewed and kept as-is (Patrick's calls). `tsc` clean. **All #40 code + docs UNCOMMITTED → Patrick commits.**
+## THIS SESSION — #41 (2026-07-01) "Rebuild Step 5": **STEP 5 DONE — Watch List integrated** as a home page, Simulator-validated by Patrick (screenshots). Port of the standalone `Projects/WatchList` app; no notifications. Patrick also raised **7 new backlog items** at session end (recorded in parked-items.md / pending.txt). `tsc` clean. **All #41 code + docs UNCOMMITTED → Patrick commits.**
 
-**Start-of-session fact:** working tree clean — all of #39 committed, code + docs (`5b22b7d Rebuld Step 4 Real Complete`). Confirmed at session start.
+**Start-of-session fact:** #40 was still uncommitted at session start (expected — docs said "Patrick commits"); Patrick committed it at session start (`db57791 Reminder organization review #40`), leaving a clean tree before Step 5 began.
+
+**What was done (3 steps, one at a time, each `tsc`-clean):**
+1. `app/watchlist.tsx` — NEW. The three standalone files (`App.js` / `useWatchListState.js` / `types.js`) combined into one TypeScript page. Behavior unchanged: add movie / TV show with a provider tag (YouTube TV, Netflix, Paramount, HBO); movies toggle To Watch ↔ Watched ("Mark Seen" / "Watch Again"); shows track season/episode (+Ep / +Seas, season bump resets episode to 1). **Restyled to match the app** (Patrick's call): blue header + ← Home pill, bridge stripe, white cards, blue buttons. Same storage keys as the standalone app (`watchlist_movies`, `watchlist_shows`) — no overlap with other app data. **No notification code.**
+2. `app/home.tsx` — 🎬 "Watch List" tile (after Project Planner, before Vault) + route.
+3. `app/_layout.tsx` — one `Stack.Screen name="watchlist"` line.
+
+**Verification:** `tsc --noEmit` clean after each step. Simulator (Patrick, screenshots): tile shows and opens the page; blue styling right; added a movie (ET) and a show (Monk); Mark Seen flipped to Watched/"Watch Again"; +Ep/+Seas stepped to S2 E3 with the correct episode reset. **Not phone-tested** — a quick Watch List once-over is batched into the phone checkpoints. NOTE: `watchlist_movies` / `watchlist_shows` are NOT yet in backup.tsx's key list — Watch List data won't be in backups until that's added (parked).
+
+**NEW BACKLOG ITEMS (Patrick, end of #41)** — all recorded in parked-items.md + pending.txt, none built:
+1. **Name the backup folder — PROMOTED**, Patrick wants it done (was nice-to-have).
+2. To-Do Custom-Category cancel bug — already tracked; now expected to **vanish via item 6**.
+3. **NEW: Import files/docs into Vault.**
+4. My Day: banner Done on *yesterday's* reminder checked off *today's* — most likely the phone's older TestFlight build (the #39 past-day guard isn't device-tested yet). Patrick tracks it; folded into the structured tests.
+5. **NEW: Look Ahead New/Edit popups — move Cancel & Save up near the input** (like To-Do's).
+6. **NEW: Remove Categories from To-Do entirely** (kills bug 2 with it).
+7. **NEW: Done button should toggle back (un-check) in My Day, Pets, AND My Week.**
+
+**➤ NEXT SESSION — Patrick picks the goal.** Still queued:
+- **STRUCTURED REMINDER TESTS** (open since #39) — now also covering item 4 above.
+- **PHONE CHECKPOINTS A + B** (cloud build) — buttonless To-Do banner (#40) + a quick Watch List once-over (#41).
+- The 7 items above, in whatever order Patrick chooses.
+
+---
+
+## SESSION — #40 (2026-07-01) "Reminder organization & Test": DESIGN REVIEW of each page's reminder machinery (goal corrected at session start — NOT the test-checklist build the #39 notes predicted). Result: **To-Do banners now carry NO buttons**; My Day / My Week / Pets reviewed and kept as-is (Patrick's calls). `tsc` clean. Committed at the start of #41 (`db57791`).
 
 **KEY DECISIONS (Patrick, #40):**
 - **To-Do banner = no popup, no buttons at all.** Patrick's reasoning: a To-Do is a one-time appointment — he wants EVERY set reminder to fire, the banner's only job is to remind, and nothing changes until after he attends anyway; Done happens in-app afterward. Code review backed it: banner-Done was redundant (in-app `completeTask` does the same: log + remove + cancel remaining alerts) and counterproductive (Done on an early preset, e.g. Day Before, would cancel the later reminders he set). Swipe dismisses; tapping the banner body still opens the app to To-Do.
 - **My Week stays as-is** — after reviewing all four parts (weekly base, six-button popup, on-page Postpone, on-page Log). Clarified in review: Postpone and Delay are the same one-off mechanism at different scales (days vs minutes); OK and Skip are identical UNLESS a snooze/postpone is pending — Skip also wipes those pending one-offs.
 - **My Day and Pets stay as-is** (reviewed My Day's machinery; Pets is its twin).
 - **Look Ahead, Timer, Project Planner: not reviewed** — Patrick ended the session before those.
-- **NEXT SESSION = STEP 5: Integrate Watch List** (Patrick's declared pick). The structured reminder tests + phone checkpoints remain owed, queued behind it.
 
 **What was done (one change, discussed first):**
 1. `app/todo.tsx` — removed `categoryIdentifier: 'todosnooze'` from reminder scheduling; comment records the reasoning. New To-Do banners carry no button set.
 2. `app/_layout.tsx` — removed the `todosnooze` category registration (OK + Done); the old banner Done handler code left in place harmlessly for banners scheduled before the change.
 
 **Verification:** `tsc --noEmit` clean. Not practically Simulator-testable (soonest To-Do preset is "1 hour before") — confirming the buttonless banner on a real phone is batched into the phone checkpoints. Note: banners scheduled BEFORE this change may still show OK/Done until they cycle out.
-
-**Also this session (docs):** dropped the "rename the `todosnooze` category (cosmetic)" nice-to-have from parked-items.md — obsolete, the category is deleted entirely.
-
-**➤ NEXT SESSION — Patrick's declared pick: STEP 5 — Integrate Watch List** as a home page (no notifications; port from `Projects/WatchList`). Still queued behind it:
-- **STRUCTURED REMINDER TESTS** (was #39's pick; #40 became a design review instead — still open).
-- **PHONE CHECKPOINTS A + B** (cloud build) — now ALSO covering the buttonless To-Do banner (#40).
-
----
-
-## SESSION — #39 (2026-07-01) "Rebuild Step 4 (routine half)": ONE SHARED POPUP for My Day / My Week / Pets — new `routineactions` category (OK / Skip / Delay 15·30·60 / Done) wired in `_layout.tsx` and adopted by all three pages. Silent-snooze fixed; past-day Done guard added; My Week's banner "+1 Day" dropped (Patrick's call). `tsc` clean; all three popups Simulator-checked (screenshots). **All #39 code + docs UNCOMMITTED → Patrick commits.**
-
-**Start-of-session fact:** working tree clean — all of #38 committed including docs (`4a431a8 Rebuild Step 4.4 #38 All of TO-DO`). Confirmed at session start. (Session is named "Rebuild Step 5" in the panel, but the actual goal became finishing Step 4 — the name is a misnomer.)
-
-**Goal = STEP 4 of the Reminder Rebuild #34 BUILD PLAN, routine half:** fold My Day / My Week / Pets onto one shared popup. (To-Do deliberately excluded per #38; Timer excluded per #34.) **This completes Step 4** as far as the Simulator can take it — real-device confirmation still owed (checkpoints below).
-
-**KEY DECISIONS (Patrick, #39):**
-- **My Week's popup = identical to the other two.** The banner's old "+1 Day" button is gone; postponing still lives on the page itself (on-tile Postpone untouched).
-- **Skip semantics:** dismiss + cancel the item's still-pending one-offs (snoozes / a My Week postpone) so it stops nagging this round; nothing marked done, nothing logged; base DAILY/WEEKLY repeat untouched, so it returns next cycle.
-- **NEXT SESSION = structured reminder tests.** Patrick: "There are too many of too many kinds to keep track of" — next session is devoted to building an organized test checklist for ALL reminder kinds (To-Do one-shots, My Day/Pets daily, My Week weekly + postpone, Look Ahead long-lead, the new shared popup buttons, past-day rules). Natural fit: fold Phone Checkpoints A+B into it.
-- **New standing rule (in session-start.md): step reports use the "what → how" shape** — 1–2 plain sentences of WHAT happened, then short bullets on HOW.
-
-**What was done (5 small steps, built + reviewed one at a time):**
-1. **Silent-snooze fix** (`_layout.tsx`) — banner-tapped Snooze/Delay reschedules now carry `sound: 'default'` (audit item #1; on-page snooze already had it).
-2. **Shared category + new behaviors** (`_layout.tsx`) — registered `routineactions` (OK / Skip / Delay 15·30·60 / Done); new `skip` handler; **past-day guard on Done** (My Day/Pets: a banner fired on a past day logs the past completion but does NOT check off today; My Week: same idea per weekly cycle via last-occurrence math); Delay handler taught about My Week (`myweeksnooze` source + "Weekly Chore" title + routing); a delayed popup keeps the button set of the popup it came from.
-3. **My Day switched over** (`myday.tsx`) — scheduled + on-page-snooze popups now use `routineactions`. Simulator-checked.
-4. **Pets switched over** (`mollie.tsx`) — same two-line change. Simulator-checked.
-5. **My Week switched over** (`myweek.tsx`) — weekly + postpone popups now use `routineactions`; old `postpone1`/`myweekactions` handler code left in place harmlessly for pre-switch banners. Simulator-checked.
-
-**Verification:** `tsc --noEmit` clean after every step. Simulator (Patrick, screenshots): all three pages' popups show the six shared buttons. **NOT device-tested / not Simulator-testable:** sound actually playing, past-day guard (needs an overnight leftover popup), real lock-screen button behavior, tap-routing → all owed to the phone checkpoints / the structured test session.
-
-**Also this session (docs):** the "per-appointment reminder time" item was moved out of "decisions to make" into "parked on purpose" in both pending.txt and parked-items.md (it was already decided — global only — and the old placement confused Patrick).
-
-**Files touched (#39):** `app/_layout.tsx`, `app/myday.tsx`, `app/mollie.tsx`, `app/myweek.tsx` (code); `docs/session-start.md` (new reporting rule), `docs/handoff.md`, `docs/parked-items.md`, `docs/pending.txt`. **All UNCOMMITTED → Patrick commits.**
-
-**➤ NEXT SESSION — Patrick's declared pick: STRUCTURED REMINDER TESTS.** Build one organized test checklist covering every reminder kind, then work through it (Simulator where possible; batch the rest into the phone checkpoints). Still queued behind it:
-- **PHONE CHECKPOINTS A + B** (cloud build) — likely folded INTO the structured test plan.
-- **STEP 5 — Integrate Watch List** as a home page (no notifications).
 
 ---
 
