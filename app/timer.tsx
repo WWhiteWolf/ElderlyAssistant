@@ -12,7 +12,7 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../constants/Colors';
+import { Theme, useTheme } from '../constants/Themes';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -54,6 +54,8 @@ const NAG_PROFILES: Record<NagStyle, { interval: number; count: number }> = {
 
 export default function TimerScreen() {
     const router = useRouter();
+    const theme = useTheme();
+    const styles = makeStyles(theme);
     const [activeTimers, setActiveTimers] = useState<ActiveTimer[]>([]);
     const [selectedMinutes, setSelectedMinutes] = useState<number | null>(null);
     const [customMinutes, setCustomMinutes] = useState('');
@@ -239,7 +241,7 @@ export default function TimerScreen() {
 
     return (
         <View style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: Colors.primary }}>
+            <SafeAreaView style={{ backgroundColor: theme.header }}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
                         <Text style={styles.headerBtnText}>← Home</Text>
@@ -274,7 +276,7 @@ export default function TimerScreen() {
                         value={customLabel}
                         onChangeText={setCustomLabel}
                         placeholder="Enter label..."
-                        placeholderTextColor="#aaa"
+                        placeholderTextColor={theme.mutedText}
                     />
                 )}
 
@@ -299,7 +301,7 @@ export default function TimerScreen() {
                         value={customMinutes}
                         onChangeText={t => { setCustomMinutes(t); setSelectedMinutes(null); }}
                         placeholder="Custom minutes..."
-                        placeholderTextColor="#aaa"
+                        placeholderTextColor={theme.mutedText}
                         keyboardType="numeric"
                     />
                     <Text style={styles.minLabel}>min</Text>
@@ -331,7 +333,8 @@ export default function TimerScreen() {
                     <Switch
                         value={loudEnabled}
                         onValueChange={setLoudEnabled}
-                        trackColor={{ true: Colors.primary, false: '#ccc' }}
+                        trackColor={{ true: theme.switchTrackOn, false: theme.switchTrackOff }}
+                        thumbColor={theme.switchThumb}
                     />
                 </View>
 
@@ -372,149 +375,150 @@ export default function TimerScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: Colors.background },
-    header: {
-        backgroundColor: Colors.primary,
-        paddingTop: 20,
-        paddingHorizontal: 20,
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    backBtn: { width: 70 },
-    settingsBtn: { width: 70, alignItems: 'flex-end' },
-    settingsBtnText: { fontSize: 22 },
-    backText: { color: Colors.lightBlue, fontSize: 16 },
-    title: {
-        fontSize: 26,
-        fontWeight: '500',
-        color: Colors.textLight,
-        fontStyle: 'italic',
-        fontFamily: 'Georgia',
-        flex: 1,
-        textAlign: 'center',
-    },
-    bridge: { height: 8, backgroundColor: Colors.bridge },
-    content: { padding: 16, gap: 12 },
-    sectionLabel: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: Colors.primary,
-        marginTop: 8,
-    },
-    labelRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-    labelBtn: {
-        paddingVertical: 10,
-        paddingHorizontal: 18,
-        borderRadius: 20,
-        borderWidth: 1.5,
-        borderColor: Colors.primary,
-        backgroundColor: Colors.white,
-    },
-    labelBtnActive: { backgroundColor: Colors.primary },
-    labelBtnText: { color: Colors.primary, fontWeight: '500', fontSize: 15 },
-    labelBtnTextActive: { color: Colors.white },
-    presetRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-    presetBtn: {
-        paddingVertical: 10,
-        paddingHorizontal: 16,
-        borderRadius: 20,
-        borderWidth: 1.5,
-        borderColor: Colors.bridge,
-        backgroundColor: Colors.white,
-    },
-    presetBtnActive: { backgroundColor: Colors.bridge },
-    presetText: { color: Colors.bridge, fontWeight: '500', fontSize: 15 },
-    presetTextActive: { color: Colors.white },
-    customRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-    customInput: {
-        flex: 1,
-        borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
-        borderRadius: 8,
-        padding: 10,
-        fontSize: 16,
-        color: Colors.text,
-        backgroundColor: Colors.white,
-    },
-    minLabel: { fontSize: 16, color: Colors.primary, fontWeight: '500' },
-    styleBtn: {
-        flex: 1,
-        paddingVertical: 12,
-        paddingHorizontal: 12,
-        borderRadius: 12,
-        borderWidth: 1.5,
-        borderColor: Colors.primary,
-        backgroundColor: Colors.white,
-        alignItems: 'center',
-    },
-    styleBtnActive: { backgroundColor: Colors.primary },
-    styleBtnText: { color: Colors.primary, fontWeight: '600', fontSize: 16 },
-    styleBtnHint: { color: Colors.primary, fontSize: 12, marginTop: 2 },
-    styleBtnTextActive: { color: Colors.white },
-    switchRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: Colors.white,
-        borderRadius: 12,
-        padding: 14,
-        borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
-        gap: 10,
-    },
-    switchLabel: { fontSize: 16, fontWeight: '600', color: Colors.primary },
-    switchHint: { fontSize: 12, color: '#888', marginTop: 2 },
-    input: {
-        borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
-        borderRadius: 8,
-        padding: 10,
-        fontSize: 16,
-        color: Colors.text,
-        backgroundColor: Colors.white,
-    },
-    startBtn: {
-        backgroundColor: Colors.primary,
-        padding: 16,
-        borderRadius: 12,
-        alignItems: 'center',
-        marginTop: 8,
-    },
-    startBtnText: { color: Colors.white, fontSize: 18, fontWeight: '600' },
-    timerCard: {
-        backgroundColor: Colors.white,
-        borderRadius: 12,
-        padding: 16,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
-    },
-    timerInfo: { gap: 4 },
-    timerLabel: { fontSize: 18, fontWeight: '600', color: Colors.primary },
-    timerCountdown: { fontSize: 28, fontWeight: '700', color: Colors.bridge },
-    timerBtnRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-    doneBtn: {
-        backgroundColor: '#27ae60',
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 8,
-    },
-    doneBtnText: { color: Colors.white, fontWeight: '600' },
-    cancelBtn: {
-        backgroundColor: '#e74c3c',
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 8,
-    },
-    cancelBtnText: { color: Colors.white, fontWeight: '600' },
-    headerBtn: {
-        borderWidth: 1,
-        borderColor: Colors.white,
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 20,
-    },
-    headerBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
-});
+// makeStyles(theme) pattern from home.tsx (#45).
+const makeStyles = (t: Theme) =>
+    StyleSheet.create({
+        container: { flex: 1, backgroundColor: t.pageBackground },
+        header: {
+            backgroundColor: t.header,
+            paddingTop: 20,
+            paddingHorizontal: 20,
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        settingsBtn: { width: 70, alignItems: 'flex-end' },
+        title: {
+            fontSize: 26,
+            fontWeight: '500',
+            color: t.titleText,
+            fontStyle: 'italic',
+            fontFamily: 'Georgia',
+            flex: 1,
+            textAlign: 'center',
+        },
+        bridge: { height: 8, backgroundColor: t.bridge },
+        content: { padding: 16, gap: 12 },
+        sectionLabel: {
+            fontSize: 16,
+            fontWeight: '600',
+            color: t.cardTitle,
+            marginTop: 8,
+        },
+        labelRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+        labelBtn: {
+            paddingVertical: 10,
+            paddingHorizontal: 18,
+            borderRadius: 20,
+            borderWidth: 1.5,
+            borderColor: t.cardTitle,
+            backgroundColor: t.chip,
+        },
+        // Selected chip: border matches the fill (invisible) so sizes stay
+        // identical next to the outlined unselected chips (#47 rule).
+        labelBtnActive: { backgroundColor: t.buttonPrimary, borderColor: t.buttonPrimary },
+        labelBtnText: { color: t.cardTitle, fontWeight: '500', fontSize: 15 },
+        labelBtnTextActive: { color: t.buttonPrimaryText },
+        presetRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+        presetBtn: {
+            paddingVertical: 10,
+            paddingHorizontal: 16,
+            borderRadius: 20,
+            borderWidth: 1.5,
+            borderColor: t.pill,
+            backgroundColor: t.chip,
+        },
+        presetBtnActive: { backgroundColor: t.pillSelected, borderColor: t.pillSelected },
+        presetText: { color: t.pill, fontWeight: '500', fontSize: 15 },
+        presetTextActive: { color: t.buttonPrimaryText },
+        customRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+        customInput: {
+            flex: 1,
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+            borderRadius: 8,
+            padding: 10,
+            fontSize: 16,
+            color: t.bodyText,
+            backgroundColor: t.chip,
+        },
+        minLabel: { fontSize: 16, color: t.bodyText, fontWeight: '500' },
+        styleBtn: {
+            flex: 1,
+            paddingVertical: 12,
+            paddingHorizontal: 12,
+            borderRadius: 12,
+            borderWidth: 1.5,
+            borderColor: t.cardTitle,
+            backgroundColor: t.chip,
+            alignItems: 'center',
+        },
+        styleBtnActive: { backgroundColor: t.buttonPrimary, borderColor: t.buttonPrimary },
+        styleBtnText: { color: t.cardTitle, fontWeight: '600', fontSize: 16 },
+        styleBtnHint: { color: t.cardTitle, fontSize: 12, marginTop: 2 },
+        styleBtnTextActive: { color: t.buttonPrimaryText },
+        switchRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: t.card,
+            borderRadius: 12,
+            padding: 14,
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+            gap: 10,
+        },
+        switchLabel: { fontSize: 16, fontWeight: '600', color: t.cardTitle },
+        switchHint: { fontSize: 12, color: t.mutedText, marginTop: 2 },
+        input: {
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+            borderRadius: 8,
+            padding: 10,
+            fontSize: 16,
+            color: t.bodyText,
+            backgroundColor: t.chip,
+        },
+        startBtn: {
+            backgroundColor: t.buttonPrimary,
+            padding: 16,
+            borderRadius: 12,
+            alignItems: 'center',
+            marginTop: 8,
+        },
+        startBtnText: { color: t.buttonPrimaryText, fontSize: 18, fontWeight: '600' },
+        timerCard: {
+            backgroundColor: t.card,
+            borderRadius: 12,
+            padding: 16,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+        },
+        timerInfo: { gap: 4 },
+        timerLabel: { fontSize: 18, fontWeight: '600', color: t.cardTitle },
+        timerCountdown: { fontSize: 28, fontWeight: '700', color: t.countdown },
+        timerBtnRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+        doneBtn: {
+            backgroundColor: t.buttonDone,
+            paddingVertical: 8,
+            paddingHorizontal: 16,
+            borderRadius: 8,
+        },
+        doneBtnText: { color: t.buttonDoneText, fontWeight: '600' },
+        cancelBtn: {
+            backgroundColor: t.buttonDelete,
+            paddingVertical: 8,
+            paddingHorizontal: 16,
+            borderRadius: 8,
+        },
+        cancelBtnText: { color: t.buttonDeleteText, fontWeight: '600' },
+        headerBtn: {
+            borderWidth: 1,
+            borderColor: t.headerButton,
+            paddingVertical: 6,
+            paddingHorizontal: 12,
+            borderRadius: 20,
+        },
+        headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
+    });

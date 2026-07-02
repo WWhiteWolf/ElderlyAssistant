@@ -1,3 +1,7 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createContext, createElement, ReactNode, useContext, useEffect, useState } from 'react';
+import { Appearance } from 'react-native';
+
 // Shared two-theme foundation (session #45).
 // Both themes live here with the same keys, so every page reads the
 // same names and gets the right values for whichever theme is active.
@@ -46,6 +50,17 @@ export interface Theme {
     stockedButtonText: string;
     rowSelected: string;        // selected list-row background (Shopping move-arrows)
     rowSelectedBorder: string;  // selected list-row border
+    // timer & settings (added #48: timer + settings conversion)
+    pill: string;             // Timer minute-preset pill border + text, unselected (light: teal; dark: outlined gold)
+    pillSelected: string;     // selected pill fill (light: teal; dark: solid orange); text = buttonPrimaryText
+    switchTrackOn: string;    // native Switch track when ON
+    switchTrackOff: string;   // native Switch track when OFF
+    switchThumb: string;      // native Switch thumb (both states)
+    buttonDone: string;       // Timer's green Done (green in BOTH themes — green means done)
+    buttonDoneText: string;
+    countdown: string;        // Timer's big countdown number
+    settingValue: string;     // Settings row value (name, times) (light: teal; dark: cream)
+    settingArrow: string;     // Settings row "›" chevron
     // typography (the two themes deliberately differ — Patrick's call, #45)
     titleSize: number;
     titleWeight: '500' | '600';
@@ -90,6 +105,16 @@ export const Themes: Record<ThemeName, Theme> = {
         stockedButtonText: '#ffffff',
         rowSelected: '#d6eef8',
         rowSelectedBorder: '#1a6e8a',
+        pill: '#2d9e8f',
+        pillSelected: '#2d9e8f',
+        switchTrackOn: '#1a6e8a',
+        switchTrackOff: '#cccccc',
+        switchThumb: '#ffffff',
+        buttonDone: '#27ae60',
+        buttonDoneText: '#ffffff',
+        countdown: '#2d9e8f',
+        settingValue: '#2d9e8f',
+        settingArrow: '#a8d4e0',
         titleSize: 28,
         titleWeight: '500',
         subtitleSize: 22,
@@ -129,6 +154,16 @@ export const Themes: Record<ThemeName, Theme> = {
         stockedButtonText: '#f0a83a',
         rowSelected: '#5c5044',
         rowSelectedBorder: '#f0a83a',
+        pill: '#f0a83a',
+        pillSelected: '#c9622e',
+        switchTrackOn: '#c9622e',
+        switchTrackOff: '#5c5044',
+        switchThumb: '#fff6de',
+        buttonDone: '#27ae60',
+        buttonDoneText: '#ffffff',
+        countdown: '#fff6de',
+        settingValue: '#fff6de',
+        settingArrow: '#e9dcba',
         titleSize: 28,
         titleWeight: '600',
         subtitleSize: 22,
@@ -139,12 +174,84 @@ export const Themes: Record<ThemeName, Theme> = {
     },
 };
 
-// Flip this one word to switch themes until the Settings toggle exists.
+// First-launch default and fallback when no stored choice exists (#48:
+// the Settings "App Colors" buttons are now the way to switch themes).
 export const DEFAULT_THEME: ThemeName = 'light';
 
-// Pages call this to get the active theme. For now it just returns the
-// default; the future Settings toggle upgrades this function's insides
-// (stored choice + live switching) without any page needing edits.
+// ---- Live theme switching (built #48) ----------------------------------
+// ThemeProvider (wrapped around the app in app/_layout.tsx) holds the
+// active choices, saves them on the phone, and re-renders converted pages
+// when they change. Unconverted pages still read Colors.ts and stay light.
+
+export type PopupStyle = 'match' | 'phone';
+
+const THEME_STORAGE_KEY = 'app_theme';    // 'light' | 'dark'
+const POPUP_STORAGE_KEY = 'popup_style';  // 'match' | 'phone'
+
+interface ThemeControls {
+    themeName: ThemeName;
+    setThemeName: (name: ThemeName) => void;
+    popupStyle: PopupStyle;
+    setPopupStyle: (style: PopupStyle) => void;
+}
+
+const ThemeContext = createContext<ThemeControls | null>(null);
+
+// No JSX here on purpose — this is a .ts file, so the provider is built
+// with createElement instead.
+export function ThemeProvider({ children }: { children: ReactNode }) {
+    const [themeName, setThemeNameState] = useState<ThemeName>(DEFAULT_THEME);
+    const [popupStyle, setPopupStyleState] = useState<PopupStyle>('match');
+
+    // Load the saved choices once at startup. Until they arrive the app
+    // shows DEFAULT_THEME, so a dark-theme user may see a brief light
+    // flash on launch.
+    useEffect(() => {
+        (async () => {
+            try {
+                const t = await AsyncStorage.getItem(THEME_STORAGE_KEY);
+                if (t === 'light' || t === 'dark') setThemeNameState(t);
+                const p = await AsyncStorage.getItem(POPUP_STORAGE_KEY);
+                if (p === 'match' || p === 'phone') setPopupStyleState(p);
+            } catch (e) {
+                console.error(e);
+            }
+        })();
+    }, []);
+
+    // Tell iOS which style its own pieces (Alert popups, share sheet,
+    // file picker) should use: the app's theme, or the phone's setting
+    // (null = follow the phone, the pre-#48 behavior).
+    useEffect(() => {
+        Appearance.setColorScheme(popupStyle === 'match' ? themeName : null);
+    }, [themeName, popupStyle]);
+
+    const setThemeName = (name: ThemeName) => {
+        setThemeNameState(name);
+        AsyncStorage.setItem(THEME_STORAGE_KEY, name).catch(console.error);
+    };
+    const setPopupStyle = (style: PopupStyle) => {
+        setPopupStyleState(style);
+        AsyncStorage.setItem(POPUP_STORAGE_KEY, style).catch(console.error);
+    };
+
+    return createElement(
+        ThemeContext.Provider,
+        { value: { themeName, setThemeName, popupStyle, setPopupStyle } },
+        children,
+    );
+}
+
+// Pages call this to get the active theme; they re-render live when it
+// changes. Falls back to DEFAULT_THEME if the provider isn't mounted.
 export function useTheme(): Theme {
-    return Themes[DEFAULT_THEME];
+    const ctx = useContext(ThemeContext);
+    return Themes[ctx ? ctx.themeName : DEFAULT_THEME];
+}
+
+// Settings' Appearance section uses this to read AND change the choices.
+export function useThemeControls(): ThemeControls {
+    const ctx = useContext(ThemeContext);
+    if (!ctx) throw new Error('useThemeControls must be used inside ThemeProvider');
+    return ctx;
 }

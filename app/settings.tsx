@@ -16,10 +16,13 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../constants/Colors';
+import { Theme, useTheme, useThemeControls } from '../constants/Themes';
 
 export default function SettingsScreen() {
     const router = useRouter();
+    const theme = useTheme();
+    const styles = makeStyles(theme);
+    const { themeName, setThemeName, popupStyle, setPopupStyle } = useThemeControls();
     const [userName, setUserName] = useState('');
     const [newUserName, setNewUserName] = useState('');
     const [biometricAvailable, setBiometricAvailable] = useState(false);
@@ -166,7 +169,7 @@ export default function SettingsScreen() {
 
     return (
         <View style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: Colors.primary }} edges={['top']}>
+            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
                         <Text style={styles.headerBtnText}>← Home</Text>
@@ -178,7 +181,41 @@ export default function SettingsScreen() {
 
             <View style={styles.bridge} />
 
-                <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
+                <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 12 }}>
+
+                    <Text style={styles.sectionHeader}>Appearance</Text>
+                    <View style={styles.settingCard}>
+                        <View style={styles.choiceRow}>
+                            <Text style={[styles.settingLabel, styles.choiceLabel]}>App Colors</Text>
+                            <TouchableOpacity
+                                style={[styles.choiceBtn, themeName === 'light' && styles.choiceBtnActive]}
+                                onPress={() => setThemeName('light')}
+                            >
+                                <Text style={[styles.choiceText, themeName === 'light' && styles.choiceTextActive]}>Light</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.choiceBtn, themeName === 'dark' && styles.choiceBtnActive]}
+                                onPress={() => setThemeName('dark')}
+                            >
+                                <Text style={[styles.choiceText, themeName === 'dark' && styles.choiceTextActive]}>Dark</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={[styles.choiceRow, styles.settingRowBorder]}>
+                            <Text style={[styles.settingLabel, styles.choiceLabel]}>Popup Colors</Text>
+                            <TouchableOpacity
+                                style={[styles.choiceBtn, popupStyle === 'match' && styles.choiceBtnActive]}
+                                onPress={() => setPopupStyle('match')}
+                            >
+                                <Text style={[styles.choiceText, popupStyle === 'match' && styles.choiceTextActive]}>Match App</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.choiceBtn, popupStyle === 'phone' && styles.choiceBtnActive]}
+                                onPress={() => setPopupStyle('phone')}
+                            >
+                                <Text style={[styles.choiceText, popupStyle === 'phone' && styles.choiceTextActive]}>Follow iPhone</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
 
                     <Text style={styles.sectionHeader}>Profile</Text>
                     <View style={styles.settingCard}>
@@ -239,8 +276,8 @@ export default function SettingsScreen() {
                             <Switch
                                 value={vaultPinEnabled}
                                 onValueChange={toggleVaultPin}
-                                trackColor={{ false: '#ccc', true: Colors.bridge }}
-                                thumbColor={vaultPinEnabled ? Colors.primary : '#fff'}
+                                trackColor={{ false: theme.switchTrackOff, true: theme.switchTrackOn }}
+                                thumbColor={theme.switchThumb}
                             />
                         </View>
                     </View>
@@ -260,10 +297,10 @@ export default function SettingsScreen() {
                     <View style={styles.settingCard}>
                         <TouchableOpacity style={styles.settingRow} onPress={resetApp}>
                             <View style={{ flex: 1 }}>
-                                <Text style={[styles.settingLabel, { color: '#e74c3c' }]}>Reset All Data</Text>
+                                <Text style={[styles.settingLabel, { color: theme.buttonDelete }]}>Reset All Data</Text>
                                 <Text style={styles.settingHint}>Permanently deletes everything — cannot be undone</Text>
                             </View>
-                            <Text style={[styles.settingArrow, { color: '#e74c3c' }]}>›</Text>
+                            <Text style={[styles.settingArrow, { color: theme.buttonDelete }]}>›</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -306,7 +343,7 @@ export default function SettingsScreen() {
                                         }}>
                                             <Text style={styles.timeAdjText}>▼</Text>
                                         </TouchableOpacity>
-                                        <Text style={{ color: Colors.primary, fontSize: 13 }}>Hour</Text>
+                                        <Text style={{ color: theme.cardTitle, fontSize: 13 }}>Hour</Text>
                                     </View>
 
                                     <Text style={styles.timeDisplayText}>:</Text>
@@ -329,7 +366,7 @@ export default function SettingsScreen() {
                                         }}>
                                             <Text style={styles.timeAdjText}>▼</Text>
                                         </TouchableOpacity>
-                                        <Text style={{ color: Colors.primary, fontSize: 13 }}>Minute</Text>
+                                        <Text style={{ color: theme.cardTitle, fontSize: 13 }}>Minute</Text>
                                     </View>
 
                                     <View style={{ alignItems: 'center' }}>
@@ -350,7 +387,7 @@ export default function SettingsScreen() {
                                         }}>
                                             <Text style={styles.timeAdjText}>▼</Text>
                                         </TouchableOpacity>
-                                        <Text style={{ color: Colors.primary, fontSize: 13 }}>AM/PM</Text>
+                                        <Text style={{ color: theme.cardTitle, fontSize: 13 }}>AM/PM</Text>
                                     </View>
                                 </View>
 
@@ -370,135 +407,166 @@ export default function SettingsScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: Colors.background },
-    header: {
-        paddingTop: 20,
-        paddingHorizontal: 16,
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingBottom: 8,
-    },
-    backBtn: { width: 70 },
-    backText: { color: Colors.lightBlue, fontSize: 16 },
-    title: {
-        fontSize: 26,
-        fontWeight: '500',
-        color: Colors.textLight,
-        fontStyle: 'italic',
-        fontFamily: 'Georgia',
-        flex: 1,
-        textAlign: 'center',
-    },
-    bridge: { height: 8, backgroundColor: Colors.bridge },
-    scroll: { flex: 1 },
-    sectionHeader: {
-        fontSize: 13,
-        fontWeight: '600',
-        color: Colors.bridge,
-        paddingHorizontal: 16,
-        paddingTop: 20,
-        paddingBottom: 6,
-        textTransform: 'uppercase',
-        letterSpacing: 1,
-    },
-    settingCard: {
-        backgroundColor: Colors.white,
-        borderRadius: 12,
-        marginHorizontal: 12,
-        borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
-    },
-    settingRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: 16,
-    },
-    settingRowBorder: {
-        borderTopWidth: 0.5,
-        borderTopColor: Colors.lightBlue,
-    },
-    settingLabel: { fontSize: 16, color: Colors.primary, fontWeight: '500' },
-    settingValue: { fontSize: 16, color: Colors.bridge },
-    settingArrow: { fontSize: 22, color: Colors.lightBlue },
-    settingHint: { fontSize: 12, color: '#aaa', marginTop: 2 },
-    nameEditRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-    nameInput: {
-        borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
-        borderRadius: 8,
-        padding: 8,
-        fontSize: 16,
-        color: Colors.text,
-        width: 150,
-        backgroundColor: Colors.background,
-    },
-    saveBtn: {
-        backgroundColor: Colors.primary,
-        padding: 8,
-        borderRadius: 8,
-    },
-    saveBtnText: { color: '#fff', fontWeight: '600' },
-    versionText: {
-        textAlign: 'center',
-        color: '#aaa',
-        fontSize: 13,
-        marginTop: 30,
-        fontStyle: 'italic',
-    },
-    headerBtn: {
-        borderWidth: 1,
-        borderColor: Colors.white,
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 20,
-    },
-    headerBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
+// makeStyles(theme) pattern from home.tsx (#45).
+const makeStyles = (t: Theme) =>
+    StyleSheet.create({
+        container: { flex: 1, backgroundColor: t.pageBackground },
+        header: {
+            paddingTop: 20,
+            paddingHorizontal: 16,
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingBottom: 8,
+        },
+        backBtn: { width: 70 },
+        title: {
+            fontSize: 26,
+            fontWeight: '500',
+            color: t.titleText,
+            fontStyle: 'italic',
+            fontFamily: 'Georgia',
+            flex: 1,
+            textAlign: 'center',
+        },
+        bridge: { height: 8, backgroundColor: t.bridge },
+        scroll: { flex: 1 },
+        sectionHeader: {
+            fontSize: 13,
+            fontWeight: '600',
+            color: t.pill,
+            paddingHorizontal: 16,
+            paddingTop: 10,
+            paddingBottom: 4,
+            textTransform: 'uppercase',
+            letterSpacing: 1,
+        },
+        settingCard: {
+            backgroundColor: t.card,
+            borderRadius: 12,
+            marginHorizontal: 12,
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+        },
+        settingRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingVertical: 10,
+            paddingHorizontal: 12,
+        },
+        settingRowBorder: {
+            borderTopWidth: 0.5,
+            borderTopColor: t.cardBorder,
+        },
+        settingLabel: { fontSize: 16, color: t.cardTitle, fontWeight: '500' },
+        settingValue: { fontSize: 16, color: t.settingValue },
+        settingArrow: { fontSize: 22, color: t.settingArrow },
+        settingHint: { fontSize: 12, color: t.mutedText, marginTop: 2 },
+        // Appearance choice buttons (#48): solid = active, outlined = the
+        // other option; active carries an invisible border for size match.
+        // Label and buttons share one row to keep the page short.
+        choiceRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+            paddingVertical: 10,
+            paddingHorizontal: 12,
+        },
+        choiceLabel: { width: 100 },
+        choiceBtn: {
+            flex: 1,
+            paddingVertical: 6,
+            borderRadius: 16,
+            borderWidth: 1.5,
+            borderColor: t.cardTitle,
+            backgroundColor: t.chip,
+            alignItems: 'center',
+        },
+        choiceBtnActive: { backgroundColor: t.buttonPrimary, borderColor: t.buttonPrimary },
+        choiceText: { color: t.cardTitle, fontWeight: '500', fontSize: 13 },
+        choiceTextActive: { color: t.buttonPrimaryText },
+        nameEditRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+        nameInput: {
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+            borderRadius: 8,
+            padding: 8,
+            fontSize: 16,
+            color: t.bodyText,
+            width: 150,
+            backgroundColor: t.pageBackground,
+        },
+        saveBtn: {
+            backgroundColor: t.buttonPrimary,
+            padding: 8,
+            borderRadius: 8,
+        },
+        saveBtnText: { color: t.buttonPrimaryText, fontWeight: '600' },
+        versionText: {
+            textAlign: 'center',
+            color: t.mutedText,
+            fontSize: 13,
+            marginTop: 10,
+            fontStyle: 'italic',
+        },
+        headerBtn: {
+            borderWidth: 1,
+            borderColor: t.headerButton,
+            paddingVertical: 6,
+            paddingHorizontal: 12,
+            borderRadius: 20,
+        },
+        headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
 
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.4)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-    },
-    pickerModal: {
-        backgroundColor: Colors.white,
-        borderRadius: 12,
-        padding: 16,
-        borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
-        width: '100%',
-    },
-    modalTitle: { fontSize: 18, fontWeight: '600', color: Colors.primary, marginBottom: 10, textAlign: 'center' },
-    timeAdjBtn: {
-        backgroundColor: Colors.primary,
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginVertical: 6,
-    },
-    timeAdjText: { color: Colors.white, fontSize: 22, fontWeight: '600' },
-    timeDisplayText: { fontSize: 40, fontWeight: '600', color: Colors.primary, marginVertical: 4 },
-    modalBtns: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 },
-    cancelBtn: {
-        backgroundColor: '#ccc',
-        padding: 10,
-        borderRadius: 8,
-        flex: 1,
-        alignItems: 'center',
-        marginRight: 8,
-    },
-    cancelBtnText: { color: '#333', fontWeight: '600' },
-    confirmBtn: {
-        backgroundColor: Colors.primary,
-        padding: 10,
-        borderRadius: 8,
-        flex: 1,
-        alignItems: 'center',
-    },
-    confirmBtnText: { color: Colors.white, fontWeight: '600' },
-});
+        modalOverlay: {
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.4)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 20,
+        },
+        pickerModal: {
+            backgroundColor: t.card,
+            borderRadius: 12,
+            padding: 16,
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+            width: '100%',
+        },
+        modalTitle: { fontSize: 18, fontWeight: '600', color: t.cardTitle, marginBottom: 10, textAlign: 'center' },
+        timeAdjBtn: {
+            backgroundColor: t.buttonPrimary,
+            width: 50,
+            height: 50,
+            borderRadius: 25,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginVertical: 6,
+        },
+        timeAdjText: { color: t.buttonPrimaryText, fontSize: 22, fontWeight: '600' },
+        timeDisplayText: { fontSize: 40, fontWeight: '600', color: t.bodyText, marginVertical: 4 },
+        modalBtns: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 },
+        // Cancel is the quiet button (outlined gold in dark); Save carries an
+        // invisible border of the same width so the two stay the same size (#47 rule).
+        cancelBtn: {
+            backgroundColor: t.buttonNeutral,
+            borderWidth: 1.5,
+            borderColor: t.buttonNeutralBorder,
+            padding: 10,
+            borderRadius: 8,
+            flex: 1,
+            alignItems: 'center',
+            marginRight: 8,
+        },
+        cancelBtnText: { color: t.buttonNeutralText, fontWeight: '600' },
+        confirmBtn: {
+            backgroundColor: t.buttonPrimary,
+            borderWidth: 1.5,
+            borderColor: t.buttonPrimary,
+            padding: 10,
+            borderRadius: 8,
+            flex: 1,
+            alignItems: 'center',
+        },
+        confirmBtnText: { color: t.buttonPrimaryText, fontWeight: '600' },
+    });

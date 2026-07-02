@@ -1,8 +1,9 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-02 (session #47 — Shopping and Vault now have
-both themes, designed with mockups and checked by you in the Simulator.
-Five pages done, eight to go. Full rollout order is in parked-items.md
-under "TWO-THEME ROLLOUT.")
+Last updated: 2026-07-02 (session #48 — Timer and Settings now have both
+themes, AND the theme switcher itself is built: you pick Light or Dark
+inside Settings and the app changes on the spot. Seven pages done, six
+to go. Full rollout order is in parked-items.md under "TWO-THEME
+ROLLOUT.")
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -14,39 +15,39 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- Session #47: the Shopping page and the Vault now follow both themes.
-  You approved every piece from mockups first, then checked both themes
-  in the Simulator. Your calls this session: in dark, quiet buttons
-  (Stocked, Edit, Cancel) are gold OUTLINES while solid orange means
-  "act on this"; and all the dark theme's cream text got brighter,
-  which also brightened Backup and Watch List to match. Light theme
-  is unchanged everywhere.
-- Small wording fix you asked for: Vault's "Missing Info" popup now
-  says "Tap a Label above, then enter a Value." so it's clear the
-  labels want a tap.
-- Two new parked items: a SUSPECTED Vault bug (typing your own label
-  under "Custom" may save the word "Custom" instead — not yet
-  confirmed; test steps are in parked-items.md), and your request to
-  eventually REMOVE CATEGORIES FROM VAULT (needs a talk-through first).
-- One thing to know: iPhone Settings light/dark does NOT change your
-  app's colors — only the one word in constants/Themes.ts does. But
-  Apple's own popups inside the app (alerts, share sheet, keyboard)
-  DO follow the iPhone setting — you saw exactly this when the white
-  "Missing Info" popup appeared over the dark Vault. Decision parked
-  for the Settings-toggle session.
-- Until the Settings toggle is built, the active theme is one word in
-  constants/Themes.ts (DEFAULT_THEME) — currently set to 'light' from
-  your testing. Set it to the one you want before committing.
+- Session #48: the Timer page and Settings follow both themes, and the
+  big one — Settings now has an APPEARANCE section where you choose the
+  look yourself. "App Colors": Light or Dark buttons, the solid one is
+  active, the app switches immediately and remembers your choice.
+  "Popup Colors": whether Apple's own popups (alerts, share sheet, file
+  picker) match the app or follow the iPhone's setting — this settles
+  the mismatch you saw in #47 with the white popup over the dark Vault.
+- Your calls this session: choice BUTTONS instead of on/off switches
+  (so it's evident what they do), and the whole Settings page tightened
+  to fit on one screen without scrolling. You checked everything in the
+  Simulator and approved.
+- Worth knowing: only the seven converted pages obey the theme choice.
+  The six unconverted pages (To-Do, Planner, Look Ahead, My Day,
+  My Week, Pets) stay light until their sessions come. Also, if you use
+  dark, the app may flash light for a blink at startup while it reads
+  your saved choice.
+- New parked item from you: rename the app BACK to "Remember When."
+  "Elyfont" only existed to help Siri, and Siri is shelved. It's in
+  parked-items.md with notes on where the name lives.
 - Not yet committed — you commit this session's code + docs when ready.
-- Next session (#48): timer.tsx + settings.tsx — the Switch toggles
-  need per-theme colors, and it's the natural time to decide about the
-  in-app theme toggle and those Apple popups.
+  (DEFAULT_THEME is committed as 'light', but it's only the fallback
+  now — your Settings choice is what counts.)
+- Next session (#49): todo.tsx — first conversion where colors live in
+  the page's logic (a PRIORITY_COLORS list), not just the stylesheet,
+  so it needs more care than the last few.
 
 
 YOUR #41 LIST — WHAT'S STILL OPEN (items 2, 5, 6, 7 done in #42)
 ----------------------------------------------------------------------------
 1. Name the backup folder — moved up from "someday" to "wanted." Best
    finished and checked on the real phone, where iCloud Drive is involved.
+   (Now related: the app-name change back to "Remember When" touches the
+   same backup file naming.)
 3. Import files/documents into the Vault. Needs a talk-through first
    (what kinds of files, from where, how they're shown and protected).
 4. My Day: a banner "Done" on YESTERDAY'S reminder checked off TODAY'S.
@@ -57,71 +58,67 @@ YOUR #41 LIST — WHAT'S STILL OPEN (items 2, 5, 6, 7 done in #42)
 
 NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
 ----------------------------------------------------------------------------
-- A To-Do reminder that seemed to fire early. You recall setting one for
-  23:30 and it went off around 21:15. Checking the code found no bug — that's
-  exactly 2 hours before a 23:15 time, so it was most likely the "2 hours"
-  before-reminder option doing its job. To be sure: make a new task due a few
-  minutes out, pick ONLY a short preset, and watch if it fires on the minute.
+- The new theme switcher and popup choice (#48) — Simulator-approved;
+  give them a once-over on the real phone after the next TestFlight build.
+- A To-Do reminder that seemed to fire early. Checking the code found no
+  bug — almost certainly the "2 hours before" option doing its job. To be
+  sure: make a task due a few minutes out, pick ONLY a short preset, and
+  watch if it fires on the minute.
 - The buttonless To-Do banner (#40), the shared routine popup (#39), Look
-  Ahead's reminders (#37), a Watch List once-over (#41), and now a #42
+  Ahead's reminders (#37), a Watch List once-over (#41), and the #42
   once-over (To-Do without categories, Look Ahead popup buttons, the
   My Day / Pets un-check) — all batched into the phone checkpoints.
 
 
 STILL BROKEN OR UNFINISHED (small bugs)
 ---------------------------------------
-- Backups skip Look Ahead and Watch List (found #41). The backup code has a
-  fixed list of what to save, and those pages' data was never added. Until
-  fixed, restoring a backup loses the Look Ahead and Watch List lists.
-  Simulator-testable — a good small session.
-- My Week: if you mark a chore done from inside the app (not from the
-  notification), it records today's date instead of the chore's own day.
-  Minor — only matters if you log a chore well after its day.
+- Backups skip some data (found #41, grew #48). The backup code has a
+  fixed list of what to save; Look Ahead, Watch List, AND now the theme +
+  popup choices were never added. Until fixed, restoring a backup loses
+  those. Simulator-testable — a good small session.
+- The Vault "Custom" label suspicion (spotted #47, NOT yet confirmed):
+  typing your own label under "Custom" may save the word "Custom"
+  instead. Test steps are in parked-items.md; if real, the fix is tiny.
+- My Week: marking a chore done from inside the app records today's date
+  instead of the chore's own day. Minor.
 - Tapping a reminder takes you to the right screen but not to the exact
   item, and this has never actually been tried with a real tap.
-  (The To-Do Custom Category cancel bug is GONE — #42 removed categories.)
 
 
 DECISIONS TO MAKE WHEN YOU'RE READY
 -----------------------------------
-- Backup "Merge" option. Right now restoring a backup REPLACES everything on
-  the phone. You wanted the choice to MERGE a backup into what's already
-  there instead. That needs its own session because each kind of data
-  (tasks, logs, counters, settings) has to combine by its own rule, and
-  those are your calls.
+- Backup "Merge" option. Restoring currently REPLACES everything; you
+  wanted the choice to MERGE instead. Its own session — each kind of data
+  combines by its own rule, and those are your calls.
 - Vault import (your item 3 above) — scope it out before building.
+- Remove categories from Vault (your #47 idea) — talk-through first,
+  like #42 did for To-Do.
 
 
 NICE-TO-HAVE LATER (polish, low priority)
 -----------------------------------------
-- A Theme toggle button in Settings, so you can switch between light and
-  dark. The groundwork now exists (#45's shared theme file) — the toggle
-  itself is a small session once more pages are converted. No rush.
-- Project Planner has reminder fields on screen, but they aren't connected
-  to anything yet.
-- Finish the "Elyfont" renaming: the in-app home greeting still says
-  "Remember When"; the TestFlight / App Store listing is still named
-  "Remember When"; and the "Memory Assist" tagline still needs a home
-  (it can't go in the app's name).
+- Rename the app back to "Remember When" (#48, yours). The icon label
+  and the backup file naming still say "Elyfont"; the home greeting and
+  App Store listing already say "Remember When." Needs a rebuild to show
+  on the phone; old backups must stay restorable. The "Memory Assist"
+  tagline still needs a home.
+- Project Planner has reminder fields on screen, but they aren't
+  connected to anything yet.
 - Make the button labels match: To-Do says "New Task" while Vault says
   "+ Add."
-- Add a Snooze button on each To-Do item itself. My Day and Pets Day already
-  have one on every tile; To-Do only has Snooze on the notification banner.
+- Add a Snooze button on each To-Do item itself. My Day and Pets Day
+  already have one on every tile; To-Do only has it on the banner.
 
 
 PARKED ON PURPOSE (bigger items, on hold for now)
 -------------------------------------------------
-- Voice control through Siri. It gets you to the app and tapping works, but
-  Siri won't recognize spoken item names ("mark snack done"). After a lot of
-  effort this was set aside. Revisit if a future iPhone update fixes it.
-- The Timer "Loud alert" isn't actually louder — it's the normal alert tone.
-  A genuinely louder, distinct alarm needs a custom sound file built into the
-  app (a full rebuild), and breaking through Silent / Do-Not-Disturb needs a
-  special Apple permission meant for medical/safety apps. Heavy — deferred.
-- A running Timer's tile disappears if the app reloads or restarts (the list
-  of active timers is only held in memory). Accepted as-is: tapping "Done"
-  still stops the alerts whether or not the tile is showing.
-- Reminder times stay global — already decided, nothing to do. The Morning /
-  Midday / Evening times are set once in Settings and apply to everything.
-  You considered letting a single appointment use its own times and chose
-  not to. This note only exists in case you ever want to revisit that.
+- Voice control through Siri. Set aside after much effort; revisit only
+  if a future iPhone update fixes the name-matching. (The app-name revert
+  above assumes this stays shelved.)
+- The Timer "Loud alert" isn't actually louder — a genuinely louder alarm
+  needs a custom sound built into the app and special Apple permission to
+  break through Silent / Do-Not-Disturb. Heavy — deferred.
+- A running Timer's tile disappears if the app reloads or restarts (the
+  list of active timers is only held in memory). Accepted as-is: "Done"
+  still stops the alerts either way.
+- Reminder times stay global — already decided, nothing to do.

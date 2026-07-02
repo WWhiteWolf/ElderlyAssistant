@@ -7,14 +7,16 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-02 (session #47 — shopping.tsx + vault.tsx
-converted to `Themes.ts`, both themes approved in the Simulator. Eleven
-more shared keys (neutral/delete/stocked buttons, selected row, chip);
-new dark convention: solid orange = action, OUTLINED GOLD = quiet
-(Stocked / Edit / Cancel); dark creams brightened app-wide (bodyText +
-button text `#fff6de`, muted `#e9dcba`) — note Home's tileLabel still
-has the old dimmer cream. Two new items below: the unverified Vault
-"Custom" label bug, and "Remove categories from Vault".)
+Last updated: 2026-07-02 (session #48 — timer.tsx + settings.tsx
+converted to `Themes.ts` (ten more shared keys: pill, switch, green
+Done, countdown, settingValue/Arrow), PLUS the Settings theme toggle
+built: Appearance section with "App Colors" Light/Dark and "Popup
+Colors" Match App / Follow iPhone choice buttons, stored on the phone
+(`app_theme` / `popup_style`), live switching via ThemeProvider in
+`_layout.tsx`. Settings page spacing tightened to fit one screen.
+All Simulator-approved. New below: the two new storage keys added to
+the backup-keys bug, and "Rename the app back to Remember When"
+replaces the old finish-the-Elyfont-renaming item.)
 
 ---
 
@@ -27,8 +29,11 @@ now means: agree its light + dark treatment (mockups first if it has new
 elements), wire it to `useTheme()` + the `makeStyles(theme)` pattern that
 `home.tsx` demonstrates, and add any new keys to BOTH palettes. One file
 (or small pair) per session, `tsc` clean + Simulator-checked in BOTH themes
-before moving on. Until the toggle exists, the active theme is the
-`DEFAULT_THEME` one-word switch in `Themes.ts` (committed as `'light'`).
+before moving on. **The Settings toggle EXISTS as of #48** (Appearance →
+App Colors, saved on the phone, switches converted pages live); the six
+unconverted pages still read `Colors.ts` and stay light whatever the
+toggle says. `DEFAULT_THEME` in `Themes.ts` is now just the first-launch
+fallback (committed as `'light'`).
 
 1. ✅ **DONE — `home.tsx`** (#44 dark build; #45 converted to `Themes.ts`
    + light design approved). Dark: as #44 (cart/gear swapped to
@@ -49,8 +54,13 @@ before moving on. Until the toggle exists, the active theme is the
    convention set here: solid orange = action, outlined gold = quiet
    (Stocked, Edit, Cancel). Dark creams brightened app-wide. Vault's
    "Missing Info" alert reworded ("Tap a Label..."). Light unchanged.
-4. **`timer.tsx` + `settings.tsx`** — paired: both use native `Switch`
-   toggles needing explicit `trackColor`/`thumbColor` values (per theme).
+4. ✅ **DONE (#48) — `timer.tsx` + `settings.tsx`.** Mockup-first, both
+   themes Simulator-approved. Ten new keys (see Themes.ts comments);
+   switches unified app-wide on the new switch keys (settings' light
+   switch changed look slightly — Patrick approved); Done stays green in
+   both themes (green means done). PLUS the theme toggle + popup choice
+   built (Appearance section) and Settings spacing tightened to fit one
+   screen without scrolling.
 5. **`todo.tsx`** — standalone; colors come from a `PRIORITY_COLORS` JS
    object in the code, not just the stylesheet — needs logic edits.
 6. **`planner.tsx`** — standalone; same color-map situation
@@ -195,12 +205,14 @@ categories from To-Do entirely.)
   tap Custom → type a label → Add, and see what label the saved item shows. If it
   reproduces, the fix is a one-word case correction (its own small session/step).
 
-- **Backup misses Look Ahead and Watch List data (found #41)** (`app/backup.tsx`).
-  `READABLE_KEYS` doesn't include `lookahead_items` / `lookahead_history` (a gap
-  since #36 built the page) nor the new `watchlist_movies` / `watchlist_shows`
-  (#41). Export/restore silently skips those pages' data. Fix: add the four keys —
-  but note a restored backup from BEFORE the fix won't contain them; verify
-  restore handles the missing keys gracefully.
+- **Backup misses Look Ahead and Watch List data (found #41; grew in #48)**
+  (`app/backup.tsx`). `READABLE_KEYS` doesn't include `lookahead_items` /
+  `lookahead_history` (a gap since #36 built the page) nor the new
+  `watchlist_movies` / `watchlist_shows` (#41), **nor #48's two new keys
+  `app_theme` / `popup_style`** (theme + popup choices won't survive a
+  restore-onto-fresh-phone). Fix: add the six keys — but note a restored
+  backup from BEFORE the fix won't contain them; verify restore handles
+  the missing keys gracefully.
 - **To-Do reminder fired early — needs a clean phone re-test** (`app/todo.tsx`). A To-Do
   Patrick recalls setting for 23:30 fired around 21:15. Reading the scheduling code found
   **no bug**: the only thing that produces an early fire is the "2 hours" before-reminder
@@ -256,19 +268,6 @@ categories from To-Do entirely.)
 
 ## Nice-to-have later (UI polish)
 
-- **System light/dark vs app theme — decide at the toggle session (#46).**
-  `app.json` has `userInterfaceStyle: "automatic"`, so iOS-drawn pieces
-  (Alert popups, share sheet, file picker, keyboard) follow the PHONE's
-  light/dark setting while the app's own pages follow `DEFAULT_THEME` —
-  they can mismatch. Patrick knows and is fine for now. Options when the
-  Settings toggle is built: pin the system style, or make the app theme
-  follow the phone automatically.
-- **Theme toggle button in Settings (Patrick, #44; foundation built #45).**
-  Add a toggle in Settings to switch between light and dark. The plumbing
-  now exists: the toggle session upgrades `useTheme()` in
-  `constants/Themes.ts` (stored choice + live switching) and adds the
-  Settings control — converted pages won't need edits. Makes most sense
-  once more pages are converted. No rush.
 - **Name the backup folder — PROMOTED (#41, see Patrick's list above)**
   (`app/backup.tsx`). Give the exported backup folder/file a clear, recognizable name
   so it's easy to find where it's saved (e.g. iCloud Drive). (The file itself is
@@ -276,10 +275,18 @@ categories from To-Do entirely.)
   findable it is.)
 - **Project Planner reminders do nothing yet** (`app/planner.tsx`). The screen has reminder
   fields, but they aren't wired to any notifications. Low priority.
-- **Finish the "Elyfont" renaming.** The in-app home greeting still says "Remember When";
-  the TestFlight / App Store listing is still named "Remember When"; and the "Memory Assist"
-  tagline still needs a home (an in-app subtitle and/or the App Store subtitle field — it
-  can't go in the app name).
+- **Rename the app BACK to "Remember When" (Patrick, #48 — REVERSES the old
+  "finish the Elyfont renaming" item).** "Elyfont" was chosen to help Siri
+  voice-match; Siri is parked, so Patrick wants the original name back.
+  Where "Elyfont" actually lives: `app.json` `"name"` (the label under the
+  phone icon) and `app/backup.tsx` (the `Elyfont-Backup-<date>.json`
+  filename, dialog/alert wording, and the backup file's internal
+  `type: 'elyfont-backup'` marker — if that marker changes, restore must
+  still ACCEPT old files carrying it). The home greeting and the
+  TestFlight/App Store listing already say "Remember When". Ties into the
+  "Name the backup folder" item (same file naming). The "Memory Assist"
+  tagline still needs a home. Its own small session; a name change needs
+  a rebuild to show on the phone.
 - **Match the button labels.** To-Do's header says "New Task" while Vault's says "+ Add."
 - **Retire the leftover pre-#39/#40 popup plumbing (cosmetic, after device validation).**
   `_layout.tsx` still registers the now-unused `mydaysnooze` / `petssnooze` /

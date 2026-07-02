@@ -7,7 +7,7 @@
 ## Standing rules (read these first, every session)
 
 - **Patrick does all git commits.** Claude must never run `git commit` or any git write command on this project — there are possible lockout problems if Claude does it. Claude makes the edits and leaves them for Patrick to review and commit himself.
-- **No "boxed" multiple-choice questions.** Don't use button/option-card questions — they feel like being locked into Claude's choices. Ask open questions in plain prose and let Patrick answer in his own words.
+- **No "boxed" multiple-choice questions — and no "Do you want X or Y?" either (Patrick, #48).** Don't use button/option-card questions, and don't embed Claude's own options in a prose question ("Do you want ... or ...?") — both feel like being pinned into Claude's choices. Ask genuinely open questions ("What would you like the scope to be?") and let Patrick answer in his own words.
 - **Step reports use the "what → how" shape (Patrick, #39).** After each build step, report as: **"What happened"** — one or two quick sentences in plain English — then **"How it was done"** — short bullets with the details (files touched, behaviors, checks run). It helps Patrick organize the information; details-first prose was hard to follow.
 - **Say explicitly WHERE to act — don't assume Patrick reads the intent.** When a step happens on a different device or surface than what we're discussing (e.g., we're talking about the iPhone app but he needs to do something on the Mac, the Simulator's macOS menu bar, Xcode, or the terminal), name the device/app and where to look. Spell it out; don't make him infer it from context.
 - **Verify before asserting.** Read the actual code before describing behavior. When unsure, say so and offer to look.

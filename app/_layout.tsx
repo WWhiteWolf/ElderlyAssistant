@@ -4,6 +4,7 @@ import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { Stack, useRouter } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
+import { ThemeProvider } from '../constants/Themes';
 import * as AppGroup from '../modules/app-group';
 
 export default function RootLayout() {
@@ -531,6 +532,7 @@ export default function RootLayout() {
   }, [response]);
 
   return (
+    <ThemeProvider>
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="home" options={{ headerShown: false }} />
@@ -547,5 +549,6 @@ export default function RootLayout() {
       <Stack.Screen name="vault" options={{ headerShown: false }} />
       <Stack.Screen name="backup" options={{ headerShown: false }} />
     </Stack>
+    </ThemeProvider>
   );
 }
