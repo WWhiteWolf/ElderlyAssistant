@@ -17,7 +17,7 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../constants/Colors';
+import { Theme, useTheme } from '../constants/Themes';
 
 type Priority = 'Urgent' | 'Normal' | 'Someday';
 
@@ -83,14 +83,27 @@ const REMINDER_PRESETS: ReminderPreset[] = [
     { label: 'Month', kind: 'clock', daysBefore: 30, timeOfDay: 'evening' },
 ];
 
-const PRIORITY_COLORS: Record<Priority, string> = {
-    Urgent: '#e74c3c',
-    Normal: '#1a6e8a',
-    Someday: '#95a5a6',
-};
+// Priority colors come from the active theme (#49). Red keeps its meaning
+// in both themes; Normal is blue in light / gold in dark; Someday's grey
+// is cool in light, warm in dark. The text map is for the selected
+// Priority button in the form — dark's gold fill needs dark-brown text.
+const priorityColors = (t: Theme): Record<Priority, string> => ({
+    Urgent: t.priorityUrgent,
+    Normal: t.priorityNormal,
+    Someday: t.prioritySomeday,
+});
+const priorityTextColors = (t: Theme): Record<Priority, string> => ({
+    Urgent: t.priorityUrgentText,
+    Normal: t.priorityNormalText,
+    Someday: t.prioritySomedayText,
+});
 
 export default function TodoScreen() {
     const router = useRouter();
+    const theme = useTheme();
+    const styles = makeStyles(theme);
+    const PRIORITY_COLORS = priorityColors(theme);
+    const PRIORITY_TEXT_COLORS = priorityTextColors(theme);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [log, setLog] = useState<LogEntry[]>([]);
     const [showAddTask, setShowAddTask] = useState(false);
@@ -424,7 +437,7 @@ export default function TodoScreen() {
 
     return (
         <GestureHandlerRootView style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: Colors.primary }}>
+            <SafeAreaView style={{ backgroundColor: theme.header }}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
                         <Text style={styles.headerBtnText}>← Home</Text>
@@ -569,7 +582,7 @@ export default function TodoScreen() {
                                 <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                                         <Text style={styles.modalTitle}>{editTask ? 'Edit Task' : 'New Task'}</Text>
-                                        <Text style={{ fontSize: 13, color: Colors.bridge, fontStyle: 'italic' }}>Tap background, or Scroll ↓ to view everything</Text>
+                                        <Text style={{ fontSize: 13, color: theme.settingValue, fontStyle: 'italic' }}>Tap background, or Scroll ↓ to view everything</Text>
                                     </View>
                                     <View style={styles.modalBtns}>
                                         <TouchableOpacity style={styles.cancelBtn} onPress={() => { resetForm(); setShowAddTask(false); }}>
@@ -591,7 +604,7 @@ export default function TodoScreen() {
                                                 style={[styles.priorityBtn, newPriority === p && { backgroundColor: PRIORITY_COLORS[p] }]}
                                                 onPress={() => setNewPriority(p)}
                                             >
-                                                <Text style={[styles.priorityBtnText, newPriority === p && { color: '#fff' }]}>{p}</Text>
+                                                <Text style={[styles.priorityBtnText, newPriority === p && { color: PRIORITY_TEXT_COLORS[p] }]}>{p}</Text>
                                             </TouchableOpacity>
                                         ))}
                                     </View>
@@ -601,11 +614,14 @@ export default function TodoScreen() {
                                             <TouchableOpacity
                                                 key={s}
                                                 style={[styles.priorityBtn, newTaskStatus === s && {
-                                                    backgroundColor: s === 'Active' ? Colors.primary : s === 'On Hold' ? '#e67e22' : Colors.bridge
+                                                    // Done is green in BOTH themes (green means done, #48 rule —
+                                                    // was bridge teal in light). Dark bridge = Active's orange,
+                                                    // so teal/bridge couldn't tell Done and Active apart there.
+                                                    backgroundColor: s === 'Active' ? theme.buttonPrimary : s === 'On Hold' ? theme.statusOnHold : theme.buttonDone
                                                 }]}
                                                 onPress={() => setNewTaskStatus(s)}
                                             >
-                                                <Text style={[styles.priorityBtnText, newTaskStatus === s && { color: '#fff' }]}>
+                                                <Text style={[styles.priorityBtnText, newTaskStatus === s && { color: theme.buttonPrimaryText }]}>
                                                     {s === 'Completed' ? 'Done' : s}
                                                 </Text>
                                             </TouchableOpacity>
@@ -706,37 +722,35 @@ export default function TodoScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: Colors.background },
+// makeStyles(theme) pattern from home.tsx (#45).
+const makeStyles = (t: Theme) =>
+    StyleSheet.create({
+    container: { flex: 1, backgroundColor: t.pageBackground },
     header: {
         paddingTop: 20,
         paddingHorizontal: 20,
         flexDirection: 'row',
         alignItems: 'center',
     },
-    backBtn: { width: 70 },
-    settingsBtn: { width: 70, alignItems: 'flex-end' },
-    settingsBtnText: { fontSize: 22 },
-    backText: { color: Colors.lightBlue, fontSize: 16 },
     title: {
         fontSize: 26,
         fontWeight: '500',
-        color: Colors.textLight,
+        color: t.titleText,
         fontStyle: 'italic',
         fontFamily: 'Georgia',
         flex: 1,
         textAlign: 'center',
     },
-    bridge: { height: 8, backgroundColor: Colors.bridge },
+    bridge: { height: 8, backgroundColor: t.bridge },
     scroll: { flex: 1, padding: 12 },
-    emptyText: { textAlign: 'center', color: '#aaa', marginTop: 40, fontSize: 16 },
+    emptyText: { textAlign: 'center', color: t.mutedText, marginTop: 40, fontSize: 16 },
     taskCard: {
         flexDirection: 'row',
-        backgroundColor: Colors.white,
+        backgroundColor: t.card,
         borderRadius: 12,
         marginBottom: 8,
         borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
         overflow: 'hidden',
     },
     priorityBar: { width: 6 },
@@ -747,15 +761,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 2,
     },
-    taskTitle: { fontSize: 16, fontWeight: '600', color: Colors.primary, flex: 1, marginRight: 8 },
+    taskTitle: { fontSize: 16, fontWeight: '600', color: t.bodyText, flex: 1, marginRight: 8 },
     taskBottomRow: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 12,
     },
     priorityLabel: { fontSize: 12, fontWeight: '600' },
-    dueDateText: { fontSize: 12, color: '#888' },
-    taskNotes: { fontSize: 12, color: '#999', marginTop: 4, fontStyle: 'italic' },
+    dueDateText: { fontSize: 12, color: t.mutedText },
+    taskNotes: { fontSize: 12, color: t.mutedText, marginTop: 4, fontStyle: 'italic' },
     fabRow: {
         position: 'absolute',
         bottom: 20,
@@ -764,20 +778,8 @@ const styles = StyleSheet.create({
         gap: 10,
         alignItems: 'center',
     },
-    fab: {
-        backgroundColor: Colors.primary,
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        borderRadius: 30,
-        elevation: 4,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-    },
-    fabMainText: { color: Colors.white, fontWeight: '600', fontSize: 16 },
     fabSecondary: {
-        backgroundColor: Colors.bridge,
+        backgroundColor: t.bridge,
         paddingVertical: 10,
         paddingHorizontal: 14,
         borderRadius: 30,
@@ -787,18 +789,18 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 4,
     },
-    fabText: { color: Colors.white, fontWeight: '600', fontSize: 14 },
+    fabText: { color: t.buttonPrimaryText, fontWeight: '600', fontSize: 14 },
     logOverlay: {
         position: 'absolute',
         bottom: 70,
         left: 12,
         right: 12,
-        backgroundColor: Colors.white,
+        backgroundColor: t.card,
         borderRadius: 12,
         padding: 16,
         maxHeight: 300,
         borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
         elevation: 10,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -811,14 +813,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 10,
     },
-    logTitle: { fontSize: 16, fontWeight: '600', color: Colors.primary },
-    logClose: { fontSize: 18, color: '#888' },
+    logTitle: { fontSize: 16, fontWeight: '600', color: t.cardTitle },
+    logClose: { fontSize: 18, color: t.mutedText },
     logItem: {
         borderBottomWidth: 0.5,
-        borderBottomColor: '#eee',
+        borderBottomColor: t.cardBorder,
         paddingVertical: 6,
     },
-    logItemText: { fontSize: 13, color: Colors.text },
+    logItemText: { fontSize: 13, color: t.bodyText },
     modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.4)',
@@ -827,22 +829,22 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     modalBox: {
-        backgroundColor: Colors.white,
+        backgroundColor: t.card,
         borderRadius: 16,
         padding: 20,
         width: '100%',
         maxHeight: '85%',
     },
-    modalTitle: { fontSize: 20, fontWeight: '600', color: Colors.primary },
-    inputLabel: { fontSize: 14, color: '#666', marginBottom: 4, marginTop: 8 },
+    modalTitle: { fontSize: 20, fontWeight: '600', color: t.cardTitle },
+    inputLabel: { fontSize: 14, color: t.mutedText, marginBottom: 4, marginTop: 8 },
     input: {
         borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
         borderRadius: 8,
         padding: 10,
         fontSize: 16,
-        backgroundColor: Colors.background,
-        color: Colors.text,
+        backgroundColor: t.pageBackground,
+        color: t.bodyText,
         marginBottom: 4,
     },
     priorityRow: { flexDirection: 'row', gap: 8, marginBottom: 4 },
@@ -851,42 +853,48 @@ const styles = StyleSheet.create({
         padding: 8,
         borderRadius: 8,
         borderWidth: 1.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
         alignItems: 'center',
     },
-    priorityBtnText: { fontSize: 13, fontWeight: '600', color: Colors.primary },
+    priorityBtnText: { fontSize: 13, fontWeight: '600', color: t.bodyText },
     recurBtn: {
         paddingVertical: 6,
         paddingHorizontal: 12,
         borderRadius: 16,
         borderWidth: 1,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
         marginRight: 8,
-        backgroundColor: Colors.white,
+        backgroundColor: t.chip,
     },
-    recurBtnActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
-    recurBtnText: { fontSize: 13, color: Colors.primary },
-    recurBtnTextActive: { color: Colors.white },
+    recurBtnActive: { backgroundColor: t.buttonPrimary, borderColor: t.buttonPrimary },
+    recurBtnText: { fontSize: 13, color: t.cardTitle },
+    recurBtnTextActive: { color: t.buttonPrimaryText },
     modalBtns: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 },
     cancelBtn: {
-        backgroundColor: '#ccc',
+        backgroundColor: t.buttonNeutral,
+        borderWidth: 1,
+        borderColor: t.buttonNeutralBorder,
         padding: 12,
         borderRadius: 8,
         flex: 1,
         alignItems: 'center',
         marginRight: 8,
     },
-    cancelBtnText: { color: '#333', fontWeight: '600' },
+    cancelBtnText: { color: t.buttonNeutralText, fontWeight: '600' },
     confirmBtn: {
-        backgroundColor: Colors.primary,
+        backgroundColor: t.buttonPrimary,
+        // Invisible border matching the fill so Cancel's outline doesn't
+        // make the two buttons different heights.
+        borderWidth: 1,
+        borderColor: t.buttonPrimary,
         padding: 12,
         borderRadius: 8,
         flex: 1,
         alignItems: 'center',
     },
-    confirmBtnText: { color: Colors.white, fontWeight: '600' },
+    confirmBtnText: { color: t.buttonPrimaryText, fontWeight: '600' },
     swipeDelete: {
-        backgroundColor: '#e74c3c',
+        backgroundColor: t.buttonDelete,
         justifyContent: 'center',
         alignItems: 'center',
         width: 80,
@@ -894,13 +902,16 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     swipeDeleteText: {
-        color: '#fff',
+        color: t.buttonDeleteText,
         fontWeight: '600',
         fontSize: 15,
     },
-    hintText: { fontSize: 11, color: '#aaa', marginBottom: 8 },
+    // Quiet/settled recipe (#47): light = solid teal, dark = outlined gold.
+    // Light's border matches the fill, so it's invisible there.
     backgroundBanner: {
-        backgroundColor: Colors.bridge,
+        backgroundColor: t.stockedButton,
+        borderWidth: 1,
+        borderColor: t.stockedButtonBorder,
         padding: 10,
         marginHorizontal: 12,
         marginTop: 8,
@@ -908,37 +919,38 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
-    backgroundBannerText: { color: Colors.white, fontWeight: '600', fontSize: 14, textAlign: 'center' },
+    backgroundBannerText: { color: t.stockedButtonText, fontWeight: '600', fontSize: 14, textAlign: 'center' },
     backgroundList: {
         marginHorizontal: 12,
         marginBottom: 8,
     },
-    pressToEdit: { fontSize: 11, color: '#aaa', fontStyle: 'italic' },
     taskBtnRow: { flexDirection: 'row', alignItems: 'center' },
+    // Green in BOTH themes (green means done, #48 rule) — deliberate light
+    // change from the old bridge teal.
     doneBtn: {
-        backgroundColor: Colors.bridge,
+        backgroundColor: t.buttonDone,
         paddingVertical: 5,
         paddingHorizontal: 12,
         borderRadius: 8,
         marginRight: 6,
     },
-    doneBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
+    doneBtnText: { color: t.buttonDoneText, fontSize: 13, fontWeight: '600' },
     editBtn: {
-        backgroundColor: Colors.background,
+        backgroundColor: t.pageBackground,
         borderWidth: 0.5,
-        borderColor: Colors.primary,
+        borderColor: t.cardTitle,
         paddingVertical: 5,
         paddingHorizontal: 10,
         borderRadius: 8,
     },
-    editBtnText: { color: Colors.primary, fontSize: 13, fontWeight: '600' },
+    editBtnText: { color: t.cardTitle, fontSize: 13, fontWeight: '600' },
     weekOverlay: {
         position: 'absolute',
         top: 60,
         left: 0,
         right: 0,
         bottom: 70,
-        backgroundColor: Colors.white,
+        backgroundColor: t.card,
         borderTopLeftRadius: 16,
         borderTopRightRadius: 16,
         padding: 16,
@@ -955,14 +967,14 @@ const styles = StyleSheet.create({
         marginBottom: 12,
         paddingBottom: 8,
         borderBottomWidth: 0.5,
-        borderBottomColor: Colors.lightBlue,
+        borderBottomColor: t.cardBorder,
     },
-    weekTitle: { fontSize: 20, fontWeight: '600', color: Colors.primary, fontStyle: 'italic', fontFamily: 'Georgia' },
+    weekTitle: { fontSize: 20, fontWeight: '600', color: t.cardTitle, fontStyle: 'italic', fontFamily: 'Georgia' },
     weekDay: {
         marginBottom: 12,
         paddingBottom: 12,
         borderBottomWidth: 0.5,
-        borderBottomColor: Colors.lightBlue,
+        borderBottomColor: t.cardBorder,
     },
     weekDayHeader: {
         flexDirection: 'row',
@@ -970,15 +982,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 6,
     },
-    weekDayName: { fontSize: 16, fontWeight: '600', color: Colors.primary },
-    weekDayDate: { fontSize: 13, color: '#aaa' },
-    weekEmpty: { fontSize: 13, color: '#aaa', fontStyle: 'italic', paddingLeft: 8 },
+    weekDayName: { fontSize: 16, fontWeight: '600', color: t.cardTitle },
+    weekDayDate: { fontSize: 13, color: t.mutedText },
+    weekEmpty: { fontSize: 13, color: t.mutedText, fontStyle: 'italic', paddingLeft: 8 },
     weekTask: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: 6,
         paddingHorizontal: 8,
-        backgroundColor: Colors.background,
+        backgroundColor: t.pageBackground,
         borderRadius: 8,
         marginBottom: 4,
         gap: 10,
@@ -988,14 +1000,14 @@ const styles = StyleSheet.create({
         height: 10,
         borderRadius: 5,
     },
-    weekTaskTitle: { fontSize: 15, color: Colors.primary, fontWeight: '500' },
+    weekTaskTitle: { fontSize: 15, color: t.bodyText, fontWeight: '500' },
 
     headerBtn: {
         borderWidth: 1,
-        borderColor: Colors.white,
+        borderColor: t.headerButton,
         paddingVertical: 2,
         paddingHorizontal: 16,
         borderRadius: 20,
     },
-    headerBtnText: { color: Colors.white, fontSize: 16, fontWeight: '600' },
+    headerBtnText: { color: t.headerButton, fontSize: 16, fontWeight: '600' },
 });

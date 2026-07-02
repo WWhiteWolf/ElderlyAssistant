@@ -61,6 +61,16 @@ export interface Theme {
     countdown: string;        // Timer's big countdown number
     settingValue: string;     // Settings row value (name, times) (light: teal; dark: cream)
     settingArrow: string;     // Settings row "›" chevron
+    // to-do priorities & status (added #49: todo conversion). These feed the
+    // page's PRIORITY_COLORS map (side bar, priority word, Week Ahead dot,
+    // selected Priority button) — red keeps meaning in both themes.
+    priorityUrgent: string;       // red in BOTH — red means urgent
+    priorityUrgentText: string;   // text on a selected Urgent button
+    priorityNormal: string;       // light: primary blue; dark: gold
+    priorityNormalText: string;   // dark gold fill needs dark-brown text
+    prioritySomeday: string;      // light: cool grey; dark: warm grey
+    prioritySomedayText: string;
+    statusOnHold: string;         // "On Hold" status fill (its own orange in BOTH)
     // typography (the two themes deliberately differ — Patrick's call, #45)
     titleSize: number;
     titleWeight: '500' | '600';
@@ -115,6 +125,13 @@ export const Themes: Record<ThemeName, Theme> = {
         countdown: '#2d9e8f',
         settingValue: '#2d9e8f',
         settingArrow: '#a8d4e0',
+        priorityUrgent: '#e74c3c',
+        priorityUrgentText: '#ffffff',
+        priorityNormal: '#1a6e8a',
+        priorityNormalText: '#ffffff',
+        prioritySomeday: '#95a5a6',
+        prioritySomedayText: '#ffffff',
+        statusOnHold: '#e67e22',
         titleSize: 28,
         titleWeight: '500',
         subtitleSize: 22,
@@ -164,6 +181,13 @@ export const Themes: Record<ThemeName, Theme> = {
         countdown: '#fff6de',
         settingValue: '#fff6de',
         settingArrow: '#e9dcba',
+        priorityUrgent: '#e74c3c',
+        priorityUrgentText: '#ffffff',
+        priorityNormal: '#f0a83a',
+        priorityNormalText: '#4a1f0c',
+        prioritySomeday: '#9c8d75',
+        prioritySomedayText: '#fff6de',
+        statusOnHold: '#e67e22',
         titleSize: 28,
         titleWeight: '600',
         subtitleSize: 22,
