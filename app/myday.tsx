@@ -227,6 +227,28 @@ export default function MyDayScreen() {
         setPendingLogId(null);
     };
 
+    // Un-check (Patrick, #42, mirrors My Week's undoDone): tapping the ✓ asks,
+    // then clears only the checkmark. The existing log entry stays untouched —
+    // logging it again later adds a fresh entry. saveData re-runs the reminder
+    // scheduling, so the un-checked item's daily reminder is armed again.
+    const undoDone = (id: string) => {
+        const item = routine.find(i => i.id === id);
+        if (!item) return;
+        Alert.alert('Un-check Item', `Mark "${item.label}" as not done?`, [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Mark not done',
+                onPress: () => {
+                    const updated = routine.map(s =>
+                        s.id === id ? { ...s, completed: false } : s
+                    );
+                    setRoutine(updated);
+                    saveData(updated, history);
+                },
+            },
+        ]);
+    };
+
     // On-page Snooze: schedule a one-off reminder for this item N minutes from
     // now, tagged 'mydaysnooze' so the daily reschedule-on-load won't wipe it.
     // Same mechanism the notification banner's Snooze buttons use.
@@ -458,7 +480,7 @@ export default function MyDayScreen() {
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={[styles.logBtn, item.completed && styles.loggedBtn]}
-                                    onPress={() => openLogModal(item.id)}
+                                    onPress={() => item.completed ? undoDone(item.id) : openLogModal(item.id)}
                                 >
                                     <Text style={styles.logBtnText}>{item.completed ? '✓' : 'Log'}</Text>
                                 </TouchableOpacity>

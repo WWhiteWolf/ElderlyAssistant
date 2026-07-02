@@ -624,6 +624,16 @@ export default function LookAheadScreen() {
                         <View style={styles.pickerModal}>
                             <Text style={styles.modalTitle}>{activeId ? 'Edit Entry' : 'New Entry'}</Text>
 
+                            {/* Cancel/Save sit up top near the input, matching To-Do's form (Patrick, #42) */}
+                            <View style={styles.modalBtns}>
+                                <TouchableOpacity style={styles.cancelBtn} onPress={closeEdit}>
+                                    <Text style={styles.cancelBtnText}>Cancel</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.confirmBtn} onPress={saveEdit}>
+                                    <Text style={styles.confirmBtnText}>Save</Text>
+                                </TouchableOpacity>
+                            </View>
+
                             <Text style={styles.inputLabel}>Name</Text>
                             <TextInput
                                 style={styles.input}
@@ -722,15 +732,6 @@ export default function LookAheadScreen() {
                                         </Text>
                                     </TouchableOpacity>
                                 ))}
-                            </View>
-
-                            <View style={styles.modalBtns}>
-                                <TouchableOpacity style={styles.cancelBtn} onPress={closeEdit}>
-                                    <Text style={styles.cancelBtnText}>Cancel</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.confirmBtn} onPress={saveEdit}>
-                                    <Text style={styles.confirmBtnText}>Save</Text>
-                                </TouchableOpacity>
                             </View>
                         </View>
                     </ScrollView>

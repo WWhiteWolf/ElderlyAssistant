@@ -1,7 +1,8 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-01 (session #41 — Step 5 done: the Watch List app is now a
-page inside "Remember When," checked in the Simulator. You then gave me a list of
-7 things you want addressed — they're all recorded below. Next session: your pick.)
+Last updated: 2026-07-01 (session #42 — three items from your list are done and
+checked in the Simulator: the Look Ahead popup buttons moved up, Categories are
+out of To-Do (that cancel bug died with them), and Done can now be un-checked
+in My Day and Pets. Next session: your pick.)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -13,41 +14,31 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- This session (#41): the Watch List movie/TV tracker is now a page in the
-  main app — 🎬 tile on the home screen, restyled to match the app's blue
-  look, working exactly like the standalone version. You checked it all in
-  the Simulator: adding, Mark Seen / Watch Again, +Ep / +Seas. A quick
-  real-phone check is batched with the other phone tests.
-- The big #34 plan is now COMPLETE on the Simulator: (1) ✅ repeating options
-  out of To-Do; (2) ✅ "Look Ahead" built; (3) ✅ its reminders; (4) ✅ popups
-  settled everywhere; (5) ✅ Watch List folded in. What's left from it is
-  real-phone confirmation (the checkpoints) and the structured reminder tests.
-- One new bug found while updating these docs: BACKUPS currently skip the
-  Look Ahead page's data (and now Watch List's too) — restoring a backup
-  would lose those lists. On the bug list below.
-- All of session #41 (code + these docs) is ready for you to commit.
-- Next session: YOUR PICK — likely from your new list just below, or the
-  structured reminder tests / phone checkpoints.
+- This session (#42) knocked out three of the seven things you listed at the
+  end of #41, all checked in the Simulator:
+    * Look Ahead's New/Edit popup — Cancel & Save now sit up top, like To-Do's.
+    * Categories are gone from To-Do — no picker, no Custom Category popup
+      (so that cancel-wipes-your-task bug is gone too), no filter row.
+      Your saved tasks are untouched.
+    * Tapping the green ✓ in My Day or Pets now asks "Mark as not done?" and
+      un-checks it. The log entry stays. My Week already worked this way.
+- A quick real-phone check of all of that is batched with the other phone
+  tests. Nothing from #42 is phone-tested yet.
+- All of session #42 (code + these docs) is ready for you to commit.
+- Next session: YOUR PICK — what's left of your list (below), the backup-keys
+  bug, or the structured reminder tests / phone checkpoints.
 
 
-YOUR #41 LIST (the 7 things you asked to address)
+YOUR #41 LIST — WHAT'S STILL OPEN (items 2, 5, 6, 7 done in #42)
 ----------------------------------------------------------------------------
-1. Name the backup folder — moved up from "someday" to "wanted."
-2. The To-Do Custom Category cancel bug — see the bug list below; it will
-   disappear on its own when we do number 6.
-3. NEW: Import files/documents into the Vault. Needs a talk-through first
+1. Name the backup folder — moved up from "someday" to "wanted." Best
+   finished and checked on the real phone, where iCloud Drive is involved.
+3. Import files/documents into the Vault. Needs a talk-through first
    (what kinds of files, from where, how they're shown and protected).
 4. My Day: a banner "Done" on YESTERDAY'S reminder checked off TODAY'S.
    Most likely your phone is still running the older build from before the
    fix (#39) — the fix just hasn't been phone-tested yet. You're tracking
    whether it happens again; it's on the structured-test checklist.
-5. NEW: On Look Ahead's New and Edit popups, move the Cancel & Save buttons
-   up near the input box (like To-Do's), not sitting low under it.
-6. NEW: Remove Categories from To-Do entirely (takes the category picker,
-   the custom-category popup, and its cancel bug all out in one go).
-7. NEW: In My Day, Pets, and My Week, tapping Done on an already-done item
-   should UN-check it (right now Done is one-way). We'll need to decide
-   what happens to the history entry when you un-check.
 
 
 NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
@@ -56,26 +47,25 @@ NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
   23:30 and it went off around 21:15. Checking the code found no bug — that's
   exactly 2 hours before a 23:15 time, so it was most likely the "2 hours"
   before-reminder option doing its job. To be sure: make a new task due a few
-  minutes out, pick ONLY "At time," and watch if it fires on the minute.
+  minutes out, pick ONLY a short preset, and watch if it fires on the minute.
 - The buttonless To-Do banner (#40), the shared routine popup (#39), Look
-  Ahead's reminders (#37), and a Watch List once-over (#41) — all batched
-  into the phone checkpoints.
+  Ahead's reminders (#37), a Watch List once-over (#41), and now a #42
+  once-over (To-Do without categories, Look Ahead popup buttons, the
+  My Day / Pets un-check) — all batched into the phone checkpoints.
 
 
 STILL BROKEN OR UNFINISHED (small bugs)
 ---------------------------------------
-- NEW (found #41): Backups skip Look Ahead and Watch List. The backup code
-  has a fixed list of what to save, and those pages' data was never added.
-  Until fixed, restoring a backup loses the Look Ahead and Watch List lists.
-- To-Do "Custom Category" cancel wipes the new task. When adding a New Task,
-  if you open the Custom Category second popup and tap Cancel, BOTH popups
-  close and the task you were entering is lost. (Goes away with your item 6 —
-  removing categories.)
+- Backups skip Look Ahead and Watch List (found #41). The backup code has a
+  fixed list of what to save, and those pages' data was never added. Until
+  fixed, restoring a backup loses the Look Ahead and Watch List lists.
+  Simulator-testable — a good small session.
 - My Week: if you mark a chore done from inside the app (not from the
   notification), it records today's date instead of the chore's own day.
   Minor — only matters if you log a chore well after its day.
 - Tapping a reminder takes you to the right screen but not to the exact
   item, and this has never actually been tried with a real tap.
+  (The To-Do Custom Category cancel bug is GONE — #42 removed categories.)
 
 
 DECISIONS TO MAKE WHEN YOU'RE READY
@@ -100,7 +90,6 @@ NICE-TO-HAVE LATER (polish, low priority)
   "+ Add."
 - Add a Snooze button on each To-Do item itself. My Day and Pets Day already
   have one on every tile; To-Do only has Snooze on the notification banner.
-  (The "Name the backup folder" item moved UP to your #41 list.)
 
 
 PARKED ON PURPOSE (bigger items, on hold for now)

@@ -27,7 +27,7 @@ const READABLE_KEYS = [
     'my_routine', 'my_history', 'my_last_date', 'my_coffee', 'my_water',
     'week_routine', 'week_history',
     'pets_feeds', 'pets_history', 'pets_last_date', 'pets_treats',
-    'todo_tasks', 'todo_categories', 'todo_log',
+    'todo_tasks', 'todo_log', // todo_categories dropped (#42): categories removed from To-Do
     'shopping_items',
     'planner_projects', 'planner_log',
     'user_name', 'biometric_enabled', 'vault_pin_enabled',

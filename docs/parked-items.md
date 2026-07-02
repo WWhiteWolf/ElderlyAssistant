@@ -7,10 +7,10 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-01 (session #41 — STEP 5 DONE: Watch List integrated as a
-home page, Simulator-validated. Patrick then listed 7 items he wants addressed —
-see "Patrick's #41 list" below. Also found while checking: backups miss Look Ahead
-AND Watch List data (new bug below). Next session: Patrick picks.)
+Last updated: 2026-07-01 (session #42 — items 5, 6, 7 from Patrick's #41 list DONE,
+Simulator-validated: Look Ahead popup buttons moved up; Categories removed from
+To-Do (killing item 2's cancel bug); Done un-check in My Day + Pets. Remaining
+from the list: items 1, 3, 4. Next session: Patrick picks.)
 
 ---
 
@@ -77,7 +77,9 @@ pages. Take ONE piece per session. **Order: pages first, then the popup consolid
   scheduled before #40 may still show the old buttons until they cycle out) — AND the
   shared routine popup (#39): six buttons, Skip, past-day guard, snooze sound. **Plus
   a quick Watch List once-over (#41): tile, add movie/show, buttons, data survives
-  an app restart.**
+  an app restart. Plus a #42 once-over: To-Do with no categories (New/Edit form,
+  no filter bar), Look Ahead popup buttons up top, and the My Day / Pets ✓
+  un-check (history intact, reminder re-armed).**
 - **✅ DONE (#41, Simulator-validated) — Watch List integrated as a home page**
   (`app/watchlist.tsx` new + home tile/route + `_layout.tsx` Stack.Screen). The
   standalone `Projects/WatchList` app's three files combined into one TS page,
@@ -88,31 +90,29 @@ pages. Take ONE piece per session. **Order: pages first, then the popup consolid
 
 ---
 
-## Patrick's #41 list — items he wants addressed (next-session candidates)
+## Patrick's #41 list — what's still open (items 2, 5, 6, 7 done in #42)
 
-Raised by Patrick at the end of #41, clarified one by one. None built yet; pick
-from here (or the older backlog) as session goals.
+Raised by Patrick at the end of #41. Items 5, 6, 7 built and Simulator-validated
+in #42 (item 2's bug died with item 6); their phone once-over is batched into the
+checkpoints above. Still open:
 
 1. **Name the backup folder — PROMOTED from nice-to-have.** Give the exported
    backup folder/file a clear, recognizable name so it's easy to find where it's
-   saved. (Detail still in "Nice-to-have" below; it's now wanted, not just nice.)
-2. **To-Do Custom-Category cancel bug** — already tracked under Bugs below;
-   expected to VANISH via item 6 (no categories → no category popup). Handle the
-   two together.
-3. **NEW — Import files/docs into Vault.** Bring outside files/documents into the
+   saved. (Detail still in "Nice-to-have" below; it's now wanted, not just nice.
+   Best confirmed on a real phone, where iCloud Drive is involved.)
+3. **Import files/docs into Vault.** Bring outside files/documents into the
    Vault. Scope is undefined (file types? where from? how shown/stored/encrypted?)
    — needs a discussion session before any build.
 4. **My Day past-day banner Done** — folded into the STRUCTURED REMINDER TESTS
    entry above. Patrick is tracking whether it recurs.
-5. **NEW — Look Ahead New/Edit popups: move Cancel & Save up near the input**
-   (like To-Do's form), instead of sitting low under the input box. Small UI fix.
-6. **NEW — Remove Categories from To-Do entirely.** Patrick's call. Takes the
-   category picker + Custom-Category popup (and its cancel bug) out of New Task;
-   existing saved tasks' category data and the `todo_categories` storage key need
-   a look during the work.
-7. **NEW — Done button toggles back (un-check) in My Day, Pets, AND My Week.**
-   Tapping Done on an already-done item should un-do it (currently one-way).
-   Needs a rule for what happens to the history log entry when un-checked.
+
+Done in #42, for the record: **5** — Look Ahead New/Edit popup's Cancel & Save
+moved up under the title (matching To-Do). **6** — Categories removed from To-Do
+entirely (`app/todo.tsx`: picker, Custom-Category popup, filter bar, tile labels
+and machinery all removed; `todo_categories` dropped from backup's key list; old
+tasks' stored `categoryId` is simply ignored) — **item 2's cancel bug is gone**.
+**7** — tapping ✓ in My Day / Pets asks "Mark as not done?" and clears just the
+checkmark, history log untouched (Patrick's rule); My Week already worked this way.
 
 ---
 
@@ -121,12 +121,12 @@ from here (or the older backlog) as session goals.
 This is the "someday" list: things worth doing eventually, not what we're working on
 right now. Nothing here is urgent.
 
-The still-open work falls into: a few **small bugs / unfinished bits** (a couple of
-minor logging quirks, the To-Do Custom-Category cancel, tap-to-exact-item), a few
-**decisions to make** (Backup Merge, per-appointment reminder times), some
+The still-open work falls into: a few **small bugs / unfinished bits** (the missing
+backup keys, a couple of minor logging quirks, tap-to-exact-item), a few
+**decisions to make** (Backup Merge, Vault import scope), some
 **nice-to-have polish**, and a couple of **bigger items parked on purpose** (Siri voice,
-the louder timer alarm). (The old 3/6-month + Monthly/Yearly To-Do repeat items are done
-— recurrence moved to the Look Ahead page, finished in #37.)
+the louder timer alarm). (The To-Do Custom-Category cancel bug is gone — #42 removed
+categories from To-Do entirely.)
 
 ---
 
@@ -146,11 +146,6 @@ the louder timer alarm). (The old 3/6-month + Monthly/Yearly To-Do repeat items 
   new task due a few minutes out, tap **only "At time"** (no before-offset), and watch
   whether it fires on the minute. If that fires on time, the original was just the 2-hour
   preset and there's nothing to fix.
-- **To-Do Custom Category cancel wipes the new task** (`app/todo.tsx`). In New Task,
-  opening the "Custom Category" second popup and tapping **Cancel** closes BOTH popups and
-  loses the in-progress task. Cancel on the category popup should close only that popup and
-  return to the New Task form with entries intact. **[#41: expected to VANISH via
-  "Remove Categories from To-Do" — Patrick's #41 list, item 6. Handle together.]**
 - **[SUPERSEDED by #34 plan] To-Do recurrence (Monthly / Yearly / 3 / 6 Months).**
   These were all open To-Do items (3/6-month stubs did nothing; Monthly/Yearly needed a
   phone test). Per #34, **recurrence leaves To-Do entirely** and moves to the new Look

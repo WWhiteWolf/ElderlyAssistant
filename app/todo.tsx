@@ -21,11 +21,9 @@ import { Colors } from '../constants/Colors';
 
 type Priority = 'Urgent' | 'Normal' | 'Someday';
 
-interface Category {
-    id: string;
-    name: string;
-    color: string;
-}
+// Categories removed entirely (Patrick, #42): no picker, no custom-category
+// popup, no filter bar. Old saved tasks may still carry a categoryId in
+// storage — it's simply ignored on load.
 
 interface Reminder {
     id: string;
@@ -43,7 +41,6 @@ interface Reminder {
 interface Task {
     id: string;
     title: string;
-    categoryId: string;
     priority: Priority;
     taskType: 'scheduled' | 'background';
     dueDate: string;
@@ -86,16 +83,6 @@ const REMINDER_PRESETS: ReminderPreset[] = [
     { label: 'Month', kind: 'clock', daysBefore: 30, timeOfDay: 'evening' },
 ];
 
-const DEFAULT_CATEGORIES: Category[] = [
-    { id: 'c1', name: 'General', color: '#1a6e8a' },
-    { id: 'c2', name: 'Health', color: '#2d9e8f' },
-    { id: 'c3', name: 'House', color: '#85c5ab' },
-    { id: 'c4', name: 'Yard', color: '#27ae60' },
-    { id: 'c5', name: 'Pet', color: '#e67e22' },
-    { id: 'c6', name: 'Bills', color: '#8e44ad' },
-    { id: 'c7', name: 'Leisure', color: '#2980b9' },
-    { id: 'c8', name: 'Hobbies', color: '#16a085' },
-];
 const PRIORITY_COLORS: Record<Priority, string> = {
     Urgent: '#e74c3c',
     Normal: '#1a6e8a',
@@ -105,21 +92,15 @@ const PRIORITY_COLORS: Record<Priority, string> = {
 export default function TodoScreen() {
     const router = useRouter();
     const [tasks, setTasks] = useState<Task[]>([]);
-    const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
     const [log, setLog] = useState<LogEntry[]>([]);
-    const [filterCategory, setFilterCategory] = useState<string>('all');
     const [showAddTask, setShowAddTask] = useState(false);
-    const [showAddCategory, setShowAddCategory] = useState(false);
     const [showLog, setShowLog] = useState(false);
     const [editTask, setEditTask] = useState<Task | null>(null);
     const [newTitle, setNewTitle] = useState('');
-    const [newCategory, setNewCategory] = useState('c1');
     const [newPriority, setNewPriority] = useState<Priority>('Normal');
     const [newDueDate, setNewDueDate] = useState('');
     const [newDueTime, setNewDueTime] = useState('');
     const [newNotes, setNewNotes] = useState('');
-    const [newCategoryName, setNewCategoryName] = useState('');
-    const [newCategoryColor, setNewCategoryColor] = useState('#1a6e8a');
     const [newTaskType, setNewTaskType] = useState<'scheduled' | 'background'>('scheduled');
     const [newReminders, setNewReminders] = useState<Reminder[]>([]);
     const [showBackgroundTasks, setShowBackgroundTasks] = useState(false);
@@ -155,10 +136,8 @@ export default function TodoScreen() {
     const loadData = async () => {
         try {
             const savedTasks = await AsyncStorage.getItem('todo_tasks');
-            const savedCats = await AsyncStorage.getItem('todo_categories');
             const savedLog = await AsyncStorage.getItem('todo_log');
             if (savedTasks) setTasks(JSON.parse(savedTasks));
-            if (savedCats) setCategories(JSON.parse(savedCats));
             if (savedLog) setLog(JSON.parse(savedLog));
         } catch (e) {
             console.error(e);
@@ -168,11 +147,6 @@ export default function TodoScreen() {
     const saveTasks = async (t: Task[]) => {
         setTasks(t);
         await AsyncStorage.setItem('todo_tasks', JSON.stringify(t));
-    };
-
-    const saveCategories = async (c: Category[]) => {
-        setCategories(c);
-        await AsyncStorage.setItem('todo_categories', JSON.stringify(c));
     };
 
     const saveLog = async (l: LogEntry[]) => {
@@ -190,7 +164,6 @@ export default function TodoScreen() {
 
     const resetForm = () => {
         setNewTitle('');
-        setNewCategory('c1');
         setNewPriority('Normal');
         setNewTaskType('scheduled');
         setNewDueDate('');
@@ -210,7 +183,6 @@ export default function TodoScreen() {
         const task: Task = {
             id: Date.now().toString(),
             title: newTitle.trim(),
-            categoryId: newCategory,
             priority: newPriority,
             taskType: newTaskType,
             dueDate: newDueDate,
@@ -239,7 +211,6 @@ export default function TodoScreen() {
         const updatedTask: Task = {
             ...editTask,
             title: newTitle.trim(),
-            categoryId: newCategory,
             priority: newPriority,
             taskType: newTaskType,
             dueDate: newDueDate,
@@ -297,37 +268,9 @@ export default function TodoScreen() {
         ]);
     };
 
-    const addCategory = () => {
-        if (!newCategoryName.trim()) {
-            Alert.alert('Missing Name', 'Please enter a category name.');
-            return;
-        }
-        const cat: Category = {
-            id: Date.now().toString(),
-            name: newCategoryName.trim(),
-            color: newCategoryColor,
-        };
-        saveCategories([...categories, cat]);
-        setNewCategoryName('');
-        setShowAddCategory(false);
-    };
-
-    const deleteCategory = (id: string) => {
-        Alert.alert('Delete Category', 'Remove this category? Tasks in it will move to General.', [
-            { text: 'Cancel', style: 'cancel' },
-            {
-                text: 'Delete', style: 'destructive', onPress: () => {
-                    saveCategories(categories.filter(c => c.id !== id));
-                    saveTasks(tasks.map(t => t.categoryId === id ? { ...t, categoryId: 'c1' } : t));
-                },
-            },
-        ]);
-    };
-
     const openEditTask = (task: Task) => {
         setEditTask(task);
         setNewTitle(task.title);
-        setNewCategory(task.categoryId);
         setNewPriority(task.priority);
         setNewTaskType(task.taskType || 'scheduled');
         setNewDueDate(task.dueDate);
@@ -340,9 +283,7 @@ export default function TodoScreen() {
     };
 
     const getSortedTasks = () => {
-        let filtered = filterCategory === 'all'
-            ? tasks.filter(t => t.taskType !== 'background')
-            : tasks.filter(t => t.categoryId === filterCategory && t.taskType !== 'background');
+        let filtered = tasks.filter(t => t.taskType !== 'background');
 
         filtered = filtered.filter(t => !t.completed);
 
@@ -358,14 +299,6 @@ export default function TodoScreen() {
             if (!b.dueDate) return -1;
             return stamp(a) - stamp(b);
         });
-    };
-
-    const getCategoryName = (id: string) => {
-        return categories.find(c => c.id === id)?.name || 'General';
-    };
-
-    const getCategoryColor = (id: string) => {
-        return categories.find(c => c.id === id)?.color || Colors.primary;
     };
 
     const scheduleReminders = async (task: Task) => {
@@ -505,26 +438,6 @@ export default function TodoScreen() {
 
             <View style={styles.bridge} />
 
-            <View style={styles.toolbar}>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRow}>
-                    <TouchableOpacity
-                        style={[styles.filterBtn, filterCategory === 'all' && styles.filterBtnActive]}
-                        onPress={() => setFilterCategory('all')}
-                    >
-                        <Text style={[styles.filterBtnText, filterCategory === 'all' && styles.filterBtnTextActive]}>All</Text>
-                    </TouchableOpacity>
-                    {categories.map(cat => (
-                        <TouchableOpacity
-                            key={cat.id}
-                            style={[styles.filterBtn, filterCategory === cat.id && styles.filterBtnActive, { borderColor: cat.color }]}
-                            onPress={() => setFilterCategory(cat.id)}
-                        >
-                            <Text style={[styles.filterBtnText, filterCategory === cat.id && styles.filterBtnTextActive, { color: cat.color }]}>{cat.name}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </ScrollView>
-            </View>
-
             {tasks.filter(t => t.taskType === 'background').length > 0 && (
                 <TouchableOpacity
                     style={styles.backgroundBanner}
@@ -564,7 +477,6 @@ export default function TodoScreen() {
                                     </View>
                                     <View style={styles.taskBottomRow}>
                                         <Text style={[styles.priorityLabel, { color: PRIORITY_COLORS[task.priority] }]}>{task.priority}</Text>
-                                        <Text style={[styles.priorityLabel, { color: getCategoryColor(task.categoryId) }]}>{getCategoryName(task.categoryId)}</Text>
                                         {scheduleLabel(task) ? <Text style={styles.dueDateText}>{scheduleLabel(task)}</Text> : null}
                                     </View>
                                 </View>
@@ -607,7 +519,6 @@ export default function TodoScreen() {
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <View style={styles.taskBottomRow}>
                                         <Text style={[styles.priorityLabel, { color: PRIORITY_COLORS[task.priority] }]}>{task.priority}</Text>
-                                        <Text style={[styles.priorityLabel, { color: getCategoryColor(task.categoryId) }]}>{getCategoryName(task.categoryId)}</Text>
                                         {scheduleLabel(task) ? <Text style={styles.dueDateText}>{scheduleLabel(task)}</Text> : null}
                                     </View>
 
@@ -672,24 +583,6 @@ export default function TodoScreen() {
                                     <Text style={styles.inputLabel}>Title</Text>
                                     <TextInput style={styles.input} value={newTitle} onChangeText={setNewTitle} placeholder="What needs to be done?" autoFocus={true} />
 
-                                    <Text style={styles.inputLabel}>Category</Text>
-                                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
-                                        {categories.map(cat => (
-                                            <TouchableOpacity
-                                                key={cat.id}
-                                                style={[styles.filterBtn, newCategory === cat.id && styles.filterBtnActive, { borderColor: cat.color }]}
-                                                onPress={() => setNewCategory(cat.id)}
-                                            >
-                                                <Text style={[styles.filterBtnText, newCategory === cat.id && styles.filterBtnTextActive, { color: newCategory === cat.id ? '#fff' : cat.color }]}>{cat.name}</Text>
-                                            </TouchableOpacity>
-                                        ))}
-                                    </ScrollView>
-                                    <TouchableOpacity
-                                        style={[styles.filterBtn, { borderColor: Colors.bridge, marginTop: 6 }]}
-                                        onPress={() => { setShowAddTask(false); setShowAddCategory(true); }}
-                                    >
-                                        <Text style={[styles.filterBtnText, { color: Colors.bridge }]}>+ Custom Category</Text>
-                                    </TouchableOpacity>
                                     <Text style={styles.inputLabel}>Priority</Text>
                                     <View style={styles.priorityRow}>
                                         {(['Urgent', 'Normal', 'Someday'] as Priority[]).map(p => (
@@ -759,45 +652,6 @@ export default function TodoScreen() {
                 </Modal>
             )}
 
-            {showAddCategory && (
-                <Modal transparent animationType="fade" visible={showAddCategory}>
-                    <View style={styles.modalOverlay}>
-                        <View style={styles.modalBox}>
-                            <Text style={styles.modalTitle}>New Category</Text>
-                            <Text style={styles.inputLabel}>Name</Text>
-                            <TextInput style={styles.input} value={newCategoryName} onChangeText={setNewCategoryName} placeholder="Category name..." autoFocus={true} />
-                            <Text style={styles.inputLabel}>Color</Text>
-                            <View style={styles.colorRow}>
-                                {['#1a6e8a', '#2d9e8f', '#85c5ab', '#e67e22', '#8e44ad', '#e74c3c', '#27ae60', '#2c3e50'].map(color => (
-                                    <TouchableOpacity
-                                        key={color}
-                                        style={[styles.colorSwatch, { backgroundColor: color }, newCategoryColor === color && styles.colorSwatchSelected]}
-                                        onPress={() => setNewCategoryColor(color)}
-                                    />
-                                ))}
-                            </View>
-                            <Text style={styles.inputLabel}>Existing Categories</Text>
-                            {categories.filter(c => !['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8'].includes(c.id)).map(cat => (
-                                <View key={cat.id} style={styles.catManageRow}>
-                                    <View style={[styles.catDot, { backgroundColor: cat.color }]} />
-                                    <Text style={styles.catManageName}>{cat.name}</Text>
-                                    <TouchableOpacity onPress={() => deleteCategory(cat.id)}>
-                                        <Text style={styles.catDeleteBtn}>✕</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            ))}
-                            <View style={styles.modalBtns}>
-                                <TouchableOpacity style={styles.cancelBtn} onPress={() => { setNewCategoryName(''); setShowAddCategory(false); }}>
-                                    <Text style={styles.cancelBtnText}>Cancel</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.confirmBtn} onPress={addCategory}>
-                                    <Text style={styles.confirmBtnText}>Add</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                </Modal>
-            )}
             {showWeekAhead && (
                 <View style={styles.weekOverlay}>
                     <View style={styles.weekHeader}>
@@ -837,7 +691,6 @@ export default function TodoScreen() {
                                                 <View style={[styles.weekPriorityDot, { backgroundColor: PRIORITY_COLORS[task.priority] }]} />
                                                 <View style={{ flex: 1 }}>
                                                     <Text style={styles.weekTaskTitle}>{task.title}</Text>
-                                                    <Text style={styles.weekTaskMeta}>{getCategoryName(task.categoryId)}</Text>
                                                 </View>
                                             </TouchableOpacity>
                                         ))
@@ -875,31 +728,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     bridge: { height: 8, backgroundColor: Colors.bridge },
-    toolbar: {
-        backgroundColor: Colors.white,
-        paddingVertical: 8,
-        borderBottomWidth: 0.5,
-        borderBottomColor: Colors.lightBlue,
-    },
-    filterRow: {
-        paddingHorizontal: 12,
-        marginBottom: 6,
-    },
-    filterBtn: {
-        paddingVertical: 6,
-        paddingHorizontal: 14,
-        borderRadius: 16,
-        borderWidth: 1.5,
-        borderColor: Colors.lightBlue,
-        marginRight: 8,
-        backgroundColor: Colors.white,
-    },
-    filterBtnActive: {
-        backgroundColor: Colors.primary,
-        borderColor: Colors.primary,
-    },
-    filterBtnText: { fontSize: 13, color: Colors.primary, fontWeight: '500' },
-    filterBtnTextActive: { color: Colors.white },
     scroll: { flex: 1, padding: 12 },
     emptyText: { textAlign: 'center', color: '#aaa', marginTop: 40, fontSize: 16 },
     taskCard: {
@@ -920,12 +748,6 @@ const styles = StyleSheet.create({
         marginBottom: 2,
     },
     taskTitle: { fontSize: 16, fontWeight: '600', color: Colors.primary, flex: 1, marginRight: 8 },
-    categoryBadge: {
-        paddingVertical: 3,
-        paddingHorizontal: 8,
-        borderRadius: 10,
-    },
-    categoryBadgeText: { fontSize: 11, color: '#fff', fontWeight: '600' },
     taskBottomRow: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -1045,41 +867,6 @@ const styles = StyleSheet.create({
     recurBtnActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
     recurBtnText: { fontSize: 13, color: Colors.primary },
     recurBtnTextActive: { color: Colors.white },
-    catSelectBtn: {
-        paddingVertical: 6,
-        paddingHorizontal: 14,
-        borderRadius: 16,
-        borderWidth: 1,
-        borderColor: Colors.lightBlue,
-        marginRight: 8,
-        backgroundColor: Colors.white,
-    },
-    catSelectText: { fontSize: 13, color: Colors.primary, fontWeight: '500' },
-    colorRow: { flexDirection: 'row', gap: 10, marginBottom: 12, flexWrap: 'wrap' },
-    colorSwatch: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-    },
-    colorSwatchSelected: {
-        borderWidth: 3,
-        borderColor: Colors.primary,
-    },
-    catManageRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 6,
-        borderBottomWidth: 0.5,
-        borderBottomColor: '#eee',
-    },
-    catDot: {
-        width: 12,
-        height: 12,
-        borderRadius: 6,
-        marginRight: 10,
-    },
-    catManageName: { flex: 1, fontSize: 14, color: Colors.text },
-    catDeleteBtn: { fontSize: 16, color: '#e74c3c', paddingHorizontal: 8 },
     modalBtns: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 },
     cancelBtn: {
         backgroundColor: '#ccc',
@@ -1202,7 +989,6 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     weekTaskTitle: { fontSize: 15, color: Colors.primary, fontWeight: '500' },
-    weekTaskMeta: { fontSize: 12, color: '#aaa', marginTop: 2 },
 
     headerBtn: {
         borderWidth: 1,

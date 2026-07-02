@@ -190,6 +190,28 @@ export default function PetsScreen() {
         setPendingLogId(null);
     };
 
+    // Un-check (Patrick, #42, mirrors My Week's undoDone): tapping the ✓ asks,
+    // then clears only the checkmark. The existing log entry stays untouched —
+    // logging it again later adds a fresh entry. saveData re-runs the reminder
+    // scheduling, so the un-checked item's daily reminder is armed again.
+    const undoDone = (id: string) => {
+        const item = feeds.find(f => f.id === id);
+        if (!item) return;
+        Alert.alert('Un-check Item', `Mark "${item.label}" as not done?`, [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Mark not done',
+                onPress: () => {
+                    const updated = feeds.map(f =>
+                        f.id === id ? { ...f, completed: false } : f
+                    );
+                    setFeeds(updated);
+                    saveData(updated, history);
+                },
+            },
+        ]);
+    };
+
     const confirmTreat = () => {
         const now = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false });
         const newEntry: HistoryEntry = {
@@ -392,7 +414,7 @@ export default function PetsScreen() {
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={[styles.logBtn, item.completed && styles.loggedBtn]}
-                                    onPress={() => openLogModal(item.id)}
+                                    onPress={() => item.completed ? undoDone(item.id) : openLogModal(item.id)}
                                 >
                                     <Text style={styles.logBtnText}>{item.completed ? '✓' : 'Log'}</Text>
                                 </TouchableOpacity>
