@@ -1,7 +1,7 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-02 (session #46 — Backup and Watch List now have
+Last updated: 2026-07-02 (session #47 — Shopping and Vault now have
 both themes, designed with mockups and checked by you in the Simulator.
-Three pages done, ten to go. Full rollout order is in parked-items.md
+Five pages done, eight to go. Full rollout order is in parked-items.md
 under "TWO-THEME ROLLOUT.")
 
 This is the "what's still left" list in everyday words. It's pulled from
@@ -14,23 +14,33 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- Session #46: the Backup page and the Watch List page now follow both
-  themes, matching Home. You approved each page's look from mockups
-  first, then checked both themes in the Simulator. The Backup page's
-  back button now says "← Back" so it fits on one line.
-- Also fixed: the dark theme's header title/subtitle are now the big
-  original sizes (28/22), same as light — that was decided in #45 but
-  hadn't actually made it into the file.
+- Session #47: the Shopping page and the Vault now follow both themes.
+  You approved every piece from mockups first, then checked both themes
+  in the Simulator. Your calls this session: in dark, quiet buttons
+  (Stocked, Edit, Cancel) are gold OUTLINES while solid orange means
+  "act on this"; and all the dark theme's cream text got brighter,
+  which also brightened Backup and Watch List to match. Light theme
+  is unchanged everywhere.
+- Small wording fix you asked for: Vault's "Missing Info" popup now
+  says "Tap a Label above, then enter a Value." so it's clear the
+  labels want a tap.
+- Two new parked items: a SUSPECTED Vault bug (typing your own label
+  under "Custom" may save the word "Custom" instead — not yet
+  confirmed; test steps are in parked-items.md), and your request to
+  eventually REMOVE CATEGORIES FROM VAULT (needs a talk-through first).
 - One thing to know: iPhone Settings light/dark does NOT change your
   app's colors — only the one word in constants/Themes.ts does. But
   Apple's own popups inside the app (alerts, share sheet, keyboard)
-  DO follow the iPhone setting, so they can look different from the
-  app around them. Decision parked for the Settings-toggle session.
+  DO follow the iPhone setting — you saw exactly this when the white
+  "Missing Info" popup appeared over the dark Vault. Decision parked
+  for the Settings-toggle session.
 - Until the Settings toggle is built, the active theme is one word in
-  constants/Themes.ts (DEFAULT_THEME) — currently set to 'dark' from
+  constants/Themes.ts (DEFAULT_THEME) — currently set to 'light' from
   your testing. Set it to the one you want before committing.
 - Not yet committed — you commit this session's code + docs when ready.
-- Next session (#47): shopping.tsx + vault.tsx, same mockup-first drill.
+- Next session (#48): timer.tsx + settings.tsx — the Switch toggles
+  need per-theme colors, and it's the natural time to decide about the
+  in-app theme toggle and those Apple popups.
 
 
 YOUR #41 LIST — WHAT'S STILL OPEN (items 2, 5, 6, 7 done in #42)

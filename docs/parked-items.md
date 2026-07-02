@@ -7,12 +7,14 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-02 (session #46 — backup.tsx + watchlist.tsx
-converted to `Themes.ts`, both themes approved in the Simulator. Eight
-new shared keys now exist: card, cardBorder, cardTitle, bodyText,
-mutedText, headerButton, buttonPrimary, buttonPrimaryText — so later
-pages have most of their vocabulary ready. Also fixed the #45 loose end:
-dark header is now 28/22 as decided.)
+Last updated: 2026-07-02 (session #47 — shopping.tsx + vault.tsx
+converted to `Themes.ts`, both themes approved in the Simulator. Eleven
+more shared keys (neutral/delete/stocked buttons, selected row, chip);
+new dark convention: solid orange = action, OUTLINED GOLD = quiet
+(Stocked / Edit / Cancel); dark creams brightened app-wide (bodyText +
+button text `#fff6de`, muted `#e9dcba`) — note Home's tileLabel still
+has the old dimmer cream. Two new items below: the unverified Vault
+"Custom" label bug, and "Remove categories from Vault".)
 
 ---
 
@@ -42,7 +44,11 @@ before moving on. Until the toggle exists, the active theme is the
    back pill now says "← Back" (the old "← Settings" wrapped to two
    lines in the fixed-width pill — Patrick chose the shorter word).
    Light `cartIcon` changed to `#d8dde3` (Patrick, supersedes #45).
-3. **`shopping.tsx` + `vault.tsx`** — medium, same list/card pattern.
+3. ✅ **DONE (#47) — `shopping.tsx` + `vault.tsx`.** Mockup-first, both
+   themes approved. Eleven new keys (see Themes.ts comments). New dark
+   convention set here: solid orange = action, outlined gold = quiet
+   (Stocked, Edit, Cancel). Dark creams brightened app-wide. Vault's
+   "Missing Info" alert reworded ("Tap a Label..."). Light unchanged.
 4. **`timer.tsx` + `settings.tsx`** — paired: both use native `Switch`
    toggles needing explicit `trackColor`/`thumbColor` values (per theme).
 5. **`todo.tsx`** — standalone; colors come from a `PRIORITY_COLORS` JS
@@ -180,6 +186,15 @@ categories from To-Do entirely.)
 
 ## Bugs / correctness (still open)
 
+- **Vault "Custom" label may save as the word "Custom" (spotted #47, UNVERIFIED)**
+  (`app/vault.tsx`). The save path checks `selectedPreset === 'custom'` (lowercase)
+  but the chip sets `'Custom'` (capital C) — read straight from the code, so tapping
+  Custom and typing your own label would save an item literally labeled "Custom",
+  ignoring what was typed. Found by code-reading during the #47 theme conversion;
+  NOT yet reproduced. Verify in the Simulator first: Vault → any category → + Add →
+  tap Custom → type a label → Add, and see what label the saved item shows. If it
+  reproduces, the fix is a one-word case correction (its own small session/step).
+
 - **Backup misses Look Ahead and Watch List data (found #41)** (`app/backup.tsx`).
   `READABLE_KEYS` doesn't include `lookahead_items` / `lookahead_history` (a gap
   since #36 built the page) nor the new `watchlist_movies` / `watchlist_shows`
@@ -212,6 +227,16 @@ categories from To-Do entirely.)
   task is feasible); My Day / "Background" reminders carry no item id.
 
 ## Design decisions to make
+
+- **Remove categories from Vault (Patrick, #47).** Like #42 did for To-Do:
+  drop the Vault's category layer (Identity / Property / Financial / Medical /
+  Digital / Legal / Other). Scope to decide before any build: does the
+  two-level navigation (category list → items) collapse into one flat list;
+  what happens to the per-category preset label chips (keep one combined set,
+  or drop presets); and how existing items' stored `category` field is
+  handled (To-Do's approach: just ignore it). Needs a discussion session
+  first — related open item: "Import files/docs into Vault" above, since both
+  reshape the same page.
 
 - **Backup "Merge" option.** Restoring a backup currently **replaces** everything. Patrick
   wants the *choice* to **merge** a backup into existing data. Its own session — the

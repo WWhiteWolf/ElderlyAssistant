@@ -13,7 +13,7 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../constants/Colors';
+import { Theme, useTheme } from '../constants/Themes';
 
 interface Item {
     id: string;
@@ -23,6 +23,8 @@ interface Item {
 
 export default function ShoppingScreen() {
     const router = useRouter();
+    const theme = useTheme();
+    const styles = makeStyles(theme);
     const [items, setItems] = useState<Item[]>([]);
     const [newItem, setNewItem] = useState('');
     const [view, setView] = useState<'inventory' | 'shopping'>('inventory');
@@ -89,7 +91,7 @@ export default function ShoppingScreen() {
 
     return (
         <GestureHandlerRootView style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: Colors.primary }}>
+            <SafeAreaView style={{ backgroundColor: theme.header }}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
                         <Text style={styles.headerBtnText}>← Home</Text>
@@ -127,7 +129,7 @@ export default function ShoppingScreen() {
                         value={newItem}
                         onChangeText={setNewItem}
                         placeholder="Add new item..."
-                        placeholderTextColor="#aaa"
+                        placeholderTextColor={theme.mutedText}
                         onSubmitEditing={addItem}
                         returnKeyType="done"
                     />
@@ -169,7 +171,7 @@ export default function ShoppingScreen() {
                                     style={[styles.statusBtn, item.status === 'stocked' && styles.statusStocked]}
                                     onPress={() => toggleStatus(item.id)}
                                 >
-                                    <Text style={styles.statusText}>
+                                    <Text style={[styles.statusText, item.status === 'stocked' && styles.statusTextStocked]}>
                                         {item.status === 'need' ? 'Need' : 'Stocked'}
                                     </Text>
                                 </TouchableOpacity>
@@ -198,141 +200,151 @@ export default function ShoppingScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: Colors.background },
-    header: {
-        backgroundColor: Colors.primary,
-        paddingTop: 20,
-        paddingHorizontal: 20,
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    backBtn: { width: 70 },
-    settingsBtn: { width: 70, alignItems: 'flex-end' },
-    settingsBtnText: { fontSize: 22 },
-    backText: { color: Colors.lightBlue, fontSize: 16 },
-    title: {
-        fontSize: 26,
-        fontWeight: '500',
-        color: Colors.textLight,
-        fontStyle: 'italic',
-        fontFamily: 'Georgia',
-        flex: 1,
-        textAlign: 'center',
-    },
-    bridge: { height: 8, backgroundColor: Colors.bridge },
-    tabRow: {
-        flexDirection: 'row',
-        backgroundColor: Colors.white,
-        borderBottomWidth: 0.5,
-        borderBottomColor: Colors.lightBlue,
-    },
-    tab: {
-        flex: 1,
-        paddingVertical: 14,
-        alignItems: 'center',
-    },
-    tabActive: {
-        borderBottomWidth: 3,
-        borderBottomColor: Colors.primary,
-    },
-    tabText: { fontSize: 16, color: '#aaa', fontWeight: '500' },
-    tabTextActive: { color: Colors.primary },
-    addRow: {
-        flexDirection: 'row',
-        padding: 12,
-        gap: 8,
-        backgroundColor: Colors.white,
-        borderBottomWidth: 0.5,
-        borderBottomColor: Colors.lightBlue,
-    },
-    input: {
-        flex: 1,
-        borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
-        borderRadius: 8,
-        padding: 10,
-        fontSize: 16,
-        color: Colors.text,
-        backgroundColor: Colors.background,
-    },
-    addBtn: {
-        backgroundColor: Colors.primary,
-        paddingHorizontal: 18,
-        borderRadius: 8,
-        justifyContent: 'center',
-    },
-    addBtnText: { color: Colors.white, fontWeight: '600', fontSize: 16 },
-    list: { flex: 1, padding: 12 },
-    emptyText: { textAlign: 'center', color: '#aaa', marginTop: 40, fontSize: 16 },
-    itemRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: Colors.white,
-        borderRadius: 10,
-        padding: 12,
-        marginBottom: 8,
-        borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
-        gap: 12,
-    },
-    statusBtn: {
-        backgroundColor: Colors.primary,
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 8,
-    },
-    swipeDelete: {
-        backgroundColor: '#e74c3c',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: 80,
-        borderRadius: 10,
-        marginBottom: 8,
-    },
-    swipeDeleteText: {
-        color: '#fff',
-        fontWeight: '600',
-        fontSize: 15,
-    },
-    statusStocked: { backgroundColor: Colors.bridge },
-    statusText: { color: Colors.white, fontWeight: '600', fontSize: 14 },
-    itemName: { flex: 1, fontSize: 18, color: Colors.text },
-    itemStocked: { color: '#aaa', textDecorationLine: 'line-through' },
-    itemSelected: {
-        backgroundColor: '#d6eef8',
-        borderColor: Colors.primary,
-        borderWidth: 1.5,
-    },
-    arrowOverlay: {
-        position: 'absolute',
-        right: 16,
-        bottom: 120,
-        backgroundColor: Colors.primary,
-        borderRadius: 12,
-        padding: 8,
-        gap: 8,
-        elevation: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-    },
-    arrowBtn: {
-        padding: 10,
-        alignItems: 'center',
-    },
-    arrowText: {
-        color: Colors.white,
-        fontSize: 22,
-        fontWeight: '600',
-    },
-    headerBtn: {
-        borderWidth: 1,
-        borderColor: Colors.white,
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 20,
-    },
-    headerBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
-});
+// makeStyles(theme) pattern from home.tsx (#45).
+const makeStyles = (t: Theme) =>
+    StyleSheet.create({
+        container: { flex: 1, backgroundColor: t.pageBackground },
+        header: {
+            backgroundColor: t.header,
+            paddingTop: 20,
+            paddingHorizontal: 20,
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        backBtn: { width: 70 },
+        settingsBtn: { width: 70, alignItems: 'flex-end' },
+        settingsBtnText: { fontSize: 22 },
+        backText: { color: t.cardBorder, fontSize: 16 },
+        title: {
+            fontSize: 26,
+            fontWeight: '500',
+            color: t.titleText,
+            fontStyle: 'italic',
+            fontFamily: 'Georgia',
+            flex: 1,
+            textAlign: 'center',
+        },
+        bridge: { height: 8, backgroundColor: t.bridge },
+        tabRow: {
+            flexDirection: 'row',
+            backgroundColor: t.card,
+            borderBottomWidth: 0.5,
+            borderBottomColor: t.cardBorder,
+        },
+        tab: {
+            flex: 1,
+            paddingVertical: 14,
+            alignItems: 'center',
+        },
+        tabActive: {
+            borderBottomWidth: 3,
+            borderBottomColor: t.buttonPrimary,
+        },
+        tabText: { fontSize: 16, color: t.mutedText, fontWeight: '500' },
+        tabTextActive: { color: t.cardTitle },
+        addRow: {
+            flexDirection: 'row',
+            padding: 12,
+            gap: 8,
+            backgroundColor: t.card,
+            borderBottomWidth: 0.5,
+            borderBottomColor: t.cardBorder,
+        },
+        input: {
+            flex: 1,
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+            borderRadius: 8,
+            padding: 10,
+            fontSize: 16,
+            color: t.bodyText,
+            backgroundColor: t.pageBackground,
+        },
+        addBtn: {
+            backgroundColor: t.buttonPrimary,
+            paddingHorizontal: 18,
+            borderRadius: 8,
+            justifyContent: 'center',
+        },
+        addBtnText: { color: t.buttonPrimaryText, fontWeight: '600', fontSize: 16 },
+        list: { flex: 1, padding: 12 },
+        emptyText: { textAlign: 'center', color: t.mutedText, marginTop: 40, fontSize: 16 },
+        itemRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: t.card,
+            borderRadius: 10,
+            padding: 12,
+            marginBottom: 8,
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+            gap: 12,
+        },
+        statusBtn: {
+            backgroundColor: t.buttonPrimary,
+            paddingVertical: 6,
+            paddingHorizontal: 12,
+            borderRadius: 8,
+            // Border matches the fill on "Need" (invisible) so the button
+            // doesn't change size when "Stocked" swaps in its outline.
+            borderWidth: 1,
+            borderColor: t.buttonPrimary,
+        },
+        swipeDelete: {
+            backgroundColor: t.buttonDelete,
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: 80,
+            borderRadius: 10,
+            marginBottom: 8,
+        },
+        swipeDeleteText: {
+            color: t.buttonDeleteText,
+            fontWeight: '600',
+            fontSize: 15,
+        },
+        statusStocked: {
+            backgroundColor: t.stockedButton,
+            borderColor: t.stockedButtonBorder,
+        },
+        statusText: { color: t.buttonPrimaryText, fontWeight: '600', fontSize: 14 },
+        statusTextStocked: { color: t.stockedButtonText },
+        itemName: { flex: 1, fontSize: 18, color: t.bodyText },
+        itemStocked: { color: t.mutedText, textDecorationLine: 'line-through' },
+        itemSelected: {
+            backgroundColor: t.rowSelected,
+            borderColor: t.rowSelectedBorder,
+            borderWidth: 1.5,
+        },
+        arrowOverlay: {
+            position: 'absolute',
+            right: 16,
+            bottom: 120,
+            backgroundColor: t.buttonPrimary,
+            borderRadius: 12,
+            padding: 8,
+            gap: 8,
+            elevation: 10,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.2,
+            shadowRadius: 4,
+        },
+        arrowBtn: {
+            padding: 10,
+            alignItems: 'center',
+        },
+        arrowText: {
+            color: t.buttonPrimaryText,
+            fontSize: 22,
+            fontWeight: '600',
+        },
+        headerBtn: {
+            borderWidth: 1,
+            borderColor: t.headerButton,
+            paddingVertical: 6,
+            paddingHorizontal: 12,
+            borderRadius: 20,
+        },
+        headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
+    });

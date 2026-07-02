@@ -15,7 +15,7 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../constants/Colors';
+import { Theme, useTheme } from '../constants/Themes';
 
 interface VaultItem {
     id: string;
@@ -38,6 +38,8 @@ const VAULT_CATEGORIES = [
 export default function VaultScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
+    const theme = useTheme();
+    const styles = makeStyles(theme);
     const [ready, setReady] = useState(false);
     const didCheck = useRef(false);
 
@@ -105,10 +107,17 @@ export default function VaultScreen() {
         setEditItem(null);
     };
 
+    // The alert wording matches the form: categories with preset chips ask for
+    // a TAP; "Other" (no chips) asks for typing. (Patrick, #47)
+    const missingInfoMessage = () =>
+        getCategoryData(selectedCategory || 'other')?.items.length
+            ? 'Tap a Label above, then enter a Value.'
+            : 'Enter a Label and a Value.';
+
     const addItem = () => {
         const label = selectedPreset === 'custom' ? customLabel.trim() : selectedPreset || newLabel.trim();
         if (!label || !newValue.trim()) {
-            Alert.alert('Missing Info', 'Please enter both a label and value.');
+            Alert.alert('Missing Info', missingInfoMessage());
             return;
         }
         const item: VaultItem = {
@@ -127,7 +136,7 @@ export default function VaultScreen() {
         if (!editItem) return;
         const label = selectedPreset === 'custom' ? customLabel.trim() : selectedPreset || newLabel.trim();
         if (!label || !newValue.trim()) {
-            Alert.alert('Missing Info', 'Please enter both a label and value.');
+            Alert.alert('Missing Info', missingInfoMessage());
             return;
         }
         const updated = items.map(i =>
@@ -172,11 +181,11 @@ export default function VaultScreen() {
         return VAULT_CATEGORIES.find(c => c.id === id);
     };
 
-    if (!ready) return <View style={{ flex: 1, backgroundColor: Colors.background }} />;
+    if (!ready) return <View style={{ flex: 1, backgroundColor: theme.pageBackground }} />;
 
     return (
         <GestureHandlerRootView style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: Colors.primary }} edges={['top']}>
+            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
                         <Text style={styles.headerBtnText}>← Home</Text>
@@ -290,18 +299,18 @@ export default function VaultScreen() {
                                             ))}
                                         </ScrollView>
                                         {selectedPreset === 'Custom' && (
-                                            <TextInput style={styles.input} value={customLabel} onChangeText={setCustomLabel} placeholder="Enter custom label..." />
+                                            <TextInput style={styles.input} value={customLabel} onChangeText={setCustomLabel} placeholder="Enter custom label..." placeholderTextColor={theme.mutedText} />
                                         )}
                                     </>
                                 ) : (
-                                    <TextInput style={styles.input} value={newLabel} onChangeText={setNewLabel} placeholder="Enter label..." autoFocus={true} />
+                                    <TextInput style={styles.input} value={newLabel} onChangeText={setNewLabel} placeholder="Enter label..." placeholderTextColor={theme.mutedText} autoFocus={true} />
                                 )}
 
                                 <Text style={styles.inputLabel}>Value</Text>
-                                <TextInput style={styles.input} value={newValue} onChangeText={setNewValue} placeholder="Enter value..." secureTextEntry={false} />
+                                <TextInput style={styles.input} value={newValue} onChangeText={setNewValue} placeholder="Enter value..." placeholderTextColor={theme.mutedText} secureTextEntry={false} />
 
                                 <Text style={styles.inputLabel}>Notes (optional)</Text>
-                                <TextInput style={styles.input} value={newNotes} onChangeText={setNewNotes} placeholder="e.g. where it's kept, expiry date..." multiline />
+                                <TextInput style={styles.input} value={newNotes} onChangeText={setNewNotes} placeholder="e.g. where it's kept, expiry date..." placeholderTextColor={theme.mutedText} multiline />
                             </ScrollView>
                         </View>
                     </View>
@@ -311,182 +320,199 @@ export default function VaultScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: Colors.background },
-    header: {
-        paddingTop: 20,
-        paddingHorizontal: 16,
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingBottom: 8,
-    },
-    backBtn: { width: 70 },
-    backText: { color: Colors.lightBlue, fontSize: 16 },
-    title: {
-        fontSize: 26,
-        fontWeight: '500',
-        color: Colors.textLight,
-        fontStyle: 'italic',
-        fontFamily: 'Georgia',
-        flex: 1,
-        textAlign: 'center',
-    },
-    settingsBtn: { width: 70, alignItems: 'flex-end' },
-    settingsBtnText: { fontSize: 22 },
-    bridge: { height: 8, backgroundColor: Colors.bridge },
-    scroll: { flex: 1, padding: 12 },
-    securityNote: {
-        fontSize: 13,
-        color: Colors.bridge,
-        textAlign: 'center',
-        marginBottom: 16,
-        fontStyle: 'italic',
-    },
-    categoryCard: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: Colors.white,
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 10,
-        borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
-    },
-    categoryIcon: { fontSize: 32, marginRight: 16 },
-    categoryInfo: { flex: 1 },
-    categoryName: { fontSize: 18, fontWeight: '600', color: Colors.primary },
-    categoryCount: { fontSize: 13, color: '#aaa', marginTop: 2 },
-    categoryArrow: { fontSize: 28, color: Colors.lightBlue },
-    backToList: { paddingVertical: 10, paddingHorizontal: 4, marginBottom: 4 },
-    backToListText: { color: Colors.primary, fontSize: 16, fontWeight: '500' },
-    emptyText: { textAlign: 'center', color: '#aaa', marginTop: 40, fontSize: 16 },
-    itemCard: {
-        backgroundColor: Colors.white,
-        borderRadius: 12,
-        padding: 14,
-        marginBottom: 10,
-        borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
-    },
-    itemHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 6,
-    },
-    itemLabel: { fontSize: 16, fontWeight: '600', color: Colors.primary, flex: 1 },
-    itemActions: { flexDirection: 'row', gap: 8 },
-    showBtn: {
-        backgroundColor: Colors.bridge,
-        paddingVertical: 4,
-        paddingHorizontal: 10,
-        borderRadius: 8,
-    },
-    showBtnText: { color: Colors.white, fontSize: 12, fontWeight: '600' },
-    editBtn: {
-        backgroundColor: Colors.background,
-        borderWidth: 0.5,
-        borderColor: Colors.primary,
-        paddingVertical: 4,
-        paddingHorizontal: 10,
-        borderRadius: 8,
-    },
-    editBtnText: { color: Colors.primary, fontSize: 12, fontWeight: '600' },
-    deleteBtn: {
-        paddingVertical: 4,
-        paddingHorizontal: 8,
-    },
-    deleteBtnText: { color: '#e74c3c', fontSize: 16, fontWeight: '600' },
-    itemValue: { fontSize: 15, color: Colors.text, marginBottom: 4 },
-    itemValueHidden: { fontSize: 15, color: '#aaa', letterSpacing: 2, marginBottom: 4 },
-    itemNotes: { fontSize: 12, color: '#aaa', fontStyle: 'italic' },
-    fab: {
-        position: 'absolute',
-        bottom: 20,
-        right: 16,
-        backgroundColor: Colors.primary,
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        borderRadius: 30,
-        elevation: 4,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-    },
-    fabText: { color: Colors.white, fontWeight: '600', fontSize: 16 },
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.4)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-    },
-    modalBox: {
-        backgroundColor: Colors.white,
-        borderRadius: 16,
-        padding: 20,
-        width: '100%',
-        maxHeight: '85%',
-    },
-    modalTitle: { fontSize: 20, fontWeight: '600', color: Colors.primary, marginBottom: 8 },
-    inputLabel: { fontSize: 14, color: '#666', marginBottom: 4, marginTop: 8 },
-    input: {
-        borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
-        borderRadius: 8,
-        padding: 10,
-        fontSize: 16,
-        backgroundColor: Colors.background,
-        color: Colors.text,
-        marginBottom: 4,
-    },
-    presetBtn: {
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 16,
-        borderWidth: 1,
-        borderColor: Colors.lightBlue,
-        marginRight: 8,
-        backgroundColor: Colors.white,
-    },
-    presetBtnActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
-    presetBtnText: { fontSize: 13, color: Colors.primary },
-    presetBtnTextActive: { color: Colors.white },
-    modalBtns: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-    cancelBtn: {
-        backgroundColor: '#ccc',
-        padding: 12,
-        borderRadius: 8,
-        flex: 1,
-        alignItems: 'center',
-        marginRight: 8,
-    },
-    cancelBtnText: { color: '#333', fontWeight: '600' },
-    confirmBtn: {
-        backgroundColor: Colors.primary,
-        padding: 12,
-        borderRadius: 8,
-        flex: 1,
-        alignItems: 'center',
-    },
-    confirmBtnText: { color: Colors.white, fontWeight: '600' },
-    swipeDelete: {
-        backgroundColor: '#e74c3c',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: 80,
-        borderRadius: 10,
-        marginBottom: 10,
-    },
-    swipeDeleteText: { color: '#fff', fontWeight: '600', fontSize: 15 },
-    
-    headerBtn: {
-        borderWidth: 1,
-        borderColor: Colors.white,
-        paddingVertical: 2,
-        paddingHorizontal: 12,
-        borderRadius: 20,
-},
-headerBtnText: { color: Colors.white, fontSize: 16, fontWeight: '600' },
-});
+// makeStyles(theme) pattern from home.tsx (#45).
+const makeStyles = (t: Theme) =>
+    StyleSheet.create({
+        container: { flex: 1, backgroundColor: t.pageBackground },
+        header: {
+            paddingTop: 20,
+            paddingHorizontal: 16,
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingBottom: 8,
+        },
+        backBtn: { width: 70 },
+        backText: { color: t.cardBorder, fontSize: 16 },
+        title: {
+            fontSize: 26,
+            fontWeight: '500',
+            color: t.titleText,
+            fontStyle: 'italic',
+            fontFamily: 'Georgia',
+            flex: 1,
+            textAlign: 'center',
+        },
+        settingsBtn: { width: 70, alignItems: 'flex-end' },
+        settingsBtnText: { fontSize: 22 },
+        bridge: { height: 8, backgroundColor: t.bridge },
+        scroll: { flex: 1, padding: 12 },
+        securityNote: {
+            fontSize: 13,
+            color: t.mutedText,
+            textAlign: 'center',
+            marginBottom: 16,
+            fontStyle: 'italic',
+        },
+        categoryCard: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: t.card,
+            borderRadius: 12,
+            padding: 16,
+            marginBottom: 10,
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+        },
+        categoryIcon: {
+            fontSize: 32,
+            marginRight: 16,
+            ...(t.iconShadow
+                ? {
+                      textShadowColor: 'rgba(0,0,0,0.5)',
+                      textShadowOffset: { width: 0, height: 1 },
+                      textShadowRadius: 3,
+                  }
+                : null),
+        },
+        categoryInfo: { flex: 1 },
+        categoryName: { fontSize: 18, fontWeight: '600', color: t.cardTitle },
+        categoryCount: { fontSize: 13, color: t.mutedText, marginTop: 2 },
+        categoryArrow: { fontSize: 28, color: t.mutedText },
+        backToList: { paddingVertical: 10, paddingHorizontal: 4, marginBottom: 4 },
+        backToListText: { color: t.cardTitle, fontSize: 16, fontWeight: '500' },
+        emptyText: { textAlign: 'center', color: t.mutedText, marginTop: 40, fontSize: 16 },
+        itemCard: {
+            backgroundColor: t.card,
+            borderRadius: 12,
+            padding: 14,
+            marginBottom: 10,
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+        },
+        itemHeader: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 6,
+        },
+        itemLabel: { fontSize: 16, fontWeight: '600', color: t.cardTitle, flex: 1 },
+        itemActions: { flexDirection: 'row', gap: 8 },
+        showBtn: {
+            backgroundColor: t.bridge,
+            paddingVertical: 4,
+            paddingHorizontal: 10,
+            borderRadius: 8,
+        },
+        showBtnText: { color: t.buttonPrimaryText, fontSize: 12, fontWeight: '600' },
+        editBtn: {
+            backgroundColor: t.pageBackground,
+            borderWidth: 0.5,
+            borderColor: t.cardTitle,
+            paddingVertical: 4,
+            paddingHorizontal: 10,
+            borderRadius: 8,
+        },
+        editBtnText: { color: t.cardTitle, fontSize: 12, fontWeight: '600' },
+        deleteBtn: {
+            paddingVertical: 4,
+            paddingHorizontal: 8,
+        },
+        deleteBtnText: { color: t.buttonDelete, fontSize: 16, fontWeight: '600' },
+        itemValue: { fontSize: 15, color: t.bodyText, marginBottom: 4 },
+        itemValueHidden: { fontSize: 15, color: t.mutedText, letterSpacing: 2, marginBottom: 4 },
+        itemNotes: { fontSize: 12, color: t.mutedText, fontStyle: 'italic' },
+        fab: {
+            position: 'absolute',
+            bottom: 20,
+            right: 16,
+            backgroundColor: t.buttonPrimary,
+            paddingVertical: 12,
+            paddingHorizontal: 20,
+            borderRadius: 30,
+            elevation: 4,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.2,
+            shadowRadius: 4,
+        },
+        fabText: { color: t.buttonPrimaryText, fontWeight: '600', fontSize: 16 },
+        modalOverlay: {
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.4)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 20,
+        },
+        modalBox: {
+            backgroundColor: t.card,
+            borderRadius: 16,
+            padding: 20,
+            width: '100%',
+            maxHeight: '85%',
+        },
+        modalTitle: { fontSize: 20, fontWeight: '600', color: t.cardTitle, marginBottom: 8 },
+        inputLabel: { fontSize: 14, color: t.mutedText, marginBottom: 4, marginTop: 8 },
+        input: {
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+            borderRadius: 8,
+            padding: 10,
+            fontSize: 16,
+            backgroundColor: t.pageBackground,
+            color: t.bodyText,
+            marginBottom: 4,
+        },
+        presetBtn: {
+            paddingVertical: 6,
+            paddingHorizontal: 12,
+            borderRadius: 16,
+            borderWidth: 1,
+            borderColor: t.cardBorder,
+            marginRight: 8,
+            backgroundColor: t.chip,
+        },
+        presetBtnActive: { backgroundColor: t.buttonPrimary, borderColor: t.buttonPrimary },
+        presetBtnText: { fontSize: 13, color: t.cardTitle },
+        presetBtnTextActive: { color: t.buttonPrimaryText },
+        modalBtns: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
+        cancelBtn: {
+            backgroundColor: t.buttonNeutral,
+            borderWidth: 1,
+            borderColor: t.buttonNeutralBorder,
+            padding: 12,
+            borderRadius: 8,
+            flex: 1,
+            alignItems: 'center',
+            marginRight: 8,
+        },
+        cancelBtnText: { color: t.buttonNeutralText, fontWeight: '600' },
+        confirmBtn: {
+            backgroundColor: t.buttonPrimary,
+            // Invisible border matching the fill so Cancel's outline doesn't
+            // make the two buttons different heights.
+            borderWidth: 1,
+            borderColor: t.buttonPrimary,
+            padding: 12,
+            borderRadius: 8,
+            flex: 1,
+            alignItems: 'center',
+        },
+        confirmBtnText: { color: t.buttonPrimaryText, fontWeight: '600' },
+        swipeDelete: {
+            backgroundColor: t.buttonDelete,
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: 80,
+            borderRadius: 10,
+            marginBottom: 10,
+        },
+        swipeDeleteText: { color: t.buttonDeleteText, fontWeight: '600', fontSize: 15 },
+        headerBtn: {
+            borderWidth: 1,
+            borderColor: t.headerButton,
+            paddingVertical: 2,
+            paddingHorizontal: 12,
+            borderRadius: 20,
+        },
+        headerBtnText: { color: t.headerButton, fontSize: 16, fontWeight: '600' },
+    });

@@ -34,6 +34,18 @@ export interface Theme {
     headerButton: string; // header pill button border + text
     buttonPrimary: string;     // solid action buttons + selected chip
     buttonPrimaryText: string; // text on those buttons
+    // list & form extras (added #47: shopping + vault conversion)
+    buttonNeutral: string;       // quiet button (Cancel) (light: solid grey; dark: outlined gold)
+    buttonNeutralBorder: string;
+    buttonNeutralText: string;
+    chip: string;                // unselected preset-chip background (Vault form)
+    buttonDelete: string;       // swipe-delete (red in BOTH themes — red means delete)
+    buttonDeleteText: string;
+    stockedButton: string;       // Shopping "Stocked" state (light: solid bridge teal; dark: outlined gold)
+    stockedButtonBorder: string;
+    stockedButtonText: string;
+    rowSelected: string;        // selected list-row background (Shopping move-arrows)
+    rowSelectedBorder: string;  // selected list-row border
     // typography (the two themes deliberately differ — Patrick's call, #45)
     titleSize: number;
     titleWeight: '500' | '600';
@@ -67,6 +79,17 @@ export const Themes: Record<ThemeName, Theme> = {
         headerButton: '#ffffff',
         buttonPrimary: '#1a6e8a',
         buttonPrimaryText: '#ffffff',
+        buttonNeutral: '#cccccc',
+        buttonNeutralBorder: '#cccccc',
+        buttonNeutralText: '#333333',
+        chip: '#ffffff',
+        buttonDelete: '#e74c3c',
+        buttonDeleteText: '#ffffff',
+        stockedButton: '#2d9e8f',
+        stockedButtonBorder: '#2d9e8f',
+        stockedButtonText: '#ffffff',
+        rowSelected: '#d6eef8',
+        rowSelectedBorder: '#1a6e8a',
         titleSize: 28,
         titleWeight: '500',
         subtitleSize: 22,
@@ -90,11 +113,22 @@ export const Themes: Record<ThemeName, Theme> = {
         card: '#4a3e30',
         cardBorder: '#a3481f',
         cardTitle: '#f0a83a',
-        bodyText: '#f0d9a8',
-        mutedText: '#c9b896',
+        bodyText: '#fff6de',
+        mutedText: '#e9dcba',
         headerButton: '#4a1f0c',
         buttonPrimary: '#c9622e',
-        buttonPrimaryText: '#f0d9a8',
+        buttonPrimaryText: '#fff6de',
+        buttonNeutral: '#4a3e30',
+        buttonNeutralBorder: '#f0a83a',
+        buttonNeutralText: '#f0a83a',
+        chip: '#3a3024',
+        buttonDelete: '#e74c3c',
+        buttonDeleteText: '#ffffff',
+        stockedButton: '#3a3024',
+        stockedButtonBorder: '#f0a83a',
+        stockedButtonText: '#f0a83a',
+        rowSelected: '#5c5044',
+        rowSelectedBorder: '#f0a83a',
         titleSize: 28,
         titleWeight: '600',
         subtitleSize: 22,
@@ -106,7 +140,7 @@ export const Themes: Record<ThemeName, Theme> = {
 };
 
 // Flip this one word to switch themes until the Settings toggle exists.
-export const DEFAULT_THEME: ThemeName = 'dark';
+export const DEFAULT_THEME: ThemeName = 'light';
 
 // Pages call this to get the active theme. For now it just returns the
 // default; the future Settings toggle upgrades this function's insides
