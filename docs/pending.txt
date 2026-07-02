@@ -1,8 +1,9 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-01 (session #39 — Step 4 (routine half): My Day, My Week and
-Pets now share ONE pop-up — OK / Skip / Delay 15/30/60 / Done. Snoozed reminders got
-their sound back; an old pop-up from a past day no longer checks off today's item.
-Next session: build a structured test plan for ALL the reminders.)
+Last updated: 2026-07-01 (session #40 — reviewed every page's reminder machinery
+page by page. Your calls: To-Do banners now have NO buttons at all — every set
+reminder fires, and "Done" happens inside the app after the appointment. My Day,
+My Week and Pets stay exactly as they are. Next session: Step 5 — fold in the
+Watch List app.)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -14,30 +15,30 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- This session (#39) finished Step 4: the routine half. My Day, My Week and
-  Pets now all show the SAME pop-up when a reminder fires, with six buttons:
-    * OK — dismiss just this pop-up, nothing else changes.
-    * Skip — skip this one occurrence: it stops nagging today, nothing is
-      marked done or logged, and it comes back on its normal schedule.
-    * Delay 15 / 30 / 60 min — snooze just this one reminder.
-    * Done — check off and log. NEW GUARD: if the pop-up is left over from a
-      past day, it logs that old completion but no longer checks off today's.
-  Also fixed: snoozed reminders from the banner were re-firing silently — they
-  have their sound back. My Week's pop-up lost its "+1 Day" button (your call);
-  postponing still works from the page itself.
-  All three pages checked in the Simulator (screenshots). What the Simulator
-  can't prove — sound, the past-day guard, real lock-screen behavior — waits
-  for the phone.
-- All of session #39 (code + these docs) is ready for you to commit.
+- This session (#40) was a design review: we went page by page through how
+  each page's reminders actually work, and you decided per page whether to
+  keep or reshape. The outcomes:
+    * To-Do — RESHAPED: banners now have NO buttons at all. Your reasoning: a
+      To-Do is a one-time appointment; you want every reminder you set to
+      fire, the banner's only job is reminding, and you mark it Done inside
+      the app after the appointment. (The old banner "Done" was actually
+      risky — tapping it on an early reminder cancelled the later ones.)
+      Swipe dismisses a banner; tapping it opens the app. Banners set BEFORE
+      this change may still show the old buttons until they've cycled out.
+    * My Week — stays as-is (we clarified: OK and Skip act the same unless a
+      snooze/postpone is pending — Skip also wipes those).
+    * My Day and Pets — stay as-is.
+    * Look Ahead, Timer, Project Planner — not reviewed this session.
+- All of session #40 (code + these docs) is ready for you to commit.
 - The plan, in a nutshell: (1) ✅ DONE — repeating options out of To-Do; (2) ✅
   DONE — build "Look Ahead"; (3) ✅ DONE — Look Ahead reminders + Delay; (4) ✅
-  DONE — same pop-up everywhere (To-Do its own way in #38, the three routine
-  pages sharing one in #39); (5) fold in your "Watch List" app as another page.
-- What's next — YOUR DECLARED PICK: a session devoted to STRUCTURED REMINDER
-  TESTS. There are too many reminder kinds to keep track of by memory, so
-  we'll build one organized checklist (every page, every button, every rule)
-  and work through it — Simulator first, with the phone-only parts batched
-  into the cloud-build checkpoints. Nothing here is urgent.
+  DONE — pop-ups settled everywhere (To-Do buttonless per #40; the three
+  routine pages share one pop-up per #39); (5) fold in your "Watch List" app
+  as another page.
+- What's next — YOUR DECLARED PICK: STEP 5, integrating the Watch List
+  movie/TV app as another home-screen page. The structured reminder tests and
+  the phone checkpoints are still owed and stay queued behind it. Nothing
+  here is urgent.
 
 
 BIG PLANNED WORK (the #34 plan — ONE effort, pages first, Simulator-first)
@@ -57,17 +58,19 @@ ordered build checklist live in docs/reminder-audit.md. The four pieces:
   Month (on the pop-up and as an on-tile button), with a "▶ Delayed …" line.
   Done, Simulator-checked. The real-phone test for this is Checkpoint A (below),
   still owed.
-- [DONE #38 + #39] Make the reminder popups behave consistently. To-Do stands on
-  its own with a simple OK + Done popup (#38) — a To-Do is a fixed one-time
-  appointment, not a repeating routine. My Day, My Week and Pets share one popup
-  with OK / Skip / Delay 15/30/60 / Done (#39), with the past-day guard so an old
-  popup can't check off today's item. Timer left out on purpose. Done,
-  Simulator-checked; the real-phone confirmation is batched into the checkpoints.
-- NEXT (your pick, #39): STRUCTURED REMINDER TESTS. One organized checklist
+- [DONE #38 + #39 + #40] Make the reminder popups behave consistently. To-Do
+  stands alone — a fixed one-time appointment, not a repeating routine — and
+  after the #40 review its banners carry NO buttons at all (every set reminder
+  fires; Done happens in-app afterward). My Day, My Week and Pets share one
+  popup with OK / Skip / Delay 15/30/60 / Done (#39), with the past-day guard
+  so an old popup can't check off today's item. Timer left out on purpose.
+  Real-phone confirmation is batched into the checkpoints.
+- NEXT (your pick, #40): STEP 5 — fold your "Watch List" movie/TV app in as
+  another home-screen page (it's built already, in its own folder). Separate
+  from the reminder work.
+- Still owed after that: STRUCTURED REMINDER TESTS — one organized checklist
   covering every reminder kind and button, worked through methodically —
   Simulator first, phone-only parts batched into the cloud-build checkpoints.
-- Fold your "Watch List" movie/TV app in as another home-screen page (it's
-  built already, in its own folder). Separate from the reminder work.
 
 
 NEEDS A PHONE TEST (built, just not confirmed on the phone yet)

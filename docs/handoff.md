@@ -1,6 +1,31 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #39 (2026-07-01) "Rebuild Step 4 (routine half)": ONE SHARED POPUP for My Day / My Week / Pets — new `routineactions` category (OK / Skip / Delay 15·30·60 / Done) wired in `_layout.tsx` and adopted by all three pages. Silent-snooze fixed; past-day Done guard added; My Week's banner "+1 Day" dropped (Patrick's call). `tsc` clean; all three popups Simulator-checked (screenshots). **All #39 code + docs UNCOMMITTED → Patrick commits.**
+## THIS SESSION — #40 (2026-07-01) "Reminder organization & Test": DESIGN REVIEW of each page's reminder machinery (goal corrected at session start — NOT the test-checklist build the #39 notes predicted). Result: **To-Do banners now carry NO buttons**; My Day / My Week / Pets reviewed and kept as-is (Patrick's calls). `tsc` clean. **All #40 code + docs UNCOMMITTED → Patrick commits.**
+
+**Start-of-session fact:** working tree clean — all of #39 committed, code + docs (`5b22b7d Rebuld Step 4 Real Complete`). Confirmed at session start.
+
+**KEY DECISIONS (Patrick, #40):**
+- **To-Do banner = no popup, no buttons at all.** Patrick's reasoning: a To-Do is a one-time appointment — he wants EVERY set reminder to fire, the banner's only job is to remind, and nothing changes until after he attends anyway; Done happens in-app afterward. Code review backed it: banner-Done was redundant (in-app `completeTask` does the same: log + remove + cancel remaining alerts) and counterproductive (Done on an early preset, e.g. Day Before, would cancel the later reminders he set). Swipe dismisses; tapping the banner body still opens the app to To-Do.
+- **My Week stays as-is** — after reviewing all four parts (weekly base, six-button popup, on-page Postpone, on-page Log). Clarified in review: Postpone and Delay are the same one-off mechanism at different scales (days vs minutes); OK and Skip are identical UNLESS a snooze/postpone is pending — Skip also wipes those pending one-offs.
+- **My Day and Pets stay as-is** (reviewed My Day's machinery; Pets is its twin).
+- **Look Ahead, Timer, Project Planner: not reviewed** — Patrick ended the session before those.
+- **NEXT SESSION = STEP 5: Integrate Watch List** (Patrick's declared pick). The structured reminder tests + phone checkpoints remain owed, queued behind it.
+
+**What was done (one change, discussed first):**
+1. `app/todo.tsx` — removed `categoryIdentifier: 'todosnooze'` from reminder scheduling; comment records the reasoning. New To-Do banners carry no button set.
+2. `app/_layout.tsx` — removed the `todosnooze` category registration (OK + Done); the old banner Done handler code left in place harmlessly for banners scheduled before the change.
+
+**Verification:** `tsc --noEmit` clean. Not practically Simulator-testable (soonest To-Do preset is "1 hour before") — confirming the buttonless banner on a real phone is batched into the phone checkpoints. Note: banners scheduled BEFORE this change may still show OK/Done until they cycle out.
+
+**Also this session (docs):** dropped the "rename the `todosnooze` category (cosmetic)" nice-to-have from parked-items.md — obsolete, the category is deleted entirely.
+
+**➤ NEXT SESSION — Patrick's declared pick: STEP 5 — Integrate Watch List** as a home page (no notifications; port from `Projects/WatchList`). Still queued behind it:
+- **STRUCTURED REMINDER TESTS** (was #39's pick; #40 became a design review instead — still open).
+- **PHONE CHECKPOINTS A + B** (cloud build) — now ALSO covering the buttonless To-Do banner (#40).
+
+---
+
+## SESSION — #39 (2026-07-01) "Rebuild Step 4 (routine half)": ONE SHARED POPUP for My Day / My Week / Pets — new `routineactions` category (OK / Skip / Delay 15·30·60 / Done) wired in `_layout.tsx` and adopted by all three pages. Silent-snooze fixed; past-day Done guard added; My Week's banner "+1 Day" dropped (Patrick's call). `tsc` clean; all three popups Simulator-checked (screenshots). **All #39 code + docs UNCOMMITTED → Patrick commits.**
 
 **Start-of-session fact:** working tree clean — all of #38 committed including docs (`4a431a8 Rebuild Step 4.4 #38 All of TO-DO`). Confirmed at session start. (Session is named "Rebuild Step 5" in the panel, but the actual goal became finishing Step 4 — the name is a misnomer.)
 
@@ -28,16 +53,6 @@
 **➤ NEXT SESSION — Patrick's declared pick: STRUCTURED REMINDER TESTS.** Build one organized test checklist covering every reminder kind, then work through it (Simulator where possible; batch the rest into the phone checkpoints). Still queued behind it:
 - **PHONE CHECKPOINTS A + B** (cloud build) — likely folded INTO the structured test plan.
 - **STEP 5 — Integrate Watch List** as a home page (no notifications).
-
----
-
-## SESSION — #38 (2026-06-30) "Rebuild Step 4 (To-Do half)": To-Do given its OWN self-contained reminder structure — not folded into the unified popup. New settable **Midday** time; rebuilt To-Do reminder presets; To-Do now sets up its own permission + handler; To-Do popup trimmed to **OK + Done**. `tsc` clean; Simulator-checked. Committed (`4a431a8` + 3 prior).
-
-**KEY DECISION (Patrick, #38) — To-Do is NOT unified with the others.** A To-Do is a fixed one-time appointment: it can't be "done late," and it can't be delayed — if the time changes you delete it and make a new one. To-Do got its **own** complete reminder structure (own permission + handler, **no Delay/Snooze**, just **OK + Done**). The unified-popup consolidation was narrowed to the three repeating pages — completed in #39 above.
-
-**What was done:** (1) Settings + backup: third settable time **"Midday"** (`reminder_midday_time`, default 12:00). (2) To-Do presets rebuilt: removed "At time"; new list = 1 hour · 2 hours · Morning of · Day Before (midday) · Night Before (evening) · 2 Days Before (midday) · Week · Month; Day Before / Night Before toggle independently. (3) To-Do now requests its own permission + sets its own handler on load. (4) `todosnooze` category trimmed to OK + Done (id kept — now a misnomer, cosmetic).
-
-**Verification:** `tsc` clean; Simulator-checked presets. **NOT device-tested:** notification firing, OK/Done on a real lock screen, sound, tap-routing (soonest preset is now "1 hour before," so quick-fire Simulator tests aren't easy).
 
 ---
 

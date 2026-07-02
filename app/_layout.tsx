@@ -101,15 +101,12 @@ export default function RootLayout() {
         { identifier: 'snooze30', buttonTitle: 'Snooze 30 min' },
         { identifier: 'snooze60', buttonTitle: 'Snooze 60 min' },
       ]);
-      // To-Do is one-time appointments only — no Snooze/Delay (Patrick, #38). A
-      // To-Do popup offers just OK and Done. (Category id kept as 'todosnooze' so
-      // todo.tsx's scheduling doesn't need to change; the name is now a misnomer.)
-      await Notifications.setNotificationCategoryAsync('todosnooze', [
-        // OK = acknowledge & dismiss just this alert. Doesn't open the app, mark
-        // the task done, or touch the task's other scheduled reminders.
-        { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
-        { identifier: 'done', buttonTitle: 'Done' },
-      ]);
+      // To-Do banners carry NO buttons (Patrick, #40). A To-Do is a one-time
+      // appointment: every set reminder should fire in turn; swipe dismisses,
+      // tap opens the app, and Done happens in-app after the appointment.
+      // The old 'todosnooze' category (OK + Done) is deliberately no longer
+      // registered; the banner Done handler code below stays in place
+      // harmlessly for any banners scheduled before this change.
       // My Week reminders: mark Done, or push the reminder one day forward.
       await Notifications.setNotificationCategoryAsync('myweekactions', [
         { identifier: 'done', buttonTitle: 'Done' },

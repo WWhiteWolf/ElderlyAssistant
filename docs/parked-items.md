@@ -7,11 +7,11 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-01 (session #39 — Step 4 routine half done: My Day / My Week /
-Pets now share ONE popup (OK / Skip / Delay 15·30·60 / Done); silent-snooze fixed;
-past-day Done guard added; My Week's banner "+1 Day" dropped. Simulator-checked.
-Next session (Patrick's pick): STRUCTURED REMINDER TESTS — one organized checklist
-for every reminder kind, folding in Phone Checkpoints A+B).
+Last updated: 2026-07-01 (session #40 — design review of every page's reminder
+machinery: To-Do banners now carry NO buttons (Patrick: every set reminder should
+fire; Done happens in-app after the appointment); My Day / My Week / Pets reviewed
+and kept as-is. Look Ahead / Timer / Planner not reviewed. Next session (Patrick's
+pick): STEP 5 — integrate Watch List.)
 
 ---
 
@@ -55,17 +55,27 @@ pages. Take ONE piece per session. **Order: pages first, then the popup consolid
   the past-day guard (logs a past completion, doesn't check off today's / this cycle's).
   Silent-snooze fixed (banner snoozes now carry sound). My Week's banner "+1 Day"
   dropped (Patrick's call — postpone stays on the page). Real-device check owed below.
-- **STRUCTURED REMINDER TESTS — ← NEXT (Patrick's pick, #39).** One organized test
-  checklist covering every reminder kind: To-Do one-shots (own OK+Done popup), My Day /
-  Pets daily, My Week weekly + postpone, Look Ahead long-lead + Delay, the shared
-  routine popup's six buttons, past-day/past-cycle guards, sound, tap-routing. Work
-  through it Simulator-first; batch the device-only parts into the checkpoints below.
+- **✅ DONE (#40) — Design review of each page's reminder machinery.** Patrick's
+  per-page calls: **To-Do banners now carry NO buttons** (`app/todo.tsx` dropped the
+  `categoryIdentifier`; `app/_layout.tsx` dropped the `todosnooze` registration, old
+  handler left harmlessly) — a To-Do is a one-time appointment, every set reminder
+  should fire, Done happens in-app afterward. My Day / My Week / Pets reviewed and
+  kept as-is. Look Ahead / Timer / Planner not reviewed. `tsc` clean; phone check of
+  the buttonless banner batched into the checkpoints below.
+- **STRUCTURED REMINDER TESTS — still owed** (was #39's pick; #40 became the design
+  review instead). One organized test checklist covering every reminder kind: To-Do
+  one-shots (now buttonless banners), My Day / Pets daily, My Week weekly + postpone,
+  Look Ahead long-lead + Delay, the shared routine popup's six buttons,
+  past-day/past-cycle guards, sound, tap-routing. Work through it Simulator-first;
+  batch the device-only parts into the checkpoints below.
 - **PHONE CHECKPOINTS A + B (cloud build) — owed; likely folded into the structured
   test session.** On the real phone confirm: To-Do one-shots + Look Ahead reminders
-  fire, route on tap, the Look Ahead Done/Delay buttons behave, the To-Do popup's
-  OK/Done behave on a real lock screen (sound, past-day rule), AND the new shared
-  routine popup (#39): six buttons, Skip, past-day guard, snooze sound.
-- **Integrate the "Watch List" page** (independent of reminders). Already built as a
+  fire, route on tap, the Look Ahead Done/Delay buttons behave, **the To-Do banner is
+  buttonless (#40)** — swipe dismisses, tap opens the app, no OK/Done (banners
+  scheduled before #40 may still show the old buttons until they cycle out) — AND the
+  shared routine popup (#39): six buttons, Skip, past-day guard, snooze sound.
+- **Integrate the "Watch List" page — ← NEXT (Patrick's pick, #40)** (independent of
+  reminders). Already built as a
   standalone Expo app in `Projects/WatchList` (movie/TV tracker, no notifications). Fold
   in as a new home-screen page: `app/watchlist.tsx` + home tile + route; port `App.js` /
   `useWatchListState.js` / `types.js` into this app's TS/expo-router structure.
@@ -146,16 +156,14 @@ the louder timer alarm). (The old 3/6-month + Monthly/Yearly To-Do repeat items 
   tagline still needs a home (an in-app subtitle and/or the App Store subtitle field — it
   can't go in the app name).
 - **Match the button labels.** To-Do's header says "New Task" while Vault's says "+ Add."
-- **Rename the `todosnooze` notification category (cosmetic).** After #38 it holds only
-  OK + Done — no snooze — so the id is a misnomer. Renaming touches `_layout.tsx` (the
-  category registration) and `app/todo.tsx` (`categoryIdentifier: 'todosnooze'` in
-  `scheduleReminders`). Purely internal; no behavior change.
-- **Retire the leftover pre-#39 popup plumbing (cosmetic, after device validation).**
+- **Retire the leftover pre-#39/#40 popup plumbing (cosmetic, after device validation).**
   `_layout.tsx` still registers the now-unused `mydaysnooze` / `petssnooze` /
-  `myweekactions` categories and keeps the old `postpone1` (+1 Day) handler — left in
-  place on purpose so banners scheduled before the #39 switch still work. Once the
-  shared popup is device-validated and old banners have cycled out, both can be
-  removed. Purely internal; no behavior change.
+  `myweekactions` categories and keeps the old `postpone1` (+1 Day) handler and the
+  To-Do banner OK/Done handler (#40 made To-Do banners buttonless) — all left in
+  place on purpose so banners scheduled before the switches still work. Once the
+  changes are device-validated and old banners have cycled out, they can be
+  removed. Purely internal; no behavior change. (The old "rename `todosnooze`"
+  item is gone — #40 deleted that category entirely.)
 - **"At time" reminder option, possibly revisit.** Removed from To-Do in #38 (Patrick's
   call — soonest preset is now "1 hour" before). If after phone testing Patrick misses an
   exact-time alert, it can be added back as a preset.
