@@ -84,6 +84,12 @@ export interface Theme {
     // (bright fill = dark text, same rule as the gold buttons).
     delay: string;                // Delay buttons + "▶ Delayed …" tile line
     delayText: string;            // text on a solid delay button
+    // my-day counters & time stepper (added #52: myday conversion).
+    counterMinus: string;         // Coffee/Water "−" circle: #ffcc00 in BOTH themes (dark gets dark-brown text — bright fill rule)
+    counterMinusText: string;
+    timeStepper: string;          // New/Edit Entry time-spinner ▲▼ circles (light: solid blue; dark: outlined gold —
+    timeStepperBorder: string;    // a quiet adjust control, so Save stays the only solid-orange action in that popup)
+    timeStepperText: string;
     // typography (the two themes deliberately differ — Patrick's call, #45)
     titleSize: number;
     titleWeight: '500' | '600';
@@ -151,6 +157,11 @@ export const Themes: Record<ThemeName, Theme> = {
         progressTrack: '#e0e0e0',
         delay: '#FF9500',
         delayText: '#ffffff',
+        counterMinus: '#ffcc00',
+        counterMinusText: '#ffffff',
+        timeStepper: '#1a6e8a',
+        timeStepperBorder: '#1a6e8a',
+        timeStepperText: '#ffffff',
         titleSize: 28,
         titleWeight: '500',
         subtitleSize: 22,
@@ -213,6 +224,11 @@ export const Themes: Record<ThemeName, Theme> = {
         progressTrack: '#5c5044',
         delay: '#FF9500',
         delayText: '#4a1f0c',
+        counterMinus: '#ffcc00',
+        counterMinusText: '#4a1f0c',
+        timeStepper: '#4a3e30',
+        timeStepperBorder: '#f0a83a',
+        timeStepperText: '#f0a83a',
         titleSize: 28,
         titleWeight: '600',
         subtitleSize: 22,

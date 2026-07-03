@@ -1,6 +1,6 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-02 (session #51 — Look Ahead now has both
-themes. Ten pages done, three to go: My Day, My Week, Pets. Full
+Last updated: 2026-07-02 (session #52 — My Day now has both
+themes. Eleven pages done, two to go: My Week, Pets. Full
 rollout order is in parked-items.md under "TWO-THEME ROLLOUT.")
 
 This is the "what's still left" list in everyday words. It's pulled from
@@ -13,36 +13,34 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- Session #51: Look Ahead now follows both themes. You checked it in
-  the Simulator — dark and light, the tiles, and all three popups —
-  and approved. The Delay buttons and the "▶ Delayed" line keep their
-  bright orange in BOTH themes so a delayed item always stands out;
-  in dark, Edit is outlined gold, Log is solid orange (your pick —
-  it's the mark-done button).
-- Your calls this session: ALL page titles should eventually be 24
-  (replaces the old "22–26 is fine" rule). Look Ahead is 24 now;
-  To-Do and the rest are parked on the list to do later. Also: the
-  Look Ahead telescope now sits under the title on purpose — it can't
-  jump up next to the words anymore.
-- Worth knowing: ten converted pages obey the theme choice; the three
-  unconverted ones (My Day, My Week, Pets) stay light until their
-  sessions come. The dark startup flash is still there. Build policy
-  unchanged: NO TestFlight builds until all pages are converted, then
-  ONE batched build — you handle the Expo billing side yourself.
+- Session #52: My Day now follows both themes — the biggest page (all
+  five popups included). You checked it in the Simulator, dark and
+  light, and approved both. Your pick: the done ✓ button is GREEN in
+  both themes ("green means done," same as the Timer). Snooze keeps
+  the bright delay orange everywhere; in dark, Log is solid orange
+  (the mark-done button), Edit is outlined gold, and the time spinner
+  in New Entry is outlined gold circles so Save stands out alone.
+- The title is size 24 now (the rule from #51). My Week and Pets get
+  theirs when their sessions come.
+- Worth knowing: eleven converted pages obey the theme choice; the two
+  unconverted ones (My Week, Pets) stay light until their sessions
+  come. The dark startup flash is still there. Build policy unchanged:
+  NO TestFlight builds until all pages are converted, then ONE batched
+  build — you handle the Expo billing side yourself.
 - Your phone's TestFlight build is from before #49, so it shows none
   of this yet — that's expected until the one batched build.
 - Not yet committed — you commit this session's code + docs when ready.
-- Next session (#52): My Day (the biggest page), then My Week + Pets
-  together (near-twins, fastest). Then the PRE-BUILD BATCH below, THEN
-  the one batched build and the phone checkpoints.
+- Next session (#53): My Week + Pets together (near-twins of My Day,
+  should go fastest). That finishes the rollout. Then the PRE-BUILD
+  BATCH below, THEN the one batched build and the phone checkpoints.
 
 
-BEFORE THE NEXT BUILD (your #51 call — do these once the last 3
+BEFORE THE NEXT BUILD (your #51 call — do these once the last 2
 pages are themed, so the one build picks everything up)
 ----------------------------------------------------------------------------
-- Bring every page title to size 24. Planner and Look Ahead are done;
-  To-Do is next; the rest get checked when this is picked up. Whether
-  Home (28) is included is your decision.
+- Bring every page title to size 24. Planner, Look Ahead, and My Day
+  are done; To-Do is next; the rest get checked when this is picked
+  up. Whether Home (28) is included is your decision.
 - Make the button labels match: To-Do says "New Task" while Vault says
   "+ Add."
 - Change the icon label under the phone icon from "Elyfont" back to

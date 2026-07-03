@@ -7,14 +7,15 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-02 (session #51 — lookahead.tsx converted to
-`Themes.ts` (two new keys: delay/delayText — the #FF9500 delay orange,
-identical in both themes). Patrick's calls: per-tile Log is SOLID
-orange in dark (the mark-done action), and a NEW title rule — ALL page
-titles eventually 24 (supersedes #50's "22–26 fine"); Look Ahead is 24
-now, the rest are parked below. Look Ahead's header is deliberately
-two lines now (title + telescope). Build policy unchanged: no
-TestFlight builds until the last three pages are converted.)
+Last updated: 2026-07-02 (session #52 — myday.tsx converted to
+`Themes.ts` (five new keys: counterMinus/counterMinusText — the
+#ffcc00 "−" circle, identical in both themes — and timeStepper/
+-Border/-Text — the time-spinner circles, solid blue light /
+outlined gold dark). Patrick's call: the done-state ✓ is GREEN in
+BOTH themes via Timer's buttonDone keys ("green means done" now
+covers My Day). Title to 24. Eleven pages converted, two to go:
+My Week + Pets (near-twins of My Day). Build policy unchanged: no
+TestFlight builds until the last two pages are converted.)
 
 ---
 
@@ -28,8 +29,8 @@ elements), wire it to `useTheme()` + the `makeStyles(theme)` pattern that
 `home.tsx` demonstrates, and add any new keys to BOTH palettes. One file
 (or small pair) per session, `tsc` clean + Simulator-checked in BOTH themes
 before moving on. **The Settings toggle EXISTS as of #48** (Appearance →
-App Colors, saved on the phone, switches converted pages live); the three
-unconverted pages (My Day, My Week, Pets) still read
+App Colors, saved on the phone, switches converted pages live); the two
+unconverted pages (My Week, Pets) still read
 `Colors.ts` and stay light whatever the toggle says. `DEFAULT_THEME` in `Themes.ts` is now just the first-launch
 fallback (committed as `'light'`).
 
@@ -79,8 +80,15 @@ fallback (committed as `'light'`).
    Patrick's call: per-tile Log is SOLID orange in dark (mark-done =
    action) — unlike Planner's outlined-gold Log. Title set to 24 with
    the telescope deliberately on its own line beneath it.
-8. **`myday.tsx`** — biggest file (5 modals, ~340 lines of styles); sets the
-   pattern for the routine-tracker trio.
+8. ✅ **DONE (#52) — `myday.tsx`.** Mockup-first, both themes
+   Simulator-approved (page, tiles, all five popups). Five new keys:
+   counterMinus/counterMinusText (#ffcc00 "−" circle, identical both
+   themes, dark-brown text in dark) + timeStepper/-Border/-Text (spinner
+   ▲▼ circles: solid blue light via the invisible-border trick, outlined
+   gold dark). Patrick's calls: done-state ✓ is GREEN both themes
+   (Timer's buttonDone — "green means done"); Log solid orange in dark
+   (mark-done action, #51 rule); Snooze rides the delay keys. Title 24.
+   This is the pattern for the routine-tracker trio.
 9. **`myweek.tsx` + `mollie.tsx`** — copy myday's pattern; near-duplicate
    files, should go fastest.
 
@@ -97,9 +105,9 @@ TestFlight build, so the build picks them all up in one go. Visual /
 wording only — no behavior logic. (Items moved here from Nice-to-have.)
 
 1. **Page titles to 24 app-wide (Patrick, #51 — supersedes #50's
-   "22–26 fine" rule).** Done so far: Planner (#50), Look Ahead (#51).
-   Explicitly on the list: To-Do (currently 26). Check the other
-   converted pages' title sizes when picked up; My Day / My Week /
+   "22–26 fine" rule).** Done so far: Planner (#50), Look Ahead (#51),
+   My Day (#52). Explicitly on the list: To-Do (currently 26). Check the
+   other converted pages' title sizes when picked up; My Week /
    Pets can get 24 during their theme sessions. Home is 28 by a
    deliberate #45 choice — whether "all" includes Home is Patrick's
    call.
