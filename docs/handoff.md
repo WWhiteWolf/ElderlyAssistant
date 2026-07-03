@@ -1,31 +1,27 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #50 (2026-07-02) "Theme planner.tsx #50": **planner.tsx on `Themes.ts` in both themes; `tsc` clean; Patrick Simulator-checked both themes (cards, popups, log) and approved ("It looks nice"). Mockup-first; page logic untouched (the unwired reminder fields stay parked). PLUS the Home dark-greeting wrap fix.**
+## THIS SESSION — #51 (2026-07-02) "Theme 'lookahead.tsx' — #51": **lookahead.tsx on `Themes.ts` in both themes; `tsc` clean; Patrick Simulator-checked both themes (page, tiles, all three popups, new header) and approved. Mockup-first; page logic untouched. PLUS the title-24 decision and the deliberate two-line header.**
 
-**Start-of-session facts:** #49's CODE was committed ("Theme todo.tsx #49 complete") but its DOCS commit never happened — docs still described #48. The #49 entry below is reconstructed from git, not session notes.
+**Two new theme keys, both palettes (light / dark):** `delay` `#FF9500` in BOTH themes (the "delay color" stays identical so a delayed item always jumps out) + `delayText` `#ffffff`/`#4a1f0c` (bright fill gets dark-brown text in dark — same rule as the gold buttons). Everything else rode existing keys: the Edit button and the Monthly/3/6/Yearly group headers use `pill` (teal in light / gold in dark — exactly the values needed, no new key); greys (`#666/#888/#999/#aaa/#eee`) unified onto `mutedText` / `progressTrack`; #47 invisible-border treatment on Cancel/Save; all 3 inputs got `mutedText` placeholders (#48 rule). Light is pixel-true apart from those standing conventions.
 
-**Four new theme keys, both palettes (light / dark):** `statusActive` `#2d9e8f`/`#5fc4b5` (dark gets a brighter teal — the light teal goes muddy on the dark card) + `statusActiveText` `#ffffff`/`#04342c`, `statusOnHoldText` white in BOTH, `progressTrack` `#e0e0e0`/`#5c5044`. Status map: Active = statusActive, On Hold = existing statusOnHold orange, Completed reuses prioritySomeday grey. Page follows todo.tsx's #49 shape exactly: `priorityColors(t)`/`statusColors(t)` + text-color maps for selected form buttons, `useTheme()` + `makeStyles(theme)`.
+**Patrick's Log call (#51):** the per-tile **Log button is SOLID `buttonPrimary`** ("version A", it's the mark-done action) — deliberately NOT Planner's outlined-gold Log. Delay button + the Delay popup's 1 Day/1 Week/1 Month buttons + the "▶ Delayed …" tile line all use the new `delay` keys.
 
-**Dark conventions applied:** "+ Task/+ Project" and "Edit Project" solid orange (action); "Log" and "Complete Project" outlined gold (quiet, #47 rule); Cancel/Save with the #47 border treatment; solid buttons carry invisible borders for size-match; all 10 inputs got `mutedText` placeholders (#48 rule); the greys (`#666/#999/#aaa`) unified onto `mutedText`; seven dead styles removed (`backBtn`, `backText`, `settingsBtnText`, `statusBadge`, `statusBadgeText`, `hintText`, `pressToEdit`). Reminder "Yes" selected uses statusActive (light identical to old bridge teal).
+**TITLE-SIZE RULE UPDATED (Patrick, #51 — supersedes #50's "22–26 all fine"):** Patrick now wants **ALL page titles eventually at 24**. Look Ahead is 24 as of this session. The rest are PARKED (his words: "Park it with the rest") — see the parked item. To-Do (currently 26) is explicitly on that list. Home is 28 by a deliberate #45 choice — whether "all" includes Home is Patrick's call when the parked item is picked up.
 
-**TITLE-SIZE RULE (Patrick, #50):** page titles do NOT need to be 26 — 22–26 is all acceptable, and fitting comfortably beats matching exactly. I raised Planner's 22 to 26 "for consistency"; the long name crowded the Home pill; reverted; Patrick then picked **24** — that's what's in the file. Don't "standardize" it upward again.
+**Header restructure that came with it:** "Look Ahead 🔭" was one Text — at 26 the emoji happened to wrap underneath (the look Patrick likes), at 24 it jumped up beside the words. Now it's deliberately two lines: a `titleWrap` column holding the title Text (24) and a telescope Text (24). Don't merge them back into one string.
 
-**Home greeting fix (same commit):** dark `subtitleWeight` `'500'` → `'400'` in `Themes.ts`, so "Good to see you, Patrick!" renders pixel-identical in both themes. On the phone it had wrapped to two left-aligned lines in dark (heavier weight = wider text than the fixed middle column allows). Patrick's rule: nothing in the header may move or change noticeably when switching themes.
-
-**BUILD POLICY (Patrick, #50):** EAS builds cost real money past the Starter plan's $45 credit — last period's 22 iOS builds ($2 each) used it exactly. Patrick's call: **no more TestFlight builds until the remaining pages are converted**, then ONE batched build picks everything up. He handles the Expo billing side himself. Don't suggest per-session builds.
-
-**Commit note:** NOT yet committed — `app/planner.tsx` + `constants/Themes.ts` (includes the greeting fix).
+**Commit note:** NOT yet committed — `app/lookahead.tsx` + `constants/Themes.ts` + these docs. Patrick commits.
 
 **➤ NEXT SESSION — pick up here:**
-1. **#51 — `lookahead.tsx`** (rollout item 7): grouped sections / swipe / modal pattern — a smaller preview of the myday/myweek/mollie trio.
-2. Then `myday.tsx` (biggest file, 5 modals), then `myweek.tsx` + `mollie.tsx` (near-duplicates, fastest). After all four: the ONE batched TestFlight build + phone checkpoints (fold in the #48 toggle test and the #49/#50 pages).
-3. Still open and untouched: backup-keys bug (six keys), app-name revert, backup folder naming, Vault import discussion, Vault "Custom" label bug (unverified), structured reminder tests, phone checkpoints A + B.
+1. **#52 — `myday.tsx`** (rollout item 8): biggest file (5 modals, ~340 lines of styles); sets the pattern for the routine-tracker trio.
+2. Then `myweek.tsx` + `mollie.tsx` (near-duplicates, fastest). After all three: the **PRE-BUILD BATCH** (Patrick, #51 — see parked-items: titles to 24, matching button labels, the icon-label rename), THEN the ONE batched TestFlight build + phone checkpoints (fold in the #48 toggle test and the #49–#51 pages). **BUILD POLICY stands (#50): no per-session builds** — EAS builds past the $45 credit cost real money; Patrick handles Expo billing.
+3. Still open and untouched: backup-keys bug (six keys), app-name revert, backup folder naming, Vault import discussion, Vault "Custom" label bug (unverified), structured reminder tests, phone checkpoints A + B, and the new page-titles-to-24 parked item.
 
 ---
 
-## SESSION — #49 (2026-07-02) "Theme todo.tsx" — **reconstructed from git; the session's docs commit was never made.**
+## SESSION — #50 (2026-07-02) "Theme planner.tsx #50": **planner.tsx on `Themes.ts` in both themes; `tsc` clean; Patrick Simulator-checked both themes (cards, popups, log) and approved ("It looks nice"). Mockup-first; page logic untouched (the unwired reminder fields stay parked). PLUS the Home dark-greeting wrap fix.**
 
-Code committed as "Theme todo.tsx #49 complete:" — `app/todo.tsx` (~180 lines changed) + `constants/Themes.ts` (+24 lines: the six priority keys `priorityUrgent/Normal/Someday` + `...Text` variants, plus `statusOnHold`, in BOTH palettes). todo.tsx converted to `useTheme()`/`makeStyles(theme)` with `priorityColors(t)`/`priorityTextColors(t)` maps feeding the side bar, priority word, Week Ahead dot, and selected Priority button. Patrick reported no problems with it in #50, and the pattern carried cleanly into planner.tsx. No further session notes survive.
+Four new theme keys, both palettes: `statusActive` `#2d9e8f`/`#5fc4b5` + `statusActiveText` `#ffffff`/`#04342c`, `statusOnHoldText` white in BOTH, `progressTrack` `#e0e0e0`/`#5c5044`. Status map: Active = statusActive, On Hold = statusOnHold orange, Completed reuses prioritySomeday grey. Page follows todo.tsx's #49 shape: `priorityColors(t)`/`statusColors(t)` + text-color maps, `useTheme()` + `makeStyles(theme)`. Dark conventions: "+ Task/Edit Project" solid orange (action); "Log"/"Complete Project" outlined gold (quiet, #47 rule); Cancel/Save with the #47 border treatment; all 10 inputs got `mutedText` placeholders; greys unified onto `mutedText`; seven dead styles removed. Planner's title set to **24** (Patrick's pick — 26 crowded the pill). Home greeting fix in the same commit: dark `subtitleWeight` `'500'` → `'400'` so the greeting renders pixel-identical in both themes. Committed as "Theme Planer #50 done."
 
 ---
 

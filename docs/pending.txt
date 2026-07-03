@@ -1,8 +1,7 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-02 (session #50 — Project Planner now has both
-themes; To-Do got them in #49. Nine pages done, four to go: Look Ahead,
-My Day, My Week, Pets. Full rollout order is in parked-items.md under
-"TWO-THEME ROLLOUT.")
+Last updated: 2026-07-02 (session #51 — Look Ahead now has both
+themes. Ten pages done, three to go: My Day, My Week, Pets. Full
+rollout order is in parked-items.md under "TWO-THEME ROLLOUT.")
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -14,29 +13,41 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- Sessions #49 + #50: To-Do and Project Planner both follow both themes
-  now. Planner's priority colors (red/gold bars) and status words
-  (Active teal, On Hold orange) come from the theme. You checked
-  Planner in the Simulator — both themes, popups too — and approved.
-- Also fixed in #50: the dark-theme Home greeting ("Good to see you,
-  Patrick!") wrapped to two crooked lines on your phone. Now it sits
-  identically in both themes — nothing moves when you switch.
-- Your calls this session: Planner's title is now 24 (26 crowded the
-  Home pill — and titles don't NEED to match at 26; fitting well
-  matters more). And the BIG one: NO more TestFlight builds until the
-  last four pages are converted, then ONE build picks everything up —
-  each build past your monthly $45 Expo credit costs real money
-  (last period's 22 builds used the credit exactly). You handle the
-  Expo billing side yourself.
-- Worth knowing: nine converted pages obey the theme choice; the four
-  unconverted ones (Look Ahead, My Day, My Week, Pets) stay light
-  until their sessions come. The dark startup flash is still there.
+- Session #51: Look Ahead now follows both themes. You checked it in
+  the Simulator — dark and light, the tiles, and all three popups —
+  and approved. The Delay buttons and the "▶ Delayed" line keep their
+  bright orange in BOTH themes so a delayed item always stands out;
+  in dark, Edit is outlined gold, Log is solid orange (your pick —
+  it's the mark-done button).
+- Your calls this session: ALL page titles should eventually be 24
+  (replaces the old "22–26 is fine" rule). Look Ahead is 24 now;
+  To-Do and the rest are parked on the list to do later. Also: the
+  Look Ahead telescope now sits under the title on purpose — it can't
+  jump up next to the words anymore.
+- Worth knowing: ten converted pages obey the theme choice; the three
+  unconverted ones (My Day, My Week, Pets) stay light until their
+  sessions come. The dark startup flash is still there. Build policy
+  unchanged: NO TestFlight builds until all pages are converted, then
+  ONE batched build — you handle the Expo billing side yourself.
 - Your phone's TestFlight build is from before #49, so it shows none
   of this yet — that's expected until the one batched build.
 - Not yet committed — you commit this session's code + docs when ready.
-- Next session (#51): lookahead.tsx. Then My Day (the biggest), then
-  My Week + Pets together (near-twins, fastest). Then the batched
-  build and the phone checkpoints.
+- Next session (#52): My Day (the biggest page), then My Week + Pets
+  together (near-twins, fastest). Then the PRE-BUILD BATCH below, THEN
+  the one batched build and the phone checkpoints.
+
+
+BEFORE THE NEXT BUILD (your #51 call — do these once the last 3
+pages are themed, so the one build picks everything up)
+----------------------------------------------------------------------------
+- Bring every page title to size 24. Planner and Look Ahead are done;
+  To-Do is next; the rest get checked when this is picked up. Whether
+  Home (28) is included is your decision.
+- Make the button labels match: To-Do says "New Task" while Vault says
+  "+ Add."
+- Change the icon label under the phone icon from "Elyfont" back to
+  "Remember When" (just the label — the backup FILE naming stays on
+  the someday list, because touching it involves the restore logic).
 
 
 YOUR #41 LIST — WHAT'S STILL OPEN (items 2, 5, 6, 7 done in #42)
@@ -94,15 +105,13 @@ DECISIONS TO MAKE WHEN YOU'RE READY
 
 NICE-TO-HAVE LATER (polish, low priority)
 -----------------------------------------
-- Rename the app back to "Remember When" (#48, yours). The icon label
-  and the backup file naming still say "Elyfont"; the home greeting and
-  App Store listing already say "Remember When." Needs a rebuild to show
-  on the phone; old backups must stay restorable. The "Memory Assist"
-  tagline still needs a home.
+- Rename the app back to "Remember When" — what's LEFT of it (#48,
+  yours). The icon-label part moved up to "BEFORE THE NEXT BUILD."
+  Still here: the backup file naming (Elyfont-Backup-...) and the
+  file's internal marker — old backups must stay restorable. The
+  "Memory Assist" tagline still needs a home.
 - Project Planner has reminder fields on screen, but they aren't
   connected to anything yet.
-- Make the button labels match: To-Do says "New Task" while Vault says
-  "+ Add."
 - Add a Snooze button on each To-Do item itself. My Day and Pets Day
   already have one on every tile; To-Do only has it on the banner.
 

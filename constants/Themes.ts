@@ -78,6 +78,12 @@ export interface Theme {
     statusActiveText: string;     // text on a selected Active button
     statusOnHoldText: string;     // text on the On Hold badge / selected button (white in BOTH)
     progressTrack: string;        // progress-bar track (the unfilled part)
+    // look-ahead delay (added #51: lookahead conversion). The bright iOS
+    // orange is the "delay color" and stays identical in BOTH themes so a
+    // delayed item always jumps out; dark gets dark-brown text on it
+    // (bright fill = dark text, same rule as the gold buttons).
+    delay: string;                // Delay buttons + "▶ Delayed …" tile line
+    delayText: string;            // text on a solid delay button
     // typography (the two themes deliberately differ — Patrick's call, #45)
     titleSize: number;
     titleWeight: '500' | '600';
@@ -143,6 +149,8 @@ export const Themes: Record<ThemeName, Theme> = {
         statusActiveText: '#ffffff',
         statusOnHoldText: '#ffffff',
         progressTrack: '#e0e0e0',
+        delay: '#FF9500',
+        delayText: '#ffffff',
         titleSize: 28,
         titleWeight: '500',
         subtitleSize: 22,
@@ -203,6 +211,8 @@ export const Themes: Record<ThemeName, Theme> = {
         statusActiveText: '#04342c',
         statusOnHoldText: '#ffffff',
         progressTrack: '#5c5044',
+        delay: '#FF9500',
+        delayText: '#4a1f0c',
         titleSize: 28,
         titleWeight: '600',
         subtitleSize: 22,

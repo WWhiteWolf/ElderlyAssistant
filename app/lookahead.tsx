@@ -18,7 +18,7 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../constants/Colors';
+import { Theme, useTheme } from '../constants/Themes';
 
 // Look Ahead — long-lead reminders grouped by repeat interval.
 // STEP 2 (#36): page + add/edit + subheadings + history ONLY.
@@ -85,6 +85,8 @@ const advanceItem = (item: LookAheadItem): LookAheadItem => {
 
 export default function LookAheadScreen() {
     const router = useRouter();
+    const theme = useTheme();
+    const styles = makeStyles(theme);
     const [items, setItems] = useState<LookAheadItem[]>([]);
     const [history, setHistory] = useState<HistoryEntry[]>([]);
 
@@ -448,12 +450,15 @@ export default function LookAheadScreen() {
 
     return (
         <GestureHandlerRootView style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: Colors.primary }} edges={['top']}>
+            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
                         <Text style={styles.headerBtnText}>← Home</Text>
                     </TouchableOpacity>
-                    <Text style={styles.title}>Look Ahead 🔭</Text>
+                    <View style={styles.titleWrap}>
+                        <Text style={styles.title}>Look Ahead</Text>
+                        <Text style={styles.titleIcon}>🔭</Text>
+                    </View>
                     <TouchableOpacity onPress={addEntry} style={styles.headerBtn}>
                         <Text style={styles.headerBtnText}>+ Add Entry</Text>
                     </TouchableOpacity>
@@ -544,7 +549,7 @@ export default function LookAheadScreen() {
                 <View style={styles.modal}>
                     <Text style={styles.modalTitle}>Log Entry</Text>
                     <Text style={styles.inputLabel}>Notes (optional)</Text>
-                    <TextInput style={styles.input} value={tempWhat} onChangeText={setTempWhat} placeholder="Add a note about this entry..." />
+                    <TextInput style={styles.input} value={tempWhat} onChangeText={setTempWhat} placeholder="Add a note about this entry..." placeholderTextColor={theme.mutedText} />
                     <View style={styles.modalBtns}>
                         <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowLogModal(false)}>
                             <Text style={styles.cancelBtnText}>Cancel</Text>
@@ -560,7 +565,7 @@ export default function LookAheadScreen() {
                 <View style={styles.modal}>
                     <Text style={styles.modalTitle}>Edit Log Entry</Text>
                     <Text style={styles.inputLabel}>Notes (optional)</Text>
-                    <TextInput style={styles.input} value={editWhat} onChangeText={setEditWhat} placeholder="Add a note about this entry..." />
+                    <TextInput style={styles.input} value={editWhat} onChangeText={setEditWhat} placeholder="Add a note about this entry..." placeholderTextColor={theme.mutedText} />
                     <View style={styles.modalBtns}>
                         <TouchableOpacity style={styles.cancelBtn} onPress={() => setEditEntry(null)}>
                             <Text style={styles.cancelBtnText}>Cancel</Text>
@@ -640,6 +645,7 @@ export default function LookAheadScreen() {
                                 value={tempName}
                                 onChangeText={setTempName}
                                 placeholder="e.g. Replace smoke alarm battery"
+                                placeholderTextColor={theme.mutedText}
                                 autoFocus={!activeId}
                             />
 
@@ -743,8 +749,10 @@ export default function LookAheadScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: Colors.background },
+// makeStyles(theme) pattern from home.tsx (#45).
+const makeStyles = (t: Theme) =>
+    StyleSheet.create({
+    container: { flex: 1, backgroundColor: t.pageBackground },
     header: {
         paddingTop: 20,
         paddingHorizontal: 16,
@@ -752,37 +760,38 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingBottom: 8,
     },
+    titleWrap: { flex: 1, alignItems: 'center' },
     title: {
-        fontSize: 26,
+        fontSize: 24,
         fontWeight: '500',
-        color: Colors.textLight,
+        color: t.titleText,
         fontStyle: 'italic',
         fontFamily: 'Georgia',
-        flex: 1,
         textAlign: 'center',
     },
-    bridge: { height: 8, backgroundColor: Colors.bridge },
+    titleIcon: { fontSize: 24 },
+    bridge: { height: 8, backgroundColor: t.bridge },
     scroll: { flex: 1 },
     section: {
-        backgroundColor: Colors.white,
+        backgroundColor: t.card,
         borderRadius: 12,
         padding: 15,
         margin: 12,
         borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
     },
-    sectionTitle: { fontSize: 18, fontWeight: '600', color: Colors.primary, marginBottom: 10 },
-    hintText: { fontSize: 11, color: '#aaa', marginTop: 2, marginBottom: 8 },
-    emptyText: { fontSize: 15, color: '#999', fontStyle: 'italic', paddingVertical: 12, textAlign: 'center' },
+    sectionTitle: { fontSize: 18, fontWeight: '600', color: t.cardTitle, marginBottom: 10 },
+    hintText: { fontSize: 11, color: t.mutedText, marginTop: 2, marginBottom: 8 },
+    emptyText: { fontSize: 15, color: t.mutedText, fontStyle: 'italic', paddingVertical: 12, textAlign: 'center' },
     group: { marginBottom: 6 },
     groupTitle: {
         fontSize: 16,
         fontWeight: '700',
-        color: Colors.bridge,
+        color: t.pill,
         marginTop: 8,
         marginBottom: 8,
         borderBottomWidth: 0.5,
-        borderBottomColor: Colors.lightBlue,
+        borderBottomColor: t.cardBorder,
         paddingBottom: 4,
     },
     row: {
@@ -792,27 +801,27 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
     labelArea: { flex: 1, marginRight: 10 },
-    itemLabel: { fontSize: 17, color: Colors.primary, fontWeight: '500' },
-    itemSub: { fontSize: 13, color: '#888', marginTop: 2 },
-    delayedLabel: { fontSize: 13, color: '#FF9500', fontWeight: '600', marginTop: 2 },
+    itemLabel: { fontSize: 17, color: t.bodyText, fontWeight: '500' },
+    itemSub: { fontSize: 13, color: t.mutedText, marginTop: 2 },
+    delayedLabel: { fontSize: 13, color: t.delay, fontWeight: '600', marginTop: 2 },
     editBtn: {
-        backgroundColor: Colors.background,
+        backgroundColor: t.pageBackground,
         borderWidth: 0.5,
-        borderColor: Colors.bridge,
+        borderColor: t.pill,
         paddingVertical: 5,
         paddingHorizontal: 10,
         borderRadius: 8,
         marginRight: 8,
     },
-    editBtnText: { color: Colors.bridge, fontSize: 13, fontWeight: '600' },
+    editBtnText: { color: t.pill, fontSize: 13, fontWeight: '600' },
     delayRowBtn: {
-        backgroundColor: '#FF9500',
+        backgroundColor: t.delay,
         paddingVertical: 5,
         paddingHorizontal: 10,
         borderRadius: 8,
         marginRight: 8,
     },
-    delayRowBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
+    delayRowBtnText: { color: t.delayText, fontSize: 13, fontWeight: '600' },
     delayOptionRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -820,20 +829,20 @@ const styles = StyleSheet.create({
     },
     delayOption: {
         flex: 1,
-        backgroundColor: '#FF9500',
+        backgroundColor: t.delay,
         paddingVertical: 14,
         borderRadius: 8,
         alignItems: 'center',
         marginHorizontal: 4,
     },
-    delayOptionText: { color: Colors.white, fontWeight: '600', fontSize: 16 },
+    delayOptionText: { color: t.delayText, fontWeight: '600', fontSize: 16 },
     logBtn: {
-        backgroundColor: Colors.primary,
+        backgroundColor: t.buttonPrimary,
         paddingVertical: 8,
         paddingHorizontal: 16,
         borderRadius: 8,
     },
-    logBtnText: { color: Colors.white, fontWeight: '600' },
+    logBtnText: { color: t.buttonPrimaryText, fontWeight: '600' },
     historySection: { marginHorizontal: 12, marginBottom: 12 },
     historyHeader: {
         flexDirection: 'row',
@@ -843,32 +852,32 @@ const styles = StyleSheet.create({
     },
     historyScroll: {
         height: 300,
-        backgroundColor: Colors.white,
+        backgroundColor: t.card,
         borderRadius: 8,
         padding: 8,
         borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
     },
-    historyItem: { borderBottomWidth: 0.5, borderBottomColor: '#eee', paddingVertical: 6 },
-    historyText: { fontSize: 13, color: Colors.text, lineHeight: 18 },
+    historyItem: { borderBottomWidth: 0.5, borderBottomColor: t.progressTrack, paddingVertical: 6 },
+    historyText: { fontSize: 13, color: t.bodyText, lineHeight: 18 },
     clearAllBtn: {
         paddingVertical: 4,
         paddingHorizontal: 10,
         borderRadius: 6,
         borderWidth: 0.5,
-        borderColor: '#999',
+        borderColor: t.mutedText,
     },
-    clearAllBtnText: { color: '#666', fontSize: 13, fontWeight: '600' },
+    clearAllBtnText: { color: t.mutedText, fontSize: 13, fontWeight: '600' },
     modal: {
         position: 'absolute',
         top: 100,
         left: 20,
         right: 20,
-        backgroundColor: Colors.white,
+        backgroundColor: t.card,
         borderRadius: 12,
         padding: 16,
         borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
         elevation: 10,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -883,18 +892,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 20,
     },
-    pickerModal: { backgroundColor: Colors.white, borderRadius: 12, padding: 16, width: '100%' },
-    modalTitle: { fontSize: 18, fontWeight: '600', color: Colors.primary, marginBottom: 10 },
-    inputLabel: { fontSize: 14, color: '#666', marginBottom: 4, marginTop: 6 },
+    pickerModal: { backgroundColor: t.card, borderRadius: 12, padding: 16, width: '100%' },
+    modalTitle: { fontSize: 18, fontWeight: '600', color: t.cardTitle, marginBottom: 10 },
+    inputLabel: { fontSize: 14, color: t.mutedText, marginBottom: 4, marginTop: 6 },
     input: {
         borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
         borderRadius: 8,
         padding: 10,
         fontSize: 16,
-        backgroundColor: Colors.background,
+        backgroundColor: t.pageBackground,
         marginBottom: 10,
-        color: Colors.text,
+        color: t.bodyText,
     },
     stepperRow: {
         flexDirection: 'row',
@@ -903,53 +912,55 @@ const styles = StyleSheet.create({
         gap: 16,
         marginVertical: 10,
     },
-    stepperCaption: { color: Colors.primary, fontSize: 13 },
+    stepperCaption: { color: t.bodyText, fontSize: 13 },
     modalBtns: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 },
     cancelBtn: {
-        backgroundColor: '#ccc',
+        backgroundColor: t.buttonNeutral,
+        borderWidth: 1.5,
+        borderColor: t.buttonNeutralBorder,
         padding: 10,
         borderRadius: 8,
         flex: 1,
         alignItems: 'center',
         marginRight: 8,
     },
-    cancelBtnText: { color: '#333', fontWeight: '600' },
-    confirmBtn: { backgroundColor: Colors.primary, padding: 10, borderRadius: 8, flex: 1, alignItems: 'center' },
-    confirmBtnText: { color: Colors.white, fontWeight: '600' },
+    cancelBtnText: { color: t.buttonNeutralText, fontWeight: '600' },
+    confirmBtn: { backgroundColor: t.buttonPrimary, borderWidth: 1.5, borderColor: t.buttonPrimary, padding: 10, borderRadius: 8, flex: 1, alignItems: 'center' },
+    confirmBtnText: { color: t.buttonPrimaryText, fontWeight: '600' },
     swipeDelete: {
-        backgroundColor: '#e74c3c',
+        backgroundColor: t.buttonDelete,
         justifyContent: 'center',
         alignItems: 'center',
         width: 80,
         borderRadius: 10,
         marginBottom: 12,
     },
-    swipeDeleteText: { color: '#fff', fontWeight: '600', fontSize: 15 },
+    swipeDeleteText: { color: t.buttonDeleteText, fontWeight: '600', fontSize: 15 },
     timeAdjBtn: {
-        backgroundColor: Colors.primary,
+        backgroundColor: t.buttonPrimary,
         width: 50, height: 50,
         borderRadius: 25,
         alignItems: 'center',
         justifyContent: 'center',
         marginVertical: 6,
     },
-    timeAdjText: { color: Colors.white, fontSize: 22, fontWeight: '600' },
-    timeDisplayText: { fontSize: 40, fontWeight: '600', color: Colors.primary, marginVertical: 4 },
-    dateDisplayText: { fontSize: 26, fontWeight: '600', color: Colors.primary, marginVertical: 4 },
+    timeAdjText: { color: t.buttonPrimaryText, fontSize: 22, fontWeight: '600' },
+    timeDisplayText: { fontSize: 40, fontWeight: '600', color: t.bodyText, marginVertical: 4 },
+    dateDisplayText: { fontSize: 26, fontWeight: '600', color: t.bodyText, marginVertical: 4 },
     headerBtn: {
         borderWidth: 1,
-        borderColor: Colors.white,
+        borderColor: t.headerButton,
         paddingVertical: 6,
         paddingHorizontal: 12,
         borderRadius: 20,
     },
-    headerBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
-    rowSelected: { backgroundColor: '#d6eef8', borderRadius: 8 },
+    headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
+    rowSelected: { backgroundColor: t.rowSelected, borderRadius: 8 },
     arrowOverlay: {
         position: 'absolute',
         right: 16,
         bottom: 140,
-        backgroundColor: Colors.primary,
+        backgroundColor: t.buttonPrimary,
         borderRadius: 12,
         padding: 8,
         gap: 8,
@@ -961,7 +972,7 @@ const styles = StyleSheet.create({
         zIndex: 1000,
     },
     arrowBtn: { padding: 10, alignItems: 'center' },
-    arrowText: { color: Colors.white, fontSize: 22, fontWeight: '600' },
+    arrowText: { color: t.buttonPrimaryText, fontSize: 22, fontWeight: '600' },
     intervalRow: {
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -972,14 +983,14 @@ const styles = StyleSheet.create({
     intervalOption: {
         flexGrow: 1,
         flexBasis: '47%',
-        backgroundColor: Colors.background,
+        backgroundColor: t.pageBackground,
         borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
         paddingVertical: 12,
         borderRadius: 8,
         alignItems: 'center',
     },
-    intervalOptionActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
-    intervalOptionText: { color: Colors.primary, fontWeight: '600', fontSize: 15 },
-    intervalOptionTextActive: { color: Colors.white },
+    intervalOptionActive: { backgroundColor: t.buttonPrimary, borderColor: t.buttonPrimary },
+    intervalOptionText: { color: t.bodyText, fontWeight: '600', fontSize: 15 },
+    intervalOptionTextActive: { color: t.buttonPrimaryText },
 });

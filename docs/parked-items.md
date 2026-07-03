@@ -7,14 +7,14 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-02 (session #50 — planner.tsx converted to
-`Themes.ts` (four new keys: statusActive/-Text, statusOnHoldText,
-progressTrack), following #49's todo.tsx pattern. Also the Home
-dark-greeting wrap fix, and two standing decisions recorded in
-handoff.md: page titles don't need to be 26 (22–26 fine, fit beats
-uniformity — Planner is 24), and NO TestFlight builds until the last
-four pages are converted, then ONE batched build — EAS builds past
-the $45 monthly credit cost real money.)
+Last updated: 2026-07-02 (session #51 — lookahead.tsx converted to
+`Themes.ts` (two new keys: delay/delayText — the #FF9500 delay orange,
+identical in both themes). Patrick's calls: per-tile Log is SOLID
+orange in dark (the mark-done action), and a NEW title rule — ALL page
+titles eventually 24 (supersedes #50's "22–26 fine"); Look Ahead is 24
+now, the rest are parked below. Look Ahead's header is deliberately
+two lines now (title + telescope). Build policy unchanged: no
+TestFlight builds until the last three pages are converted.)
 
 ---
 
@@ -28,8 +28,8 @@ elements), wire it to `useTheme()` + the `makeStyles(theme)` pattern that
 `home.tsx` demonstrates, and add any new keys to BOTH palettes. One file
 (or small pair) per session, `tsc` clean + Simulator-checked in BOTH themes
 before moving on. **The Settings toggle EXISTS as of #48** (Appearance →
-App Colors, saved on the phone, switches converted pages live); the four
-unconverted pages (Look Ahead, My Day, My Week, Pets) still read
+App Colors, saved on the phone, switches converted pages live); the three
+unconverted pages (My Day, My Week, Pets) still read
 `Colors.ts` and stay light whatever the toggle says. `DEFAULT_THEME` in `Themes.ts` is now just the first-launch
 fallback (committed as `'light'`).
 
@@ -71,8 +71,14 @@ fallback (committed as `'light'`).
    solid orange, Log/Complete Project outlined gold. Title set to 24
    (Patrick's pick — the long name crowds the pill at 26). Reminder
    fields still unwired (see Nice-to-have below).
-7. **`lookahead.tsx`** — grouped sections/swipe/modal pattern, a smaller
-   preview of the myday/myweek/mollie trio below.
+7. ✅ **DONE (#51) — `lookahead.tsx`.** Mockup-first, both themes
+   Simulator-approved (page, tiles, all three popups). Two new keys:
+   `delay`/`delayText` — the #FF9500 delay orange, identical in BOTH
+   themes (dark gets dark-brown text on it). Edit button + group
+   headers ride the existing `pill` key (teal light / gold dark).
+   Patrick's call: per-tile Log is SOLID orange in dark (mark-done =
+   action) — unlike Planner's outlined-gold Log. Title set to 24 with
+   the telescope deliberately on its own line beneath it.
 8. **`myday.tsx`** — biggest file (5 modals, ~340 lines of styles); sets the
    pattern for the routine-tracker trio.
 9. **`myweek.tsx` + `mollie.tsx`** — copy myday's pattern; near-duplicate
@@ -81,6 +87,31 @@ fallback (committed as `'light'`).
 Once all 13 are converted, `constants/Colors.ts` can be retired — its
 values already live on as the light palette in `Themes.ts`. Not removed
 yet on purpose: unconverted pages still read it.
+
+---
+
+## PRE-BUILD BATCH — non-logic items (Patrick, #51)
+
+Do these AFTER the last three theme pages and BEFORE the one batched
+TestFlight build, so the build picks them all up in one go. Visual /
+wording only — no behavior logic. (Items moved here from Nice-to-have.)
+
+1. **Page titles to 24 app-wide (Patrick, #51 — supersedes #50's
+   "22–26 fine" rule).** Done so far: Planner (#50), Look Ahead (#51).
+   Explicitly on the list: To-Do (currently 26). Check the other
+   converted pages' title sizes when picked up; My Day / My Week /
+   Pets can get 24 during their theme sessions. Home is 28 by a
+   deliberate #45 choice — whether "all" includes Home is Patrick's
+   call.
+2. **Match the button labels.** To-Do's header says "New Task" while
+   Vault's says "+ Add."
+3. **App name back to "Remember When" — the icon-label half only**
+   (`app.json` `"name"`, the label under the phone icon; needs a
+   rebuild to show, which is exactly why it's in this batch). The
+   backup-file half (the `Elyfont-Backup-<date>.json` filename, dialog
+   wording, and the internal `type: 'elyfont-backup'` marker — restore
+   must still ACCEPT old files) stays in Nice-to-have below: it
+   touches restore logic, so it's NOT in this batch.
 
 ---
 
@@ -281,19 +312,18 @@ categories from To-Do entirely.)
   findable it is.)
 - **Project Planner reminders do nothing yet** (`app/planner.tsx`). The screen has reminder
   fields, but they aren't wired to any notifications. Low priority.
-- **Rename the app BACK to "Remember When" (Patrick, #48 — REVERSES the old
-  "finish the Elyfont renaming" item).** "Elyfont" was chosen to help Siri
-  voice-match; Siri is parked, so Patrick wants the original name back.
-  Where "Elyfont" actually lives: `app.json` `"name"` (the label under the
-  phone icon) and `app/backup.tsx` (the `Elyfont-Backup-<date>.json`
-  filename, dialog/alert wording, and the backup file's internal
+- **Rename the app BACK to "Remember When" — the BACKUP-FILE half
+  (Patrick, #48 — REVERSES the old "finish the Elyfont renaming" item).**
+  "Elyfont" was chosen to help Siri voice-match; Siri is parked, so
+  Patrick wants the original name back. The icon-label half (`app.json`
+  `"name"`) MOVED to the PRE-BUILD BATCH above (#51). Still here:
+  `app/backup.tsx` — the `Elyfont-Backup-<date>.json` filename,
+  dialog/alert wording, and the backup file's internal
   `type: 'elyfont-backup'` marker — if that marker changes, restore must
-  still ACCEPT old files carrying it). The home greeting and the
+  still ACCEPT old files carrying it. The home greeting and the
   TestFlight/App Store listing already say "Remember When". Ties into the
   "Name the backup folder" item (same file naming). The "Memory Assist"
-  tagline still needs a home. Its own small session; a name change needs
-  a rebuild to show on the phone.
-- **Match the button labels.** To-Do's header says "New Task" while Vault's says "+ Add."
+  tagline still needs a home.
 - **Retire the leftover pre-#39/#40 popup plumbing (cosmetic, after device validation).**
   `_layout.tsx` still registers the now-unused `mydaysnooze` / `petssnooze` /
   `myweekactions` categories and keeps the old `postpone1` (+1 Day) handler and the
