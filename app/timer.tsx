@@ -388,7 +388,7 @@ const makeStyles = (t: Theme) =>
         },
         settingsBtn: { width: 70, alignItems: 'flex-end' },
         title: {
-            fontSize: 26,
+            fontSize: 24,
             fontWeight: '500',
             color: t.titleText,
             fontStyle: 'italic',

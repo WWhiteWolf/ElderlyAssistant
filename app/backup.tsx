@@ -397,7 +397,7 @@ const makeStyles = (t: Theme) =>
             alignItems: 'center',
         },
         title: {
-            fontSize: 26,
+            fontSize: 24,
             fontWeight: '500',
             color: t.titleText,
             fontStyle: 'italic',

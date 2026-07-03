@@ -119,8 +119,6 @@ export default function TodoScreen() {
     const [showBackgroundTasks, setShowBackgroundTasks] = useState(false);
     const [newTaskStatus, setNewTaskStatus] = useState<'Active' | 'On Hold' | 'Completed'>('Active');
     const [newTaskOnHoldNote, setNewTaskOnHoldNote] = useState('');
-    const [showWeekAhead, setShowWeekAhead] = useState(false);
-    const [showToday, setShowToday] = useState(false);
 
     useEffect(() => {
         const setup = async () => {
@@ -544,9 +542,6 @@ export default function TodoScreen() {
             </ScrollView>
 
             <View style={styles.fabRow}>
-                <TouchableOpacity style={styles.fabSecondary} onPress={() => setShowWeekAhead(!showWeekAhead)}>
-                    <Text style={styles.fabText}>📅 Week</Text>
-                </TouchableOpacity>
                 <TouchableOpacity style={styles.fabSecondary} onPress={() => setShowLog(!showLog)}>
                     <Text style={styles.fabText}>📋 Log</Text>
                 </TouchableOpacity>
@@ -668,56 +663,6 @@ export default function TodoScreen() {
                 </Modal>
             )}
 
-            {showWeekAhead && (
-                <View style={styles.weekOverlay}>
-                    <View style={styles.weekHeader}>
-                        <Text style={styles.weekTitle}>Week Ahead</Text>
-                        <TouchableOpacity onPress={() => setShowWeekAhead(false)} style={styles.recurBtn}>
-                            <Text style={styles.recurBtnText}>← Back</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <ScrollView>
-                        {[0, 1, 2, 3, 4, 5, 6].map(dayOffset => {
-                            const date = new Date();
-                            date.setDate(date.getDate() + dayOffset);
-                            const dateStr = date.toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' });
-                            const dayName = dayOffset === 0 ? 'Today' : dayOffset === 1 ? 'Tomorrow' : date.toLocaleDateString([], { weekday: 'long' });
-
-                            const dayTasks = tasks.filter(t => {
-                                if (t.completed) return false;
-                                if (t.taskType === 'background') return false;
-                                return t.dueDate === dateStr;
-                            });
-
-                            return (
-                                <View key={dayOffset} style={styles.weekDay}>
-                                    <View style={styles.weekDayHeader}>
-                                        <Text style={styles.weekDayName}>{dayName}</Text>
-                                        <Text style={styles.weekDayDate}>{dateStr}</Text>
-                                    </View>
-                                    {dayTasks.length === 0 ? (
-                                        <Text style={styles.weekEmpty}>Nothing due</Text>
-                                    ) : (
-                                        dayTasks.map(task => (
-                                            <TouchableOpacity
-                                                key={task.id}
-                                                style={styles.weekTask}
-                                                onPress={() => { setShowWeekAhead(false); openEditTask(task); }}
-                                            >
-                                                <View style={[styles.weekPriorityDot, { backgroundColor: PRIORITY_COLORS[task.priority] }]} />
-                                                <View style={{ flex: 1 }}>
-                                                    <Text style={styles.weekTaskTitle}>{task.title}</Text>
-                                                </View>
-                                            </TouchableOpacity>
-                                        ))
-                                    )}
-                                </View>
-                            );
-                        })}
-                    </ScrollView>
-                </View>
-            )}
-
         </GestureHandlerRootView>
     );
 }
@@ -733,7 +678,7 @@ const makeStyles = (t: Theme) =>
         alignItems: 'center',
     },
     title: {
-        fontSize: 26,
+        fontSize: 24,
         fontWeight: '500',
         color: t.titleText,
         fontStyle: 'italic',
@@ -944,64 +889,6 @@ const makeStyles = (t: Theme) =>
         borderRadius: 8,
     },
     editBtnText: { color: t.cardTitle, fontSize: 13, fontWeight: '600' },
-    weekOverlay: {
-        position: 'absolute',
-        top: 60,
-        left: 0,
-        right: 0,
-        bottom: 70,
-        backgroundColor: t.card,
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16,
-        padding: 16,
-        elevation: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 4,
-    },
-    weekHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 12,
-        paddingBottom: 8,
-        borderBottomWidth: 0.5,
-        borderBottomColor: t.cardBorder,
-    },
-    weekTitle: { fontSize: 20, fontWeight: '600', color: t.cardTitle, fontStyle: 'italic', fontFamily: 'Georgia' },
-    weekDay: {
-        marginBottom: 12,
-        paddingBottom: 12,
-        borderBottomWidth: 0.5,
-        borderBottomColor: t.cardBorder,
-    },
-    weekDayHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 6,
-    },
-    weekDayName: { fontSize: 16, fontWeight: '600', color: t.cardTitle },
-    weekDayDate: { fontSize: 13, color: t.mutedText },
-    weekEmpty: { fontSize: 13, color: t.mutedText, fontStyle: 'italic', paddingLeft: 8 },
-    weekTask: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 6,
-        paddingHorizontal: 8,
-        backgroundColor: t.pageBackground,
-        borderRadius: 8,
-        marginBottom: 4,
-        gap: 10,
-    },
-    weekPriorityDot: {
-        width: 10,
-        height: 10,
-        borderRadius: 5,
-    },
-    weekTaskTitle: { fontSize: 15, color: t.bodyText, fontWeight: '500' },
-
     headerBtn: {
         borderWidth: 1,
         borderColor: t.headerButton,

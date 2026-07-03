@@ -1,6 +1,26 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #53 (2026-07-02) "Theme — myweek.tsx + mollie.tsx #53": **BOTH pages on `Themes.ts` in both themes; `tsc` clean; Patrick Simulator-checked BOTH themes on BOTH pages (pages, tiles, all popups) and approved. THE TWO-THEME ROLLOUT IS COMPLETE — all 13 pages converted.** Mockup-first for My Week (page + New Chore + Postpone popups); Pets needed no mockup — no new elements, everything had a #52-approved treatment. Page logic untouched. Titles 26 → 24 on both (the #51 rule).
+## THIS SESSION — #54 (2026-07-03) "PRE-BUILD BATCH — #54": **the batch is DONE — the ONE batched TestFlight build is now unblocked.** All visual/wording, no behavior logic, `tsc` clean throughout. Plus one extra cleanup Patrick added mid-session (the To-Do Week button, below).
+
+**What changed:**
+- **Titles:** the seven remaining pages went 26 → 24 (To-Do, Shopping, Vault, Settings, Timer, Backup, Watch List) — **all 12 non-Home pages now read 24**; verified page-by-page. Home stays 28 (Patrick's call — see below).
+- **Home header:** subtitle 22 → **21** in BOTH palettes (`Themes.ts` `subtitleSize`) — Patrick's fix for the subtitle wrapping with his name. Title briefly went to 26 mid-session, then **reverted to 28** on Patrick's call after his phone (old build) showed 28 fits fine — **the Simulator misled on text size** (it runs a narrower device, so the same pt size wraps there but not on the phone; Patrick declined switching the Simulator device to match). Net: Home = 28/21.
+- **App name:** `app.json` `"name"` `"Elyfont"` → `"Remember When"` (icon-label half only; shows after the build). `slug`/`scheme`/`bundleIdentifier` deliberately untouched; backup-file naming stays in Nice-to-have (touches restore logic).
+- **Button labels item (To-Do "New Task" vs Vault "+ Add") — DROPPED from the batch by Patrick**, not done.
+- **To-Do Week button REMOVED (Patrick's mid-session add):** the "📅 Week" fab button, `showWeekAhead` state, the whole Week Ahead overlay (~50 lines) and its 10 `week*` styles cut from `app/todo.tsx`. The "Week" reminder preset (7 days before) STAYS. **No parked-items entry — Patrick's call ("nothing to park")**; the code lives in git history before the #54 commit if ever wanted. Also removed: a dead `showToday` state line (pre-existing, found by an unused-code sweep; the sweep found nothing else in the file).
+- **Planner title "too small" on Patrick's phone — already fixed, nothing done:** his build (the #48 state) has Planner at 22; current code has 24 (#50). The next build shows it.
+
+**Process note (Patrick flagged BOTH in #54):** (1) an instruction like "park it now" means NOW, not deferred to session end; (2) a scope answer is not a "go" — wait for the explicit go before cutting code.
+
+**Commit note:** NOT yet committed — 9 code files (`Themes.ts`, `app.json`, `todo.tsx`, `shopping.tsx`, `vault.tsx`, `settings.tsx`, `timer.tsx`, `backup.tsx`, `watchlist.tsx`) + these docs. Patrick commits.
+
+**➤ NEXT SESSION — pick up here:**
+1. **The ONE batched TestFlight build** + phone checkpoints (fold in the #48 toggle test and the #49–#54 pages). **BUILD POLICY stands (#50): no per-session builds** — EAS builds past the $45 credit cost real money; Patrick handles Expo billing.
+2. Still open and untouched: backup-keys bug (six keys), backup folder naming, Vault import discussion, Vault "Custom" label bug (unverified), structured reminder tests, phone checkpoints A + B, Colors.ts retirement.
+
+---
+
+## SESSION — #53 (2026-07-02) "Theme — myweek.tsx + mollie.tsx #53": **BOTH pages on `Themes.ts` in both themes; `tsc` clean; Patrick Simulator-checked BOTH themes on BOTH pages (pages, tiles, all popups) and approved. THE TWO-THEME ROLLOUT IS COMPLETE — all 13 pages converted.** Mockup-first for My Week (page + New Chore + Postpone popups); Pets needed no mockup — no new elements, everything had a #52-approved treatment. Page logic untouched. Titles 26 → 24 on both (the #51 rule).
 
 **ZERO new theme keys — `Themes.ts` untouched.** Everything rode existing keys:
 - **My Week:** Postpone button, "Tomorrow (+1 day)", and the "▶ moved to <day>" tile line ride the `delay` keys (same #FF9500 both themes); the day/time tile line ("Tue 7:00 PM") rides `pill` (light unchanged teal / gold in dark); Done = solid `buttonPrimary`; Edit = outlined `pill`; **day chips (the one element My Day didn't have):** unselected = `pageBackground` fill + `cardBorder` border + `bodyText` text (light pixel-true), selected = solid `buttonPrimary` — Patrick OK'd the dark New Chore popup having TWO solid oranges (Save + the selected day; Timer's selected-pill precedent, bends #52's "Save stands alone").
@@ -15,20 +35,6 @@
 1. **PRE-BUILD BATCH** (Patrick, #51 — see parked-items): remaining titles to 24 (To-Do explicitly; check the other converted pages; Home-at-28 is Patrick's call), matching button labels (To-Do "New Task" vs Vault "+ Add"), the icon-label rename to "Remember When".
 2. THEN the ONE batched TestFlight build + phone checkpoints (fold in the #48 toggle test and the #49–#53 pages). **BUILD POLICY stands (#50): no per-session builds** — EAS builds past the $45 credit cost real money; Patrick handles Expo billing.
 3. Still open and untouched: backup-keys bug (six keys), backup folder naming, Vault import discussion, Vault "Custom" label bug (unverified), structured reminder tests, phone checkpoints A + B, Colors.ts retirement.
-
----
-
-## SESSION — #52 (2026-07-02) "Theme 'myday.tsx' — #52": **myday.tsx on `Themes.ts` in both themes; `tsc` clean; Patrick Simulator-checked BOTH themes (page, tiles, all five popups) and approved. Mockup-first; page logic untouched. Title 26 → 24 (the #51 rule). This set the pattern for the routine-tracker trio — My Week + Pets copied it in #53.**
-
-**Five new theme keys, both palettes:** `counterMinus` `#ffcc00` in BOTH themes + `counterMinusText` (`#ffffff`/`#4a1f0c` — bright fill gets dark-brown text in dark, same rule as the gold buttons) for the Coffee/Water "−" circle; `timeStepper` / `timeStepperBorder` / `timeStepperText` for the New/Edit Entry time-spinner ▲▼ circles — light: solid blue via the #47 invisible-border trick; dark: outlined gold (a quiet adjust control, so Save stays the only solid-orange button in that popup).
-
-**Patrick's ✓ call (#52):** the done-state ✓ button is **GREEN in BOTH themes** — it rides Timer's `buttonDone`/`buttonDoneText` keys ("green means done" now covers My Day too). Picked from a 4-option mockup; supersedes the first build's teal `statusActive`. The rest: Log stays SOLID `buttonPrimary` (mark-done action, the #51 rule); on-tile Snooze + the 15/30/60 picker ride the `delay` keys (Snooze = Delay, same `#FF9500` both themes); counter "+" rides `bridge`; reorder-arrows overlay solid `buttonPrimary`; Edit exactly like Look Ahead's (`pageBackground` fill + `pill` border/text); Cancel got the #47 border treatment; all 5 inputs got `mutedText` placeholders (#48 rule); greys (`#aaa/#666/#999/#eee`) unified onto `mutedText`/`progressTrack`; 14 dead styles removed.
-
-**Three approved deviations from the mockup (dark only; Patrick OK'd them on screenshots):** Clear All is `mutedText` cream-outlined (matches Look Ahead's identical button, not the mockup's gold); the Coffee/Water divider rides `cardBorder`; the Hour/Minute/AM-PM captions ride `bodyText`.
-
-**Process note (Patrick flagged it TWICE in #52):** the #48 no-boxed-questions rule got broken twice ("2 ? again") — questions with embedded options ("...or...?") count as boxed. ONE genuinely open question, nothing else.
-
-**Commit note:** committed as "Theme  — myday.tsx #52." (code + docs together).
 
 ---
 

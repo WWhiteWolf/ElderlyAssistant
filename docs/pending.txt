@@ -1,7 +1,6 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-02 (session #53 — My Week and Pets now have
-both themes. THE THEME ROLLOUT IS FINISHED: all 13 pages done.
-Next up: the small pre-build batch, then the one TestFlight build.)
+Last updated: 2026-07-03 (session #54 — the pre-build batch is DONE.
+Next up: the one TestFlight build, then the phone checkpoints.)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -13,37 +12,29 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- Session #53: My Week and Pets now follow both themes — THE THEME
-  ROLLOUT IS FINISHED. Every one of the 13 pages obeys the App Colors
-  choice in Settings. You checked both pages in the Simulator, dark
-  and light, and approved. No new color keys were needed — both pages
-  reused My Day's choices: the done ✓ is GREEN in both themes,
-  Postpone and Snooze keep the bright delay orange, Log/Done is the
-  solid action button, Edit is the quiet outlined one. Titles are
-  size 24 on both.
+- Session #54: the PRE-BUILD BATCH is DONE. Every page title except
+  Home is now size 24 (checked page by page); Home keeps its 28 title
+  and its subtitle came down one size to 21 (your wrap fix); the icon
+  label under the phone icon is set back to "Remember When" (shows
+  after the build). You dropped the button-labels item from the batch.
+- Also in #54, at your ask: the To-Do page's "📅 Week" button and its
+  Week Ahead popup were removed entirely — nothing parked, your call.
+  A leftover dead line from an old rework came out too; a sweep found
+  no other dead code in that file.
+- A lesson from #54: the Simulator runs a narrower screen than your
+  phone, so it's NOT a reliable judge of text size and wrapping —
+  your phone is. (Home's title looked wrong at 26 in the Simulator;
+  your phone showed 28 fits fine, so 28 it stayed.)
 - The dark startup flash is still there (a known small quirk).
 - Your phone's TestFlight build is from before #49, so it shows none
-  of this yet — that's expected until the one batched build. Build
+  of this yet — that's expected until the one batched build. (It's
+  also why Project Planner's title looks too small on your phone:
+  that page is 22 on your build, already 24 in the code.) Build
   policy unchanged: ONE batched build, you handle Expo billing.
 - Not yet committed — you commit this session's code + docs when ready.
-- Next session: the PRE-BUILD BATCH below (small visual/wording
-  items), THEN the one batched build and the phone checkpoints.
-- New small item now possible: the old Colors.ts file can be retired —
+- Next session: the ONE batched build, then the phone checkpoints.
+- Small item still possible: the old Colors.ts file can be retired —
   nothing reads it anymore (on the someday list).
-
-
-BEFORE THE NEXT BUILD (your #51 call — the last 2 pages are themed
-now, so these are next; the one build then picks everything up)
-----------------------------------------------------------------------------
-- Bring every page title to size 24. Planner, Look Ahead, My Day,
-  My Week, and Pets are done; To-Do is next; the rest get checked
-  when this is picked up. Whether Home (28) is included is your
-  decision.
-- Make the button labels match: To-Do says "New Task" while Vault says
-  "+ Add."
-- Change the icon label under the phone icon from "Elyfont" back to
-  "Remember When" (just the label — the backup FILE naming stays on
-  the someday list, because touching it involves the restore logic).
 
 
 YOUR #41 LIST — WHAT'S STILL OPEN (items 2, 5, 6, 7 done in #42)
@@ -102,7 +93,7 @@ DECISIONS TO MAKE WHEN YOU'RE READY
 NICE-TO-HAVE LATER (polish, low priority)
 -----------------------------------------
 - Rename the app back to "Remember When" — what's LEFT of it (#48,
-  yours). The icon-label part moved up to "BEFORE THE NEXT BUILD."
+  yours). The icon-label part was finished in #54.
   Still here: the backup file naming (Elyfont-Backup-...) and the
   file's internal marker — old backups must stay restorable. The
   "Memory Assist" tagline still needs a home.

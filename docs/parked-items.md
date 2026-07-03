@@ -7,13 +7,13 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-02 (session #53 — myweek.tsx + mollie.tsx
-converted to `Themes.ts`, ZERO new keys. **THE TWO-THEME ROLLOUT
-IS COMPLETE — all 13 pages.** ✓ done state green both themes;
-Postpone/Snooze on the delay keys; My Week's day chips: selected =
-solid buttonPrimary, unselected = pageBackground/cardBorder.
-Titles to 24 on both. Colors.ts is now retirable. Next: the
-PRE-BUILD BATCH below, then the ONE batched TestFlight build.)
+Last updated: 2026-07-03 (session #54 — the PRE-BUILD BATCH is DONE
+and its section removed: all 12 non-Home titles at 24, Home 28/21
+(subtitle down one size), app.json name back to "Remember When".
+The button-labels item was DROPPED by Patrick. Extra cleanup: the
+To-Do "📅 Week" button + Week Ahead popup removed entirely — no
+parked entry by Patrick's call, git history has the code. Next:
+the ONE batched TestFlight build, then the phone checkpoints.)
 
 ---
 
@@ -99,30 +99,6 @@ just the first-launch fallback (committed as `'light'`).
 **RETIRE `constants/Colors.ts` — now unblocked (#53).** All 13 pages
 read `Themes.ts`; its values live on as the light palette. Before
 deleting, grep that nothing else imports it. Small tidy-up session.
-
----
-
-## PRE-BUILD BATCH — non-logic items (Patrick, #51)
-
-The theme rollout is done (#53), so this batch is NEXT — do it BEFORE
-the one batched TestFlight build, so the build picks it all up in one go. Visual /
-wording only — no behavior logic. (Items moved here from Nice-to-have.)
-
-1. **Page titles to 24 app-wide (Patrick, #51 — supersedes #50's
-   "22–26 fine" rule).** Done so far: Planner (#50), Look Ahead (#51),
-   My Day (#52), My Week + Pets (#53). Explicitly on the list: To-Do
-   (currently 26). Check the other converted pages' title sizes when
-   picked up. Home is 28 by a deliberate #45 choice — whether "all"
-   includes Home is Patrick's call.
-2. **Match the button labels.** To-Do's header says "New Task" while
-   Vault's says "+ Add."
-3. **App name back to "Remember When" — the icon-label half only**
-   (`app.json` `"name"`, the label under the phone icon; needs a
-   rebuild to show, which is exactly why it's in this batch). The
-   backup-file half (the `Elyfont-Backup-<date>.json` filename, dialog
-   wording, and the internal `type: 'elyfont-backup'` marker — restore
-   must still ACCEPT old files) stays in Nice-to-have below: it
-   touches restore logic, so it's NOT in this batch.
 
 ---
 
@@ -327,7 +303,7 @@ categories from To-Do entirely.)
   (Patrick, #48 — REVERSES the old "finish the Elyfont renaming" item).**
   "Elyfont" was chosen to help Siri voice-match; Siri is parked, so
   Patrick wants the original name back. The icon-label half (`app.json`
-  `"name"`) MOVED to the PRE-BUILD BATCH above (#51). Still here:
+  `"name"`) was DONE in #54. Still here:
   `app/backup.tsx` — the `Elyfont-Backup-<date>.json` filename,
   dialog/alert wording, and the backup file's internal
   `type: 'elyfont-backup'` marker — if that marker changes, restore must

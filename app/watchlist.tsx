@@ -283,7 +283,7 @@ const makeStyles = (t: Theme) =>
         },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
         title: {
-            fontSize: 26,
+            fontSize: 24,
             fontWeight: '500',
             color: t.titleText,
             fontStyle: 'italic',

@@ -216,7 +216,7 @@ const makeStyles = (t: Theme) =>
         settingsBtnText: { fontSize: 22 },
         backText: { color: t.cardBorder, fontSize: 16 },
         title: {
-            fontSize: 26,
+            fontSize: 24,
             fontWeight: '500',
             color: t.titleText,
             fontStyle: 'italic',

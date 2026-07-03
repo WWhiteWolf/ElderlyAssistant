@@ -420,7 +420,7 @@ const makeStyles = (t: Theme) =>
         },
         backBtn: { width: 70 },
         title: {
-            fontSize: 26,
+            fontSize: 24,
             fontWeight: '500',
             color: t.titleText,
             fontStyle: 'italic',
