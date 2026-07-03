@@ -7,16 +7,14 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-02 (session #48 — timer.tsx + settings.tsx
-converted to `Themes.ts` (ten more shared keys: pill, switch, green
-Done, countdown, settingValue/Arrow), PLUS the Settings theme toggle
-built: Appearance section with "App Colors" Light/Dark and "Popup
-Colors" Match App / Follow iPhone choice buttons, stored on the phone
-(`app_theme` / `popup_style`), live switching via ThemeProvider in
-`_layout.tsx`. Settings page spacing tightened to fit one screen.
-All Simulator-approved. New below: the two new storage keys added to
-the backup-keys bug, and "Rename the app back to Remember When"
-replaces the old finish-the-Elyfont-renaming item.)
+Last updated: 2026-07-02 (session #50 — planner.tsx converted to
+`Themes.ts` (four new keys: statusActive/-Text, statusOnHoldText,
+progressTrack), following #49's todo.tsx pattern. Also the Home
+dark-greeting wrap fix, and two standing decisions recorded in
+handoff.md: page titles don't need to be 26 (22–26 fine, fit beats
+uniformity — Planner is 24), and NO TestFlight builds until the last
+four pages are converted, then ONE batched build — EAS builds past
+the $45 monthly credit cost real money.)
 
 ---
 
@@ -30,9 +28,9 @@ elements), wire it to `useTheme()` + the `makeStyles(theme)` pattern that
 `home.tsx` demonstrates, and add any new keys to BOTH palettes. One file
 (or small pair) per session, `tsc` clean + Simulator-checked in BOTH themes
 before moving on. **The Settings toggle EXISTS as of #48** (Appearance →
-App Colors, saved on the phone, switches converted pages live); the six
-unconverted pages still read `Colors.ts` and stay light whatever the
-toggle says. `DEFAULT_THEME` in `Themes.ts` is now just the first-launch
+App Colors, saved on the phone, switches converted pages live); the four
+unconverted pages (Look Ahead, My Day, My Week, Pets) still read
+`Colors.ts` and stay light whatever the toggle says. `DEFAULT_THEME` in `Themes.ts` is now just the first-launch
 fallback (committed as `'light'`).
 
 1. ✅ **DONE — `home.tsx`** (#44 dark build; #45 converted to `Themes.ts`
@@ -61,10 +59,18 @@ fallback (committed as `'light'`).
    both themes (green means done). PLUS the theme toggle + popup choice
    built (Appearance section) and Settings spacing tightened to fit one
    screen without scrolling.
-5. **`todo.tsx`** — standalone; colors come from a `PRIORITY_COLORS` JS
-   object in the code, not just the stylesheet — needs logic edits.
-6. **`planner.tsx`** — standalone; same color-map situation
-   (`PRIORITY_COLORS` + `STATUS_COLORS`), most structurally complex file.
+5. ✅ **DONE (#49) — `todo.tsx`.** First conversion with colors in the
+   page logic: `PRIORITY_COLORS` became `priorityColors(theme)` /
+   `priorityTextColors(theme)` maps over six new priority keys (+
+   `statusOnHold`) in both palettes. (Docs commit for #49 was never
+   made — reconstructed from git in #50's handoff.)
+6. ✅ **DONE (#50) — `planner.tsx`.** Mockup-first, both themes
+   Simulator-approved. Same map pattern as #49 plus `statusColors(t)`;
+   four new keys (statusActive/-Text, statusOnHoldText, progressTrack);
+   Completed status reuses prioritySomeday. Dark: +Task/Edit Project
+   solid orange, Log/Complete Project outlined gold. Title set to 24
+   (Patrick's pick — the long name crowds the pill at 26). Reminder
+   fields still unwired (see Nice-to-have below).
 7. **`lookahead.tsx`** — grouped sections/swipe/modal pattern, a smaller
    preview of the myday/myweek/mollie trio below.
 8. **`myday.tsx`** — biggest file (5 modals, ~340 lines of styles); sets the

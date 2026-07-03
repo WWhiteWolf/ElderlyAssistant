@@ -16,7 +16,7 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../constants/Colors';
+import { Theme, useTheme } from '../constants/Themes';
 
 type TaskStatus = 'Active' | 'On Hold' | 'Completed';
 type Priority = 'Urgent' | 'Normal' | 'Someday';
@@ -56,19 +56,39 @@ interface LogEntry {
     notes: string;
 }
 
-const PRIORITY_COLORS: Record<Priority, string> = {
-    Urgent: '#e74c3c',
-    Normal: '#1a6e8a',
-    Someday: '#95a5a6',
-};
-
-const STATUS_COLORS: Record<TaskStatus, string> = {
-    Active: '#2d9e8f',
-    'On Hold': '#e67e22',
-    Completed: '#95a5a6',
-};
+// Priority colors come from the active theme (#50) — the same keys and
+// pattern as todo.tsx (#49). The text maps are for the selected form
+// buttons — dark's gold/teal fills need dark text.
+const priorityColors = (t: Theme): Record<Priority, string> => ({
+    Urgent: t.priorityUrgent,
+    Normal: t.priorityNormal,
+    Someday: t.prioritySomeday,
+});
+const priorityTextColors = (t: Theme): Record<Priority, string> => ({
+    Urgent: t.priorityUrgentText,
+    Normal: t.priorityNormalText,
+    Someday: t.prioritySomedayText,
+});
+// Status colors (#50): Active teal (brighter in dark), On Hold's orange
+// in BOTH themes, Completed reuses Someday's grey.
+const statusColors = (t: Theme): Record<TaskStatus, string> => ({
+    Active: t.statusActive,
+    'On Hold': t.statusOnHold,
+    Completed: t.prioritySomeday,
+});
+const statusTextColors = (t: Theme): Record<TaskStatus, string> => ({
+    Active: t.statusActiveText,
+    'On Hold': t.statusOnHoldText,
+    Completed: t.prioritySomedayText,
+});
 export default function PlannerScreen() {
     const router = useRouter();
+    const theme = useTheme();
+    const styles = makeStyles(theme);
+    const PRIORITY_COLORS = priorityColors(theme);
+    const PRIORITY_TEXT_COLORS = priorityTextColors(theme);
+    const STATUS_COLORS = statusColors(theme);
+    const STATUS_TEXT_COLORS = statusTextColors(theme);
     const [projects, setProjects] = useState<Project[]>([]);
     const [log, setLog] = useState<LogEntry[]>([]);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -337,7 +357,7 @@ export default function PlannerScreen() {
     };
     return (
         <GestureHandlerRootView style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: Colors.primary }}>
+            <SafeAreaView style={{ backgroundColor: theme.header }}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
                         <Text style={styles.headerBtnText}>← Home</Text>
@@ -414,8 +434,8 @@ export default function PlannerScreen() {
                             <TouchableOpacity style={styles.projectActionBtn} onPress={() => openEditProject(selectedProject)}>
                                 <Text style={styles.projectActionText}>Edit Project</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.projectActionBtn, { backgroundColor: Colors.bridge }]} onPress={() => completeProject(selectedProject)}>
-                                <Text style={styles.projectActionText}>Complete Project</Text>
+                            <TouchableOpacity style={[styles.projectActionBtn, styles.completeBtn]} onPress={() => completeProject(selectedProject)}>
+                                <Text style={[styles.projectActionText, styles.completeBtnText]}>Complete Project</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -508,7 +528,7 @@ export default function PlannerScreen() {
                                 <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <Text style={styles.modalTitle}>{editProject ? 'Edit Project' : 'New Project'}</Text>
-                                        <Text style={{ fontSize: 13, color: Colors.bridge, fontStyle: 'italic' }}>Tap background, or Scroll ↓</Text>
+                                        <Text style={{ fontSize: 13, color: theme.settingValue, fontStyle: 'italic' }}>Tap background, or Scroll ↓</Text>
                                     </View>
                                     <View style={styles.modalBtns}>
                                         <TouchableOpacity style={styles.cancelBtn} onPress={() => { resetProjectForm(); setShowAddProject(false); }}>
@@ -520,33 +540,33 @@ export default function PlannerScreen() {
                                     </View>
 
                                     <Text style={styles.inputLabel}>Project Name</Text>
-                                    <TextInput style={styles.input} value={newProjectName} onChangeText={setNewProjectName} placeholder="What is this project?" autoFocus={true} />
+                                    <TextInput style={styles.input} value={newProjectName} onChangeText={setNewProjectName} placeholder="What is this project?" placeholderTextColor={theme.mutedText} autoFocus={true} />
 
                                     <Text style={styles.inputLabel}>Description (optional)</Text>
-                                    <TextInput style={styles.input} value={newProjectDesc} onChangeText={setNewProjectDesc} placeholder="Brief description..." multiline />
+                                    <TextInput style={styles.input} value={newProjectDesc} onChangeText={setNewProjectDesc} placeholder="Brief description..." placeholderTextColor={theme.mutedText} multiline />
 
                                     <Text style={styles.inputLabel}>Start Date (MM/DD/YY)</Text>
-                                    <TextInput style={styles.input} value={newProjectStartDate} onChangeText={setNewProjectStartDate} placeholder="e.g. 04/10/26" keyboardType="numbers-and-punctuation" />
+                                    <TextInput style={styles.input} value={newProjectStartDate} onChangeText={setNewProjectStartDate} placeholder="e.g. 04/10/26" placeholderTextColor={theme.mutedText} keyboardType="numbers-and-punctuation" />
 
                                     <Text style={styles.inputLabel}>On Hold?</Text>
                                     <View style={styles.priorityRow}>
                                         <TouchableOpacity
-                                            style={[styles.priorityBtn, !newProjectOnHold && { backgroundColor: Colors.primary }]}
+                                            style={[styles.priorityBtn, !newProjectOnHold && { backgroundColor: theme.buttonPrimary }]}
                                             onPress={() => setNewProjectOnHold(false)}
                                         >
-                                            <Text style={[styles.priorityBtnText, !newProjectOnHold && { color: '#fff' }]}>Active</Text>
+                                            <Text style={[styles.priorityBtnText, !newProjectOnHold && { color: theme.buttonPrimaryText }]}>Active</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity
-                                            style={[styles.priorityBtn, newProjectOnHold && { backgroundColor: '#e67e22' }]}
+                                            style={[styles.priorityBtn, newProjectOnHold && { backgroundColor: theme.statusOnHold }]}
                                             onPress={() => setNewProjectOnHold(true)}
                                         >
-                                            <Text style={[styles.priorityBtnText, newProjectOnHold && { color: '#fff' }]}>On Hold</Text>
+                                            <Text style={[styles.priorityBtnText, newProjectOnHold && { color: theme.statusOnHoldText }]}>On Hold</Text>
                                         </TouchableOpacity>
                                     </View>
                                     {newProjectOnHold && (
                                         <>
                                             <Text style={styles.inputLabel}>Reason for Hold</Text>
-                                            <TextInput style={styles.input} value={newProjectOnHoldNote} onChangeText={setNewProjectOnHoldNote} placeholder="Why is this on hold?" />
+                                            <TextInput style={styles.input} value={newProjectOnHoldNote} onChangeText={setNewProjectOnHoldNote} placeholder="Why is this on hold?" placeholderTextColor={theme.mutedText} />
                                         </>
                                     )}
                                 </ScrollView>
@@ -564,7 +584,7 @@ export default function PlannerScreen() {
                                 <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <Text style={styles.modalTitle}>{editTask ? 'Edit Task' : 'New Task'}</Text>
-                                        <Text style={{ fontSize: 13, color: Colors.bridge, fontStyle: 'italic' }}>Tap background, or Scroll ↓</Text>
+                                        <Text style={{ fontSize: 13, color: theme.settingValue, fontStyle: 'italic' }}>Tap background, or Scroll ↓</Text>
                                     </View>
                                     <View style={styles.modalBtns}>
                                         <TouchableOpacity style={styles.cancelBtn} onPress={() => { resetTaskForm(); setShowAddTask(false); }}>
@@ -576,7 +596,7 @@ export default function PlannerScreen() {
                                     </View>
 
                                     <Text style={styles.inputLabel}>Task Title</Text>
-                                    <TextInput style={styles.input} value={newTaskTitle} onChangeText={setNewTaskTitle} placeholder="What needs to be done?" autoFocus={true} />
+                                    <TextInput style={styles.input} value={newTaskTitle} onChangeText={setNewTaskTitle} placeholder="What needs to be done?" placeholderTextColor={theme.mutedText} autoFocus={true} />
 
                                     <Text style={styles.inputLabel}>Priority</Text>
                                     <View style={styles.priorityRow}>
@@ -586,7 +606,7 @@ export default function PlannerScreen() {
                                                 style={[styles.priorityBtn, newTaskPriority === p && { backgroundColor: PRIORITY_COLORS[p] }]}
                                                 onPress={() => setNewTaskPriority(p)}
                                             >
-                                                <Text style={[styles.priorityBtnText, newTaskPriority === p && { color: '#fff' }]}>{p}</Text>
+                                                <Text style={[styles.priorityBtnText, newTaskPriority === p && { color: PRIORITY_TEXT_COLORS[p] }]}>{p}</Text>
                                             </TouchableOpacity>
                                         ))}
                                     </View>
@@ -599,7 +619,7 @@ export default function PlannerScreen() {
                                                 style={[styles.priorityBtn, newTaskStatus === s && { backgroundColor: STATUS_COLORS[s] }]}
                                                 onPress={() => setNewTaskStatus(s)}
                                             >
-                                                <Text style={[styles.priorityBtnText, newTaskStatus === s && { color: '#fff' }]}>{s === 'Completed' ? 'Done' : s}</Text>
+                                                <Text style={[styles.priorityBtnText, newTaskStatus === s && { color: STATUS_TEXT_COLORS[s] }]}>{s === 'Completed' ? 'Done' : s}</Text>
                                             </TouchableOpacity>
                                         ))}
                                     </View>
@@ -607,38 +627,38 @@ export default function PlannerScreen() {
                                     {newTaskStatus === 'On Hold' && (
                                         <>
                                             <Text style={styles.inputLabel}>Reason for Hold</Text>
-                                            <TextInput style={styles.input} value={newTaskOnHoldNote} onChangeText={setNewTaskOnHoldNote} placeholder="Why is this on hold?" />
+                                            <TextInput style={styles.input} value={newTaskOnHoldNote} onChangeText={setNewTaskOnHoldNote} placeholder="Why is this on hold?" placeholderTextColor={theme.mutedText} />
                                         </>
                                     )}
 
                                     <Text style={styles.inputLabel}>Due Date (MM/DD/YY)</Text>
-                                    <TextInput style={styles.input} value={newTaskDueDate} onChangeText={setNewTaskDueDate} placeholder="e.g. 04/15/26" keyboardType="numbers-and-punctuation" />
+                                    <TextInput style={styles.input} value={newTaskDueDate} onChangeText={setNewTaskDueDate} placeholder="e.g. 04/15/26" placeholderTextColor={theme.mutedText} keyboardType="numbers-and-punctuation" />
 
                                     <Text style={styles.inputLabel}>Notes (optional)</Text>
-                                    <TextInput style={styles.input} value={newTaskNotes} onChangeText={setNewTaskNotes} placeholder="Any details..." multiline />
+                                    <TextInput style={styles.input} value={newTaskNotes} onChangeText={setNewTaskNotes} placeholder="Any details..." placeholderTextColor={theme.mutedText} multiline />
 
                                     <Text style={styles.inputLabel}>Reminder?</Text>
                                     <View style={styles.priorityRow}>
                                         <TouchableOpacity
-                                            style={[styles.priorityBtn, !newTaskHasReminder && { backgroundColor: Colors.primary }]}
+                                            style={[styles.priorityBtn, !newTaskHasReminder && { backgroundColor: theme.buttonPrimary }]}
                                             onPress={() => setNewTaskHasReminder(false)}
                                         >
-                                            <Text style={[styles.priorityBtnText, !newTaskHasReminder && { color: '#fff' }]}>No</Text>
+                                            <Text style={[styles.priorityBtnText, !newTaskHasReminder && { color: theme.buttonPrimaryText }]}>No</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity
-                                            style={[styles.priorityBtn, newTaskHasReminder && { backgroundColor: Colors.bridge }]}
+                                            style={[styles.priorityBtn, newTaskHasReminder && { backgroundColor: theme.statusActive }]}
                                             onPress={() => setNewTaskHasReminder(true)}
                                         >
-                                            <Text style={[styles.priorityBtnText, newTaskHasReminder && { color: '#fff' }]}>Yes</Text>
+                                            <Text style={[styles.priorityBtnText, newTaskHasReminder && { color: theme.statusActiveText }]}>Yes</Text>
                                         </TouchableOpacity>
                                     </View>
 
                                     {newTaskHasReminder && (
                                         <>
                                             <Text style={styles.inputLabel}>Reminder Date (MM/DD/YY)</Text>
-                                            <TextInput style={styles.input} value={newTaskReminderDate} onChangeText={setNewTaskReminderDate} placeholder="e.g. 04/14/26" keyboardType="numbers-and-punctuation" />
+                                            <TextInput style={styles.input} value={newTaskReminderDate} onChangeText={setNewTaskReminderDate} placeholder="e.g. 04/14/26" placeholderTextColor={theme.mutedText} keyboardType="numbers-and-punctuation" />
                                             <Text style={styles.inputLabel}>Reminder Time (HH:MM)</Text>
-                                            <TextInput style={styles.input} value={newTaskReminderTime} onChangeText={setNewTaskReminderTime} placeholder="e.g. 09:00" keyboardType="numbers-and-punctuation" />
+                                            <TextInput style={styles.input} value={newTaskReminderTime} onChangeText={setNewTaskReminderTime} placeholder="e.g. 09:00" placeholderTextColor={theme.mutedText} keyboardType="numbers-and-punctuation" />
                                         </>
                                     )}
                                 </ScrollView>
@@ -651,82 +671,81 @@ export default function PlannerScreen() {
         </GestureHandlerRootView>
     );
 }
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: Colors.background },
+// makeStyles(theme) pattern from home.tsx (#45).
+const makeStyles = (t: Theme) =>
+    StyleSheet.create({
+    container: { flex: 1, backgroundColor: t.pageBackground },
     header: {
         paddingTop: 20,
         paddingHorizontal: 20,
         flexDirection: 'row',
         alignItems: 'center',
     },
-    backBtn: { width: 70 },
     settingsBtn: { width: 70, alignItems: 'flex-end' },
-    settingsBtnText: { fontSize: 22 },
-    backText: { color: Colors.lightBlue, fontSize: 16 },
     title: {
-        fontSize: 22,
+        fontSize: 24,
         fontWeight: '500',
-        color: Colors.textLight,
+        color: t.titleText,
         fontStyle: 'italic',
         fontFamily: 'Georgia',
         flex: 1,
         textAlign: 'center',
     },
-    bridge: { height: 8, backgroundColor: Colors.bridge },
+    bridge: { height: 8, backgroundColor: t.bridge },
     scroll: { flex: 1, padding: 12 },
-    emptyText: { textAlign: 'center', color: '#aaa', marginTop: 40, fontSize: 16 },
+    emptyText: { textAlign: 'center', color: t.mutedText, marginTop: 40, fontSize: 16 },
     projectCard: {
-        backgroundColor: Colors.white,
+        backgroundColor: t.card,
         borderRadius: 12,
         padding: 14,
         marginBottom: 10,
         borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
     },
     onHoldBadge: {
-        backgroundColor: '#e67e22',
+        backgroundColor: t.statusOnHold,
         borderRadius: 6,
         paddingVertical: 3,
         paddingHorizontal: 8,
         marginBottom: 8,
         alignSelf: 'flex-start',
     },
-    onHoldBadgeText: { color: '#fff', fontSize: 11, fontWeight: '600' },
+    onHoldBadgeText: { color: t.statusOnHoldText, fontSize: 11, fontWeight: '600' },
     projectCardTop: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 4,
     },
-    projectName: { fontSize: 18, fontWeight: '600', color: Colors.primary, flex: 1 },
-    projectProgress: { fontSize: 16, fontWeight: '600', color: Colors.bridge },
-    projectDesc: { fontSize: 13, color: '#888', marginBottom: 8, fontStyle: 'italic' },
+    projectName: { fontSize: 18, fontWeight: '600', color: t.cardTitle, flex: 1 },
+    projectProgress: { fontSize: 16, fontWeight: '600', color: t.settingValue },
+    projectDesc: { fontSize: 13, color: t.mutedText, marginBottom: 8, fontStyle: 'italic' },
     progressBar: {
         height: 6,
-        backgroundColor: '#e0e0e0',
+        backgroundColor: t.progressTrack,
         borderRadius: 3,
         marginVertical: 6,
         overflow: 'hidden',
     },
     progressFill: {
         height: 6,
-        backgroundColor: Colors.bridge,
+        backgroundColor: t.bridge,
         borderRadius: 3,
     },
-    projectMeta: { fontSize: 12, color: '#aaa', marginTop: 4 },
+    projectMeta: { fontSize: 12, color: t.mutedText, marginTop: 4 },
     backToProjects: {
         paddingVertical: 10,
         paddingHorizontal: 4,
         marginBottom: 8,
     },
-    backToProjectsText: { color: Colors.primary, fontSize: 16, fontWeight: '500' },
+    backToProjectsText: { color: t.cardTitle, fontSize: 16, fontWeight: '500' },
     projectDetailHeader: {
-        backgroundColor: Colors.white,
+        backgroundColor: t.card,
         borderRadius: 12,
         padding: 14,
         marginBottom: 12,
         borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
     },
     projectActions: {
         flexDirection: 'row',
@@ -735,19 +754,26 @@ const styles = StyleSheet.create({
     },
     projectActionBtn: {
         flex: 1,
-        backgroundColor: Colors.primary,
+        backgroundColor: t.buttonPrimary,
         padding: 10,
         borderRadius: 8,
+        borderWidth: 1.5,
+        borderColor: t.buttonPrimary,
         alignItems: 'center',
     },
-    projectActionText: { color: Colors.white, fontWeight: '600', fontSize: 14 },
+    projectActionText: { color: t.buttonPrimaryText, fontWeight: '600', fontSize: 14 },
+    completeBtn: {
+        backgroundColor: t.stockedButton,
+        borderColor: t.stockedButtonBorder,
+    },
+    completeBtnText: { color: t.stockedButtonText },
     taskCard: {
         flexDirection: 'row',
-        backgroundColor: Colors.white,
+        backgroundColor: t.card,
         borderRadius: 12,
         marginBottom: 10,
         borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
         overflow: 'hidden',
     },
     priorityBar: { width: 6 },
@@ -758,23 +784,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 6,
     },
-    taskTitle: { fontSize: 16, fontWeight: '600', color: Colors.primary, flex: 1, marginRight: 8 },
-    statusBadge: {
-        paddingVertical: 3,
-        paddingHorizontal: 8,
-        borderRadius: 10,
-    },
-    statusBadgeText: { fontSize: 11, color: '#fff', fontWeight: '600' },
-    onHoldNote: { fontSize: 12, color: '#e67e22', marginBottom: 4, fontStyle: 'italic' },
+    taskTitle: { fontSize: 16, fontWeight: '600', color: t.bodyText, flex: 1, marginRight: 8 },
+    onHoldNote: { fontSize: 12, color: t.statusOnHold, marginBottom: 4, fontStyle: 'italic' },
     taskBottomRow: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 12,
     },
     priorityLabel: { fontSize: 12, fontWeight: '600' },
-    dueDateText: { fontSize: 12, color: '#888' },
-    reminderIndicator: { fontSize: 12, color: Colors.bridge },
-    taskNotes: { fontSize: 12, color: '#999', marginTop: 4, fontStyle: 'italic' },
+    dueDateText: { fontSize: 12, color: t.mutedText },
+    reminderIndicator: { fontSize: 12, color: t.settingValue },
+    taskNotes: { fontSize: 12, color: t.mutedText, marginTop: 4, fontStyle: 'italic' },
     fabRow: {
         position: 'absolute',
         bottom: 20,
@@ -784,7 +804,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     fab: {
-        backgroundColor: Colors.primary,
+        backgroundColor: t.buttonPrimary,
+        borderWidth: 1.5,
+        borderColor: t.buttonPrimary,
         paddingVertical: 12,
         paddingHorizontal: 20,
         borderRadius: 30,
@@ -794,9 +816,11 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 4,
     },
-    fabMainText: { color: Colors.white, fontWeight: '600', fontSize: 16 },
+    fabMainText: { color: t.buttonPrimaryText, fontWeight: '600', fontSize: 16 },
     fabSecondary: {
-        backgroundColor: Colors.bridge,
+        backgroundColor: t.stockedButton,
+        borderWidth: 1.5,
+        borderColor: t.stockedButtonBorder,
         paddingVertical: 10,
         paddingHorizontal: 14,
         borderRadius: 30,
@@ -806,18 +830,18 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 4,
     },
-    fabText: { color: Colors.white, fontWeight: '600', fontSize: 14 },
+    fabText: { color: t.stockedButtonText, fontWeight: '600', fontSize: 14 },
     logOverlay: {
         position: 'absolute',
         bottom: 70,
         left: 12,
         right: 12,
-        backgroundColor: Colors.white,
+        backgroundColor: t.card,
         borderRadius: 12,
         padding: 16,
         maxHeight: 300,
         borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
         elevation: 10,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -830,14 +854,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 10,
     },
-    logTitle: { fontSize: 16, fontWeight: '600', color: Colors.primary },
-    logClose: { fontSize: 18, color: '#888' },
+    logTitle: { fontSize: 16, fontWeight: '600', color: t.cardTitle },
+    logClose: { fontSize: 18, color: t.mutedText },
     logItem: {
         borderBottomWidth: 0.5,
-        borderBottomColor: '#eee',
+        borderBottomColor: t.progressTrack,
         paddingVertical: 6,
     },
-    logItemText: { fontSize: 13, color: Colors.text },
+    logItemText: { fontSize: 13, color: t.bodyText },
     modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.4)',
@@ -846,22 +870,22 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     modalBox: {
-        backgroundColor: Colors.white,
+        backgroundColor: t.card,
         borderRadius: 16,
         padding: 20,
         width: '100%',
         maxHeight: '85%',
     },
-    modalTitle: { fontSize: 20, fontWeight: '600', color: Colors.primary },
-    inputLabel: { fontSize: 14, color: '#666', marginBottom: 4, marginTop: 8 },
+    modalTitle: { fontSize: 20, fontWeight: '600', color: t.cardTitle },
+    inputLabel: { fontSize: 14, color: t.mutedText, marginBottom: 4, marginTop: 8 },
     input: {
         borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
         borderRadius: 8,
         padding: 10,
         fontSize: 16,
-        backgroundColor: Colors.background,
-        color: Colors.text,
+        backgroundColor: t.pageBackground,
+        color: t.bodyText,
         marginBottom: 4,
     },
     priorityRow: { flexDirection: 'row', gap: 8, marginBottom: 4 },
@@ -870,30 +894,34 @@ const styles = StyleSheet.create({
         padding: 8,
         borderRadius: 8,
         borderWidth: 1.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
         alignItems: 'center',
     },
-    priorityBtnText: { fontSize: 13, fontWeight: '600', color: Colors.primary },
+    priorityBtnText: { fontSize: 13, fontWeight: '600', color: t.bodyText },
     modalBtns: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8, marginBottom: 8 },
     cancelBtn: {
-        backgroundColor: '#ccc',
+        backgroundColor: t.buttonNeutral,
+        borderWidth: 1.5,
+        borderColor: t.buttonNeutralBorder,
         padding: 12,
         borderRadius: 8,
         flex: 1,
         alignItems: 'center',
         marginRight: 8,
     },
-    cancelBtnText: { color: '#333', fontWeight: '600' },
+    cancelBtnText: { color: t.buttonNeutralText, fontWeight: '600' },
     confirmBtn: {
-        backgroundColor: Colors.primary,
+        backgroundColor: t.buttonPrimary,
+        borderWidth: 1.5,
+        borderColor: t.buttonPrimary,
         padding: 12,
         borderRadius: 8,
         flex: 1,
         alignItems: 'center',
     },
-    confirmBtnText: { color: Colors.white, fontWeight: '600' },
+    confirmBtnText: { color: t.buttonPrimaryText, fontWeight: '600' },
     swipeDelete: {
-        backgroundColor: '#e74c3c',
+        backgroundColor: t.buttonDelete,
         justifyContent: 'center',
         alignItems: 'center',
         width: 80,
@@ -901,27 +929,25 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     swipeDeleteText: {
-        color: '#fff',
+        color: t.buttonDeleteText,
         fontWeight: '600',
         fontSize: 15,
     },
-    hintText: { fontSize: 11, color: '#aaa', marginBottom: 8 },
-    pressToEdit: { fontSize: 11, color: '#aaa', fontStyle: 'italic' },
     editBtn: {
-        backgroundColor: Colors.background,
+        backgroundColor: t.pageBackground,
         borderWidth: 0.5,
-        borderColor: Colors.primary,
+        borderColor: t.cardTitle,
         paddingVertical: 8,
         paddingHorizontal: 16,
         borderRadius: 8,
     },
-    editBtnText: { color: Colors.primary, fontSize: 16, fontWeight: '600' },
+    editBtnText: { color: t.cardTitle, fontSize: 16, fontWeight: '600' },
     headerBtn: {
-    borderWidth: 1,
-    borderColor: Colors.white,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-},
-headerBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
+        borderWidth: 1,
+        borderColor: t.headerButton,
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderRadius: 20,
+    },
+    headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
 });

@@ -71,6 +71,13 @@ export interface Theme {
     prioritySomeday: string;      // light: cool grey; dark: warm grey
     prioritySomedayText: string;
     statusOnHold: string;         // "On Hold" status fill (its own orange in BOTH)
+    // planner status & progress (added #50: planner conversion). These feed the
+    // page's STATUS_COLORS map (status word, selected Status button, Reminder "Yes").
+    // "Completed" reuses prioritySomeday; "On Hold" uses statusOnHold above.
+    statusActive: string;         // "Active" status (light: bridge teal; dark: brighter teal — light teal goes muddy on the dark card)
+    statusActiveText: string;     // text on a selected Active button
+    statusOnHoldText: string;     // text on the On Hold badge / selected button (white in BOTH)
+    progressTrack: string;        // progress-bar track (the unfilled part)
     // typography (the two themes deliberately differ — Patrick's call, #45)
     titleSize: number;
     titleWeight: '500' | '600';
@@ -132,6 +139,10 @@ export const Themes: Record<ThemeName, Theme> = {
         prioritySomeday: '#95a5a6',
         prioritySomedayText: '#ffffff',
         statusOnHold: '#e67e22',
+        statusActive: '#2d9e8f',
+        statusActiveText: '#ffffff',
+        statusOnHoldText: '#ffffff',
+        progressTrack: '#e0e0e0',
         titleSize: 28,
         titleWeight: '500',
         subtitleSize: 22,
@@ -188,10 +199,14 @@ export const Themes: Record<ThemeName, Theme> = {
         prioritySomeday: '#9c8d75',
         prioritySomedayText: '#fff6de',
         statusOnHold: '#e67e22',
+        statusActive: '#5fc4b5',
+        statusActiveText: '#04342c',
+        statusOnHoldText: '#ffffff',
+        progressTrack: '#5c5044',
         titleSize: 28,
         titleWeight: '600',
         subtitleSize: 22,
-        subtitleWeight: '500',
+        subtitleWeight: '400',
         tileLabelSize: 13,
         tileLabelFont: 'Georgia',
         iconShadow: true,

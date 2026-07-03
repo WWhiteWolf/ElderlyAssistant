@@ -1,9 +1,8 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-02 (session #48 — Timer and Settings now have both
-themes, AND the theme switcher itself is built: you pick Light or Dark
-inside Settings and the app changes on the spot. Seven pages done, six
-to go. Full rollout order is in parked-items.md under "TWO-THEME
-ROLLOUT.")
+Last updated: 2026-07-02 (session #50 — Project Planner now has both
+themes; To-Do got them in #49. Nine pages done, four to go: Look Ahead,
+My Day, My Week, Pets. Full rollout order is in parked-items.md under
+"TWO-THEME ROLLOUT.")
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -15,31 +14,29 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- Session #48: the Timer page and Settings follow both themes, and the
-  big one — Settings now has an APPEARANCE section where you choose the
-  look yourself. "App Colors": Light or Dark buttons, the solid one is
-  active, the app switches immediately and remembers your choice.
-  "Popup Colors": whether Apple's own popups (alerts, share sheet, file
-  picker) match the app or follow the iPhone's setting — this settles
-  the mismatch you saw in #47 with the white popup over the dark Vault.
-- Your calls this session: choice BUTTONS instead of on/off switches
-  (so it's evident what they do), and the whole Settings page tightened
-  to fit on one screen without scrolling. You checked everything in the
-  Simulator and approved.
-- Worth knowing: only the seven converted pages obey the theme choice.
-  The six unconverted pages (To-Do, Planner, Look Ahead, My Day,
-  My Week, Pets) stay light until their sessions come. Also, if you use
-  dark, the app may flash light for a blink at startup while it reads
-  your saved choice.
-- New parked item from you: rename the app BACK to "Remember When."
-  "Elyfont" only existed to help Siri, and Siri is shelved. It's in
-  parked-items.md with notes on where the name lives.
+- Sessions #49 + #50: To-Do and Project Planner both follow both themes
+  now. Planner's priority colors (red/gold bars) and status words
+  (Active teal, On Hold orange) come from the theme. You checked
+  Planner in the Simulator — both themes, popups too — and approved.
+- Also fixed in #50: the dark-theme Home greeting ("Good to see you,
+  Patrick!") wrapped to two crooked lines on your phone. Now it sits
+  identically in both themes — nothing moves when you switch.
+- Your calls this session: Planner's title is now 24 (26 crowded the
+  Home pill — and titles don't NEED to match at 26; fitting well
+  matters more). And the BIG one: NO more TestFlight builds until the
+  last four pages are converted, then ONE build picks everything up —
+  each build past your monthly $45 Expo credit costs real money
+  (last period's 22 builds used the credit exactly). You handle the
+  Expo billing side yourself.
+- Worth knowing: nine converted pages obey the theme choice; the four
+  unconverted ones (Look Ahead, My Day, My Week, Pets) stay light
+  until their sessions come. The dark startup flash is still there.
+- Your phone's TestFlight build is from before #49, so it shows none
+  of this yet — that's expected until the one batched build.
 - Not yet committed — you commit this session's code + docs when ready.
-  (DEFAULT_THEME is committed as 'light', but it's only the fallback
-  now — your Settings choice is what counts.)
-- Next session (#49): todo.tsx — first conversion where colors live in
-  the page's logic (a PRIORITY_COLORS list), not just the stylesheet,
-  so it needs more care than the last few.
+- Next session (#51): lookahead.tsx. Then My Day (the biggest), then
+  My Week + Pets together (near-twins, fastest). Then the batched
+  build and the phone checkpoints.
 
 
 YOUR #41 LIST — WHAT'S STILL OPEN (items 2, 5, 6, 7 done in #42)
