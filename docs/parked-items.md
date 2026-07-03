@@ -7,19 +7,17 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-02 (session #52 — myday.tsx converted to
-`Themes.ts` (five new keys: counterMinus/counterMinusText — the
-#ffcc00 "−" circle, identical in both themes — and timeStepper/
--Border/-Text — the time-spinner circles, solid blue light /
-outlined gold dark). Patrick's call: the done-state ✓ is GREEN in
-BOTH themes via Timer's buttonDone keys ("green means done" now
-covers My Day). Title to 24. Eleven pages converted, two to go:
-My Week + Pets (near-twins of My Day). Build policy unchanged: no
-TestFlight builds until the last two pages are converted.)
+Last updated: 2026-07-02 (session #53 — myweek.tsx + mollie.tsx
+converted to `Themes.ts`, ZERO new keys. **THE TWO-THEME ROLLOUT
+IS COMPLETE — all 13 pages.** ✓ done state green both themes;
+Postpone/Snooze on the delay keys; My Week's day chips: selected =
+solid buttonPrimary, unselected = pageBackground/cardBorder.
+Titles to 24 on both. Colors.ts is now retirable. Next: the
+PRE-BUILD BATCH below, then the ONE batched TestFlight build.)
 
 ---
 
-## TWO-THEME ROLLOUT (was "dark theme rollout"; rescoped #45) — all 13 pages
+## TWO-THEME ROLLOUT (was "dark theme rollout"; rescoped #45) — ✅ COMPLETE (#53): all 13 pages converted
 
 Patrick's call (#45): the light theme is NOT going away — every page gets
 BOTH themes, shared via `constants/Themes.ts` (both palettes, same keys),
@@ -29,10 +27,9 @@ elements), wire it to `useTheme()` + the `makeStyles(theme)` pattern that
 `home.tsx` demonstrates, and add any new keys to BOTH palettes. One file
 (or small pair) per session, `tsc` clean + Simulator-checked in BOTH themes
 before moving on. **The Settings toggle EXISTS as of #48** (Appearance →
-App Colors, saved on the phone, switches converted pages live); the two
-unconverted pages (My Week, Pets) still read
-`Colors.ts` and stay light whatever the toggle says. `DEFAULT_THEME` in `Themes.ts` is now just the first-launch
-fallback (committed as `'light'`).
+App Colors, saved on the phone) and as of #53 switches EVERY page live —
+no page reads `Colors.ts` anymore. `DEFAULT_THEME` in `Themes.ts` is now
+just the first-launch fallback (committed as `'light'`).
 
 1. ✅ **DONE — `home.tsx`** (#44 dark build; #45 converted to `Themes.ts`
    + light design approved). Dark: as #44 (cart/gear swapped to
@@ -89,28 +86,34 @@ fallback (committed as `'light'`).
    (Timer's buttonDone — "green means done"); Log solid orange in dark
    (mark-done action, #51 rule); Snooze rides the delay keys. Title 24.
    This is the pattern for the routine-tracker trio.
-9. **`myweek.tsx` + `mollie.tsx`** — copy myday's pattern; near-duplicate
-   files, should go fastest.
+9. ✅ **DONE (#53) — `myweek.tsx` + `mollie.tsx`.** Mockup-first for
+   My Week; Pets needed no mockup (no new elements). ZERO new theme
+   keys — everything rode existing ones. ✓ done state green in BOTH
+   themes (was teal in light — Patrick approved); Postpone / Snooze /
+   "▶ moved to" on the `delay` keys; My Week's day chips: unselected =
+   pageBackground/cardBorder/bodyText (light pixel-true), selected =
+   solid buttonPrimary (two solid oranges in the dark New Chore popup —
+   Patrick OK'd, Timer precedent); Pets Treats "−" on counterMinus,
+   "+" on bridge; Pets New/Edit popup kept borderless. Titles to 24.
 
-Once all 13 are converted, `constants/Colors.ts` can be retired — its
-values already live on as the light palette in `Themes.ts`. Not removed
-yet on purpose: unconverted pages still read it.
+**RETIRE `constants/Colors.ts` — now unblocked (#53).** All 13 pages
+read `Themes.ts`; its values live on as the light palette. Before
+deleting, grep that nothing else imports it. Small tidy-up session.
 
 ---
 
 ## PRE-BUILD BATCH — non-logic items (Patrick, #51)
 
-Do these AFTER the last three theme pages and BEFORE the one batched
-TestFlight build, so the build picks them all up in one go. Visual /
+The theme rollout is done (#53), so this batch is NEXT — do it BEFORE
+the one batched TestFlight build, so the build picks it all up in one go. Visual /
 wording only — no behavior logic. (Items moved here from Nice-to-have.)
 
 1. **Page titles to 24 app-wide (Patrick, #51 — supersedes #50's
    "22–26 fine" rule).** Done so far: Planner (#50), Look Ahead (#51),
-   My Day (#52). Explicitly on the list: To-Do (currently 26). Check the
-   other converted pages' title sizes when picked up; My Week /
-   Pets can get 24 during their theme sessions. Home is 28 by a
-   deliberate #45 choice — whether "all" includes Home is Patrick's
-   call.
+   My Day (#52), My Week + Pets (#53). Explicitly on the list: To-Do
+   (currently 26). Check the other converted pages' title sizes when
+   picked up. Home is 28 by a deliberate #45 choice — whether "all"
+   includes Home is Patrick's call.
 2. **Match the button labels.** To-Do's header says "New Task" while
    Vault's says "+ Add."
 3. **App name back to "Remember When" — the icon-label half only**

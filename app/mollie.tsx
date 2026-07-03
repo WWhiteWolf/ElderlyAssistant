@@ -18,7 +18,7 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../constants/Colors';
+import { Theme, useTheme } from '../constants/Themes';
 
 interface FeedItem {
     id: string;
@@ -44,6 +44,8 @@ const INITIAL_FEEDS: FeedItem[] = [
 
 export default function PetsScreen() {
     const router = useRouter();
+    const theme = useTheme();
+    const styles = makeStyles(theme);
     const [feeds, setFeeds] = useState<FeedItem[]>(INITIAL_FEEDS);
     const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [activeId, setActiveId] = useState<string | null>(null);
@@ -360,7 +362,7 @@ export default function PetsScreen() {
 
     return (
         <GestureHandlerRootView style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: Colors.primary }} edges={['top']}>
+            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
                         <Text style={styles.headerBtnText}>← Home</Text>
@@ -416,7 +418,7 @@ export default function PetsScreen() {
                                     style={[styles.logBtn, item.completed && styles.loggedBtn]}
                                     onPress={() => item.completed ? undoDone(item.id) : openLogModal(item.id)}
                                 >
-                                    <Text style={styles.logBtnText}>{item.completed ? '✓' : 'Log'}</Text>
+                                    <Text style={[styles.logBtnText, item.completed && styles.loggedBtnText]}>{item.completed ? '✓' : 'Log'}</Text>
                                 </TouchableOpacity>
                             </View>
                         </Swipeable>
@@ -461,7 +463,7 @@ export default function PetsScreen() {
                 <View style={styles.modal}>
                     <Text style={styles.modalTitle}>Log Entry</Text>
                     <Text style={styles.inputLabel}>Notes (optional)</Text>
-                    <TextInput style={styles.input} value={tempWhat} onChangeText={setTempWhat} placeholder="Add a note about this entry..." />
+                    <TextInput style={styles.input} value={tempWhat} onChangeText={setTempWhat} placeholder="Add a note about this entry..." placeholderTextColor={theme.mutedText} />
                     <View style={styles.modalBtns}>
                         <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowLogModal(false)}>
                             <Text style={styles.cancelBtnText}>Cancel</Text>
@@ -477,7 +479,7 @@ export default function PetsScreen() {
                 <View style={styles.modal}>
                     <Text style={styles.modalTitle}>Log Treat</Text>
                     <Text style={styles.inputLabel}>Notes (optional)</Text>
-                    <TextInput style={styles.input} value={tempTreatNote} onChangeText={setTempTreatNote} placeholder="e.g. biscuit, dental chew..." autoFocus={true} />
+                    <TextInput style={styles.input} value={tempTreatNote} onChangeText={setTempTreatNote} placeholder="e.g. biscuit, dental chew..." placeholderTextColor={theme.mutedText} autoFocus={true} />
                     <View style={styles.modalBtns}>
                         <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowTreatModal(false)}>
                             <Text style={styles.cancelBtnText}>Cancel</Text>
@@ -500,7 +502,7 @@ export default function PetsScreen() {
                                 AsyncStorage.setItem('pets_treats', String(newCount));
                             }
                         }}>
-                            <Text style={styles.counterBtnText}>-</Text>
+                            <Text style={styles.minusBtnText}>-</Text>
                         </TouchableOpacity>
                         <Text style={styles.counterCount}>{treatCount}</Text>
                         <TouchableOpacity style={styles.plusBtn} onPress={() => { setTempTreatNote(''); setShowTreatModal(true); }}>
@@ -514,7 +516,7 @@ export default function PetsScreen() {
                 <View style={styles.modal}>
                     <Text style={styles.modalTitle}>Edit Log Entry</Text>
                     <Text style={styles.inputLabel}>Notes (optional)</Text>
-                    <TextInput style={styles.input} value={editWhat} onChangeText={setEditWhat} placeholder="Add a note about this entry..." />
+                    <TextInput style={styles.input} value={editWhat} onChangeText={setEditWhat} placeholder="Add a note about this entry..." placeholderTextColor={theme.mutedText} />
                     <View style={styles.modalBtns}>
                         <TouchableOpacity style={styles.cancelBtn} onPress={() => setEditEntry(null)}>
                             <Text style={styles.cancelBtnText}>Cancel</Text>
@@ -586,6 +588,7 @@ export default function PetsScreen() {
                                 value={tempName}
                                 onChangeText={setTempName}
                                 placeholder="e.g. Morning Feed"
+                                placeholderTextColor={theme.mutedText}
                                 autoFocus={!activeId}
                             />
 
@@ -619,7 +622,7 @@ export default function PetsScreen() {
                                     }}>
                                         <Text style={styles.timeAdjText}>▼</Text>
                                     </TouchableOpacity>
-                                    <Text style={{ color: Colors.primary, fontSize: 13 }}>Hour</Text>
+                                    <Text style={{ color: theme.bodyText, fontSize: 13 }}>Hour</Text>
                                 </View>
 
                                 <Text style={styles.timeDisplayText}>:</Text>
@@ -644,7 +647,7 @@ export default function PetsScreen() {
                                     }}>
                                         <Text style={styles.timeAdjText}>▼</Text>
                                     </TouchableOpacity>
-                                    <Text style={{ color: Colors.primary, fontSize: 13 }}>Minute</Text>
+                                    <Text style={{ color: theme.bodyText, fontSize: 13 }}>Minute</Text>
                                 </View>
 
                                 <View style={{ alignItems: 'center' }}>
@@ -667,7 +670,7 @@ export default function PetsScreen() {
                                     }}>
                                         <Text style={styles.timeAdjText}>▼</Text>
                                     </TouchableOpacity>
-                                    <Text style={{ color: Colors.primary, fontSize: 13 }}>AM/PM</Text>
+                                    <Text style={{ color: theme.bodyText, fontSize: 13 }}>AM/PM</Text>
                                 </View>
                             </View>
 
@@ -689,8 +692,10 @@ export default function PetsScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: Colors.background },
+// makeStyles(theme) pattern from home.tsx (#45).
+const makeStyles = (t: Theme) =>
+    StyleSheet.create({
+    container: { flex: 1, backgroundColor: t.pageBackground },
     header: {
         paddingTop: 20,
         paddingHorizontal: 16,
@@ -699,31 +704,31 @@ const styles = StyleSheet.create({
         paddingBottom: 8,
     },
     title: {
-        fontSize: 26,
+        fontSize: 24,
         fontWeight: '500',
-        color: Colors.textLight,
+        color: t.titleText,
         fontStyle: 'italic',
         fontFamily: 'Georgia',
         flex: 1,
         textAlign: 'center',
     },
-    bridge: { height: 8, backgroundColor: Colors.bridge },
+    bridge: { height: 8, backgroundColor: t.bridge },
     scroll: { flex: 1 },
     section: {
-        backgroundColor: Colors.white,
+        backgroundColor: t.card,
         borderRadius: 12,
         padding: 15,
         margin: 12,
         borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
     },
     sectionTitle: {
         fontSize: 18,
         fontWeight: '600',
-        color: Colors.primary,
+        color: t.cardTitle,
         marginBottom: 10,
     },
-    hintText: { fontSize: 11, color: '#aaa', marginTop: 2, marginBottom: 8 },
+    hintText: { fontSize: 11, color: t.mutedText, marginTop: 2, marginBottom: 8 },
     row: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -731,33 +736,34 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
     labelArea: { flex: 1, marginRight: 10 },
-    itemLabel: { fontSize: 17, color: Colors.primary, fontWeight: '500' },
+    itemLabel: { fontSize: 17, color: t.bodyText, fontWeight: '500' },
     logBtn: {
-        backgroundColor: Colors.primary,
+        backgroundColor: t.buttonPrimary,
         paddingVertical: 8,
         paddingHorizontal: 16,
         borderRadius: 8,
     },
-    loggedBtn: { backgroundColor: Colors.bridge },
-    logBtnText: { color: Colors.white, fontWeight: '600' },
+    loggedBtn: { backgroundColor: t.buttonDone },
+    logBtnText: { color: t.buttonPrimaryText, fontWeight: '600' },
+    loggedBtnText: { color: t.buttonDoneText },
     historySection: { marginHorizontal: 12, marginBottom: 12 },
     historyScroll: {
         height: 375,
-        backgroundColor: Colors.white,
+        backgroundColor: t.card,
         borderRadius: 8,
         padding: 8,
         borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
     },
     historyItem: {
         borderBottomWidth: 0.5,
-        borderBottomColor: '#eee',
+        borderBottomColor: t.progressTrack,
         paddingVertical: 6,
     },
-    historyText: { fontSize: 13, color: Colors.text, lineHeight: 18 },
+    historyText: { fontSize: 13, color: t.bodyText, lineHeight: 18 },
     counterBox: {
         flexDirection: 'row',
-        backgroundColor: Colors.white,
+        backgroundColor: t.card,
         borderRadius: 12,
         padding: 15,
         marginHorizontal: 12,
@@ -765,37 +771,38 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
     },
     counterItem: { flex: 1, alignItems: 'center' },
-    counterTitle: { fontSize: 18, fontWeight: '600', color: Colors.primary, marginBottom: 8 },
+    counterTitle: { fontSize: 18, fontWeight: '600', color: t.cardTitle, marginBottom: 8 },
     counterControls: { flexDirection: 'row', alignItems: 'center' },
-    counterCount: { fontSize: 22, fontWeight: 'bold', width: 40, textAlign: 'center', color: Colors.primary },
+    counterCount: { fontSize: 22, fontWeight: 'bold', width: 40, textAlign: 'center', color: t.bodyText },
     minusBtn: {
-        backgroundColor: '#ffcc00',
+        backgroundColor: t.counterMinus,
         width: 40, height: 40,
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
     },
     plusBtn: {
-        backgroundColor: Colors.bridge,
+        backgroundColor: t.bridge,
         width: 40, height: 40,
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    counterBtnText: { fontSize: 24, color: Colors.white, fontWeight: 'bold' },
+    counterBtnText: { fontSize: 24, color: t.buttonPrimaryText, fontWeight: 'bold' },
+    minusBtnText: { fontSize: 24, color: t.counterMinusText, fontWeight: 'bold' },
     modal: {
         position: 'absolute',
         top: 100,
         left: 20,
         right: 20,
-        backgroundColor: Colors.white,
+        backgroundColor: t.card,
         borderRadius: 12,
         padding: 16,
         borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
         elevation: 10,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -811,90 +818,94 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     pickerModal: {
-        backgroundColor: Colors.white,
+        backgroundColor: t.card,
         borderRadius: 12,
         padding: 16,
         width: '100%',
     },
-    modalTitle: { fontSize: 18, fontWeight: '600', color: Colors.primary, marginBottom: 10 },
-    inputLabel: { fontSize: 14, color: '#666', marginBottom: 4 },
+    modalTitle: { fontSize: 18, fontWeight: '600', color: t.cardTitle, marginBottom: 10 },
+    inputLabel: { fontSize: 14, color: t.mutedText, marginBottom: 4 },
     input: {
         borderWidth: 0.5,
-        borderColor: Colors.lightBlue,
+        borderColor: t.cardBorder,
         borderRadius: 8,
         padding: 10,
         fontSize: 16,
-        backgroundColor: Colors.background,
+        backgroundColor: t.pageBackground,
         marginBottom: 10,
-        color: Colors.text,
+        color: t.bodyText,
     },
     modalBtns: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 },
     cancelBtn: {
-        backgroundColor: '#ccc',
+        backgroundColor: t.buttonNeutral,
+        borderWidth: 1,
+        borderColor: t.buttonNeutralBorder,
         padding: 10,
         borderRadius: 8,
         flex: 1,
         alignItems: 'center',
         marginRight: 8,
     },
-    cancelBtnText: { color: '#333', fontWeight: '600' },
+    cancelBtnText: { color: t.buttonNeutralText, fontWeight: '600' },
     confirmBtn: {
-        backgroundColor: Colors.primary,
+        backgroundColor: t.buttonPrimary,
         padding: 10,
         borderRadius: 8,
         flex: 1,
         alignItems: 'center',
     },
-    confirmBtnText: { color: Colors.white, fontWeight: '600' },
+    confirmBtnText: { color: t.buttonPrimaryText, fontWeight: '600' },
     swipeDelete: {
-        backgroundColor: '#e74c3c',
+        backgroundColor: t.buttonDelete,
         justifyContent: 'center',
         alignItems: 'center',
         width: 80,
         borderRadius: 10,
         marginBottom: 12,
     },
-    swipeDeleteText: { color: '#fff', fontWeight: '600', fontSize: 15 },
+    swipeDeleteText: { color: t.buttonDeleteText, fontWeight: '600', fontSize: 15 },
     timeAdjBtn: {
-        backgroundColor: Colors.primary,
+        backgroundColor: t.timeStepper,
+        borderWidth: 1.5,
+        borderColor: t.timeStepperBorder,
         width: 50, height: 50,
         borderRadius: 25,
         alignItems: 'center',
         justifyContent: 'center',
         marginVertical: 6,
     },
-    timeAdjText: { color: Colors.white, fontSize: 22, fontWeight: '600' },
-    timeDisplayText: { fontSize: 40, fontWeight: '600', color: Colors.primary, marginVertical: 4 },
+    timeAdjText: { color: t.timeStepperText, fontSize: 22, fontWeight: '600' },
+    timeDisplayText: { fontSize: 40, fontWeight: '600', color: t.bodyText, marginVertical: 4 },
     headerBtn: {
         borderWidth: 1,
-        borderColor: Colors.white,
+        borderColor: t.headerButton,
         paddingVertical: 6,
         paddingHorizontal: 12,
         borderRadius: 20,
     },
-    headerBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
+    headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
     rowSelected: {
-        backgroundColor: '#d6eef8',
+        backgroundColor: t.rowSelected,
         borderRadius: 8,
     },
     editBtn: {
-        backgroundColor: Colors.background,
+        backgroundColor: t.pageBackground,
         borderWidth: 0.5,
-        borderColor: Colors.bridge,
+        borderColor: t.pill,
         paddingVertical: 5,
         paddingHorizontal: 10,
         borderRadius: 8,
         marginRight: 8,
     },
-    editBtnText: { color: Colors.bridge, fontSize: 13, fontWeight: '600' },
+    editBtnText: { color: t.pill, fontSize: 13, fontWeight: '600' },
     snoozeRowBtn: {
-        backgroundColor: '#FF9500',
+        backgroundColor: t.delay,
         paddingVertical: 5,
         paddingHorizontal: 10,
         borderRadius: 8,
         marginRight: 8,
     },
-    snoozeRowBtnText: { color: Colors.white, fontSize: 13, fontWeight: '600' },
+    snoozeRowBtnText: { color: t.delayText, fontSize: 13, fontWeight: '600' },
     snoozeOptionRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -902,13 +913,13 @@ const styles = StyleSheet.create({
     },
     snoozeOption: {
         flex: 1,
-        backgroundColor: '#FF9500',
+        backgroundColor: t.delay,
         paddingVertical: 14,
         borderRadius: 8,
         alignItems: 'center',
         marginHorizontal: 4,
     },
-    snoozeOptionText: { color: Colors.white, fontWeight: '600', fontSize: 16 },
+    snoozeOptionText: { color: t.delayText, fontWeight: '600', fontSize: 16 },
     historyHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -920,10 +931,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         borderRadius: 6,
         borderWidth: 0.5,
-        borderColor: '#999',
+        borderColor: t.mutedText,
     },
     clearAllBtnText: {
-        color: '#666',
+        color: t.mutedText,
         fontSize: 13,
         fontWeight: '600',
     },
@@ -931,7 +942,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 16,
         bottom: 140,
-        backgroundColor: Colors.primary,
+        backgroundColor: t.buttonPrimary,
         borderRadius: 12,
         padding: 8,
         gap: 8,
@@ -947,7 +958,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     arrowText: {
-        color: Colors.white,
+        color: t.buttonPrimaryText,
         fontSize: 22,
         fontWeight: '600',
     },
