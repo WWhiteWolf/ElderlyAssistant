@@ -351,9 +351,10 @@ export default function TodoScreen() {
                     content: {
                         title: `📋 Reminder: ${task.title}`,
                         body: task.dueDate ? `Due: ${task.dueDate}${task.dueTime ? ' at ' + task.dueTime : ''}` : '',
-                        // No categoryIdentifier (Patrick, #40): To-Do banners carry NO buttons.
-                        // A To-Do is a one-time appointment — every set reminder should fire;
-                        // swipe dismisses, tap opens the app, Done happens in-app afterward.
+                        // 'todook' (Patrick, #56; softens #40's buttonless call): press-and-hold
+                        // shows a single OK that just closes the banner. Still no Done/Snooze —
+                        // a To-Do is a one-time appointment; Done happens in-app afterward.
+                        categoryIdentifier: 'todook',
                         data: { taskId: task.id, itemId: task.id, label: task.title, source: 'todo' },
                         sound: 'default',
                     },

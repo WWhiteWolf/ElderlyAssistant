@@ -99,6 +99,12 @@ export interface Theme {
     tileLabelFont: string | undefined; // 'Georgia' or undefined = system font
     // effects
     iconShadow: boolean; // emoji drop shadow (needed on dark, smudgy on light)
+    // home tile halo (added #56): soft glow behind each icon circle, in the
+    // theme's HEADER color (Patrick's pick). iOS shadow props on iconCircle;
+    // mockup-approved, final strength is a phone judgment.
+    tileHalo: string;         // halo color
+    tileHaloOpacity: number;  // shadowOpacity
+    tileHaloRadius: number;   // shadowRadius
 }
 
 export const Themes: Record<ThemeName, Theme> = {
@@ -111,7 +117,7 @@ export const Themes: Record<ThemeName, Theme> = {
         pageBackground: '#e8f4f8',
         bridge: '#2d9e8f',
         tileCircle: '#4caba1',
-        tileCircleBorder: '#348f86',
+        tileCircleBorder: '#43a297',
         tileLabel: '#1a6e8a',
         cartIcon: '#d8dde3',
         settingsGear: '#4caba1',
@@ -167,8 +173,11 @@ export const Themes: Record<ThemeName, Theme> = {
         subtitleSize: 21,
         subtitleWeight: '400',
         tileLabelSize: 18,
-        tileLabelFont: undefined,
+        tileLabelFont: 'Georgia', // #56: matches dark — both themes read Georgia
         iconShadow: false,
+        tileHalo: '#1a6e8a',      // #56: header teal-blue, stronger than dark's
+        tileHaloOpacity: 0.75,
+        tileHaloRadius: 9,
     },
     // Dark — the warm dark theme exactly as approved #43 / built #44.
     dark: {
@@ -179,7 +188,7 @@ export const Themes: Record<ThemeName, Theme> = {
         bridge: '#c9622e',
         tileCircle: '#c9622e',
         tileCircleBorder: '#a3481f',
-        tileLabel: '#f0d9a8',
+        tileLabel: '#f0a83a', // #56: gold (was pale cream #f0d9a8) — Patrick's pick
         cartIcon: '#d8dde3',
         settingsGear: '#c9622e',
         card: '#4a3e30',
@@ -233,9 +242,12 @@ export const Themes: Record<ThemeName, Theme> = {
         titleWeight: '600',
         subtitleSize: 21,
         subtitleWeight: '400',
-        tileLabelSize: 13,
+        tileLabelSize: 18, // #56: was 13 — dark labels now match light's size
         tileLabelFont: 'Georgia',
         iconShadow: true,
+        tileHalo: '#f0a83a',      // #56: header gold, softer than light's
+        tileHaloOpacity: 0.55,
+        tileHaloRadius: 7,
     },
 };
 

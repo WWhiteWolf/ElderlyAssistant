@@ -1,6 +1,7 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-03 (session #55 — docs tidy-up. The batched
-TestFlight build is DONE and on the phone. Next up: the phone checkpoints.)
+Last updated: 2026-07-04 (session #56 "Polish 1" — the Home page got
+its polish and the To-Do banner got an OK button. Next build shows it
+all on the phone.)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -12,55 +13,58 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
 - The app ("Remember When") is stable and on your phone via TestFlight.
   Nothing is half-built or broken in a way that's holding you up.
-- Session #54: the PRE-BUILD BATCH is DONE. Every page title except
-  Home is now size 24 (checked page by page); Home keeps its 28 title
-  and its subtitle came down one size to 21 (your wrap fix); the icon
-  label under the phone icon is set back to "Remember When" (shows
-  after the build). You dropped the button-labels item from the batch.
-- Also in #54, at your ask: the To-Do page's "📅 Week" button and its
-  Week Ahead popup were removed entirely — nothing parked, your call.
-  A leftover dead line from an old rework came out too; a sweep found
-  no other dead code in that file.
-- A lesson from #54: the Simulator runs a narrower screen than your
-  phone, so it's NOT a reliable judge of text size and wrapping —
-  your phone is. (Home's title looked wrong at 26 in the Simulator;
-  your phone showed 28 fits fine, so 28 it stayed.)
+- Your phone (the #55 build) shows everything from #49 through #54:
+  the new titles, Home 28/21, the two themes on all pages, and the
+  "Remember When" icon label. The #48 Settings controls and nearly
+  all the phone checkpoints were verified in #55.
+- Session #56 "Polish 1" — built and approved by you in the
+  Simulator ("the perfect balance"):
+  · Home button names are now size 18 in Georgia in BOTH themes —
+    gold in Dark, the usual blue in Light. (This fixes the
+    too-small Dark buttons you spotted in #55.)
+  · A soft halo now glows behind each Home button, in each theme's
+    header color — this also fills the "too empty" button area.
+  · The Light theme's ring around each button is now barely-there
+    teal (#43a297), your pick from the mockups.
+  · The home tile now reads "My Pets Day" (tile only, your call).
+  · The To-Do banner has an OK button again: press and hold the
+    banner, tap OK, it just closes — the app doesn't open. (The
+    buttonless banner PASSED its test, but you decided you want
+    the OK back after living with it.)
+- NOT yet committed: the four #56 code files + the docs. You commit.
+- #56's changes reach your phone at the NEXT batched build — judge
+  the halo strength, ring shade, label wrapping, and the OK banner
+  there. Build policy unchanged: batched builds only, you handle
+  Expo billing.
 - The dark startup flash is still there (a known small quirk).
-- The ONE batched TestFlight build is DONE and on your phone (#55).
-  All commits are done too. Your phone now shows everything from
-  #49 through #54: the new titles, Home 28/21, the two themes, and
-  the "Remember When" icon label. Build policy unchanged: batched
-  builds only, you handle Expo billing.
-- You confirmed on the phone (#55): the themes are in ALL pages, and
-  the #48 Settings controls (Light/Dark switcher, Popup Colors) are
-  fully verified — including surviving a restart. That checkpoint
-  is DONE.
-- Next session: the phone checkpoints.
 - Small item still possible: the old Colors.ts file can be retired —
   nothing reads it anymore (on the someday list).
 
 
-WHAT'S NEXT (#55) — suggested order, easiest and most useful first
+WHAT'S NEXT (#56) — suggested order, easiest and most useful first
 ------------------------------------------------------------------
-1. Home page buttons too small in Dark theme — quick visual fix.
-2. The backup-keys bug — a good small Simulator session.
-3. To-Do log rebuild — talked through in #55, spec ready (see the
+1. The backup-keys bug — a good small Simulator session.
+2. To-Do log rebuild — talked through in #55, spec ready (see the
    decisions section below).
+3. The single-digit date/time padding fix (see STILL BROKEN below).
 4. Name the backup folder/file — needs the real phone (iCloud); ties
    into finishing the "Remember When" rename.
    (The when-you're-ready talk-throughs — Vault import, removing
    Vault categories, the backup Merge option — are listed in the
    DECISIONS section below.)
-(Everything parked in #55 — the Vault "Custom" check and the
-bigger/someday items — now lives in PARKED ON PURPOSE at the bottom.)
+(Done in #56: the Home dark-theme button fix, plus the halo, ring,
+"My Pets Day", and the To-Do banner OK. Everything parked in #55 —
+the Vault "Custom" check and the bigger/someday items — lives in
+PARKED ON PURPOSE at the bottom.)
 
 
 #40 & #41 STILL OPEN (from your #41 list, items 2, 5, 6, 7 done in
 #42; item 4 phone-verified in #55)
 ----------------------------------------------------------------------------
-- The buttonless To-Do banner test (#40) — the LAST phone checkpoint.
-  Being tested as #55 wrapped up; record the result next session.
-  (Test steps are in the phone-test section below.)
+- ✅ DONE — the buttonless To-Do banner test (#40): PASSED on the
+  phone (#56) — and then overtaken the same session: you decided
+  you want an OK button after all, and it's now built. The NEW
+  one-OK banner gets its look at the next build (steps below).
 1. Name the backup folder — moved up from "someday" to "wanted." Best
    finished and checked on the real phone, where iCloud Drive is involved.
    (Now related: the app-name change back to "Remember When" touches the
@@ -80,16 +84,23 @@ NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
   bug — almost certainly the "2 hours before" option doing its job. To be
   sure: make a task due a few minutes out, pick ONLY a short preset, and
   watch if it fires on the minute.
-- The buttonless To-Do banner (#40) — the LAST phone checkpoint left.
-  To test: make a throwaway To-Do due a bit over an hour from now and
-  pick only the "1 hour" preset (the reminder fires an hour before
-  the due time — a due time just minutes away puts the fire time in
-  the past, so nothing fires; that's by design). When the banner
-  arrives, press and hold it: it should show NO buttons.
+- The NEW To-Do banner OK (#56) — VERIFIED in the Simulator (press
+  and hold a fresh banner with the app open → one OK button). Still
+  give it a quick phone look at the next batched build: press and
+  hold a To-Do banner, tap OK, the banner should close WITHOUT
+  opening the app. (Banners scheduled on the old build stay
+  buttonless until they cycle out.)
+  LESSON from testing this (#56): the Simulator's LOCK SCREEN never
+  shows banner buttons — not even My Day's proven six. Judge banner
+  buttons with the app open in the Simulator, or on the real phone.
+- Also at the next build: the Home page halo strength, the Light
+  ring shade, and how the size-18 Georgia button names wrap — all
+  Simulator-approved in #56, but the phone is the real judge.
   (Verified in #55: the shared routine popup (#39) — all 6 buttons on
   My Day / My Week / Pets, and tapping routes to the page; Look
   Ahead's reminders (#37); the Watch List once-over (#41); and the
-  #42 once-over.)
+  #42 once-over. The buttonless banner passed in #56 before the OK
+  change replaced it.)
 
 
 STILL BROKEN OR UNFINISHED (small bugs)
@@ -109,8 +120,7 @@ STILL BROKEN OR UNFINISHED (small bugs)
 - Tapping a reminder now TRIED with a real tap (#55): it lands on the
   right page. Taking you to the exact item on that page is still
   not built. Minor.
-- The Home page buttons are too small in the Dark theme (spotted on
-  the phone, #55).
+  (The too-small Dark theme Home buttons from #55: FIXED in #56.)
 
 
 DECISIONS TO MAKE WHEN YOU'RE READY

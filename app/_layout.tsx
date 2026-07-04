@@ -102,12 +102,17 @@ export default function RootLayout() {
         { identifier: 'snooze30', buttonTitle: 'Snooze 30 min' },
         { identifier: 'snooze60', buttonTitle: 'Snooze 60 min' },
       ]);
-      // To-Do banners carry NO buttons (Patrick, #40). A To-Do is a one-time
-      // appointment: every set reminder should fire in turn; swipe dismisses,
-      // tap opens the app, and Done happens in-app after the appointment.
-      // The old 'todosnooze' category (OK + Done) is deliberately no longer
-      // registered; the banner Done handler code below stays in place
-      // harmlessly for any banners scheduled before this change.
+      // To-Do banners carry ONE button (Patrick, #56 — softens #40's
+      // buttonless call after living with it): press-and-hold shows just OK,
+      // which closes the banner without opening the app (the 'ok' action is
+      // a no-op in the handler below). Still no Done/Snooze — a To-Do is a
+      // one-time appointment; Done happens in-app after the appointment.
+      // The old 'todosnooze' category (OK + Done) stays unregistered; its
+      // banner Done handler code below remains harmlessly for any banners
+      // scheduled before #40.
+      await Notifications.setNotificationCategoryAsync('todook', [
+        { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
+      ]);
       // My Week reminders: mark Done, or push the reminder one day forward.
       await Notifications.setNotificationCategoryAsync('myweekactions', [
         { identifier: 'done', buttonTitle: 'Done' },

@@ -1,40 +1,29 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #54 (2026-07-03) "PRE-BUILD BATCH — #54": **the batch is DONE — the ONE batched TestFlight build is now unblocked.** All visual/wording, no behavior logic, `tsc` clean throughout. Plus one extra cleanup Patrick added mid-session (the To-Do Week button, below).
+## THIS SESSION — #56 (2026-07-04) "Polish 1": **Home-page polish batch + the To-Do banner gets its OK back — all built, `tsc` clean, Patrick Simulator-approved ("the perfect balance").** Mockup-first throughout (several halo/ring iterations before any code). No behavior logic beyond the banner category.
+
+**Test result recorded first:** the buttonless To-Do banner (#40) PASSED its phone test — the last #40/#41 checkpoint. But living with it changed Patrick's mind: "exactly what I asked for, but not what I want now." Hence the OK change below; the NEW one-button banner needs its own phone look at the next build.
 
 **What changed:**
-- **Titles:** the seven remaining pages went 26 → 24 (To-Do, Shopping, Vault, Settings, Timer, Backup, Watch List) — **all 12 non-Home pages now read 24**; verified page-by-page. Home stays 28 (Patrick's call — see below).
-- **Home header:** subtitle 22 → **21** in BOTH palettes (`Themes.ts` `subtitleSize`) — Patrick's fix for the subtitle wrapping with his name. Title briefly went to 26 mid-session, then **reverted to 28** on Patrick's call after his phone (old build) showed 28 fits fine — **the Simulator misled on text size** (it runs a narrower device, so the same pt size wraps there but not on the phone; Patrick declined switching the Simulator device to match). Net: Home = 28/21.
-- **App name:** `app.json` `"name"` `"Elyfont"` → `"Remember When"` (icon-label half only; shows after the build). `slug`/`scheme`/`bundleIdentifier` deliberately untouched; backup-file naming stays in Nice-to-have (touches restore logic).
-- **Button labels item (To-Do "New Task" vs Vault "+ Add") — DROPPED from the batch by Patrick**, not done.
-- **To-Do Week button REMOVED (Patrick's mid-session add):** the "📅 Week" fab button, `showWeekAhead` state, the whole Week Ahead overlay (~50 lines) and its 10 `week*` styles cut from `app/todo.tsx`. The "Week" reminder preset (7 days before) STAYS. **No parked-items entry — Patrick's call ("nothing to park")**; the code lives in git history before the #54 commit if ever wanted. Also removed: a dead `showToday` state line (pre-existing, found by an unused-code sweep; the sweep found nothing else in the file).
-- **Planner title "too small" on Patrick's phone — already fixed, nothing done:** his build (the #48 state) has Planner at 22; current code has 24 (#50). The next build shows it.
+- **To-Do banner OK (Patrick's call, softens #40):** new `todook` category in `_layout.tsx` — press-and-hold shows a single **OK** that closes the banner WITHOUT opening the app (the existing `action === 'ok'` no-op handles it; verified before building). `todo.tsx` scheduling now tags `categoryIdentifier: 'todook'`. Still no Done/Snooze — a To-Do stays a one-time appointment. Old `todosnooze` remains unregistered; its legacy handler untouched.
+- **Home labels (`Themes.ts`):** dark `tileLabel` pale cream → **gold `#f0a83a`**, `tileLabelSize` 13 → **18**; light `tileLabelFont` system → **Georgia**. Net: BOTH themes 18/Georgia — dark gold, light keeps its blue.
+- **Halo (NEW — this settles Patrick's "button area too empty"; he confirmed nothing more is needed behind the buttons):** three new theme keys (`tileHalo`/`tileHaloOpacity`/`tileHaloRadius`, both palettes) + iOS shadow on `home.tsx`'s `iconCircle`. Each theme's halo is its HEADER color — light `#1a6e8a` stronger (0.75/9), dark `#f0a83a` softer (0.55/7). Values are mockup-derived: fine-tune on the phone.
+- **Light ring:** `tileCircleBorder` `#348f86` → **`#43a297`** — Patrick picked this near-blend shade from a mockup ladder (tried lighter mint = MORE noticeable, wrong direction; "lighter" meant "less noticeable").
+- **Home tile wording:** "Pets Day" → **"My Pets Day"** (`home.tsx`). Tile only — page title "Pets 🐾", banner "Pets Routine", "Pets Log" all deliberately unchanged (Patrick's call).
 
-**Process note (Patrick flagged BOTH in #54):** (1) an instruction like "park it now" means NOW, not deferred to session end; (2) a scope answer is not a "go" — wait for the explicit go before cutting code.
+**Checks:** `tsc` clean; diff re-read against the spec; grep confirmed the tileLabel/halo keys are read ONLY by `home.tsx` — no ripple to other pages.
 
-**Commit note:** NOT yet committed — 9 code files (`Themes.ts`, `app.json`, `todo.tsx`, `shopping.tsx`, `vault.tsx`, `settings.tsx`, `timer.tsx`, `backup.tsx`, `watchlist.tsx`) + these docs. Patrick commits.
+**Simulator-verified in-session (after a false alarm):** the OK popup WORKS — a fresh To-Do banner, app in foreground, press-and-hold → a single OK. First attempts looked broken; isolating with a temporary switch to My Day's proven `routineactions` popup (reverted same session) showed the code was fine all along. **New Simulator lesson (joins #54's):** the Simulator's LOCK SCREEN doesn't show banner action buttons at all — not for To-Do, not even for My Day's proven six — so banner buttons must be judged with the app open (or on the real phone). Also mid-session: Metro had died; relaunched with `npx expo start`.
+
+**Commit note:** NOT yet committed — 4 code files (`constants/Themes.ts`, `app/home.tsx`, `app/_layout.tsx`, `app/todo.tsx`) + these docs. Patrick commits.
 
 **➤ NEXT SESSION — pick up here:**
-1. **The ONE batched TestFlight build** + phone checkpoints (fold in the #48 toggle test and the #49–#54 pages). **BUILD POLICY stands (#50): no per-session builds** — EAS builds past the $45 credit cost real money; Patrick handles Expo billing.
-2. Still open and untouched: backup-keys bug (six keys), backup folder naming, Vault import discussion, Vault "Custom" label bug (unverified), structured reminder tests, phone checkpoints A + B, Colors.ts retirement.
+1. Next batched build folds in #56: judge on the phone — halo strength, ring shade, 18-Georgia wrapping, and the new OK banner (press-and-hold a To-Do banner → one OK, closes without opening the app). **BUILD POLICY stands (#50): no per-session builds** — Patrick handles Expo billing.
+2. Patrick's pending.txt menu, still open: backup-keys bug (six keys), To-Do log rebuild (spec ready, #55), single-digit date/time padding bug (#55), backup folder naming, and the talk-throughs (Vault import, Vault categories, backup Merge).
 
 ---
 
-## SESSION — #53 (2026-07-02) "Theme — myweek.tsx + mollie.tsx #53": **BOTH pages on `Themes.ts` in both themes; `tsc` clean; Patrick Simulator-checked BOTH themes on BOTH pages (pages, tiles, all popups) and approved. THE TWO-THEME ROLLOUT IS COMPLETE — all 13 pages converted.** Mockup-first for My Week (page + New Chore + Postpone popups); Pets needed no mockup — no new elements, everything had a #52-approved treatment. Page logic untouched. Titles 26 → 24 on both (the #51 rule).
-
-**ZERO new theme keys — `Themes.ts` untouched.** Everything rode existing keys:
-- **My Week:** Postpone button, "Tomorrow (+1 day)", and the "▶ moved to <day>" tile line ride the `delay` keys (same #FF9500 both themes); the day/time tile line ("Tue 7:00 PM") rides `pill` (light unchanged teal / gold in dark); Done = solid `buttonPrimary`; Edit = outlined `pill`; **day chips (the one element My Day didn't have):** unselected = `pageBackground` fill + `cardBorder` border + `bodyText` text (light pixel-true), selected = solid `buttonPrimary` — Patrick OK'd the dark New Chore popup having TWO solid oranges (Save + the selected day; Timer's selected-pill precedent, bends #52's "Save stands alone").
-- **Pets (`mollie.tsx`):** Snooze + the 15/30/60 popup ride `delay`; Treats "−" on `counterMinus` (new `minusBtnText` style — dark-brown text on the yellow in dark), "+" on `bridge`, count on `bodyText`; Log solid `buttonPrimary`; Edit outlined `pill`; time stepper on the `timeStepper` keys. New/Edit Entry popup deliberately kept borderless (faithful to the old light look; My Day/My Week's have a thin border).
-- **Both:** ✓ done state now GREEN in BOTH themes via `buttonDone` (the #52 "green means done" rule — a visible light-theme change, was teal; Patrick approved on the mockup); #47 invisible border on Cancel; #48 `mutedText` placeholders (3 inputs My Week, 4 Pets); greys (#aaa/#666/#999/#eee/#ccc) unified onto `mutedText`/`progressTrack`/`buttonNeutral`; spinner captions on `bodyText`.
-
-**Rollout consequence:** every page now reads `Themes.ts` — `constants/Colors.ts` is officially retirable (its own small parked item, now unblocked; check nothing else imports it first).
-
-**Commit note:** NOT yet committed — `app/myweek.tsx` + `app/mollie.tsx` + these docs. Patrick commits.
-
-**➤ NEXT SESSION — pick up here:**
-1. **PRE-BUILD BATCH** (Patrick, #51 — see parked-items): remaining titles to 24 (To-Do explicitly; check the other converted pages; Home-at-28 is Patrick's call), matching button labels (To-Do "New Task" vs Vault "+ Add"), the icon-label rename to "Remember When".
-2. THEN the ONE batched TestFlight build + phone checkpoints (fold in the #48 toggle test and the #49–#53 pages). **BUILD POLICY stands (#50): no per-session builds** — EAS builds past the $45 credit cost real money; Patrick handles Expo billing.
-3. Still open and untouched: backup-keys bug (six keys), backup folder naming, Vault import discussion, Vault "Custom" label bug (unverified), structured reminder tests, phone checkpoints A + B, Colors.ts retirement.
+## SESSION — #55 (2026-07-03) "Docs tidy-up": **the ONE batched TestFlight build (#49–#54 content) was built and is on the phone; commits all done.** Phone-verified: themes on ALL pages; the #48 Settings controls (Light/Dark + Popup Colors) incl. surviving restart; the shared routine popup (#39, all six buttons + routing); Look Ahead reminders (#37); Watch List + #42 once-overs; the My Day past-day banner guard (tested past midnight — logged under yesterday, today untouched). New finds, put on pending.txt: Home dark-theme buttons too small (→ FIXED in #56); single-digit dates/times likely break scheduling silently; save-with-no-preset schedules nothing silently; banner-Done should log both times (nice-to-have). To-Do log rebuild talked through — spec sits in pending.txt. The buttonless-banner test was in flight as the session wrapped (→ resolved in #56, see above).
 
 ---
 

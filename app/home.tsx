@@ -17,7 +17,7 @@ const modules = [
   { id: 'timer', label: 'Timer Alerts', icon: '⏰' },
   { id: 'myday', label: 'My Day', icon: '☀️' },
   { id: 'myweek', label: 'My Week', icon: '🗓️' },
-  { id: 'mollie', label: 'Pets Day', icon: '🐾' },
+  { id: 'mollie', label: 'My Pets Day', icon: '🐾' },
   { id: 'lookahead', label: 'Look Ahead', icon: '🔭' },
   { id: 'todo', label: 'To-Do', icon: '✅' },
   { id: 'planner', label: 'Project Planner', icon: '📋' },
@@ -151,6 +151,12 @@ const makeStyles = (t: Theme) =>
             alignItems: 'center',
             justifyContent: 'center',
             marginBottom: 8,
+            // #56: the halo — a soft glow in the theme's header color
+            // (iOS shadow; strength keys live in Themes.ts).
+            shadowColor: t.tileHalo,
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: t.tileHaloOpacity,
+            shadowRadius: t.tileHaloRadius,
         },
         tileIcon: {
             fontSize: 22,

@@ -7,13 +7,15 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-03 (session #54 — the PRE-BUILD BATCH is DONE
-and its section removed: all 12 non-Home titles at 24, Home 28/21
-(subtitle down one size), app.json name back to "Remember When".
-The button-labels item was DROPPED by Patrick. Extra cleanup: the
-To-Do "📅 Week" button + Week Ahead popup removed entirely — no
-parked entry by Patrick's call, git history has the code. Next:
-the ONE batched TestFlight build, then the phone checkpoints.)
+Last updated: 2026-07-04 (session #56 "Polish 1" — Home polish batch
+built and Simulator-approved: labels 18/Georgia both themes (dark in
+gold #f0a83a), a NEW halo behind each icon circle in the theme's
+header color, light ring softened to #43a297, tile renamed "My Pets
+Day". PLUS the To-Do banner got a single OK button back (`todook`
+category) — the #40 buttonless banner PASSED its phone test but
+Patrick changed his mind after living with it. The #55 build put
+#49–#54 on the phone; #56's changes ride the NEXT batched build,
+where halo/ring/OK get their phone judgment.)
 
 ---
 
@@ -158,16 +160,16 @@ pages. Take ONE piece per session. **Order: pages first, then the popup consolid
   item 4): he saw a banner Done on YESTERDAY'S My Day reminder check off TODAY'S —
   almost certainly the phone's older TestFlight build (the #39 past-day guard isn't
   device-tested yet), but verify the guard explicitly. Patrick is tracking it.**
-- **PHONE CHECKPOINTS A + B (cloud build) — owed; likely folded into the structured
-  test session.** On the real phone confirm: To-Do one-shots + Look Ahead reminders
-  fire, route on tap, the Look Ahead Done/Delay buttons behave, **the To-Do banner is
-  buttonless (#40)** — swipe dismisses, tap opens the app, no OK/Done (banners
-  scheduled before #40 may still show the old buttons until they cycle out) — AND the
-  shared routine popup (#39): six buttons, Skip, past-day guard, snooze sound. **Plus
-  a quick Watch List once-over (#41): tile, add movie/show, buttons, data survives
-  an app restart. Plus a #42 once-over: To-Do with no categories (New/Edit form,
-  no filter bar), Look Ahead popup buttons up top, and the My Day / Pets ✓
-  un-check (history intact, reminder re-armed).**
+- **PHONE CHECKPOINTS A + B — ✅ essentially DONE (#55/#56).** Verified on the
+  phone in #55: Look Ahead reminders + Done/Delay (#37), tap-routing to the
+  right page, the shared routine popup (#39 — six buttons, Skip, snooze
+  sound), the My Day past-day guard (tested past midnight — logged under
+  yesterday, today untouched), the Watch List once-over (#41), and the #42
+  once-over. The buttonless To-Do banner (#40) passed in #56 — and was then
+  SUPERSEDED the same session: banners now carry a single OK (`todook`).
+  **Still owed at the next batched build: the NEW OK banner** (press-and-hold
+  → one OK, closes without opening the app) and the To-Do early-fire re-test
+  (see Bugs above).
 - **✅ DONE (#41, Simulator-validated) — Watch List integrated as a home page**
   (`app/watchlist.tsx` new + home tile/route + `_layout.tsx` Stack.Screen). The
   standalone `Projects/WatchList` app's three files combined into one TS page,
@@ -191,8 +193,10 @@ checkpoints above. Still open:
 3. **Import files/docs into Vault.** Bring outside files/documents into the
    Vault. Scope is undefined (file types? where from? how shown/stored/encrypted?)
    — needs a discussion session before any build.
-4. **My Day past-day banner Done** — folded into the STRUCTURED REMINDER TESTS
-   entry above. Patrick is tracking whether it recurs.
+4. ✅ **My Day past-day banner Done — PHONE-VERIFIED (#55)**, tested just past
+   midnight: the past completion logged under yesterday's date, today's items
+   untouched, as designed. (Spin-off nice-to-have in pending.txt: log BOTH
+   times on a banner Done.)
 
 Done in #42, for the record: **5** — Look Ahead New/Edit popup's Cancel & Save
 moved up under the title (matching To-Do). **6** — Categories removed from To-Do
@@ -314,11 +318,12 @@ categories from To-Do entirely.)
 - **Retire the leftover pre-#39/#40 popup plumbing (cosmetic, after device validation).**
   `_layout.tsx` still registers the now-unused `mydaysnooze` / `petssnooze` /
   `myweekactions` categories and keeps the old `postpone1` (+1 Day) handler and the
-  To-Do banner OK/Done handler (#40 made To-Do banners buttonless) — all left in
-  place on purpose so banners scheduled before the switches still work. Once the
-  changes are device-validated and old banners have cycled out, they can be
-  removed. Purely internal; no behavior change. (The old "rename `todosnooze`"
-  item is gone — #40 deleted that category entirely.)
+  old To-Do banner Done handler — all left in place on purpose so banners
+  scheduled before the switches still work. Once the changes are
+  device-validated and old banners have cycled out, they can be removed.
+  Purely internal; no behavior change. (Note #56: To-Do banners now use the
+  NEW `todook` category — a single OK riding the shared no-op 'ok' handler —
+  which is live code, NOT part of this retirement.)
 - **"At time" reminder option, possibly revisit.** Removed from To-Do in #38 (Patrick's
   call — soonest preset is now "1 hour" before). If after phone testing Patrick misses an
   exact-time alert, it can be added back as a preset.
