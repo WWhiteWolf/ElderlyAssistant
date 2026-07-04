@@ -1,6 +1,6 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-03 (session #54 — the pre-build batch is DONE.
-Next up: the one TestFlight build, then the phone checkpoints.)
+Last updated: 2026-07-03 (session #55 — docs tidy-up. The batched
+TestFlight build is DONE and on the phone. Next up: the phone checkpoints.)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -26,58 +26,91 @@ WHERE THINGS STAND RIGHT NOW (read this first)
   your phone is. (Home's title looked wrong at 26 in the Simulator;
   your phone showed 28 fits fine, so 28 it stayed.)
 - The dark startup flash is still there (a known small quirk).
-- Your phone's TestFlight build is from before #49, so it shows none
-  of this yet — that's expected until the one batched build. (It's
-  also why Project Planner's title looks too small on your phone:
-  that page is 22 on your build, already 24 in the code.) Build
-  policy unchanged: ONE batched build, you handle Expo billing.
-- Not yet committed — you commit this session's code + docs when ready.
-- Next session: the ONE batched build, then the phone checkpoints.
+- The ONE batched TestFlight build is DONE and on your phone (#55).
+  All commits are done too. Your phone now shows everything from
+  #49 through #54: the new titles, Home 28/21, the two themes, and
+  the "Remember When" icon label. Build policy unchanged: batched
+  builds only, you handle Expo billing.
+- You confirmed on the phone (#55): the themes are in ALL pages, and
+  the #48 Settings controls (Light/Dark switcher, Popup Colors) are
+  fully verified — including surviving a restart. That checkpoint
+  is DONE.
+- Next session: the phone checkpoints.
 - Small item still possible: the old Colors.ts file can be retired —
   nothing reads it anymore (on the someday list).
 
 
-YOUR #41 LIST — WHAT'S STILL OPEN (items 2, 5, 6, 7 done in #42)
+WHAT'S NEXT (#55) — suggested order, easiest and most useful first
+------------------------------------------------------------------
+1. Home page buttons too small in Dark theme — quick visual fix.
+2. The backup-keys bug — a good small Simulator session.
+3. To-Do log rebuild — talked through in #55, spec ready (see the
+   decisions section below).
+4. Name the backup folder/file — needs the real phone (iCloud); ties
+   into finishing the "Remember When" rename.
+   (The when-you're-ready talk-throughs — Vault import, removing
+   Vault categories, the backup Merge option — are listed in the
+   DECISIONS section below.)
+(Everything parked in #55 — the Vault "Custom" check and the
+bigger/someday items — now lives in PARKED ON PURPOSE at the bottom.)
+
+
+#40 & #41 STILL OPEN (from your #41 list, items 2, 5, 6, 7 done in
+#42; item 4 phone-verified in #55)
 ----------------------------------------------------------------------------
+- The buttonless To-Do banner test (#40) — the LAST phone checkpoint.
+  Being tested as #55 wrapped up; record the result next session.
+  (Test steps are in the phone-test section below.)
 1. Name the backup folder — moved up from "someday" to "wanted." Best
    finished and checked on the real phone, where iCloud Drive is involved.
    (Now related: the app-name change back to "Remember When" touches the
    same backup file naming.)
 3. Import files/documents into the Vault. Needs a talk-through first
    (what kinds of files, from where, how they're shown and protected).
-4. My Day: a banner "Done" on YESTERDAY'S reminder checked off TODAY'S.
-   Most likely your phone is still running the older build from before the
-   fix (#39) — the fix just hasn't been phone-tested yet. You're tracking
-   whether it happens again; it's on the structured-test checklist.
+4. ✅ DONE — My Day banner "Done" on YESTERDAY'S reminder: PHONE-
+   VERIFIED in #55 (tested just past midnight). Today's items stayed
+   untouched; the past completion was logged under yesterday's date
+   and fire time, as designed. (Spin-off request below in
+   Nice-to-have: log BOTH times.)
 
 
 NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
 ----------------------------------------------------------------------------
-- The new theme switcher and popup choice (#48) — Simulator-approved;
-  give them a once-over on the real phone after the next TestFlight build.
 - A To-Do reminder that seemed to fire early. Checking the code found no
   bug — almost certainly the "2 hours before" option doing its job. To be
   sure: make a task due a few minutes out, pick ONLY a short preset, and
   watch if it fires on the minute.
-- The buttonless To-Do banner (#40), the shared routine popup (#39), Look
-  Ahead's reminders (#37), a Watch List once-over (#41), and the #42
-  once-over (To-Do without categories, Look Ahead popup buttons, the
-  My Day / Pets un-check) — all batched into the phone checkpoints.
+- The buttonless To-Do banner (#40) — the LAST phone checkpoint left.
+  To test: make a throwaway To-Do due a bit over an hour from now and
+  pick only the "1 hour" preset (the reminder fires an hour before
+  the due time — a due time just minutes away puts the fire time in
+  the past, so nothing fires; that's by design). When the banner
+  arrives, press and hold it: it should show NO buttons.
+  (Verified in #55: the shared routine popup (#39) — all 6 buttons on
+  My Day / My Week / Pets, and tapping routes to the page; Look
+  Ahead's reminders (#37); the Watch List once-over (#41); and the
+  #42 once-over.)
 
 
 STILL BROKEN OR UNFINISHED (small bugs)
 ---------------------------------------
+- To-Do dates/times typed with single digits (7/4/26 or 9:00 instead
+  of 07/04/26 or 09:00) most likely break reminder scheduling
+  SILENTLY — the code glues the typed text straight into a computer
+  date without padding it (#55). Small fix: pad single digits
+  automatically in the scheduling and sorting code. Until then:
+  always type two digits, time in 24-hour clock.
 - Backups skip some data (found #41, grew #48). The backup code has a
   fixed list of what to save; Look Ahead, Watch List, AND now the theme +
   popup choices were never added. Until fixed, restoring a backup loses
   those. Simulator-testable — a good small session.
-- The Vault "Custom" label suspicion (spotted #47, NOT yet confirmed):
-  typing your own label under "Custom" may save the word "Custom"
-  instead. Test steps are in parked-items.md; if real, the fix is tiny.
 - My Week: marking a chore done from inside the app records today's date
   instead of the chore's own day. Minor.
-- Tapping a reminder takes you to the right screen but not to the exact
-  item, and this has never actually been tried with a real tap.
+- Tapping a reminder now TRIED with a real tap (#55): it lands on the
+  right page. Taking you to the exact item on that page is still
+  not built. Minor.
+- The Home page buttons are too small in the Dark theme (spotted on
+  the phone, #55).
 
 
 DECISIONS TO MAKE WHEN YOU'RE READY
@@ -88,10 +121,21 @@ DECISIONS TO MAKE WHEN YOU'RE READY
 - Vault import (your item 3 above) — scope it out before building.
 - Remove categories from Vault (your #47 idea) — talk-through first,
   like #42 did for To-Do.
+- To-Do log rebuild — TALKED THROUGH in #55, ready to build (a modest
+  session of its own). The spec: drop the "📋 Log" button and its
+  popup; the log sits at the bottom of the To-Do page, always visible
+  under the task tiles, on the same pattern as the other pages' logs —
+  header row with a "Clear All" button (with the same are-you-sure
+  popup), tap an entry to edit its note, swipe left to delete it,
+  last 50 kept, same styling. Each line keeps showing what it shows
+  today: set date, done date, task name, notes.
 
 
 NICE-TO-HAVE LATER (polish, low priority)
 -----------------------------------------
+- Watch List overhaul — its own session, talk-through first (moved
+  from What's Next, your call #55). The night-and-time-a-TV-show-airs
+  idea folds into it.
 - Rename the app back to "Remember When" — what's LEFT of it (#48,
   yours). The icon-label part was finished in #54.
   Still here: the backup file naming (Elyfont-Backup-...) and the
@@ -99,12 +143,26 @@ NICE-TO-HAVE LATER (polish, low priority)
   "Memory Assist" tagline still needs a home.
 - Project Planner has reminder fields on screen, but they aren't
   connected to anything yet.
-- Add a Snooze button on each To-Do item itself. My Day and Pets Day
-  already have one on every tile; To-Do only has it on the banner.
+- My Day / Pets: a Done tapped from the BANNER logs only the fire
+  ("set") time. Patrick wants the entry to carry both times like the
+  in-app logs do — the set time AND the time Done was actually
+  tapped (#55).
+- To-Do: saving a task with a due date but NO reminder preset picked
+  schedules nothing, silently (#55 — this cost an hour of test
+  waiting). Add a small note on save, like "no reminder set for
+  this task."
 
 
 PARKED ON PURPOSE (bigger items, on hold for now)
 -------------------------------------------------
+- Moved here from What's Next (your call, #55): the structured
+  reminder test checklist; My Week's done-date recording; exact-item
+  tap routing; retiring Colors.ts; the dark startup flash; Planner's
+  unconnected reminder fields.
+- The Vault "Custom" label suspicion (spotted #47, NOT yet confirmed;
+  parked #55, your call): typing your own label under "Custom" may
+  save the word "Custom" instead. Test steps are in parked-items.md;
+  if real, the fix is tiny.
 - Voice control through Siri. Set aside after much effort; revisit only
   if a future iPhone update fixes the name-matching. (The app-name revert
   above assumes this stays shelved.)

@@ -1,1 +1,1 @@
-Start each session with sending me a folder picker and the readinf session-start.md.
+Start each session with sending me a folder picker and the readinf session-start.md. Do not send me button question. Ask one question at a time. No questions with "or" something else. No questions that pin me in.
