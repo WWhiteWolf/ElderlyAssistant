@@ -107,7 +107,10 @@ export default function TodoScreen() {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [log, setLog] = useState<LogEntry[]>([]);
     const [showAddTask, setShowAddTask] = useState(false);
-    const [showLog, setShowLog] = useState(false);
+    // Log rebuild (#57): the log lives at the bottom of the page now — no
+    // show/hide state. These two drive the tap-to-edit-note popup.
+    const [editLogEntry, setEditLogEntry] = useState<LogEntry | null>(null);
+    const [editLogNotes, setEditLogNotes] = useState('');
     const [editTask, setEditTask] = useState<Task | null>(null);
     const [newTitle, setNewTitle] = useState('');
     const [newPriority, setNewPriority] = useState<Priority>('Normal');
@@ -271,12 +274,35 @@ export default function TodoScreen() {
                         scheduledFor,
                         notes: task.notes,
                     };
-                    const updatedLog = [logEntry, ...log].slice(0, 100);
+                    const updatedLog = [logEntry, ...log].slice(0, 50);
                     saveLog(updatedLog);
                     saveTasks(tasks.filter(t => t.id !== task.id));
                 },
             },
         ]);
+    };
+
+    // Log section actions (#57) — same pattern as My Day's log.
+    const deleteLogEntry = (id: string) => {
+        saveLog(log.filter(l => l.id !== id));
+    };
+
+    const clearAllLog = () => {
+        Alert.alert(
+            'Clear All',
+            'Delete all log entries? This cannot be undone.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Clear All', style: 'destructive', onPress: () => saveLog([]) },
+            ]
+        );
+    };
+
+    const saveLogEntryNotes = () => {
+        if (!editLogEntry) return;
+        const updated = log.map(l => l.id === editLogEntry.id ? { ...l, notes: editLogNotes } : l);
+        saveLog(updated);
+        setEditLogEntry(null);
     };
 
     const openEditTask = (task: Task) => {
@@ -498,7 +524,7 @@ export default function TodoScreen() {
                 </View>
             )}
 
-            <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 100 }}>
+            <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
                 {getSortedTasks().length === 0 && (
                     <Text style={styles.emptyText}>No tasks yet. Tap + to add one.</Text>
                 )}
@@ -540,31 +566,63 @@ export default function TodoScreen() {
                         </View>
                     </Swipeable>
                 ))}
-            </ScrollView>
 
-            <View style={styles.fabRow}>
-                <TouchableOpacity style={styles.fabSecondary} onPress={() => setShowLog(!showLog)}>
-                    <Text style={styles.fabText}>📋 Log</Text>
-                </TouchableOpacity>
-            </View>
-
-            {showLog && (
-                <View style={styles.logOverlay}>
+                <View style={styles.logSection}>
                     <View style={styles.logHeader}>
                         <Text style={styles.logTitle}>Completed Tasks</Text>
-                        <TouchableOpacity onPress={() => setShowLog(false)}>
-                            <Text style={styles.logClose}>✕</Text>
-                        </TouchableOpacity>
+                        {log.length > 0 && (
+                            <TouchableOpacity style={styles.clearAllBtn} onPress={clearAllLog}>
+                                <Text style={styles.clearAllBtnText}>Clear All</Text>
+                            </TouchableOpacity>
+                        )}
                     </View>
-                    <ScrollView>
-                        {log.length === 0 && <Text style={styles.emptyText}>No completed tasks yet.</Text>}
+                    <ScrollView style={styles.logScroll} nestedScrollEnabled={true}>
+                        {log.length === 0 && <Text style={[styles.emptyText, { marginTop: 10, marginBottom: 10 }]}>No completed tasks yet.</Text>}
                         {log.map(l => (
-                            <View key={l.id} style={styles.logItem}>
-                                <Text style={styles.logItemText}>{l.scheduledFor ? `Set ${l.scheduledFor} | ` : ''}Done {l.completedDate} | {l.taskTitle}{l.notes ? ` | ${l.notes}` : ''}</Text>
-                            </View>
+                            <Swipeable
+                                key={l.id}
+                                renderRightActions={() => (
+                                    <TouchableOpacity style={styles.swipeDelete} onPress={() => deleteLogEntry(l.id)}>
+                                        <Text style={styles.swipeDeleteText}>Delete</Text>
+                                    </TouchableOpacity>
+                                )}
+                            >
+                                <TouchableOpacity style={styles.logItem} onPress={() => {
+                                    setEditLogEntry(l);
+                                    setEditLogNotes(l.notes || '');
+                                }}>
+                                    <Text style={styles.logItemText}>{l.scheduledFor ? `Set ${l.scheduledFor} | ` : ''}Done {l.completedDate} | {l.taskTitle}{l.notes ? ` | ${l.notes}` : ''}</Text>
+                                </TouchableOpacity>
+                            </Swipeable>
                         ))}
                     </ScrollView>
                 </View>
+            </ScrollView>
+
+            {editLogEntry && (
+                <Modal transparent animationType="fade" visible={!!editLogEntry}>
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalBox}>
+                            <Text style={styles.modalTitle}>Edit Log Entry</Text>
+                            <Text style={styles.inputLabel}>Notes (optional)</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={editLogNotes}
+                                onChangeText={setEditLogNotes}
+                                placeholder="Add a note about this entry..."
+                                placeholderTextColor={theme.mutedText}
+                            />
+                            <View style={styles.modalBtns}>
+                                <TouchableOpacity style={styles.cancelBtn} onPress={() => setEditLogEntry(null)}>
+                                    <Text style={styles.cancelBtnText}>Cancel</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.confirmBtn} onPress={saveLogEntryNotes}>
+                                    <Text style={styles.confirmBtnText}>Save</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
             )}
 
             {showAddTask && (
@@ -716,42 +774,15 @@ const makeStyles = (t: Theme) =>
     priorityLabel: { fontSize: 12, fontWeight: '600' },
     dueDateText: { fontSize: 12, color: t.mutedText },
     taskNotes: { fontSize: 12, color: t.mutedText, marginTop: 4, fontStyle: 'italic' },
-    fabRow: {
-        position: 'absolute',
-        bottom: 20,
-        right: 16,
-        flexDirection: 'row',
-        gap: 10,
-        alignItems: 'center',
-    },
-    fabSecondary: {
-        backgroundColor: t.bridge,
-        paddingVertical: 10,
-        paddingHorizontal: 14,
-        borderRadius: 30,
-        elevation: 4,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-    },
-    fabText: { color: t.buttonPrimaryText, fontWeight: '600', fontSize: 14 },
-    logOverlay: {
-        position: 'absolute',
-        bottom: 70,
-        left: 12,
-        right: 12,
+    // Log section (#57) — bottom of the page, My Day's log pattern.
+    logSection: { marginTop: 8, marginBottom: 12 },
+    logScroll: {
+        height: 385,
         backgroundColor: t.card,
-        borderRadius: 12,
-        padding: 16,
-        maxHeight: 300,
+        borderRadius: 8,
+        padding: 8,
         borderWidth: 0.5,
         borderColor: t.cardBorder,
-        elevation: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 4,
     },
     logHeader: {
         flexDirection: 'row',
@@ -759,8 +790,19 @@ const makeStyles = (t: Theme) =>
         alignItems: 'center',
         marginBottom: 10,
     },
-    logTitle: { fontSize: 16, fontWeight: '600', color: t.cardTitle },
-    logClose: { fontSize: 18, color: t.mutedText },
+    logTitle: { fontSize: 18, fontWeight: '600', color: t.cardTitle },
+    clearAllBtn: {
+        paddingVertical: 4,
+        paddingHorizontal: 10,
+        borderRadius: 6,
+        borderWidth: 0.5,
+        borderColor: t.mutedText,
+    },
+    clearAllBtnText: {
+        color: t.mutedText,
+        fontSize: 13,
+        fontWeight: '600',
+    },
     logItem: {
         borderBottomWidth: 0.5,
         borderBottomColor: t.cardBorder,

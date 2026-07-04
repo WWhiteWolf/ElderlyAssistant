@@ -7,15 +7,38 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-04 (session #56 "Polish 1" — Home polish batch
-built and Simulator-approved: labels 18/Georgia both themes (dark in
-gold #f0a83a), a NEW halo behind each icon circle in the theme's
-header color, light ring softened to #43a297, tile renamed "My Pets
-Day". PLUS the To-Do banner got a single OK button back (`todook`
-category) — the #40 buttonless banner PASSED its phone test but
-Patrick changed his mind after living with it. The #55 build put
-#49–#54 on the phone; #56's changes ride the NEXT batched build,
-where halo/ring/OK get their phone judgment.)
+Last updated: 2026-07-04 (session #57 "Polish 2" — To-Do log rebuilt
+onto the page bottom (My Day's pattern, cap 50), the backup six-keys
+gap fixed (`lookahead_items`/`lookahead_history`/`watchlist_movies`/
+`watchlist_shows`/`app_theme`/`popup_style`), and `Colors.ts` deleted.
+NEW PLAN agreed for #58: ONE shared date/time control — Look Ahead's
+spinners + an optional padded type-in — rolled out one page per
+session, To-Do first; it absorbs the single-digit padding bug and the
+"no reminder set" save note. After #58 Patrick plans an EAS phone
+build carrying everything from #56 + #57.)
+
+---
+
+## SHARED DATE/TIME CONTROL ROLLOUT (#58 plan, Patrick's call #57)
+
+One shared component (Look Ahead's proven Month/Day/Year +
+Hour/Minute/AM-PM spinners, PLUS a new optional type-in field for
+date and time — typed input padded/validated before save). Time-only
+pages show just the time part. One page per session, like the theme
+rollout. To-Do is the live #58 goal (in handoff.md); the rest queue
+here:
+
+1. **To-Do** — ACTIVE (#58): replaces the typed date/time fields;
+   kills the single-digit bug at the source; include the "no
+   reminder set for this task" save note (#55 nice-to-have).
+2. **Look Ahead** — swap its inline spinners for the shared component.
+3. **My Day** (time-only), 4. **My Week** (time-only),
+5. **Pets** (time-only), 6. **Settings** (time-only: the global
+   Morning/Midday/Evening times).
+
+Old entries stored with single digits stay as-is (Patrick, #57:
+"Old data is not a concern") — no belt-and-braces padding at the
+read points.
 
 ---
 
@@ -98,9 +121,7 @@ just the first-launch fallback (committed as `'light'`).
    Patrick OK'd, Timer precedent); Pets Treats "−" on counterMinus,
    "+" on bridge; Pets New/Edit popup kept borderless. Titles to 24.
 
-**RETIRE `constants/Colors.ts` — now unblocked (#53).** All 13 pages
-read `Themes.ts`; its values live on as the light palette. Before
-deleting, grep that nothing else imports it. Small tidy-up session.
+(`constants/Colors.ts` was retired — grep-verified and deleted — in #57.)
 
 ---
 
@@ -233,14 +254,6 @@ categories from To-Do entirely.)
   tap Custom → type a label → Add, and see what label the saved item shows. If it
   reproduces, the fix is a one-word case correction (its own small session/step).
 
-- **Backup misses Look Ahead and Watch List data (found #41; grew in #48)**
-  (`app/backup.tsx`). `READABLE_KEYS` doesn't include `lookahead_items` /
-  `lookahead_history` (a gap since #36 built the page) nor the new
-  `watchlist_movies` / `watchlist_shows` (#41), **nor #48's two new keys
-  `app_theme` / `popup_style`** (theme + popup choices won't survive a
-  restore-onto-fresh-phone). Fix: add the six keys — but note a restored
-  backup from BEFORE the fix won't contain them; verify restore handles
-  the missing keys gracefully.
 - **To-Do reminder fired early — needs a clean phone re-test** (`app/todo.tsx`). A To-Do
   Patrick recalls setting for 23:30 fired around 21:15. Reading the scheduling code found
   **no bug**: the only thing that produces an early fire is the "2 hours" before-reminder

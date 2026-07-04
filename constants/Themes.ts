@@ -257,8 +257,8 @@ export const DEFAULT_THEME: ThemeName = 'light';
 
 // ---- Live theme switching (built #48) ----------------------------------
 // ThemeProvider (wrapped around the app in app/_layout.tsx) holds the
-// active choices, saves them on the phone, and re-renders converted pages
-// when they change. Unconverted pages still read Colors.ts and stay light.
+// active choices, saves them on the phone, and re-renders every page when
+// they change. (All 13 pages converted as of #53; Colors.ts retired #57.)
 
 export type PopupStyle = 'match' | 'phone';
 

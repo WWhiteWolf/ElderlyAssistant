@@ -339,7 +339,7 @@ export default function RootLayout() {
               scheduledFor,
               notes: task.notes,
             };
-            await AsyncStorage.setItem('todo_log', JSON.stringify([entry, ...log].slice(0, 100)));
+            await AsyncStorage.setItem('todo_log', JSON.stringify([entry, ...log].slice(0, 50)));
             await AsyncStorage.setItem('todo_tasks', JSON.stringify(tasks.filter((t) => t.id !== itemId)));
             const scheduled = await Notifications.getAllScheduledNotificationsAsync();
             for (const n of scheduled) {
