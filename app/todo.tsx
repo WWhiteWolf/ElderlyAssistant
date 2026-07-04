@@ -17,6 +17,7 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import DateTimeControl, { formatDateMMDDYY, formatTime24 } from '../components/DateTimeControl';
 import { Theme, useTheme } from '../constants/Themes';
 
 type Priority = 'Urgent' | 'Normal' | 'Someday';
@@ -114,8 +115,12 @@ export default function TodoScreen() {
     const [editTask, setEditTask] = useState<Task | null>(null);
     const [newTitle, setNewTitle] = useState('');
     const [newPriority, setNewPriority] = useState<Priority>('Normal');
-    const [newDueDate, setNewDueDate] = useState('');
-    const [newDueTime, setNewDueTime] = useState('');
+    // #58: the shared date/time control replaced the two typed boxes. The
+    // form holds one Date (spinners + type-in stay in step through it) and
+    // a validity flag — false while a type-in box holds an impossible value.
+    // A new form opens at today, 12:00 noon (Patrick's call, like Look Ahead).
+    const [newDueAt, setNewDueAt] = useState<Date>(() => new Date(new Date().setHours(12, 0, 0, 0)));
+    const [newDueValid, setNewDueValid] = useState(true);
     const [newNotes, setNewNotes] = useState('');
     const [newTaskType, setNewTaskType] = useState<'scheduled' | 'background'>('scheduled');
     const [newReminders, setNewReminders] = useState<Reminder[]>([]);
@@ -180,8 +185,8 @@ export default function TodoScreen() {
         setNewTitle('');
         setNewPriority('Normal');
         setNewTaskType('scheduled');
-        setNewDueDate('');
-        setNewDueTime('');
+        setNewDueAt(new Date(new Date().setHours(12, 0, 0, 0)));
+        setNewDueValid(true);
         setNewNotes('');
         setNewReminders([]);
         setEditTask(null);
@@ -194,13 +199,32 @@ export default function TodoScreen() {
             Alert.alert('Missing Title', 'Please enter a task title.');
             return;
         }
+        // #58: an impossible typed date/time blocks the save (warning block,
+        // Patrick's call). The box at fault carries a red border.
+        if (!newDueValid) {
+            Alert.alert('Check Date & Time', 'The typed date or time is not a real one. Fix the box outlined in red, then save.');
+            return;
+        }
+        // #58 (the #55 fold-in): saving with no reminder ticked asks first —
+        // a confirm, not a hard block. The final say stays with Patrick.
+        if (newTaskType === 'scheduled' && newReminders.length === 0) {
+            Alert.alert('No Reminder Set', "Are you sure you don't want to set a Reminder?", [
+                { text: 'Go Back', style: 'cancel' },
+                { text: 'Save Anyway', onPress: () => finishAdd() },
+            ]);
+            return;
+        }
+        finishAdd();
+    };
+
+    const finishAdd = () => {
         const task: Task = {
             id: Date.now().toString(),
             title: newTitle.trim(),
             priority: newPriority,
             taskType: newTaskType,
-            dueDate: newDueDate,
-            dueTime: newDueTime,
+            dueDate: formatDateMMDDYY(newDueAt),
+            dueTime: formatTime24(newDueAt),
             reminders: newReminders,
             completed: false,
             createdDate: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' }),
@@ -222,24 +246,41 @@ export default function TodoScreen() {
             setShowAddTask(false);
             return;
         }
+        // #58: same warning block as the Add path.
+        if (!newDueValid) {
+            Alert.alert('Check Date & Time', 'The typed date or time is not a real one. Fix the box outlined in red, then save.');
+            return;
+        }
+        // #58: same no-reminder confirm as the Add path.
+        if (newTaskType === 'scheduled' && newReminders.length === 0) {
+            Alert.alert('No Reminder Set', "Are you sure you don't want to set a Reminder?", [
+                { text: 'Go Back', style: 'cancel' },
+                { text: 'Save Anyway', onPress: () => finishUpdate(editTask) },
+            ]);
+            return;
+        }
+        await finishUpdate(editTask);
+    };
+
+    const finishUpdate = async (editing: Task) => {
         const updatedTask: Task = {
-            ...editTask,
+            ...editing,
             title: newTitle.trim(),
             priority: newPriority,
             taskType: newTaskType,
-            dueDate: newDueDate,
-            dueTime: newDueTime,
+            dueDate: formatDateMMDDYY(newDueAt),
+            dueTime: formatTime24(newDueAt),
             reminders: newReminders,
             notes: newNotes,
             status: newTaskStatus,
             onHoldNote: newTaskOnHoldNote,
         };
-        const updated = tasks.map(t => (t.id === editTask.id ? updatedTask : t));
+        const updated = tasks.map(t => (t.id === editing.id ? updatedTask : t));
         saveTasks(updated);
         // Editing used to schedule nothing, so changes to due time/reminders
         // never took effect. Cancel this task's old reminders first, then
         // reschedule from the new values (mirrors the Add path).
-        await cancelReminders(editTask.id);
+        await cancelReminders(editing.id);
         await scheduleReminders(updatedTask);
         resetForm();
         setShowAddTask(false);
@@ -305,13 +346,27 @@ export default function TodoScreen() {
         setEditLogEntry(null);
     };
 
+    // #58: stored tasks keep their MM/DD/YY + HH:MM strings; the control
+    // works on a Date. Old entries (unpadded digits, or no time) still read
+    // fine; anything unreadable falls back to today at noon.
+    const storedToDate = (dateStr: string, timeStr: string): Date => {
+        const fallback = new Date(new Date().setHours(12, 0, 0, 0));
+        if (!dateStr) return fallback;
+        const parts = dateStr.split('/').map(s => parseInt(s, 10));
+        if (parts.length !== 3 || parts.some(isNaN)) return fallback;
+        const year = parts[2] < 100 ? parts[2] + 2000 : parts[2];
+        const [hh, mm] = (timeStr || '12:00').split(':').map(s => parseInt(s, 10));
+        const d = new Date(year, parts[0] - 1, parts[1], isNaN(hh) ? 12 : hh, isNaN(mm) ? 0 : mm, 0, 0);
+        return isNaN(d.getTime()) ? fallback : d;
+    };
+
     const openEditTask = (task: Task) => {
         setEditTask(task);
         setNewTitle(task.title);
         setNewPriority(task.priority);
         setNewTaskType(task.taskType || 'scheduled');
-        setNewDueDate(task.dueDate);
-        setNewDueTime(task.dueTime);
+        setNewDueAt(storedToDate(task.dueDate, task.dueTime));
+        setNewDueValid(true);
         setNewNotes(task.notes);
         setNewReminders(task.reminders || []);
         setShowAddTask(true);
@@ -688,11 +743,7 @@ export default function TodoScreen() {
                                         </>
                                     )}
 
-                                    <Text style={styles.inputLabel}>Due Date (MM/DD/YY)</Text>
-                                    <TextInput style={styles.input} value={newDueDate} onChangeText={setNewDueDate} placeholder="e.g. 04/15/26" keyboardType="numbers-and-punctuation" />
-
-                                    <Text style={styles.inputLabel}>Due Time (optional)</Text>
-                                    <TextInput style={styles.input} value={newDueTime} onChangeText={setNewDueTime} placeholder="e.g. 09:00" keyboardType="numbers-and-punctuation" />
+                                    <DateTimeControl value={newDueAt} onChange={setNewDueAt} onValidityChange={setNewDueValid} />
 
                                     <Text style={styles.inputLabel}>Notes (optional)</Text>
                                     <TextInput style={styles.input} value={newNotes} onChangeText={setNewNotes} placeholder="Any details..." multiline />

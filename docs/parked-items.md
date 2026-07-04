@@ -7,31 +7,31 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-04 (session #57 "Polish 2" — To-Do log rebuilt
-onto the page bottom (My Day's pattern, cap 50), the backup six-keys
-gap fixed (`lookahead_items`/`lookahead_history`/`watchlist_movies`/
-`watchlist_shows`/`app_theme`/`popup_style`), and `Colors.ts` deleted.
-NEW PLAN agreed for #58: ONE shared date/time control — Look Ahead's
-spinners + an optional padded type-in — rolled out one page per
-session, To-Do first; it absorbs the single-digit padding bug and the
-"no reminder set" save note. After #58 Patrick plans an EAS phone
-build carrying everything from #56 + #57.)
+Last updated: 2026-07-04 (session #58 "Polish 3" — the shared
+date/time control BUILT (`components/DateTimeControl.tsx`) and To-Do
+converted: date+time required, auto-padded type-in + smaller spinners,
+typo warning blocks bad saves, "Are you sure you don't want to set a
+Reminder?" confirm. The single-digit bug is dead at its source.
+NEW PARKED from #58: the To-Do form slim-down (remove Priority +
+Status entirely) and a "30 min." reminder preset — see below.
+Patrick's planned EAS phone build now carries #56 + #57 + #58.)
 
 ---
 
 ## SHARED DATE/TIME CONTROL ROLLOUT (#58 plan, Patrick's call #57)
 
-One shared component (Look Ahead's proven Month/Day/Year +
-Hour/Minute/AM-PM spinners, PLUS a new optional type-in field for
-date and time — typed input padded/validated before save). Time-only
-pages show just the time part. One page per session, like the theme
-rollout. To-Do is the live #58 goal (in handoff.md); the rest queue
-here:
+One shared component — **BUILT in #58: `components/DateTimeControl.tsx`**
+(Look Ahead's spinners sized down + a type-in box under each group;
+typed input auto-padded/validated; `mode='time'` ready for the
+time-only pages; themed both palettes, no new keys). One page per
+session, like the theme rollout:
 
-1. **To-Do** — ACTIVE (#58): replaces the typed date/time fields;
-   kills the single-digit bug at the source; include the "no
-   reminder set for this task" save note (#55 nice-to-have).
-2. **Look Ahead** — swap its inline spinners for the shared component.
+1. ✅ **DONE (#58) — To-Do**: typed date/time fields replaced by the
+   control; date AND time now required; single-digit bug killed at
+   the source; the "no reminder set" confirm is in (Go Back / Save
+   Anyway). Simulator-approved; phone judgment rides the next build.
+2. **Look Ahead** — NEXT: swap its inline spinners for the shared
+   component (mostly wiring — the component exists now).
 3. **My Day** (time-only), 4. **My Week** (time-only),
 5. **Pets** (time-only), 6. **Settings** (time-only: the global
    Morning/Midday/Evening times).
@@ -39,6 +39,29 @@ here:
 Old entries stored with single digits stay as-is (Patrick, #57:
 "Old data is not a concern") — no belt-and-braces padding at the
 read points.
+
+---
+
+## TO-DO FORM SLIM-DOWN + 30-MIN PRESET (Patrick, #58 — scoped, parked)
+
+Raised after Simulator-testing the new control: the New/Edit form is
+long. Discussed and scoped in #58; Patrick said park, not build.
+Treatment agreed: full removal, like #42 did for categories — old
+stored tasks keep their values harmlessly, the page just stops
+reading them.
+
+1. **Remove Priority from To-Do entirely** (`app/todo.tsx`): the
+   Urgent/Normal/Someday form buttons AND the tiles' colored side
+   bar + colored priority word ("Title colors can go away, and the
+   rest also"). The priority theme keys stay in `Themes.ts` — the
+   Planner still uses them.
+2. **Remove Status from To-Do entirely** (`app/todo.tsx`): the
+   Active/On Hold/Completed form buttons, the "Reason for Hold" box,
+   and Completed-from-Edit. On Hold disappears with them; the tile's
+   ✓ stays the way to complete.
+3. **Add a "30 min." one-tap reminder preset** (`app/todo.tsx`
+   `REMINDER_PRESETS`): offset kind, 30 minutes before the
+   appointment time, sitting before "1 hour".
 
 ---
 

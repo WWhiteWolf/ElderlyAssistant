@@ -1,7 +1,7 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-04 (session #57 "Polish 2" — the To-Do log moved
-onto the page, the backup gap is fixed, and old Colors.ts is gone.
-A NEW plan was agreed for #58: one shared date/time control.)
+Last updated: 2026-07-04 (session #58 "Polish 3" — the shared
+date/time control is built and To-Do uses it. The single-digit
+bug is gone for good.)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -14,45 +14,48 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 - The app ("Remember When") is stable and on your phone via TestFlight
   (the #55 build). Nothing is half-built or broken in a way that's
   holding you up.
-- Session #57 "Polish 2" — built and approved by you in the Simulator:
-  · The To-Do log now lives at the BOTTOM of the To-Do page, always
-    visible under the tasks — no more Log button or popup. Same as
-    the other pages: Clear All (with are-you-sure), tap an entry to
-    edit its note, swipe left to delete. Keeps the last 50.
-  · The backup now saves Look Ahead, Watch List, and your theme +
-    popup choices (six things it used to silently skip). You tested
-    a restore: Watch List came back; a restored theme shows after
-    the app restarts (that's how themes load — you're fine with it).
-  · The old Colors.ts file is deleted — nothing used it anymore.
-- NOT yet committed: the #57 code + docs. You commit.
-- THE PLAN FOR #58 (your call, made this session): ONE shared
-  date-and-time setter used on every page — the same ▲▼ spinners
-  Look Ahead already has, PLUS a type-in box for those who'd rather
-  type. Whatever you type gets padded and checked automatically, so
-  the single-digit bug can't happen again. To-Do gets it first, then
-  the other pages one session at a time. The "no reminder set" save
-  note folds in too. (Old entries already saved with single digits
-  stay as-is — you said that's not a concern.)
-- AFTER #58: you plan an EAS phone build + load. Everything from
-  #56 and #57 rides that build. Build policy unchanged: batched
+- Session #58 "Polish 3" — built and approved by you in the Simulator:
+  · The NEW date-and-time setter is on To-Do: the same ▲▼ spinners
+    Look Ahead has (sized smaller), plus a type-in box under the
+    date and another under the time. Type or spin — they stay in
+    step. Whatever you type gets its zeros added automatically
+    (7/4/26 becomes 07/04/26), so the single-digit bug CAN'T happen
+    anymore. Typing 13/45/26 or 25:70 blocks the save with a warning.
+  · Every To-Do task now needs a date AND a time (your call). A new
+    task starts at today, noon.
+  · Saving with no reminder picked now asks "Are you sure you don't
+    want to set a Reminder?" — Go Back or Save Anyway. Your say.
+  · Old saved tasks are untouched; the reminders themselves are
+    untouched — same presets, same scheme.
+- NOT yet committed: the #58 code + docs. You commit.
+- NEW from #58, parked (the New/Edit form is long, your call):
+  strip Priority and Status out of To-Do entirely, and add a
+  "30 min." reminder button. Scoped and waiting in parked-items.md.
+- NEXT: your planned EAS phone build + load. Everything from #56,
+  #57, and #58 rides that build. Build policy unchanged: batched
   builds only, you handle Expo billing.
+- The date/time rollout continues after that, one page a session:
+  Look Ahead next, then My Day, My Week, Pets, Settings (time-only).
 - The dark startup flash is still there (a known small quirk).
 
 
 WHAT'S NEXT — suggested order
 ------------------------------------------------------------------
-1. #58: the shared date/time control (spinners + type-in) — To-Do
-   first. This also settles the single-digit bug and the "no
-   reminder set" note.
-2. Then your EAS phone build + load, and judge everything waiting
-   in NEEDS A PHONE TEST below.
-3. Name the backup folder/file — needs the real phone (iCloud); ties
+1. Your EAS phone build + load, and judge everything waiting in
+   NEEDS A PHONE TEST below (now including the new date/time
+   control on To-Do).
+2. Continue the date/time rollout, one page a session: Look Ahead,
+   then My Day, My Week, Pets, Settings. (Lighter sessions now —
+   the control is built; it's mostly wiring.)
+3. The To-Do form slim-down (drop Priority + Status) and the
+   "30 min." reminder button — parked from #58, ready when you are.
+4. Name the backup folder/file — needs the real phone (iCloud); ties
    into finishing the "Remember When" rename.
    (The when-you're-ready talk-throughs — Vault import, removing
    Vault categories, the backup Merge option — are in the DECISIONS
    section below.)
-(Done in #57: the To-Do log rebuild, the backup six-keys fix, and
-retiring Colors.ts.)
+(Done in #58: the shared date/time control + To-Do conversion, the
+single-digit bug, and the "no reminder set" confirm.)
 
 
 #40 & #41 STILL OPEN (what's left of your #41 list)
@@ -81,15 +84,15 @@ NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
 - The Home page polish (#56): halo strength, the Light ring shade,
   and how the size-18 Georgia button names wrap.
 - The new To-Do log page (#57): a quick once-over on the phone.
+- The new date/time control on To-Do (#58): spin, type, watch the
+  padding, try a bad value, and the "no reminder" confirm — plus
+  how the smaller spinners feel on the real screen.
 
 
 STILL BROKEN OR UNFINISHED (small bugs)
 ---------------------------------------
-- Single-digit dates/times typed into To-Do (7/4/26 instead of
-  07/04/26) can silently break scheduling and sorting. NO standalone
-  fix planned anymore — #58's shared control solves it at the source
-  (you can't save an unpadded value through it). Until #58 is built:
-  type two digits, time in 24-hour clock.
+(The single-digit date/time bug is FIXED — #58's control pads and
+checks everything typed; an unpadded value can't be saved anymore.)
 - My Week: marking a chore done from inside the app records today's date
   instead of the chore's own day. Minor.
 - Tapping a reminder lands on the right page (tested #55), but taking
@@ -122,7 +125,7 @@ NICE-TO-HAVE LATER (polish, low priority)
   ("set") time. You want the entry to carry both times like the
   in-app logs do — the set time AND the time Done was actually
   tapped (#55).
-  (The To-Do "no reminder set" save note moved into the #58 plan.)
+  (The To-Do "no reminder set" save note: DONE in #58.)
 
 
 PARKED ON PURPOSE (bigger items, on hold for now)
