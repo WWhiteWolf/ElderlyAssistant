@@ -143,6 +143,16 @@ export default function RootLayout() {
         { identifier: 'snooze30', buttonTitle: 'Delay 30 min' },
         { identifier: 'snooze60', buttonTitle: 'Delay 60 min' },
       ]);
+      // Orders banners (#63): the routineactions set with Done→HERE and no
+      // Skip (orders don't recur — Patrick's #62 spec). HERE first, the
+      // #62 watch rule. HERE logs the arrival and removes the entry.
+      await Notifications.setNotificationCategoryAsync('orderactions', [
+        { identifier: 'here', buttonTitle: 'HERE' },
+        { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
+        { identifier: 'snooze15', buttonTitle: 'Delay 15 min' },
+        { identifier: 'snooze30', buttonTitle: 'Delay 30 min' },
+        { identifier: 'snooze60', buttonTitle: 'Delay 60 min' },
+      ]);
     })();
   }, []);
 
@@ -191,22 +201,23 @@ export default function RootLayout() {
       const isTodo = source === 'todo';
       const isPets = source === 'pets' || source === 'petssnooze';
       const isWeek = source === 'myweek' || source === 'myweekpostpone' || source === 'myweeksnooze';
+      const isOrders = source === 'orders' || source === 'orderssnooze';
       Notifications.scheduleNotificationAsync({
         content: {
-          title: isTodo ? `📋 Reminder: ${label}` : isPets ? 'Pets Routine' : isWeek ? 'Weekly Chore' : 'Daily Routine',
-          body: isTodo ? label : `Time for ${label}!`,
+          title: isTodo ? `📋 Reminder: ${label}` : isPets ? 'Pets Routine' : isWeek ? 'Weekly Chore' : isOrders ? '📦 Orders' : 'Daily Routine',
+          body: isTodo ? label : isOrders ? `Delivery reminder: ${label}` : `Time for ${label}!`,
           // Tag with the snooze source (not 'myday'/'pets'/'myweek') so each
           // screen's reschedule-on-load, which only cancels its own base source,
           // won't wipe this snooze. To-Do has no reschedule-on-load, keeps 'todo'.
           data: isTodo
             ? { source: 'todo', taskId: data?.itemId, itemId: data?.itemId, label }
-            : { source: isPets ? 'petssnooze' : isWeek ? 'myweeksnooze' : 'mydaysnooze', itemId: data?.itemId, label },
+            : { source: isPets ? 'petssnooze' : isWeek ? 'myweeksnooze' : isOrders ? 'orderssnooze' : 'mydaysnooze', itemId: data?.itemId, label },
           // Keep whatever button set the fired popup had, so a delayed popup
           // re-appears with the same buttons (old per-page category before a
           // page is switched over, 'routineactions' after).
           categoryIdentifier:
             response.notification.request.content.categoryIdentifier ||
-            (isTodo ? 'todosnooze' : isPets ? 'petssnooze' : isWeek ? 'routineactions' : 'mydaysnooze'),
+            (isTodo ? 'todosnooze' : isPets ? 'petssnooze' : isWeek ? 'routineactions' : isOrders ? 'orderactions' : 'mydaysnooze'),
           // Same sound rule as the on-page Snooze buttons — a banner-tapped
           // snooze was silently rescheduled without this (audit item #1).
           sound: 'default',
@@ -307,6 +318,44 @@ export default function RootLayout() {
           c.id === itemId ? { ...c, postponedTo: target.getTime() } : c
         );
         await AsyncStorage.setItem('week_routine', JSON.stringify(updated));
+      })();
+      return;
+    }
+
+    // Orders "HERE" (#63): the package arrived. Log the arrival (dated from
+    // when HERE was TAPPED — that's when it's in hand, unlike the routine
+    // pages' fire-time dating), remove the entry from the list, and cancel
+    // everything still pending for it (base reminders + snoozes) so a
+    // window-close can never nag about a logged package. Banner equivalent
+    // of the page's HERE button — same log shape, same 50-cap.
+    if (action === 'here') {
+      const itemId = data?.itemId as string | undefined;
+      if (!itemId) return;
+      (async () => {
+        const raw = await AsyncStorage.getItem('orders_items');
+        const orderItems = raw ? (JSON.parse(raw) as any[]) : [];
+        const item = orderItems.find((i) => i.id === itemId);
+        if (!item) return;
+        const now = new Date();
+        const histRaw = await AsyncStorage.getItem('orders_history');
+        const hist = histRaw ? (JSON.parse(histRaw) as any[]) : [];
+        const entry = {
+          id: Date.now().toString(),
+          date: now.toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
+          actual: now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false }),
+          sched: item.name,
+          what: item.store !== '' ? item.store : undefined,
+          note: '',
+        };
+        await AsyncStorage.setItem('orders_history', JSON.stringify([entry, ...hist].slice(0, 50)));
+        await AsyncStorage.setItem('orders_items', JSON.stringify(orderItems.filter((i) => i.id !== itemId)));
+        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+        for (const n of scheduled) {
+          const src = n.content.data?.source as string | undefined;
+          if ((src === 'orders' || src === 'orderssnooze') && n.content.data?.itemId === itemId) {
+            await Notifications.cancelScheduledNotificationAsync(n.identifier);
+          }
+        }
       })();
       return;
     }
@@ -535,6 +584,8 @@ export default function RootLayout() {
       router.push('/mollie');
     } else if (source === 'lookahead' || source === 'lookaheaddelay') {
       router.push('/lookahead');
+    } else if (source === 'orders' || source === 'orderssnooze') {
+      router.push('/orders');
     }
   }, [response]);
 
@@ -552,6 +603,7 @@ export default function RootLayout() {
       <Stack.Screen name="todo" options={{ headerShown: false }} />
       <Stack.Screen name="planner" options={{ headerShown: false }} />
       <Stack.Screen name="watchlist" options={{ headerShown: false }} />
+      <Stack.Screen name="orders" options={{ headerShown: false }} />
       <Stack.Screen name="settings" options={{ headerShown: false }} />
       <Stack.Screen name="vault" options={{ headerShown: false }} />
       <Stack.Screen name="backup" options={{ headerShown: false }} />

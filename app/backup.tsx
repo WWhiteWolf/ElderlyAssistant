@@ -32,6 +32,7 @@ const READABLE_KEYS = [
     'planner_projects', 'planner_log',
     'lookahead_items', 'lookahead_history',   // missing since #36 built the page (#57 fix)
     'watchlist_movies', 'watchlist_shows',    // missing since #41 brought Watch List in (#57 fix)
+    'orders_items', 'orders_history',         // Orders page (#63), added the session it was built
     'user_name', 'biometric_enabled', 'vault_pin_enabled',
     'reminder_morning_time', 'reminder_midday_time', 'reminder_evening_time',
     'app_theme', 'popup_style',               // #48's theme + popup choices (#57 fix)

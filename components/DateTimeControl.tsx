@@ -17,6 +17,9 @@ import { Theme, useTheme } from '../constants/Themes';
 //   the visual hint once the box loses focus.
 // - mode='time' shows only the time half (for My Day / My Week / Pets /
 //   Settings later in the rollout). Default is the full date + time.
+// - mode='date' shows only the date half (#63, built for the Orders
+//   page's "by" date). The Orders form's start/end window is two
+//   mode='time' controls side by side — no pair machinery in here.
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -58,7 +61,7 @@ const parseTimeText = (text: string): { hour: number; minute: number } | null =>
 interface Props {
     value: Date;
     onChange: (d: Date) => void;
-    mode?: 'datetime' | 'time';
+    mode?: 'datetime' | 'time' | 'date';
     dateLabel?: string;
     timeLabel?: string;
     // Fires whenever the typed boxes go valid/invalid as a whole. The page
@@ -92,7 +95,7 @@ export default function DateTimeControl({
     // repaints the box from them — so clearing a bad entry can never leave
     // the red border stuck or Save blocked.
     const dateOk = mode === 'time' || dateText.trim() === '' || parseDateText(dateText) !== null;
-    const timeOk = timeText.trim() === '' || parseTimeText(timeText) !== null;
+    const timeOk = mode === 'date' || timeText.trim() === '' || parseTimeText(timeText) !== null;
     const lastReported = useRef<boolean | null>(null);
     useEffect(() => {
         const ok = dateOk && timeOk;
@@ -215,7 +218,7 @@ export default function DateTimeControl({
 
     return (
         <View>
-            {mode === 'datetime' && (
+            {mode !== 'time' && (
                 <>
                     <Text style={styles.inputLabel}>{dateLabel}</Text>
                     <View style={styles.stepperRow}>
@@ -240,27 +243,31 @@ export default function DateTimeControl({
                 </>
             )}
 
-            <Text style={styles.inputLabel}>{timeLabel}</Text>
-            <View style={styles.timeRow}>
-                <Stepper display={pad2(h12)} caption="Hour"
-                    up={() => adjustHour('up')} down={() => adjustHour('down')} displayStyle={styles.timeDisplay} />
-                <Text style={styles.timeDisplay}>:</Text>
-                <Stepper display={pad2(value.getMinutes())} caption="Minute"
-                    up={() => adjustMinute(1)} down={() => adjustMinute(-1)} displayStyle={styles.timeDisplay} />
-                <Stepper display={h < 12 ? 'AM' : 'PM'} caption="AM/PM"
-                    up={toggleAmPm} down={toggleAmPm} displayStyle={styles.ampmDisplay} />
-            </View>
-            <TextInput
-                style={[styles.typeBox, timeBad && styles.typeBoxBad]}
-                value={timeText}
-                onChangeText={onTimeTyped}
-                onFocus={() => { timeFocused.current = true; }}
-                onBlur={onTimeBlur}
-                placeholder="HH:MM"
-                placeholderTextColor={theme.mutedText}
-                keyboardType="numbers-and-punctuation"
-            />
-            <Text style={styles.hint}>Type the time (24-hour clock)</Text>
+            {mode !== 'date' && (
+                <>
+                    <Text style={styles.inputLabel}>{timeLabel}</Text>
+                    <View style={styles.timeRow}>
+                        <Stepper display={pad2(h12)} caption="Hour"
+                            up={() => adjustHour('up')} down={() => adjustHour('down')} displayStyle={styles.timeDisplay} />
+                        <Text style={styles.timeDisplay}>:</Text>
+                        <Stepper display={pad2(value.getMinutes())} caption="Minute"
+                            up={() => adjustMinute(1)} down={() => adjustMinute(-1)} displayStyle={styles.timeDisplay} />
+                        <Stepper display={h < 12 ? 'AM' : 'PM'} caption="AM/PM"
+                            up={toggleAmPm} down={toggleAmPm} displayStyle={styles.ampmDisplay} />
+                    </View>
+                    <TextInput
+                        style={[styles.typeBox, timeBad && styles.typeBoxBad]}
+                        value={timeText}
+                        onChangeText={onTimeTyped}
+                        onFocus={() => { timeFocused.current = true; }}
+                        onBlur={onTimeBlur}
+                        placeholder="HH:MM"
+                        placeholderTextColor={theme.mutedText}
+                        keyboardType="numbers-and-punctuation"
+                    />
+                    <Text style={styles.hint}>Type the time (24-hour clock)</Text>
+                </>
+            )}
         </View>
     );
 }
