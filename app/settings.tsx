@@ -16,6 +16,7 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import DateTimeControl from '../components/DateTimeControl';
 import { Theme, useTheme, useThemeControls } from '../constants/Themes';
 
 export default function SettingsScreen() {
@@ -35,6 +36,9 @@ export default function SettingsScreen() {
     const [showTimeModal, setShowTimeModal] = useState(false);
     const [editingWhich, setEditingWhich] = useState<'morning' | 'midday' | 'evening'>('morning');
     const [pendingTime, setPendingTime] = useState<Date | null>(null);
+    // True while the shared control's typed time box holds a real time;
+    // Save is blocked with a warning while false (#61, Look Ahead's pattern).
+    const [pendingTimeValid, setPendingTimeValid] = useState(true);
 
     useEffect(() => {
         loadSettings();
@@ -73,11 +77,16 @@ export default function SettingsScreen() {
         const hhmm = which === 'morning' ? morningTime : which === 'midday' ? middayTime : eveningTime;
         const [h, m] = hhmm.split(':').map(n => parseInt(n, 10));
         setPendingTime(new Date(new Date().setHours(h, m, 0, 0)));
+        setPendingTimeValid(true);
         setEditingWhich(which);
         setShowTimeModal(true);
     };
 
     const saveTime = async () => {
+        if (!pendingTimeValid) {
+            Alert.alert('Check Time', 'The typed time is not a real one. Fix the box outlined in red, then save.');
+            return;
+        }
         const t = pendingTime || new Date(new Date().setHours(8, 0, 0, 0));
         const hhmm = `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`;
         if (editingWhich === 'morning') {
@@ -316,80 +325,15 @@ export default function SettingsScreen() {
                                     {editingWhich === 'morning' ? 'Morning Reminder Time' : editingWhich === 'midday' ? 'Midday Reminder Time' : 'Evening Reminder Time'}
                                 </Text>
 
-                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 20, marginVertical: 10 }}>
-                                    <View style={{ alignItems: 'center' }}>
-                                        <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
-                                            const next = new Date(pendingTime || new Date());
-                                            const h = next.getHours();
-                                            const isPM = h >= 12;
-                                            let h12 = h % 12; if (h12 === 0) h12 = 12;
-                                            h12 = h12 === 12 ? 1 : h12 + 1;
-                                            next.setHours(isPM ? (h12 % 12) + 12 : h12 % 12);
-                                            setPendingTime(next);
-                                        }}>
-                                            <Text style={styles.timeAdjText}>▲</Text>
-                                        </TouchableOpacity>
-                                        <Text style={styles.timeDisplayText}>
-                                            {(() => { const h = (pendingTime || new Date()).getHours(); let h12 = h % 12; if (h12 === 0) h12 = 12; return String(h12).padStart(2, '0'); })()}
-                                        </Text>
-                                        <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
-                                            const next = new Date(pendingTime || new Date());
-                                            const h = next.getHours();
-                                            const isPM = h >= 12;
-                                            let h12 = h % 12; if (h12 === 0) h12 = 12;
-                                            h12 = h12 === 1 ? 12 : h12 - 1;
-                                            next.setHours(isPM ? (h12 % 12) + 12 : h12 % 12);
-                                            setPendingTime(next);
-                                        }}>
-                                            <Text style={styles.timeAdjText}>▼</Text>
-                                        </TouchableOpacity>
-                                        <Text style={{ color: theme.cardTitle, fontSize: 13 }}>Hour</Text>
-                                    </View>
-
-                                    <Text style={styles.timeDisplayText}>:</Text>
-
-                                    <View style={{ alignItems: 'center' }}>
-                                        <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
-                                            const next = new Date(pendingTime || new Date());
-                                            next.setMinutes((next.getMinutes() + 1) % 60);
-                                            setPendingTime(next);
-                                        }}>
-                                            <Text style={styles.timeAdjText}>▲</Text>
-                                        </TouchableOpacity>
-                                        <Text style={styles.timeDisplayText}>
-                                            {String((pendingTime || new Date()).getMinutes()).padStart(2, '0')}
-                                        </Text>
-                                        <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
-                                            const next = new Date(pendingTime || new Date());
-                                            next.setMinutes((next.getMinutes() + 59) % 60);
-                                            setPendingTime(next);
-                                        }}>
-                                            <Text style={styles.timeAdjText}>▼</Text>
-                                        </TouchableOpacity>
-                                        <Text style={{ color: theme.cardTitle, fontSize: 13 }}>Minute</Text>
-                                    </View>
-
-                                    <View style={{ alignItems: 'center' }}>
-                                        <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
-                                            const next = new Date(pendingTime || new Date());
-                                            next.setHours((next.getHours() + 12) % 24);
-                                            setPendingTime(next);
-                                        }}>
-                                            <Text style={styles.timeAdjText}>▲</Text>
-                                        </TouchableOpacity>
-                                        <Text style={[styles.timeDisplayText, { fontSize: 28 }]}>
-                                            {(pendingTime || new Date()).getHours() < 12 ? 'AM' : 'PM'}
-                                        </Text>
-                                        <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
-                                            const next = new Date(pendingTime || new Date());
-                                            next.setHours((next.getHours() + 12) % 24);
-                                            setPendingTime(next);
-                                        }}>
-                                            <Text style={styles.timeAdjText}>▼</Text>
-                                        </TouchableOpacity>
-                                        <Text style={{ color: theme.cardTitle, fontSize: 13 }}>AM/PM</Text>
-                                    </View>
-                                </View>
+                                {/* Shared date/time control, time-only (#61) — spinners +
+                                    type-in box, auto-padding, red-border bad-value hint. */}
+                                <DateTimeControl
+                                    mode="time"
+                                    value={pendingTime || new Date(new Date().setHours(8, 0, 0, 0))}
+                                    onChange={setPendingTime}
+                                    timeLabel="Time"
+                                    onValidityChange={setPendingTimeValid}
+                                />
 
                                 <View style={styles.modalBtns}>
                                     <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowTimeModal(false)}>
@@ -534,17 +478,6 @@ const makeStyles = (t: Theme) =>
             width: '100%',
         },
         modalTitle: { fontSize: 18, fontWeight: '600', color: t.cardTitle, marginBottom: 10, textAlign: 'center' },
-        timeAdjBtn: {
-            backgroundColor: t.buttonPrimary,
-            width: 50,
-            height: 50,
-            borderRadius: 25,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginVertical: 6,
-        },
-        timeAdjText: { color: t.buttonPrimaryText, fontSize: 22, fontWeight: '600' },
-        timeDisplayText: { fontSize: 40, fontWeight: '600', color: t.bodyText, marginVertical: 4 },
         modalBtns: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 },
         // Cancel is the quiet button (outlined gold in dark); Save carries an
         // invisible border of the same width so the two stay the same size (#47 rule).

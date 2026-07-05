@@ -1,8 +1,8 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-04 (session #60 "Polish 5" — To-Do's dates are
-stored as numbers now, Priority and Status are gone from To-Do, the
-"30 min." reminder button is in, and the New/Edit popup got a good
-polish.)
+Last updated: 2026-07-04 (session #61 — the new date/time setter is
+now on EVERY page that needed it. My Week, Pets Day, My Day, and
+Settings all got the time-only version in one session. The rollout
+is finished; the next step is your "beat on" phone build.)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -15,40 +15,34 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 - The app ("Remember When") is stable and on your phone via TestFlight
   (the #55 build). Nothing is half-built or broken in a way that's
   holding you up.
-- Session #60 "Polish 5" — built and approved by you in the Simulator:
-  · To-Do now stores its dates and times as plain numbers, the same
-    way Look Ahead does — the last page that kept them as text.
-    Old tasks carry no weight (your rule): they open at today-noon
-    when edited and convert themselves the first time you save.
-    You watched a reminder fire exactly on the minute.
-  · Priority (Urgent/Normal/Someday) and Status (Active/On Hold/
-    Done) are GONE from To-Do — the form is much shorter, and the
-    tile's green Done button is the one way to complete a task.
-  · A "30 min." one-tap reminder button now sits before "1 hour".
-  · The New/Edit popup got polish: taller (nearly full screen),
-    tighter under the title, the reminder buttons moved UP under
-    the date/time so they can't be overlooked anymore, and Notes
-    sits last with a "↓" hint and a roomier three-line box.
-- NOT yet committed: the #60 code (app/todo.tsx) + docs. You commit.
-- Two of the four pre-build steps are done. What's left before your
-  "beat on" EAS build: just the four time-only pages (item 1 below).
+- Session #61 — built and approved by you in the Simulator, one page
+  at a time:
+  · My Week, Pets Day, My Day, and Settings (the three reminder
+    times) all use the shared time setter now — spin or type,
+    zeros added for you, and a made-up time like 25:70 can't be
+    saved (Save stops with a "Check Time" note and a red box).
+  · The spinner circles on those pages now match To-Do and Look
+    Ahead: smaller, solid orange, with the type-in box underneath.
+  · Nothing about how your data is stored changed on any of them.
+- NOT yet committed: the #61 code (myweek, mollie, myday, settings)
+  + docs. You commit.
+- ALL FOUR pre-build steps are done. Nothing is left before your
+  "beat on" EAS build — the build IS the next step.
 - The dark startup flash is still there (a known small quirk).
 
 
 WHAT'S NEXT — the order you set in #59
 ------------------------------------------------------------------
-1. The time-only pages get the date/time setter: My Day, My Week,
-   Pets, Settings — probably two a session (next session or two).
-2. Your EAS phone build + load — the "beat on" build — and judge
+1. Your EAS phone build + load — the "beat on" build — and judge
    everything waiting in NEEDS A PHONE TEST below.
-3. After the build: name the backup folder/file — needs the real
+2. After the build: name the backup folder/file — needs the real
    phone (iCloud); ties into finishing the "Remember When" rename.
    (The when-you're-ready talk-throughs — Vault import, removing
    Vault categories, the backup Merge option — are in the DECISIONS
    section below.)
-(Done in #60: To-Do dates as numbers + the form slim-down + the
-30-min button + popup polish. Done in #59: Look Ahead on the shared
-setter + the stuck-red-box fix.)
+(Done in #61: the time setter on My Week, Pets Day, My Day, and
+Settings — the whole rollout is finished. Done in #60: To-Do dates
+as numbers + the form slim-down + the 30-min button + popup polish.)
 
 
 #40 & #41 STILL OPEN (what's left of your #41 list)
@@ -88,6 +82,11 @@ NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
   at today-noon and be fine after saving), the slimmed form (no
   Priority, no Status), the "30 min." button, and the reworked popup
   (reminder buttons visible under the time, Notes last with the ↓).
+- The #61 time setter on the four pages: on My Week, Pets Day, and
+  My Day, open New and Edit — spin, type a time, try a bad one,
+  clear it, Save; check the reminder still fires at the set time.
+  In Settings, change each of the three reminder times the same way
+  and check the row shows the new time.
 
 
 STILL BROKEN OR UNFINISHED (small bugs)

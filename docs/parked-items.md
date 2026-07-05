@@ -7,16 +7,14 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-04 (session #60 "Polish 5" — pre-build plan items
-1 AND 2 are DONE: To-Do stores dates/times as numbers (last string
-outlier gone), Priority + Status removed from To-Do, "30 min." preset
-added, plus New/Edit popup polish. What's LEFT before the "beat on"
-EAS build: just the four time-only pages. The active order lives in
-handoff.md.)
+Last updated: 2026-07-04 (session #61 "Date/Time control — My Week &
+Pets Day", which grew to all four time-only pages — the shared-control
+rollout is COMPLETE. NOTHING is left before the "beat on" EAS build;
+the build itself is the next session's work. See handoff.md.)
 
 ---
 
-## SHARED DATE/TIME CONTROL ROLLOUT (#58 plan, Patrick's call #57)
+## SHARED DATE/TIME CONTROL ROLLOUT (#58 plan, Patrick's call #57) — ✅ COMPLETE (#61)
 
 One shared component — **BUILT in #58: `components/DateTimeControl.tsx`**
 (Look Ahead's spinners sized down + a type-in box under each group;
@@ -33,11 +31,14 @@ session, like the theme rollout:
    blocks Save; dead spinner code removed. Plus the empty-box fix in
    the control itself (clearing a bad entry snaps back to the
    spinners — To-Do inherits it). Simulator-approved.
-3. **My Day** (time-only), 4. **My Week** (time-only),
-5. **Pets** (time-only), 6. **Settings** (time-only: the global
-   Morning/Midday/Evening times).
-   **All four now scheduled BEFORE the EAS build (Patrick, #59)** —
-   likely two pages a session; order in handoff.md.
+3. ✅ **DONE (#61) — My Week, Pets Day, My Day, Settings** (all four
+   in one session): each inline Hour/Minute/AM-PM spinner block
+   replaced by `<DateTimeControl mode='time'>`; bad typed time blocks
+   Save ("Check Time" alert); orphaned spinner styles deleted.
+   Storage untouched everywhere (the routine trio already stored
+   numbers; Settings keeps its padded "HH:MM" strings). Each page
+   `tsc`-clean and Simulator-approved individually. Phone judgment
+   rides the "beat on" build.
 
 ✅ **DONE (#60) — To-Do storage conversion to numbers.** `dueDate`/
 `dueTime` strings replaced by year/month/day/hour/minute (Look Ahead's
@@ -338,6 +339,11 @@ categories from To-Do entirely.)
 
 ## Nice-to-have later (UI polish)
 
+- **Remove the orphaned `timeStepper` theme keys (#61)**
+  (`constants/Themes.ts`). `timeStepper`/`timeStepperBorder`/
+  `timeStepperText` lost their last user when My Day moved to the
+  shared control — no page reads them now (grep-verified #61). Left
+  in place on purpose; deleting theme keys is its own small step.
 - **Name the backup folder — PROMOTED (#41, see Patrick's list above)**
   (`app/backup.tsx`). Give the exported backup folder/file a clear, recognizable name
   so it's easy to find where it's saved (e.g. iCloud Drive). (The file itself is

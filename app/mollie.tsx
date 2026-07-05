@@ -18,6 +18,7 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import DateTimeControl from '../components/DateTimeControl';
 import { Theme, useTheme } from '../constants/Themes';
 
 interface FeedItem {
@@ -57,6 +58,9 @@ export default function PetsScreen() {
     const [tempTreatNote, setTempTreatNote] = useState('');
     const [treatCount, setTreatCount] = useState(0);
     const [pendingTime, setPendingTime] = useState<Date | null>(null);
+    // True while the shared control's typed time box holds a real time;
+    // Save is blocked with a warning while false (#61, Look Ahead's pattern).
+    const [pendingTimeValid, setPendingTimeValid] = useState(true);
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
     const [showEditModal, setShowEditModal] = useState(false);
     const [editEntry, setEditEntry] = useState<HistoryEntry | null>(null);
@@ -262,6 +266,7 @@ export default function PetsScreen() {
         setActiveId(null);
         setTempName('');
         setPendingTime(new Date(new Date().setHours(12, 0, 0, 0)));
+        setPendingTimeValid(true);
         setShowEditModal(true);
     };
 
@@ -303,6 +308,10 @@ export default function PetsScreen() {
         const name = tempName.trim();
         if (!name) {
             Alert.alert('Missing Name', 'Please enter a name.');
+            return;
+        }
+        if (!pendingTimeValid) {
+            Alert.alert('Check Time', 'The typed time is not a real one. Fix the box outlined in red, then save.');
             return;
         }
         const hour = pendingTime ? pendingTime.getHours() : 12;
@@ -403,6 +412,7 @@ export default function PetsScreen() {
                                         setActiveId(item.id);
                                         setTempName(item.label);
                                         setPendingTime(new Date(new Date().setHours(item.hour, item.minute, 0, 0)));
+                                        setPendingTimeValid(true);
                                         setShowEditModal(true);
                                     }}
                                 >
@@ -592,87 +602,15 @@ export default function PetsScreen() {
                                 autoFocus={!activeId}
                             />
 
-                            <Text style={styles.inputLabel}>Time</Text>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 20, marginVertical: 10 }}>
-                                <View style={{ alignItems: 'center' }}>
-                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
-                                        const current = pendingTime || new Date(new Date().setHours(12, 0, 0, 0));
-                                        const next = new Date(current);
-                                        const h = next.getHours();
-                                        const isPM = h >= 12;
-                                        let h12 = h % 12; if (h12 === 0) h12 = 12;
-                                        h12 = h12 === 12 ? 1 : h12 + 1;
-                                        next.setHours(isPM ? (h12 % 12) + 12 : h12 % 12);
-                                        setPendingTime(next);
-                                    }}>
-                                        <Text style={styles.timeAdjText}>▲</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.timeDisplayText}>
-                                        {(() => { const h = (pendingTime || new Date(new Date().setHours(12, 0, 0, 0))).getHours(); let h12 = h % 12; if (h12 === 0) h12 = 12; return String(h12).padStart(2, '0'); })()}
-                                    </Text>
-                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
-                                        const current = pendingTime || new Date(new Date().setHours(12, 0, 0, 0));
-                                        const next = new Date(current);
-                                        const h = next.getHours();
-                                        const isPM = h >= 12;
-                                        let h12 = h % 12; if (h12 === 0) h12 = 12;
-                                        h12 = h12 === 1 ? 12 : h12 - 1;
-                                        next.setHours(isPM ? (h12 % 12) + 12 : h12 % 12);
-                                        setPendingTime(next);
-                                    }}>
-                                        <Text style={styles.timeAdjText}>▼</Text>
-                                    </TouchableOpacity>
-                                    <Text style={{ color: theme.bodyText, fontSize: 13 }}>Hour</Text>
-                                </View>
-
-                                <Text style={styles.timeDisplayText}>:</Text>
-
-                                <View style={{ alignItems: 'center' }}>
-                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
-                                        const current = pendingTime || new Date(new Date().setHours(12, 0, 0, 0));
-                                        const next = new Date(current);
-                                        next.setMinutes((next.getMinutes() + 1) % 60);
-                                        setPendingTime(next);
-                                    }}>
-                                        <Text style={styles.timeAdjText}>▲</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.timeDisplayText}>
-                                        {String((pendingTime || new Date(new Date().setHours(12, 0, 0, 0))).getMinutes()).padStart(2, '0')}
-                                    </Text>
-                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
-                                        const current = pendingTime || new Date(new Date().setHours(12, 0, 0, 0));
-                                        const next = new Date(current);
-                                        next.setMinutes((next.getMinutes() + 59) % 60);
-                                        setPendingTime(next);
-                                    }}>
-                                        <Text style={styles.timeAdjText}>▼</Text>
-                                    </TouchableOpacity>
-                                    <Text style={{ color: theme.bodyText, fontSize: 13 }}>Minute</Text>
-                                </View>
-
-                                <View style={{ alignItems: 'center' }}>
-                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
-                                        const current = pendingTime || new Date(new Date().setHours(12, 0, 0, 0));
-                                        const next = new Date(current);
-                                        next.setHours((next.getHours() + 12) % 24);
-                                        setPendingTime(next);
-                                    }}>
-                                        <Text style={styles.timeAdjText}>▲</Text>
-                                    </TouchableOpacity>
-                                    <Text style={[styles.timeDisplayText, { fontSize: 28 }]}>
-                                        {(pendingTime || new Date(new Date().setHours(12, 0, 0, 0))).getHours() < 12 ? 'AM' : 'PM'}
-                                    </Text>
-                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => {
-                                        const current = pendingTime || new Date(new Date().setHours(12, 0, 0, 0));
-                                        const next = new Date(current);
-                                        next.setHours((next.getHours() + 12) % 24);
-                                        setPendingTime(next);
-                                    }}>
-                                        <Text style={styles.timeAdjText}>▼</Text>
-                                    </TouchableOpacity>
-                                    <Text style={{ color: theme.bodyText, fontSize: 13 }}>AM/PM</Text>
-                                </View>
-                            </View>
+                            {/* Shared date/time control, time-only (#61) — spinners +
+                                type-in box, auto-padding, red-border bad-value hint. */}
+                            <DateTimeControl
+                                mode="time"
+                                value={pendingTime || new Date(new Date().setHours(12, 0, 0, 0))}
+                                onChange={setPendingTime}
+                                timeLabel="Time"
+                                onValidityChange={setPendingTimeValid}
+                            />
 
                             <View style={styles.modalBtns}>
                                 <TouchableOpacity style={styles.cancelBtn} onPress={closeEdit}>
@@ -864,18 +802,6 @@ const makeStyles = (t: Theme) =>
         marginBottom: 12,
     },
     swipeDeleteText: { color: t.buttonDeleteText, fontWeight: '600', fontSize: 15 },
-    timeAdjBtn: {
-        backgroundColor: t.timeStepper,
-        borderWidth: 1.5,
-        borderColor: t.timeStepperBorder,
-        width: 50, height: 50,
-        borderRadius: 25,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginVertical: 6,
-    },
-    timeAdjText: { color: t.timeStepperText, fontSize: 22, fontWeight: '600' },
-    timeDisplayText: { fontSize: 40, fontWeight: '600', color: t.bodyText, marginVertical: 4 },
     headerBtn: {
         borderWidth: 1,
         borderColor: t.headerButton,
