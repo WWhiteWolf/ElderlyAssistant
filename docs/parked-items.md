@@ -7,14 +7,13 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-04 (session #58 "Polish 3" — the shared
-date/time control BUILT (`components/DateTimeControl.tsx`) and To-Do
-converted: date+time required, auto-padded type-in + smaller spinners,
-typo warning blocks bad saves, "Are you sure you don't want to set a
-Reminder?" confirm. The single-digit bug is dead at its source.
-NEW PARKED from #58: the To-Do form slim-down (remove Priority +
-Status entirely) and a "30 min." reminder preset — see below.
-Patrick's planned EAS phone build now carries #56 + #57 + #58.)
+Last updated: 2026-07-04 (session #59 "Polish 4" — Look Ahead converted
+to the shared control; empty-box fix inside DateTimeControl (clearing a
+bad typed value now snaps back to the spinners instead of sticking red).
+PLAN RESET (Patrick, #59): the next EAS build is the "beat on" build —
+the To-Do storage conversion to numbers, the #58 form slim-down +
+30-min preset, AND the four time-only pages all land BEFORE it. The
+active order lives in handoff.md.)
 
 ---
 
@@ -30,11 +29,26 @@ session, like the theme rollout:
    control; date AND time now required; single-digit bug killed at
    the source; the "no reminder set" confirm is in (Go Back / Save
    Anyway). Simulator-approved; phone judgment rides the next build.
-2. **Look Ahead** — NEXT: swap its inline spinners for the shared
-   component (mostly wiring — the component exists now).
+2. ✅ **DONE (#59) — Look Ahead**: inline spinners swapped for the
+   shared control (labels "First Due Date" / "Time"); bad typed value
+   blocks Save; dead spinner code removed. Plus the empty-box fix in
+   the control itself (clearing a bad entry snaps back to the
+   spinners — To-Do inherits it). Simulator-approved.
 3. **My Day** (time-only), 4. **My Week** (time-only),
 5. **Pets** (time-only), 6. **Settings** (time-only: the global
    Morning/Midday/Evening times).
+   **All four now scheduled BEFORE the EAS build (Patrick, #59)** —
+   likely two pages a session; order in handoff.md.
+
+**NEW (#59) — To-Do storage conversion to numbers — pulled into the
+active plan, NEXT SESSION (see handoff.md).** Patrick's long-run
+standard: every page stores dates/times as separate numbers (Look
+Ahead's pattern). To-Do's `dueDate`/`dueTime` strings are the last
+real outlier. Old data carries no weight (his rule): no compat code,
+old tasks open via the existing today-noon fallback until edited.
+Touches todo.tsx's read points incl. reminder scheduling — its own
+session. (Settings' "08:00" strings are harmless — written only by
+controlled buttons — could be aligned later for consistency.)
 
 Old entries stored with single digits stay as-is (Patrick, #57:
 "Old data is not a concern") — no belt-and-braces padding at the
@@ -42,10 +56,11 @@ read points.
 
 ---
 
-## TO-DO FORM SLIM-DOWN + 30-MIN PRESET (Patrick, #58 — scoped, parked)
+## TO-DO FORM SLIM-DOWN + 30-MIN PRESET (Patrick, #58 — scoped; **UNPARKED #59: now item 2 of the pre-build plan in handoff.md**)
 
 Raised after Simulator-testing the new control: the New/Edit form is
-long. Discussed and scoped in #58; Patrick said park, not build.
+long. Discussed and scoped in #58; Patrick pulled it into the
+pre-build plan in #59 — it lands before the EAS build.
 Treatment agreed: full removal, like #42 did for categories — old
 stored tasks keep their values harmlessly, the page just stops
 reading them.

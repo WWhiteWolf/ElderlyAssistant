@@ -1,7 +1,7 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-04 (session #58 "Polish 3" — the shared
-date/time control is built and To-Do uses it. The single-digit
-bug is gone for good.)
+Last updated: 2026-07-04 (session #59 "Polish 4" — Look Ahead now
+uses the shared date/time setter too, and clearing a wrongly typed
+value no longer leaves you stuck on a red box.)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -14,48 +14,46 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 - The app ("Remember When") is stable and on your phone via TestFlight
   (the #55 build). Nothing is half-built or broken in a way that's
   holding you up.
-- Session #58 "Polish 3" — built and approved by you in the Simulator:
-  · The NEW date-and-time setter is on To-Do: the same ▲▼ spinners
-    Look Ahead has (sized smaller), plus a type-in box under the
-    date and another under the time. Type or spin — they stay in
-    step. Whatever you type gets its zeros added automatically
-    (7/4/26 becomes 07/04/26), so the single-digit bug CAN'T happen
-    anymore. Typing 13/45/26 or 25:70 blocks the save with a warning.
-  · Every To-Do task now needs a date AND a time (your call). A new
-    task starts at today, noon.
-  · Saving with no reminder picked now asks "Are you sure you don't
-    want to set a Reminder?" — Go Back or Save Anyway. Your say.
-  · Old saved tasks are untouched; the reminders themselves are
-    untouched — same presets, same scheme.
-- NOT yet committed: the #58 code + docs. You commit.
-- NEW from #58, parked (the New/Edit form is long, your call):
-  strip Priority and Status out of To-Do entirely, and add a
-  "30 min." reminder button. Scoped and waiting in parked-items.md.
-- NEXT: your planned EAS phone build + load. Everything from #56,
-  #57, and #58 rides that build. Build policy unchanged: batched
-  builds only, you handle Expo billing.
-- The date/time rollout continues after that, one page a session:
-  Look Ahead next, then My Day, My Week, Pets, Settings (time-only).
+- Session #59 "Polish 4" — built and approved by you in the Simulator:
+  · Look Ahead's New/Edit popup now uses the SAME date-and-time
+    setter as To-Do — smaller spinners plus the type-in boxes with
+    automatic zeros. Its labels stayed "First Due Date" and "Time"
+    (your call). A bad typed value blocks Save with a warning.
+  · The stuck-red-box problem you found is FIXED, in the shared
+    setter itself: clearing a wrongly typed box now snaps it back
+    to what the spinners show, the red vanishes, and Save works
+    again. To-Do gets this fix too, automatically.
+- NOT yet committed: the #59 code + docs. You commit.
+- THE PLAN CHANGED (#59, your call): the next EAS build is the one
+  you can BEAT ON — everything below lands before it, in order:
+  1. To-Do's stored dates become numbers like every other page
+     (next session). Old data carries no weight — your rule.
+  2. The To-Do form slim-down: Priority and Status removed, and
+     the "30 min." reminder button added.
+  3. The four time-only pages get the setter: My Day, My Week,
+     Pets, Settings — probably two pages a session.
+  4. THEN your EAS build + load, and judge the whole phone-test
+     list on it. Build policy unchanged: batched builds only.
 - The dark startup flash is still there (a known small quirk).
 
 
-WHAT'S NEXT — suggested order
+WHAT'S NEXT — the order you set in #59
 ------------------------------------------------------------------
-1. Your EAS phone build + load, and judge everything waiting in
-   NEEDS A PHONE TEST below (now including the new date/time
-   control on To-Do).
-2. Continue the date/time rollout, one page a session: Look Ahead,
-   then My Day, My Week, Pets, Settings. (Lighter sessions now —
-   the control is built; it's mostly wiring.)
-3. The To-Do form slim-down (drop Priority + Status) and the
-   "30 min." reminder button — parked from #58, ready when you are.
-4. Name the backup folder/file — needs the real phone (iCloud); ties
-   into finishing the "Remember When" rename.
+1. To-Do stores its dates as numbers, like every other page
+   (next session).
+2. The To-Do form slim-down (drop Priority + Status) and the
+   "30 min." reminder button.
+3. The time-only pages get the date/time setter: My Day, My Week,
+   Pets, Settings — probably two a session.
+4. Your EAS phone build + load — the "beat on" build — and judge
+   everything waiting in NEEDS A PHONE TEST below.
+5. After the build: name the backup folder/file — needs the real
+   phone (iCloud); ties into finishing the "Remember When" rename.
    (The when-you're-ready talk-throughs — Vault import, removing
    Vault categories, the backup Merge option — are in the DECISIONS
    section below.)
-(Done in #58: the shared date/time control + To-Do conversion, the
-single-digit bug, and the "no reminder set" confirm.)
+(Done in #59: Look Ahead on the shared setter + the stuck-red-box
+fix. Done in #58: the setter itself + To-Do converted.)
 
 
 #40 & #41 STILL OPEN (what's left of your #41 list)
@@ -87,6 +85,9 @@ NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
 - The new date/time control on To-Do (#58): spin, type, watch the
   padding, try a bad value, and the "no reminder" confirm — plus
   how the smaller spinners feel on the real screen.
+- The same control on Look Ahead (#59): New/Edit an entry, spin and
+  type, try a bad value, clear it (red should vanish), and check
+  the reminders still arm from the saved date.
 
 
 STILL BROKEN OR UNFINISHED (small bugs)

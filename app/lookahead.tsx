@@ -18,6 +18,7 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import DateTimeControl from '../components/DateTimeControl';
 import { Theme, useTheme } from '../constants/Themes';
 
 // Look Ahead — long-lead reminders grouped by repeat interval.
@@ -93,6 +94,9 @@ export default function LookAheadScreen() {
     const [activeId, setActiveId] = useState<string | null>(null);
     const [tempName, setTempName] = useState('');
     const [pendingDate, setPendingDate] = useState<Date | null>(null);
+    // True while the shared control's typed boxes hold a real date + time;
+    // Save is blocked with a warning while false (#59, To-Do's pattern).
+    const [pendingDateValid, setPendingDateValid] = useState(true);
     const [pendingInterval, setPendingInterval] = useState<Interval>('monthly');
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
@@ -249,6 +253,7 @@ export default function LookAheadScreen() {
         const d = new Date();
         d.setHours(12, 0, 0, 0);
         setPendingDate(d);
+        setPendingDateValid(true);
         setPendingInterval('monthly');
         setShowEditModal(true);
     };
@@ -258,6 +263,7 @@ export default function LookAheadScreen() {
         setTempName(item.label);
         const d = new Date(item.year, item.month, item.day, item.hour, item.minute, 0, 0);
         setPendingDate(d);
+        setPendingDateValid(true);
         setPendingInterval(item.interval);
         setShowEditModal(true);
     };
@@ -273,6 +279,10 @@ export default function LookAheadScreen() {
         const name = tempName.trim();
         if (!name) {
             Alert.alert('Missing Name', 'Please enter a name.');
+            return;
+        }
+        if (!pendingDateValid) {
+            Alert.alert('Check Date & Time', 'The typed date or time is not a real one. Fix the box outlined in red, then save.');
             return;
         }
         const d = pendingDate || new Date(new Date().setHours(12, 0, 0, 0));
@@ -390,62 +400,8 @@ export default function LookAheadScreen() {
         ]);
     };
 
-    // ----- Date stepper helpers -----
-    const adjustMonth = (delta: number) => {
-        const cur = pendingDate || new Date(new Date().setHours(12, 0, 0, 0));
-        const next = new Date(cur);
-        const m = (next.getMonth() + delta + 12) % 12;
-        const maxDay = daysInMonth(next.getFullYear(), m);
-        next.setMonth(m, Math.min(next.getDate(), maxDay));
-        setPendingDate(next);
-    };
-
-    const adjustDay = (delta: number) => {
-        const cur = pendingDate || new Date(new Date().setHours(12, 0, 0, 0));
-        const next = new Date(cur);
-        const max = daysInMonth(next.getFullYear(), next.getMonth());
-        let day = next.getDate() + delta;
-        if (day < 1) day = max;
-        if (day > max) day = 1;
-        next.setDate(day);
-        setPendingDate(next);
-    };
-
-    const adjustYear = (delta: number) => {
-        const cur = pendingDate || new Date(new Date().setHours(12, 0, 0, 0));
-        const next = new Date(cur);
-        const y = next.getFullYear() + delta;
-        const maxDay = daysInMonth(y, next.getMonth());
-        next.setFullYear(y, next.getMonth(), Math.min(next.getDate(), maxDay));
-        setPendingDate(next);
-    };
-
-    // ----- Time stepper helpers (mirrors Pets) -----
-    const adjustHour = (dir: 'up' | 'down') => {
-        const cur = pendingDate || new Date(new Date().setHours(12, 0, 0, 0));
-        const next = new Date(cur);
-        const h = next.getHours();
-        const isPM = h >= 12;
-        let h12 = h % 12; if (h12 === 0) h12 = 12;
-        h12 = dir === 'up' ? (h12 === 12 ? 1 : h12 + 1) : (h12 === 1 ? 12 : h12 - 1);
-        next.setHours(isPM ? (h12 % 12) + 12 : h12 % 12);
-        setPendingDate(next);
-    };
-
-    const adjustMinute = (delta: number) => {
-        const cur = pendingDate || new Date(new Date().setHours(12, 0, 0, 0));
-        const next = new Date(cur);
-        next.setMinutes((next.getMinutes() + delta + 60) % 60);
-        setPendingDate(next);
-    };
-
-    const toggleAmPm = () => {
-        const cur = pendingDate || new Date(new Date().setHours(12, 0, 0, 0));
-        const next = new Date(cur);
-        next.setHours((next.getHours() + 12) % 24);
-        setPendingDate(next);
-    };
-
+    // The date/time spinners + type-in boxes live in the shared
+    // DateTimeControl (#59) — the old inline stepper helpers are gone.
     const pd = pendingDate || new Date(new Date().setHours(12, 0, 0, 0));
 
     return (
@@ -649,81 +605,15 @@ export default function LookAheadScreen() {
                                 autoFocus={!activeId}
                             />
 
-                            <Text style={styles.inputLabel}>First Due Date</Text>
-                            <View style={styles.stepperRow}>
-                                <View style={{ alignItems: 'center' }}>
-                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustMonth(1)}>
-                                        <Text style={styles.timeAdjText}>▲</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.dateDisplayText}>{MONTH_NAMES[pd.getMonth()]}</Text>
-                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustMonth(-1)}>
-                                        <Text style={styles.timeAdjText}>▼</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.stepperCaption}>Month</Text>
-                                </View>
-                                <View style={{ alignItems: 'center' }}>
-                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustDay(1)}>
-                                        <Text style={styles.timeAdjText}>▲</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.dateDisplayText}>{String(pd.getDate()).padStart(2, '0')}</Text>
-                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustDay(-1)}>
-                                        <Text style={styles.timeAdjText}>▼</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.stepperCaption}>Day</Text>
-                                </View>
-                                <View style={{ alignItems: 'center' }}>
-                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustYear(1)}>
-                                        <Text style={styles.timeAdjText}>▲</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.dateDisplayText}>{pd.getFullYear()}</Text>
-                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustYear(-1)}>
-                                        <Text style={styles.timeAdjText}>▼</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.stepperCaption}>Year</Text>
-                                </View>
-                            </View>
-
-                            <Text style={styles.inputLabel}>Time</Text>
-                            <View style={styles.stepperRow}>
-                                <View style={{ alignItems: 'center' }}>
-                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustHour('up')}>
-                                        <Text style={styles.timeAdjText}>▲</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.timeDisplayText}>
-                                        {(() => { const h = pd.getHours(); let h12 = h % 12; if (h12 === 0) h12 = 12; return String(h12).padStart(2, '0'); })()}
-                                    </Text>
-                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustHour('down')}>
-                                        <Text style={styles.timeAdjText}>▼</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.stepperCaption}>Hour</Text>
-                                </View>
-
-                                <Text style={styles.timeDisplayText}>:</Text>
-
-                                <View style={{ alignItems: 'center' }}>
-                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustMinute(1)}>
-                                        <Text style={styles.timeAdjText}>▲</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.timeDisplayText}>{String(pd.getMinutes()).padStart(2, '0')}</Text>
-                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={() => adjustMinute(-1)}>
-                                        <Text style={styles.timeAdjText}>▼</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.stepperCaption}>Minute</Text>
-                                </View>
-
-                                <View style={{ alignItems: 'center' }}>
-                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={toggleAmPm}>
-                                        <Text style={styles.timeAdjText}>▲</Text>
-                                    </TouchableOpacity>
-                                    <Text style={[styles.timeDisplayText, { fontSize: 28 }]}>
-                                        {pd.getHours() < 12 ? 'AM' : 'PM'}
-                                    </Text>
-                                    <TouchableOpacity style={styles.timeAdjBtn} onPress={toggleAmPm}>
-                                        <Text style={styles.timeAdjText}>▼</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.stepperCaption}>AM/PM</Text>
-                                </View>
-                            </View>
+                            {/* Shared date/time control (#59) — spinners + type-in
+                                boxes, auto-padding, red-border bad-value hint. */}
+                            <DateTimeControl
+                                value={pd}
+                                onChange={setPendingDate}
+                                dateLabel="First Due Date"
+                                timeLabel="Time"
+                                onValidityChange={setPendingDateValid}
+                            />
 
                             <Text style={styles.inputLabel}>Repeat Every</Text>
                             <View style={styles.intervalRow}>
@@ -905,14 +795,6 @@ const makeStyles = (t: Theme) =>
         marginBottom: 10,
         color: t.bodyText,
     },
-    stepperRow: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 16,
-        marginVertical: 10,
-    },
-    stepperCaption: { color: t.bodyText, fontSize: 13 },
     modalBtns: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 },
     cancelBtn: {
         backgroundColor: t.buttonNeutral,
@@ -936,17 +818,6 @@ const makeStyles = (t: Theme) =>
         marginBottom: 12,
     },
     swipeDeleteText: { color: t.buttonDeleteText, fontWeight: '600', fontSize: 15 },
-    timeAdjBtn: {
-        backgroundColor: t.buttonPrimary,
-        width: 50, height: 50,
-        borderRadius: 25,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginVertical: 6,
-    },
-    timeAdjText: { color: t.buttonPrimaryText, fontSize: 22, fontWeight: '600' },
-    timeDisplayText: { fontSize: 40, fontWeight: '600', color: t.bodyText, marginVertical: 4 },
-    dateDisplayText: { fontSize: 26, fontWeight: '600', color: t.bodyText, marginVertical: 4 },
     headerBtn: {
         borderWidth: 1,
         borderColor: t.headerButton,

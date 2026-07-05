@@ -87,8 +87,12 @@ export default function DateTimeControl({
     const dateFocused = useRef(false);
     const timeFocused = useRef(false);
 
-    const dateOk = mode === 'time' || parseDateText(dateText) !== null;
-    const timeOk = parseTimeText(timeText) !== null;
+    // An EMPTY box means "never mind what I typed" (#59, Patrick's call): it
+    // counts as valid — the spinners always hold a real value, and blur
+    // repaints the box from them — so clearing a bad entry can never leave
+    // the red border stuck or Save blocked.
+    const dateOk = mode === 'time' || dateText.trim() === '' || parseDateText(dateText) !== null;
+    const timeOk = timeText.trim() === '' || parseTimeText(timeText) !== null;
     const lastReported = useRef<boolean | null>(null);
     useEffect(() => {
         const ok = dateOk && timeOk;
@@ -148,6 +152,7 @@ export default function DateTimeControl({
 
     const onDateTyped = (text: string) => {
         setDateText(text);
+        if (text.trim() === '') { setDateBad(false); return; }
         const p = parseDateText(text);
         if (p) {
             setDateBad(false);
@@ -159,6 +164,7 @@ export default function DateTimeControl({
 
     const onTimeTyped = (text: string) => {
         setTimeText(text);
+        if (text.trim() === '') { setTimeBad(false); return; }
         const p = parseTimeText(text);
         if (p) {
             setTimeBad(false);
@@ -171,14 +177,16 @@ export default function DateTimeControl({
     const onDateBlur = () => {
         dateFocused.current = false;
         const p = parseDateText(dateText);
-        if (p) { setDateText(formatDateMMDDYY(value)); setDateBad(false); }
+        // Empty or valid: repaint from the spinners' value, no red. Only a
+        // non-empty value that isn't a real date goes red.
+        if (p || dateText.trim() === '') { setDateText(formatDateMMDDYY(value)); setDateBad(false); }
         else setDateBad(true);
     };
 
     const onTimeBlur = () => {
         timeFocused.current = false;
         const p = parseTimeText(timeText);
-        if (p) { setTimeText(formatTime24(value)); setTimeBad(false); }
+        if (p || timeText.trim() === '') { setTimeText(formatTime24(value)); setTimeBad(false); }
         else setTimeBad(true);
     };
 
