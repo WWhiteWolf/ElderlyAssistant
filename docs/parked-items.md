@@ -7,13 +7,12 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-04 (session #59 "Polish 4" — Look Ahead converted
-to the shared control; empty-box fix inside DateTimeControl (clearing a
-bad typed value now snaps back to the spinners instead of sticking red).
-PLAN RESET (Patrick, #59): the next EAS build is the "beat on" build —
-the To-Do storage conversion to numbers, the #58 form slim-down +
-30-min preset, AND the four time-only pages all land BEFORE it. The
-active order lives in handoff.md.)
+Last updated: 2026-07-04 (session #60 "Polish 5" — pre-build plan items
+1 AND 2 are DONE: To-Do stores dates/times as numbers (last string
+outlier gone), Priority + Status removed from To-Do, "30 min." preset
+added, plus New/Edit popup polish. What's LEFT before the "beat on"
+EAS build: just the four time-only pages. The active order lives in
+handoff.md.)
 
 ---
 
@@ -40,15 +39,15 @@ session, like the theme rollout:
    **All four now scheduled BEFORE the EAS build (Patrick, #59)** —
    likely two pages a session; order in handoff.md.
 
-**NEW (#59) — To-Do storage conversion to numbers — pulled into the
-active plan, NEXT SESSION (see handoff.md).** Patrick's long-run
-standard: every page stores dates/times as separate numbers (Look
-Ahead's pattern). To-Do's `dueDate`/`dueTime` strings are the last
-real outlier. Old data carries no weight (his rule): no compat code,
-old tasks open via the existing today-noon fallback until edited.
-Touches todo.tsx's read points incl. reminder scheduling — its own
-session. (Settings' "08:00" strings are harmless — written only by
-controlled buttons — could be aligned later for consistency.)
+✅ **DONE (#60) — To-Do storage conversion to numbers.** `dueDate`/
+`dueTime` strings replaced by year/month/day/hour/minute (Look Ahead's
+pattern); no compat code — old string tasks ride the today-noon
+fallback until edited. Simulator-approved (banner fired on the
+minute). (Still noted: Settings' "08:00" strings are harmless —
+written only by controlled buttons — could be aligned later for
+consistency. And `_layout.tsx`'s dead old To-Do banner-Done handler
+still reads the strings harmlessly — goes with the parked popup-
+plumbing retirement below.)
 
 Old entries stored with single digits stay as-is (Patrick, #57:
 "Old data is not a concern") — no belt-and-braces padding at the
@@ -56,27 +55,19 @@ read points.
 
 ---
 
-## TO-DO FORM SLIM-DOWN + 30-MIN PRESET (Patrick, #58 — scoped; **UNPARKED #59: now item 2 of the pre-build plan in handoff.md**)
+## TO-DO FORM SLIM-DOWN + 30-MIN PRESET — ✅ COMPLETE (#60)
 
-Raised after Simulator-testing the new control: the New/Edit form is
-long. Discussed and scoped in #58; Patrick pulled it into the
-pre-build plan in #59 — it lands before the EAS build.
-Treatment agreed: full removal, like #42 did for categories — old
-stored tasks keep their values harmlessly, the page just stops
-reading them.
-
-1. **Remove Priority from To-Do entirely** (`app/todo.tsx`): the
-   Urgent/Normal/Someday form buttons AND the tiles' colored side
-   bar + colored priority word ("Title colors can go away, and the
-   rest also"). The priority theme keys stay in `Themes.ts` — the
-   Planner still uses them.
-2. **Remove Status from To-Do entirely** (`app/todo.tsx`): the
-   Active/On Hold/Completed form buttons, the "Reason for Hold" box,
-   and Completed-from-Edit. On Hold disappears with them; the tile's
-   ✓ stays the way to complete.
-3. **Add a "30 min." one-tap reminder preset** (`app/todo.tsx`
-   `REMINDER_PRESETS`): offset kind, 30 minutes before the
-   appointment time, sitting before "1 hour".
+All three parts built and Simulator-approved in #60, exactly as
+scoped in #58: Priority removed entirely (theme keys stay for the
+Planner), Status removed entirely (the tile's green Done is the one
+way to complete), and the "30 min." preset sits before "1 hour".
+Old stored priority/status values are simply ignored on load (the
+#42 categories treatment). #60 also added popup polish on top:
+title gap tightened, popup taller (98%), scroll hint removed,
+Reminders moved up under the date/time (they were getting forgotten
+at the bottom), Notes last with a "↓" on its label and a ~3-line
+starting height. DECIDED AGAINST (Patrick, #60): moving the type-in
+boxes' direction lines into placeholders — don't re-raise.
 
 ---
 

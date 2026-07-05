@@ -20,7 +20,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl, { formatDateMMDDYY, formatTime24 } from '../components/DateTimeControl';
 import { Theme, useTheme } from '../constants/Themes';
 
-type Priority = 'Urgent' | 'Normal' | 'Someday';
+// Priority removed entirely (Patrick, #58 scope, built #60): no form
+// buttons, no tile side bar or colored priority word. Old saved tasks may
+// still carry a priority in storage — it's simply ignored on load (the
+// #42 categories treatment). The priority* theme keys stay in Themes.ts —
+// the Planner still uses them.
 
 // Categories removed entirely (Patrick, #42): no picker, no custom-category
 // popup, no filter bar. Old saved tasks may still carry a categoryId in
@@ -42,17 +46,26 @@ interface Reminder {
 interface Task {
     id: string;
     title: string;
-    priority: Priority;
     taskType: 'scheduled' | 'background';
-    dueDate: string;
-    dueTime: string;
+    // #60: due date/time stored as separate numbers — Look Ahead's pattern,
+    // now the app-wide standard. (Was dueDate/dueTime MM/DD/YY + HH:MM
+    // strings; no compat code — old string tasks open via the today-noon
+    // fallback until edited, per Patrick's rule.)
+    year: number;
+    month: number; // 0-11
+    day: number;   // 1-31
+    hour: number;
+    minute: number;
     reminders: Reminder[];
     completed: boolean;
     createdDate: string;
     completedDate?: string;
     notes: string;
-    status: 'Active' | 'On Hold' | 'Completed';
-    onHoldNote: string;
+    // Status removed entirely (Patrick, #58 scope, built #60): no
+    // Active/On Hold/Completed form buttons, no "Reason for Hold" box, no
+    // Completed-from-Edit. On Hold is gone with them; the tile's ✓ (Done)
+    // is the way to complete. Old saved tasks may still carry status /
+    // onHoldNote in storage — simply ignored on load.
 }
 interface LogEntry {
     id: string;
@@ -74,6 +87,8 @@ type ReminderPreset = {
     timeOfDay?: 'morning' | 'midday' | 'evening';
 };
 const REMINDER_PRESETS: ReminderPreset[] = [
+    // '30 min.' added #60 (Patrick's #58 ask) — sits before '1 hour'.
+    { label: '30 min.', kind: 'offset', amount: 30, unit: 'minutes' },
     { label: '1 hour', kind: 'offset', amount: 1, unit: 'hours' },
     { label: '2 hours', kind: 'offset', amount: 2, unit: 'hours' },
     { label: 'Morning of', kind: 'clock', daysBefore: 0, timeOfDay: 'morning' },
@@ -84,27 +99,10 @@ const REMINDER_PRESETS: ReminderPreset[] = [
     { label: 'Month', kind: 'clock', daysBefore: 30, timeOfDay: 'evening' },
 ];
 
-// Priority colors come from the active theme (#49). Red keeps its meaning
-// in both themes; Normal is blue in light / gold in dark; Someday's grey
-// is cool in light, warm in dark. The text map is for the selected
-// Priority button in the form — dark's gold fill needs dark-brown text.
-const priorityColors = (t: Theme): Record<Priority, string> => ({
-    Urgent: t.priorityUrgent,
-    Normal: t.priorityNormal,
-    Someday: t.prioritySomeday,
-});
-const priorityTextColors = (t: Theme): Record<Priority, string> => ({
-    Urgent: t.priorityUrgentText,
-    Normal: t.priorityNormalText,
-    Someday: t.prioritySomedayText,
-});
-
 export default function TodoScreen() {
     const router = useRouter();
     const theme = useTheme();
     const styles = makeStyles(theme);
-    const PRIORITY_COLORS = priorityColors(theme);
-    const PRIORITY_TEXT_COLORS = priorityTextColors(theme);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [log, setLog] = useState<LogEntry[]>([]);
     const [showAddTask, setShowAddTask] = useState(false);
@@ -114,7 +112,6 @@ export default function TodoScreen() {
     const [editLogNotes, setEditLogNotes] = useState('');
     const [editTask, setEditTask] = useState<Task | null>(null);
     const [newTitle, setNewTitle] = useState('');
-    const [newPriority, setNewPriority] = useState<Priority>('Normal');
     // #58: the shared date/time control replaced the two typed boxes. The
     // form holds one Date (spinners + type-in stay in step through it) and
     // a validity flag — false while a type-in box holds an impossible value.
@@ -125,8 +122,6 @@ export default function TodoScreen() {
     const [newTaskType, setNewTaskType] = useState<'scheduled' | 'background'>('scheduled');
     const [newReminders, setNewReminders] = useState<Reminder[]>([]);
     const [showBackgroundTasks, setShowBackgroundTasks] = useState(false);
-    const [newTaskStatus, setNewTaskStatus] = useState<'Active' | 'On Hold' | 'Completed'>('Active');
-    const [newTaskOnHoldNote, setNewTaskOnHoldNote] = useState('');
 
     useEffect(() => {
         const setup = async () => {
@@ -173,25 +168,31 @@ export default function TodoScreen() {
         await AsyncStorage.setItem('todo_log', JSON.stringify(l));
     };
 
-    // Text shown under a task's title. A task with a date shows the date + time.
-    const scheduleLabel = (task: Task) => {
-        if (task.dueDate) {
-            return `Due: ${task.dueDate}${task.dueTime ? ' at ' + task.dueTime : ''}`;
+    // #60: the one bridge from stored numbers to a Date. Returns null when a
+    // task has no numbers (an old string-stored task) — callers treat that as
+    // "no due date" until the task is edited and re-saved.
+    const taskDueDate = (task: Task): Date | null => {
+        if (typeof task.year !== 'number' || typeof task.month !== 'number' || typeof task.day !== 'number') {
+            return null;
         }
-        return '';
+        return new Date(task.year, task.month, task.day, task.hour ?? 12, task.minute ?? 0, 0, 0);
+    };
+
+    // Text shown under a task's title (and in the reminder banner body).
+    // Same wording/format as before: "Due: MM/DD/YY at HH:MM".
+    const scheduleLabel = (task: Task) => {
+        const due = taskDueDate(task);
+        return due ? `Due: ${formatDateMMDDYY(due)} at ${formatTime24(due)}` : '';
     };
 
     const resetForm = () => {
         setNewTitle('');
-        setNewPriority('Normal');
         setNewTaskType('scheduled');
         setNewDueAt(new Date(new Date().setHours(12, 0, 0, 0)));
         setNewDueValid(true);
         setNewNotes('');
         setNewReminders([]);
         setEditTask(null);
-        setNewTaskStatus('Active');
-        setNewTaskOnHoldNote('');
     };
 
     const addTask = () => {
@@ -221,16 +222,16 @@ export default function TodoScreen() {
         const task: Task = {
             id: Date.now().toString(),
             title: newTitle.trim(),
-            priority: newPriority,
             taskType: newTaskType,
-            dueDate: formatDateMMDDYY(newDueAt),
-            dueTime: formatTime24(newDueAt),
+            year: newDueAt.getFullYear(),
+            month: newDueAt.getMonth(),
+            day: newDueAt.getDate(),
+            hour: newDueAt.getHours(),
+            minute: newDueAt.getMinutes(),
             reminders: newReminders,
             completed: false,
             createdDate: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' }),
             notes: newNotes,
-            status: newTaskStatus,
-            onHoldNote: newTaskOnHoldNote,
         };
         saveTasks([...tasks, task]);
         scheduleReminders(task);
@@ -241,11 +242,6 @@ export default function TodoScreen() {
 
     const updateTask = async () => {
         if (!editTask || !newTitle.trim()) return;
-        if (newTaskStatus === 'Completed') {
-            completeTask(editTask);
-            setShowAddTask(false);
-            return;
-        }
         // #58: same warning block as the Add path.
         if (!newDueValid) {
             Alert.alert('Check Date & Time', 'The typed date or time is not a real one. Fix the box outlined in red, then save.');
@@ -266,14 +262,14 @@ export default function TodoScreen() {
         const updatedTask: Task = {
             ...editing,
             title: newTitle.trim(),
-            priority: newPriority,
             taskType: newTaskType,
-            dueDate: formatDateMMDDYY(newDueAt),
-            dueTime: formatTime24(newDueAt),
+            year: newDueAt.getFullYear(),
+            month: newDueAt.getMonth(),
+            day: newDueAt.getDate(),
+            hour: newDueAt.getHours(),
+            minute: newDueAt.getMinutes(),
             reminders: newReminders,
             notes: newNotes,
-            status: newTaskStatus,
-            onHoldNote: newTaskOnHoldNote,
         };
         const updated = tasks.map(t => (t.id === editing.id ? updatedTask : t));
         saveTasks(updated);
@@ -305,9 +301,11 @@ export default function TodoScreen() {
                 text: 'Done', onPress: () => {
                     cancelReminders(task.id);
                     const completedDate = new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' });
-                    // Original set date/time, matching the banner Done in _layout.tsx (#27).
-                    let scheduledFor = task.dueDate || '';
-                    if (task.dueTime) scheduledFor += (scheduledFor ? ' at ' : '') + task.dueTime;
+                    // Original set date/time (#27). #60: built from the stored
+                    // numbers; an old string task logs an empty scheduledFor
+                    // (the log popup already tolerates a missing one).
+                    const due = taskDueDate(task);
+                    const scheduledFor = due ? `${formatDateMMDDYY(due)} at ${formatTime24(due)}` : '';
                     const logEntry: LogEntry = {
                         id: Date.now().toString(),
                         taskTitle: task.title,
@@ -346,32 +344,17 @@ export default function TodoScreen() {
         setEditLogEntry(null);
     };
 
-    // #58: stored tasks keep their MM/DD/YY + HH:MM strings; the control
-    // works on a Date. Old entries (unpadded digits, or no time) still read
-    // fine; anything unreadable falls back to today at noon.
-    const storedToDate = (dateStr: string, timeStr: string): Date => {
-        const fallback = new Date(new Date().setHours(12, 0, 0, 0));
-        if (!dateStr) return fallback;
-        const parts = dateStr.split('/').map(s => parseInt(s, 10));
-        if (parts.length !== 3 || parts.some(isNaN)) return fallback;
-        const year = parts[2] < 100 ? parts[2] + 2000 : parts[2];
-        const [hh, mm] = (timeStr || '12:00').split(':').map(s => parseInt(s, 10));
-        const d = new Date(year, parts[0] - 1, parts[1], isNaN(hh) ? 12 : hh, isNaN(mm) ? 0 : mm, 0, 0);
-        return isNaN(d.getTime()) ? fallback : d;
-    };
-
     const openEditTask = (task: Task) => {
         setEditTask(task);
         setNewTitle(task.title);
-        setNewPriority(task.priority);
         setNewTaskType(task.taskType || 'scheduled');
-        setNewDueAt(storedToDate(task.dueDate, task.dueTime));
+        // #60: numbers → Date directly. An old string task (no numbers) opens
+        // at today-noon — the same fallback the string parser used to provide.
+        setNewDueAt(taskDueDate(task) ?? new Date(new Date().setHours(12, 0, 0, 0)));
         setNewDueValid(true);
         setNewNotes(task.notes);
         setNewReminders(task.reminders || []);
         setShowAddTask(true);
-        setNewTaskStatus(task.status || 'Active');
-        setNewTaskOnHoldNote(task.onHoldNote || '');
     };
 
     const getSortedTasks = () => {
@@ -380,24 +363,25 @@ export default function TodoScreen() {
         filtered = filtered.filter(t => !t.completed);
 
         // Fixed sort: by due date + time, soonest on top. Tasks with no due
-        // date fall to the bottom.
-        const stamp = (t: Task) => {
-            const [month, day, year] = t.dueDate.split('/');
-            const fullYear = year.length === 2 ? `20${year}` : year;
-            return new Date(`${fullYear}-${month}-${day}T${t.dueTime || '00:00'}:00`).getTime();
-        };
+        // date (old string-stored ones) fall to the bottom.
         return [...filtered].sort((a, b) => {
-            if (!a.dueDate) return 1;
-            if (!b.dueDate) return -1;
-            return stamp(a) - stamp(b);
+            const dueA = taskDueDate(a);
+            const dueB = taskDueDate(b);
+            if (!dueA) return 1;
+            if (!dueB) return -1;
+            return dueA.getTime() - dueB.getTime();
         });
     };
 
     const scheduleReminders = async (task: Task) => {
-        console.log('scheduleReminders called', task.taskType, task.dueDate, task.reminders.length);
+        console.log('scheduleReminders called', task.taskType, taskDueDate(task), task.reminders.length);
         if (task.taskType === 'background') return;
 
-        if (!task.dueDate || task.reminders.length === 0) return;
+        // #60: the due Date comes straight from the stored numbers. No numbers
+        // (an old string task) = nothing to schedule — it gets its reminders
+        // back when it's edited and re-saved.
+        const dueDateTime = taskDueDate(task);
+        if (!dueDateTime || task.reminders.length === 0) return;
 
         // Global morning/midday/evening times (set in Settings) drive 'clock' reminders.
         const morningTime = (await AsyncStorage.getItem('reminder_morning_time')) || '08:00';
@@ -405,10 +389,6 @@ export default function TodoScreen() {
         const eveningTime = (await AsyncStorage.getItem('reminder_evening_time')) || '17:00';
 
         for (const reminder of task.reminders) {
-            const [month, day, year] = task.dueDate.split('/');
-            const fullYear = year.length === 2 ? `20${year}` : year;
-            const dueDateTime = new Date(`${fullYear}-${month}-${day}T${task.dueTime || '09:00'}:00`);
-
             let fireTime: Date;
             if (reminder.kind === 'clock') {
                 // Fire at the chosen global time, `daysBefore` days before the date.
@@ -416,7 +396,7 @@ export default function TodoScreen() {
                     : reminder.timeOfDay === 'midday' ? middayTime
                     : morningTime;
                 const [chStr, cmStr] = which.split(':');
-                fireTime = new Date(`${fullYear}-${month}-${day}T00:00:00`);
+                fireTime = new Date(task.year, task.month, task.day, 0, 0, 0, 0);
                 fireTime.setDate(fireTime.getDate() - (reminder.daysBefore ?? 0));
                 fireTime.setHours(parseInt(chStr, 10) || 0, parseInt(cmStr, 10) || 0, 0, 0);
             } else {
@@ -431,7 +411,7 @@ export default function TodoScreen() {
                 await Notifications.scheduleNotificationAsync({
                     content: {
                         title: `📋 Reminder: ${task.title}`,
-                        body: task.dueDate ? `Due: ${task.dueDate}${task.dueTime ? ' at ' + task.dueTime : ''}` : '',
+                        body: scheduleLabel(task),
                         // 'todook' (Patrick, #56; softens #40's buttonless call): press-and-hold
                         // shows a single OK that just closes the banner. Still no Done/Snooze —
                         // a To-Do is a one-time appointment; Done happens in-app afterward.
@@ -560,7 +540,6 @@ export default function TodoScreen() {
                                 style={styles.taskCard}
                                 onPress={() => openEditTask(task)}
                             >
-                                <View style={[styles.priorityBar, { backgroundColor: PRIORITY_COLORS[task.priority] }]} />
                                 <View style={styles.taskContent}>
                                     <View style={styles.taskTopRow}>
                                         <Text style={styles.taskTitle}>{task.title}</Text>
@@ -569,7 +548,6 @@ export default function TodoScreen() {
                                         </TouchableOpacity>
                                     </View>
                                     <View style={styles.taskBottomRow}>
-                                        <Text style={[styles.priorityLabel, { color: PRIORITY_COLORS[task.priority] }]}>{task.priority}</Text>
                                         {scheduleLabel(task) ? <Text style={styles.dueDateText}>{scheduleLabel(task)}</Text> : null}
                                     </View>
                                 </View>
@@ -596,7 +574,6 @@ export default function TodoScreen() {
                         )}
                     >
                         <View style={styles.taskCard}>
-                            <View style={[styles.priorityBar, { backgroundColor: PRIORITY_COLORS[task.priority] }]} />
                             <View style={styles.taskContent}>
                                 <View style={styles.taskTopRow}>
                                     <Text style={styles.taskTitle}>{task.title}</Text>
@@ -611,7 +588,6 @@ export default function TodoScreen() {
                                 </View>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <View style={styles.taskBottomRow}>
-                                        <Text style={[styles.priorityLabel, { color: PRIORITY_COLORS[task.priority] }]}>{task.priority}</Text>
                                         {scheduleLabel(task) ? <Text style={styles.dueDateText}>{scheduleLabel(task)}</Text> : null}
                                     </View>
 
@@ -687,13 +663,17 @@ export default function TodoScreen() {
                         style={{ flex: 1 }}
                     >
                         <View style={styles.modalOverlay}>
-                            <View style={styles.modalBox}>
+                            {/* #60: taller popup (85% → 98%, Patrick) — the bottom edge sits
+                                low enough to read "Notes (optional)". Log popup unchanged. */}
+                            <View style={[styles.modalBox, { maxHeight: '98%' }]}>
                                 <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                                    {/* #60: gap under the title cut 32 → 8, and the italic
+                                        scroll hint removed (Patrick: never noticed it) — the ↓ on
+                                        the Notes label does that job now. Log popup untouched. */}
+                                    <View style={{ marginBottom: 8 }}>
                                         <Text style={styles.modalTitle}>{editTask ? 'Edit Task' : 'New Task'}</Text>
-                                        <Text style={{ fontSize: 13, color: theme.settingValue, fontStyle: 'italic' }}>Tap background, or Scroll ↓ to view everything</Text>
                                     </View>
-                                    <View style={styles.modalBtns}>
+                                    <View style={[styles.modalBtns, { marginTop: 0 }]}>
                                         <TouchableOpacity style={styles.cancelBtn} onPress={() => { resetForm(); setShowAddTask(false); }}>
                                             <Text style={styles.cancelBtnText}>Cancel</Text>
                                         </TouchableOpacity>
@@ -705,49 +685,11 @@ export default function TodoScreen() {
                                     <Text style={styles.inputLabel}>Title</Text>
                                     <TextInput style={styles.input} value={newTitle} onChangeText={setNewTitle} placeholder="What needs to be done?" autoFocus={true} />
 
-                                    <Text style={styles.inputLabel}>Priority</Text>
-                                    <View style={styles.priorityRow}>
-                                        {(['Urgent', 'Normal', 'Someday'] as Priority[]).map(p => (
-                                            <TouchableOpacity
-                                                key={p}
-                                                style={[styles.priorityBtn, newPriority === p && { backgroundColor: PRIORITY_COLORS[p] }]}
-                                                onPress={() => setNewPriority(p)}
-                                            >
-                                                <Text style={[styles.priorityBtnText, newPriority === p && { color: PRIORITY_TEXT_COLORS[p] }]}>{p}</Text>
-                                            </TouchableOpacity>
-                                        ))}
-                                    </View>
-                                    <Text style={styles.inputLabel}>Status</Text>
-                                    <View style={styles.priorityRow}>
-                                        {(['Active', 'On Hold', 'Completed'] as const).map(s => (
-                                            <TouchableOpacity
-                                                key={s}
-                                                style={[styles.priorityBtn, newTaskStatus === s && {
-                                                    // Done is green in BOTH themes (green means done, #48 rule —
-                                                    // was bridge teal in light). Dark bridge = Active's orange,
-                                                    // so teal/bridge couldn't tell Done and Active apart there.
-                                                    backgroundColor: s === 'Active' ? theme.buttonPrimary : s === 'On Hold' ? theme.statusOnHold : theme.buttonDone
-                                                }]}
-                                                onPress={() => setNewTaskStatus(s)}
-                                            >
-                                                <Text style={[styles.priorityBtnText, newTaskStatus === s && { color: theme.buttonPrimaryText }]}>
-                                                    {s === 'Completed' ? 'Done' : s}
-                                                </Text>
-                                            </TouchableOpacity>
-                                        ))}
-                                    </View>
-                                    {newTaskStatus === 'On Hold' && (
-                                        <>
-                                            <Text style={styles.inputLabel}>Reason for Hold</Text>
-                                            <TextInput style={styles.input} value={newTaskOnHoldNote} onChangeText={setNewTaskOnHoldNote} placeholder="Why is this on hold?" />
-                                        </>
-                                    )}
-
                                     <DateTimeControl value={newDueAt} onChange={setNewDueAt} onValidityChange={setNewDueValid} />
 
-                                    <Text style={styles.inputLabel}>Notes (optional)</Text>
-                                    <TextInput style={styles.input} value={newNotes} onChangeText={setNewNotes} placeholder="Any details..." multiline />
-
+                                    {/* #60: Reminders moved up under the date/time (Patrick) —
+                                        they lived at the bottom, out of sight, and got forgotten.
+                                        Notes (optional) drops to last. */}
                                     {newTaskType === 'scheduled' && (
                                         <>
                                             <Text style={styles.inputLabel}>Reminders before</Text>
@@ -765,7 +707,11 @@ export default function TodoScreen() {
                                         </>
                                     )}
 
-
+                                    {/* #60: the ↓ hints there's more below the fold (Patrick) —
+                                        replaces the removed header scroll hint. */}
+                                    <Text style={styles.inputLabel}>Notes (optional) ↓</Text>
+                                    {/* #60: starts ~3 lines tall (Patrick) and still grows as you type. */}
+                                    <TextInput style={[styles.input, { minHeight: 76, textAlignVertical: 'top' }]} value={newNotes} onChangeText={setNewNotes} placeholder="Any details..." multiline />
                                 </ScrollView>
                             </View>
                         </View>
@@ -808,7 +754,6 @@ const makeStyles = (t: Theme) =>
         borderColor: t.cardBorder,
         overflow: 'hidden',
     },
-    priorityBar: { width: 6 },
     taskContent: { flex: 1, padding: 6 },
     taskTopRow: {
         flexDirection: 'row',
@@ -822,7 +767,6 @@ const makeStyles = (t: Theme) =>
         alignItems: 'center',
         gap: 12,
     },
-    priorityLabel: { fontSize: 12, fontWeight: '600' },
     dueDateText: { fontSize: 12, color: t.mutedText },
     taskNotes: { fontSize: 12, color: t.mutedText, marginTop: 4, fontStyle: 'italic' },
     // Log section (#57) — bottom of the page, My Day's log pattern.
@@ -886,16 +830,6 @@ const makeStyles = (t: Theme) =>
         color: t.bodyText,
         marginBottom: 4,
     },
-    priorityRow: { flexDirection: 'row', gap: 8, marginBottom: 4 },
-    priorityBtn: {
-        flex: 1,
-        padding: 8,
-        borderRadius: 8,
-        borderWidth: 1.5,
-        borderColor: t.cardBorder,
-        alignItems: 'center',
-    },
-    priorityBtnText: { fontSize: 13, fontWeight: '600', color: t.bodyText },
     recurBtn: {
         paddingVertical: 6,
         paddingHorizontal: 12,
