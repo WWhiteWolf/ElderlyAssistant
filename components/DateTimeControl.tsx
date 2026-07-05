@@ -196,11 +196,14 @@ export default function DateTimeControl({
         display: string; caption: string; up: () => void; down: () => void; displayStyle: object;
     }) => (
         <View style={{ alignItems: 'center' }}>
-            <TouchableOpacity style={styles.adjBtn} onPress={up}>
+            {/* #62: hitSlop widens the TAP area ~5px each side beyond the drawn
+                circle (40px drawn ≈ 50px tappable) — Patrick found the #58
+                circles hard to tap on the phone. */}
+            <TouchableOpacity style={styles.adjBtn} onPress={up} hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}>
                 <Text style={styles.adjText}>▲</Text>
             </TouchableOpacity>
             <Text style={displayStyle}>{display}</Text>
-            <TouchableOpacity style={styles.adjBtn} onPress={down}>
+            <TouchableOpacity style={styles.adjBtn} onPress={down} hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}>
                 <Text style={styles.adjText}>▼</Text>
             </TouchableOpacity>
             <Text style={styles.caption}>{caption}</Text>
@@ -266,17 +269,19 @@ const makeStyles = (t: Theme) => StyleSheet.create({
     inputLabel: { fontSize: 14, color: t.mutedText, marginBottom: 4, marginTop: 8 },
     stepperRow: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 6 },
     timeRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 14, marginBottom: 6 },
-    // Look Ahead's circles are 50 with 22pt arrows; #58 sizes them down so
-    // the whole form stays visible (mockup-approved).
+    // Look Ahead's circles were 50 with 22pt arrows; #58 sized them down to 34
+    // to keep the whole form visible, but Patrick found 34 hard to tap on the
+    // phone (#62) — now 40 with 18pt arrows, plus hitSlop above for ~50px of
+    // tappable area.
     adjBtn: {
         backgroundColor: t.buttonPrimary,
-        width: 34, height: 34,
-        borderRadius: 17,
+        width: 40, height: 40,
+        borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
         marginVertical: 4,
     },
-    adjText: { color: t.buttonPrimaryText, fontSize: 15, fontWeight: '600' },
+    adjText: { color: t.buttonPrimaryText, fontSize: 18, fontWeight: '600' },
     dateDisplay: { fontSize: 20, fontWeight: '600', color: t.bodyText, marginVertical: 2 },
     timeDisplay: { fontSize: 24, fontWeight: '600', color: t.bodyText, marginVertical: 2 },
     ampmDisplay: { fontSize: 18, fontWeight: '600', color: t.bodyText, marginVertical: 5 },

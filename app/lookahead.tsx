@@ -581,7 +581,10 @@ export default function LookAheadScreen() {
             {showEditModal && (
                 <Modal transparent={true} animationType="fade" visible={showEditModal}>
                     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-                    <ScrollView contentContainerStyle={styles.modalOverlay} keyboardShouldPersistTaps="handled">
+                    {/* #62: paddingVertical 20 → 40 (this popup only) — with the bigger
+                        spinner circles the top edge crowded the clock/notch zone, same
+                        as To-Do's. Content scrolls if it no longer fits. */}
+                    <ScrollView contentContainerStyle={[styles.modalOverlay, { paddingVertical: 40 }]} keyboardShouldPersistTaps="handled">
                         <View style={styles.pickerModal}>
                             <Text style={styles.modalTitle}>{activeId ? 'Edit Entry' : 'New Entry'}</Text>
 

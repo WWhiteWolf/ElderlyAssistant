@@ -664,8 +664,10 @@ export default function TodoScreen() {
                     >
                         <View style={styles.modalOverlay}>
                             {/* #60: taller popup (85% → 98%, Patrick) — the bottom edge sits
-                                low enough to read "Notes (optional)". Log popup unchanged. */}
-                            <View style={[styles.modalBox, { maxHeight: '98%' }]}>
+                                low enough to read "Notes (optional)". Log popup unchanged.
+                                #62: 98% → 92% — with the bigger spinner circles the top edge
+                                reached the clock/notch zone; 92% drops it clear (Patrick). */}
+                            <View style={[styles.modalBox, { maxHeight: '92%' }]}>
                                 <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
                                     {/* #60: gap under the title cut 32 → 8, and the italic
                                         scroll hint removed (Patrick: never noticed it) — the ↓ on

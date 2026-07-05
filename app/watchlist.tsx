@@ -154,7 +154,9 @@ export default function WatchListScreen() {
 
     return (
         <View style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
+            {/* #62: no edges prop (default all edges), matching the seven taller-header
+                pages — Patrick standardized on the taller header look. */}
+            <SafeAreaView style={{ backgroundColor: theme.header }}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
                         <Text style={styles.headerBtnText}>← Home</Text>
@@ -269,7 +271,6 @@ const makeStyles = (t: Theme) =>
         header: {
             backgroundColor: t.header,
             paddingTop: 20,
-            paddingBottom: 12,
             paddingHorizontal: 20,
             flexDirection: 'row',
             alignItems: 'center',

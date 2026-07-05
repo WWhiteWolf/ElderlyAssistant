@@ -69,6 +69,12 @@ export default function HomeScreen() {
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
+            {/* #62 bridge redesign (Patrick): four bands — light (page), mid (bridge),
+                light again, dark (header). The light bands read wider than they are,
+                so the mid and dark bands are a touch taller (4px vs 3px). */}
+            <View style={styles.bridgeLight} />
+            <View style={styles.bridge} />
+            <View style={styles.bridgeLight} />
             <View style={styles.bridge} />
             <ScrollView contentContainerStyle={styles.grid}>
                 {modules.map((mod) => (
@@ -79,7 +85,7 @@ export default function HomeScreen() {
                     >
                         <View style={styles.iconCircle}>
                             {mod.id === 'shopping' ? (
-                                <Ionicons name="cart" size={22} color={theme.cartIcon} />
+                                <Ionicons name="cart" size={24} color={theme.cartIcon} />
                             ) : (
                                 <Text style={styles.tileIcon}>{mod.icon}</Text>
                             )}
@@ -125,9 +131,17 @@ const makeStyles = (t: Theme) =>
             fontFamily: 'Georgia',
             marginTop: 4,
         },
+        bridgeLight: {
+            height: 3,
+            backgroundColor: t.pageBackground,
+        },
         bridge: {
-            height: 8,
+            height: 4,
             backgroundColor: t.bridge,
+        },
+        bridgeBottom: {
+            height: 4,
+            backgroundColor: t.header,
         },
         grid: {
             flexDirection: 'row',
@@ -141,10 +155,13 @@ const makeStyles = (t: Theme) =>
             alignItems: 'center',
             paddingVertical: 12,
         },
+        // #62: tiles ~10% bigger (Patrick's phone call — sized for the real
+        // screen, not the Simulator): circle 44→48, emoji 22→24; the label
+        // size and halo radius scale in Themes.ts.
         iconCircle: {
-            width: 44,
-            height: 44,
-            borderRadius: 22,
+            width: 48,
+            height: 48,
+            borderRadius: 24,
             backgroundColor: t.tileCircle,
             borderWidth: 1.5,
             borderColor: t.tileCircleBorder,
@@ -159,7 +176,7 @@ const makeStyles = (t: Theme) =>
             shadowRadius: t.tileHaloRadius,
         },
         tileIcon: {
-            fontSize: 22,
+            fontSize: 24,
             ...(t.iconShadow
                 ? {
                       textShadowColor: 'rgba(0,0,0,0.5)',

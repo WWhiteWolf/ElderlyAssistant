@@ -133,13 +133,15 @@ export default function RootLayout() {
       // OK = silence just this popup; Skip = this occurrence only (cancels the
       // item's pending one-offs, nothing marked/logged); Delay = snooze this one
       // reminder; Done = check off + log (with a past-day guard).
+      // Done FIRST (Patrick, #62): on the Apple Watch the buttons show as a
+      // vertical list and he had to scroll to the bottom to reach Done.
       await Notifications.setNotificationCategoryAsync('routineactions', [
+        { identifier: 'done', buttonTitle: 'Done' },
         { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
         { identifier: 'skip', buttonTitle: 'Skip', options: { opensAppToForeground: false } },
         { identifier: 'snooze15', buttonTitle: 'Delay 15 min' },
         { identifier: 'snooze30', buttonTitle: 'Delay 30 min' },
         { identifier: 'snooze60', buttonTitle: 'Delay 60 min' },
-        { identifier: 'done', buttonTitle: 'Done' },
       ]);
     })();
   }, []);

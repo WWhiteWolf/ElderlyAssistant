@@ -172,12 +172,12 @@ export const Themes: Record<ThemeName, Theme> = {
         titleWeight: '500',
         subtitleSize: 21,
         subtitleWeight: '400',
-        tileLabelSize: 18,
+        tileLabelSize: 20, // #62: was 18 — Home tiles ~10% bigger (Patrick's phone call)
         tileLabelFont: 'Georgia', // #56: matches dark — both themes read Georgia
         iconShadow: false,
         tileHalo: '#1a6e8a',      // #56: header teal-blue, stronger than dark's
         tileHaloOpacity: 0.75,
-        tileHaloRadius: 9,
+        tileHaloRadius: 10,       // #62: was 9 — scaled with the bigger circle
     },
     // Dark — the warm dark theme exactly as approved #43 / built #44.
     dark: {
@@ -242,12 +242,12 @@ export const Themes: Record<ThemeName, Theme> = {
         titleWeight: '600',
         subtitleSize: 21,
         subtitleWeight: '400',
-        tileLabelSize: 18, // #56: was 13 — dark labels now match light's size
+        tileLabelSize: 20, // #62: was 18 — Home tiles ~10% bigger (Patrick's phone call)
         tileLabelFont: 'Georgia',
         iconShadow: true,
         tileHalo: '#f0a83a',      // #56: header gold, softer than light's
         tileHaloOpacity: 0.55,
-        tileHaloRadius: 7,
+        tileHaloRadius: 8,        // #62: was 7 — scaled with the bigger circle
     },
 };
 

@@ -1,8 +1,9 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-04 (session #61 — the new date/time setter is
-now on EVERY page that needed it. My Week, Pets Day, My Day, and
-Settings all got the time-only version in one session. The rollout
-is finished; the next step is your "beat on" phone build.)
+Last updated: 2026-07-05 (session #62 — your "beat on" build happened
+and you phone-tested it. Four of your five issues were fixed this
+session; the fifth (Look Ahead's banner Delay not showing on the
+tile) is written up below. The new "Orders" page is fully specced —
+next session builds it.)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -12,37 +13,43 @@ tracked here — git history keeps the full record — so this list stays short.
 
 WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
-- The app ("Remember When") is stable and on your phone via TestFlight
-  (the #55 build). Nothing is half-built or broken in a way that's
-  holding you up.
-- Session #61 — built and approved by you in the Simulator, one page
-  at a time:
-  · My Week, Pets Day, My Day, and Settings (the three reminder
-    times) all use the shared time setter now — spin or type,
-    zeros added for you, and a made-up time like 25:70 can't be
-    saved (Save stops with a "Check Time" note and a red box).
-  · The spinner circles on those pages now match To-Do and Look
-    Ahead: smaller, solid orange, with the type-in box underneath.
-  · Nothing about how your data is stored changed on any of them.
-- NOT yet committed: the #61 code (myweek, mollie, myday, settings)
-  + docs. You commit.
-- ALL FOUR pre-build steps are done. Nothing is left before your
-  "beat on" EAS build — the build IS the next step.
+- The "beat on" build HAPPENED — the app is on your phone with all
+  the #58-#61 work. Your phone testing turned up five issues.
+- Session #62 fixed four of them, each checked in the Simulator:
+  · Done is now the FIRST button on My Day / Pets / My Week
+    reminder banners (for the watch). Banners scheduled on the old
+    build keep the old order until they cycle out.
+  · The Home page strip under the header is now a four-band design
+    (your light/mid/light/mid pattern) — Home only for now; the
+    other pages are parked below.
+  · Settings, Pets Day, Watch List, and Vault headers now match the
+    taller headers of the other pages.
+  · Home page buttons ~10% bigger (circle, emoji, name, halo).
+    Judge on the phone — the Sim already looked right to you.
+  · The time-setter spin buttons are bigger (40px) with a wider
+    invisible tap area (~50px). The To-Do and Look Ahead popups
+    were dropping their tops into the clock zone with the bigger
+    circles — both pulled down and approved.
+- The fifth issue (Look Ahead banner Delay) is in STILL BROKEN below.
+- NOT yet committed: all the #62 code + docs. You commit.
 - The dark startup flash is still there (a known small quirk).
 
 
-WHAT'S NEXT — the order you set in #59
+WHAT'S NEXT
 ------------------------------------------------------------------
-1. Your EAS phone build + load — the "beat on" build — and judge
-   everything waiting in NEEDS A PHONE TEST below.
-2. After the build: name the backup folder/file — needs the real
-   phone (iCloud); ties into finishing the "Remember When" rename.
-   (The when-you're-ready talk-throughs — Vault import, removing
-   Vault categories, the backup Merge option — are in the DECISIONS
-   section below.)
-(Done in #61: the time setter on My Week, Pets Day, My Day, and
-Settings — the whole rollout is finished. Done in #60: To-Do dates
-as numbers + the form slim-down + the 30-min button + popup polish.)
+1. BUILD THE NEW "ORDERS" PAGE — fully specced this session, all
+   your calls; the complete spec is in handoff.md. In short: a
+   📦 Orders tile; one entry per item (name, price, store, address,
+   order#, "by" date, time window added later by hand); a HERE
+   button that logs the arrival and clears the entry; reminders at
+   day-before (Midday), morning-of (Morning), window open, and
+   window close if not HERE; banner buttons HERE / OK / Delay
+   15-30-60. The biggest build since Look Ahead — several steps.
+2. Still on the list from before: name the backup folder/file —
+   needs the real phone (iCloud); ties into finishing the
+   "Remember When" rename. (The when-you're-ready talk-throughs —
+   Vault import, removing Vault categories, the backup Merge
+   option — are in the DECISIONS section below.)
 
 
 #40 & #41 STILL OPEN (what's left of your #41 list)
@@ -57,42 +64,37 @@ as numbers + the form slim-down + the 30-min button + popup polish.)
 
 NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
 ----------------------------------------------------------------------------
-- A To-Do reminder that seemed to fire early. Checking the code found no
-  bug — almost certainly the "2 hours before" option doing its job. To be
-  sure: make a task due a few minutes out, pick ONLY a short preset, and
-  watch if it fires on the minute.
-- The To-Do banner OK (#56) — verified in the Simulator twice now
-  (#56 and again in #57). Still give it a quick phone look: press
-  and hold a To-Do banner, tap OK, the banner should close WITHOUT
-  opening the app. (Banners scheduled on the old build stay
-  buttonless until they cycle out.)
-  LESSON (#56): the Simulator's LOCK SCREEN never shows banner
-  buttons — judge banner buttons with the app open, or on the phone.
-- The Home page polish (#56): halo strength, the Light ring shade,
-  and how the size-18 Georgia button names wrap.
-- The new To-Do log page (#57): a quick once-over on the phone.
-- The new date/time control on To-Do (#58): spin, type, watch the
-  padding, try a bad value, and the "no reminder" confirm — plus
-  how the smaller spinners feel on the real screen.
-- The same control on Look Ahead (#59): New/Edit an entry, spin and
-  type, try a bad value, clear it (red should vanish), and check
-  the reminders still arm from the saved date.
-- The #60 To-Do changes: dates stored as numbers (make a task, watch
-  its reminder fire on the minute; edit an OLD task — it should open
-  at today-noon and be fine after saving), the slimmed form (no
-  Priority, no Status), the "30 min." button, and the reworked popup
-  (reminder buttons visible under the time, Notes last with the ↓).
-- The #61 time setter on the four pages: on My Week, Pets Day, and
-  My Day, open New and Edit — spin, type a time, try a bad one,
-  clear it, Save; check the reminder still fires at the set time.
-  In Settings, change each of the three reminder times the same way
-  and check the row shows the new time.
+(The old #56-#61 checklist rode your "beat on" build — you tested and
+brought back five issues, all handled in #62. Anything from that old
+list you DIDN'T flag is assumed fine; say so if something still nags.)
+- The #62 fixes, on the NEXT build:
+  · Done first on a routine banner (watch AND phone) — remember old
+    banners keep the old order until they cycle out.
+  · The four-band strip on the Home page, both themes.
+  · The matched header heights on Settings, Pets Day, Watch List,
+    and Vault.
+  · The bigger Home buttons — especially how the longer names
+    ("Project Planner", "Shopping List") wrap at the new size.
+  · The bigger spin buttons — do they feel right to tap now, and do
+    the To-Do and Look Ahead popups sit clear of the clock.
+- Still carried from before (you didn't flag them, but they were
+  never singled out either): a To-Do reminder with ONLY "At time"
+  set should fire exactly on the minute (the old "fired early"
+  puzzle — almost certainly the 2-hour preset doing its job).
 
 
 STILL BROKEN OR UNFINISHED (small bugs)
 ---------------------------------------
 (The single-digit date/time bug is FIXED — #58's control pads and
 checks everything typed; an unpadded value can't be saved anymore.)
+- Look Ahead: delaying from the BANNER doesn't show the "▶ Delayed"
+  line on the tile (your #61-build phone test). Reading the code
+  found the likely cause: the page only re-reads its saved items
+  when it first opens, so a banner delay done while the page was
+  already loaded never appears — and can even be lost. The Delay
+  button ON the tile is fine. Fix is small (re-read on every visit).
+  Also checked: a Delay is NOT supposed to write a log entry —
+  only Done logs. That part is by design.
 - My Week: marking a chore done from inside the app records today's date
   instead of the chore's own day. Minor.
 - Tapping a reminder lands on the right page (tested #55), but taking

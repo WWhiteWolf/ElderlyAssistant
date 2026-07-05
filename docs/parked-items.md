@@ -7,10 +7,11 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-04 (session #61 "Date/Time control — My Week &
-Pets Day", which grew to all four time-only pages — the shared-control
-rollout is COMPLETE. NOTHING is left before the "beat on" EAS build;
-the build itself is the next session's work. See handoff.md.)
+Last updated: 2026-07-05 (session #62 — the "beat on" build happened
+and Patrick phone-tested it; 4 of his 5 issues fixed, 1 documented
+below (Look Ahead banner-Delay tile line). New parked items: the
+four-band bridge rollout, the Home/Look Ahead header-padding call.
+NEXT SESSION builds the new "Orders" page — spec in handoff.md.)
 
 ---
 
@@ -275,6 +276,19 @@ categories from To-Do entirely.)
 
 ## Bugs / correctness (still open)
 
+- **Look Ahead: banner Delay doesn't show "▶ Delayed" on the tile (Patrick's phone test
+  of the #61 build, reported #62).** Code-read diagnosis: the banner Delay handler
+  (`app/_layout.tsx`) writes the `delayedUntil`/`delayedLabel` stamp into storage, but
+  `app/lookahead.tsx` only re-reads storage on MOUNT (`useEffect([])`), not on every
+  return to the page. If the page was already mounted when the banner Delay was tapped,
+  the tile won't show the line — and any later save from the page (log/edit/delete)
+  writes the stale state back over the stamp and loses it. The on-tile Delay button is
+  fine (updates state directly). Patrick doesn't recall his exact steps, so the repro is
+  unconfirmed, but this stale-mount path is the likely cause. Fix shape: re-read storage
+  on screen focus (`useFocusEffect`) instead of only on mount. Also verified: a Delay
+  writes NOTHING to the log by design ("No log, no change to the item's real due date")
+  — only Done/logging creates a log entry, so no log line is correct behavior.
+
 - **Vault "Custom" label may save as the word "Custom" (spotted #47, UNVERIFIED)**
   (`app/vault.tsx`). The save path checks `selectedPreset === 'custom'` (lowercase)
   but the chip sets `'Custom'` (capital C) — read straight from the code, so tapping
@@ -339,6 +353,19 @@ categories from To-Do entirely.)
 
 ## Nice-to-have later (UI polish)
 
+- **Roll the four-band bridge out to the other 12 pages (#62).**
+  Patrick approved the Home design: page-color (3px), bridge-color
+  (4px), page-color (3px), bridge-color (4px) — colors from existing
+  theme keys, no new ones. Home has it (`app/home.tsx`); every other
+  page still draws the old single 8px `bridge` view. When rolling out,
+  make it ONE shared component so future changes are a single edit,
+  and delete `home.tsx`'s now-unused `bridgeBottom` style.
+- **Home & Look Ahead header padding — decide someday (#62).** The
+  other 11 pages now share the taller header (safe-area default
+  edges). Home and Look Ahead were deliberately left on
+  `edges={['top']}` because their second line (greeting / telescope
+  icon) already gives them height. If they ever look short next to
+  the rest, same two-line fix as #62 used on Settings & friends.
 - **Remove the orphaned `timeStepper` theme keys (#61)**
   (`constants/Themes.ts`). `timeStepper`/`timeStepperBorder`/
   `timeStepperText` lost their last user when My Day moved to the
