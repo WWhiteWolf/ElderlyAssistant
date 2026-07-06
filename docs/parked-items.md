@@ -7,13 +7,13 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-06 (session #64 — polish: the Elyfont banner
-name was the phone's stale cache (restart fixed it, no code); Home
-tiles got crisp themed outlines and the halo was dropped (Patrick's
-call). The app RENAME was decided and PROMOTED to next session's
-goal: store name "A Place To Remember", icon label "Remember", plus
-the first custom icon (approved design in handoff.md). The rename
-item below is superseded accordingly.)
+Last updated: 2026-07-06 (session #65 — the RENAME PACKAGE was
+BUILT: icon label "Remember", the custom happy-face icon, Home
+header (full name + small face icon), Settings version line, and
+the backup renaming (old backups stay restorable) — plus Patrick
+changed the App Store Connect listing name to "A Place To
+Remember" live. The rename item below is removed; the backup-
+folder item is updated — its filename half is done.)
 
 ---
 
@@ -364,27 +364,24 @@ categories from To-Do entirely.)
   `timeStepperText` lost their last user when My Day moved to the
   shared control — no page reads them now (grep-verified #61). Left
   in place on purpose; deleting theme keys is its own small step.
-- **Name the backup folder — PROMOTED (#41, see Patrick's list above)**
-  (`app/backup.tsx`). Give the exported backup folder/file a clear, recognizable name
-  so it's easy to find where it's saved (e.g. iCloud Drive). (The file itself is
-  already named `Elyfont-Backup-<date>.json`; this is about where it lands / how
-  findable it is.)
+- **Name the backup folder — filename half DONE (#65), findability
+  check still owed** (`app/backup.tsx`). The file is now named
+  `Remember-Backup-<date>.json` (#65 rename). What remains is the
+  real-phone proof: where the file lands in iCloud Drive / Files
+  and how findable it is — rides the #65 build's phone test.
 - **Project Planner reminders do nothing yet** (`app/planner.tsx`). The screen has reminder
   fields, but they aren't wired to any notifications. Low priority.
-- **App rename — PROMOTED to the next session's goal (#64 — SUPERSEDES
-  the old "back to Remember When" plan; full spec in handoff.md).**
-  Decided in #64: App Store listing → **"A Place To Remember"**
-  (verified free), icon label → **"Remember"** (full name truncates
-  under the icon), plus the approved first custom icon. The build
-  session covers: `app.json` name, `assets/images/icon.png`, the
-  in-app name spots (Home greeting, Settings version line), and the
-  `app/backup.tsx` half carried over from #48 — the
-  `Elyfont-Backup-<date>.json` filename, dialog/alert wording, and
-  the internal `type: 'elyfont-backup'` marker, where restore must
-  still ACCEPT old files carrying the old marker. Ties into "Name
-  the backup folder" (same file naming; real-phone/iCloud proof).
-  Patrick's own step: the listing name in App Store Connect. The
-  "Memory Assist" tagline still needs a home.
+- **The "Memory Assist" tagline still needs a home** (left over
+  from the rename, which was fully BUILT in #65 — store name,
+  icon, in-app spots, backup naming all done). Possible homes:
+  the App Store subtitle field (30 chars, sits empty today), the
+  listing description, or somewhere in-app.
+- **Android icon variants + splash image still carry the old
+  placeholder art** (`assets/images/android-icon-*.png`,
+  `splash-icon.png`). Deliberately deferred at #65 when
+  `icon.png` got the new happy-face art. Small session: derive
+  the Android foreground/background/monochrome set and the
+  splash from the approved design.
 - **Retire the leftover pre-#39/#40 popup plumbing (cosmetic, after device validation).**
   `_layout.tsx` still registers the now-unused `mydaysnooze` / `petssnooze` /
   `myweekactions` categories and keeps the old `postpone1` (+1 Day) handler and the

@@ -1,10 +1,10 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-06 (session #64 — polish day: the "Elyfont"
-name on reminder banners turned out to be the phone's own stale
-cache — a restart fixed it, no code. The Home buttons got crisp
-outlines and lost their fuzzy glow. And two big decisions were
-made, ready to build next session: the app's new name and its
-first real icon.)
+Last updated: 2026-07-06 (session #65 — the big rename, built and
+done: the app is now "A Place To Remember" in the store listing,
+"Remember" under the icon, the happy-face icon is real, the Home
+page wears the full name with a little face next to your greeting,
+and backups have the new name too — old backups still restore.
+Everything waits on the next build to reach the phone.)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -14,40 +14,44 @@ tracked here — git history keeps the full record — so this list stays short.
 
 WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
-- THE "ELYFONT" BANNER MYSTERY IS CLOSED (#64). The reminder
-  popups were showing the old name because the PHONE had cached
-  it, not because the app carried it — a restart cleared it and
-  banners now say "Remember When". No code changed.
-- THE HOME BUTTONS ARE CRISP NOW (#64). Each circle has a clear
-  outline (teal in light, gold in dark) and the soft glow behind
-  them is gone — your call after trying it both ways. Checked in
-  the Simulator in both themes; it reaches the phone with the
-  next build.
-- THE NEW NAME IS DECIDED (#64, not built yet): the App Store
-  listing becomes "A Place To Remember" (checked — no app has
-  it), and the label under the icon becomes "Remember" (the full
-  name won't fit there).
-- THE APP'S FIRST REAL ICON IS DESIGNED (#64, not built yet): a
-  line-drawn happy face — the face you make when you remember
-  something good — red-brown lines on gold, with a little
-  sparkle at the temple.
+- THE RENAME IS BUILT (#65), all of it: "Remember" under the
+  icon, the happy-face icon picture, "A Place To Remember" on
+  the Home page (with a small face icon next to your greeting)
+  and on the Settings version line, and backups now save as
+  "Remember-Backup-<date>.json" — OLD backups still restore.
+  You also changed the store listing name to "A Place To
+  Remember" in App Store Connect yourself, live in the session.
+- BUILD 48 IS ON THE PHONE — committed, built, and submitted the
+  same day. Getting it to Apple took three tries: an expired
+  Apple developer agreement, then the EU "Digital Services Act"
+  question (you answered "not a trader"), both fixed in App
+  Store Connect under Business. If a future submit fails with
+  "agreement missing or expired" — that's the place to look.
+- ONE THING BUILD 48 DOESN'T HAVE: you caught the header face
+  showing brick-red on the LIGHT theme's teal header (only dark
+  was Sim-checked). Fixed in code the same day — the face now
+  wears the gear's color in each theme (checked BOTH this time).
+  Your phone shows the old red face on light until the NEXT
+  build. Known, not a surprise.
+- STILL TO COMMIT: that face-color fix (home.tsx) + the docs.
 - The #63 Orders phone test is STILL IN PROGRESS (multi-day by
   nature — the day-before and morning-of reminders need real
-  days to pass). The #63 docs commit waits on it.
+  days to pass).
 - The dark startup flash is still there (a known small quirk).
 
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. FINISH THE #63 PHONE TEST (in progress — see NEEDS A PHONE
-   TEST below for what's left).
-2. THE RENAME PACKAGE — next session's goal, all decisions made:
-   the "Remember" icon label, the new icon picture, the in-app
-   name spots (Home greeting, Settings version line), and the
-   backup file's naming (old backups must still restore — this
-   also covers the long-standing "name the backup folder" item).
-   Your own part: change the listing name in App Store Connect
-   to "A Place To Remember". Everything rides the next build.
+1. COMMIT the face-color fix + docs (git add . && commit).
+2. THE PHONE TEST of build 48 — what's left to check:
+   · Export a backup: the file should be Remember-Backup-<date>.
+     Then IMPORT AN OLD Elyfont-Backup file — it must restore.
+     While you're there: note WHERE the file lands in iCloud /
+     Files and how easy it is to find (the old "name the backup
+     folder" item — its filename half is now done).
+   · The remaining #63 Orders checks (see NEEDS A PHONE TEST).
+   (The face-color fix rides the NEXT build, whenever that is —
+   no rush, it's cosmetic and only shows on the light theme.)
    (The when-you're-ready talk-throughs — Vault import, removing
    Vault categories, the backup Merge option — are in the
    DECISIONS section below.)
@@ -55,9 +59,10 @@ WHAT'S NEXT
 
 #40 & #41 STILL OPEN (what's left of your #41 list)
 ----------------------------------------------------------------------------
-1. Name the backup folder — moved up from "someday" to "wanted." Best
-   finished and checked on the real phone, where iCloud Drive is involved.
-   (Now folded into the RENAME PACKAGE in WHAT'S NEXT — same file naming.)
+1. Name the backup folder — the FILENAME half is DONE (#65:
+   Remember-Backup-<date>.json). What's left is checking on the
+   real phone WHERE the file lands in iCloud and how findable it
+   is (folded into the phone test in WHAT'S NEXT).
 3. Import files/documents into the Vault. Needs a talk-through first
    (what kinds of files, from where, how they're shown and protected).
 
@@ -130,10 +135,12 @@ NICE-TO-HAVE LATER (polish, low priority)
 - Watch List overhaul — its own session, talk-through first (moved
   from What's Next, your call #55). The night-and-time-a-TV-show-airs
   idea folds into it.
-- (The app rename moved UP: it's now the "A Place To Remember" /
-  "Remember" rename package in WHAT'S NEXT — superseding the old
-  "back to Remember When" item. The "Memory Assist" tagline
-  still needs a home.)
+- (The app rename is DONE — #65.) The "Memory Assist" tagline
+  still needs a home — the App Store subtitle field is empty and
+  is one natural spot.
+- The Android icon pictures and the splash (startup) image still
+  carry the old placeholder art — deliberately left for later
+  when the main icon got the new face (#65).
 - Project Planner has reminder fields on screen, but they aren't
   connected to anything yet.
 - My Day / Pets: a Done tapped from the BANNER logs only the fire

@@ -131,6 +131,9 @@ const makeStyles = (t: Theme) =>
         headerIcon: {
             width: 32,
             height: 32,
+            // #65: face matches the gear's themed color (Patrick's call —
+            // the raw art's brick-red clashed with the light teal header).
+            tintColor: t.settingsGear,
         },
         title: {
             fontSize: t.titleSize,
