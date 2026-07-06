@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
+    Image,
     ScrollView,
     StyleSheet,
     Text,
@@ -62,15 +63,26 @@ export default function HomeScreen() {
         <View style={styles.container}>
             <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
-                    <View style={{ width: 70 }} />
-                    <View style={{ flex: 1, alignItems: 'center' }}>
-                        <Text style={styles.title}>Remember When</Text>
-                        <Text style={styles.subtitle}>Good to see you{userName ? `, ${userName}` : ''}!</Text>
+                    {/* #65: title on its own full-width line so the longer name
+                        fits; gear moved down beside the subtitle. */}
+                    <Text style={styles.title}>A Place To Remember</Text>
+                    <View style={styles.subtitleRow}>
+                        {/* #65: small app-icon face (transparent background
+                            version — Patrick's call), mirroring the gear. */}
+                        <View style={{ width: 70, alignItems: 'flex-start' }}>
+                            <Image
+                                source={require('../assets/images/icon-face.png')}
+                                style={styles.headerIcon}
+                            />
+                        </View>
+                        <View style={{ flex: 1, alignItems: 'center' }}>
+                            <Text style={styles.subtitle}>Good to see you{userName ? `, ${userName}` : ''}!</Text>
+                        </View>
+                        {/* #63: hitSlop — the 22px gear was a hard target on the phone */}
+                        <TouchableOpacity onPress={() => router.push('/settings')} style={{ width: 70, alignItems: 'flex-end' }} hitSlop={{ top: 12, bottom: 12, left: 10, right: 10 }}>
+                            <Ionicons name="settings" size={22} color={theme.settingsGear} />
+                        </TouchableOpacity>
                     </View>
-                    {/* #63: hitSlop — the 22px gear was a hard target on the phone */}
-                    <TouchableOpacity onPress={() => router.push('/settings')} style={{ width: 70, alignItems: 'flex-end' }} hitSlop={{ top: 12, bottom: 12, left: 10, right: 10 }}>
-                        <Ionicons name="settings" size={22} color={theme.settingsGear} />
-                    </TouchableOpacity>
                 </View>
             </SafeAreaView>
             {/* #62 four-band bridge — now the shared component (#63 rollout). */}
@@ -110,8 +122,15 @@ const makeStyles = (t: Theme) =>
             backgroundColor: t.header,
             paddingBottom: 12,
             paddingHorizontal: 16,
+            // #65: was a single row; now title line over subtitle row.
+        },
+        subtitleRow: {
             flexDirection: 'row',
             alignItems: 'center',
+        },
+        headerIcon: {
+            width: 32,
+            height: 32,
         },
         title: {
             fontSize: t.titleSize,

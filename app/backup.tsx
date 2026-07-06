@@ -53,8 +53,11 @@ export default function BackupScreen() {
     ) => {
         try {
             const backup = {
-                app: 'Elyfont',
-                type: 'elyfont-backup',
+                app: 'A Place To Remember',
+                // #65 rename: new backups carry the new marker; restore
+                // accepts this AND the old 'elyfont-backup' (old files
+                // must stay restorable).
+                type: 'remember-backup',
                 version: BACKUP_VERSION,
                 exportedAt: new Date().toISOString(),
                 vaultEncrypted: !!encryptedVault,
@@ -72,7 +75,7 @@ export default function BackupScreen() {
                 `${String(now.getDate()).padStart(2, '0')}-` +
                 `${String(now.getHours()).padStart(2, '0')}` +
                 `${String(now.getMinutes()).padStart(2, '0')}`;
-            const fileName = `Elyfont-Backup-${stamp}.json`;
+            const fileName = `Remember-Backup-${stamp}.json`;
 
             const file = new File(Paths.cache, fileName);
             if (file.exists) file.delete();
@@ -91,7 +94,7 @@ export default function BackupScreen() {
             await Sharing.shareAsync(file.uri, {
                 mimeType: 'application/json',
                 UTI: 'public.json',
-                dialogTitle: 'Save your Elyfont backup',
+                dialogTitle: 'Save your Remember backup',
             });
         } catch {
             Alert.alert(
@@ -311,15 +314,18 @@ export default function BackupScreen() {
             } catch {
                 Alert.alert(
                     'Not a valid backup',
-                    'That file could not be read as an Elyfont backup. Nothing was changed.',
+                    'That file could not be read as a backup. Nothing was changed.',
                 );
                 return;
             }
 
-            if (!parsed || parsed.type !== 'elyfont-backup' || !parsed.data) {
+            // #65 rename: accept the new marker AND the old one — every
+            // backup ever exported must stay restorable.
+            const validTypes = ['remember-backup', 'elyfont-backup'];
+            if (!parsed || !validTypes.includes(parsed.type) || !parsed.data) {
                 Alert.alert(
-                    'Not an Elyfont backup',
-                    'That file is not an Elyfont backup file. Nothing was changed.',
+                    'Not a backup from this app',
+                    'That file is not a backup made by A Place To Remember. Nothing was changed.',
                 );
                 return;
             }

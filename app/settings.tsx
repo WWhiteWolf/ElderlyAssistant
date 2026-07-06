@@ -316,7 +316,7 @@ export default function SettingsScreen() {
                         </TouchableOpacity>
                     </View>
 
-                    <Text style={styles.versionText}>Remember When v1.0</Text>
+                    <Text style={styles.versionText}>A Place To Remember v1.0</Text>
 
                 </ScrollView>
 
