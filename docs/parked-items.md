@@ -7,11 +7,10 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-05 (session #62 — the "beat on" build happened
-and Patrick phone-tested it; 4 of his 5 issues fixed, 1 documented
-below (Look Ahead banner-Delay tile line). New parked items: the
-four-band bridge rollout, the Home/Look Ahead header-padding call.
-NEXT SESSION builds the new "Orders" page — spec in handoff.md.)
+Last updated: 2026-07-05 (session #63 — the ORDERS PAGE was fully
+built, all six steps in one session, Simulator-approved throughout;
+details in handoff.md. Phone judgment rides the next EAS build.
+Nothing new parked; the open list below is unchanged from #62.)
 
 ---
 
@@ -298,14 +297,6 @@ categories from To-Do entirely.)
   tap Custom → type a label → Add, and see what label the saved item shows. If it
   reproduces, the fix is a one-word case correction (its own small session/step).
 
-- **To-Do reminder fired early — needs a clean phone re-test** (`app/todo.tsx`). A To-Do
-  Patrick recalls setting for 23:30 fired around 21:15. Reading the scheduling code found
-  **no bug**: the only thing that produces an early fire is the "2 hours" before-reminder
-  preset, and 21:15 is exactly 2h before a 23:15 due time — so this is most likely the
-  preset working as designed, not a fault. Confirm before chasing it: on the phone, make a
-  new task due a few minutes out, tap **only "At time"** (no before-offset), and watch
-  whether it fires on the minute. If that fires on time, the original was just the 2-hour
-  preset and there's nothing to fix.
 - **[SUPERSEDED by #34 plan] To-Do recurrence (Monthly / Yearly / 3 / 6 Months).**
   These were all open To-Do items (3/6-month stubs did nothing; Monthly/Yearly needed a
   phone test). Per #34, **recurrence leaves To-Do entirely** and moves to the new Look
@@ -353,13 +344,12 @@ categories from To-Do entirely.)
 
 ## Nice-to-have later (UI polish)
 
-- **Roll the four-band bridge out to the other 12 pages (#62).**
-  Patrick approved the Home design: page-color (3px), bridge-color
-  (4px), page-color (3px), bridge-color (4px) — colors from existing
-  theme keys, no new ones. Home has it (`app/home.tsx`); every other
-  page still draws the old single 8px `bridge` view. When rolling out,
-  make it ONE shared component so future changes are a single edit,
-  and delete `home.tsx`'s now-unused `bridgeBottom` style.
+- ✅ **DONE (#63) — Four-band bridge on all 14 pages.** Built as the
+  shared `components/Bridge.tsx` (page 3px / bridge 4px / page 3px /
+  bridge 4px, existing theme keys); Home switched to it and every
+  other page's single 8px strip replaced; orphaned `bridge` styles
+  and Home's unused `bridgeBottom` deleted. Simulator-approved.
+  Future bridge changes = one edit in the component.
 - **Home & Look Ahead header padding — decide someday (#62).** The
   other 11 pages now share the taller header (safe-area default
   edges). Home and Look Ahead were deliberately left on
@@ -400,8 +390,10 @@ categories from To-Do entirely.)
   NEW `todook` category — a single OK riding the shared no-op 'ok' handler —
   which is live code, NOT part of this retirement.)
 - **"At time" reminder option, possibly revisit.** Removed from To-Do in #38 (Patrick's
-  call — soonest preset is now "1 hour" before). If after phone testing Patrick misses an
-  exact-time alert, it can be added back as a preset.
+  call — soonest preset is now "30 min." before, since #60). Patrick reaffirmed in #63
+  after living with it: "leave as is for now." If he ever misses an exact-time alert,
+  it can be added back as a preset. This also closed the old "fired early" test —
+  it needed the removed preset, and the early fire was the 2-hour preset working.
 - **Add an on-tile Snooze button to To-Do** (`app/todo.tsx`). My Day and Pets Day each have
   an on-page Snooze (15/30/60) on every tile; To-Do only has Snooze on the notification
   banner. Add the same on-tile control for consistency.

@@ -1,35 +1,39 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #62 (2026-07-05) "New Order & Delivery Page": **Patrick's "beat on" phone build HAPPENED between sessions — he tested on the phone and brought back 5 issues; 4 were FIXED this session (each Simulator-approved one at a time), 1 documented as Still Broken. Then the whole session's second half was the talk-through SPEC for the new "Orders" page — next session BUILDS it.**
+## THIS SESSION — #63 (2026-07-05) "Orders Page": **The WHOLE Orders page was BUILT in one session — all six planned steps, each `tsc`-clean and Simulator-approved one at a time (Patrick's #63 structure: Simulator work first, phone-test work last). Banner fired and showed HERE/OK/Delay 15-30-60 in the Simulator. Phone judgment rides the next EAS build.**
 
-**The 5 phone-test issues and what was done:**
-1. **Look Ahead banner-Delay doesn't show "▶ Delayed" on the tile — NOT fixed, documented** as Still Broken (parked-items.md "Bugs" + pending.txt). Code-read diagnosis: `lookahead.tsx` only re-reads storage on MOUNT, so a banner delay stamped by `_layout.tsx` while the page is mounted never shows and can be overwritten. Fix shape: `useFocusEffect`. (Also verified: Delay writing no log entry is BY DESIGN.)
-2. **Done now FIRST on routine banners** (`_layout.tsx`, `routineactions`: Done, OK, Skip, Delay 15/30/60) — Patrick's watch shows the buttons as a scrolling list and Done sat last. Old-order banners persist until they cycle out.
-3. **Bridge redesign + header heights.** Home's 8px bridge is now FOUR 3-4px bands: page-color, bridge-color, page-color, bridge-color (Patrick iterated to this in the Simulator; dark band dropped). **Home only — rollout to the other 12 pages is PARKED** (plus unused `bridgeBottom` style cleanup). AND: Settings/Pets/Watch List/Vault headers were shorter than the rest (they had `edges={['top']}`; seven pages default to all edges). Patrick standardized on the TALLER look: those four lost `edges={['top']}` and their 8-12px header paddingBottom. Home + Look Ahead deliberately untouched (their 2nd line gives them height).
-4. **Home tiles ~10% bigger** (for the phone, not the Sim): circle 44→48, emoji 22→24, cart icon 22→24 (`home.tsx`); label 18→20 both themes, halo radius 9→10 / 7→8 (`Themes.ts`). Watch how longer names wrap at 20 on the phone.
-5. **Date/time spinner circles bigger + easier to tap** (`DateTimeControl.tsx`, all 6 pages at once): 34→40px, arrows 15→18pt, plus `hitSlop` 5 → ~50px tappable. Knock-on fixes, both Simulator-approved: To-Do New/Edit popup maxHeight 98→92% (`todo.tsx`) and Look Ahead New/Edit overlay paddingVertical 20→40 (`lookahead.tsx`) — both popup tops had crowded the clock/notch zone.
+**What was built, step by step (spec: #62, all Patrick's calls):**
+1. **`DateTimeControl` gets `mode='date'`** (`components/DateTimeControl.tsx`): date-only face — time half hidden, validity ignores the time box. ~6 lines, the 6 existing pages untouched. **Decision (#63): NO pair machinery in the control** — the Orders window is two `mode='time'` controls in the form.
+2. **Skeleton:** `app/orders.tsx` (new) + 📦 "Orders" as the 11th Home tile/route (`home.tsx`) + Stack.Screen (`_layout.tsx`). Taller-header standard, single 8px bridge (four-band rollout still parked), existing theme keys only throughout the whole page.
+3. **New/Edit form + list:** "+ Add Order" header pill → popup (Cancel/Save up top, clock-safe padding). Fields: Item Name (only required one), Price, Store, Delivery Address, Order # — free text; "Expected By" on the new date-only face; time window hidden behind "+ Add Time Window" → Window Start/End time controls + "Remove Time Window" (defaults 12:00–5:00 PM). Save blocks on: no name, bad typed date/time, window end ≤ start. Storage `orders_items`, date+window as numbers. List sorted soonest-by-date first; row shows name / store · price / "By <date> · <window>" / address / order#; Edit button; swipe-delete.
+4. **HERE + Arrivals Log:** HERE button (solid buttonPrimary, #51 mark-done rule) with a confirm alert → logs arrival (dated when tapped) + removes entry. "Arrivals Log" below the list: Look Ahead's log pattern (`orders_history`, 50-cap, entry "date | time | name (store)", tap-to-add-note, swipe-delete, Clear All). **Backup:** `orders_items` + `orders_history` added to `backup.tsx` READABLE_KEYS same-session (no #57-style miss).
+5. **Reminders** (`orders.tsx`): page requests permission + sets handler (Look Ahead pattern); self-heals (re-arms from storage) on every open. Per entry, one-shot dated, only-if-future: day-before @ Settings Midday, morning-of @ Settings Morning, window-open, window-close (window ones only when a window is set). "Close only if HERE not tapped" = HERE/delete cancel everything pending for the entry (`cancelForItem`: sources 'orders' + 'orderssnooze'); edit cancels + re-arms. Settings times read as "HH:MM" (defaults 08:00/12:00, To-Do's pattern).
+6. **Banner category** (`_layout.tsx`): `orderactions` = HERE (first, #62 watch rule), OK, Delay 15/30/60 — no Skip (orders don't recur). Banner HERE mirrors the page's (logs arrival dated at TAP time — Patrick's call that arrival = in hand; unlike the routine pages' fire-time dating), removes entry, cancels its pending reminders+snoozes. Snooze handler learned orders (re-banner "📦 Orders", source 'orderssnooze', keeps buttons). Plain tap routes to /orders.
 
-**Commit note:** NOT yet committed — all of the above + these docs. Patrick commits.
+**Simulator-verified live:** window-open banner fired on the minute; press-and-hold showed HERE/OK/Delay 15/30/60 in order; page HERE moved the entry to the Arrivals Log.
 
-**➤ NEXT SESSION — the goal is set: BUILD the "Orders" page.** Full spec, all Patrick's calls (#62):
-- **Home tile:** 📦 "Orders" (11th tile).
-- **One entry PER ITEM** (a multi-item order = several entries): item name, price, store name, delivery address, order# (optional, reference only), expected **"by" date** (all he has at order time), and a **start/end time window** added by hand later when the store narrows it. He updates the date/window manually as estimates sharpen.
-- **HERE button** on each entry: tap when the package arrives → arrival is logged, entry leaves the list.
-- **Reminders per entry**, re-armed whenever the entry is edited: day-before at the Settings **Midday** time; morning-of at the Settings **Morning** time; **window-open** and — only if HERE not yet tapped — **window-close**, at the entered window times. Date-only = just the first two.
-- **Banner buttons** (new category, register in `_layout.tsx` sequentially like the rest): **HERE, OK, Delay 15 / 30 / 60 min** — Done→HERE mapping of `routineactions`, Skip dropped (orders don't recur).
-- **Build notes:** needs a **date-only face + a start/end time pair** added to the shared `DateTimeControl` (it does datetime and time-only today); storage as numbers (the app-wide standard); a log like the other pages'. Biggest build since Look Ahead — take it in steps.
+**Also built during the phone test (still #63): the FOUR-BAND BRIDGE ROLLOUT — done, Simulator-approved, then PHONE-VERIFIED the same day (Patrick built a second time: bridges on all 14 pages confirmed, hitSlop Edit/gear "easier to tap" confirmed).** New shared `components/Bridge.tsx`; Home switched onto it (pixel-identical); all 13 other pages swapped their single 8px strip for it; orphaned `bridge` styles + Home's unused `bridgeBottom` deleted. Future bridge changes are one edit. (Patrick promoted this from parked earlier the same session, then called for the build.)
+
+**Added during Patrick's phone test (still #63):** he found the Edit buttons and Home's Settings gear hard to tap. Fix: `hitSlop` (invisible tap-widening to ~44-48px, NO visual change) on the Edit button in To-Do (both sites), Look Ahead, My Day, My Week, Pets, Planner, Vault, Orders — vertical 10, horizontal only 4 so neighboring buttons' tap areas don't collide — and on the Home gear (12/10). If his finger still argues after the next build, the escalation is drawing them bigger (like #62 did for the spinners). Phone-test results captured so far: all five #62 fixes PASS; Orders first reminder fired with the right buttons, Delay 15 dismissed it (re-banner + rest of checklist still in progress). "At time" stays gone (reaffirmed; old "fired early" test closed). Four-band bridge rollout PROMOTED to What's Next (his call).
+
+**Commit note:** NOT yet committed — all #63 code + these docs. Patrick commits the CODE first and triggers the EAS "beat on" build (two-commit rhythm; docs commit follows the phone test).
+
+**➤ NEXT: phone test of the build.** What rides it (also in pending.txt):
+- Orders: day-before Midday + morning-of Morning timing; banner buttons on the real device (the #39 category-registration lesson — worked in Sim, lost one on device once); banner HERE end-to-end; window-open/close; snooze/Delay from the banner; tap-routing to the Orders page.
+- Plus the #62 fixes' phone checks still owed (Done-first banners, four-band Home strip, header heights, bigger tiles, bigger spinners).
 
 ---
 
-## SESSION — #61 (2026-07-04) "Date/Time control — My Week & Pets Day" (grew to all four): **The time-only rollout is COMPLETE — My Week, Pets Day, My Day, AND Settings all got `<DateTimeControl mode='time'>` — `tsc` clean after each page, each Simulator-approved by Patrick one at a time. The #58 shared-control plan is fully done.**
+## SESSION — #62 (2026-07-05) "New Order & Delivery Page": **Patrick phone-tested the "beat on" build and brought back 5 issues; 4 FIXED this session (each Simulator-approved), 1 documented as Still Broken. Second half was the talk-through SPEC for the Orders page (built in #63 above).**
 
-**What changed (four files, same six-edit pattern each):**
-- **`app/myweek.tsx`, `app/mollie.tsx`, `app/myday.tsx`:** the ~80-line inline Hour/Minute/AM-PM spinner block in each New/Edit popup replaced by `<DateTimeControl mode="time" timeLabel="Time">`; new `pendingTimeValid` flag set true whenever the popup opens (New AND Edit paths); Save blocked with the "Check Time — fix the box outlined in red" alert while a typed time isn't real; orphaned `timeAdjBtn`/`timeAdjText`/`timeDisplayText` styles deleted. Storage untouched — all three already keep `hour`/`minute` as numbers.
-- **`app/settings.tsx`:** same treatment on the ONE shared time popup serving Morning/Midday/Evening; guard at the top of `saveTime`; flag set in `openTimeEditor`. Storage deliberately untouched — `saveTime` still writes the padded "HH:MM" strings.
-- **Housekeeping note:** the `timeStepper`/`timeStepperBorder`/`timeStepperText` theme keys have NO users. Left in `Themes.ts` on purpose — removing theme keys is its own small decision. Parked.
-- **This closed the #58 plan end to end:** To-Do (#58), Look Ahead (#59), To-Do number storage (#60), the four time-only pages (#61).
+**The 5 phone-test issues, in short:**
+1. **Look Ahead banner-Delay doesn't show "▶ Delayed" on the tile — NOT fixed, documented** as Still Broken (parked-items.md "Bugs"). Diagnosis: `lookahead.tsx` re-reads storage only on MOUNT; fix shape `useFocusEffect`. (Delay writing no log entry is BY DESIGN.)
+2. **Done now FIRST on routine banners** (`_layout.tsx` `routineactions`) — for the watch's scrolling button list.
+3. **Bridge redesign + header heights:** Home's bridge became FOUR 3-4px bands (Home only — rollout parked); Settings/Pets/Watch List/Vault standardized on the taller header (lost `edges={['top']}` + header paddingBottom). Home + Look Ahead deliberately untouched.
+4. **Home tiles ~10% bigger** (`home.tsx`: circle 44→48, emoji 22→24; `Themes.ts`: label 18→20, halo up). Watch long-name wrap on the phone.
+5. **Spinner circles 34→40px + hitSlop ~50px tappable** (`DateTimeControl.tsx`); knock-ons: To-Do popup maxHeight 98→92%, Look Ahead overlay paddingVertical 20→40.
 
-**Commit note:** COMMITTED (`6decf17`, code + docs). The "beat on" EAS build followed and Patrick phone-tested it — results are session #62 above.
+**Commit note:** COMMITTED (Patrick confirmed at #63 start, code + docs together).
 
 ---
 

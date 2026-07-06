@@ -1,9 +1,9 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-05 (session #62 — your "beat on" build happened
-and you phone-tested it. Four of your five issues were fixed this
-session; the fifth (Look Ahead's banner Delay not showing on the
-tile) is written up below. The new "Orders" page is fully specced —
-next session builds it.)
+Last updated: 2026-07-05 (session #63 — the ORDERS PAGE IS BUILT,
+all of it in one session: the tile, the form, the HERE button and
+arrivals log, the reminders, and the banner buttons. Everything
+checked out in the Simulator, including a live banner with the
+HERE / OK / Delay buttons. The phone test rides your next build.)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -13,38 +13,30 @@ tracked here — git history keeps the full record — so this list stays short.
 
 WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
-- The "beat on" build HAPPENED — the app is on your phone with all
-  the #58-#61 work. Your phone testing turned up five issues.
-- Session #62 fixed four of them, each checked in the Simulator:
-  · Done is now the FIRST button on My Day / Pets / My Week
-    reminder banners (for the watch). Banners scheduled on the old
-    build keep the old order until they cycle out.
-  · The Home page strip under the header is now a four-band design
-    (your light/mid/light/mid pattern) — Home only for now; the
-    other pages are parked below.
-  · Settings, Pets Day, Watch List, and Vault headers now match the
-    taller headers of the other pages.
-  · Home page buttons ~10% bigger (circle, emoji, name, halo).
-    Judge on the phone — the Sim already looked right to you.
-  · The time-setter spin buttons are bigger (40px) with a wider
-    invisible tap area (~50px). The To-Do and Look Ahead popups
-    were dropping their tops into the clock zone with the bigger
-    circles — both pulled down and approved.
-- The fifth issue (Look Ahead banner Delay) is in STILL BROKEN below.
-- NOT yet committed: all the #62 code + docs. You commit.
+- THE ORDERS PAGE IS BUILT (#63). The 📦 tile is on the Home page
+  (11th button). One entry per item: name, price, store, address,
+  order number, the "expected by" date, and a time window you add
+  later by hand when the store narrows it down. HERE logs the
+  arrival and clears the entry; the Arrivals Log sits below the
+  list. Reminders: day before (at your Midday time), morning of
+  (at your Morning time), window open, and window close unless
+  you've already tapped HERE. Banner buttons: HERE / OK / Delay
+  15-30-60.
+- Orders data is included in Backup from day one.
+- Everything was checked in the Simulator step by step, including
+  a live banner firing with the right buttons on it.
+- All #63 CODE is committed and on your phone (two builds the same
+  day: the Orders build, then the bridge rollout + tap-area build).
+  Only the DOCS still need their commit — the usual post-test
+  docs commit closes out the session.
 - The dark startup flash is still there (a known small quirk).
 
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. BUILD THE NEW "ORDERS" PAGE — fully specced this session, all
-   your calls; the complete spec is in handoff.md. In short: a
-   📦 Orders tile; one entry per item (name, price, store, address,
-   order#, "by" date, time window added later by hand); a HERE
-   button that logs the arrival and clears the entry; reminders at
-   day-before (Midday), morning-of (Morning), window open, and
-   window close if not HERE; banner buttons HERE / OK / Delay
-   15-30-60. The biggest build since Look Ahead — several steps.
+1. COMMIT + BUILD + PHONE TEST. The new build carries the whole
+   Orders page AND the #62 fixes — the phone checklist is in the
+   NEEDS A PHONE TEST section below.
 2. Still on the list from before: name the backup folder/file —
    needs the real phone (iCloud); ties into finishing the
    "Remember When" rename. (The when-you're-ready talk-throughs —
@@ -67,20 +59,34 @@ NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
 (The old #56-#61 checklist rode your "beat on" build — you tested and
 brought back five issues, all handled in #62. Anything from that old
 list you DIDN'T flag is assumed fine; say so if something still nags.)
-- The #62 fixes, on the NEXT build:
-  · Done first on a routine banner (watch AND phone) — remember old
-    banners keep the old order until they cycle out.
-  · The four-band strip on the Home page, both themes.
-  · The matched header heights on Settings, Pets Day, Watch List,
-    and Vault.
-  · The bigger Home buttons — especially how the longer names
-    ("Project Planner", "Shopping List") wrap at the new size.
-  · The bigger spin buttons — do they feel right to tap now, and do
-    the To-Do and Look Ahead popups sit clear of the clock.
-- Still carried from before (you didn't flag them, but they were
-  never singled out either): a To-Do reminder with ONLY "At time"
-  set should fire exactly on the minute (the old "fired early"
-  puzzle — almost certainly the 2-hour preset doing its job).
+- THE ORDERS PAGE (#63), the whole thing on a real order or two.
+  Mid-test results so far (reported live during #63):
+  · PASSED: a reminder fired with HERE / OK / Delay 15-30-60 on it;
+    Delay 15 dismissed the banner; the delayed banner CAME BACK at
+    15 min; HERE from that banner logged the arrival correctly.
+    That's the full snooze-and-arrive loop working on the phone.
+  · PASSED: tapping the banner body opened the Orders page.
+  · PASSED: the window-close reminder fired when it should have.
+  · The day-before reminder (your Midday time) and morning-of
+    reminder (your Morning time) firing on the right days — needs
+    a real multi-day order to prove.
+  · The flip side of window-close: NO nag on a package you'd
+    already tapped HERE on before the window ended.
+  · How the banner buttons list on the watch. One caution:
+    banner-button registration once worked in the Sim but dropped
+    a button set on the real phone (#39) — worth a careful look.
+- PHONE-VERIFIED (#63, second build of the day): the wider tap
+  areas on the Edit buttons + Settings gear — "easier to tap" —
+  and the four-band bridge on all 14 pages. Both confirmed on
+  the phone. Nothing left to check on either.
+- The #62 fixes: ALL FIVE PASSED your phone test (reported #63) —
+  Done-first banners, the four-band Home strip, the matched header
+  heights, the bigger Home buttons, and the bigger spin buttons.
+  Nothing left to check there.
+(The old "To-Do fired early" test is CLOSED (#63): the test as
+written needed the "At time" preset, which was removed back in #38 —
+your call, reaffirmed #63 ("leave as is for now"). The early fire
+was already explained as the 2-hour preset doing its job.)
 
 
 STILL BROKEN OR UNFINISHED (small bugs)
