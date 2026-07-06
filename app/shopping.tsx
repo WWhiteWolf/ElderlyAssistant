@@ -13,6 +13,7 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 
 interface Item {
@@ -101,7 +102,7 @@ export default function ShoppingScreen() {
                 </View>
             </SafeAreaView>
 
-            <View style={styles.bridge} />
+            <Bridge />
 
             <View style={styles.tabRow}>
                 <TouchableOpacity
@@ -224,7 +225,6 @@ const makeStyles = (t: Theme) =>
             flex: 1,
             textAlign: 'center',
         },
-        bridge: { height: 8, backgroundColor: t.bridge },
         tabRow: {
             flexDirection: 'row',
             backgroundColor: t.card,

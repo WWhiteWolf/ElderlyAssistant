@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 
 const modules = [
@@ -66,18 +67,14 @@ export default function HomeScreen() {
                         <Text style={styles.title}>Remember When</Text>
                         <Text style={styles.subtitle}>Good to see you{userName ? `, ${userName}` : ''}!</Text>
                     </View>
-                    <TouchableOpacity onPress={() => router.push('/settings')} style={{ width: 70, alignItems: 'flex-end' }}>
+                    {/* #63: hitSlop — the 22px gear was a hard target on the phone */}
+                    <TouchableOpacity onPress={() => router.push('/settings')} style={{ width: 70, alignItems: 'flex-end' }} hitSlop={{ top: 12, bottom: 12, left: 10, right: 10 }}>
                         <Ionicons name="settings" size={22} color={theme.settingsGear} />
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
-            {/* #62 bridge redesign (Patrick): four bands — light (page), mid (bridge),
-                light again, dark (header). The light bands read wider than they are,
-                so the mid and dark bands are a touch taller (4px vs 3px). */}
-            <View style={styles.bridgeLight} />
-            <View style={styles.bridge} />
-            <View style={styles.bridgeLight} />
-            <View style={styles.bridge} />
+            {/* #62 four-band bridge — now the shared component (#63 rollout). */}
+            <Bridge />
             <ScrollView contentContainerStyle={styles.grid}>
                 {modules.map((mod) => (
                     <TouchableOpacity
@@ -132,18 +129,6 @@ const makeStyles = (t: Theme) =>
             fontStyle: 'italic',
             fontFamily: 'Georgia',
             marginTop: 4,
-        },
-        bridgeLight: {
-            height: 3,
-            backgroundColor: t.pageBackground,
-        },
-        bridge: {
-            height: 4,
-            backgroundColor: t.bridge,
-        },
-        bridgeBottom: {
-            height: 4,
-            backgroundColor: t.header,
         },
         grid: {
             flexDirection: 'row',

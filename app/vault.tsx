@@ -15,6 +15,7 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 
 interface VaultItem {
@@ -205,7 +206,7 @@ export default function VaultScreen() {
                 </View>
             </SafeAreaView>
 
-            <View style={styles.bridge} />
+            <Bridge />
 
             {!selectedCategory ? (
                 <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
@@ -253,7 +254,7 @@ export default function VaultScreen() {
                                         <TouchableOpacity onPress={() => toggleShowValue(item.id)} style={styles.showBtn}>
                                             <Text style={styles.showBtnText}>{showValues[item.id] ? 'Hide' : 'Show'}</Text>
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => openEditItem(item)} style={styles.editBtn}>
+                                        <TouchableOpacity onPress={() => openEditItem(item)} style={styles.editBtn} hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}>
                                             <Text style={styles.editBtnText}>Edit</Text>
                                         </TouchableOpacity>
                                     </View>
@@ -345,7 +346,6 @@ const makeStyles = (t: Theme) =>
         },
         settingsBtn: { width: 70, alignItems: 'flex-end' },
         settingsBtnText: { fontSize: 22 },
-        bridge: { height: 8, backgroundColor: t.bridge },
         scroll: { flex: 1, padding: 12 },
         securityNote: {
             fontSize: 13,

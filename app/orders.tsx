@@ -18,6 +18,7 @@ import {
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl from '../components/DateTimeControl';
+import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 
 // Orders page (#63) — track expected deliveries, one entry PER ITEM
@@ -403,7 +404,7 @@ export default function OrdersScreen() {
                 </View>
             </SafeAreaView>
 
-            <View style={styles.bridge} />
+            <Bridge />
 
             <ScrollView contentContainerStyle={styles.listArea}>
                 <View style={styles.section}>
@@ -445,7 +446,7 @@ export default function OrdersScreen() {
                                         <Text style={styles.itemSub}>Order # {item.orderNumber}</Text>
                                     )}
                                 </View>
-                                <TouchableOpacity style={styles.editBtn} onPress={() => openEdit(item)}>
+                                <TouchableOpacity style={styles.editBtn} onPress={() => openEdit(item)} hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}>
                                     <Text style={styles.editBtnText}>Edit</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.hereBtn} onPress={() => markHere(item)}>
@@ -654,7 +655,6 @@ const makeStyles = (t: Theme) =>
             flex: 1,
             textAlign: 'center',
         },
-        bridge: { height: 8, backgroundColor: t.bridge },
         listArea: { paddingBottom: 40 },
         section: {
             backgroundColor: t.card,

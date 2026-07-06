@@ -19,6 +19,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl from '../components/DateTimeControl';
+import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 
 // Look Ahead — long-lead reminders grouped by repeat interval.
@@ -421,7 +422,7 @@ export default function LookAheadScreen() {
                 </View>
             </SafeAreaView>
 
-            <View style={styles.bridge} />
+            <Bridge />
 
             <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }} scrollEventThrottle={16} directionalLockEnabled={true}>
 
@@ -453,7 +454,7 @@ export default function LookAheadScreen() {
                                                     <Text style={styles.delayedLabel}>▶ Delayed {item.delayedLabel}</Text>
                                                 )}
                                             </TouchableOpacity>
-                                            <TouchableOpacity style={styles.editBtn} onPress={() => openEdit(item)}>
+                                            <TouchableOpacity style={styles.editBtn} onPress={() => openEdit(item)} hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}>
                                                 <Text style={styles.editBtnText}>Edit</Text>
                                             </TouchableOpacity>
                                             <TouchableOpacity style={styles.delayRowBtn} onPress={() => setDelayItemId(item.id)}>
@@ -663,7 +664,6 @@ const makeStyles = (t: Theme) =>
         textAlign: 'center',
     },
     titleIcon: { fontSize: 24 },
-    bridge: { height: 8, backgroundColor: t.bridge },
     scroll: { flex: 1 },
     section: {
         backgroundColor: t.card,

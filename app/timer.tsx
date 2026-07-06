@@ -12,6 +12,7 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 
 Notifications.setNotificationHandler({
@@ -251,7 +252,7 @@ export default function TimerScreen() {
                 </View>
             </SafeAreaView>
 
-            <View style={styles.bridge} />
+            <Bridge />
 
             <ScrollView contentContainerStyle={styles.content}>
 
@@ -396,7 +397,6 @@ const makeStyles = (t: Theme) =>
             flex: 1,
             textAlign: 'center',
         },
-        bridge: { height: 8, backgroundColor: t.bridge },
         content: { padding: 16, gap: 12 },
         sectionLabel: {
             fontSize: 16,

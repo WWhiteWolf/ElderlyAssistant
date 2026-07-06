@@ -10,6 +10,7 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 
 // Ported from the standalone WatchList app (Projects/WatchList) in Rebuild Step 5.
@@ -166,7 +167,7 @@ export default function WatchListScreen() {
                 </View>
             </SafeAreaView>
 
-            <View style={styles.bridge} />
+            <Bridge />
 
             {/* Add form */}
             <View style={styles.formContainer}>
@@ -292,7 +293,6 @@ const makeStyles = (t: Theme) =>
             flex: 1,
             textAlign: 'center',
         },
-        bridge: { height: 8, backgroundColor: t.bridge },
         formContainer: {
             padding: 12,
             backgroundColor: t.card,

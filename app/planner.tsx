@@ -16,6 +16,7 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 
 type TaskStatus = 'Active' | 'On Hold' | 'Completed';
@@ -367,7 +368,7 @@ export default function PlannerScreen() {
                 </View>
             </SafeAreaView>
 
-            <View style={styles.bridge} />
+            <Bridge />
 
             {!selectedProject ? (
                 <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 100 }}>
@@ -461,7 +462,7 @@ export default function PlannerScreen() {
                                 <View style={styles.taskContent}>
                                     <View style={styles.taskTopRow}>
                                         <Text style={styles.taskTitle}>{task.title}</Text>
-                                        <TouchableOpacity onPress={() => openEditTask(task)} style={styles.editBtn}>
+                                        <TouchableOpacity onPress={() => openEditTask(task)} style={styles.editBtn} hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}>
                                             <Text style={styles.editBtnText}>Edit</Text>
                                         </TouchableOpacity>
                                     </View>
@@ -691,7 +692,6 @@ const makeStyles = (t: Theme) =>
         flex: 1,
         textAlign: 'center',
     },
-    bridge: { height: 8, backgroundColor: t.bridge },
     scroll: { flex: 1, padding: 12 },
     emptyText: { textAlign: 'center', color: t.mutedText, marginTop: 40, fontSize: 16 },
     projectCard: {

@@ -14,6 +14,7 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 
 // Format the backup file. Bump VERSION only if the shape changes,
@@ -358,7 +359,7 @@ export default function BackupScreen() {
                 </View>
             </SafeAreaView>
 
-            <View style={styles.bridge} />
+            <Bridge />
 
             <ScrollView contentContainerStyle={styles.body}>
                 <Text style={styles.intro}>
@@ -409,7 +410,6 @@ const makeStyles = (t: Theme) =>
             flex: 1,
             textAlign: 'center',
         },
-        bridge: { height: 8, backgroundColor: t.bridge },
         body: { padding: 20 },
         intro: {
             fontSize: 17,

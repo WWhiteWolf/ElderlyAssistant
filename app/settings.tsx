@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl from '../components/DateTimeControl';
+import Bridge from '../components/Bridge';
 import { Theme, useTheme, useThemeControls } from '../constants/Themes';
 
 export default function SettingsScreen() {
@@ -190,7 +191,7 @@ export default function SettingsScreen() {
                 </View>
             </SafeAreaView>
 
-            <View style={styles.bridge} />
+            <Bridge />
 
                 <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 12 }}>
 
@@ -373,7 +374,6 @@ const makeStyles = (t: Theme) =>
             flex: 1,
             textAlign: 'center',
         },
-        bridge: { height: 8, backgroundColor: t.bridge },
         scroll: { flex: 1 },
         sectionHeader: {
             fontSize: 13,

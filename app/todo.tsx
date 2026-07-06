@@ -18,6 +18,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl, { formatDateMMDDYY, formatTime24 } from '../components/DateTimeControl';
+import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 
 // Priority removed entirely (Patrick, #58 scope, built #60): no form
@@ -509,7 +510,7 @@ export default function TodoScreen() {
                 </View>
             </SafeAreaView>
 
-            <View style={styles.bridge} />
+            <Bridge />
 
             {tasks.filter(t => t.taskType === 'background').length > 0 && (
                 <TouchableOpacity
@@ -543,7 +544,7 @@ export default function TodoScreen() {
                                 <View style={styles.taskContent}>
                                     <View style={styles.taskTopRow}>
                                         <Text style={styles.taskTitle}>{task.title}</Text>
-                                        <TouchableOpacity onPress={() => openEditTask(task)} style={styles.editBtn}>
+                                        <TouchableOpacity onPress={() => openEditTask(task)} style={styles.editBtn} hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}>
                                             <Text style={styles.editBtnText}>Edit</Text>
                                         </TouchableOpacity>
                                     </View>
@@ -581,7 +582,7 @@ export default function TodoScreen() {
                                         <TouchableOpacity onPress={() => completeTask(task)} style={styles.doneBtn}>
                                             <Text style={styles.doneBtnText}>Done</Text>
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => openEditTask(task)} style={styles.editBtn}>
+                                        <TouchableOpacity onPress={() => openEditTask(task)} style={styles.editBtn} hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}>
                                             <Text style={styles.editBtnText}>Edit</Text>
                                         </TouchableOpacity>
                                     </View>
@@ -744,7 +745,6 @@ const makeStyles = (t: Theme) =>
         flex: 1,
         textAlign: 'center',
     },
-    bridge: { height: 8, backgroundColor: t.bridge },
     scroll: { flex: 1, padding: 12 },
     emptyText: { textAlign: 'center', color: t.mutedText, marginTop: 40, fontSize: 16 },
     taskCard: {

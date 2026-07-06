@@ -19,6 +19,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl from '../components/DateTimeControl';
+import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 import * as AppGroup from '../modules/app-group';
 
@@ -446,7 +447,7 @@ export default function MyDayScreen() {
                 </View>
             </SafeAreaView>
 
-            <View style={styles.bridge} />
+            <Bridge />
 
             <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }} scrollEventThrottle={16} directionalLockEnabled={true}>
 
@@ -474,6 +475,7 @@ export default function MyDayScreen() {
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={styles.editBtn}
+                                    hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}
                                     onPress={() => {
                                         setActiveId(item.id);
                                         setTempName(item.label);
@@ -750,7 +752,6 @@ const makeStyles = (t: Theme) =>
         flex: 1,
         textAlign: 'center',
     },
-    bridge: { height: 8, backgroundColor: t.bridge },
     scroll: { flex: 1 },
     section: {
         backgroundColor: t.card,
