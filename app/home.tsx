@@ -150,7 +150,8 @@ const makeStyles = (t: Theme) =>
             height: 48,
             borderRadius: 24,
             backgroundColor: t.tileCircle,
-            borderWidth: 1.5,
+            // #64: crisp outline — width + contrasting color come from the theme
+            borderWidth: t.tileCircleBorderWidth,
             borderColor: t.tileCircleBorder,
             alignItems: 'center',
             justifyContent: 'center',

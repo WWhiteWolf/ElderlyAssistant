@@ -26,6 +26,7 @@ export interface Theme {
     bridge: string;
     tileCircle: string;
     tileCircleBorder: string;
+    tileCircleBorderWidth: number; // #64: crisp outline — differs per theme (2 light / 3 dark)
     tileLabel: string;
     cartIcon: string;
     settingsGear: string;
@@ -117,7 +118,8 @@ export const Themes: Record<ThemeName, Theme> = {
         pageBackground: '#e8f4f8',
         bridge: '#2d9e8f',
         tileCircle: '#4caba1',
-        tileCircleBorder: '#43a297',
+        tileCircleBorder: '#1a6e8a', // #64: crisp header-teal outline (was #43a297 — near-identical to the fill)
+        tileCircleBorderWidth: 2,    // #64: Patrick's pick — thinner than dark's 3
         tileLabel: '#1a6e8a',
         cartIcon: '#d8dde3',
         settingsGear: '#4caba1',
@@ -175,9 +177,9 @@ export const Themes: Record<ThemeName, Theme> = {
         tileLabelSize: 20, // #62: was 18 — Home tiles ~10% bigger (Patrick's phone call)
         tileLabelFont: 'Georgia', // #56: matches dark — both themes read Georgia
         iconShadow: false,
-        tileHalo: '#1a6e8a',      // #56: header teal-blue, stronger than dark's
-        tileHaloOpacity: 0.75,
-        tileHaloRadius: 10,       // #62: was 9 — scaled with the bigger circle
+        tileHalo: '#1a6e8a',      // #56: header teal-blue
+        tileHaloOpacity: 0,       // #64: halo OFF (Patrick trying no-halo; was 0.75 pre-#64 — restore both numbers to bring it back)
+        tileHaloRadius: 8,
     },
     // Dark — the warm dark theme exactly as approved #43 / built #44.
     dark: {
@@ -187,7 +189,8 @@ export const Themes: Record<ThemeName, Theme> = {
         pageBackground: '#3a3024',
         bridge: '#c9622e',
         tileCircle: '#c9622e',
-        tileCircleBorder: '#a3481f',
+        tileCircleBorder: '#f0a83a', // #64: crisp gold outline (was #a3481f) — matches the outlined-gold convention
+        tileCircleBorderWidth: 3,    // #64: Patrick's pick — heavier than light's 2
         tileLabel: '#f0a83a', // #56: gold (was pale cream #f0d9a8) — Patrick's pick
         cartIcon: '#d8dde3',
         settingsGear: '#c9622e',
@@ -245,9 +248,9 @@ export const Themes: Record<ThemeName, Theme> = {
         tileLabelSize: 20, // #62: was 18 — Home tiles ~10% bigger (Patrick's phone call)
         tileLabelFont: 'Georgia',
         iconShadow: true,
-        tileHalo: '#f0a83a',      // #56: header gold, softer than light's
-        tileHaloOpacity: 0.55,
-        tileHaloRadius: 8,        // #62: was 7 — scaled with the bigger circle
+        tileHalo: '#f0a83a',      // #56: header gold
+        tileHaloOpacity: 0,       // #64: halo OFF (Patrick trying no-halo; was 0.55 pre-#64 — restore both numbers to bring it back)
+        tileHaloRadius: 7,
     },
 };
 

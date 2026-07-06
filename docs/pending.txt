@@ -1,9 +1,10 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-05 (session #63 — the ORDERS PAGE IS BUILT,
-all of it in one session: the tile, the form, the HERE button and
-arrivals log, the reminders, and the banner buttons. Everything
-checked out in the Simulator, including a live banner with the
-HERE / OK / Delay buttons. The phone test rides your next build.)
+Last updated: 2026-07-06 (session #64 — polish day: the "Elyfont"
+name on reminder banners turned out to be the phone's own stale
+cache — a restart fixed it, no code. The Home buttons got crisp
+outlines and lost their fuzzy glow. And two big decisions were
+made, ready to build next session: the app's new name and its
+first real icon.)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -13,43 +14,50 @@ tracked here — git history keeps the full record — so this list stays short.
 
 WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
-- THE ORDERS PAGE IS BUILT (#63). The 📦 tile is on the Home page
-  (11th button). One entry per item: name, price, store, address,
-  order number, the "expected by" date, and a time window you add
-  later by hand when the store narrows it down. HERE logs the
-  arrival and clears the entry; the Arrivals Log sits below the
-  list. Reminders: day before (at your Midday time), morning of
-  (at your Morning time), window open, and window close unless
-  you've already tapped HERE. Banner buttons: HERE / OK / Delay
-  15-30-60.
-- Orders data is included in Backup from day one.
-- Everything was checked in the Simulator step by step, including
-  a live banner firing with the right buttons on it.
-- All #63 CODE is committed and on your phone (two builds the same
-  day: the Orders build, then the bridge rollout + tap-area build).
-  Only the DOCS still need their commit — the usual post-test
-  docs commit closes out the session.
+- THE "ELYFONT" BANNER MYSTERY IS CLOSED (#64). The reminder
+  popups were showing the old name because the PHONE had cached
+  it, not because the app carried it — a restart cleared it and
+  banners now say "Remember When". No code changed.
+- THE HOME BUTTONS ARE CRISP NOW (#64). Each circle has a clear
+  outline (teal in light, gold in dark) and the soft glow behind
+  them is gone — your call after trying it both ways. Checked in
+  the Simulator in both themes; it reaches the phone with the
+  next build.
+- THE NEW NAME IS DECIDED (#64, not built yet): the App Store
+  listing becomes "A Place To Remember" (checked — no app has
+  it), and the label under the icon becomes "Remember" (the full
+  name won't fit there).
+- THE APP'S FIRST REAL ICON IS DESIGNED (#64, not built yet): a
+  line-drawn happy face — the face you make when you remember
+  something good — red-brown lines on gold, with a little
+  sparkle at the temple.
+- The #63 Orders phone test is STILL IN PROGRESS (multi-day by
+  nature — the day-before and morning-of reminders need real
+  days to pass). The #63 docs commit waits on it.
 - The dark startup flash is still there (a known small quirk).
 
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. COMMIT + BUILD + PHONE TEST. The new build carries the whole
-   Orders page AND the #62 fixes — the phone checklist is in the
-   NEEDS A PHONE TEST section below.
-2. Still on the list from before: name the backup folder/file —
-   needs the real phone (iCloud); ties into finishing the
-   "Remember When" rename. (The when-you're-ready talk-throughs —
-   Vault import, removing Vault categories, the backup Merge
-   option — are in the DECISIONS section below.)
+1. FINISH THE #63 PHONE TEST (in progress — see NEEDS A PHONE
+   TEST below for what's left).
+2. THE RENAME PACKAGE — next session's goal, all decisions made:
+   the "Remember" icon label, the new icon picture, the in-app
+   name spots (Home greeting, Settings version line), and the
+   backup file's naming (old backups must still restore — this
+   also covers the long-standing "name the backup folder" item).
+   Your own part: change the listing name in App Store Connect
+   to "A Place To Remember". Everything rides the next build.
+   (The when-you're-ready talk-throughs — Vault import, removing
+   Vault categories, the backup Merge option — are in the
+   DECISIONS section below.)
 
 
 #40 & #41 STILL OPEN (what's left of your #41 list)
 ----------------------------------------------------------------------------
 1. Name the backup folder — moved up from "someday" to "wanted." Best
    finished and checked on the real phone, where iCloud Drive is involved.
-   (Now related: the app-name change back to "Remember When" touches the
-   same backup file naming.)
+   (Now folded into the RENAME PACKAGE in WHAT'S NEXT — same file naming.)
 3. Import files/documents into the Vault. Needs a talk-through first
    (what kinds of files, from where, how they're shown and protected).
 
@@ -122,11 +130,10 @@ NICE-TO-HAVE LATER (polish, low priority)
 - Watch List overhaul — its own session, talk-through first (moved
   from What's Next, your call #55). The night-and-time-a-TV-show-airs
   idea folds into it.
-- Rename the app back to "Remember When" — what's LEFT of it (#48,
-  yours). The icon-label part was finished in #54.
-  Still here: the backup file naming (Elyfont-Backup-...) and the
-  file's internal marker — old backups must stay restorable. The
-  "Memory Assist" tagline still needs a home.
+- (The app rename moved UP: it's now the "A Place To Remember" /
+  "Remember" rename package in WHAT'S NEXT — superseding the old
+  "back to Remember When" item. The "Memory Assist" tagline
+  still needs a home.)
 - Project Planner has reminder fields on screen, but they aren't
   connected to anything yet.
 - My Day / Pets: a Done tapped from the BANNER logs only the fire

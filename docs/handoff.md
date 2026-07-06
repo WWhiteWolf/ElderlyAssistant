@@ -1,6 +1,30 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #63 (2026-07-05) "Orders Page": **The WHOLE Orders page was BUILT in one session — all six planned steps, each `tsc`-clean and Simulator-approved one at a time (Patrick's #63 structure: Simulator work first, phone-test work last). Banner fired and showed HERE/OK/Delay 15-30-60 in the Simulator. Phone judgment rides the next EAS build.**
+## THIS SESSION — #64 (2026-07-06) "Polish 6 — App name & Home screen buttons"
+
+**1. The "Elyfont" reminder-popup mystery — SOLVED, zero code.** The code and `app.json` have said "Remember When" since #54 (grep-verified; the only real "Elyfont" strings left are backup.tsx's file naming/wording and the inert Siri intent files). Patrick's lock-screen banners still said "Elyfont" while his icon label said "Remember When" → stale iOS name cache from a pre-#54 build. **A phone restart fixed it** — banners now say "Remember When". Nothing rides a build.
+
+**2. NAME DECIDED (not built): App Store listing → "A Place To Remember"; icon label → "Remember".** The full name came to Patrick mid-test ("it hit me") and checked out free: App Store search on his phone shows nothing using it (web checks agreed). It won't fit under the icon (~13-14 char truncation, which Patrick rejected), so the icon label is the short "Remember" — noted and accepted that it sits visually near Apple's "Reminders".
+
+**3. ICON DECIDED (not built): first custom icon** (replaces the Expo placeholder). Approved via mockup rounds: a line-drawn smiling face — "the happy face when you remember something good" — brick-red lines (`#b04a1a`) on gold (`#eec55a`), 4-point sparkle + small dot at the upper-right temple. Final art must be an edge-to-edge 1024×1024 square (iOS rounds the corners itself — no baked-in rounding). Same icon everywhere: Patrick declined notification-specific art (iOS can't swap the banner icon; the attachment-thumbnail workaround was offered and declined).
+
+**4. BUILT + Simulator-approved (the session's one code change): crisp Home-tile outlines, halo dropped.** Patrick: the tiles "seem a little blurry" (both themes). Cause read from the code: 1.5px borders in near-fill colors plus the #56 halo glow. Fix: `Themes.ts` got a new `tileCircleBorderWidth` key (light **2** / dark **3**, Patrick's picks); light border `#43a297` → `#1a6e8a` (header teal), dark `#a3481f` → `#f0a83a` (the outlined-gold convention); `home.tsx`'s iconCircle reads the width key instead of the hard-coded 1.5. The halo was softened, nudged up twice, then turned **OFF** (Patrick: "That is the best") — `tileHaloOpacity: 0` in both themes, radius left in place; pre-#64 restore values if ever missed: light 0.75/10, dark 0.55/8. `tsc` clean.
+
+**Phone-test status (#63 build, reported at session start): still mid-test, multi-day.** To-Do "2 Days Before" expected at noon today, Day/Night Before tomorrow, the rest over the following days. The #63 docs commit stays pending accordingly.
+
+**Commit note:** #64 code (`Themes.ts` + `home.tsx`) + these docs NOT yet committed — Patrick commits.
+
+**➤ NEXT SESSION — the RENAME PACKAGE (Patrick's call, all decisions already made):**
+- `app.json` `"name"` → `"Remember"` (the icon label).
+- The approved icon as `assets/images/icon.png` (Android variants + splash can follow later).
+- In-app texts — the Home greeting and Settings' "Remember When v1.0": Patrick decides full name vs short.
+- `backup.tsx` naming (the parked #48 half): the `Elyfont-Backup-<date>.json` filename, dialog/alert wording, and the internal `type: 'elyfont-backup'` marker — old backups MUST stay restorable. Pairs with the "name the backup folder" item (proof wants the real phone / iCloud).
+- Patrick's own step, in the browser on the Mac: App Store Connect listing name → "A Place To Remember" (check Apple's current rules on when a name edit is allowed — not yet verified).
+- Everything rides the next EAS build.
+
+---
+
+## SESSION — #63 (2026-07-05) "Orders Page": **The WHOLE Orders page was BUILT in one session — all six planned steps, each `tsc`-clean and Simulator-approved one at a time (Patrick's #63 structure: Simulator work first, phone-test work last). Banner fired and showed HERE/OK/Delay 15-30-60 in the Simulator. Phone judgment rides the next EAS build.**
 
 **What was built, step by step (spec: #62, all Patrick's calls):**
 1. **`DateTimeControl` gets `mode='date'`** (`components/DateTimeControl.tsx`): date-only face — time half hidden, validity ignores the time box. ~6 lines, the 6 existing pages untouched. **Decision (#63): NO pair machinery in the control** — the Orders window is two `mode='time'` controls in the form.
@@ -21,19 +45,6 @@
 **➤ NEXT: phone test of the build.** What rides it (also in pending.txt):
 - Orders: day-before Midday + morning-of Morning timing; banner buttons on the real device (the #39 category-registration lesson — worked in Sim, lost one on device once); banner HERE end-to-end; window-open/close; snooze/Delay from the banner; tap-routing to the Orders page.
 - Plus the #62 fixes' phone checks still owed (Done-first banners, four-band Home strip, header heights, bigger tiles, bigger spinners).
-
----
-
-## SESSION — #62 (2026-07-05) "New Order & Delivery Page": **Patrick phone-tested the "beat on" build and brought back 5 issues; 4 FIXED this session (each Simulator-approved), 1 documented as Still Broken. Second half was the talk-through SPEC for the Orders page (built in #63 above).**
-
-**The 5 phone-test issues, in short:**
-1. **Look Ahead banner-Delay doesn't show "▶ Delayed" on the tile — NOT fixed, documented** as Still Broken (parked-items.md "Bugs"). Diagnosis: `lookahead.tsx` re-reads storage only on MOUNT; fix shape `useFocusEffect`. (Delay writing no log entry is BY DESIGN.)
-2. **Done now FIRST on routine banners** (`_layout.tsx` `routineactions`) — for the watch's scrolling button list.
-3. **Bridge redesign + header heights:** Home's bridge became FOUR 3-4px bands (Home only — rollout parked); Settings/Pets/Watch List/Vault standardized on the taller header (lost `edges={['top']}` + header paddingBottom). Home + Look Ahead deliberately untouched.
-4. **Home tiles ~10% bigger** (`home.tsx`: circle 44→48, emoji 22→24; `Themes.ts`: label 18→20, halo up). Watch long-name wrap on the phone.
-5. **Spinner circles 34→40px + hitSlop ~50px tappable** (`DateTimeControl.tsx`); knock-ons: To-Do popup maxHeight 98→92%, Look Ahead overlay paddingVertical 20→40.
-
-**Commit note:** COMMITTED (Patrick confirmed at #63 start, code + docs together).
 
 ---
 
