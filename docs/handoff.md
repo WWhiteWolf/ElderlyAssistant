@@ -1,6 +1,54 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #65 (2026-07-06) "Name change to 'A Place To Remember'"
+## THIS SESSION — #66 (2026-07-07) "Memory Test page"
+
+**WHY:** Patrick failed the 5-word cognitive memory test and was diagnosed with
+mild (3%) sleep apnea; he's starting a PAP mask. This page runs that same test
+daily so the scores show whether the mask helps. (Started as a separate
+"Memory Tests" project — a Sonnet-built HTML file that had no notifications and
+couldn't save outside Claude's preview. Patrick decided mid-session to build it
+INTO this app instead and deleted that folder; native notifications were the
+clincher.)
+
+**THE WHOLE PACKAGE WAS BUILT, one step at a time, `tsc` clean after each:**
+
+1. **`app/memorytest.tsx`** (new, self-contained): FIVE learning rounds — words
+   shown as text → hidden → he types them into 5 big boxes → scored → next
+   round, ALWAYS all five even on a perfect round (the RAVLT pattern; research
+   confirmed it matches what his doctor did) — then "I Got It" schedules a
+   5-minute notification (MoCA-style delayed recall, the headline score).
+   One test per day; all round scores + recall score log with the date.
+   Decisions: displayed text, NO audio (his call — past audio trouble; a
+   recognized variant, consistency is what matters); forgiving scoring (case,
+   stray characters, plural 's' free); word bank of 60, 5 drawn fresh daily;
+   restart-recovery to the right screen; a stale unfinished session from a
+   past day is silently discarded.
+2. **Home tile**: 🧠 "Memory Test", last in the grid, + its route.
+3. **`_layout.tsx`**: banner tap routes to the page; screen registered. NO
+   banner buttons on purpose — a Delay button would invite postponing a test
+   that must happen at the 5-minute mark.
+4. **`backup.tsx`**: `memtest_session` + `memtest_history` joined READABLE_KEYS.
+5. **LATE ADDITION, from Patrick's Simulator run: spelling forgiveness.** A
+   one-letter mistake (wrong / missing / extra letter, or two neighbors
+   swapped — "candel") no longer costs a point; two mistakes is still a miss.
+   The daily draw keeps the 5 words ≥3 edits apart (the bank has 12 pairs
+   only 2 apart, e.g. pepper/copper — they can't be drawn together), and each
+   answer claims at most one word. Logic proven with a node test battery.
+
+**SIMULATOR-APPROVED, BOTH THEMES (Patrick, live this session):** full flow
+run — his rounds went 4→5 climbing to all five, recall 5/5 — plus the retake
+trick (swipe today's My Scores row → Delete → the start button returns) and
+the spelling forgiveness. "It all works good."
+
+**➤ NEXT: Patrick commits + EAS build. The phone test:** the 5-minute banner
+fires with the phone LOCKED; tapping it lands on the recall screen; scores
+appear in My Scores; a backup export includes the memtest keys. The
+mic-button dictation tip (speak the words into the boxes) is worth trying on
+the real phone too.
+
+---
+
+## SESSION — #65 (2026-07-06) "Name change to 'A Place To Remember'"
 
 **The WHOLE RENAME PACKAGE was BUILT — every piece Simulator-approved one at a time — AND Patrick's own App Store Connect step was completed live the same session.** All decisions were #64's; #65 executed them.
 
@@ -23,22 +71,6 @@
 - ✅ Seen already: the new icon + header face (which is what caught the light-theme clash).
 - Backup: export shows `Remember-Backup-…`; **prove an old `Elyfont-Backup-…` file still restores** (pairs with the "name the backup folder" findability check in iCloud — the filename half is now done).
 - Plus the still-running #63 Orders multi-day checks (see pending.txt): day-before @ Midday / morning-of @ Morning, no window-close nag after HERE, watch-button listing.
-
----
-
-## SESSION — #64 (2026-07-06) "Polish 6 — App name & Home screen buttons"
-
-**1. The "Elyfont" reminder-popup mystery — SOLVED, zero code.** The code and `app.json` have said "Remember When" since #54 (grep-verified; the only real "Elyfont" strings left are backup.tsx's file naming/wording and the inert Siri intent files). Patrick's lock-screen banners still said "Elyfont" while his icon label said "Remember When" → stale iOS name cache from a pre-#54 build. **A phone restart fixed it** — banners now say "Remember When". Nothing rides a build.
-
-**2. NAME DECIDED: App Store listing → "A Place To Remember"; icon label → "Remember".** The full name came to Patrick mid-test ("it hit me") and checked out free: App Store search on his phone shows nothing using it (web checks agreed). It won't fit under the icon (~13-14 char truncation, which Patrick rejected), so the icon label is the short "Remember" — noted and accepted that it sits visually near Apple's "Reminders". **(BUILT in #65.)**
-
-**3. ICON DECIDED: first custom icon** (replaces the Expo placeholder). Approved via mockup rounds: a line-drawn smiling face — "the happy face when you remember something good" — brick-red lines (`#b04a1a`) on gold (`#eec55a`), 4-point sparkle + small dot at the upper-right temple. Final art must be an edge-to-edge 1024×1024 square (iOS rounds the corners itself — no baked-in rounding). Same icon everywhere: Patrick declined notification-specific art (iOS can't swap the banner icon; the attachment-thumbnail workaround was offered and declined). **(BUILT in #65.)**
-
-**4. BUILT + Simulator-approved (the session's one code change): crisp Home-tile outlines, halo dropped.** Patrick: the tiles "seem a little blurry" (both themes). Cause read from the code: 1.5px borders in near-fill colors plus the #56 halo glow. Fix: `Themes.ts` got a new `tileCircleBorderWidth` key (light **2** / dark **3**, Patrick's picks); light border `#43a297` → `#1a6e8a` (header teal), dark `#a3481f` → `#f0a83a` (the outlined-gold convention); `home.tsx`'s iconCircle reads the width key instead of the hard-coded 1.5. The halo was softened, nudged up twice, then turned **OFF** (Patrick: "That is the best") — `tileHaloOpacity: 0` in both themes, radius left in place; pre-#64 restore values if ever missed: light 0.75/10, dark 0.55/8. `tsc` clean.
-
-**Phone-test status (#63 build): still mid-test, multi-day** — the remaining Orders checks ride along with the #65 build (see pending.txt). The #63 docs commit stays pending accordingly.
-
-**Commit note:** #64 code (`Themes.ts` + `home.tsx`) was committed by Patrick (confirmed at #65 start); the #64 docs ride the #65 docs commit.
 
 ---
 

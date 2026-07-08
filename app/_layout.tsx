@@ -586,6 +586,9 @@ export default function RootLayout() {
       router.push('/lookahead');
     } else if (source === 'orders' || source === 'orderssnooze') {
       router.push('/orders');
+    } else if (source === 'memorytest') {
+      // The 5-minute recall banner — land straight on the recall screen.
+      router.push('/memorytest');
     }
   }, [response]);
 
@@ -607,6 +610,7 @@ export default function RootLayout() {
       <Stack.Screen name="settings" options={{ headerShown: false }} />
       <Stack.Screen name="vault" options={{ headerShown: false }} />
       <Stack.Screen name="backup" options={{ headerShown: false }} />
+      <Stack.Screen name="memorytest" options={{ headerShown: false }} />
     </Stack>
     </ThemeProvider>
   );

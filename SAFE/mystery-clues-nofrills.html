@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="screen-orientation" content="portrait">
+<meta name="color-scheme" content="dark">
+<style>
+@media screen and (orientation: landscape) {
+  body::before {
+    content: 'Please rotate your device to portrait mode';
+    position: fixed; inset: 0; z-index: 9999;
+    background: #1a1410; color: #e8b060;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 1rem; text-align: center;
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px;
+  }
+  body > * { display: none !important; }
+}
+</style>
+<title>Mystery Clues Tracker Beta</title>
+<link rel="manifest" href="/static/clue-manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mystery Clues Beta">
+<link rel="apple-touch-icon" href="/static/clue-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#1a1410;--bg2:#242018;--surface:#2a2218;--border:#8b6a38;
+  --gold:#c8903a;--gold-dk:#e8b060;--red:#c04040;--green:#2a8a48;
+  --blue:#4a6aab;--text:#f0e8d8;--muted:#a89878;--radius:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Lora',Georgia,serif;background:var(--bg);color:var(--text);max-width:430px;margin:0 auto;display:flex;flex-direction:column;height:100dvh;overflow:hidden;user-select:none;-webkit-user-select:none;}
+input,textarea{user-select:text;-webkit-user-select:text;}
+
+/* HEADER */
+.app-header{background:var(--gold-dk);color:#f5ede0;padding:8px 12px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;}
+.app-header h1{font-family:'Playfair Display',serif;font-size:1.1rem;letter-spacing:0.08em;flex:1;text-align:center;}
+.hbtn{font-family:'Lora',serif;font-size:0.8rem;background:rgba(255,255,255,0.25);border:1.5px solid rgba(255,255,255,0.6);color:#fff;border-radius:4px;padding:6px 12px;cursor:pointer;white-space:nowrap;font-weight:600;}
+.hbtn:active{background:rgba(255,255,255,0.4);}
+.btn-play-header.inactive{background:rgba(0,0,0,0.3);border-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.25);cursor:default;}
+
+/* SCREENS */
+.screen{display:none;flex-direction:column;flex:1;overflow:hidden;}
+.screen.active{display:flex;}
+
+/* SETUP */
+.setup-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px;}
+.sec-label{font-family:'Playfair Display',serif;font-size:0.85rem;color:var(--gold-dk);text-transform:uppercase;letter-spacing:0.1em;border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:3px;}
+.setup-hint{font-size:0.82rem;color:var(--muted);font-style:italic;line-height:1.5;}
+.player-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.player-slot{background:#2a2218;border:1.5px solid var(--border);border-radius:var(--radius);padding:5px 8px;cursor:pointer;min-height:40px;display:flex;flex-direction:column;gap:2px;}
+.player-slot.is-me{border-color:var(--green);background:#0f2e18;}
+.player-slot.has-name{border-color:var(--gold);}
+.slot-lbl{font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;}
+.slot-name{font-size:0.85rem;color:var(--text);font-weight:500;min-height:1em;}
+.slot-badge{font-size:0.6rem;color:var(--green);font-weight:600;}
+.card-section{margin-bottom:6px;}
+.cat-hdr{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;padding:0 10px;line-height:1.6;border-radius:3px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;color:#fff;}
+.cat-hdr.suspects{background:#5a1010;}
+.cat-hdr.weapons{background:#0f1e3a;}
+.cat-hdr.rooms{background:#0f3018;}
+.cat-edit-btn{font-size:0.65rem;padding:3px 8px;border-radius:3px;border:1px solid rgba(255,255,255,0.4);background:transparent;cursor:pointer;font-family:'Lora',serif;color:#fff;}
+.card-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.card-chip{font-size:0.85rem;padding:6px 12px;border-radius:16px;border:1.5px solid var(--border);background:#2a2218;color:var(--text);cursor:pointer;transition:all 0.12s;}
+.card-chip:active{transform:scale(0.95);}
+.card-chip.selected{background:var(--green);border-color:#1a5a28;color:#e8f5e8;font-weight:500;}
+.setup-footer{flex-shrink:0;padding:10px 14px;background:#242018;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;}
+.setup-counter{font-size:0.8rem;color:var(--muted);font-style:italic;flex:1;}
+.btn-play{font-family:'Playfair Display',serif;font-size:1rem;background:#3a2a10;color:#7a5c3a;border:1px solid #5a3a18;border-radius:var(--radius);padding:11px 22px;cursor:default;pointer-events:none;transition:all 0.2s;}
+.btn-play.ready{background:var(--gold-dk);color:#1a1410;border-color:var(--gold-dk);cursor:pointer;pointer-events:auto;}
+/* Placeholder styling for card edit inputs */
+.card-edit-input::placeholder{color:var(--muted);font-style:italic;}
+.card-edit-input:focus::placeholder{color:transparent;}
+
+/* PLAY */
+.turn-bar{background:var(--green);color:#e8f5ec;padding:6px 14px;font-size:0.85rem;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;}
+.stage-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:5px 10px;font-size:0.78rem;color:var(--gold-dk);font-style:italic;flex-shrink:0;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:6px;}
+.stage-hint-center{text-align:center;font-style:italic;color:var(--gold-dk);font-size:0.78rem;}
+.undo-btn{font-size:0.82rem;padding:4px 11px;border-radius:3px;background:var(--red);color:#fff;border:none;cursor:pointer;font-family:'Lora',serif;font-weight:600;}
+.next-small-btn{font-size:0.82rem;padding:4px 11px;border-radius:3px;background:var(--green);color:#e8f5ec;border:none;cursor:pointer;font-family:'Lora',serif;font-weight:600;}
+.grid-wrap{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;}
+.tracker-table{border-collapse:collapse;width:100%;}
+
+/* Table header */
+.tracker-table th.corner-th{position:sticky;left:0;top:0;z-index:10;background:var(--gold-dk);color:#1a1410;padding:5px 6px;font-size:9px;text-align:left;border:1px solid #9a6e2a;width:82px;min-width:82px;}
+.tracker-table th.player-th{position:sticky;top:0;z-index:9;background:var(--gold-dk);color:#1a1410;text-align:center;padding:5px 3px;font-size:9.5px;border:1px solid #9a6e2a;width:50px;min-width:50px;max-width:50px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;}
+.tracker-table th.player-th.me-th{background:var(--green);border-color:#145228;}
+.tracker-table th.player-th.active-asker{background:#3a5a9b;border-color:#2a4a7b;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.2);}
+.tracker-table th.player-th.inactive-th{opacity:0.2;}
+
+/* Category rows */
+.cat-row td{font-size:8px;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;padding:3px 6px;color:#fff;}
+.cat-suspects{background:var(--red);}
+.cat-weapons{background:var(--blue);}
+.cat-rooms{background:var(--green);}
+
+/* Card name column */
+.card-th{position:sticky;left:0;z-index:8;text-align:left;padding:3px 5px;font-size:10px;font-weight:700;color:var(--text);background:#2a2218;border-right:2px solid var(--border);border-bottom:1px solid var(--border);white-space:nowrap;width:82px;min-width:82px;}
+
+/* Summary column */
+.tracker-table th.summary-th{position:sticky;top:0;z-index:9;background:var(--gold-dk);color:#1a1410;text-align:center;padding:4px 1px;font-size:8px;border:1px solid var(--border);width:24px;min-width:24px;max-width:24px;}
+.summary-cell{border:1px solid var(--border);width:24px;min-width:24px;text-align:center;vertical-align:middle;padding:1px;background:#242018;font-size:11px;cursor:pointer;}
+.summary-cell.sum-check{background:#242018;}
+.summary-cell.sum-cross{background:#242018;}
+.summary-cell.sum-error{background:#3a0808;}
+.summary-cell.sum-manual{opacity:1;}
+.data-cell{border:1px solid var(--border);min-height:28px;width:50px;min-width:50px;vertical-align:top;padding:2px 3px;background:#1e1a14;cursor:pointer;word-wrap:break-word;white-space:normal;position:relative;}
+.data-cell.me-cell{background:#0f2018;}
+.data-cell.inactive-cell{opacity:0.35;background:#1a1614!important;pointer-events:none;}
+.data-cell.conflict{background:#3a1010!important;}
+.data-cell.tap-asking{outline:1px solid #4a6aab;outline-offset:-1px;}
+.data-cell.tap-selected{background:#1e2a4a!important;outline:1px solid var(--blue);outline-offset:-1px;}
+tr:nth-child(even) .data-cell{background:#242018;}
+tr:nth-child(even) .data-cell.me-cell{background:#142818;}
+
+/* Symbols */
+.cell-inner{display:flex;flex-wrap:wrap;gap:2px;align-items:flex-start;min-height:24px;}
+.sym{font-size:10px;line-height:1.2;display:inline-flex;align-items:baseline;white-space:nowrap;}
+.sym sup{font-size:7px;line-height:1;}
+.sym-check{color:#60e090;font-weight:700;font-size:9px;}
+.sym-cross{color:#e06060;font-weight:700;font-size:8px;}
+.sym-asked{color:#8aaaf0;font-weight:700;background:#1a2a50;border-radius:2px;padding:0 2px;}
+.sym-showed{color:#e0a060;font-weight:700;background:#3a2010;border-radius:2px;padding:0 2px;}
+.sym-shownme{color:#60c080;font-weight:700;background:#0f2e18;border-radius:2px;padding:0 2px;}
+.sym-ishowed{color:var(--gold);font-weight:700;background:#2a1e08;border-radius:2px;padding:0 2px;}
+.cell-custom{position:absolute;bottom:1px;right:2px;font-size:8px;color:var(--muted);font-family:'Lora',serif;font-style:italic;line-height:1;pointer-events:none;max-width:44px;text-align:right;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+
+/* Voice bar */
+.voice-bar{flex-shrink:0;background:#2c1a08;padding:8px 14px;display:flex;align-items:center;gap:12px;}
+.mic-btn{width:52px;height:52px;border-radius:50%;background:var(--gold);border:2px solid #f5ede0;color:#f5ede0;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background 0.15s;}
+.mic-btn.listening{background:var(--red);}
+.voice-display{flex:1;min-height:38px;display:flex;align-items:center;}
+.voice-text{font-size:0.78rem;color:#c8a87a;font-style:italic;line-height:1.4;}
+.voice-text.heard{color:#f5ede0;font-style:normal;}
+.status-bar{background:var(--bg2);border-top:1px solid var(--border);padding:4px 14px;font-size:0.75rem;color:var(--muted);font-style:italic;min-height:24px;flex-shrink:0;}
+
+/* MODALS */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(44,26,8,0.75);z-index:100;align-items:flex-start;justify-content:center;padding:12px 18px;overflow-y:auto;}
+.modal-backdrop.open{display:flex;}
+.modal{background:#2a2218;border:2px solid var(--border);border-radius:10px;width:100%;max-width:340px;overflow:hidden;margin-top:8px;}
+.modal-head{background:var(--gold-dk);color:#1a1410;font-family:'Playfair Display',serif;font-size:0.95rem;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;}
+.modal-close{background:none;border:1px solid rgba(26,20,16,0.3);color:#1a1410;font-size:0.75rem;cursor:pointer;padding:3px 8px;border-radius:3px;font-family:"Lora",serif;font-weight:600;opacity:0.8;}
+.modal-body{background:#2a2218;padding:14px;display:flex;flex-direction:column;gap:10px;}
+.modal-input{width:100%;font-family:'Lora',serif;font-size:1.05rem;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--radius);background:#1a1410;color:var(--text);outline:none;}
+.modal-input:focus{border-color:var(--gold);}
+.modal-name-row{display:flex;gap:8px;align-items:center;}
+.modal-mic{width:40px;height:40px;border-radius:50%;background:var(--gold);border:none;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.modal-mic.listening{background:var(--red);}
+.me-toggle{display:flex;align-items:center;gap:10px;background:#edf7f0;border:1.5px solid var(--green);border-radius:var(--radius);padding:9px 14px;cursor:pointer;}
+.me-toggle input[type=checkbox]{width:22px;height:22px;accent-color:var(--green);cursor:pointer;}
+.me-toggle label{font-size:0.9rem;color:var(--green);font-weight:500;cursor:pointer;}
+.modal-btn-row{display:flex;gap:8px;}
+.modal-btn{flex:1;font-family:'Lora',serif;font-size:0.9rem;padding:10px;border-radius:var(--radius);cursor:pointer;border:1px solid var(--border);}
+.modal-btn.primary{background:var(--gold-dk);color:#f5ede0;border-color:var(--gold-dk);}
+.modal-btn.secondary{background:transparent;color:var(--gold-dk);}
+.modal-btn.danger{background:var(--red);color:#fff;border-color:var(--red);}
+.private-cards{display:flex;flex-direction:column;gap:7px;max-height:270px;overflow-y:auto;}
+.private-card-opt{padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--bg);font-size:0.92rem;cursor:pointer;transition:all 0.12s;}
+.private-card-opt:active{background:var(--bg2);}
+.private-card-opt.selected{background:var(--green);border-color:#145228;color:#e8f5ec;font-weight:500;}
+.card-edit-list{display:flex;flex-direction:column;gap:7px;max-height:310px;overflow-y:auto;}
+.card-edit-row{display:flex;gap:6px;align-items:center;}
+.card-edit-input{flex:1;font-family:'Lora',serif;font-size:0.92rem;padding:7px 9px;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text);outline:none;}
+.card-edit-input:focus{border-color:var(--gold);}
+
+/* Template styles */
+.template-bar{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px;min-height:0;}
+.template-chip{font-family:'Lora',serif;font-size:0.75rem;padding:5px 0;border-radius:14px;border:1.5px solid var(--border);background:#2a2218;color:var(--text);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;max-width:calc(25% - 4px);}
+.template-chip:active{opacity:0.7;}
+.template-chip .t-del{color:var(--red);font-size:0.8rem;font-weight:700;padding:0 2px;}
+.template-save-btn{font-family:'Lora',serif;font-size:0.75rem;padding:5px 10px;border-radius:14px;border:1.5px solid var(--gold);background:transparent;color:var(--gold);cursor:pointer;white-space:nowrap;}
+
+.mark-list{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto;}
+.mark-row{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);font-size:0.85rem;}
+.mark-del{background:var(--red);color:#fff;border:none;border-radius:3px;padding:2px 8px;font-size:0.75rem;cursor:pointer;font-family:'Lora',serif;}
+.two-tap-active{background:var(--red)!important;color:#fff!important;border-color:var(--red)!important;}
+.mark-empty{font-size:0.82rem;color:var(--muted);font-style:italic;}
+.add-mark-row{display:flex;flex-wrap:wrap;gap:6px;}
+.add-mark-btn{font-family:'Lora',serif;font-size:0.82rem;padding:6px 12px;border-radius:var(--radius);border:1.5px solid var(--border);background:var(--surface);cursor:pointer;}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <button class="hbtn" id="btnNew" onclick="confirmNewGame()" style="display:none">New</button>
+  <h1>🔍 Mystery Clues Tracker <span style="font-size:0.65rem;background:#c04040;color:#fff;border-radius:3px;padding:2px 5px;vertical-align:middle;font-family:'Lora',serif;letter-spacing:0.05em;">BETA</span></h1>
+  <div style="display:flex;gap:6px;align-items:center">
+    <button class="hbtn" id="btnPlayerOut" onclick="openPlayerOutModal()" style="display:none">Out</button>
+    <button class="hbtn btn-play-header inactive" id="btnPlayHeader" onclick="startGame()" style="display:none;pointer-events:none">▶ Play</button>
+  </div>
+</div>
+
+<!-- SETUP -->
+<div class="screen active" id="screenSetup">
+  <div class="setup-body">
+    <div><div class="sec-label">STEP 1 - PLAYERS</div><p class="setup-hint">Tap each seat. Check "This is Me" on your seat.</p></div>
+    <div class="player-grid" id="playerGrid"></div>
+    <div>
+      <div class="sec-label">STEP 2 - CARDS</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:nowrap">
+        <button class="template-save-btn" onclick="openSaveTemplateModal()">💾 Save Card Template</button>
+        <span id="templateHint" style="font-size:0.68rem;color:var(--muted);font-style:italic;line-height:1.3">← Tap to save card names: max 4</span>
+      </div>
+      <div style="height:6px"></div>
+      <div style="font-size:0.68rem;color:var(--muted);font-style:italic;margin-bottom:6px;padding-top:10px">Tap Template Name to restore</div>
+      <div class="template-bar" id="templateBar" style="margin-bottom:6px"></div>
+    </div>
+    <div id="cardPicker"></div>
+  </div>
+  <div style="padding:10px 14px;border-top:1px solid var(--border);background:#1a1410;text-align:center;">
+    <button onclick="openFeedback()" style="font-family:'Lora',serif;font-size:0.88rem;background:none;border:none;color:var(--gold);font-style:italic;cursor:pointer;font-weight:500;">💬 Do you want to offer any suggestions?</button>
+  </div>
+</div>
+
+<!-- PLAY -->
+<div class="screen" id="screenPlay">
+  <div class="turn-bar">
+    <span id="turnLabel">Turn 1</span>
+  </div>
+  <div class="stage-bar">
+    <button class="undo-btn" id="undoBtn" onclick="undoTurn()" style="opacity:0.3;pointer-events:none">↩ Undo</button>
+    <span class="stage-hint-center" id="stageHint">—</span>
+    <button class="next-small-btn" onclick="nextPlayer()">Next ▶</button>
+  </div>
+  <div class="grid-wrap"><table class="tracker-table" id="trackerTable"></table></div>
+  <div style="position:relative;flex-shrink:0;border-top:1px solid var(--border);background:#1a1410;">
+    <div style="padding:6px 14px;text-align:center;">
+      <button onclick="openFeedback()" style="font-family:'Lora',serif;font-size:0.88rem;background:none;border:none;color:var(--gold);font-style:italic;cursor:pointer;font-weight:500;">💬 Do you want to offer any suggestions?</button>
+    </div>
+    <div id="statusBar" style="position:absolute;inset:0;display:none;align-items:center;padding:0 14px;background:#1a1410;font-size:0.75rem;color:var(--muted);font-style:italic;"></div>
+  </div>
+</div>
+
+<!-- MODAL: Player Name -->
+<div class="modal-backdrop" id="modalPlayer">
+  <div class="modal">
+    <div class="modal-head"><span id="modalPlayerTitle">Player Name</span><button class="modal-close" onclick="closeModal('modalPlayer')">Close</button></div>
+    <div class="modal-body">
+      <div class="modal-name-row">
+        <input class="modal-input" id="playerNameInput" type="text" placeholder="Enter nickname…" maxlength="6" autofocus>
+      </div>
+      <div class="me-toggle" onclick="toggleMeCheck()">
+        <input type="checkbox" id="meCheck"><label for="meCheck">This is Me</label>
+      </div>
+      <div class="modal-btn-row">
+        <button class="modal-btn secondary" onclick="clearPlayerSlot()">Clear</button>
+        <button class="modal-btn primary" onclick="savePlayerName()">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Edit Card Names -->
+<div class="modal-backdrop" id="modalEditCards">
+  <div class="modal">
+    <div class="modal-head"><span id="editCardsTitle">Edit Cards</span><button class="modal-close" onclick="closeModal('modalEditCards')">Close</button></div>
+    <div class="modal-body">
+      <div class="card-edit-list" id="cardEditList"></div>
+      <div class="modal-btn-row">
+        <button class="modal-btn secondary" style="color:var(--red);border-color:var(--red)" onclick="resetCardsToDefault()">Reset</button>
+        <button class="modal-btn secondary" onclick="closeModal('modalEditCards')">Cancel</button>
+        <button class="modal-btn primary" onclick="saveCardNames()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Feedback -->
+<div class="modal-backdrop" id="modalFeedback">
+  <div class="modal">
+    <div class="modal-head"><span>💬 Beta Feedback</span><button class="modal-close" onclick="closeModal('modalFeedback')">Close</button></div>
+    <div class="modal-body">
+      <p style="font-size:0.82rem;color:var(--muted);font-style:italic;line-height:1.5">Thank you for testing Mystery Clues Tracker Beta! Your feedback shapes the final app.</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:0.78rem;color:var(--gold-dk);font-weight:600">1. Did the tracker work correctly during your game?</div>
+        <div style="display:flex;gap:8px">
+          <button class="modal-btn primary fb-q1-btn" data-val="Yes" style="font-size:0.8rem;padding:7px" onclick="setFeedback('q1','Yes')">✅ Yes</button>
+          <button class="modal-btn secondary fb-q1-btn" data-val="Mostly" style="font-size:0.8rem;padding:7px" onclick="setFeedback('q1','Mostly')">⚠️ Mostly</button>
+          <button class="modal-btn danger fb-q1-btn" data-val="No" style="font-size:0.8rem;padding:7px" onclick="setFeedback('q1','No')">❌ No</button>
+        </div>
+        <div style="font-size:0.78rem;color:var(--gold-dk);font-weight:600">2. Was anything confusing or hard to use?</div>
+        <textarea id="fbq2" rows="2" style="width:100%;font-family:'Lora',serif;font-size:0.85rem;padding:7px;border:1.5px solid var(--border);border-radius:var(--radius);background:#1a1410;color:var(--text);resize:none;outline:none;" placeholder="Describe anything confusing…"></textarea>
+        <div style="font-size:0.78rem;color:var(--gold-dk);font-weight:600">3. What one feature would make this a must-have?</div>
+        <textarea id="fbq3" rows="2" style="width:100%;font-family:'Lora',serif;font-size:0.85rem;padding:7px;border:1.5px solid var(--border);border-radius:var(--radius);background:#1a1410;color:var(--text);resize:none;outline:none;" placeholder="Your most wanted feature…"></textarea>
+        <div style="font-size:0.78rem;color:var(--gold-dk);font-weight:600">4. Any other comments?</div>
+        <textarea id="fbq4" rows="2" style="width:100%;font-family:'Lora',serif;font-size:0.85rem;padding:7px;border:1.5px solid var(--border);border-radius:var(--radius);background:#1a1410;color:var(--text);resize:none;outline:none;" placeholder="Anything else…"></textarea>
+      </div>
+      <div class="modal-btn-row" style="margin-top:4px">
+        <button class="modal-btn secondary" onclick="closeModal('modalFeedback')">Cancel</button>
+        <button class="modal-btn primary" onclick="submitFeedback()">Send Feedback</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Save Template -->
+<div class="modal-backdrop" id="modalSaveTemplate">
+  <div class="modal">
+    <div class="modal-head"><span>💾 Save Card Template</span><button class="modal-close" onclick="closeModal('modalSaveTemplate')">Close</button></div>
+    <div class="modal-body">
+      <p style="font-size:0.82rem;color:var(--muted);font-style:italic">Name this card set so you can reload it later.</p>
+      <div class="modal-name-row">
+        <input class="modal-input" id="templateNameInput" type="text" placeholder="e.g. Classic, Clue Jr, My Game…" maxlength="13">
+      </div>
+      <div class="modal-btn-row">
+        <button class="modal-btn secondary" onclick="document.getElementById('templateNameInput').value=''">Clear</button>
+        <button class="modal-btn primary" onclick="confirmSaveTemplate()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Summary Picker -->
+<div class="modal-backdrop" id="modalSummary">
+  <div class="modal">
+    <div class="modal-head"><span id="summaryModalTitle">∑ Summary</span><button class="modal-close" onclick="closeModal('modalSummary')">Close</button></div>
+    <div class="modal-body">
+      <p style="font-size:0.78rem;color:var(--muted);font-style:italic">Set the summary indicator for this card row:</p>
+      <div class="modal-btn-row">
+        <button class="modal-btn primary" style="background:#2a2218;border-color:#8b6a38;color:var(--text);font-weight:700" onclick="setSummary('check')">✕ Has card</button>
+        <button class="modal-btn primary" style="background:#2a2218;border-color:#8b6a38;color:#e8b060;font-weight:700" onclick="setSummary('cross')">⭐ Solution?</button>
+        <button class="modal-btn secondary" id="summaryClearBtn" onclick="clearSummary(this)">Clear</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Player Out -->
+<div class="modal-backdrop" id="modalPlayerOut">
+  <div class="modal">
+    <div class="modal-head"><span>Player Out</span><button class="modal-close" onclick="closeModal('modalPlayerOut')">Close</button></div>
+    <div class="modal-body">
+      <p style="font-size:0.85rem;color:var(--muted);font-style:italic">Who is leaving the game?</p>
+      <div class="private-cards" id="playerOutList"></div>
+      <div class="modal-btn-row" style="margin-top:4px">
+        <button class="modal-btn secondary" onclick="closeModal('modalPlayerOut')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Welcome Back -->
+<div class="modal-backdrop" id="modalWelcomeBack">
+  <div class="modal">
+    <div class="modal-head"><span>🔍 Welcome Back!</span></div>
+    <div class="modal-body">
+      <p style="font-size:0.88rem;color:var(--text)">You have a saved game. What would you like to do?</p>
+      <div class="modal-btn-row" style="flex-direction:column;gap:8px">
+        <button class="modal-btn primary" style="width:100%" onclick="continueGame()">▶ Continue Game</button>
+        <button class="modal-btn secondary" style="width:100%" onclick="closeModal('modalWelcomeBack');startNewGame(true)">New Game — Same Players</button>
+        <button class="modal-btn secondary" style="width:100%" onclick="closeModal('modalWelcomeBack');startNewGame(false)">New Game — New Players</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Custom Confirm -->
+<div class="modal-backdrop" id="modalConfirm">
+  <div class="modal">
+    <div class="modal-head"><span id="confirmTitle">Confirm</span></div>
+    <div class="modal-body">
+      <p id="confirmMessage" style="font-size:0.92rem;color:var(--text)"></p>
+      <div class="modal-btn-row">
+        <button class="modal-btn secondary" onclick="confirmRespond(false)">Cancel</button>
+        <button class="modal-btn primary" id="confirmOkBtn" onclick="confirmRespond(true)">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Returning Players -->
+<div class="modal-backdrop" id="modalReturningPlayers">
+  <div class="modal">
+    <div class="modal-head"><span>🔍 Welcome Back!</span></div>
+    <div class="modal-body">
+      <p style="font-size:0.88rem;color:var(--text)">No active game found. Use your saved player names?</p>
+      <div class="modal-btn-row" style="flex-direction:column;gap:8px">
+        <button class="modal-btn primary" style="width:100%" onclick="closeModal('modalReturningPlayers')">Same Players</button>
+        <button class="modal-btn secondary" style="width:100%" onclick="closeModal('modalReturningPlayers');clearAllPlayers()">New Players</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: New Game -->
+<div class="modal-backdrop" id="modalNewGame">
+  <div class="modal">
+    <div class="modal-head"><span>New Game</span><button class="modal-close" onclick="closeModal('modalNewGame')">Close</button></div>
+    <div class="modal-body">
+      <p style="font-size:0.88rem;color:var(--text)">Start a new game? All card and turn data will be cleared.</p>
+      <div class="modal-btn-row">
+        <button class="modal-btn secondary" onclick="closeModal('modalNewGame')">Cancel</button>
+        <button class="modal-btn secondary" id="newGameNewBtn" onclick="twoTap('newGameNew',this,()=>startNewGame(false),'Sure?')">New Players</button>
+        <button class="modal-btn primary" id="newGameSameBtn" onclick="twoTap('newGameSame',this,()=>startNewGame(true),'Sure?')">Same Players</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Cell Edit -->
+<div class="modal-backdrop" id="modalCellEdit">
+  <div class="modal">
+    <div class="modal-head"><span id="cellEditTitle">Cell Note</span><button class="modal-close" onclick="closeModal('modalCellEdit')">Close</button></div>
+    <div class="modal-body">
+      <p style="font-size:0.82rem;color:var(--muted);font-style:italic">Add a short note to this cell (appears bottom-right).</p>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+        <input type="text" id="customNoteInput" maxlength="6" placeholder="e.g. ?" style="flex:1;font-family:'Lora',serif;font-size:0.9rem;padding:5px 8px;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text);outline:none;">
+        <button onclick="saveCustomNote()" style="font-family:'Lora',serif;font-size:0.8rem;padding:6px 12px;border-radius:var(--radius);background:var(--gold-dk);color:#f5ede0;border:none;cursor:pointer;">Set</button>
+        <button onclick="clearCustomNote()" style="font-family:'Lora',serif;font-size:0.8rem;padding:6px 12px;border-radius:var(--radius);background:transparent;color:var(--gold-dk);border:1px solid var(--border);cursor:pointer;">Clear</button>
+      </div>
+      <div class="modal-btn-row" style="margin-top:8px">
+        <button class="modal-btn primary" onclick="closeModal('modalCellEdit')">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: I Showed -->
+<div class="modal-backdrop" id="modalIShowed">
+  <div class="modal">
+    <div class="modal-head"><span>🔒 Which card did you show?</span><button class="modal-close" onclick="closeModal('modalIShowed')">Close</button></div>
+    <div class="modal-body">
+      <p style="font-size:0.85rem;color:var(--text);font-style:normal;font-weight:500">Tap the card you want to show, when Green, Confirm.</p>
+      <p style="font-size:0.82rem;color:var(--muted);font-style:italic" id="iShowedHint"></p>
+      <div class="private-cards" id="iShowedCards"></div>
+      <div class="modal-btn-row">
+        <button class="modal-btn secondary" onclick="closeModal('modalIShowed')">Cancel</button>
+        <button class="modal-btn primary" onclick="confirmIShowed()">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Shown To Me -->
+<div class="modal-backdrop" id="modalShownMe">
+  <div class="modal">
+    <div class="modal-head"><span>🔒 What were you shown?</span><button class="modal-close" onclick="closeModal('modalShownMe')">Close</button></div>
+    <div class="modal-body">
+      <p style="font-size:0.85rem;color:var(--text);font-style:normal;font-weight:500">Tap the card you were shown, when Green, Confirm.</p>
+      <p style="font-size:0.82rem;color:var(--muted);font-style:italic" id="shownMeHint"></p>
+      <div class="private-cards" id="shownMeCards"></div>
+      <div class="modal-btn-row">
+        <button class="modal-btn secondary" onclick="closeModal('modalShownMe')">Cancel</button>
+        <button class="modal-btn primary" onclick="confirmShownMe()">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══ CONSTANTS ═══
+let SUSPECTS=["Suspect 1","Suspect 2","Suspect 3","Suspect 4","Suspect 5","Suspect 6"];
+let WEAPONS =["Weapon 1","Weapon 2","Weapon 3","Weapon 4","Weapon 5","Weapon 6"];
+let ROOMS   =["Room 1","Room 2","Room 3","Room 4","Room 5","Room 6","Room 7","Room 8","Room 9"];
+const allCards=()=>[...SUSPECTS,...WEAPONS,...ROOMS];
+const ALIASES={"green":"Mr. Green","mustard":"Col. Mustard","orchid":"Dr. Orchid","peacock":"Miss Peacock","plum":"Prof. Plum","scarlet":"Ms. Scarlet"};
+const WEAPON_ALIASES={"leadpipe":"Lead Pipe","lead pipe":"Lead Pipe","lead":"Lead Pipe"};
+
+// ═══ STATE ═══
+let players=['','','','','',''],meSlot=-1,myCards=new Set();
+// cellState[card][col] = [{type,turn,extra}]
+let cellState={};
+let cellNotes={}; // cellNotes[card_col] = string
+let summaryOverrides={}; // summaryOverrides[card] = 'check'|'cross'|null (manual override)
+let turnCount=1,turnStep=0,activePlayers=[],gamePhase='asking';
+let pendingCards=[],pendingAskerCol=-1;
+let editingSlot=-1,editingCardCat=null;
+let editingCellCard=null,editingCellCol=-1;
+let iShowedSelected=null,shownMeSelected=null,iShowedAskerCol=-1,shownMeShowerCol=-1;
+
+// ═══ INIT ═══
+function init(){
+  allCards().forEach(card=>{cellState[card]={};for(let i=0;i<6;i++)cellState[card][i]=[];});
+  summaryOverrides={};
+  cellNotes={};
+  buildPlayerGrid();buildCardPicker();loadState();updateSetupCounter();buildTemplateBar();updateTemplateHint();
+}
+
+// ═══ MARK HELPERS ═══
+function addMark(card,col,type,extra){
+  if(!cellState[card])cellState[card]={};
+  if(!cellState[card][col])cellState[card][col]=[];
+  // For cross and check, never duplicate regardless of turn number
+  if(type==='cross'||type==='check'){
+    if(cellState[card][col].find(m=>m.type===type)) return;
+  } else {
+    if(cellState[card][col].find(m=>m.type===type&&m.turn===turnCount)) return;
+  }
+  cellState[card][col].push({type,turn:turnCount,extra:extra||''});
+  renderCell(card,col);
+  renderSummary(card);
+}
+function removeMark(card,col,idx){
+  if(cellState[card]&&cellState[card][col])cellState[card][col].splice(idx,1);
+  renderCell(card,col);saveState();
+}
+function clearCellMarks(card,col){
+  if(cellState[card])cellState[card][col]=[];
+  renderCell(card,col);saveState();
+}
+// Wipe all marks for a given turn number
+function wipeTurn(t){
+  allCards().forEach(card=>{
+    for(let i=0;i<6;i++){
+      if(cellState[card]&&cellState[card][i])
+        cellState[card][i]=cellState[card][i].filter(m=>m.turn!==t);
+    }
+  });
+}
+
+// ═══ PLAYER SETUP ═══
+function buildPlayerGrid(){
+  const g=document.getElementById('playerGrid');g.innerHTML='';
+  for(let i=0;i<6;i++){
+    const s=document.createElement('div');s.className='player-slot';s.id='slot'+i;s.onclick=()=>openPlayerModal(i);
+    s.innerHTML=`<div class="slot-lbl">Seat ${i+1}</div><div class="slot-name" id="sn${i}"></div><div class="slot-badge" id="sb${i}"></div>`;
+    g.appendChild(s);
+  }refreshSlots();
+}
+function refreshSlots(){
+  for(let i=0;i<6;i++){
+    const s=document.getElementById('slot'+i),n=document.getElementById('sn'+i),b=document.getElementById('sb'+i);if(!s)continue;
+    s.className='player-slot'+(meSlot===i?' is-me':players[i]?' has-name':'');
+    n.textContent=meSlot===i?'Me':(players[i]||'—');b.textContent=meSlot===i?'★ Me':'';
+  }
+}
+function openPlayerModal(idx){
+  editingSlot=idx;
+  document.getElementById('modalPlayerTitle').textContent=`Seat ${idx+1}`;
+  document.getElementById('playerNameInput').value=meSlot===idx?'':(players[idx]||'');
+  document.getElementById('meCheck').checked=meSlot===idx;
+  openModal('modalPlayer');
+  const inp=document.getElementById('playerNameInput');
+  inp.removeAttribute('autofocus');
+  void inp.offsetWidth;
+  inp.setAttribute('autofocus','');
+  setTimeout(()=>{inp.focus();inp.click();},100);
+}
+function toggleMeCheck(){const cb=document.getElementById('meCheck');cb.checked=!cb.checked;if(cb.checked)document.getElementById('playerNameInput').value='';}
+function savePlayerName(){
+  const isMe=document.getElementById('meCheck').checked,name=document.getElementById('playerNameInput').value.trim();
+  if(isMe){meSlot=editingSlot;players[editingSlot]='';}
+  else{if(meSlot===editingSlot)meSlot=-1;players[editingSlot]=name;}
+  closeModal('modalPlayer');refreshSlots();updateSetupCounter();saveState();
+}
+function clearPlayerSlot(){
+  // Only clear the text input — popup stays open
+  document.getElementById('playerNameInput').value='';
+  document.getElementById('playerNameInput').focus();
+}
+
+// ═══ CARD PICKER ═══
+function buildCardPicker(){
+  const c=document.getElementById('cardPicker');
+  c.innerHTML='<p class="setup-hint" style="margin:1px 0 0px;padding-bottom:3px">Tap each card you are holding.</p>';
+  [{label:'— Suspects —',cls:'suspects',cards:SUSPECTS,key:'suspects'},
+   {label:'— Weapons —',cls:'weapons',cards:WEAPONS,key:'weapons'},
+   {label:'— Rooms —',cls:'rooms',cards:ROOMS,key:'rooms'}].forEach((cat,idx)=>{
+    const div=document.createElement('div');div.className='card-section';
+    const hdr=document.createElement('div');hdr.className=`cat-hdr ${cat.cls}`;
+    hdr.innerHTML=`<span>${cat.label}</span><span style="display:flex;align-items:center;gap:4px;font-size:0.65rem;font-weight:400;font-style:italic;opacity:0.85">Rename →<button class="cat-edit-btn" onclick="openEditCards('${cat.key}')">✏ Edit</button></span>`;
+    div.appendChild(hdr);
+    const chips=document.createElement('div');chips.className='card-chips';chips.id='chips_'+cat.key;
+    cat.cards.forEach(card=>chips.appendChild(makeChip(card)));
+    div.appendChild(chips);c.appendChild(div);
+  });
+}
+function makeChip(card){
+  const ch=document.createElement('div');
+  ch.className='card-chip'+(myCards.has(card)?' selected':'');
+  ch.textContent=card;ch.id='chip_'+card.replace(/\W/g,'_');
+  ch.onclick=()=>toggleMyCard(card,ch);return ch;
+}
+function toggleMyCard(card,chip){
+  if(myCards.has(card)){myCards.delete(card);chip.classList.remove('selected');}
+  else{myCards.add(card);chip.classList.add('selected');}
+  updateSetupCounter();saveState();
+}
+function updateSetupCounter(){
+  const hasMe=meSlot>=0,cc=myCards.size,pc=players.filter(p=>p.trim()!=='').length+(hasMe?1:0);
+  let msg='';
+  if(!hasMe&&pc===0) msg='Tap a seat to add players';
+  else if(!hasMe) msg='Check "This is Me" on your seat';
+  else if(cc<3) msg=` card${cc!==1?'s':''} selected - need ${3-cc} more`;
+  else msg=`${cc} card${cc!==1?'s':''} selected · ${pc} player${pc!==1?'s':''}`;
+  // Update header Play button state
+  const ready=hasMe&&cc>=3&&pc>=3;
+  const playBtn=document.getElementById('btnPlayHeader');
+  if(playBtn){
+    playBtn.style.display=ready?'inline-block':'none';
+    playBtn.style.pointerEvents=ready?'auto':'none';
+    playBtn.classList.remove('inactive');
+  }
+}
+
+// ═══ CARD TEMPLATES ═══
+function loadTemplates(){
+  try{return JSON.parse(localStorage.getItem('mctTemplates'))||[];}catch(e){return[];}
+}
+function saveTemplates(tmpl){
+  localStorage.setItem('mctTemplates',JSON.stringify(tmpl));
+}
+function buildTemplateBar(){
+  const bar=document.getElementById('templateBar');if(!bar)return;
+  bar.innerHTML='';
+  updateTemplateHint();
+  const templates=loadTemplates();
+  updateTemplateHint();
+  if(templates.length===0){bar.innerHTML='';return;}
+  templates.forEach((t,idx)=>{
+    const chip=document.createElement('div');chip.className='template-chip';
+    chip.textContent=t.name;
+    let pressTimer=null;
+    let longPressFired=false;
+    chip.addEventListener('touchstart',(e)=>{
+      longPressFired=false;
+      pressTimer=setTimeout(()=>{
+        longPressFired=true;
+        deleteTemplate(idx);
+      },400);
+    },{passive:true});
+    chip.addEventListener('touchend',(e)=>{
+      clearTimeout(pressTimer);
+      if(!longPressFired){
+        showConfirm('Load Template',`Load "${t.name}"? This will replace current card names.`,'Load',(ok)=>{if(ok)loadTemplate(idx);});
+      }
+    },{passive:true});
+    chip.addEventListener('touchmove',()=>{
+      clearTimeout(pressTimer);
+      longPressFired=true;
+    },{passive:true});
+    bar.appendChild(chip);
+  });
+}
+function openSaveTemplateModal(){
+  const templates=loadTemplates();
+  if(templates.length>=4){
+    updateTemplateHint();
+    showStatus('Maximum 4 templates reached — delete one to save a new one');
+    return;
+  }
+  document.getElementById('templateNameInput').value='';
+  document.getElementById('templateNameInput').placeholder='e.g. Classic, Clue Jr, My Game…';
+  openModal('modalSaveTemplate');
+}
+
+function updateTemplateHint(){
+  const templates=loadTemplates();
+  const hint=document.getElementById('templateHint');
+  if(!hint)return;
+  if(templates.length>=4){
+    hint.textContent='You have reached the max of 4';
+  } else if(templates.length===0){
+    hint.textContent='← Tap to save card names: max 4 — No saved templates';
+  } else {
+    hint.textContent='← Tap to save card names: max 4';
+  }
+}
+function confirmSaveTemplate(){
+  const name=document.getElementById('templateNameInput').value.trim();
+  if(!name){
+    document.getElementById('templateNameInput').placeholder='Please enter a name first';
+    return;
+  }
+  const templates=loadTemplates();
+  if(templates.length>=4){showStatus('Maximum 4 templates — delete one first');return;}
+  if(templates.find(t=>t.name.toLowerCase()===name.toLowerCase())){
+    document.getElementById('templateNameInput').value='';
+    document.getElementById('templateNameInput').placeholder='That name is already used!';
+    return;
+  }
+  templates.push({name,suspects:[...SUSPECTS],weapons:[...WEAPONS],rooms:[...ROOMS]});
+  saveTemplates(templates);
+  closeModal('modalSaveTemplate');
+  buildTemplateBar();
+  showStatus(`Template "${name}" saved`);
+}
+function loadTemplate(idx){
+  const templates=loadTemplates();
+  const t=templates[idx];if(!t)return;
+  SUSPECTS=[...t.suspects];
+  WEAPONS=[...t.weapons];
+  ROOMS=[...t.rooms];
+  // Clear my cards since card names changed
+  myCards=new Set();
+  buildCardPicker();
+  updateSetupCounter();
+  saveState();
+  showStatus(`Loaded template "${t.name}"`);
+}
+function clearCardNames(){
+  // Clear all inputs in the edit list
+  document.querySelectorAll('#cardEditList .card-edit-input').forEach(inp=>{
+    inp.value='';
+  });
+}
+function deleteTemplate(idx){
+  const templates=loadTemplates();
+  const name=templates[idx].name;
+  const bar=document.getElementById('templateBar');
+  const chip=bar?bar.children[idx]:null;
+  if(!chip)return;
+  twoTap(`tmpl_${idx}`,chip,()=>{
+    templates.splice(idx,1);
+    saveTemplates(templates);
+    bar.innerHTML='';
+    buildTemplateBar();
+    showStatus(`Template "${name}" deleted`);
+  },'Delete?');
+}
+function openEditCards(key){
+  editingCardCat=key;
+  const cards=key==='suspects'?SUSPECTS:key==='weapons'?WEAPONS:ROOMS;
+  document.getElementById('editCardsTitle').textContent='Edit '+(key.charAt(0).toUpperCase()+key.slice(1));
+  const list=document.getElementById('cardEditList');list.innerHTML='';
+  cards.forEach((card,i)=>{
+    const row=document.createElement('div');row.className='card-edit-row';
+    const inp=document.createElement('input');
+    inp.className='card-edit-input';
+    inp.maxLength=13;
+    const isPlaceholder=card.match(/^(Suspect|Weapon|Room) \d+$/);
+    inp.placeholder=isPlaceholder?card:'';
+    inp.value=isPlaceholder?'':card;
+    inp.dataset.idx=i;
+    inp.setAttribute('autocomplete','off');
+    inp.setAttribute('autocorrect','off');
+    inp.setAttribute('autocapitalize','words');
+    inp.setAttribute('inputmode','text');
+    row.appendChild(inp);list.appendChild(row);
+  });
+  openModal('modalEditCards');
+}
+function resetCardsToDefault(){
+  const btn=document.querySelector('#modalEditCards .modal-btn[onclick="resetCardsToDefault()"]');
+  if(!btn)return;
+  const defaults={
+    suspects:["Suspect 1","Suspect 2","Suspect 3","Suspect 4","Suspect 5","Suspect 6"],
+    weapons:["Weapon 1","Weapon 2","Weapon 3","Weapon 4","Weapon 5","Weapon 6"],
+    rooms:["Room 1","Room 2","Room 3","Room 4","Room 5","Room 6","Room 7","Room 8","Room 9"]
+  };
+  twoTap('resetCards',btn,()=>{
+    const def=defaults[editingCardCat];
+    if(editingCardCat==='suspects')SUSPECTS=[...def];
+    else if(editingCardCat==='weapons')WEAPONS=[...def];
+    else ROOMS=[...def];
+    closeModal('modalEditCards');
+    buildCardPicker();
+    showStatus('Cards reset to default');
+  },'Reset?');
+}
+function saveCardNames(){
+  const inputs=document.querySelectorAll('#cardEditList .card-edit-input');
+  const arr=editingCardCat==='suspects'?SUSPECTS:editingCardCat==='weapons'?WEAPONS:ROOMS;
+  inputs.forEach((inp,i)=>{
+    const n=inp.value.trim()||inp.placeholder.trim();
+    if(n&&n!==arr[i]){if(myCards.has(arr[i])){myCards.delete(arr[i]);myCards.add(n);}arr[i]=n;}
+  });
+  closeModal('modalEditCards');buildCardPicker();
+  myCards.forEach(card=>{const ch=document.getElementById('chip_'+card.replace(/\W/g,'_'));if(ch)ch.classList.add('selected');});
+  saveState();
+}
+
+// ═══ START GAME ═══
+function startGame(){
+  activePlayers=[];
+  for(let i=0;i<6;i++){if(i===meSlot||players[i].trim()!=='')activePlayers.push(i);}
+  allCards().forEach(card=>{cellState[card]={};for(let i=0;i<6;i++)cellState[card][i]=[];});
+  turnCount=1;turnStep=0;pendingCards=[];pendingAskerCol=-1;gamePhase='asking';cellNotes={};summaryOverrides={};
+  // Apply setup marks at turn 0 — undo never touches turn 0
+  turnCount=0;
+  allCards().forEach(card=>{
+    if(myCards.has(card)){
+      addMark(card,meSlot,'check');
+      activePlayers.forEach(col=>{if(col!==meSlot)addMark(card,col,'cross');});
+    } else {
+      addMark(card,meSlot,'cross');
+    }
+  });
+  turnCount=1;
+  buildTrackerTable();showScreen('screenPlay');
+  setHeaderForPlay();
+  renderTurnBar();updateMicHint();saveState();
+}
+
+// ═══ TABLE ═══
+function buildTrackerTable(){
+  const table=document.getElementById('trackerTable');table.innerHTML='';
+  const thead=document.createElement('thead'),hr=document.createElement('tr');
+  const cor=document.createElement('th');cor.className='corner-th';cor.textContent='Card';hr.appendChild(cor);
+  // Summary column header
+  const sumTh=document.createElement('th');sumTh.className='summary-th';sumTh.textContent='∑';hr.appendChild(sumTh);
+  for(let i=0;i<6;i++){
+    const th=document.createElement('th');
+    th.className='player-th'+(i===meSlot?' me-th':'')+(activePlayers.includes(i)?'':' inactive-th');
+    th.id='pth'+i;th.textContent=i===meSlot?'Me':(players[i]||'P'+(i+1));
+    th.onclick=()=>onHeaderClick(i);hr.appendChild(th);
+  }
+  thead.appendChild(hr);table.appendChild(thead);
+  const tbody=document.createElement('tbody');
+  [{lbl:'— Suspects —',cls:'cat-suspects',cards:SUSPECTS},
+   {lbl:'— Weapons —',cls:'cat-weapons',cards:WEAPONS},
+   {lbl:'— Rooms —',cls:'cat-rooms',cards:ROOMS}].forEach(sec=>{
+    const cr=document.createElement('tr');cr.className='cat-row';
+    const td=document.createElement('td');td.colSpan=8;td.className=sec.cls;td.textContent=sec.lbl;
+    cr.appendChild(td);tbody.appendChild(cr);
+    sec.cards.forEach(card=>{
+      const row=document.createElement('tr');
+      row.id=`row_${card.replace(/\W/g,'_')}`;
+      const th=document.createElement('th');
+      th.className='card-th';
+      th.textContent=card;
+      row.appendChild(th);
+      // Summary cell
+      const sumTd=document.createElement('td');
+      sumTd.className='summary-cell';
+      sumTd.id=`sum_${card.replace(/\W/g,'_')}`;
+      sumTd.onclick=()=>openSummaryPicker(card);
+      row.appendChild(sumTd);
+      for(let i=0;i<6;i++){
+        const td=document.createElement('td');
+        td.className='data-cell'+(i===meSlot?' me-cell':'')+(activePlayers.includes(i)?'':' inactive-cell');
+        td.id=`c_${card.replace(/\W/g,'_')}_${i}`;
+        td.onclick=()=>onCellClick(card,i);
+        const inner=document.createElement('div');inner.className='cell-inner';
+        td.appendChild(inner);row.appendChild(td);
+      }
+      tbody.appendChild(row);
+    });
+  });
+  table.appendChild(tbody);renderAllCells();
+}
+
+function renderAllCells(){allCards().forEach(card=>{for(let i=0;i<6;i++)renderCell(card,i);renderSummary(card);});}
+
+function renderSummary(card){
+  const el=document.getElementById(`sum_${card.replace(/\W/g,'_')}`);if(!el)return;
+  el.className='summary-cell';el.textContent='';
+  // Manual override only in Beta
+  if(summaryOverrides[card]==='check'){
+    el.classList.add('sum-check');
+    el.style.background='#1e1a14';
+    el.innerHTML='<span style="color:#6a6060;font-size:9px;font-weight:700">✕</span>';
+    return;
+  }
+  if(summaryOverrides[card]==='cross'){
+    el.classList.add('sum-cross');
+    el.innerHTML='<span style="color:#e8b060;font-size:11px">⭐</span>';
+    return;
+  }
+}
+
+let editingSummaryCard=null;
+function openSummaryPicker(card){
+  editingSummaryCard=card;
+  document.getElementById('summaryModalTitle').textContent=`∑ ${card}`;
+  openModal('modalSummary');
+}
+function setSummary(val){
+  if(!editingSummaryCard)return;
+  if(val===null) delete summaryOverrides[editingSummaryCard];
+  else summaryOverrides[editingSummaryCard]=val;
+  renderSummary(editingSummaryCard);
+  closeModal('modalSummary');
+  saveState();
+}
+function clearSummary(btn){
+  twoTap('sumClear',btn,()=>{
+    if(editingSummaryCard){
+      delete summaryOverrides[editingSummaryCard];
+      renderSummary(editingSummaryCard);
+      closeModal('modalSummary');
+      saveState();
+    }
+  },'Sure?');
+}
+
+function renderCell(card,col){
+  const el=document.getElementById(`c_${card.replace(/\W/g,'_')}_${col}`);if(!el)return;
+  const marks=(cellState[card]&&cellState[card][col])||[];
+  const inner=el.querySelector('.cell-inner');if(!inner)return;
+  inner.innerHTML='';
+  const hasCheck=marks.some(m=>m.type==='check'),hasCross=marks.some(m=>m.type==='cross');
+  el.classList.toggle('conflict',hasCheck&&hasCross);
+  // No Frills — show all marks but NO turn number superscripts
+  marks.forEach(m=>{
+    const sp=document.createElement('span');sp.className='sym';
+    if(m.type==='check')     {sp.classList.add('sym-check'); sp.textContent='✅';}
+    else if(m.type==='cross')    {sp.classList.add('sym-cross'); sp.textContent='❌';}
+    else if(m.type==='asked')    {sp.classList.add('sym-asked'); sp.textContent='?';}
+    else if(m.type==='showed')   {sp.classList.add('sym-showed');sp.textContent='!';}
+    else if(m.type==='shownme')  {sp.classList.add('sym-shownme');sp.textContent=m.extra||'?';}
+    else if(m.type==='ishowed')  {sp.classList.add('sym-ishowed');sp.textContent='Me';}
+    inner.appendChild(sp);
+  });
+  // Custom note in bottom-right
+  const noteKey=`${card}_${col}`;
+  let noteEl=el.querySelector('.cell-custom');
+  if(cellNotes[noteKey]){
+    if(!noteEl){noteEl=document.createElement('div');noteEl.className='cell-custom';el.appendChild(noteEl);}
+    noteEl.textContent=cellNotes[noteKey];
+  } else {
+    if(noteEl) noteEl.remove();
+  }
+}
+
+// ═══ CELL EDIT MODAL ═══
+function onCellClick(card,col){
+  if(!activePlayers.includes(col))return;
+  // During asking phase — handle game input for asker's column
+  if(gamePhase==='asking'&&col===currentCol()){
+    handleAskingTap(card,col);return;
+  }
+  // Any other tap — open cell editor
+  openCellEdit(card,col);
+}
+
+function openCellEdit(card,col){
+  editingCellCard=card;editingCellCol=col;
+  document.getElementById('cellEditTitle').textContent=`${card} — ${pName(col)}`;
+  const noteKey=`${card}_${col}`;
+  const noteInput=document.getElementById('customNoteInput');
+  if(noteInput) noteInput.value=cellNotes[noteKey]||'';
+  openModal('modalCellEdit');
+}
+
+function saveCustomNote(){
+  const val=document.getElementById('customNoteInput').value.trim();
+  const noteKey=`${editingCellCard}_${editingCellCol}`;
+  if(val) cellNotes[noteKey]=val;
+  else delete cellNotes[noteKey];
+  renderCell(editingCellCard,editingCellCol);
+  saveState();
+}
+
+function clearCustomNote(){
+  const noteKey=`${editingCellCard}_${editingCellCol}`;
+  delete cellNotes[noteKey];
+  document.getElementById('customNoteInput').value='';
+  renderCell(editingCellCard,editingCellCol);
+  saveState();
+}
+
+// ═══ TURN / ASKING FLOW ═══
+function currentCol(){return activePlayers[turnStep%activePlayers.length];}
+function currentName(){const c=currentCol();return c===meSlot?'Me':(players[c]||'P'+(c+1));}
+function pName(col){return col===meSlot?'Me':(players[col]||'P'+(col+1));}
+function pInitial(col){return pName(col).charAt(0).toUpperCase();}
+
+function renderTurnBar(){
+  const isMe=currentCol()===meSlot;
+  const name=currentName();
+  const stage=gamePhase==='asking'?'is thinking 🤔':gamePhase==='showing'?'is waiting ⏳':'showed — tap Turn →';
+  document.getElementById('turnLabel').textContent=`Turn ${turnCount} — ${name} ... ${stage}`;
+  const hint=gamePhase==='asking'
+    ?(isMe?'Tap three cards in your column':'Tap '+name+"'s column for each guessed card")
+    :gamePhase==='showing'
+    ?(isMe?'Tap their column header or Next if nobody shows':'Tap the column header of who showed')
+    :'Tap Turn → to continue';
+  document.getElementById('stageHint').textContent=hint;
+  for(let i=0;i<6;i++){
+    const th=document.getElementById('pth'+i);if(!th)continue;
+    th.classList.remove('active-asker');
+    if(i===currentCol()&&gamePhase==='asking')th.classList.add('active-asker');
+  }
+    const canUndo=turnCount>1||(turnCount===1&&(gamePhase!=='asking'||pendingCards.length>0));
+    const ub=document.getElementById('undoBtn');
+    ub.style.opacity=canUndo?'1':'0.3';
+    ub.style.pointerEvents=canUndo?'auto':'none';
+
+  highlightCells();
+}
+
+function highlightCells(){
+  document.querySelectorAll('.data-cell').forEach(c=>c.classList.remove('tap-asking','tap-selected'));
+  if(gamePhase==='asking'){
+    const col=currentCol();
+    allCards().forEach(card=>{
+      const el=document.getElementById(`c_${card.replace(/\W/g,'_')}_${col}`);
+      if(el&&!el.classList.contains('inactive-cell')){
+        if(pendingCards.includes(card))el.classList.add('tap-selected');
+        else el.classList.add('tap-asking');
+      }
+    });
+  }
+}
+
+function getCategory(card){
+  if(SUSPECTS.includes(card)) return 'suspect';
+  if(WEAPONS.includes(card))  return 'weapon';
+  return 'room';
+}
+
+function handleAskingTap(card,col){
+  if(pendingCards.includes(card)){
+    // Deselect — remove this turn's asked mark
+    pendingCards=pendingCards.filter(c=>c!==card);
+    if(cellState[card]&&cellState[card][col])
+      cellState[card][col]=cellState[card][col].filter(m=>!(m.type==='asked'&&m.turn===turnCount));
+    renderCell(card,col);
+  } else {
+    // Check if same category already selected — if so, deselect it first
+    const cat=getCategory(card);
+    const existing=pendingCards.find(c=>getCategory(c)===cat);
+    if(existing){
+      // Remove the existing card in this category
+      pendingCards=pendingCards.filter(c=>c!==existing);
+      if(cellState[existing]&&cellState[existing][col])
+        cellState[existing][col]=cellState[existing][col].filter(m=>!(m.type==='asked'&&m.turn===turnCount));
+      renderCell(existing,col);
+    }
+    pendingCards.push(card);
+    addMark(card,col,'asked');
+  }
+  if(pendingCards.length===3){
+    pendingAskerCol=col;
+    gamePhase='showing';
+    renderTurnBar();
+    const isMe=col===meSlot;
+    setVoiceText(isMe?'Say who showed you, or tap their column header':'Tap the column header of who showed',false);
+  } else {
+    const cats=pendingCards.map(getCategory);
+    const missing=['suspect','weapon','room'].filter(c=>!cats.includes(c));
+    showStatus(`${pendingCards.length}/3 — need: ${missing.join(', ')}`);
+    highlightCells();
+  }
+}
+
+function onHeaderClick(col){
+  if(!activePlayers.includes(col))return;
+  if(gamePhase!=='showing'){showStatus('Select 3 cards first, then tap the shower column header');return;}
+  if(col===pendingAskerCol||(pendingAskerCol<0&&col===currentCol())){
+    showStatus(`${pName(col)} is asking — cannot also show`);
+    return;
+  }
+  if(pendingCards.length===3){
+    const askerCol=pendingAskerCol>=0?pendingAskerCol:currentCol();
+    const ai=activePlayers.indexOf(askerCol);
+    let firstEligible=-1;
+    for(let i=1;i<activePlayers.length;i++){
+      const c=activePlayers[(ai+i)%activePlayers.length];
+      if(c===askerCol)continue;
+      const hasCheck=pendingCards.some(card=>
+        cellState[card]&&cellState[card][c]&&cellState[card][c].some(m=>m.type==='check')
+      );
+      if(hasCheck){firstEligible=c;break;}
+    }
+    if(firstEligible>=0&&col!==firstEligible){
+      showStatus(`${pName(firstEligible)} must show first — they have a confirmed card`);
+      return;
+    }
+  }
+  commitShower(col);
+}
+
+function commitShower(showerCol){
+  const askerCol=pendingAskerCol>=0?pendingAskerCol:currentCol();
+  if(showerCol===meSlot&&askerCol!==meSlot)openIShowedModal(pendingCards,askerCol);
+  else if(askerCol===meSlot)openShownMeModal(pendingCards,showerCol);
+  else markShower(pendingCards,askerCol,showerCol);
+}
+
+function markShower(cards,askerCol,showerCol){
+  cards.forEach(card=>{
+    const isConfirmedPreviously=activePlayers.some(c=>
+      cellState[card]&&cellState[card][c]&&cellState[card][c].some(m=>m.type==='check'&&m.turn<turnCount)
+    );
+    if(!isConfirmedPreviously) addMark(card,showerCol,'showed');
+  });
+  autoXPassers(cards,askerCol,showerCol);
+  showStatus(`${pName(showerCol)} showed — advancing`);
+  pendingCards=[];
+  autoNextPlayer();
+}
+
+function autoNextPlayer(){
+  // Don't auto-advance — show Turn → button instead
+  gamePhase='waiting';
+  renderTurnBar();
+  saveState();
+}
+
+function nextPlayer(){
+  // If in waiting phase (after show) — just advance turn
+  if(gamePhase==='waiting'){
+    turnStep++;
+    if(turnStep>=activePlayers.length){turnStep=0;}
+    turnCount++;
+    gamePhase='asking';pendingCards=[];pendingAskerCol=-1;
+    renderTurnBar();updateMicHint();saveState();
+    return;
+  }
+  if(pendingCards.length===3&&gamePhase==='showing'){
+    const ac=pendingAskerCol>=0?pendingAskerCol:currentCol();
+    const ai=activePlayers.indexOf(ac);
+    // Block if first eligible player hasn't shown
+    for(let i=1;i<activePlayers.length;i++){
+      const c=activePlayers[(ai+i)%activePlayers.length];
+      if(c===ac)continue;
+      const hasCheck=pendingCards.some(card=>
+        cellState[card]&&cellState[card][c]&&cellState[card][c].some(m=>m.type==='check'&&(m.turn>0||c===meSlot))
+      );
+      if(hasCheck){
+        showStatus(`${pName(c)} must show first — they have a confirmed card`);
+        return;
+      }
+    }
+    activePlayers.forEach(col=>{if(col!==ac)pendingCards.forEach(card=>addMark(card,col,'cross'));});
+    showStatus('Nobody showed — cards crossed out');
+  }
+  turnStep++;
+  if(turnStep>=activePlayers.length){turnStep=0;}
+  turnCount++;
+  gamePhase='asking';pendingCards=[];pendingAskerCol=-1;
+  renderTurnBar();updateMicHint();saveState();
+}
+
+function autoXPassers(cards,askerCol,showerCol){
+  const ai=activePlayers.indexOf(askerCol),si=activePlayers.indexOf(showerCol);
+  if(ai<0||si<0)return;
+  let idx=(ai+1)%activePlayers.length;
+  while(idx!==si){
+    const col=activePlayers[idx];
+    cards.forEach(card=>{
+      const isConfirmed=activePlayers.some(c=>
+        cellState[card]&&cellState[card][c]&&cellState[card][c].some(m=>m.type==='check')
+      );
+      if(!isConfirmed) addMark(card,col,'cross');
+    });
+    idx=(idx+1)%activePlayers.length;
+  }
+}
+
+// ═══ PRIVATE MODALS ═══
+function openIShowedModal(cards,askerCol){
+  iShowedAskerCol=askerCol;iShowedSelected=null;
+  const myCardsList=cards.filter(card=>myCards.has(card));
+  const showList=myCardsList.length>0?myCardsList:cards;
+  const c=document.getElementById('iShowedCards');c.innerHTML='';
+  const sorted=[...showList].sort((a,b)=>allCards().indexOf(a)-allCards().indexOf(b));
+  sorted.forEach(card=>{
+    const o=document.createElement('div');o.className='private-card-opt';o.textContent=card;
+    o.onclick=()=>{document.querySelectorAll('#iShowedCards .private-card-opt').forEach(x=>x.classList.remove('selected'));o.classList.add('selected');iShowedSelected=card;};
+    c.appendChild(o);
+  });
+  document.getElementById('iShowedHint').textContent='';
+  // Auto-select if only one card
+  if(sorted.length===1){
+    iShowedSelected=sorted[0];
+    c.querySelector('.private-card-opt').classList.add('selected');
+  }
+  openModal('modalIShowed');
+}
+function confirmIShowed(){
+  if(!iShowedSelected){showStatus('Select a card');return;}
+  // Me[turn] goes in the ASKER's column for the shown card (22.18 fix)
+  addMark(iShowedSelected,iShowedAskerCol,'ishowed');
+  // S marks on my column for all 3 asked cards removed — not needed
+  autoXPassers(pendingCards,iShowedAskerCol,meSlot);
+  showStatus(`Recorded: You showed ${iShowedSelected} to ${pName(iShowedAskerCol)}`);
+  closeModal('modalIShowed');
+  pendingCards=[];gamePhase='asking';
+  autoNextPlayer();
+}
+
+function openShownMeModal(cards,showerCol){
+  shownMeShowerCol=showerCol;shownMeSelected=null;
+  document.getElementById('shownMeHint').textContent='';
+  const c=document.getElementById('shownMeCards');c.innerHTML='';
+  // Filter out cards Me already holds — shower can't show Me a card Me has
+  const notMine=cards.filter(card=>!myCards.has(card));
+  const showList=notMine.length>0?notMine:cards;
+  const sorted=[...showList].sort((a,b)=>allCards().indexOf(a)-allCards().indexOf(b));
+  sorted.forEach(card=>{
+    const o=document.createElement('div');o.className='private-card-opt';o.textContent=card;
+    o.onclick=()=>{document.querySelectorAll('#shownMeCards .private-card-opt').forEach(x=>x.classList.remove('selected'));o.classList.add('selected');shownMeSelected=card;};
+    c.appendChild(o);
+  });
+  if(sorted.length===1){
+    shownMeSelected=sorted[0];
+    c.querySelector('.private-card-opt').classList.add('selected');
+  }
+  openModal('modalShownMe');
+}
+function confirmShownMe(){
+  if(!shownMeSelected){showStatus('Select a card');return;}
+  // My column gets the shower's initial for the specific card
+  addMark(shownMeSelected,meSlot,'shownme',pInitial(shownMeShowerCol));
+  // Shower gets ✅ on shown card ONLY — not the other two
+  addMark(shownMeSelected,shownMeShowerCol,'check');
+  // Auto-✗ only passing players between me and shower
+  autoXPassers(pendingCards,meSlot,shownMeShowerCol);
+  showStatus(`${pName(shownMeShowerCol)} showed you ${shownMeSelected}`);
+  closeModal('modalShownMe');
+  pendingCards=[];gamePhase='asking';
+  autoNextPlayer();
+}
+
+// ═══ UNDO ═══
+function undoTurn(){
+  if(turnCount<=1&&gamePhase==='asking'&&pendingCards.length===0){showStatus('Nothing to undo');return;}
+  const atTurnStart=gamePhase==='asking'&&pendingCards.length===0;
+  const btn=document.getElementById('undoBtn');
+  twoTap('undo',btn,()=>{
+    wipeTurn(turnCount);
+    if(atTurnStart&&turnCount>1){
+      turnCount--;
+      turnStep=(turnStep-1+activePlayers.length)%activePlayers.length;
+      wipeTurn(turnCount);
+    }
+    gamePhase='asking';pendingCards=[];pendingAskerCol=-1;
+    renderAllCells();renderTurnBar();updateMicHint();
+    showStatus(`Returned to start of Turn ${turnCount} — ${currentName()}`);
+    saveState();
+  },atTurnStart?'Prev Turn?':'Undo?');
+}
+
+// ═══ VOICE — DISABLED IN NO-FRILLS VERSION ═══
+function updateMicHint(){} // no-op
+function micForInput(inputId,btnId){} // no-op
+
+// ═══ FEEDBACK ═══
+let feedbackQ1='';
+function openFeedback(){
+  feedbackQ1='';
+  document.getElementById('fbq2').value='';
+  document.getElementById('fbq3').value='';
+  document.getElementById('fbq4').value='';
+  // Make sure NO Q1 button is highlighted
+  document.querySelectorAll('#modalFeedback .fb-q1-btn').forEach(b=>{
+    b.style.opacity='1';
+    b.style.fontWeight='normal';
+    b.style.outline='none';
+  });
+  openModal('modalFeedback');
+}
+function setFeedback(q,val){
+  feedbackQ1=val;
+  document.querySelectorAll('#modalFeedback .fb-q1-btn').forEach(b=>{
+    b.style.opacity=b.dataset.val===val?'1':'0.4';
+  });
+  showStatus(`Q1: "${val}" selected`);
+}
+function submitFeedback(){
+  const q2=document.getElementById('fbq2').value.trim();
+  const q3=document.getElementById('fbq3').value.trim();
+  const q4=document.getElementById('fbq4').value.trim();
+  const body=encodeURIComponent(
+    `Mystery Clues Tracker Beta Feedback\n\n`+
+    `1. Did the tracker work correctly?\n${feedbackQ1||'(not answered)'}\n\n`+
+    `2. Was anything confusing?\n${q2||'(none)'}\n\n`+
+    `3. Most wanted feature?\n${q3||'(none)'}\n\n`+
+    `4. Other comments?\n${q4||'(none)'}`
+  );
+  const subject=encodeURIComponent('Mystery Clues Tracker Beta Feedback');
+  window.location.href=`mailto:?subject=${subject}&body=${body}`;
+  closeModal('modalFeedback');
+  showStatus('Thank you for your feedback!');
+}
+
+
+// ═══ HELPERS ═══
+function openPlayerOutModal(){
+  const list=document.getElementById('playerOutList');
+  list.innerHTML='';
+  // Show only active players who are not Me
+  const eligible=activePlayers.filter(col=>col!==meSlot);
+  if(eligible.length===0){
+    list.innerHTML='<div style="font-size:0.85rem;color:var(--muted);font-style:italic">No other active players.</div>';
+  } else {
+    eligible.forEach(col=>{
+      const o=document.createElement('div');
+      o.className='private-card-opt';
+      o.textContent=pName(col);
+      o.dataset.col=col;
+      o.onclick=()=>removePlayer(col);
+      list.appendChild(o);
+    });
+  }
+  openModal('modalPlayerOut');
+}
+
+function removePlayer(col){
+  const btn=document.querySelector(`#playerOutList .private-card-opt[data-col="${col}"]`);
+  if(!btn)return;
+  twoTap(`playerout_${col}`,btn,()=>{
+    closeModal('modalPlayerOut');
+    activePlayers=activePlayers.filter(c=>c!==col);
+    if(turnStep>=activePlayers.length) turnStep=0;
+    const th=document.getElementById('pth'+col);
+    if(th) th.classList.add('inactive-th');
+    allCards().forEach(card=>{
+      const el=document.getElementById(`c_${card.replace(/\W/g,'_')}_${col}`);
+      if(el) el.classList.add('inactive-cell');
+    });
+    showStatus(`${pName(col)} has left the game`);
+    renderTurnBar();
+    saveState();
+  },'Remove?');
+}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function setHeaderForPlay(){
+  document.getElementById('btnPlayHeader').style.display='none';
+  document.getElementById('btnNew').style.display='inline-block';
+  document.getElementById('btnPlayerOut').style.display='inline-block';
+}
+function setHeaderForSetup(){
+  document.getElementById('btnNew').style.display='none';
+  document.getElementById('btnPlayerOut').style.display='none';
+  const pb=document.getElementById('btnPlayHeader');
+  pb.style.display='none';
+  pb.classList.add('inactive');
+  pb.style.pointerEvents='none';
+}
+function showStatus(msg){
+  const el=document.getElementById('statusBar');
+  el.textContent=msg;
+  el.style.display=msg?'flex':'none';
+  clearTimeout(el._t);
+  if(msg) el._t=setTimeout(()=>{el.textContent='';el.style.display='none';},4000);
+}
+// ═══ TWO-TAP CONFIRM ═══
+const twoTapState={};
+function twoTap(id, btn, action, confirmLabel='Sure?', resetMs=3000){
+  if(twoTapState[id]){
+    // Second tap — execute
+    clearTimeout(twoTapState[id].timer);
+    delete twoTapState[id];
+    btn.textContent=btn.dataset.origLabel;
+    btn.classList.remove('two-tap-active');
+    showStatus('');
+    action();
+  } else {
+    // First tap — arm
+    btn.dataset.origLabel=btn.textContent;
+    btn.textContent=confirmLabel;
+    btn.classList.add('two-tap-active');
+    showStatus('Tap again to confirm');
+    twoTapState[id]={timer:setTimeout(()=>{
+      btn.textContent=btn.dataset.origLabel;
+      btn.classList.remove('two-tap-active');
+      showStatus('');
+      // Restore stage hint if Undo was the one that changed it
+      const sh=document.getElementById('stageHint');
+      if(sh&&sh.textContent==='Tap Undo again to confirm')sh.textContent=btn.dataset.origHint||'';
+      delete twoTapState[id];
+    },resetMs)};
+  }
+}
+function showConfirm(title,message,okLabel,callback){
+  // Legacy — kept for compatibility, calls callback directly
+  if(confirm(message)) callback(true);
+  else callback(false);
+}
+function confirmRespond(result){}
+function clearAllPlayers(){
+  players=['','','','','',''];meSlot=-1;
+  refreshSlots();updateSetupCounter();
+  localStorage.removeItem('mctPlayerNames');
+}
+function continueGame(){
+  closeModal('modalWelcomeBack');
+  buildTrackerTable();
+  showScreen('screenPlay');
+  setHeaderForPlay();
+  renderTurnBar();
+  updateMicHint();
+}
+
+function confirmNewGame(){
+  openModal('modalNewGame');
+}
+function startNewGame(keepPlayers){
+  const savedPlayers=[...players];const savedMeSlot=meSlot;
+  players=['','','','','',''];meSlot=-1;myCards=new Set();cellState={};
+  if(!keepPlayers){
+    SUSPECTS=["Suspect 1","Suspect 2","Suspect 3","Suspect 4","Suspect 5","Suspect 6"];
+    WEAPONS =["Weapon 1","Weapon 2","Weapon 3","Weapon 4","Weapon 5","Weapon 6"];
+    ROOMS   =["Room 1","Room 2","Room 3","Room 4","Room 5","Room 6","Room 7","Room 8","Room 9"];
+  }
+  localStorage.removeItem('clueTrackerMobile');
+  closeModal('modalNewGame');
+  closeModal('modalWelcomeBack');
+  init();
+  if(keepPlayers){
+    // Use current players if available, otherwise restore from saved names
+    const hasPlayers=savedPlayers.some(p=>p.trim()!=='');
+    if(hasPlayers){
+      players=savedPlayers;meSlot=savedMeSlot;
+    } else {
+      try{
+        const saved=JSON.parse(localStorage.getItem('mctPlayerNames')||'{}');
+        if(saved.players)players=saved.players;
+        if(saved.meSlot!==undefined)meSlot=saved.meSlot;
+      }catch(e){}
+    }
+    refreshSlots();updateSetupCounter();
+  }
+  showScreen('screenSetup');
+  setHeaderForSetup();
+  buildTemplateBar();
+}
+
+// ═══ PERSIST ═══
+function saveState(){
+  try{
+    const currentScreen=document.querySelector('.screen.active')?document.querySelector('.screen.active').id:'screenSetup';
+    localStorage.setItem('clueTrackerMobile',JSON.stringify({
+      players,meSlot,myCards:[...myCards],cellState,cellNotes,summaryOverrides,
+      turnCount,turnStep,activePlayers,gamePhase,
+      pendingCards,pendingAskerCol,SUSPECTS,WEAPONS,ROOMS,
+      currentScreen
+    }));
+    // Always save player names separately so they survive New Game resets
+    localStorage.setItem('mctPlayerNames',JSON.stringify({players,meSlot}));
+  }catch(e){}
+}
+function loadState(){
+  try{
+    const raw=localStorage.getItem('clueTrackerMobile');if(!raw)return;
+    const d=JSON.parse(raw);
+    players=d.players||['','','','','',''];
+    meSlot=d.meSlot!==undefined?d.meSlot:-1;
+    myCards=new Set(d.myCards||[]);
+    if(d.SUSPECTS)SUSPECTS=d.SUSPECTS;
+    if(d.WEAPONS)WEAPONS=d.WEAPONS;
+    if(d.ROOMS)ROOMS=d.ROOMS;
+    cellState=d.cellState||{};
+    cellNotes=d.cellNotes||{};
+    summaryOverrides=d.summaryOverrides||{};
+    turnCount=d.turnCount||1;turnStep=d.turnStep||0;
+    activePlayers=d.activePlayers||[];
+    gamePhase=d.gamePhase||'asking';
+    pendingCards=d.pendingCards||[];
+    pendingAskerCol=d.pendingAskerCol||-1;
+    refreshSlots();
+    myCards.forEach(card=>{const ch=document.getElementById('chip_'+card.replace(/\W/g,'_'));if(ch)ch.classList.add('selected');});
+    updateSetupCounter();
+    // Always start on Setup screen — show Welcome Back if game was in progress
+    showScreen('screenSetup');
+    setHeaderForSetup();
+    if(activePlayers.length>0){
+      setTimeout(()=>openModal('modalWelcomeBack'),300);
+    } else {
+      try{
+        const saved=JSON.parse(localStorage.getItem('mctPlayerNames')||'{}');
+        if(saved.players&&saved.players.some(p=>p.trim()!=='')){
+          players=saved.players;
+          if(saved.meSlot!==undefined)meSlot=saved.meSlot;
+          myCards=new Set(); // clear card selections — new game
+          refreshSlots();updateSetupCounter();
+          setTimeout(()=>openModal('modalReturningPlayers'),300);
+        }
+      }catch(e){}
+    }
+  }catch(e){}
+}
+
+init();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/service-worker.js')
+      .catch(err=>console.log('SW failed:',err));
+  });
+}
+</script>
+</body>
+</html>

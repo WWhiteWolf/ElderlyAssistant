@@ -26,6 +26,7 @@ const modules = [
   { id: 'watchlist', label: 'Watch List', icon: '🎬' },
   { id: 'vault', label: 'Vault', icon: '🔒' },
   { id: 'orders', label: 'Orders', icon: '📦' },
+  { id: 'memorytest', label: 'Memory Test', icon: '🧠' },
 ];
 
 export default function HomeScreen() {
@@ -57,6 +58,7 @@ export default function HomeScreen() {
         if (id === 'watchlist') router.push('/watchlist');
         if (id === 'vault') router.push('/vault');
         if (id === 'orders') router.push('/orders');
+        if (id === 'memorytest') router.push('/memorytest');
     };
 
     return (

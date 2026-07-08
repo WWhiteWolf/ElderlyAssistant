@@ -1,10 +1,9 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-06 (session #65 — the big rename, built and
-done: the app is now "A Place To Remember" in the store listing,
-"Remember" under the icon, the happy-face icon is real, the Home
-page wears the full name with a little face next to your greeting,
-and backups have the new name too — old backups still restore.
-Everything waits on the next build to reach the phone.)
+Last updated: 2026-07-07 (session #66 — the MEMORY TEST page is
+built: the 5-word test from the doctor's office, now in the app.
+Five practice rounds, then a notification 5 minutes later for the
+real recall. Scores save day by day so the PAP mask's benefit
+will show in the numbers. Waits on the Simulator check + build.)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -14,6 +13,18 @@ tracked here — git history keeps the full record — so this list stays short.
 
 WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
+- NEW THIS SESSION (#66): THE MEMORY TEST PAGE IS BUILT — the
+  same 5-word test you failed at the doctor's, so you can track
+  whether sleeping with the PAP mask helps. The app picks 5
+  words, runs five practice rounds (always five, even when you
+  get them all — that's how the real test works), then a
+  notification 5 minutes later for the recall that counts. One
+  test a day; every score saves with the date and rides your
+  backups. 🧠 tile on the Home page, last position. A one-letter
+  spelling slip doesn't cost a point (added after your test run).
+  SIMULATOR-APPROVED, both themes, full flow — you ran it live:
+  rounds climbing 4→5, then 5/5 at the recall. Awaiting your
+  commit + build.
 - THE RENAME IS BUILT (#65), all of it: "Remember" under the
   icon, the happy-face icon picture, "A Place To Remember" on
   the Home page (with a small face icon next to your greeting)
@@ -42,7 +53,13 @@ WHERE THINGS STAND RIGHT NOW (read this first)
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. COMMIT the face-color fix + docs (git add . && commit).
+1. COMMIT the Memory Test (Simulator check DONE, both themes;
+   the face-color fix from #65 rides along) and BUILD. On the
+   phone, prove the part the Simulator can't: the 5-minute
+   notification arriving with the phone LOCKED, and its tap
+   landing on the recall screen. Also: a score shows in My
+   Scores, and a backup export carries the scores. Try the
+   keyboard mic button to SPEAK the words instead of typing.
 2. THE PHONE TEST of build 48 — what's left to check:
    · Export a backup: the file should be Remember-Backup-<date>.
      Then IMPORT AN OLD Elyfont-Backup file — it must restore.

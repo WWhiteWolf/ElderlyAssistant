@@ -7,13 +7,22 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-06 (session #65 — the RENAME PACKAGE was
-BUILT: icon label "Remember", the custom happy-face icon, Home
-header (full name + small face icon), Settings version line, and
-the backup renaming (old backups stay restorable) — plus Patrick
-changed the App Store Connect listing name to "A Place To
-Remember" live. The rename item below is removed; the backup-
-folder item is updated — its filename half is done.)
+Last updated: 2026-07-07 (session #66 — the MEMORY TEST page was
+built: five learning rounds + 5-minute recall, 🧠 Home tile,
+banner routing, backup keys. New parked items below.)
+
+---
+
+## MEMORY TEST — later ideas (page built #66)
+
+- **Mask-start marker + trend view.** When Patrick starts sleeping with
+  the PAP mask, record that date so the score history splits visibly
+  into before-mask / after-mask — maybe a simple chart once enough
+  days accumulate. Talk-through first.
+- **Spoken words (audio) option.** The clinical tests read the words
+  aloud. Deliberately skipped — Patrick had trouble with audio in an
+  earlier attempt, and displayed text kept the test dependable and
+  consistent. Revisit only if he asks.
 
 ---
 
