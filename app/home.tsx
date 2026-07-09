@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
@@ -10,23 +11,22 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 
 const modules = [
-  { id: 'shopping', label: 'Shopping List', icon: '🛒' },
-  { id: 'timer', label: 'Timer Alerts', icon: '⏰' },
-  { id: 'myday', label: 'My Day', icon: '☀️' },
-  { id: 'myweek', label: 'My Week', icon: '🗓️' },
-  { id: 'mollie', label: 'My Pets Day', icon: '🐾' },
-  { id: 'lookahead', label: 'Look Ahead', icon: '🔭' },
-  { id: 'todo', label: 'To-Do', icon: '✅' },
   { id: 'planner', label: 'Project Planner', icon: '📋' },
+  { id: 'memorytest', label: 'Memory Test', icon: '🧠' },
+  { id: 'orders', label: 'Orders', icon: '📦' },
   { id: 'watchlist', label: 'Watch List', icon: '🎬' },
   { id: 'vault', label: 'Vault', icon: '🔒' },
-  { id: 'orders', label: 'Orders', icon: '📦' },
-  { id: 'memorytest', label: 'Memory Test', icon: '🧠' },
+  { id: 'timer', label: 'Timer Alerts', icon: '⏰' },
+  { id: 'todo', label: 'To-Do', icon: '✅' },
+  { id: 'lookahead', label: 'Look Ahead', icon: '🔭' },
+  { id: 'myweek', label: 'My Week', icon: '🗓️' },
+  { id: 'shopping', label: 'Shopping List', icon: '🛒' },
+  { id: 'mollie', label: 'My Pets Day', icon: '🐾' },
+  { id: 'myday', label: 'My Day', icon: '☀️' },
 ];
 
 export default function HomeScreen() {
