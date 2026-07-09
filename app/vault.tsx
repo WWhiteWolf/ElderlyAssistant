@@ -26,14 +26,24 @@ interface VaultItem {
     notes: string;
 }
 
-const VAULT_CATEGORIES = [
-    { id: 'identity', name: 'Identity', icon: '🪪', items: ['Passport #', 'TSA #', 'Driver License #', 'Social Security #'] },
-    { id: 'property', name: 'Property', icon: '🏠', items: ['Deed/Mortgage Info', 'Vehicle Registration', 'Home Insurance'] },
-    { id: 'financial', name: 'Financial', icon: '💳', items: ['Credit Card #', 'Bank Account #', 'Investment Account #'] },
-    { id: 'medical', name: 'Medical', icon: '🏥', items: ['Health Insurance', 'Medicare #', 'Primary Doctor', 'Specialist'] },
-    { id: 'digital', name: 'Digital', icon: '🔐', items: ['Email Password', 'App Password', 'WiFi Password'] },
-    { id: 'legal', name: 'Legal', icon: '📜', items: ['Will Location', 'Power of Attorney', 'Trust Documents'] },
-    { id: 'other', name: 'Other', icon: '📁', items: [] },
+interface VaultCategory {
+    id: string;
+    name: string;
+}
+
+// All categories are USER-DEFINED now (Patrick, #67): no hard-coded list, no
+// icons, no preset label chips. This list exists ONLY to seed the user's
+// editable category list the FIRST time this code runs, so every existing
+// item stays exactly where it was. The ids must never change — saved items
+// point at them.
+const DEFAULT_CATEGORIES: VaultCategory[] = [
+    { id: 'identity', name: 'Identity' },
+    { id: 'property', name: 'Property' },
+    { id: 'financial', name: 'Financial' },
+    { id: 'medical', name: 'Medical' },
+    { id: 'digital', name: 'Digital' },
+    { id: 'legal', name: 'Legal' },
+    { id: 'other', name: 'Other' },
 ];
 
 export default function VaultScreen() {
@@ -71,6 +81,7 @@ export default function VaultScreen() {
     }, []);
 
     const [items, setItems] = useState<VaultItem[]>([]);
+    const [categories, setCategories] = useState<VaultCategory[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [showAddItem, setShowAddItem] = useState(false);
     const [editItem, setEditItem] = useState<VaultItem | null>(null);
@@ -78,8 +89,9 @@ export default function VaultScreen() {
     const [newValue, setNewValue] = useState('');
     const [newNotes, setNewNotes] = useState('');
     const [showValues, setShowValues] = useState<Record<string, boolean>>({});
-    const [customLabel, setCustomLabel] = useState('');
-    const [selectedPreset, setSelectedPreset] = useState('');
+    const [showAddCategory, setShowAddCategory] = useState(false);
+    const [newCategoryName, setNewCategoryName] = useState('');
+    const [editCategory, setEditCategory] = useState<VaultCategory | null>(null);
 
     useEffect(() => {
         loadItems();
@@ -89,6 +101,15 @@ export default function VaultScreen() {
         try {
             const saved = await AsyncStorage.getItem('vault_items');
             if (saved) setItems(JSON.parse(saved));
+            const savedCats = await AsyncStorage.getItem('vault_categories');
+            if (savedCats) {
+                setCategories(JSON.parse(savedCats));
+            } else {
+                // First run after the #67 change: seed the editable list with
+                // the original seven and save it, so nothing moves.
+                setCategories(DEFAULT_CATEGORIES);
+                await AsyncStorage.setItem('vault_categories', JSON.stringify(DEFAULT_CATEGORIES));
+            }
         } catch (e) {
             console.error(e);
         }
@@ -99,26 +120,82 @@ export default function VaultScreen() {
         await AsyncStorage.setItem('vault_items', JSON.stringify(updated));
     };
 
+    const saveCategories = async (updated: VaultCategory[]) => {
+        setCategories(updated);
+        await AsyncStorage.setItem('vault_categories', JSON.stringify(updated));
+    };
+
+    const addCategory = () => {
+        const name = newCategoryName.trim();
+        if (!name) {
+            Alert.alert('Missing Info', 'Enter a category name.');
+            return;
+        }
+        const category: VaultCategory = { id: Date.now().toString(), name };
+        saveCategories([...categories, category]);
+        setNewCategoryName('');
+        setShowAddCategory(false);
+    };
+
+    const openEditCategory = (cat: VaultCategory) => {
+        setEditCategory(cat);
+        setNewCategoryName(cat.name);
+        setShowAddCategory(true);
+    };
+
+    const renameCategory = () => {
+        if (!editCategory) return;
+        const name = newCategoryName.trim();
+        if (!name) {
+            Alert.alert('Missing Info', 'Enter a category name.');
+            return;
+        }
+        // Only the display name changes — the id stays, so the items inside
+        // keep pointing at this category.
+        saveCategories(categories.map(c => (c.id === editCategory.id ? { ...c, name } : c)));
+        setNewCategoryName('');
+        setEditCategory(null);
+        setShowAddCategory(false);
+    };
+
+    // Two-stage confirmation (Patrick, #67): a category delete takes its items
+    // with it, so the warning comes twice before anything happens.
+    const deleteCategory = (cat: VaultCategory) => {
+        const count = items.filter(i => i.category === cat.id).length;
+        const itemsNote = count === 0
+            ? 'It has no items.'
+            : count === 1
+                ? 'The 1 item inside will be deleted with it.'
+                : `The ${count} items inside will be deleted with it.`;
+        Alert.alert('Delete Category', `Delete "${cat.name}"? ${itemsNote}`, [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Delete', style: 'destructive', onPress: () => {
+                    Alert.alert('Are You Sure?', `"${cat.name}" and everything in it will be permanently deleted. This cannot be undone.`, [
+                        { text: 'Cancel', style: 'cancel' },
+                        {
+                            text: 'Yes, Delete', style: 'destructive', onPress: () => {
+                                saveCategories(categories.filter(c => c.id !== cat.id));
+                                saveItems(items.filter(i => i.category !== cat.id));
+                            },
+                        },
+                    ]);
+                },
+            },
+        ]);
+    };
+
     const resetForm = () => {
         setNewLabel('');
         setNewValue('');
         setNewNotes('');
-        setCustomLabel('');
-        setSelectedPreset('');
         setEditItem(null);
     };
 
-    // The alert wording matches the form: categories with preset chips ask for
-    // a TAP; "Other" (no chips) asks for typing. (Patrick, #47)
-    const missingInfoMessage = () =>
-        getCategoryData(selectedCategory || 'other')?.items.length
-            ? 'Tap a Label above, then enter a Value.'
-            : 'Enter a Label and a Value.';
-
     const addItem = () => {
-        const label = selectedPreset === 'custom' ? customLabel.trim() : selectedPreset || newLabel.trim();
+        const label = newLabel.trim();
         if (!label || !newValue.trim()) {
-            Alert.alert('Missing Info', missingInfoMessage());
+            Alert.alert('Missing Info', 'Enter a Label and a Value.');
             return;
         }
         const item: VaultItem = {
@@ -135,9 +212,9 @@ export default function VaultScreen() {
 
     const updateItem = () => {
         if (!editItem) return;
-        const label = selectedPreset === 'custom' ? customLabel.trim() : selectedPreset || newLabel.trim();
+        const label = newLabel.trim();
         if (!label || !newValue.trim()) {
-            Alert.alert('Missing Info', missingInfoMessage());
+            Alert.alert('Missing Info', 'Enter a Label and a Value.');
             return;
         }
         const updated = items.map(i =>
@@ -164,7 +241,6 @@ export default function VaultScreen() {
     const openEditItem = (item: VaultItem) => {
         setEditItem(item);
         setNewLabel(item.label);
-        setSelectedPreset(item.label);
         setNewValue(item.value);
         setNewNotes(item.notes);
         setShowAddItem(true);
@@ -179,7 +255,7 @@ export default function VaultScreen() {
     };
 
     const getCategoryData = (id: string) => {
-        return VAULT_CATEGORIES.find(c => c.id === id);
+        return categories.find(c => c.id === id);
     };
 
     if (!ready) return <View style={{ flex: 1, backgroundColor: theme.pageBackground }} />;
@@ -201,7 +277,9 @@ export default function VaultScreen() {
                             <Text style={styles.headerBtnText}>+ Add</Text>
                         </TouchableOpacity>
                     ) : (
-                        <View style={styles.settingsBtn} />
+                        <TouchableOpacity onPress={() => { setNewCategoryName(''); setShowAddCategory(true); }} style={styles.headerBtn}>
+                            <Text style={styles.headerBtnText}>+ New</Text>
+                        </TouchableOpacity>
                     )}
                 </View>
             </SafeAreaView>
@@ -211,21 +289,31 @@ export default function VaultScreen() {
             {!selectedCategory ? (
                 <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
                     <Text style={styles.securityNote}>🔒 Your data is stored securely on this device only.</Text>
-                    {VAULT_CATEGORIES.map(cat => (
-                        <TouchableOpacity
+                    {categories.map(cat => (
+                        <Swipeable
                             key={cat.id}
-                            style={styles.categoryCard}
-                            onPress={() => setSelectedCategory(cat.id)}
+                            renderRightActions={() => (
+                                <TouchableOpacity style={styles.swipeDelete} onPress={() => deleteCategory(cat)}>
+                                    <Text style={styles.swipeDeleteText}>Delete</Text>
+                                </TouchableOpacity>
+                            )}
                         >
-                            <Text style={styles.categoryIcon}>{cat.icon}</Text>
-                            <View style={styles.categoryInfo}>
-                                <Text style={styles.categoryName}>{cat.name}</Text>
-                                <Text style={styles.categoryCount}>
-                                    {items.filter(i => i.category === cat.id).length} items
-                                </Text>
-                            </View>
-                            <Text style={styles.categoryArrow}>›</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.categoryCard}
+                                onPress={() => setSelectedCategory(cat.id)}
+                            >
+                                <View style={styles.categoryInfo}>
+                                    <Text style={styles.categoryName}>{cat.name}</Text>
+                                    <Text style={styles.categoryCount}>
+                                        {items.filter(i => i.category === cat.id).length} items
+                                    </Text>
+                                </View>
+                                <TouchableOpacity onPress={() => openEditCategory(cat)} style={[styles.editBtn, { marginRight: 12 }]} hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}>
+                                    <Text style={styles.editBtnText}>Edit</Text>
+                                </TouchableOpacity>
+                                <Text style={styles.categoryArrow}>›</Text>
+                            </TouchableOpacity>
+                        </Swipeable>
                     ))}
                 </ScrollView>
             ) : (
@@ -288,26 +376,7 @@ export default function VaultScreen() {
                                 </View>
 
                                 <Text style={styles.inputLabel}>Label</Text>
-                                {getCategoryData(selectedCategory || 'other')?.items.length ? (
-                                    <>
-                                        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 8 }}>
-                                            {[...(getCategoryData(selectedCategory || 'other')?.items || []), 'Custom'].map(preset => (
-                                                <TouchableOpacity
-                                                    key={preset}
-                                                    style={[styles.presetBtn, selectedPreset === preset && styles.presetBtnActive]}
-                                                    onPress={() => setSelectedPreset(preset)}
-                                                >
-                                                    <Text style={[styles.presetBtnText, selectedPreset === preset && styles.presetBtnTextActive]}>{preset}</Text>
-                                                </TouchableOpacity>
-                                            ))}
-                                        </ScrollView>
-                                        {selectedPreset === 'Custom' && (
-                                            <TextInput style={styles.input} value={customLabel} onChangeText={setCustomLabel} placeholder="Enter custom label..." placeholderTextColor={theme.mutedText} />
-                                        )}
-                                    </>
-                                ) : (
-                                    <TextInput style={styles.input} value={newLabel} onChangeText={setNewLabel} placeholder="Enter label..." placeholderTextColor={theme.mutedText} autoFocus={true} />
-                                )}
+                                <TextInput style={styles.input} value={newLabel} onChangeText={setNewLabel} placeholder="Enter label..." placeholderTextColor={theme.mutedText} autoFocus={true} />
 
                                 <Text style={styles.inputLabel}>Value</Text>
                                 <TextInput style={styles.input} value={newValue} onChangeText={setNewValue} placeholder="Enter value..." placeholderTextColor={theme.mutedText} secureTextEntry={false} />
@@ -315,6 +384,28 @@ export default function VaultScreen() {
                                 <Text style={styles.inputLabel}>Notes (optional)</Text>
                                 <TextInput style={styles.input} value={newNotes} onChangeText={setNewNotes} placeholder="e.g. where it's kept, expiry date..." placeholderTextColor={theme.mutedText} multiline />
                             </ScrollView>
+                        </View>
+                    </View>
+                </Modal>
+            )}
+
+            {showAddCategory && (
+                <Modal transparent animationType="slide" visible={showAddCategory}>
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalBox}>
+                            <Text style={styles.modalTitle}>{editCategory ? 'Rename Category' : 'New Category'}</Text>
+
+                            <View style={styles.modalBtns}>
+                                <TouchableOpacity style={styles.cancelBtn} onPress={() => { setNewCategoryName(''); setEditCategory(null); setShowAddCategory(false); }}>
+                                    <Text style={styles.cancelBtnText}>Cancel</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.confirmBtn} onPress={editCategory ? renameCategory : addCategory}>
+                                    <Text style={styles.confirmBtnText}>{editCategory ? 'Update' : 'Add'}</Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <Text style={styles.inputLabel}>Name</Text>
+                            <TextInput style={styles.input} value={newCategoryName} onChangeText={setNewCategoryName} placeholder="Enter category name..." placeholderTextColor={theme.mutedText} autoFocus={true} />
                         </View>
                     </View>
                 </Modal>
@@ -364,22 +455,19 @@ const makeStyles = (t: Theme) =>
             borderWidth: 0.5,
             borderColor: t.cardBorder,
         },
-        categoryIcon: {
-            fontSize: 32,
-            marginRight: 16,
-            ...(t.iconShadow
-                ? {
-                      textShadowColor: 'rgba(0,0,0,0.5)',
-                      textShadowOffset: { width: 0, height: 1 },
-                      textShadowRadius: 3,
-                  }
-                : null),
-        },
         categoryInfo: { flex: 1 },
         categoryName: { fontSize: 18, fontWeight: '600', color: t.cardTitle },
         categoryCount: { fontSize: 13, color: t.mutedText, marginTop: 2 },
         categoryArrow: { fontSize: 28, color: t.mutedText },
-        backToList: { paddingVertical: 10, paddingHorizontal: 4, marginBottom: 4 },
+        backToList: {
+            alignSelf: 'flex-start',
+            borderWidth: 1,
+            borderColor: t.cardTitle,
+            borderRadius: 20,
+            paddingVertical: 6,
+            paddingHorizontal: 14,
+            marginBottom: 8,
+        },
         backToListText: { color: t.cardTitle, fontSize: 16, fontWeight: '500' },
         emptyText: { textAlign: 'center', color: t.mutedText, marginTop: 40, fontSize: 16 },
         itemCard: {
@@ -463,18 +551,6 @@ const makeStyles = (t: Theme) =>
             color: t.bodyText,
             marginBottom: 4,
         },
-        presetBtn: {
-            paddingVertical: 6,
-            paddingHorizontal: 12,
-            borderRadius: 16,
-            borderWidth: 1,
-            borderColor: t.cardBorder,
-            marginRight: 8,
-            backgroundColor: t.chip,
-        },
-        presetBtnActive: { backgroundColor: t.buttonPrimary, borderColor: t.buttonPrimary },
-        presetBtnText: { fontSize: 13, color: t.cardTitle },
-        presetBtnTextActive: { color: t.buttonPrimaryText },
         modalBtns: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
         cancelBtn: {
             backgroundColor: t.buttonNeutral,

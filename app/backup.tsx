@@ -35,6 +35,7 @@ const READABLE_KEYS = [
     'watchlist_movies', 'watchlist_shows',    // missing since #41 brought Watch List in (#57 fix)
     'orders_items', 'orders_history',         // Orders page (#63), added the session it was built
     'memtest_session', 'memtest_history',     // Memory Test page, added the session it was built
+    'vault_categories',                       // user-defined Vault categories (#67) — names only; the items stay in the encrypted vault_items
     'user_name', 'biometric_enabled', 'vault_pin_enabled',
     'reminder_morning_time', 'reminder_midday_time', 'reminder_evening_time',
     'app_theme', 'popup_style',               // #48's theme + popup choices (#57 fix)
