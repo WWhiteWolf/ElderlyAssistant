@@ -253,9 +253,10 @@ checkpoints above. Still open:
    backup folder/file a clear, recognizable name so it's easy to find where it's
    saved. (Detail still in "Nice-to-have" below; it's now wanted, not just nice.
    Best confirmed on a real phone, where iCloud Drive is involved.)
-3. **Import files/docs into Vault.** Bring outside files/documents into the
-   Vault. Scope is undefined (file types? where from? how shown/stored/encrypted?)
-   — needs a discussion session before any build.
+3. **Import files/docs into Vault — SUPERSEDED then PARKED.** The #68 roadmap
+   replaced this with "Vault pages" (paste text directly into a Vault item — no
+   file handling), and in #69 Patrick parked that too: the Vault stays as it is
+   until he runs into a real need. Don't re-raise.
 4. ✅ **My Day past-day banner Done — PHONE-VERIFIED (#55)**, tested just past
    midnight: the past completion logged under yesterday's date, today's items
    untouched, as designed. (Spin-off nice-to-have in pending.txt: log BOTH

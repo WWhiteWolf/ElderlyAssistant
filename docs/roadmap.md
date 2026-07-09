@@ -113,17 +113,21 @@ building, and go at Patrick's pace.
 The app is essentially built. This track is the remaining features, fixes, and
 page decisions — the milestone view; the running detail lives in `pending.txt`.
 
-- **Vault pages (#68)** — paste text directly into a Vault item as a page. This
-  *replaces* the old "import files/documents" idea entirely — no file handling,
-  just pasted text riding the Vault's existing encryption. Details to be decided
-  when this page is taken up.
-- **Whole-file backup encryption (#68)** — today only the Vault's items are
-  encrypted inside the backup; the rest exports readable. Patrick wants the
-  whole exported file encrypted. Talk-through first: how it locks/unlocks on
-  restore, and what happens to existing readable backups.
-- **Preset stores & addresses in Orders (#68)** — a saved list of stores with
-  their addresses to pick from in the Orders form, instead of retyping both
-  on every new order. Talk-through first.
+- **Vault pages (#68) — PARKED (#69).** Paste text directly into a Vault item
+  as a page; *replaces* the old "import files/documents" idea entirely — no
+  file handling, just pasted text riding the Vault's existing encryption.
+  Patrick opened the talk-through in #69 and wasn't ready to picture it yet —
+  the Vault stays as it is until he runs into a real need. Don't re-raise.
+- **Whole-file backup encryption (#68) — demoted to NICE-TO-HAVE (#69).** Today
+  only the Vault's items are encrypted inside the backup; the rest exports
+  readable. Patrick still wants the whole exported file encrypted eventually,
+  but moved it to nice-to-have in #69. When taken up, talk-through first: how
+  it locks/unlocks on restore, and what happens to existing readable backups.
+- **Preset stores & addresses in Orders (#68) — DROPPED (#69).** The idea was a
+  saved list to pick from instead of retyping. In #69 Patrick started the
+  talk-through (a short saved list — Home plus 2–3 others — with typing kept),
+  then looked at the form again and decided it needs no changes. Only revisit
+  if he raises it.
 - **Watch List overhaul** — its own session, talk-through first; the
   night-and-time-a-show-airs idea folds into it.
 - **The small-fix sweep** — the known minor quirks, none urgent: Look Ahead's

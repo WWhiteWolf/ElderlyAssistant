@@ -1,10 +1,9 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-08 (session #67 — TWO things: the MEMORY
-TEST was confirmed done and on the phone, working just as you
-want (you speak the words in with the mic now). Then the VAULT
-got its makeover: ALL categories are yours now — add with
-"+ New", rename with Edit on each tile, delete with a swipe and
-a double warning. Simulator-approved; waits on commit + build.)
+Last updated: 2026-07-09 (session #69 — a light one on purpose:
+you reordered the HOME BADGES yourself in VS Code, and three
+ideas came off the active list — Vault input PARKED, whole-file
+encryption to NICE-TO-HAVE, Orders preset addresses DROPPED.
+Next session: PUBLISHING.)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -14,75 +13,39 @@ tracked here — git history keeps the full record — so this list stays short.
 
 WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
-- NEW THIS SESSION (#67): THE VAULT CATEGORIES ARE ALL YOURS.
-  No more fixed list — the app starts you off with the same
-  seven you had (everything stays where it was), and from now
-  on you add your own with "+ New", rename any with its Edit
-  button, and delete with a swipe — two warnings first, and the
-  items inside go with it (fine: the Vault is a pocket
-  reference; the originals live elsewhere). Icons are gone from
-  category tiles — clean names only. Adding an item is now just
-  type-the-label — no more preset chips, and that long-suspected
-  "Custom" bug (your typed label saved as the word "Custom")
-  turned out to be REAL and is now gone with the chips. Your
-  categories ride backups. SIMULATOR-APPROVED, both themes —
-  "everything looks good." AWAITING YOUR COMMIT + BUILD.
-- THE MEMORY TEST IS DONE AND ON THE PHONE (#66 built it, #67
-  confirmed it): five practice rounds, the 5-minute recall
-  notification, one test a day, scores saved with dates for
-  tracking the PAP mask's benefit. WORKS JUST AS YOU WANT — you
-  speak the words in with the keyboard mic now.
-- THE RENAME IS BUILT (#65), all of it: "Remember" under the
-  icon, the happy-face icon picture, "A Place To Remember" on
-  the Home page (with a small face icon next to your greeting)
-  and on the Settings version line, and backups now save as
-  "Remember-Backup-<date>.json" — OLD backups still restore.
-  You also changed the store listing name to "A Place To
-  Remember" in App Store Connect yourself, live in the session.
-- BUILD 48 IS ON THE PHONE — committed, built, and submitted the
-  same day. Getting it to Apple took three tries: an expired
-  Apple developer agreement, then the EU "Digital Services Act"
-  question (you answered "not a trader"), both fixed in App
-  Store Connect under Business. If a future submit fails with
-  "agreement missing or expired" — that's the place to look.
-- ALL THE VISUAL CHANGES ARE IN AND APPROVED GOOD (your report,
-  #67) — the light-theme header face included. Nothing visual
-  left to check.
-- THE #63 ORDERS TEST IS DONE — verified working on the phone
-  (your report, #67). The whole Orders page is proven.
-- OLD BACKUPS ARE A CLOSED BOOK: you exported fresh backups
-  under the new Remember-Backup name and deleted the old
-  Elyfont files. No old-file restore proof needed. (The code
-  still accepts old backups; it just never needs to.)
-- STILL TO COMMIT: just these docs (Patrick commits).
+- NEW THIS SESSION (#69): THE HOME BADGES ARE IN YOUR NEW ORDER —
+  you made the edit yourself in VS Code and approved it in the
+  Simulator; Claude verified the file clean. AWAITING YOUR
+  COMMIT + BUILD; the phone check is just the order of the
+  twelve badges.
+- THREE IDEAS SETTLED (#69): Vault input/import is PARKED (the
+  Vault stays as it is until you hit a real need — not to be
+  re-raised); whole-file backup encryption moved to NICE-TO-HAVE
+  below; Orders preset addresses DROPPED (you looked at the form
+  and it's fine as is).
+- EARLIER TODAY (#68): the ROADMAP.MD REFRESH IS DONE and
+  committed — the long-standing rewrite is off the list. And the
+  #67 VAULT CATEGORY PACKAGE WAS CONFIRMED ON THE PHONE: the app
+  is phone-verified through #67, nothing built awaits a phone
+  test except this session's badge order.
+- NEXT SESSION (your pick, #69): PUBLISHING. The strategy doc is
+  Publishing-Strategy.docx in OneDrive -> App-Pubs (not in this
+  folder) — connect that folder at the session start.
+- STILL TO COMMIT: home.tsx (the badge order) + these docs
+  (Patrick commits).
 - The dark startup flash is still there (a known small quirk).
 
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. COMMIT the Vault work + these docs, and BUILD. On the phone:
-   your items should be right where they were under the same
-   seven names (no icons now); add a category, rename one,
-   delete one (two warnings, its items go too); add an item and
-   check it saves the label YOU TYPED (the old "Custom" bug,
-   proven dead on the phone); export a backup and see
-   vault_categories in it; the "← All Categories" capsule.
-2. THE ROADMAP.MD REFRESH — started this session, parked when
-   you chose the Vault build instead. It still shows the #31
-   picture (old Elyfont name, four newer pages missing from the
-   built list, phases long overtaken). Natural next-session
-   pick, and the "where does the app go from here" talk comes
-   with it.
-   INCLUDE IN THE REWRITE (your ask, #67): a DOCUMENTATION
-   milestone — a build document for THIS app, done the way
-   MysteryTracker's spec was (Claude read it this session):
-   plain-English, function-anchored, detailed enough to rebuild
-   the app from the document alone; possibly a companion
-   draw.io diagram as its map; and a style-rules file to govern
-   how it's written, page by page, one session-goal at a time.
-3. After that it's an open pick — Vault file import needs its
-   talk-through (DECISIONS below), and the smaller items live in
-   the lists that follow.
+1. COMMIT the badge reorder + these docs, and BUILD. On the
+   phone: just check the twelve Home badges sit in your new
+   order.
+2. PUBLISHING — your pick for next session (#69). Start by
+   connecting the OneDrive -> App-Pubs folder and reading
+   Publishing-Strategy.docx.
+3. After that it's an open pick — the smaller items live in the
+   lists that follow. (Vault input/import is PARKED — see below.)
 
 
 #40 & #41 STILL OPEN (what's left of your #41 list)
@@ -90,14 +53,18 @@ WHAT'S NEXT
 (Item 1 — backup naming/findability — is CLOSED: the filename is
 Remember-Backup-<date>, and you've exported and managed the new
 files yourself, #67.)
-3. Import files/documents into the Vault. Needs a talk-through first
-   (what kinds of files, from where, how they're shown and protected).
+3. Import files/documents into the Vault — PARKED (#69). The idea
+   became "Vault pages" (paste text straight into a Vault item, no
+   files) in the #68 roadmap; in #69 you started the talk-through,
+   weren't ready, and parked the whole thing. The Vault stays as
+   it is until you run into a real need. Not to be re-raised.
 
 
 NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
 ----------------------------------------------------------------------------
-- THE VAULT CATEGORY PACKAGE (#67) — the checklist is item 1 of
-  WHAT'S NEXT above. Simulator-approved; the phone proves it.
+- THE HOME BADGE ORDER (#69) — the one check in item 1 of WHAT'S
+  NEXT above. (The #67 Vault category package was CONFIRMED on
+  the phone in #68 — nothing else is waiting.)
 
 
 STILL BROKEN OR UNFINISHED (small bugs)
@@ -118,13 +85,17 @@ STILL BROKEN OR UNFINISHED (small bugs)
 
 DECISIONS TO MAKE WHEN YOU'RE READY
 -----------------------------------
-- Vault import (your item 3 above) — scope it out before building.
-  (The Vault category work is BUILT — #67. Nothing left to decide
+- (Vault input/import was here — PARKED in #69, see item 3 above.
+  The Vault category work is BUILT — #67. Nothing left to decide
   there.)
 
 
 NICE-TO-HAVE LATER (polish, low priority)
 -----------------------------------------
+- Whole-file backup encryption — moved here in #69 (was a #68
+  roadmap item). Today only the Vault's part of a backup is
+  encrypted; the rest is readable. You still want the whole file
+  encrypted someday; talk-through first when you take it up.
 - Watch List overhaul — its own session, talk-through first (moved
   from What's Next, your call #55). The night-and-time-a-TV-show-airs
   idea folds into it.
