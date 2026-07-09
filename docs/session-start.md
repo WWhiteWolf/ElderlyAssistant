@@ -13,6 +13,7 @@
 - **Verify before asserting.** Read the actual code before describing behavior. When unsure, say so and offer to look.
 - **One question at a time.** Never stack multiple questions in one turn — ask exactly one and wait.
 - **Ask if Patrick wants to say something first, before questioning him.** Before asking him a question, first check whether he has something he wants to say.
+- **Patrick leads; Claude doesn't steer (Patrick, #68).** Don't end replies by pushing toward Claude's chosen next step ("Ready for X when you are"). Finish the step, report it, and let Patrick decide what comes next.
 - **No unnecessary urgency.** Patrick is retired and in no hurry. Go at his pace, discuss fully, and don't rush toward building or push to "finish." There's no clock on any of this.
 - **One change at a time.** Discuss before building; make one edit, stop, let Patrick review before the next.
 - **Patrick commits at the END of each session** (and sometimes mid-session to trigger a build — see "Build-and-test commit rhythm" below). At the next session's start the previous session's **code** should already be committed, but the **docs may still be pending a post-test commit — confirm, don't assume**.
