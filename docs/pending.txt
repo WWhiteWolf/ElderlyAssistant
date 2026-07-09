@@ -1,9 +1,10 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-07 (session #66 — the MEMORY TEST page is
-built: the 5-word test from the doctor's office, now in the app.
-Five practice rounds, then a notification 5 minutes later for the
-real recall. Scores save day by day so the PAP mask's benefit
-will show in the numbers. Waits on the Simulator check + build.)
+Last updated: 2026-07-08 (session #67 — TWO things: the MEMORY
+TEST was confirmed done and on the phone, working just as you
+want (you speak the words in with the mic now). Then the VAULT
+got its makeover: ALL categories are yours now — add with
+"+ New", rename with Edit on each tile, delete with a swipe and
+a double warning. Simulator-approved; waits on commit + build.)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -13,18 +14,24 @@ tracked here — git history keeps the full record — so this list stays short.
 
 WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
-- NEW THIS SESSION (#66): THE MEMORY TEST PAGE IS BUILT — the
-  same 5-word test you failed at the doctor's, so you can track
-  whether sleeping with the PAP mask helps. The app picks 5
-  words, runs five practice rounds (always five, even when you
-  get them all — that's how the real test works), then a
-  notification 5 minutes later for the recall that counts. One
-  test a day; every score saves with the date and rides your
-  backups. 🧠 tile on the Home page, last position. A one-letter
-  spelling slip doesn't cost a point (added after your test run).
-  SIMULATOR-APPROVED, both themes, full flow — you ran it live:
-  rounds climbing 4→5, then 5/5 at the recall. Awaiting your
-  commit + build.
+- NEW THIS SESSION (#67): THE VAULT CATEGORIES ARE ALL YOURS.
+  No more fixed list — the app starts you off with the same
+  seven you had (everything stays where it was), and from now
+  on you add your own with "+ New", rename any with its Edit
+  button, and delete with a swipe — two warnings first, and the
+  items inside go with it (fine: the Vault is a pocket
+  reference; the originals live elsewhere). Icons are gone from
+  category tiles — clean names only. Adding an item is now just
+  type-the-label — no more preset chips, and that long-suspected
+  "Custom" bug (your typed label saved as the word "Custom")
+  turned out to be REAL and is now gone with the chips. Your
+  categories ride backups. SIMULATOR-APPROVED, both themes —
+  "everything looks good." AWAITING YOUR COMMIT + BUILD.
+- THE MEMORY TEST IS DONE AND ON THE PHONE (#66 built it, #67
+  confirmed it): five practice rounds, the 5-minute recall
+  notification, one test a day, scores saved with dates for
+  tracking the PAP mask's benefit. WORKS JUST AS YOU WANT — you
+  speak the words in with the keyboard mic now.
 - THE RENAME IS BUILT (#65), all of it: "Remember" under the
   icon, the happy-face icon picture, "A Place To Remember" on
   the Home page (with a small face icon next to your greeting)
@@ -38,91 +45,63 @@ WHERE THINGS STAND RIGHT NOW (read this first)
   question (you answered "not a trader"), both fixed in App
   Store Connect under Business. If a future submit fails with
   "agreement missing or expired" — that's the place to look.
-- ONE THING BUILD 48 DOESN'T HAVE: you caught the header face
-  showing brick-red on the LIGHT theme's teal header (only dark
-  was Sim-checked). Fixed in code the same day — the face now
-  wears the gear's color in each theme (checked BOTH this time).
-  Your phone shows the old red face on light until the NEXT
-  build. Known, not a surprise.
-- STILL TO COMMIT: that face-color fix (home.tsx) + the docs.
-- The #63 Orders phone test is STILL IN PROGRESS (multi-day by
-  nature — the day-before and morning-of reminders need real
-  days to pass).
+- ALL THE VISUAL CHANGES ARE IN AND APPROVED GOOD (your report,
+  #67) — the light-theme header face included. Nothing visual
+  left to check.
+- THE #63 ORDERS TEST IS DONE — verified working on the phone
+  (your report, #67). The whole Orders page is proven.
+- OLD BACKUPS ARE A CLOSED BOOK: you exported fresh backups
+  under the new Remember-Backup name and deleted the old
+  Elyfont files. No old-file restore proof needed. (The code
+  still accepts old backups; it just never needs to.)
+- STILL TO COMMIT: just these docs (Patrick commits).
 - The dark startup flash is still there (a known small quirk).
 
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. COMMIT the Memory Test (Simulator check DONE, both themes;
-   the face-color fix from #65 rides along) and BUILD. On the
-   phone, prove the part the Simulator can't: the 5-minute
-   notification arriving with the phone LOCKED, and its tap
-   landing on the recall screen. Also: a score shows in My
-   Scores, and a backup export carries the scores. Try the
-   keyboard mic button to SPEAK the words instead of typing.
-2. THE PHONE TEST of build 48 — what's left to check:
-   · Export a backup: the file should be Remember-Backup-<date>.
-     Then IMPORT AN OLD Elyfont-Backup file — it must restore.
-     While you're there: note WHERE the file lands in iCloud /
-     Files and how easy it is to find (the old "name the backup
-     folder" item — its filename half is now done).
-   · The remaining #63 Orders checks (see NEEDS A PHONE TEST).
-   (The face-color fix rides the NEXT build, whenever that is —
-   no rush, it's cosmetic and only shows on the light theme.)
-   (The when-you're-ready talk-throughs — Vault import, removing
-   Vault categories, the backup Merge option — are in the
-   DECISIONS section below.)
+1. COMMIT the Vault work + these docs, and BUILD. On the phone:
+   your items should be right where they were under the same
+   seven names (no icons now); add a category, rename one,
+   delete one (two warnings, its items go too); add an item and
+   check it saves the label YOU TYPED (the old "Custom" bug,
+   proven dead on the phone); export a backup and see
+   vault_categories in it; the "← All Categories" capsule.
+2. THE ROADMAP.MD REFRESH — started this session, parked when
+   you chose the Vault build instead. It still shows the #31
+   picture (old Elyfont name, four newer pages missing from the
+   built list, phases long overtaken). Natural next-session
+   pick, and the "where does the app go from here" talk comes
+   with it.
+   INCLUDE IN THE REWRITE (your ask, #67): a DOCUMENTATION
+   milestone — a build document for THIS app, done the way
+   MysteryTracker's spec was (Claude read it this session):
+   plain-English, function-anchored, detailed enough to rebuild
+   the app from the document alone; possibly a companion
+   draw.io diagram as its map; and a style-rules file to govern
+   how it's written, page by page, one session-goal at a time.
+3. After that it's an open pick — Vault file import needs its
+   talk-through (DECISIONS below), and the smaller items live in
+   the lists that follow.
 
 
 #40 & #41 STILL OPEN (what's left of your #41 list)
 ----------------------------------------------------------------------------
-1. Name the backup folder — the FILENAME half is DONE (#65:
-   Remember-Backup-<date>.json). What's left is checking on the
-   real phone WHERE the file lands in iCloud and how findable it
-   is (folded into the phone test in WHAT'S NEXT).
+(Item 1 — backup naming/findability — is CLOSED: the filename is
+Remember-Backup-<date>, and you've exported and managed the new
+files yourself, #67.)
 3. Import files/documents into the Vault. Needs a talk-through first
    (what kinds of files, from where, how they're shown and protected).
 
 
 NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
 ----------------------------------------------------------------------------
-(The old #56-#61 checklist rode your "beat on" build — you tested and
-brought back five issues, all handled in #62. Anything from that old
-list you DIDN'T flag is assumed fine; say so if something still nags.)
-- THE ORDERS PAGE (#63), the whole thing on a real order or two.
-  Mid-test results so far (reported live during #63):
-  · PASSED: a reminder fired with HERE / OK / Delay 15-30-60 on it;
-    Delay 15 dismissed the banner; the delayed banner CAME BACK at
-    15 min; HERE from that banner logged the arrival correctly.
-    That's the full snooze-and-arrive loop working on the phone.
-  · PASSED: tapping the banner body opened the Orders page.
-  · PASSED: the window-close reminder fired when it should have.
-  · The day-before reminder (your Midday time) and morning-of
-    reminder (your Morning time) firing on the right days — needs
-    a real multi-day order to prove.
-  · The flip side of window-close: NO nag on a package you'd
-    already tapped HERE on before the window ended.
-  · How the banner buttons list on the watch. One caution:
-    banner-button registration once worked in the Sim but dropped
-    a button set on the real phone (#39) — worth a careful look.
-- PHONE-VERIFIED (#63, second build of the day): the wider tap
-  areas on the Edit buttons + Settings gear — "easier to tap" —
-  and the four-band bridge on all 14 pages. Both confirmed on
-  the phone. Nothing left to check on either.
-- The #62 fixes: ALL FIVE PASSED your phone test (reported #63) —
-  Done-first banners, the four-band Home strip, the matched header
-  heights, the bigger Home buttons, and the bigger spin buttons.
-  Nothing left to check there.
-(The old "To-Do fired early" test is CLOSED (#63): the test as
-written needed the "At time" preset, which was removed back in #38 —
-your call, reaffirmed #63 ("leave as is for now"). The early fire
-was already explained as the 2-hour preset doing its job.)
+- THE VAULT CATEGORY PACKAGE (#67) — the checklist is item 1 of
+  WHAT'S NEXT above. Simulator-approved; the phone proves it.
 
 
 STILL BROKEN OR UNFINISHED (small bugs)
 ---------------------------------------
-(The single-digit date/time bug is FIXED — #58's control pads and
-checks everything typed; an unpadded value can't be saved anymore.)
 - Look Ahead: delaying from the BANNER doesn't show the "▶ Delayed"
   line on the tile (your #61-build phone test). Reading the code
   found the likely cause: the page only re-reads its saved items
@@ -139,12 +118,9 @@ checks everything typed; an unpadded value can't be saved anymore.)
 
 DECISIONS TO MAKE WHEN YOU'RE READY
 -----------------------------------
-- Backup "Merge" option. Restoring currently REPLACES everything; you
-  wanted the choice to MERGE instead. Its own session — each kind of data
-  combines by its own rule, and those are your calls.
 - Vault import (your item 3 above) — scope it out before building.
-- Remove categories from Vault (your #47 idea) — talk-through first,
-  like #42 did for To-Do.
+  (The Vault category work is BUILT — #67. Nothing left to decide
+  there.)
 
 
 NICE-TO-HAVE LATER (polish, low priority)
@@ -164,7 +140,6 @@ NICE-TO-HAVE LATER (polish, low priority)
   ("set") time. You want the entry to carry both times like the
   in-app logs do — the set time AND the time Done was actually
   tapped (#55).
-  (The To-Do "no reminder set" save note: DONE in #58.)
 
 
 PARKED ON PURPOSE (bigger items, on hold for now)
@@ -173,17 +148,12 @@ PARKED ON PURPOSE (bigger items, on hold for now)
   reminder test checklist; My Week's done-date recording; exact-item
   tap routing; the dark startup flash; Planner's unconnected
   reminder fields. (Retiring Colors.ts: DONE in #57.)
-- The Vault "Custom" label suspicion (spotted #47, NOT yet confirmed;
-  parked #55, your call): typing your own label under "Custom" may
-  save the word "Custom" instead. Test steps are in parked-items.md;
-  if real, the fix is tiny.
 - Voice control through Siri. Set aside after much effort; revisit only
   if a future iPhone update fixes the name-matching. (The app-name revert
   above assumes this stays shelved.)
 - The Timer "Loud alert" isn't actually louder — a genuinely louder alarm
   needs a custom sound built into the app and special Apple permission to
   break through Silent / Do-Not-Disturb. Heavy — deferred.
-- A running Timer's tile disappears if the app reloads or restarts (the
-  list of active timers is only held in memory). Accepted as-is: "Done"
-  still stops the alerts either way.
-- Reminder times stay global — already decided, nothing to do.
+- Backup "Merge" option — BACK-MOST BURNER (#67): Patrick is 90%
+  sure he's dropping it. Restore keeps REPLACING everything, which
+  works fine for his one-device use. Only revisit if he raises it.

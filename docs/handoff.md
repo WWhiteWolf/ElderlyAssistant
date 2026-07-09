@@ -1,6 +1,62 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #66 (2026-07-07) "Memory Test page"
+## THIS SESSION — #67 (2026-07-08) "Vault: user-defined categories"
+
+**THE WHOLE VAULT CATEGORY PACKAGE WAS BUILT, one step at a time, `tsc`
+clean after each, and SIMULATOR-APPROVED by Patrick ("Everything looks
+good"):**
+
+1. **Categories are now USER DATA** (`app/vault.tsx`): the hard-coded
+   seven are gone. A new `vault_categories` AsyncStorage key holds the
+   editable list; on FIRST run it's seeded with the original seven (same
+   ids — `identity`, `property`, `financial`, `medical`, `digital`,
+   `legal`, `other` — so every existing item stays put). **No icons
+   anywhere** (Patrick's call — the seeded seven lost theirs too; cards
+   show name + item count only).
+2. **"+ New" button** in the header (category list view) → Add Category
+   popup: standard slide-up modal, one Name field, Cancel/Add.
+3. **Edit button on every tile** → same popup as "Rename Category /
+   Update", name pre-filled. Rename changes the display name only; the id
+   stays, so items stay inside.
+4. **Swipe-to-delete on tiles** with a TWO-STAGE warning (Patrick's
+   spec): stage 1 names the category and counts its items; stage 2 is the
+   "permanently deleted, cannot be undone" confirm. Deleting removes the
+   category AND its items (his call — the Vault is a mobile reference
+   copy; masters live elsewhere).
+5. **Preset label chips REMOVED** from the New Item popup — plain typed
+   Label/Value/Notes now. This also ERASED the #47 "Custom" bug, which
+   was CONFIRMED REAL this session by reading the code: the chip row used
+   `'Custom'` (capital) but the save line checked `'custom'` (lower), so
+   typed labels were saved as the word "Custom".
+6. **`backup.tsx`**: `vault_categories` joined READABLE_KEYS (names only,
+   no secrets). Verified in the restore code: an OLD backup with no such
+   key just clears it and the Vault re-seeds the seven on next open —
+   old backups restore gracefully.
+7. **Polish (Patrick's ask):** "← All Categories" is now a capsule-
+   outlined button (themed `cardTitle` color, both themes).
+
+**Also this session (part 1):** #66 Memory Test confirmed DONE on the
+phone by Patrick — works just as he wants; he enters words by KEYBOARD
+MIC now (closer to the real test). Docs cleaned throughout: Orders #63
+verified working; all visuals approved; old Elyfont backups deleted (no
+old-restore proof needed); backup Merge idea moved to the back-most
+burner (90% dropped); pending.txt pruned of settled items.
+
+**NOT done yet: the roadmap.md refresh** — it's still the #31 picture
+(Elyfont naming, no Orders/Watch List/Look Ahead/Memory Test in the
+built list, To-Do phases long overtaken). Patrick began evaluating the
+road ahead this session and chose the Vault build first; the roadmap
+rewrite is the natural next-session candidate.
+
+**➤ NEXT: Patrick commits + EAS build. The phone test:** categories
+arrive seeded with his items where they were; add/rename/delete (two
+warnings, items go too); new items save their TYPED label (the Custom
+bug's fix, proven for real on the phone); a backup export includes
+`vault_categories`; the capsule outline on "← All Categories".
+
+---
+
+## SESSION — #66 (2026-07-07) "Memory Test page"
 
 **WHY:** Patrick failed the 5-word cognitive memory test and was diagnosed with
 mild (3%) sleep apnea; he's starting a PAP mask. This page runs that same test
@@ -40,37 +96,8 @@ run — his rounds went 4→5 climbing to all five, recall 5/5 — plus the reta
 trick (swipe today's My Scores row → Delete → the start button returns) and
 the spelling forgiveness. "It all works good."
 
-**➤ NEXT: Patrick commits + EAS build. The phone test:** the 5-minute banner
-fires with the phone LOCKED; tapping it lands on the recall screen; scores
-appear in My Scores; a backup export includes the memtest keys. The
-mic-button dictation tip (speak the words into the boxes) is worth trying on
-the real phone too.
-
----
-
-## SESSION — #65 (2026-07-06) "Name change to 'A Place To Remember'"
-
-**The WHOLE RENAME PACKAGE was BUILT — every piece Simulator-approved one at a time — AND Patrick's own App Store Connect step was completed live the same session.** All decisions were #64's; #65 executed them.
-
-1. **`app.json`**: `"name"` → `"Remember"` (the icon label; one line).
-2. **Home header rebuilt** (`app/home.tsx`): title "A Place To Remember" moved to its OWN full-width line (fits one line — verified both themes); the gear moved down beside the subtitle with its #63 hitSlop intact; **NEW: a small 32px face icon at the left of the subtitle row**, mirroring the gear. Patrick asked for no gold square behind it, so it uses **`assets/images/icon-face.png` — a NEW transparent-background file** (face/sparkle/dot only, cropped square). Approved in both themes.
-3. **Settings version line** (`app/settings.tsx`): → "A Place To Remember v1.0". Simulator-verified.
-4. **`backup.tsx` naming**: filename → `Remember-Backup-<date>.json`; internals → `app: 'A Place To Remember'`, `type: 'remember-backup'`; **restore accepts the new marker AND the old `'elyfont-backup'`** (a code comment guards it — old backups must stay restorable forever); share-sheet title + both failure alerts reworded. Share sheet verified live in the Simulator with the new filename. Old-backup restore proof rides the phone (iCloud).
-5. **The ICON ART was BUILT**: the #64-approved design (line-drawn happy face, brick-red `#b04a1a` on gold `#eec55a`, 4-point sparkle + dot at the upper-right temple) drawn at 1024×1024 RGB no-alpha and placed as **`assets/images/icon.png`** (Expo placeholder gone). Android variants + splash deliberately later. The phone only shows it after the EAS build.
-6. **Patrick's App Store Connect step — DONE live** (walked through step-by-step in Firefox): Distribution → App Information → Name → **"A Place To Remember"**, saved. The field was editable because the app is unreleased with version 1.0 in "Prepare for Submission" — no review gate hit.
-
-`tsc` clean after every edit. Docs refreshed end of session.
-
-**7. LATE ADDITION — AFTER build 48 shipped (rides the NEXT build):** Patrick's phone test caught the header face clashing with the light theme's teal header (brick-red art; he'd only checked dark in the Sim). Fix: `tintColor: t.settingsGear` on the header icon (`home.tsx`, one line) — the face now matches the gear's themed color pair (light soft-teal `#4caba1`, dark `#c9622e` — near-identical to the raw brick-red). Simulator-approved BOTH themes. **Until the next build, the phone shows the old brick-red face on the light header — known, fixed in code.**
-
-**8. THE SUBMISSION SAGA (for the record — build 48 DID reach TestFlight + the phone the same day):** `eas submit` failed twice with Apple 403 `FORBIDDEN.REQUIRED_AGREEMENTS_MISSING_OR_EXPIRED`. Two separate blockers, both cleared live in App Store Connect → **Business**: (1) the updated Apple Developer Program License Agreement needed accepting; (2) the EU **Digital Services Act** popup needed answering — Patrick chose "I'm not a trader under the DSA" (free personal app). Third `eas submit` of the same build succeeded immediately. **If a future submit 403s with "agreement missing or expired" → App Store Connect → Business, look for banners/popups.** (The "Sign the Paid Apps Agreement" note there is ignorable — only for paid apps/IAP.)
-
-**Commit note:** the main #65 code was committed and BUILT as **build 48** (on the phone). Still uncommitted at session end: the item-7 tint fix (`home.tsx`) + these docs — Patrick commits.
-
-**➤ NEXT: the phone test of build 48** (the item-7 tint fix rides the NEXT build):
-- ✅ Seen already: the new icon + header face (which is what caught the light-theme clash).
-- Backup: export shows `Remember-Backup-…`; **prove an old `Elyfont-Backup-…` file still restores** (pairs with the "name the backup folder" findability check in iCloud — the filename half is now done).
-- Plus the still-running #63 Orders multi-day checks (see pending.txt): day-before @ Midday / morning-of @ Morning, no window-close nag after HERE, watch-button listing.
+**➤ NEXT (COMPLETED — see #67 above): commit + build + phone test all done;
+works as Patrick wants, mic entry adopted.**
 
 ---
 
