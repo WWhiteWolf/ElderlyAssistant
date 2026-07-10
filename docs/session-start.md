@@ -1,5 +1,8 @@
 # Session start — how we begin
 
+**At every session start, read: `CLAUDE.md` (folder root), this file,
+and honor Patrick's saved Cowork preferences.**
+
 > **Cross-project note:** The cross-project docs for all my apps live in
 > **Projects → App-Docs** (a git repo, since #71): `master-handoff.md` (the one
 > session chain — read it first) and `Publishing-Strategy.docx` (the strategy).
