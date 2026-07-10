@@ -1,9 +1,9 @@
 PENDING WORK — plain-language list
-Last updated: 2026-07-09 (session #69 — a light one on purpose:
-you reordered the HOME BADGES yourself in VS Code, and three
-ideas came off the active list — Vault input PARKED, whole-file
-encryption to NICE-TO-HAVE, Orders preset addresses DROPPED.
-Next session: PUBLISHING.)
+Last updated: 2026-07-09 (session #71 — a publishing/deciding
+session, no app code touched. The FOUR-PRODUCT goal is written
+down, the fork is CHOSEN — Mystery mobile first, to the App
+Store, free — and the road there is scoped and decided. See
+MysteryCluesTracker/docs/upgrade-scope.md for all of it.)
 
 This is the "what's still left" list in everyday words. It's pulled from
 parked-items.md and the hand-off notes so you can glance at it without
@@ -13,39 +13,37 @@ tracked here — git history keeps the full record — so this list stays short.
 
 WHERE THINGS STAND RIGHT NOW (read this first)
 ----------------------------------------------
-- NEW THIS SESSION (#69): THE HOME BADGES ARE IN YOUR NEW ORDER —
-  you made the edit yourself in VS Code and approved it in the
-  Simulator; Claude verified the file clean. AWAITING YOUR
-  COMMIT + BUILD; the phone check is just the order of the
-  twelve badges.
-- THREE IDEAS SETTLED (#69): Vault input/import is PARKED (the
-  Vault stays as it is until you hit a real need — not to be
-  re-raised); whole-file backup encryption moved to NICE-TO-HAVE
-  below; Orders preset addresses DROPPED (you looked at the form
-  and it's fine as is).
-- EARLIER TODAY (#68): the ROADMAP.MD REFRESH IS DONE and
-  committed — the long-standing rewrite is off the list. And the
-  #67 VAULT CATEGORY PACKAGE WAS CONFIRMED ON THE PHONE: the app
-  is phone-verified through #67, nothing built awaits a phone
-  test except this session's badge order.
-- NEXT SESSION (your pick, #69): PUBLISHING. The strategy doc is
-  Publishing-Strategy.docx in OneDrive -> App-Pubs (not in this
-  folder) — connect that folder at the session start.
-- STILL TO COMMIT: home.tsx (the badge order) + these docs
-  (Patrick commits).
+- SESSIONS #70–#71 WERE PUBLISHING SESSIONS — nothing in the
+  Memory app changed. #70 fixed elyfont.com (welcome home page,
+  verified live). #71 made the big decisions: BOTH apps go to
+  web AND mobile, all published (the four-product goal); FIRST
+  UP is the Mystery mobile app — renamed "Mystery Tracker",
+  cleaned up, to the App Store as a FREE app, wrapped in a small
+  Xcode shell (route researched and decided). The full scope
+  lives in MysteryCluesTracker/docs/upgrade-scope.md.
+- STILL FROM #69: THE HOME BADGE REORDER (home.tsx) — the
+  commit + build + phone check (just the badge order) may still
+  be pending. Confirm where that stands.
+- The cross-project docs moved (late #71): they now live in
+  Projects -> App-Docs, a git repo — master-handoff.md (the one
+  session chain, read first) plus Publishing-Strategy.docx. The
+  OneDrive copies are stale, marked MOVED. A pointer lives at
+  docs/publishing.md. YOU still owe: git init + GitHub repo +
+  first commit for the new App-Docs folder.
 - The dark startup flash is still there (a known small quirk).
 
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. COMMIT the badge reorder + these docs, and BUILD. On the
-   phone: just check the twelve Home badges sit in your new
-   order.
-2. PUBLISHING — your pick for next session (#69). Start by
-   connecting the OneDrive -> App-Pubs folder and reading
-   Publishing-Strategy.docx.
-3. After that it's an open pick — the smaller items live in the
-   lists that follow. (Vault input/import is PARKED — see below.)
+1. NEXT SESSION (your call, #71): begin the Mystery Tracker
+   mobile upgrade "when we are ready." Connect the
+   MysteryCluesTracker folder and read docs/upgrade-scope.md
+   there. First candidates: the "Clue" text check, the small
+   pre-store code fixes, or mockups for the new setup + columns.
+2. If not done yet: COMMIT the #69 badge reorder + these docs,
+   BUILD, and check the badge order on the phone.
+3. After that it's an open pick — the smaller Memory items live
+   in the lists that follow. (Vault input/import stays PARKED.)
 
 
 #40 & #41 STILL OPEN (what's left of your #41 list)

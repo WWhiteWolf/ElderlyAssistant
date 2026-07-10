@@ -1,47 +1,70 @@
 # Hand-off note — paste at the start of the next session
 
-## THIS SESSION — #69 (2026-07-09) "Home badges + three decisions"
+## THIS SESSION — #71 (2026-07-09) "Publishing Memory" (became: Mystery Tracker mobile decided)
 
-**A light session by design ("we didn't do much here" — Patrick, approvingly).
-One code change and three list-clearing decisions:**
+**A publishing/deciding session — NO app code changed in any project.
+The session was named for Memory but the road chosen runs through the
+Mystery app first. Everything below is recorded in the strategy doc
+(Projects → App-Docs → `Publishing-Strategy.docx`) and in
+`MysteryCluesTracker/docs/upgrade-scope.md`:**
 
-1. **Home badges reordered — PATRICK MADE THE EDIT HIMSELF in VS Code**
-   (`app/home.tsx`, the `modules` list, lines 17–30) and tested it in the
-   Simulator. Claude verified after: all twelve entries intact (id + label +
-   icon together), `tsc` clean. New order, two per row: Planner / Memory Test,
-   Orders / Watch List, Vault / Timer, To-Do / Look Ahead, My Week / Shopping,
-   Pets / My Day. **This is the ONLY code change of the session.**
-2. **Vault pages (input/import) — PARKED.** The #69 talk-through opened with
-   "walk me through the picture" and Patrick wasn't ready: "not ready for this
-   yet… I am going with the way it is" until he runs into a real need.
-   Don't re-raise.
-3. **Whole-file backup encryption — demoted to NICE-TO-HAVE.** (He'd opened
-   the session calling it a standing requirement, then moved it down himself.)
-4. **Orders preset addresses — DROPPED.** Talk-through got as far as his
-   picture (Home + 2–3 saved addresses, typing kept) before he looked at the
-   form again and decided it needs no changes. Only revisit if he raises it.
+1. **THE FOUR-PRODUCT GOAL is now written down** (it was only "options to
+   keep open" before): both apps — Mystery Tracker AND Memory — on web
+   AND mobile, all fully done and published. Recorded in the strategy doc
+   as "The four products — decided."
+2. **The fork is CHOSEN: Mobile first.** Clean up the Mystery mobile PWA
+   (RENAMED "Mystery Tracker", same name as the web version) and take it
+   to the App Store FREE. The Memory web version waits its turn.
+3. **Full upgrade scope recorded** in `MysteryCluesTracker/docs/upgrade-scope.md`
+   — the one file to read before touching that app. Highlights: player-
+   configurable structure (1–4 categories, 1–30 cards — legally motivated,
+   away from the famous game's fixed 6/6/9 shape); ✓/✗ cell tinting,
+   Σ + House columns from the web app; NO tiering (free = everything on),
+   no voice, no export, no Deductions; scrolling OK (landscape idea parked
+   to mockup time).
+4. **Route to the store DECIDED (research done, web-verified): bare
+   Xcode + WKWebView wrapper.** Near-zero maintenance; Claude is built
+   into Xcode 26 to help. A localStorage→native data-safety bridge is
+   required work. Capacitor / Expo+WebView / PWABuilder passed over.
+5. **New in THIS project:** `docs/publishing.md` — pointer to the
+   publishing docs (the "App-Pubs" name is dead; fixed everywhere this
+   session). LATE IN #71 the cross-project home MOVED: everything now
+   lives in **Projects → App-Docs** — a git repo with a new
+   `master-handoff.md` anchoring ONE session chain for all projects
+   (Patrick's call: one folder, version-controlled; OneDrive copy is
+   stale, marked with MOVED.txt).
 
-All three decisions are recorded in `roadmap.md`, `parked-items.md`, and
-`pending.txt` (edited this session).
+**➤ NEXT SESSION (Patrick, end of #71): begin the Mystery Tracker mobile
+upgrade "when we are ready." Connect Projects → MysteryCluesTracker and
+read its `docs/upgrade-scope.md` first.** Open first steps there: the
+quick "Clue" grep of in-app text, the mechanical pre-store fixes, or
+mockups for the configurable setup + new columns — Patrick names the goal.
 
-**➤ NEXT: Patrick commits + builds; the phone check is just the new badge
-order on Home. NEXT SESSION'S GOAL (his call, end of #69): PUBLISHING.**
-The strategy doc lives OUTSIDE this folder — **OneDrive → App-Pubs →
-`Publishing-Strategy.docx`** (see the cross-project note atop
-`session-start.md`); connect that folder at the start.
+*Memory-app note: nothing changed here in #70–#71. The #69 badge-order
+commit + build + phone check may still be pending — confirm with Patrick,
+don't assume.*
 
 ---
 
-## SESSION — #68 (2026-07-09, earlier) "Roadmap refresh"
+## SESSION — #70 (2026-07-09, earlier) "Publishing: elyfont.com root fix + home page"
 
-*Not written up in the hand-off at the time — this entry was reconstructed in
-#69 from the roadmap and git.* The `roadmap.md` rewrite (parked since #67) was
-completed and committed (`c4e92bd` "Roadmap completed"). The #67 Vault
-category package was **confirmed on the phone** — the roadmap now records the
-app as phone-verified through #67. Session-start rules gained "Patrick leads;
-Claude doesn't steer" (#68). Three new Track-1 ideas were logged (#68): Vault
-pages, whole-file backup encryption, Orders preset addresses — all three were
-then settled in #69 (parked / nice-to-have / dropped, above).
+**A publishing-side session — NO app code changed in this project.** Full
+detail lives in the strategy doc: **Projects → App-Docs →
+`Publishing-Strategy.docx`** (moved from OneDrive late in #71).
+
+1. **New folder in THIS project: `elyfont-home/`, holding one file,
+   `index.html`.** This is the SOURCE of the live home page at
+   **elyfont.com**. The site no longer opens straight into Mystery Tracker —
+   the root is now a welcome page (Patrick wants the domain to host multiple
+   apps) linking to the app and to the 266-step test procedure. If this file
+   is ever edited, the live copy must be re-uploaded to the public repo
+   `WWhiteWolf/mystery-tracker` (upload replaces; never rename anything to
+   or from `index.html` there — see `MysteryTracker/docs/DEPLOY.md`).
+2. **The stale-root problem is FIXED and verified live** (Patrick made all
+   commits via the GitHub website). Mix-up cleaned: a copy accidentally
+   committed to the private `MysteryTracker` repo was deleted.
+3. **Repos archived by Patrick himself:** `WatchList` (its features live on
+   in A Place To Remember) and `Health-Data`.
 
 ---
 

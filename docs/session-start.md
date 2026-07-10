@@ -1,8 +1,9 @@
 # Session start — how we begin
 
-> **Cross-project note:** The overarching business/publishing strategy and learning
-> tracker for all my apps lives in **OneDrive → App-Pubs** as `Publishing-Strategy.docx`.
-> Connect that folder to read or update it — it's no longer kept in the Projects folder.
+> **Cross-project note:** The cross-project docs for all my apps live in
+> **Projects → App-Docs** (a git repo, since #71): `master-handoff.md` (the one
+> session chain — read it first) and `Publishing-Strategy.docx` (the strategy).
+> (A pointer with the details sits at `docs/publishing.md` in this project.)
 
 ## Standing rules (read these first, every session)
 
