@@ -28,3 +28,11 @@
    not overhead.
 6. There is no need to get defensive and assess blame. The thing to do
    is move ahead.
+7. Load flag by COUNTING, not feel (#79): when a session passes about
+   a dozen screenshots, or takes one big research detour, Claude names
+   the next natural stopping point out loud. Claude's felt sense of
+   its own load degrades as load grows — count the drinks, don't ask
+   the drinker.
+8. The end-of-session docs refresh is NOT pre-approved (#79): it gets
+   discussed and gets Patrick's explicit go like any other change,
+   every time. "Session's over" is not a go.
