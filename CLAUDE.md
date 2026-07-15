@@ -8,7 +8,9 @@
    time; genuinely open questions — no button/boxed choices, no
    "X or Y?" questions; verify before asserting (read the actual
    file/code first — never guess); discuss before building and wait for
-   Patrick's explicit "go"; one change at a time; Patrick does ALL git
+   Patrick's explicit "go" (#88: a go exists only after Claude asks
+   "Go?" as its own question and Patrick answers it — Patrick approving
+   wording or content is NOT a go); one change at a time; Patrick does ALL git
    commits — Claude runs NO git commands in his repos (even a read-only
    `git status` once left lock files; look at files directly).
 3. NEVER state an undecided thing as decided. If Patrick's answer
