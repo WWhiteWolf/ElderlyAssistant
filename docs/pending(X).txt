@@ -11,12 +11,58 @@ reading the technical docs. Nothing here is urgent. Finished work isn't
 tracked here — git history keeps the full record — so this list stays short.
 
 
+WHERE THINGS STAND RIGHT NOW (read this first)
+----------------------------------------------
+- SESSIONS #70–#71 WERE PUBLISHING SESSIONS — nothing in the
+  Memory app changed. #70 fixed elyfont.com (welcome home page,
+  verified live). #71 made the big decisions: BOTH apps go to
+  web AND mobile, all published (the four-product goal); FIRST
+  UP is the Mystery mobile app — renamed "Mystery Tracker",
+  cleaned up, to the App Store as a FREE app, wrapped in a small
+  Xcode shell (route researched and decided). The full scope
+  lives in MysteryCluesTracker/docs/upgrade-scope.md.
+- STILL FROM #69: THE HOME BADGE REORDER (home.tsx) — the
+  commit + build + phone check (just the badge order) may still
+  be pending. Confirm where that stands.
+- The cross-project docs moved (late #71): they now live in
+  Projects -> App-Docs, a git repo — master-handoff.md (the one
+  session chain, read first) plus Publishing-Strategy.docx. The
+  OneDrive copies are stale, marked MOVED. A pointer lives at
+  docs/publishing.md. YOU still owe: git init + GitHub repo +
+  first commit for the new App-Docs folder.
+- The dark startup flash is still there (a known small quirk).
+
+
 WHAT'S NEXT
 ------------------------------------------------------------------
+1. NEXT SESSION (your call, #71): begin the Mystery Tracker
+   mobile upgrade "when we are ready." Connect the
+   MysteryCluesTracker folder and read docs/upgrade-scope.md
+   there. First candidates: the "Clue" text check, the small
+   pre-store code fixes, or mockups for the new setup + columns.
+2. If not done yet: COMMIT the #69 badge reorder + these docs,
+   BUILD, and check the badge order on the phone.
+3. After that it's an open pick — the smaller Memory items live
+   in the lists that follow. (Vault input/import stays PARKED.)
+
+
+#40 & #41 STILL OPEN (what's left of your #41 list)
+----------------------------------------------------------------------------
+(Item 1 — backup naming/findability — is CLOSED: the filename is
+Remember-Backup-<date>, and you've exported and managed the new
+files yourself, #67.)
+3. Import files/documents into the Vault — PARKED (#69). The idea
+   became "Vault pages" (paste text straight into a Vault item, no
+   files) in the #68 roadmap; in #69 you started the talk-through,
+   weren't ready, and parked the whole thing. The Vault stays as
+   it is until you run into a real need. Not to be re-raised.
 
 
 NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
 ----------------------------------------------------------------------------
+- THE HOME BADGE ORDER (#69) — the one check in item 1 of WHAT'S
+  NEXT above. (The #67 Vault category package was CONFIRMED on
+  the phone in #68 — nothing else is waiting.)
 
 
 STILL BROKEN OR UNFINISHED (small bugs)
@@ -37,6 +83,9 @@ STILL BROKEN OR UNFINISHED (small bugs)
 
 DECISIONS TO MAKE WHEN YOU'RE READY
 -----------------------------------
+- (Vault input/import was here — PARKED in #69, see item 3 above.
+  The Vault category work is BUILT — #67. Nothing left to decide
+  there.)
 
 
 NICE-TO-HAVE LATER (polish, low priority)
@@ -77,8 +126,3 @@ PARKED ON PURPOSE (bigger items, on hold for now)
 - Backup "Merge" option — BACK-MOST BURNER (#67): Patrick is 90%
   sure he's dropping it. Restore keeps REPLACING everything, which
   works fine for his one-device use. Only revisit if he raises it.
-- Import files/documents into the Vault — PARKED (#69). The idea
-  became "Vault pages" (paste text straight into a Vault item, no
-  files) in the #68 roadmap; in #69 you started the talk-through,
-  weren't ready, and parked the whole thing. The Vault stays as
-  it is until you run into a real need. Not to be re-raised.
