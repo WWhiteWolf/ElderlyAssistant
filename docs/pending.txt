@@ -1,14 +1,12 @@
-PENDING WORK — plain-language list
-Last updated: 2026-07-09 (session #71 — a publishing/deciding
-session, no app code touched. The FOUR-PRODUCT goal is written
-down, the fork is CHOSEN — Mystery mobile first, to the App
-Store, free — and the road there is scoped and decided. See
-MysteryCluesTracker/docs/upgrade-scope.md for all of it.)
+A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
+Last updated: 2026-07-30 (session 0 — the transition carpentry:
+the project's files reshaped to mirror Mystery's, no app code
+touched. Memory's own chain begins next session at #1-new; bare
+session numbers below mean the old shared chain.)
 
-This is the "what's still left" list in everyday words. It's pulled from
-parked-items.md and the hand-off notes so you can glance at it without
-reading the technical docs. Nothing here is urgent. Finished work isn't
-tracked here — git history keeps the full record — so this list stays short.
+This is the "what's still left" list in everyday words. Nothing here
+is urgent. Finished work isn't tracked here — git history keeps the
+full record — so this list stays short.
 
 
 WHAT'S NEXT
