@@ -137,3 +137,69 @@ is read.
 **The refresh.** pending.docx rebuilt from the txt and
 machine-checked word for word. Next session's goal: #3-new —
 header buttons to round & Days no time set.
+
+## #3-new (2026-07-31): round header buttons and optional Day
+times, built and phone-verified
+
+**The goal — done.** Both "What's Next" items scoped together
+first, then built in three pieces, each on its own go:
+
+- **Round header buttons (all fifteen screens):** every
+  `headerBtn` pill became a true circle — width and height 54,
+  radius 27, contents centered — and the labels trimmed to
+  "Home" (arrow dropped), "+ Add" on every add-type button, and
+  "Back" on Backup. The strays settled by Patrick's word along
+  the way: Vault's "+ New" became "+ Add" (its two plus-buttons
+  live on separate screens, so no confusion), To-Do's "New Task"
+  became "+ Add", and Backup's "← Back" joined as a circle
+  reading "Back". memorytest's invisible title-centering spacer
+  and Backup's headerSpacer (90 to 54) followed their styles.
+- **The shared control (components/DateTimeControl.tsx):** three
+  new optional settings — optionalTime, timeSet, onClearTime.
+  While the time is optional and none is set, the spinner row
+  sits dulled at 12:00 PM, the typed box sits empty, and the
+  hint reads "No time set — tap the arrows or type a time to set
+  one." The first arrow tap wakes it at 12:00 PM; typing a valid
+  time wakes it directly; emptying the box clears the time. The
+  #59 empty-box rule is untouched wherever the switch is off,
+  and every other caller (To-Do, Look Ahead, Orders, My Week,
+  Settings) compiles unchanged. Patrick's word: any page MAY
+  adopt the option later, each needing its own save-path work —
+  only the two Day pages adopt it now.
+- **My Day / Pets Day (app/myday.tsx, app/mollie.tsx):** hour
+  and minute may now be null — the row shows just the label, the
+  scheduler arms no reminder, "+ Add" opens the modal asleep,
+  Edit opens asleep only for a no-time item, and Save writes
+  null when the box is empty. Existing saved items keep their
+  numbers; nothing migrates.
+
+**The two header fixes from the Simulator test.** Patrick's test
+found the taller circles pushed every header down except Look
+Ahead's. The cause: Look Ahead's header SafeAreaView carries
+edges={['top']}; the rest defaulted to all edges (the old #62
+"taller header look", now reversed — the settings.tsx comment
+records the change). All thirteen other screens got
+edges={['top']}, then paddingBottom: 8 under the buttons, both
+matching Home and Look Ahead.
+
+**Checks.** npx tsc --noEmit clean after every piece; a search
+across the header labels found only "Home", "+ Add", and "Back";
+counts confirmed all fifteen wrappers and all fourteen header
+blocks aligned. Patrick verified in the Simulator, then built
+through EAS and confirmed everything on the phone. The code
+commit is Patrick's, made in-session.
+
+**Filed and noted.** pending.txt's "What's Next" refilled with
+three items, Patrick's word: Look Ahead's tile format and its
+Snooze changed or dropped; Timer's tile gaining a Stop (Pause) /
+Continue (Go) button and a log; the Vault restructuring's
+"Home"-to-"Back" button change. His EAS build-and-submit steps
+recorded at the end of docs/publishing.md under "Build steps" (a
+quiet-file change, noted in the hand-off for one session).
+Amendment, Patrick's word: status reports no longer mention
+Mystery.
+
+**The refresh.** pending.docx rebuilt from the txt and
+machine-checked word for word — 566 words each side, zero
+mismatches. Next session's goal: #4-new — take up pending.txt's
+"What's Next" items, scoped together at the session start.

@@ -1,8 +1,9 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-07-31 (#2-new — the three "What's Next" items
-built and verified in the Simulator, then replaced with two new
-ones: round header-button outlines, and no required time in the
-Days. Bare session numbers below mean the old shared chain.)
+Last updated: 2026-07-31 (#3-new — the round header buttons and
+the Days' optional times built and phone-verified, then replaced
+with three new items: Look Ahead's tiles and Snooze, Timer's tile
+button and log, and the Vault's Home-to-Back change. Bare session
+numbers below mean the old shared chain.)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. Finished work isn't tracked here — git history keeps the
@@ -11,11 +12,12 @@ full record — so this list stays short.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-- Every screen carrying the "Home" and "+" header buttons: change
-  the pill outline to round (#2-new).
-- My Day / Pets Day: an item no longer requires a time — an item
-  saved without one simply gets no reminder, for the things you
-  want listed but not nagged about (#2-new).
+- Look Ahead: change the tile format, and change or drop the
+  Snooze (#3-new).
+- Timer: add a Stop (Pause) / Continue (Go) button to the tile,
+  and add a log (#3-new).
+- Vault restructuring: the "Home" header button becomes a "Back"
+  button (#3-new).
 
 
 NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
