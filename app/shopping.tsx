@@ -115,7 +115,7 @@ export default function ShoppingScreen() {
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[styles.tab, view === 'shopping' && styles.tabActive]}
-                    onPress={() => setView('shopping')}
+                    onPress={() => { setView('shopping'); setSelectedId(null); }}
                 >
                     <Text style={[styles.tabText, view === 'shopping' && styles.tabTextActive]}>
                         Shopping
@@ -161,7 +161,7 @@ export default function ShoppingScreen() {
                         )}
                     >
                         <TouchableOpacity
-                            onPress={() => setSelectedId(selectedId === item.id ? null : item.id)}
+                            onPress={() => { if (view === 'inventory') setSelectedId(selectedId === item.id ? null : item.id); }}
                             activeOpacity={0.8}
                         >
                             <View style={[styles.itemRow, selectedId === item.id && styles.itemSelected]}>
@@ -274,7 +274,8 @@ const makeStyles = (t: Theme) =>
             alignItems: 'center',
             backgroundColor: t.card,
             borderRadius: 10,
-            padding: 12,
+            paddingVertical: 4,
+            paddingHorizontal: 12,
             marginBottom: 8,
             borderWidth: 0.5,
             borderColor: t.cardBorder,

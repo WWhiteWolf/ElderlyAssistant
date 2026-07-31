@@ -82,7 +82,7 @@ export default function HomeScreen() {
                         </View>
                         {/* #63: hitSlop — the 22px gear was a hard target on the phone */}
                         <TouchableOpacity onPress={() => router.push('/settings')} style={{ width: 70, alignItems: 'flex-end' }} hitSlop={{ top: 12, bottom: 12, left: 10, right: 10 }}>
-                            <Ionicons name="settings" size={22} color={theme.settingsGear} />
+                            <Ionicons name="settings" size={32} color={theme.settingsGear} />
                         </TouchableOpacity>
                     </View>
                 </View>

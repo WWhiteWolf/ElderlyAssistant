@@ -60,14 +60,8 @@ export default function MyDayScreen() {
     const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [activeId, setActiveId] = useState<string | null>(null);
     const [tempName, setTempName] = useState('');
-    const [tempWhat, setTempWhat] = useState('');
-    const [tempNote, setTempNote] = useState('');
-    const [showLogModal, setShowLogModal] = useState(false);
-    const [pendingLogId, setPendingLogId] = useState<string | null>(null);
     const [editEntry, setEditEntry] = useState<HistoryEntry | null>(null);
     const [coffeeCount, setCoffeeCount] = useState(0);
-    const [showCoffeeModal, setShowCoffeeModal] = useState(false);
-    const [tempCoffeeNote, setTempCoffeeNote] = useState('');
     const [editWhat, setEditWhat] = useState('');
     const [editNote, setEditNote] = useState('');
     const [pendingTime, setPendingTime] = useState<Date | null>(null);
@@ -75,8 +69,6 @@ export default function MyDayScreen() {
     // Save is blocked with a warning while false (#61, Look Ahead's pattern).
     const [pendingTimeValid, setPendingTimeValid] = useState(true);
     const [waterCount, setWaterCount] = useState(0);
-    const [showWaterModal, setShowWaterModal] = useState(false);
-    const [tempWaterNote, setTempWaterNote] = useState('');
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
     const [showEditModal, setShowEditModal] = useState(false);
     const [snoozeItemId, setSnoozeItemId] = useState<string | null>(null);
@@ -199,16 +191,10 @@ export default function MyDayScreen() {
         return `${hr}:${m.toString().padStart(2, '0')} ${period}`;
     };
 
-    const openLogModal = (id: string) => {
-        setPendingLogId(id);
-        setTempWhat('');
-        setTempNote('');
-        setShowLogModal(true);
-    };
-
-    const confirmLog = () => {
-        if (!pendingLogId) return;
-        const item = routine.find(i => i.id === pendingLogId);
+    // #2-new: one-tap Log — no notes modal. A note is added afterward,
+    // if wanted, through My Log's tap-to-edit modal.
+    const logItem = (id: string) => {
+        const item = routine.find(i => i.id === id);
         if (!item) return;
         const now = new Date().toLocaleTimeString([], {
             hour: 'numeric',
@@ -220,18 +206,16 @@ export default function MyDayScreen() {
             date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
             sched: item.label,
             actual: now,
-            what: tempWhat || '',
-            note: tempNote || '',
+            what: '',
+            note: '',
         };
         const updatedHist = [newEntry, ...history].slice(0, 50);
         const updatedRoutine = routine.map(s =>
-            s.id === pendingLogId ? { ...s, completed: true } : s
+            s.id === id ? { ...s, completed: true } : s
         );
         setRoutine(updatedRoutine);
         setHistory(updatedHist);
         saveData(updatedRoutine, updatedHist);
-        setShowLogModal(false);
-        setPendingLogId(null);
     };
 
     // Un-check (Patrick, #42, mirrors My Week's undoDone): tapping the ✓ asks,
@@ -301,6 +285,7 @@ export default function MyDayScreen() {
         ]);
     };
 
+    // #2-new: one-tap count — no notes modal (same pattern as logItem).
     const confirmCoffee = () => {
         const now = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false });
         const newEntry: HistoryEntry = {
@@ -308,7 +293,7 @@ export default function MyDayScreen() {
             date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
             sched: 'Coffee',
             actual: now,
-            what: tempCoffeeNote || '',
+            what: '',
             note: '',
         };
         const updatedHist = [newEntry, ...history].slice(0, 50);
@@ -317,8 +302,6 @@ export default function MyDayScreen() {
         AsyncStorage.setItem('my_coffee', String(newCount));
         setHistory(updatedHist);
         saveData(routine, updatedHist);
-        setShowCoffeeModal(false);
-        setTempCoffeeNote('');
     };
 
     const decrementCoffee = () => {
@@ -329,6 +312,7 @@ export default function MyDayScreen() {
         }
     };
 
+    // #2-new: one-tap count — no notes modal (same pattern as logItem).
     const confirmWater = () => {
         const now = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false });
         const newEntry: HistoryEntry = {
@@ -336,7 +320,7 @@ export default function MyDayScreen() {
             date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
             sched: 'Water',
             actual: now,
-            what: tempWaterNote || '',
+            what: '',
             note: '',
         };
         const updatedHist = [newEntry, ...history].slice(0, 50);
@@ -345,8 +329,6 @@ export default function MyDayScreen() {
         AsyncStorage.setItem('my_water', String(newCount));
         setHistory(updatedHist);
         saveData(routine, updatedHist);
-        setShowWaterModal(false);
-        setTempWaterNote('');
     };
 
     const toggleSelect = (id: string) => {
@@ -494,7 +476,7 @@ export default function MyDayScreen() {
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={[styles.logBtn, item.completed && styles.loggedBtn]}
-                                    onPress={() => item.completed ? undoDone(item.id) : openLogModal(item.id)}
+                                    onPress={() => item.completed ? undoDone(item.id) : logItem(item.id)}
                                 >
                                     <Text style={[styles.logBtnText, item.completed && styles.loggedBtnText]}>{item.completed ? '✓' : 'Log'}</Text>
                                 </TouchableOpacity>
@@ -538,54 +520,6 @@ export default function MyDayScreen() {
 
             </ScrollView>
 
-            {showLogModal && (
-                <View style={styles.modal}>
-                    <Text style={styles.modalTitle}>Log Entry</Text>
-                    <Text style={styles.inputLabel}>Notes (optional)</Text>
-                    <TextInput style={styles.input} value={tempWhat} onChangeText={setTempWhat} placeholder="Add a note about this entry..." placeholderTextColor={theme.mutedText} />
-                    <View style={styles.modalBtns}>
-                        <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowLogModal(false)}>
-                            <Text style={styles.cancelBtnText}>Cancel</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.confirmBtn} onPress={confirmLog}>
-                            <Text style={styles.confirmBtnText}>Log</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            )}
-
-            {showCoffeeModal && (
-                <View style={styles.modal}>
-                    <Text style={styles.modalTitle}>Log Coffee</Text>
-                    <Text style={styles.inputLabel}>Notes (optional)</Text>
-                    <TextInput style={styles.input} value={tempCoffeeNote} onChangeText={setTempCoffeeNote} placeholder="e.g. black, with cream..." placeholderTextColor={theme.mutedText} autoFocus={true} />
-                    <View style={styles.modalBtns}>
-                        <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowCoffeeModal(false)}>
-                            <Text style={styles.cancelBtnText}>Cancel</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.confirmBtn} onPress={confirmCoffee}>
-                            <Text style={styles.confirmBtnText}>Log</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            )}
-
-            {showWaterModal && (
-                <View style={styles.modal}>
-                    <Text style={styles.modalTitle}>Log Water</Text>
-                    <Text style={styles.inputLabel}>Notes (optional)</Text>
-                    <TextInput style={styles.input} value={tempWaterNote} onChangeText={setTempWaterNote} placeholder="e.g. glass, bottle..." placeholderTextColor={theme.mutedText} autoFocus={true} />
-                    <View style={styles.modalBtns}>
-                        <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowWaterModal(false)}>
-                            <Text style={styles.cancelBtnText}>Cancel</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.confirmBtn} onPress={confirmWater}>
-                            <Text style={styles.confirmBtnText}>Log</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            )}
-
             <View style={styles.counterBox}>
                 <View style={styles.counterItem}>
                     <Text style={styles.counterTitle}>Coffee</Text>
@@ -594,7 +528,7 @@ export default function MyDayScreen() {
                             <Text style={styles.minusBtnText}>-</Text>
                         </TouchableOpacity>
                         <Text style={styles.coffeeCount}>{coffeeCount}</Text>
-                        <TouchableOpacity style={styles.plusBtn} onPress={() => { setTempCoffeeNote(''); setShowCoffeeModal(true); }}>
+                        <TouchableOpacity style={styles.plusBtn} onPress={confirmCoffee}>
                             <Text style={styles.counterBtnText}>+</Text>
                         </TouchableOpacity>
                     </View>
@@ -613,7 +547,7 @@ export default function MyDayScreen() {
                             <Text style={styles.minusBtnText}>-</Text>
                         </TouchableOpacity>
                         <Text style={styles.coffeeCount}>{waterCount}</Text>
-                        <TouchableOpacity style={styles.plusBtn} onPress={() => { setTempWaterNote(''); setShowWaterModal(true); }}>
+                        <TouchableOpacity style={styles.plusBtn} onPress={confirmWater}>
                             <Text style={styles.counterBtnText}>+</Text>
                         </TouchableOpacity>
                     </View>

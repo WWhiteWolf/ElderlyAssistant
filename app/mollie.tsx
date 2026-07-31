@@ -52,11 +52,6 @@ export default function PetsScreen() {
     const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [activeId, setActiveId] = useState<string | null>(null);
     const [tempName, setTempName] = useState('');
-    const [showLogModal, setShowLogModal] = useState(false);
-    const [pendingLogId, setPendingLogId] = useState<string | null>(null);
-    const [tempWhat, setTempWhat] = useState('');
-    const [showTreatModal, setShowTreatModal] = useState(false);
-    const [tempTreatNote, setTempTreatNote] = useState('');
     const [treatCount, setTreatCount] = useState(0);
     const [pendingTime, setPendingTime] = useState<Date | null>(null);
     // True while the shared control's typed time box holds a real time;
@@ -167,15 +162,10 @@ export default function PetsScreen() {
         return `${hr}:${m.toString().padStart(2, '0')} ${period}`;
     };
 
-    const openLogModal = (id: string) => {
-        setPendingLogId(id);
-        setTempWhat('');
-        setShowLogModal(true);
-    };
-
-    const confirmLog = () => {
-        if (!pendingLogId) return;
-        const item = feeds.find(f => f.id === pendingLogId);
+    // #2-new: one-tap Log — no notes modal (mirrors My Day). A note is
+    // added afterward, if wanted, through the Pets Log's tap-to-edit modal.
+    const logItem = (id: string) => {
+        const item = feeds.find(f => f.id === id);
         if (!item) return;
         const now = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false });
         const newEntry: HistoryEntry = {
@@ -183,18 +173,16 @@ export default function PetsScreen() {
             date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
             sched: item.label,
             actual: now,
-            what: tempWhat || '',
+            what: '',
             note: '',
         };
         const updatedFeeds = feeds.map(f =>
-            f.id === pendingLogId ? { ...f, completed: true } : f
+            f.id === id ? { ...f, completed: true } : f
         );
         const updatedHist = [newEntry, ...history].slice(0, 50);
         setFeeds(updatedFeeds);
         setHistory(updatedHist);
         saveData(updatedFeeds, updatedHist);
-        setShowLogModal(false);
-        setPendingLogId(null);
     };
 
     // Un-check (Patrick, #42, mirrors My Week's undoDone): tapping the ✓ asks,
@@ -219,6 +207,7 @@ export default function PetsScreen() {
         ]);
     };
 
+    // #2-new: one-tap count — no notes modal (same pattern as logItem).
     const confirmTreat = () => {
         const now = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false });
         const newEntry: HistoryEntry = {
@@ -226,7 +215,7 @@ export default function PetsScreen() {
             date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
             sched: 'Treat',
             actual: now,
-            what: tempTreatNote || '',
+            what: '',
             note: '',
         };
         const updatedHist = [newEntry, ...history].slice(0, 50);
@@ -235,8 +224,6 @@ export default function PetsScreen() {
         AsyncStorage.setItem('pets_treats', String(newCount));
         setHistory(updatedHist);
         saveData(feeds, updatedHist);
-        setShowTreatModal(false);
-        setTempTreatNote('');
     };
 
     // On-page Snooze: schedule a one-off reminder for this feed N minutes from
@@ -430,7 +417,7 @@ export default function PetsScreen() {
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={[styles.logBtn, item.completed && styles.loggedBtn]}
-                                    onPress={() => item.completed ? undoDone(item.id) : openLogModal(item.id)}
+                                    onPress={() => item.completed ? undoDone(item.id) : logItem(item.id)}
                                 >
                                     <Text style={[styles.logBtnText, item.completed && styles.loggedBtnText]}>{item.completed ? '✓' : 'Log'}</Text>
                                 </TouchableOpacity>
@@ -473,38 +460,6 @@ export default function PetsScreen() {
 
             </ScrollView>
 
-            {showLogModal && (
-                <View style={styles.modal}>
-                    <Text style={styles.modalTitle}>Log Entry</Text>
-                    <Text style={styles.inputLabel}>Notes (optional)</Text>
-                    <TextInput style={styles.input} value={tempWhat} onChangeText={setTempWhat} placeholder="Add a note about this entry..." placeholderTextColor={theme.mutedText} />
-                    <View style={styles.modalBtns}>
-                        <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowLogModal(false)}>
-                            <Text style={styles.cancelBtnText}>Cancel</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.confirmBtn} onPress={confirmLog}>
-                            <Text style={styles.confirmBtnText}>Log</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            )}
-
-            {showTreatModal && (
-                <View style={styles.modal}>
-                    <Text style={styles.modalTitle}>Log Treat</Text>
-                    <Text style={styles.inputLabel}>Notes (optional)</Text>
-                    <TextInput style={styles.input} value={tempTreatNote} onChangeText={setTempTreatNote} placeholder="e.g. biscuit, dental chew..." placeholderTextColor={theme.mutedText} autoFocus={true} />
-                    <View style={styles.modalBtns}>
-                        <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowTreatModal(false)}>
-                            <Text style={styles.cancelBtnText}>Cancel</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.confirmBtn} onPress={confirmTreat}>
-                            <Text style={styles.confirmBtnText}>Log</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            )}
-
             <View style={styles.counterBox}>
                 <View style={styles.counterItem}>
                     <Text style={styles.counterTitle}>Treats</Text>
@@ -519,7 +474,7 @@ export default function PetsScreen() {
                             <Text style={styles.minusBtnText}>-</Text>
                         </TouchableOpacity>
                         <Text style={styles.counterCount}>{treatCount}</Text>
-                        <TouchableOpacity style={styles.plusBtn} onPress={() => { setTempTreatNote(''); setShowTreatModal(true); }}>
+                        <TouchableOpacity style={styles.plusBtn} onPress={confirmTreat}>
                             <Text style={styles.counterBtnText}>+</Text>
                         </TouchableOpacity>
                     </View>
