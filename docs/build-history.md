@@ -24,7 +24,12 @@ with the App Store release ahead. The name is "A Place To Remember"
 on the Home screen, on the Settings version line and in App Store
 Connect; the badge under the icon is "Memory". What remains open is
 small: the minor quirks tracked in docs/pending.txt, and the
-roadmap's five milestone tracks.
+roadmap's five milestone tracks. The #69 badge-reorder is finished —
+committed, built, and phone-verified (Patrick's word, #1-new).
+The My Week done-date fix is in — marking a chore done now records
+the chore's own day — and the structured reminder test checklist
+passed in full, every offset and recurrence ticked (Patrick's
+word, #1-new).
 
 **Session 153 > 0 — the map.** Settled: Memory mirrors Mystery's
 file shapes; NO project hand-off — the master carries Memory's
@@ -51,3 +56,37 @@ from the txt and machine-checked word for word (613 words each
 side, zero mismatches). pending(X).txt is Patrick's to delete by
 hand. Next: Memory's chain begins at #1-new, first filling
 pending.txt's "What's Next" with new items.
+
+## #1-new (2026-07-30): "What's Next" filled and the pending list
+tidied
+
+**The goal — done.** pending.txt's "What's Next" gained three
+items, Patrick's word: the Home screen's Settings gear in symmetry
+with the logo; the My Day / Pets Day counters losing the log
+pop-up, with editing happening in the log itself; and the Shopping
+List's Shopping-mode highlighting stopped and the tiles made
+thinner. All three are code changes waiting for #2-new.
+
+**The tidy that came with it.** The five-piece Parked bullet
+dissolved: the structured reminder test checklist passed in full
+(every offset and every recurrence ticked) and the My Week
+done-date fix confirmed — both recorded in the transition section
+above; the exact-item tap routing re-homed to "Parked on purpose";
+the dark startup flash re-homed to "Decisions to make". The
+Planner reminder-fields item and the My Day / Pets banner-Done
+item were deleted outright. The "Memory Assist" subtitle item left
+pending.txt for docs/publishing.md by Patrick's hand. The #69
+badge-reorder loose end was closed in the master hand-off,
+recorded above as finished and phone-verified.
+
+**Two rules amended, Patrick's word.** The quiet files are "quiet
+until needed": any change to one is noted in the master hand-off's
+"Where things stand" for the next one session only, then dropped —
+publishing.md's subtitle line is the rule's first use. And
+pending.txt's header line is brought up to date at every
+session-end refresh, before pending.docx is rebuilt.
+
+**The refresh.** pending.docx rebuilt from the txt and
+machine-checked word for word — 548 words each side, zero
+mismatches, both rendered pages read back clean. Next session's
+goal: #2-new — work the "What's Next" items.

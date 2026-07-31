@@ -27,6 +27,8 @@ reference is ever edited.
 
 The quiet files — `docs/handoff.md`, `docs/session-start.md`,
 `docs/parked-items.md`, `docs/publishing.md` — are from before the
-transition (153 > 0). They stay in place, unedited and undeleted,
-and belong to no reading order. The archives (`docs/reminder-audit.md`
-and the two Siri briefs) sit the same way.
+transition (153 > 0). They stay in place, quiet until needed, and
+belong to no reading order. Any change to one of these files is
+noted in the master hand-off's "Where things stand" for the next
+one session only, then dropped. The archive
+(`docs/reminder-audit.md`) sits the same way.

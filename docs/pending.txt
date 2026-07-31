@@ -1,8 +1,9 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-07-30 (session 0 — the transition carpentry:
-the project's files reshaped to mirror Mystery's, no app code
-touched. Memory's own chain begins next session at #1-new; bare
-session numbers below mean the old shared chain.)
+Last updated: 2026-07-30 (#1-new — Memory's chain begins: "What's
+Next" filled with three items, and the list tidied — the five-piece
+Parked bullet dissolved, the subtitle item re-homed to
+publishing.md, two items deleted outright. Bare session numbers
+below mean the old shared chain.)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. Finished work isn't tracked here — git history keeps the
@@ -11,6 +12,11 @@ full record — so this list stays short.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
+- Home screen: the Settings gear in symmetry with the logo (#1-new).
+- My Day / Pets Day: the counters don't need the log pop-up —
+  editing can happen in the log itself (#1-new).
+- Shopping List: stop the highlighting in Shopping mode, and make
+  the tiles thinner (#1-new).
 
 
 NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
@@ -27,14 +33,11 @@ STILL BROKEN OR UNFINISHED (small bugs)
   button ON the tile is fine. Fix is small (re-read on every visit).
   Also checked: a Delay is NOT supposed to write a log entry —
   only Done logs. That part is by design.
-- My Week: marking a chore done from inside the app records today's date
-  instead of the chore's own day. Minor.
-- Tapping a reminder lands on the right page (tested #55), but taking
-  you to the exact item on that page is still not built. Minor.
 
 
 DECISIONS TO MAKE WHEN YOU'RE READY
 -----------------------------------
+- The dark startup flash (moved here from Parked, #1-new).
 
 
 NICE-TO-HAVE LATER (polish, low priority)
@@ -46,26 +49,13 @@ NICE-TO-HAVE LATER (polish, low priority)
 - Watch List overhaul — its own session, talk-through first (moved
   from What's Next, your call #55). The night-and-time-a-TV-show-airs
   idea folds into it.
-- (The app rename is DONE — #65.) The "Memory Assist" tagline
-  still needs a home — the App Store subtitle field is empty and
-  is one natural spot.
-- The Android icon pictures and the splash (startup) image still
-  carry the old placeholder art — deliberately left for later
-  when the main icon got the new face (#65).
-- Project Planner has reminder fields on screen, but they aren't
-  connected to anything yet.
-- My Day / Pets: a Done tapped from the BANNER logs only the fire
-  ("set") time. You want the entry to carry both times like the
-  in-app logs do — the set time AND the time Done was actually
-  tapped (#55).
 
 
 PARKED ON PURPOSE (bigger items, on hold for now)
 -------------------------------------------------
-- Moved here from What's Next (your call, #55): the structured
-  reminder test checklist; My Week's done-date recording; exact-item
-  tap routing; the dark startup flash; Planner's unconnected
-  reminder fields. (Retiring Colors.ts: DONE in #57.)
+- Tapping a reminder lands on the right page (tested #55), but
+  taking you to the exact item on that page is still not built.
+  (Moved here from Still broken, #1-new.)
 - Voice control through Siri. Set aside after much effort; revisit only
   if a future iPhone update fixes the name-matching. (The app-name revert
   above assumes this stays shelved.)
@@ -80,3 +70,7 @@ PARKED ON PURPOSE (bigger items, on hold for now)
   files) in the #68 roadmap; in #69 you started the talk-through,
   weren't ready, and parked the whole thing. The Vault stays as
   it is until you run into a real need. Not to be re-raised.
+- The Android icon pictures and the splash (startup) image still
+  carry the old placeholder art — deliberately left for later
+  when the main icon got the new face (#65). (Moved here from
+  Nice-to-have, #1-new.)
