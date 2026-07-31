@@ -33,3 +33,15 @@ app's own repo (per the strategy doc). As that material gets made, keep
 it under `docs/` and list it below so it's findable.
 
 - *(nothing yet — Phase 2 is just beginning)*
+
+## Build steps
+
+Simulator: npm run ios
+
+PHONE:
+VS Code: Commit/build/submit
+eas build --platform ios --profile production
+Yes, yes
+eas submit --platform ios --profile production
+Yes, yes, check build name, yes
+TestFlight update
