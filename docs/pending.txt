@@ -1,9 +1,8 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-07-30 (#1-new — Memory's chain begins: "What's
-Next" filled with three items, and the list tidied — the five-piece
-Parked bullet dissolved, the subtitle item re-homed to
-publishing.md, two items deleted outright. Bare session numbers
-below mean the old shared chain.)
+Last updated: 2026-07-31 (#2-new — the three "What's Next" items
+built and verified in the Simulator, then replaced with two new
+ones: round header-button outlines, and no required time in the
+Days. Bare session numbers below mean the old shared chain.)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. Finished work isn't tracked here — git history keeps the
@@ -12,11 +11,11 @@ full record — so this list stays short.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-- Home screen: the Settings gear in symmetry with the logo (#1-new).
-- My Day / Pets Day: the counters don't need the log pop-up —
-  editing can happen in the log itself (#1-new).
-- Shopping List: stop the highlighting in Shopping mode, and make
-  the tiles thinner (#1-new).
+- Every screen carrying the "Home" and "+" header buttons: change
+  the pill outline to round (#2-new).
+- My Day / Pets Day: an item no longer requires a time — an item
+  saved without one simply gets no reminder, for the things you
+  want listed but not nagged about (#2-new).
 
 
 NEEDS A PHONE TEST (built, just not confirmed on the phone yet)

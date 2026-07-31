@@ -90,3 +90,50 @@ session-end refresh, before pending.docx is rebuilt.
 machine-checked word for word — 548 words each side, zero
 mismatches, both rendered pages read back clean. Next session's
 goal: #2-new — work the "What's Next" items.
+
+## #2-new (2026-07-31): the three "What's Next" items built and
+verified in the Simulator
+
+**The goal — done.** All three items scoped together first, then
+built one piece at a time, each on its own go:
+
+- **Home gear (app/home.tsx):** the Settings gear enlarged from
+  22 to 32, matching the icon face across the header — made by
+  Patrick's own hand in VS Code, one line. (Along the way he
+  found VS Code's Auto Save had been hiding the unsaved-changes
+  dot, and switched it off.)
+- **One-tap logging (app/myday.tsx, app/mollie.tsx):** the
+  routine's Log button and the counter + buttons (Coffee, Water,
+  Treats) now act in one tap — the item checks off or the count
+  rises, the entry writes itself with the time, no notes modal.
+  The open/confirm modal pair became a direct logItem function
+  in each file; five modal blocks and a dozen state variables
+  came out. Notes are added afterward through the log's
+  tap-to-edit modal, unchanged. My Week and Look Ahead keep
+  their own log modals — outside the item's scope, untouched.
+- **Shopping List (app/shopping.tsx):** tapping a row in
+  Shopping view no longer selects or highlights it (the
+  selection only ever drove Full Inventory's reorder arrows); a
+  leftover Full Inventory selection clears when switching to the
+  Shopping tab; and the tiles hug the Need/Stocked button in
+  both views (vertical padding 12 to 4).
+
+**Checks.** The full TypeScript check (tsc --noEmit) came back
+clean after each build step, and a search across the app for
+every removed name confirmed nothing still references them.
+Patrick ran the app in the iOS Simulator (npm run ios) and
+confirmed everything works, then committed the code in-session.
+
+**Filed and noted.** pending.txt's "What's Next" refilled with
+two new items, Patrick's word: the "Home" / "+" header-button
+pill outlines changed to round on every screen that carries
+them; and My Day / Pets Day items no longer requiring a time —
+no time set means no reminder. docs/reminder-audit.md (the
+archive) deleted by Patrick's hand. The opener-note shape
+amended at Patrick's word: folder asks and reads straight
+through, both folders, one status report only after everything
+is read.
+
+**The refresh.** pending.docx rebuilt from the txt and
+machine-checked word for word. Next session's goal: #3-new —
+header buttons to round & Days no time set.
