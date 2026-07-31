@@ -20,6 +20,13 @@ import { Theme, useTheme } from '../constants/Themes';
 // - mode='date' shows only the date half (#63, built for the Orders
 //   page's "by" date). The Orders form's start/end window is two
 //   mode='time' controls side by side — no pair machinery in here.
+// - #3-new: optionalTime — a page may declare the time optional. While no
+//   time is set (timeSet=false) the spinners sit dulled at 12:00 PM and
+//   the box sits empty with a "No time set" hint; tapping any arrow or
+//   typing a time wakes it (onChange fires as usual), and emptying the
+//   box clears it (onClearTime fires). Meant for mode='time' pages; the
+//   #59 empty-box rule (empty repaints from the spinners) applies only
+//   when optionalTime is off.
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -67,6 +74,13 @@ interface Props {
     // Fires whenever the typed boxes go valid/invalid as a whole. The page
     // uses the latest value to block Save with its warning alert.
     onValidityChange?: (ok: boolean) => void;
+    // #3-new: the time is optional on this page. value stays a real Date
+    // (the sleeping display dulls it at whatever the page passes — 12:00
+    // by convention); timeSet says whether the item actually has a time;
+    // onClearTime fires when the typed box is emptied.
+    optionalTime?: boolean;
+    timeSet?: boolean;
+    onClearTime?: () => void;
 }
 
 export default function DateTimeControl({
@@ -76,12 +90,18 @@ export default function DateTimeControl({
     dateLabel = 'Due Date',
     timeLabel = 'Due Time',
     onValidityChange,
+    optionalTime = false,
+    timeSet = true,
+    onClearTime,
 }: Props) {
     const theme = useTheme();
     const styles = makeStyles(theme);
 
+    // Asleep = the page says time is optional and none is set right now.
+    const asleep = optionalTime && !timeSet;
+
     const [dateText, setDateText] = useState(formatDateMMDDYY(value));
-    const [timeText, setTimeText] = useState(formatTime24(value));
+    const [timeText, setTimeText] = useState(asleep ? '' : formatTime24(value));
     const [dateBad, setDateBad] = useState(false);
     const [timeBad, setTimeBad] = useState(false);
 
@@ -109,14 +129,16 @@ export default function DateTimeControl({
     // spin just happened), repaint any box that isn't being typed in.
     useEffect(() => {
         if (!dateFocused.current) { setDateText(formatDateMMDDYY(value)); setDateBad(false); }
-        if (!timeFocused.current) { setTimeText(formatTime24(value)); setTimeBad(false); }
-    }, [value]);
+        if (!timeFocused.current) { setTimeText(asleep ? '' : formatTime24(value)); setTimeBad(false); }
+    }, [value, asleep]);
 
     // ---- spinner adjustments (same moves as Look Ahead's) ----
 
     const spin = (change: (d: Date) => void) => {
         const next = new Date(value);
-        change(next);
+        // Asleep: the first tap only wakes the control at the shown
+        // 12:00 PM — the adjustment itself starts with the next tap.
+        if (!asleep) change(next);
         onChange(next);
     };
 
@@ -167,7 +189,12 @@ export default function DateTimeControl({
 
     const onTimeTyped = (text: string) => {
         setTimeText(text);
-        if (text.trim() === '') { setTimeBad(false); return; }
+        if (text.trim() === '') {
+            setTimeBad(false);
+            // Optional time: an emptied box means "no time" — tell the page.
+            if (optionalTime) onClearTime?.();
+            return;
+        }
         const p = parseTimeText(text);
         if (p) {
             setTimeBad(false);
@@ -189,7 +216,10 @@ export default function DateTimeControl({
     const onTimeBlur = () => {
         timeFocused.current = false;
         const p = parseTimeText(timeText);
-        if (p || timeText.trim() === '') { setTimeText(formatTime24(value)); setTimeBad(false); }
+        // Optional time + empty box: stay empty — empty MEANS "no time"
+        // here, so blur must not repaint it from the spinners (#3-new).
+        if (optionalTime && timeText.trim() === '') { setTimeBad(false); }
+        else if (p || timeText.trim() === '') { setTimeText(formatTime24(value)); setTimeBad(false); }
         else setTimeBad(true);
     };
 
@@ -246,7 +276,7 @@ export default function DateTimeControl({
             {mode !== 'date' && (
                 <>
                     <Text style={styles.inputLabel}>{timeLabel}</Text>
-                    <View style={styles.timeRow}>
+                    <View style={[styles.timeRow, asleep && styles.timeRowAsleep]}>
                         <Stepper display={pad2(h12)} caption="Hour"
                             up={() => adjustHour('up')} down={() => adjustHour('down')} displayStyle={styles.timeDisplay} />
                         <Text style={styles.timeDisplay}>:</Text>
@@ -265,7 +295,11 @@ export default function DateTimeControl({
                         placeholderTextColor={theme.mutedText}
                         keyboardType="numbers-and-punctuation"
                     />
-                    <Text style={styles.hint}>Type the time (24-hour clock)</Text>
+                    <Text style={styles.hint}>
+                        {asleep
+                            ? 'No time set — tap the arrows or type a time to set one'
+                            : 'Type the time (24-hour clock)'}
+                    </Text>
                 </>
             )}
         </View>
@@ -276,6 +310,8 @@ const makeStyles = (t: Theme) => StyleSheet.create({
     inputLabel: { fontSize: 14, color: t.mutedText, marginBottom: 4, marginTop: 8 },
     stepperRow: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 6 },
     timeRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 14, marginBottom: 6 },
+    // #3-new: the whole spinner row dulled while no time is set.
+    timeRowAsleep: { opacity: 0.4 },
     // Look Ahead's circles were 50 with 22pt arrows; #58 sized them down to 34
     // to keep the whole form visible, but Patrick found 34 hard to tap on the
     // phone (#62) — now 40 with 18pt arrows, plus hitSlop above for ~50px of

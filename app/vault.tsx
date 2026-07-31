@@ -264,10 +264,10 @@ export default function VaultScreen() {
         <GestureHandlerRootView style={styles.container}>
             {/* #62: no edges prop (default all edges), matching the seven taller-header
                 pages — Patrick standardized on the taller header look. */}
-            <SafeAreaView style={{ backgroundColor: theme.header }}>
+            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>← Home</Text>
+                        <Text style={styles.headerBtnText}>Home</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>
                         {selectedCategory ? getCategoryData(selectedCategory)?.name : 'Vault 🔒'}
@@ -278,7 +278,7 @@ export default function VaultScreen() {
                         </TouchableOpacity>
                     ) : (
                         <TouchableOpacity onPress={() => { setNewCategoryName(''); setShowAddCategory(true); }} style={styles.headerBtn}>
-                            <Text style={styles.headerBtnText}>+ New</Text>
+                            <Text style={styles.headerBtnText}>+ Add</Text>
                         </TouchableOpacity>
                     )}
                 </View>
@@ -423,6 +423,7 @@ const makeStyles = (t: Theme) =>
             paddingHorizontal: 16,
             flexDirection: 'row',
             alignItems: 'center',
+            paddingBottom: 8,
         },
         backBtn: { width: 70 },
         backText: { color: t.cardBorder, fontSize: 16 },
@@ -585,11 +586,13 @@ const makeStyles = (t: Theme) =>
         },
         swipeDeleteText: { color: t.buttonDeleteText, fontWeight: '600', fontSize: 15 },
         headerBtn: {
+            width: 54,
+            height: 54,
+            borderRadius: 27,
             borderWidth: 1,
             borderColor: t.headerButton,
-            paddingVertical: 2,
-            paddingHorizontal: 12,
-            borderRadius: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
         },
         headerBtnText: { color: t.headerButton, fontSize: 16, fontWeight: '600' },
     });

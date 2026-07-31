@@ -437,14 +437,14 @@ export default function MyWeekScreen() {
 
     return (
         <GestureHandlerRootView style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: theme.header }}>
+            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>← Home</Text>
+                        <Text style={styles.headerBtnText}>Home</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>My Week</Text>
                     <TouchableOpacity onPress={addEntry} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>+ Add Chore</Text>
+                        <Text style={styles.headerBtnText}>+ Add</Text>
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
@@ -700,6 +700,7 @@ const makeStyles = (t: Theme) =>
         paddingHorizontal: 20,
         flexDirection: 'row',
         alignItems: 'center',
+        paddingBottom: 8,
     },
     title: {
         fontSize: 24,
@@ -875,11 +876,13 @@ const makeStyles = (t: Theme) =>
         width: '100%',
     },
     headerBtn: {
+        width: 54,
+        height: 54,
+        borderRadius: 27,
         borderWidth: 1,
         borderColor: t.headerButton,
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
     rowSelected: {

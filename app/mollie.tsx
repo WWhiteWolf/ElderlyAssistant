@@ -25,8 +25,9 @@ import { Theme, useTheme } from '../constants/Themes';
 interface FeedItem {
     id: string;
     label: string;
-    hour: number;
-    minute: number;
+    // #3-new: null = no time set — the item shows no time and gets no reminder.
+    hour: number | null;
+    minute: number | null;
     completed: boolean;
 }
 
@@ -132,7 +133,8 @@ export default function PetsScreen() {
         const saved = await AsyncStorage.getItem('pets_feeds');
         const items: FeedItem[] = saved ? JSON.parse(saved) : INITIAL_FEEDS;
         for (const item of items) {
-            if (!item.completed) {
+            // #3-new: an item with no time set gets no reminder.
+            if (!item.completed && item.hour !== null && item.minute !== null) {
                 await Notifications.scheduleNotificationAsync({
                     content: {
                         title: 'Pets Routine',
@@ -253,7 +255,8 @@ export default function PetsScreen() {
     const addEntry = () => {
         setActiveId(null);
         setTempName('');
-        setPendingTime(new Date(new Date().setHours(12, 0, 0, 0)));
+        // #3-new: a new item starts with no time — the control opens asleep.
+        setPendingTime(null);
         setPendingTimeValid(true);
         setShowEditModal(true);
     };
@@ -302,8 +305,9 @@ export default function PetsScreen() {
             Alert.alert('Check Time', 'The typed time is not a real one. Fix the box outlined in red, then save.');
             return;
         }
-        const hour = pendingTime ? pendingTime.getHours() : 12;
-        const minute = pendingTime ? pendingTime.getMinutes() : 0;
+        // #3-new: no pending time means the item is saved with no time.
+        const hour = pendingTime ? pendingTime.getHours() : null;
+        const minute = pendingTime ? pendingTime.getMinutes() : null;
         if (activeId) {
             const updated = feeds.map(f =>
                 f.id === activeId ? { ...f, label: name, hour, minute } : f
@@ -361,14 +365,14 @@ export default function PetsScreen() {
         <GestureHandlerRootView style={styles.container}>
             {/* #62: no edges prop (default all edges), matching the seven taller-header
                 pages — Patrick standardized on the taller header look. */}
-            <SafeAreaView style={{ backgroundColor: theme.header }}>
+            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>← Home</Text>
+                        <Text style={styles.headerBtnText}>Home</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>Pets 🐾</Text>
                     <TouchableOpacity onPress={addEntry} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>+ Add Entry</Text>
+                        <Text style={styles.headerBtnText}>+ Add</Text>
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
@@ -394,7 +398,7 @@ export default function PetsScreen() {
                                     style={styles.labelArea}
                                     onPress={() => toggleSelect(item.id)}
                                 >
-                                    <Text style={styles.itemLabel}>{format12Hour(item.hour, item.minute)} {item.label}</Text>
+                                    <Text style={styles.itemLabel}>{item.hour !== null && item.minute !== null ? `${format12Hour(item.hour, item.minute)} ` : ''}{item.label}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={styles.editBtn}
@@ -402,7 +406,9 @@ export default function PetsScreen() {
                                     onPress={() => {
                                         setActiveId(item.id);
                                         setTempName(item.label);
-                                        setPendingTime(new Date(new Date().setHours(item.hour, item.minute, 0, 0)));
+                                        setPendingTime(item.hour !== null && item.minute !== null
+                                            ? new Date(new Date().setHours(item.hour, item.minute, 0, 0))
+                                            : null);
                                         setPendingTimeValid(true);
                                         setShowEditModal(true);
                                     }}
@@ -569,6 +575,9 @@ export default function PetsScreen() {
                                 onChange={setPendingTime}
                                 timeLabel="Time"
                                 onValidityChange={setPendingTimeValid}
+                                optionalTime
+                                timeSet={pendingTime !== null}
+                                onClearTime={() => setPendingTime(null)}
                             />
 
                             <View style={styles.modalBtns}>
@@ -598,6 +607,7 @@ const makeStyles = (t: Theme) =>
         paddingHorizontal: 16,
         flexDirection: 'row',
         alignItems: 'center',
+        paddingBottom: 8,
     },
     title: {
         fontSize: 24,
@@ -760,11 +770,13 @@ const makeStyles = (t: Theme) =>
     },
     swipeDeleteText: { color: t.buttonDeleteText, fontWeight: '600', fontSize: 15 },
     headerBtn: {
+        width: 54,
+        height: 54,
+        borderRadius: 27,
         borderWidth: 1,
         borderColor: t.headerButton,
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
     rowSelected: {

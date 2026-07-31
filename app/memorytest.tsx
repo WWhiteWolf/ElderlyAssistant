@@ -536,15 +536,15 @@ export default function MemoryTestScreen() {
 
     return (
         <GestureHandlerRootView style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: theme.header }}>
+            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>← Home</Text>
+                        <Text style={styles.headerBtnText}>Home</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>Memory Test</Text>
                     {/* spacer keeps the title centered — matches the ← Home pill */}
                     <View style={[styles.headerBtn, { opacity: 0 }]}>
-                        <Text style={styles.headerBtnText}>← Home</Text>
+                        <Text style={styles.headerBtnText}>Home</Text>
                     </View>
                 </View>
             </SafeAreaView>
@@ -604,6 +604,7 @@ const makeStyles = (t: Theme) =>
             paddingHorizontal: 20,
             flexDirection: 'row',
             alignItems: 'center',
+            paddingBottom: 8,
         },
         title: {
             fontSize: 24,
@@ -717,11 +718,13 @@ const makeStyles = (t: Theme) =>
         },
         swipeDeleteText: { color: t.buttonDeleteText, fontWeight: '600', fontSize: 15 },
         headerBtn: {
+            width: 54,
+            height: 54,
+            borderRadius: 27,
             borderWidth: 1,
             borderColor: t.headerButton,
-            paddingVertical: 6,
-            paddingHorizontal: 12,
-            borderRadius: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
         },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
     });

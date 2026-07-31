@@ -179,12 +179,13 @@ export default function SettingsScreen() {
 
     return (
         <View style={styles.container}>
-            {/* #62: no edges prop (default all edges), matching the seven taller-header
-                pages — Patrick standardized on the taller header look. */}
-            <SafeAreaView style={{ backgroundColor: theme.header }}>
+            {/* #3-new: edges={['top']} on every screen's header wrapper — the
+                round header buttons made the old #62 taller-header look too
+                tall, so all screens now match Home and Look Ahead. */}
+            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>← Home</Text>
+                        <Text style={styles.headerBtnText}>Home</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>Settings</Text>
                     <View style={styles.backBtn} />
@@ -363,6 +364,7 @@ const makeStyles = (t: Theme) =>
             paddingHorizontal: 16,
             flexDirection: 'row',
             alignItems: 'center',
+            paddingBottom: 8,
         },
         backBtn: { width: 70 },
         title: {
@@ -455,11 +457,13 @@ const makeStyles = (t: Theme) =>
             fontStyle: 'italic',
         },
         headerBtn: {
+            width: 54,
+            height: 54,
+            borderRadius: 27,
             borderWidth: 1,
             borderColor: t.headerButton,
-            paddingVertical: 6,
-            paddingHorizontal: 12,
-            borderRadius: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
         },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
 

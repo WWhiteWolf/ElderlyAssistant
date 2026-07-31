@@ -392,14 +392,14 @@ export default function OrdersScreen() {
         <GestureHandlerRootView style={styles.container}>
             {/* No edges prop (default all edges) — the taller header Patrick
                 standardized on in #62. */}
-            <SafeAreaView style={{ backgroundColor: theme.header }}>
+            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>← Home</Text>
+                        <Text style={styles.headerBtnText}>Home</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>Orders</Text>
                     <TouchableOpacity onPress={openNew} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>+ Add Order</Text>
+                        <Text style={styles.headerBtnText}>+ Add</Text>
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
@@ -637,13 +637,16 @@ const makeStyles = (t: Theme) =>
             paddingHorizontal: 16,
             flexDirection: 'row',
             alignItems: 'center',
+            paddingBottom: 8,
         },
         headerBtn: {
+            width: 54,
+            height: 54,
+            borderRadius: 27,
             borderWidth: 1,
             borderColor: t.headerButton,
-            paddingVertical: 6,
-            paddingHorizontal: 12,
-            borderRadius: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
         },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
         title: {

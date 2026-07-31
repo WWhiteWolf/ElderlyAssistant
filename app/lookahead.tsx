@@ -410,14 +410,14 @@ export default function LookAheadScreen() {
             <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>← Home</Text>
+                        <Text style={styles.headerBtnText}>Home</Text>
                     </TouchableOpacity>
                     <View style={styles.titleWrap}>
                         <Text style={styles.title}>Look Ahead</Text>
                         <Text style={styles.titleIcon}>🔭</Text>
                     </View>
                     <TouchableOpacity onPress={addEntry} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>+ Add Entry</Text>
+                        <Text style={styles.headerBtnText}>+ Add</Text>
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
@@ -822,11 +822,13 @@ const makeStyles = (t: Theme) =>
     },
     swipeDeleteText: { color: t.buttonDeleteText, fontWeight: '600', fontSize: 15 },
     headerBtn: {
+        width: 54,
+        height: 54,
+        borderRadius: 27,
         borderWidth: 1,
         borderColor: t.headerButton,
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
     rowSelected: { backgroundColor: t.rowSelected, borderRadius: 8 },

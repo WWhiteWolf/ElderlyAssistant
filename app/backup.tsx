@@ -357,10 +357,10 @@ export default function BackupScreen() {
 
     return (
         <View style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: theme.header }}>
+            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>← Back</Text>
+                        <Text style={styles.headerBtnText}>Back</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>Backup & Restore</Text>
                     <View style={styles.headerSpacer} />
@@ -408,6 +408,7 @@ const makeStyles = (t: Theme) =>
             paddingHorizontal: 20,
             flexDirection: 'row',
             alignItems: 'center',
+            paddingBottom: 8,
         },
         title: {
             fontSize: 24,
@@ -462,13 +463,14 @@ const makeStyles = (t: Theme) =>
             fontStyle: 'italic',
         },
         headerBtn: {
-            width: 90,
+            width: 54,
+            height: 54,
+            borderRadius: 27,
             borderWidth: 1,
             borderColor: t.headerButton,
-            paddingVertical: 6,
-            paddingHorizontal: 12,
-            borderRadius: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
         },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
-        headerSpacer: { width: 90 },
+        headerSpacer: { width: 54 },
     });
