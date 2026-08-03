@@ -1,34 +1,35 @@
-# A Place To Remember (Memory) — what to read
+# Session rules — read before anything else
 
-How Claude conducts itself lives in `App-Docs/CLAUDE.md`, which
-arrives at the start of every session before anything is read. It is
-not repeated here.
+1. How Claude conducts itself lives in `App-Docs/CLAUDE.md`,
+   which arrives on its own at every session start. None of it
+   is repeated here.
 
-Reading order when the session's goal lives in this project:
+2. This project's opening read is `docs/handoff.md`, and only
+   that. `docs/pending.txt` is Patrick's plain-language list,
+   opened at the end-of-session refresh; `docs/pending.docx` is
+   his reading copy, rebuilt from the txt and machine-checked
+   to match. `docs/build-history.md` is opened only when
+   something finished needs tracing.
 
-1. `App-Docs/master-handoff.md` — where things stand across all the
-   projects, and the next session's goal. There is no project
-   hand-off: the master carries Memory's where-things-stand, exactly
-   as it carries Mystery's.
+3. At a session start, ask Patrick whether the previous
+   session's work was committed — he prefers being asked. Never
+   pre-assert a commit in his voice. When he says he has
+   committed, mark it committed at once; do not hedge or ask
+   him to verify.
 
-2. `docs/build-history.md` — the full detail of each session in
-   Memory's chain; the hand-off's one-line index entry names the
-   section to open.
+# Working notes for this project
 
-Not read at a session start: `docs/pending.txt`, Patrick's
-plain-language pending list, opened at the end-of-session refresh;
-the hand-off already carries where things stand. `docs/pending.docx`
-is what Patrick himself reads; it is rebuilt from the txt and
-machine-checked to match it word for word.
-
-Session numbering: bare session numbers always mean the old shared
-chain; Memory's own chain is written "#1-new, #2-new, …". No old
-reference is ever edited.
-
-The quiet files — `docs/handoff.md`, `docs/session-start.md`,
-`docs/parked-items.md`, `docs/publishing.md` — are from before the
-transition (153 > 0). They stay in place, quiet until needed, and
-belong to no reading order. Any change to one of these files is
-noted in the master hand-off's "Where things stand" for the next
-one session only, then dropped. The archive
-(`docs/reminder-audit.md`) sits the same way.
+- **The name is "A Place To Remember"; the badge under the icon
+  is "Memory".** Bare session numbers mean the old shared
+  chain; this project's own chain is written "#1-new, #2-new, …".
+  No old reference is ever edited.
+- **Patrick's EAS build-and-submit steps**, in his own words,
+  live at the end of `docs/publishing.md` under "Build steps".
+- **TypeScript checks (npx tsc) are fine here.** Git never is —
+  that rule lives in App-Docs.
+- **The quiet files** — `docs/parked-items.md`,
+  `docs/publishing.md`, `docs/roadmap.md` — are from before the
+  transition (153 > 0). They stay in place, quiet until needed,
+  and belong to no reading order. A change to one of them is
+  noted in `docs/handoff.md` for the next one session only,
+  then dropped.

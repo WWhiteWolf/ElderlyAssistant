@@ -1,71 +1,41 @@
-# Hand-off note — paste at the start of the next session
+# Session hand-off — A Place To Remember (Memory, iPhone)
 
-## THIS SESSION — #71 (2026-07-09) "Publishing Memory" (became: Mystery Tracker mobile decided)
+This file carries the continuity and nothing else: where the work
+stands and what is open in front of it. Finished work goes to
+`build-history.md`, opened only when something needs tracing.
 
-**A publishing/deciding session — NO app code changed in any project.
-The session was named for Memory but the road chosen runs through the
-Mystery app first. Everything below is recorded in the strategy doc
-(Projects → App-Docs → `Publishing-Strategy.docx`) and in
-`MysteryCluesTracker/docs/upgrade-scope.md`:**
+## Where things stand
 
-1. **THE FOUR-PRODUCT GOAL is now written down** (it was only "options to
-   keep open" before): both apps — Mystery Tracker AND Memory — on web
-   AND mobile, all fully done and published. Recorded in the strategy doc
-   as "The four products — decided."
-2. **The fork is CHOSEN: Mobile first.** Clean up the Mystery mobile PWA
-   (RENAMED "Mystery Tracker", same name as the web version) and take it
-   to the App Store FREE. The Memory web version waits its turn.
-3. **Full upgrade scope recorded** in `MysteryCluesTracker/docs/upgrade-scope.md`
-   — the one file to read before touching that app. Highlights: player-
-   configurable structure (1–4 categories, 1–30 cards — legally motivated,
-   away from the famous game's fixed 6/6/9 shape); ✓/✗ cell tinting,
-   Σ + House columns from the web app; NO tiering (free = everything on),
-   no voice, no export, no Deductions; scrolling OK (landscape idea parked
-   to mockup time).
-4. **Route to the store DECIDED (research done, web-verified): bare
-   Xcode + WKWebView wrapper.** Near-zero maintenance; Claude is built
-   into Xcode 26 to help. A localStorage→native data-safety bridge is
-   required work. Capacitor / Expo+WebView / PWABuilder passed over.
-5. **New in THIS project:** `docs/publishing.md` — pointer to the
-   publishing docs (the "App-Pubs" name is dead; fixed everywhere this
-   session). LATE IN #71 the cross-project home MOVED: everything now
-   lives in **Projects → App-Docs** — a git repo with a new
-   `master-handoff.md` anchoring ONE session chain for all projects
-   (Patrick's call: one folder, version-controlled; OneDrive copy is
-   stale, marked with MOVED.txt).
+**Alpha, mostly built, and #3-new is proven.** The round header
+buttons on all fifteen screens (54-point circles, labels Home /
++ Add / Back), the optional times in My Day and Pets Day (no
+time set = label only, no reminder), and the header re-leveling
+were all phone-verified through a full EAS build and committed
+by Patrick (2026-07-31). Store prep waits until the Mystery
+rehearsal is done; Android eventually (#72).
 
-**➤ NEXT SESSION (Patrick, end of #71): begin the Mystery Tracker mobile
-upgrade "when we are ready." Connect Projects → MysteryCluesTracker and
-read its `docs/upgrade-scope.md` first.** Open first steps there: the
-quick "Clue" grep of in-app text, the mechanical pre-store fixes, or
-mockups for the configurable setup + new columns — Patrick names the goal.
+## What is open in front of it
 
-*Memory-app note: nothing changed here in #70–#71. The #69 badge-order
-commit + build + phone check may still be pending — confirm with Patrick,
-don't assume.*
+**Next session, #4-new — Patrick's word at #3-new:** the three
+"What's Next" items in `pending.txt` — Look Ahead's tile format
+and its Snooze changed or dropped, the Timer tile's Stop (Pause)
+/ Continue (Go) button and log, and the Vault restructuring's
+"Home"-to-"Back" button change. Each is a code change; scope
+them together at the session start.
 
----
+**Also open:** the Look Ahead banner-delay bug in `pending.txt`
+"Still broken" — a small fix (re-read the saved items on every
+visit).
 
-## SESSION — #70 (2026-07-09, earlier) "Publishing: elyfont.com root fix + home page"
+## Quiet-file note (this one session only)
 
-**A publishing-side session — NO app code changed in this project.** Full
-detail lives in the strategy doc: **Projects → App-Docs →
-`Publishing-Strategy.docx`** (moved from OneDrive late in #71).
+`docs/publishing.md` gained a "Build steps" section at its end —
+Patrick's EAS build-and-submit steps, in his own words (#3-new).
 
-1. **New folder in THIS project: `elyfont-home/`, holding one file,
-   `index.html`.** This is the SOURCE of the live home page at
-   **elyfont.com**. The site no longer opens straight into Mystery Tracker —
-   the root is now a welcome page (Patrick wants the domain to host multiple
-   apps) linking to the app and to the 266-step test procedure. If this file
-   is ever edited, the live copy must be re-uploaded to the public repo
-   `WWhiteWolf/mystery-tracker` (upload replaces; never rename anything to
-   or from `index.html` there — see `MysteryTracker/docs/DEPLOY.md`).
-2. **The stale-root problem is FIXED and verified live** (Patrick made all
-   commits via the GitHub website). Mix-up cleaned: a copy accidentally
-   committed to the private `MysteryTracker` repo was deleted.
-3. **Repos archived by Patrick himself:** `WatchList` (its features live on
-   in A Place To Remember) and `Health-Data`.
+## A fact worth carrying
 
----
-
-*Only the last two sessions are kept here. Older session detail isn't archived in the docs anymore — git history holds the full record.*
+`elyfont-home/index.html` in THIS project is the SOURCE of the
+live elyfont.com home page. If it is ever edited, the live copy
+must be re-uploaded to the public `WWhiteWolf/mystery-tracker`
+repo — upload replaces; never rename anything to or from
+`index.html` there (see `MysteryTracker/docs/DEPLOY.md`).
