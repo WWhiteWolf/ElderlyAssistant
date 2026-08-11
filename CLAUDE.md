@@ -1,14 +1,15 @@
 # Session rules — read before anything else
 
-1. How Claude conducts itself lives in `App-Docs/CLAUDE.md`,
-   which arrives on its own at every session start. None of it
-   is repeated here.
+1. How Claude conducts itself lives in `Projects/CLAUDE.md`, at
+   the root of the parent folder, which arrives on its own at
+   every session start. None of it is repeated here. This file
+   arrives on its own too, whenever this project's folder is
+   connected.
 
 2. This project's opening read is `docs/handoff.md`, and only
-   that. `docs/pending.txt` is Patrick's plain-language list,
-   opened at the end-of-session refresh; `docs/pending.docx` is
-   his reading copy, rebuilt from the txt and machine-checked
-   to match. `docs/build-history.md` is opened only when
+   that. `docs/pending.txt` is Patrick's plain-language list —
+   his direct read, no Word copy — opened at the end-of-session
+   refresh. `docs/build-history.md` is opened only when
    something finished needs tracing.
 
 3. At a session start, ask Patrick whether the previous
