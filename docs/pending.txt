@@ -1,9 +1,10 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-07-31 (#3-new — the round header buttons and
-the Days' optional times built and phone-verified, then replaced
-with three new items: Look Ahead's tiles and Snooze, Timer's tile
-button and log, and the Vault's Home-to-Back change. Bare session
-numbers below mean the old shared chain.)
+Last updated: 2026-08-18 (#4-new — the three notification defects
+fixed across six files, written but not yet built or tested, so
+they sit under "Needs a phone test"; the Look Ahead banner-delay
+bug moved there with them, its own fix having gone in. The three
+"What's Next" items are untouched. Bare session numbers below
+mean the old shared chain.)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. Finished work isn't tracked here — git history keeps the
@@ -22,10 +23,15 @@ WHAT'S NEXT
 
 NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
 ----------------------------------------------------------------------------
-
-
-STILL BROKEN OR UNFINISHED (small bugs)
----------------------------------------
+- The notification fixes (#4-new). Three things: your Done on a
+  banner no longer wipes out tomorrow's reminder; a Done now also
+  clears any snooze still waiting for that same item, so nothing
+  rings after you've said you're finished; and every routine
+  screen now re-reads what's saved when you come back to it, so a
+  checkmark you made from a banner is really there instead of
+  quietly disappearing. Covers My Day, Pets, My Week, Look Ahead
+  and Orders. Nothing has been on the phone yet — you'll only
+  know by living with it for a while.
 - Look Ahead: delaying from the BANNER doesn't show the "▶ Delayed"
   line on the tile (your #61-build phone test). Reading the code
   found the likely cause: the page only re-reads its saved items
@@ -34,6 +40,12 @@ STILL BROKEN OR UNFINISHED (small bugs)
   button ON the tile is fine. Fix is small (re-read on every visit).
   Also checked: a Delay is NOT supposed to write a log entry —
   only Done logs. That part is by design.
+  #4-new: that fix is now in — Look Ahead re-reads on every visit.
+  Very likely cured, but unconfirmed until the phone says so.
+
+
+STILL BROKEN OR UNFINISHED (small bugs)
+---------------------------------------
 
 
 DECISIONS TO MAKE WHEN YOU'RE READY

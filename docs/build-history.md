@@ -203,3 +203,109 @@ Mystery.
 machine-checked word for word — 566 words each side, zero
 mismatches. Next session's goal: #4-new — take up pending.txt's
 "What's Next" items, scoped together at the session start.
+
+## #4-new (2026-08-18): the three notification defects verified
+and fixed, six files changed, nothing built
+
+**The goal changed at the top of the session.** The opener named
+a new app idea — a college student's assistant — but Patrick set
+it aside for the notifications in Memory, which he now uses daily
+and calls his biggest gripe. The new app is why Memory was chosen
+as its basis, since it will live on the web first. Nothing was
+built for it, and one thing was noted about it: Memory's
+notifications are native local ones through expo-notifications,
+which a web app on the iPhone cannot have at all, so what carries
+across to the new app is the thinking rather than the code.
+
+**What arrived.** A session on the web, run because a stuck email
+login link kept Patrick off his Mac for a day, saved nothing but
+two documents: docs/ElderlyAssistant-notification-findings.md, a
+read-only review of the repository naming three defects and one
+recorded edge, and docs/college-app-draft-v1.md. A copy of that
+chat sits at Projects/Campus travel.rtf, unread.
+
+**The findings were verified before anything was changed.**
+app/_layout.tsx and app/myday.tsx were read end to end. All three
+defects are real, and the read corrected the document twice:
+
+- Finding 1 is worse than it was described. The line that cancels
+  the fired notification also runs when the past-day guard has
+  refused to check the item off, so a leftover banner's Done
+  destroys the daily repeat and marks nothing in exchange.
+- Finding 2's account of the re-arming is wrong.
+  scheduleAllNotifications() is reached through saveData() as
+  well as loadData(), so it runs on nearly every action on the
+  screen. That sharpens the defect rather than softening it,
+  because every one of those actions is also a chance to write
+  the stale copy back over a banner's check-off.
+
+**Findings 1 and 3 were taken together as one change in
+_layout.tsx.** They sit forty lines apart in the shared My Day /
+Pets branch of the done handler and are two halves of one idea —
+making that branch behave the way My Week's Done already does.
+
+- The cancelScheduledNotificationAsync(notifId) call was removed.
+  My Day and Pets both schedule DAILY repeats, confirmed in both
+  files, and a repeating request keeps one identifier for its
+  whole life, so cancelling it removed the repeat rather than the
+  occurrence.
+- The missing sweep was added: the branch now cancels the item's
+  pending mydaysnooze and petssnooze one-offs, so nothing nags
+  after a Done.
+- The judgment call, put to Patrick before the change and agreed:
+  the sweep is guarded by the branch's existing past-day check,
+  matching My Week, so a stale banner's Done cannot clear
+  reminders belonging to today.
+
+**Finding 2 was ruled on rather than patched, then applied to all
+five routine screens.** A search found that none of My Day, Pets,
+My Week, Look Ahead or Orders ever re-reads storage after
+mounting, and that the five carry one template between them. Both
+halves of the cure already existed in the app — useFocusEffect in
+home.tsx and an AppState listener in _layout.tsx — so nothing was
+invented.
+
+- Each screen's load was split in two. refreshFromStorage reads
+  the saved lists into the screen; loadData calls it and then
+  arms the reminders as before.
+- A focus effect on each screen calls the reading half when the
+  screen regains focus and when the app returns to the front —
+  the case that matters most, since a banner is usually tapped
+  with the app closed and the screen may never lose focus at all.
+- Patrick's decision, taken on the recommendation: the refresh
+  re-reads the saved items only and does not rebuild the
+  reminders, so walking onto a screen no longer tears down and
+  re-creates a dozen requests before showing anything. He first
+  asked whether to try My Day alone for a while; the answer that
+  settled it was that the _layout.tsx fix already governs Pets as
+  well, so a My-Day-only trial could not have been isolated
+  anyway, and two builds would have been needed instead of one.
+- Judgment calls named to him: My Week's weekly reset stays
+  inside the reading half, because a cycle can roll over while
+  the screen sits open; Look Ahead and Orders hand their list to
+  their scheduler, so on those two the reading half returns it;
+  and at startup each screen now reads storage twice, once on
+  mount and once on first focus, left as it is rather than
+  guarded with something harder to follow.
+
+**A standing bug was probably cured on the way.** pending.txt's
+Look Ahead banner-delay entry describes its own fix as "re-read
+on every visit", which is exactly what Look Ahead received. It is
+moved to "Needs a phone test" rather than struck, since nothing
+has been on the phone.
+
+**Checks.** npx tsc --noEmit clean after each change and again at
+the end. No build was run, nothing has been near the phone, and
+no behaviour was observed anywhere — Patrick's own word is that
+he will only know these work after using them for a while.
+
+**Left open.** Finding 4, the 64-request ceiling, recorded as an
+edge and not diagnosed. The comment heading the done handler in
+_layout.tsx, which still says it cancels the fired reminder —
+untrue of this branch now, and untrue of My Week's since it was
+written; raised and not ruled on. And the three "What's Next"
+items, untouched, the session having gone elsewhere by Patrick's
+word.
+
+**The refresh.** Next session's goal is unset; the phone trial
+comes first.
