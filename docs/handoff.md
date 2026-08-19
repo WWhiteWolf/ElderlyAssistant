@@ -49,13 +49,18 @@ received.
 
 ## The other thing #4-new produced
 
-`docs/college-app-draft-v1.md` — a feature draft for a college
-student's assistant, which would live on the web first. It has no
-folder of its own and no session yet. A copy of the chat behind it
-is at `Projects/Campus travel.rtf`, unread. One fact from it worth
-carrying: an iPhone web app saved to the Home Screen cannot schedule
-its own local alarms, so Memory's notification code will not carry
-across to it — only the thinking behind it will.
+A feature draft for a college student's assistant, which would live
+on the web first. It and a copy of the chat behind it now sit in a
+folder of their own at `Projects/Sudents-Assistant` —
+`college-app-draft-v1.md` and `Campus travel.rtf`, the second still
+unread. That folder name went in misspelled; Patrick renames it to
+`Students-Assistant` next session. The new app has no session of its
+own yet.
+
+One fact from the draft worth carrying: an iPhone web app saved to
+the Home Screen cannot schedule its own local alarms, so Memory's
+notification code will not carry across to it — only the thinking
+behind it will.
 
 ## Quiet-file note (this one session only)
 

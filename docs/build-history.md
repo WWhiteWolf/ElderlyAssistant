@@ -221,8 +221,13 @@ across to the new app is the thinking rather than the code.
 login link kept Patrick off his Mac for a day, saved nothing but
 two documents: docs/ElderlyAssistant-notification-findings.md, a
 read-only review of the repository naming three defects and one
-recorded edge, and docs/college-app-draft-v1.md. A copy of that
-chat sits at Projects/Campus travel.rtf, unread.
+recorded edge, and a feature draft for the college app. At the
+close of the session Patrick made a folder for the new app at the
+Projects root and moved the draft and a copy of that chat into it,
+as Sudents-Assistant/college-app-draft-v1.md and
+Sudents-Assistant/Campus travel.rtf. The folder name went in
+misspelled and is to be renamed Students-Assistant; the review
+stayed behind with Memory, where it belongs.
 
 **The findings were verified before anything was changed.**
 app/_layout.tsx and app/myday.tsx were read end to end. All three
