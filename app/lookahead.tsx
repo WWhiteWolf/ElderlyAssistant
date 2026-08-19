@@ -1,10 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { SchedulableTriggerInputTypes } from 'expo-notifications';
-import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import {
     Alert,
+    AppState,
     KeyboardAvoidingView,
     Modal,
     Platform,
@@ -130,7 +131,28 @@ export default function LookAheadScreen() {
         setup();
     }, []);
 
-    const loadData = async () => {
+    // Re-read storage when the screen regains focus — arriving here from
+    // elsewhere in the app — and when the app returns to the front, which is
+    // the usual case after a banner Done, since this screen may never lose
+    // focus at all while the banner is tapped.
+    useFocusEffect(
+        useCallback(() => {
+            refreshFromStorage();
+            const sub = AppState.addEventListener('change', (state) => {
+                if (state === 'active') refreshFromStorage();
+            });
+            return () => sub.remove();
+        }, [])
+    );
+
+    // Read the saved items and log back into the screen. Called on mount, and
+    // again whenever the screen regains focus or the app returns to the front —
+    // so a Done tapped on a banner, which _layout.tsx writes straight to
+    // storage, shows up here instead of being overwritten by this screen's
+    // stale in-memory copy the next time anything is saved.
+    // It deliberately does NOT re-arm the reminders; that is loadData's job.
+    // Returns the cleaned list so loadData can arm from it.
+    const refreshFromStorage = async (): Promise<LookAheadItem[] | undefined> => {
         try {
             const savedItems = await AsyncStorage.getItem('lookahead_items');
             const parsedItems: LookAheadItem[] = savedItems ? JSON.parse(savedItems) : [];
@@ -148,8 +170,18 @@ export default function LookAheadScreen() {
             if (JSON.stringify(cleaned) !== JSON.stringify(parsedItems)) {
                 await AsyncStorage.setItem('lookahead_items', JSON.stringify(cleaned));
             }
-            // Self-heal: re-arm this page's reminders from the saved items every open.
-            await scheduleAll(cleaned);
+            return cleaned;
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    // Mount-time load: read storage, then self-heal — re-arm this page's
+    // reminders from the saved items every open.
+    const loadData = async () => {
+        const cleaned = await refreshFromStorage();
+        try {
+            if (cleaned) await scheduleAll(cleaned);
         } catch (e) {
             console.error(e);
         }

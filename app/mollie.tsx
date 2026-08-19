@@ -1,10 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { SchedulableTriggerInputTypes } from 'expo-notifications';
-import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import {
     Alert,
+    AppState,
     KeyboardAvoidingView,
     Modal,
     Platform,
@@ -84,7 +85,29 @@ export default function PetsScreen() {
         setup();
     }, []);
 
-    const loadData = async () => {
+    // Re-read storage when the screen regains focus — arriving here from
+    // elsewhere in the app — and when the app returns to the front, which is
+    // the usual case after a banner Done, since this screen may never lose
+    // focus at all while the banner is tapped.
+    useFocusEffect(
+        useCallback(() => {
+            refreshFromStorage();
+            const sub = AppState.addEventListener('change', (state) => {
+                if (state === 'active') refreshFromStorage();
+            });
+            return () => sub.remove();
+        }, [])
+    );
+
+    // Read the saved lists back into the screen. Called on mount, and again
+    // whenever the screen regains focus or the app returns to the front — so a
+    // Done tapped on a banner, which _layout.tsx writes straight to storage,
+    // shows up here instead of being overwritten by this screen's stale
+    // in-memory copy the next time anything is saved.
+    // It deliberately does NOT rebuild the reminders; that is loadData's job.
+    // The one exception is the day-change branch below, which resets yesterday's
+    // checkmarks and does re-arm them, because a fresh day genuinely needs it.
+    const refreshFromStorage = async () => {
         try {
             // One-time cleanup: remove the orphaned legacy key from the old
             // multi-pet storage (no longer read anywhere). No-op if absent.
@@ -107,6 +130,15 @@ export default function PetsScreen() {
                 setFeeds(parsedFeeds);
                 setTreatCount(savedTreats ? parseInt(savedTreats, 10) : 0);
             }
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    // Mount-time load: read storage, then arm this screen's reminders.
+    const loadData = async () => {
+        await refreshFromStorage();
+        try {
             await scheduleAllPetsNotifications();
         } catch (e) {
             console.error(e);

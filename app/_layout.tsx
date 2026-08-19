@@ -565,7 +565,21 @@ export default function RootLayout() {
           note: '',
         };
         await AsyncStorage.setItem(historyKey, JSON.stringify([newEntry, ...hist].slice(0, 50)));
-        await Notifications.cancelScheduledNotificationAsync(notifId);
+        // We do NOT cancel the fired notification's id — the base reminder is a
+        // DAILY repeat that must fire again tomorrow; iOS auto-clears the shown
+        // banner on an action tap. (Same rule My Week's Done follows above.)
+        // Clear this item's pending snooze one-offs so nothing nags after a Done
+        // — but only when the Done actually checked off today's occurrence; a
+        // stale banner's Done must leave today's pending reminders alone.
+        if (itemId && !firedOnPastDay) {
+          const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+          for (const n of scheduled) {
+            const src = n.content.data?.source as string | undefined;
+            if ((src === 'mydaysnooze' || src === 'petssnooze') && n.content.data?.itemId === itemId) {
+              await Notifications.cancelScheduledNotificationAsync(n.identifier);
+            }
+          }
+        }
       })();
       return;
     }

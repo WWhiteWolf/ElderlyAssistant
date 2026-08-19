@@ -1,10 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { SchedulableTriggerInputTypes } from 'expo-notifications';
-import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import {
     Alert,
+    AppState,
     KeyboardAvoidingView,
     Modal,
     Platform,
@@ -103,6 +104,20 @@ export default function MyWeekScreen() {
         setup();
     }, []);
 
+    // Re-read storage when the screen regains focus — arriving here from
+    // elsewhere in the app — and when the app returns to the front, which is
+    // the usual case after a banner Done, since this screen may never lose
+    // focus at all while the banner is tapped.
+    useFocusEffect(
+        useCallback(() => {
+            refreshFromStorage();
+            const sub = AppState.addEventListener('change', (state) => {
+                if (state === 'active') refreshFromStorage();
+            });
+            return () => sub.remove();
+        }, [])
+    );
+
     // The epoch-ms of a chore's most recent past occurrence (its weekday at its
     // time, on or before now). If today IS its day but the time hasn't arrived
     // yet, the last occurrence was a week ago.
@@ -134,7 +149,15 @@ export default function MyWeekScreen() {
             return next;
         });
 
-    const loadData = async () => {
+    // Read the saved chores and log back into the screen. Called on mount, and
+    // again whenever the screen regains focus or the app returns to the front —
+    // so a Done tapped on a banner, which _layout.tsx writes straight to
+    // storage, shows up here instead of being overwritten by this screen's
+    // stale in-memory copy the next time anything is saved.
+    // It deliberately does NOT rebuild the reminders; that is loadData's job.
+    // The weekly reset still runs here, since a cycle can roll over while the
+    // screen sits open.
+    const refreshFromStorage = async () => {
         try {
             const savedChores = await AsyncStorage.getItem('week_routine');
             const parsed: Chore[] = savedChores ? JSON.parse(savedChores) : INITIAL_CHORES;
@@ -143,6 +166,15 @@ export default function MyWeekScreen() {
             await AsyncStorage.setItem('week_routine', JSON.stringify(reset));
             const savedHist = await AsyncStorage.getItem('week_history');
             if (savedHist) setHistory(JSON.parse(savedHist));
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    // Mount-time load: read storage, then arm this screen's reminders.
+    const loadData = async () => {
+        await refreshFromStorage();
+        try {
             await scheduleAllNotifications();
         } catch (e) {
             console.error(e);
