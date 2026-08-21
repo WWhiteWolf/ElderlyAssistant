@@ -22,6 +22,7 @@ import DateTimeControl from '../components/DateTimeControl';
 import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 import { runScheduler } from '../scheduler/scheduler';
+import { warnIfFull } from '../scheduler/warn';
 
 // A weekly chore: a label, the day of the week it belongs to (0 = Sun … 6 = Sat),
 // the time of day, and whether it's been marked Done this week.
@@ -183,8 +184,9 @@ export default function MyWeekScreen() {
         await AsyncStorage.setItem('week_history', JSON.stringify(h));
         // The saved list has changed, so let the module work the whole answer
         // out again. It reads storage itself, matches by key, and touches only
-        // what actually differs.
-        await runScheduler();
+        // what actually differs. If it could not hold everything the lists
+        // asked for, the warning speaks here and nowhere else (plan step 6).
+        warnIfFull(await runScheduler());
     };
 
     // The next future date whose weekday matches, at the chore's time.

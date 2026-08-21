@@ -22,6 +22,7 @@ import DateTimeControl from '../components/DateTimeControl';
 import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 import { runScheduler } from '../scheduler/scheduler';
+import { warnIfFull } from '../scheduler/warn';
 
 // Look Ahead — long-lead reminders grouped by repeat interval.
 // STEP 2 (#36): page + add/edit + subheadings + history ONLY.
@@ -188,8 +189,9 @@ export default function LookAheadScreen() {
         await AsyncStorage.setItem('lookahead_history', JSON.stringify(h));
         // The saved list has changed, so let the module work the whole answer
         // out again. It reads storage itself, matches by key, and touches only
-        // what actually differs.
-        await runScheduler();
+        // what actually differs. If it could not hold everything the lists
+        // asked for, the warning speaks here and nowhere else (plan step 6).
+        warnIfFull(await runScheduler());
     };
 
     // On-tile Delay: push this item's reminder out by a day, a week or a month.

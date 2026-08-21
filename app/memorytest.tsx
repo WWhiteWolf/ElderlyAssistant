@@ -19,6 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 import { runScheduler } from '../scheduler/scheduler';
+import { warnIfFull } from '../scheduler/warn';
 
 // Memory Test — a 5-word recall test, built so Patrick can track his scores
 // before and after starting the PAP mask. The flow matches what his doctor
@@ -235,8 +236,10 @@ export default function MemoryTestScreen() {
         await AsyncStorage.setItem(SESSION_KEY, JSON.stringify(s));
         // The saved session has changed, so let the module work the whole
         // answer out again. It reads the session itself and decides whether the
-        // five-minute recall reminder should exist (plan step 5).
-        await runScheduler();
+        // five-minute recall reminder should exist (plan step 5). If it could
+        // not hold everything the lists asked for, the warning speaks here and
+        // nowhere else (plan step 6).
+        warnIfFull(await runScheduler());
     };
 
     // This page neither arms nor cancels anything. The module owns the one

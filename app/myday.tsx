@@ -22,7 +22,8 @@ import DateTimeControl from '../components/DateTimeControl';
 import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 import * as AppGroup from '../modules/app-group';
-import { runScheduler } from '../scheduler/scheduler';
+import { runDailyReset, runScheduler } from '../scheduler/scheduler';
+import { warnIfFull } from '../scheduler/warn';
 
 interface ScheduleItem {
     id: string;
@@ -133,41 +134,26 @@ export default function MyDayScreen() {
     // Done tapped on a banner, which _layout.tsx writes straight to storage,
     // shows up here instead of being overwritten by this screen's stale
     // in-memory copy the next time anything is saved.
-    // It deliberately does NOT rebuild the reminders; that is loadData's job.
-    // The one exception is the day-change branch below, which resets yesterday's
-    // checkmarks and does re-arm them, because a fresh day genuinely needs it.
+    // It deliberately does NOT rebuild the reminders; the module owns those.
+    // Nor does it roll the day over any more — that moved into the module at
+    // plan step 7, so the checkmarks clear whether or not this screen is
+    // opened. It is asked to run first all the same, because it costs two reads
+    // on a day already rolled over and it means this screen can never draw
+    // yesterday's checkmarks while waiting for the module's own run.
     const refreshFromStorage = async () => {
         try {
-            const savedDate = await AsyncStorage.getItem('my_last_date');
-            const today = new Date().toLocaleDateString();
+            await runDailyReset();
             const savedHist = await AsyncStorage.getItem('my_history');
             if (savedHist) setHistory(JSON.parse(savedHist));
             const parsedRoutine = await getMigratedRoutine();
             const savedCoffee = await AsyncStorage.getItem('my_coffee');
             const savedWater = await AsyncStorage.getItem('my_water');
-            if (savedDate !== today) {
-                // A new day clears yesterday's checkmarks, and yesterday's
-                // snoozes with them — a snooze belongs to the day it was made,
-                // and the item's own daily reminder carries today.
-                const resetRoutine = parsedRoutine.map((s: ScheduleItem) => {
-                    const { snoozedUntil, ...rest } = s;
-                    return { ...rest, completed: false };
-                });
-                setRoutine(resetRoutine);
-                setCoffeeCount(0);
-                setWaterCount(0);
-                await AsyncStorage.setItem('my_last_date', today);
-                await AsyncStorage.setItem('my_coffee', '0');
-                await AsyncStorage.setItem('my_water', '0');
-                await saveData(resetRoutine, savedHist ? JSON.parse(savedHist) : []);
-            } else {
-                setRoutine(parsedRoutine);
-                setCoffeeCount(savedCoffee ? parseInt(savedCoffee, 10) : 0);
-                setWaterCount(savedWater ? parseInt(savedWater, 10) : 0);
-                // Same-day load doesn't go through saveData, so publish here too
-                // to keep Siri's live item list fresh.
-                AppGroup.setMyDayItems(parsedRoutine.map(i => ({ id: i.id, label: i.label })));
-            }
+            setRoutine(parsedRoutine);
+            setCoffeeCount(savedCoffee ? parseInt(savedCoffee, 10) : 0);
+            setWaterCount(savedWater ? parseInt(savedWater, 10) : 0);
+            // This read doesn't go through saveData, so publish here too to keep
+            // Siri's live item list fresh.
+            AppGroup.setMyDayItems(parsedRoutine.map(i => ({ id: i.id, label: i.label })));
         } catch (e) {
             console.error(e);
         }
@@ -188,8 +174,9 @@ export default function MyDayScreen() {
         AppGroup.setMyDayItems(r.map(i => ({ id: i.id, label: i.label })));
         // The saved list has changed, so let the module work the whole answer
         // out again. It reads storage itself, matches by key, and touches only
-        // what actually differs.
-        await runScheduler();
+        // what actually differs. If it could not hold everything the lists
+        // asked for, the warning speaks here and nowhere else (plan step 6).
+        warnIfFull(await runScheduler());
     };
 
     const format12Hour = (h: number, m: number) => {

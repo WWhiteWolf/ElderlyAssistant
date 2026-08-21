@@ -21,7 +21,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl from '../components/DateTimeControl';
 import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
-import { runScheduler } from '../scheduler/scheduler';
+import { runDailyReset, runScheduler } from '../scheduler/scheduler';
+import { warnIfFull } from '../scheduler/warn';
 
 interface FeedItem {
     id: string;
@@ -109,38 +110,25 @@ export default function PetsScreen() {
     // Done tapped on a banner, which _layout.tsx writes straight to storage,
     // shows up here instead of being overwritten by this screen's stale
     // in-memory copy the next time anything is saved.
-    // It deliberately does NOT rebuild the reminders; that is loadData's job.
-    // The one exception is the day-change branch below, which resets yesterday's
-    // checkmarks and does re-arm them, because a fresh day genuinely needs it.
+    // It deliberately does NOT rebuild the reminders; the module owns those.
+    // Nor does it roll the day over any more — that moved into the module at
+    // plan step 7, so the checkmarks clear whether or not this screen is
+    // opened. It is asked to run first all the same, because it costs two reads
+    // on a day already rolled over and it means this screen can never draw
+    // yesterday's checkmarks while waiting for the module's own run.
     const refreshFromStorage = async () => {
         try {
+            await runDailyReset();
             // One-time cleanup: remove the orphaned legacy key from the old
             // multi-pet storage (no longer read anywhere). No-op if absent.
             await AsyncStorage.removeItem('pets_data');
-            const savedDate = await AsyncStorage.getItem('pets_last_date');
-            const today = new Date().toLocaleDateString();
             const savedHist = await AsyncStorage.getItem('pets_history');
             if (savedHist) setHistory(JSON.parse(savedHist));
             const savedFeeds = await AsyncStorage.getItem('pets_feeds');
             const parsedFeeds: FeedItem[] = savedFeeds ? JSON.parse(savedFeeds) : INITIAL_FEEDS;
             const savedTreats = await AsyncStorage.getItem('pets_treats');
-            if (savedDate !== today) {
-                // A new day clears yesterday's checkmarks, and yesterday's
-                // snoozes with them — a snooze belongs to the day it was made,
-                // and the feed's own daily reminder carries today.
-                const resetFeeds = parsedFeeds.map(f => {
-                    const { snoozedUntil, ...rest } = f;
-                    return { ...rest, completed: false };
-                });
-                setFeeds(resetFeeds);
-                setTreatCount(0);
-                await AsyncStorage.setItem('pets_last_date', today);
-                await AsyncStorage.setItem('pets_treats', '0');
-                await saveData(resetFeeds, savedHist ? JSON.parse(savedHist) : []);
-            } else {
-                setFeeds(parsedFeeds);
-                setTreatCount(savedTreats ? parseInt(savedTreats, 10) : 0);
-            }
+            setFeeds(parsedFeeds);
+            setTreatCount(savedTreats ? parseInt(savedTreats, 10) : 0);
         } catch (e) {
             console.error(e);
         }
@@ -158,8 +146,9 @@ export default function PetsScreen() {
         await AsyncStorage.setItem('pets_history', JSON.stringify(h));
         // The saved list has changed, so let the module work the whole answer
         // out again. It reads storage itself, matches by key, and touches only
-        // what actually differs.
-        await runScheduler();
+        // what actually differs. If it could not hold everything the lists
+        // asked for, the warning speaks here and nowhere else (plan step 6).
+        warnIfFull(await runScheduler());
     };
 
     const format12Hour = (h: number, m: number) => {

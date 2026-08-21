@@ -922,3 +922,51 @@ labels for #5-new through #10-new by hand. The one real miss was a
 report he could not follow, his words being "I don't know what you're
 trying to say", after which he stated the To-Do reason plainly himself
 and it went into the comments in his words rather than in Claude's.
+
+**Added after the session's docs refresh — the phone.** Patrick rebuilt,
+loaded the phone and tested what he could; the build number was not
+recorded. Three things passed: the Memory Test's five-minute recall,
+which is step 5's own work; a Pets snooze all the way through, which is
+step 4's first confirmation on a device; and My Week, his verdict being
+that it does it correctly. The morning-after test remains the one that
+matters and has still never been run. Three things came out of the
+testing and are carried in `handoff.md` and `pending.txt`: the "Snoozed
+till:" line cannot be read on either theme, its style using the color
+meant for text on a solid button — white on a white row in the light
+theme; "+1 Day" has gone from every My Week banner, both reminders now
+carrying the shared routine buttons, so `myweekactions` is registered
+but never asked for and the `postpone1` branch cannot fire; and Patrick
+restated what he wants from a tapped banner, which is the page open and
+the item highlighted, no scrolling. He also mixed the two projects for a
+moment, the "card" in that conversation being Students-Assistant's
+course card rather than anything in Memory — that note belongs to the
+other project and is not written down anywhere yet.
+
+**Step 6 built, after the phone testing.** Patrick reopened the session
+and asked for it. The budget itself was already running, so the step only
+gave it a voice. `scheduler/warn.ts` is new and holds two things: the
+wording, in one place rather than typed into six screens, and the check
+that decides whether to speak. Each of the six saves — My Day, Pets, My
+Week, Look Ahead, To-Do and Memory Test — now hands it the module's
+answer. It says nothing on the housing's own runs, which is what makes it
+speak as an item goes in and at no other time, and nothing when a run was
+skipped because another was already going, a warning missed there costing
+nothing since the next save asks again. No test came with it: the check is
+one comparison and it raises a pop-up, so it sits outside what Node can
+run, and that was said plainly rather than papered over. One judgment
+call, Claude's — the Memory Test screen asks the module to run in two
+places and only the save warns, throwing away a stale session not being an
+item going in. TypeScript clean, 93 tests still pass, nothing on a phone.
+
+The wording and placement were proposed rather than asked about, which is
+the durable part of the exchange. Patrick had said plainly that being
+grilled instead of helped would be reported, and he was right about the
+session: two of the rules that failed — the "X or Y?" question and asking
+for what could be worked out — were already written and simply not
+attended to. His own diagnosis is the one to carry: too many rules, not
+enough paying attention to them, so nothing new was added. The proposal
+was accepted as it stood, and it is now recorded in
+`docs/scheduler-plan.md`, whose open-questions section is empty for the
+first time. One correction went with it: step 8's home was never open —
+the pending-queue screen goes into Settings, settled at #5-new — and this
+project's hand-off had been carrying it as an open question.

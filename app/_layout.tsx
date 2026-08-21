@@ -408,9 +408,12 @@ export default function RootLayout() {
       return;
     }
 
-    // "Done" action button: mark this item complete in storage and cancel the
-    // fired reminder, the banner equivalent of the on-screen Log (✓) button.
-    // The screen's daily reset + reschedule-on-load brings it back tomorrow.
+    // "Done" action button: mark this item complete in storage, the banner
+    // equivalent of the on-screen Log (✓) button. It does NOT cancel the fired
+    // reminder — that was never true of My Week's branch and stopped being true
+    // of My Day's and Pets' when the module took the repeats over. iOS clears
+    // the shown banner itself on an action tap, and the base repeat is left
+    // alone so it fires again next time round.
     if (action === 'done') {
       const source = data?.source as string | undefined;
       const itemId = data?.itemId as string | undefined;
@@ -428,27 +431,15 @@ export default function RootLayout() {
           const raw = await AsyncStorage.getItem('week_routine');
           const chores = raw ? (JSON.parse(raw) as any[]) : [];
           const fired = new Date(response.notification.date * 1000);
-          // PAST-CYCLE GUARD (spec #34): if this banner fired BEFORE the chore's
-          // most recent scheduled occurrence, it's left over from a previous
-          // cycle — log that past completion below, but do NOT check off the
-          // current cycle's occurrence.
-          const chore = chores.find((c) => c.id === itemId);
-          let stale = false;
-          if (chore) {
-            const now = new Date();
-            const d = new Date(now);
-            d.setHours(chore.hour, chore.minute, 0, 0);
-            let diff = (now.getDay() - chore.day + 7) % 7;
-            if (diff === 0 && d.getTime() > now.getTime()) diff = 7;
-            d.setDate(d.getDate() - diff);
-            stale = fired.getTime() < d.getTime();
-          }
-          if (!stale) {
-            const updated = chores.map((c) =>
-              c.id === itemId ? { ...c, completed: true, doneAt: Date.now(), postponedTo: undefined } : c
-            );
-            await AsyncStorage.setItem('week_routine', JSON.stringify(updated));
-          }
+          // A Done always means the cycle now (plan step 7). The past-cycle
+          // guard that used to stand here went with My Day's and Pets' past-day
+          // guard, for the same reason: the module sweeps yesterday's banners
+          // away as it runs, so a banner still there to be tapped is one from
+          // today, and a chore's banner from today belongs to this cycle.
+          const updated = chores.map((c) =>
+            c.id === itemId ? { ...c, completed: true, doneAt: Date.now(), postponedTo: undefined } : c
+          );
+          await AsyncStorage.setItem('week_routine', JSON.stringify(updated));
           const label = (data?.label as string) || 'Chore';
           const histRaw = await AsyncStorage.getItem('week_history');
           const hist = histRaw ? (JSON.parse(histRaw) as any[]) : [];
@@ -461,21 +452,17 @@ export default function RootLayout() {
             note: '',
           };
           await AsyncStorage.setItem('week_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
-          // A Done that checked off the current cycle also clears the postpone
-          // stamp above, so asking the module to run takes the postponed
-          // reminder off the phone. A snooze still has to be hunted down by
-          // hand: snoozes are not written down yet and the module cannot see
-          // them. A stale banner's Done leaves both alone, having changed
-          // nothing about this cycle.
-          if (!stale) {
-            const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-            for (const n of scheduled) {
-              if (n.content.data?.source === 'myweeksnooze' && n.content.data?.itemId === itemId) {
-                await Notifications.cancelScheduledNotificationAsync(n.identifier);
-              }
+          // The Done cleared the postpone above, so asking the module to run
+          // takes the postponed reminder off the phone. A snooze still has to be
+          // hunted down by hand: My Week's snoozes are not written down yet and
+          // the module cannot see them.
+          const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+          for (const n of scheduled) {
+            if (n.content.data?.source === 'myweeksnooze' && n.content.data?.itemId === itemId) {
+              await Notifications.cancelScheduledNotificationAsync(n.identifier);
             }
-            await runScheduler();
           }
+          await runScheduler();
         })();
         return;
       }
@@ -528,12 +515,11 @@ export default function RootLayout() {
       const storageKey = isPets ? 'pets_feeds' : 'my_routine';
       const historyKey = isPets ? 'pets_history' : 'my_history';
       (async () => {
-        // PAST-DAY GUARD (spec #34): if this banner fired on a PAST day, log
-        // that past completion below, but do NOT check off TODAY's occurrence —
-        // yesterday's leftover popup mustn't silence today's routine.
-        const firedAt = new Date(response.notification.date * 1000);
-        const firedOnPastDay = firedAt.toLocaleDateString() !== new Date().toLocaleDateString();
-        if (itemId && !firedOnPastDay) {
+        // A Done always means today (plan step 7). The past-day guard that used
+        // to stand here is gone with the rest of the midnight holdover: the
+        // module sweeps yesterday's banners away as it runs, so a banner still
+        // there to be tapped is one from today.
+        if (itemId) {
           const raw = await AsyncStorage.getItem(storageKey);
           if (raw) {
             const items = JSON.parse(raw) as { id: string; completed: boolean; snoozedUntil?: number }[];
@@ -576,10 +562,9 @@ export default function RootLayout() {
         // banner on an action tap. (Same rule My Week's Done follows above.)
         //
         // #10-new: the snooze needs no hunting through the phone's queue any
-        // more. The stamp came off with the checkmark above, so asking the
-        // module to run takes the snooze reminder off the phone and leaves the
-        // daily repeat where it is. A stale banner's Done changed nothing, so
-        // the run finds nothing to do and today's reminders stand.
+        // more. It came off with the checkmark above, so asking the module to
+        // run takes the snooze reminder off the phone and leaves the daily
+        // repeat where it is.
         await runScheduler();
       })();
       return;

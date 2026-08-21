@@ -14,6 +14,8 @@ import { SchedulableTriggerInputTypes } from 'expo-notifications';
 
 import { reconcile } from './reconcile.ts';
 import type { Plan, QueueEntry } from './reconcile.ts';
+import { isNewDay, resetForNewDay } from './dailyreset.ts';
+import type { ResettableItem } from './dailyreset.ts';
 import type { WantedReminder, WantedTrigger } from './types.ts';
 
 import { readMyDay } from './readers/myday.ts';
@@ -70,6 +72,81 @@ export const OWNED_SOURCES = [
     'orders',
     'orderssnooze',
 ];
+
+/**
+ * Roll the day over for the two daily screens, if it has not been rolled yet.
+ *
+ * This used to happen only when My Day or Pets was opened, which meant the day
+ * never turned over for a screen that was not visited. It now runs wherever the
+ * module runs — on launch, on every return to the front, and after any save —
+ * so the checkmarks clear whether or not those screens are looked at.
+ *
+ * It is safe to call at any time: on a day that has already been rolled over it
+ * reads two dates and does nothing else. That is what lets the screens call it
+ * before they read, so neither of them can ever draw yesterday's checkmarks
+ * while waiting for the module's own run.
+ *
+ * The counts go back to zero with the checkmarks — the cups of coffee and
+ * glasses of water on My Day, and the treats on Pets — because each of those
+ * counts a day.
+ */
+export async function runDailyReset(): Promise<void> {
+    const today = new Date().toLocaleDateString();
+
+    const screens = [
+        { dateKey: 'my_last_date', listKey: 'my_routine', counters: ['my_coffee', 'my_water'] },
+        { dateKey: 'pets_last_date', listKey: 'pets_feeds', counters: ['pets_treats'] },
+    ];
+
+    for (const screen of screens) {
+        try {
+            const savedDate = await AsyncStorage.getItem(screen.dateKey);
+            if (!isNewDay(savedDate, today)) continue;
+
+            const items = await readList<ResettableItem>(screen.listKey);
+            if (items.length > 0) {
+                await AsyncStorage.setItem(screen.listKey, JSON.stringify(resetForNewDay(items)));
+            }
+            for (const counter of screen.counters) {
+                await AsyncStorage.setItem(counter, '0');
+            }
+            await AsyncStorage.setItem(screen.dateKey, today);
+        } catch {
+            // One screen failing to roll over must not stop the other, and must
+            // not stop the reminders being worked out below.
+        }
+    }
+}
+
+/**
+ * Take down any banner delivered before today.
+ *
+ * A thing not done on time is of no use as a reminder (Patrick), so yesterday's
+ * untapped banner is not left sitting in Notification Center to be tapped
+ * today. Only delivered banners are touched; nothing still waiting to fire is
+ * affected.
+ *
+ * The honest limit: this can only happen while the app is running or as it
+ * comes to the front. A phone left unopened for two days keeps those banners
+ * until it is opened.
+ */
+export async function sweepStaleBanners(): Promise<void> {
+    try {
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+
+        const presented = await Notifications.getPresentedNotificationsAsync();
+        for (const banner of presented) {
+            // iOS reports the moment in seconds since 1970.
+            const deliveredAt = banner.date * 1000;
+            if (deliveredAt < startOfToday.getTime()) {
+                await Notifications.dismissNotificationAsync(banner.request.identifier);
+            }
+        }
+    } catch {
+        // A banner that has already gone is nothing to worry about.
+    }
+}
 
 /** Read one saved list, tolerating a key that has never been written. */
 async function readList<T>(key: string): Promise<T[]> {
@@ -241,6 +318,12 @@ export async function runScheduler(): Promise<Plan | null> {
     try {
         const permission = await Notifications.getPermissionsAsync();
         if (!permission.granted) return null;
+
+        // The clean slate comes first, in both its halves. The reset has to
+        // happen before the lists are read, or a snooze made yesterday would be
+        // armed for today; the sweep is independent and simply belongs here.
+        await runDailyReset();
+        await sweepStaleBanners();
 
         const now = Date.now();
         const wanted = await gatherWanted(now);

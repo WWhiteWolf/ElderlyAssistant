@@ -1,12 +1,13 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-08-21 (#11-new — the reminder rebuild is five
-steps in of eight. Step 4 is finished: To-Do turned out to need no
-snooze at all, so that last piece was taking out code that could
-never run rather than building anything. Step 5 followed in the
-same session — the Memory Test's five-minute recall now comes from
-the one piece too. Steps 1 and 2 are on your phone as build 57;
-steps 3, 4 and 5 have never run anywhere. Bare session numbers
-below mean the old shared chain.)
+Last updated: 2026-08-21 (#11-new — the reminder rebuild is seven
+steps in of eight, and only the pending-queue screen is left. Step
+4 is finished: To-Do turned out to need no snooze at all. Step 5
+brought the Memory Test in. Step 6 gave the budget a voice. Step 7
+is the clean slate — yesterday's checkmarks clear and yesterday's
+banners get taken down whether or not you open those pages. You
+rebuilt and tested three things on the phone; the morning-after
+test is still to come. Bare session numbers below mean the old
+shared chain.)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. Finished work isn't tracked here — git history keeps the
@@ -18,7 +19,7 @@ WHAT'S NEXT
 - THE REMINDERS. Build the one piece that owns them all (#5-new).
   The plan is written out in full in docs/scheduler-plan.md and
   every decision in it is yours and already made. It builds in
-  eight steps. Five are done:
+  eight steps. Seven are done:
     Step 1 (#6-new) — the new piece itself, plus its tests. No
       page touched.
     Step 2 (#7-new) — My Day and Pets stopped arming their own.
@@ -32,19 +33,24 @@ WHAT'S NEXT
       Snooze button to tap, so the piece was taking out code that
       could never run.
     Step 5 (#11-new) — the Memory Test's five-minute recall.
-  Three are left:
-    Step 6 — the warning when the phone is close to holding all
-      the reminders it can. It waits on you: what it should say,
-      and where it should show. The building after that is small.
-    Step 7 — the daily reset moves in, yesterday's untapped
-      banners get swept out of Notification Center, and a stale
-      branch comes out of the Done handler.
+    Step 6 (#11-new) — the warning when your phone can't hold
+      every reminder asked for. It shows as you save the item,
+      on the page you're on, and says the reminder furthest in
+      the future won't go off until something makes room.
+    Step 7 (#11-new) — the clean slate. Yesterday's checkmarks,
+      snoozes and counts now clear whether or not you open My Day
+      or Pets, and any banner from before today is taken down as
+      the app opens or comes back to the front. A Done always
+      means today now.
+  One is left:
     Step 8 — the screen that shows which reminders are pending.
-      Where it lives is also yours to say. Until it exists there
-      is no way to see the pending list on the phone at all.
-  Steps 1 and 2 are on your phone as build 57. Steps 3, 4 and 5
-  have never run anywhere. You asked for all eight before the
-  next build, one at a time.
+      It goes into Settings, which you settled back at #5-new.
+      Until it exists there is no way to see the pending list on
+      the phone at all. You said you'd take it up next session.
+  You rebuilt at the close of #11-new and confirmed three things
+  on the phone: the Memory Test's five-minute recall, a Pets
+  snooze, and My Week. Steps 6 and 7 have never run anywhere. You
+  asked for all eight before the next build, one at a time.
 - The clock setter is off by twelve hours (#5-new). Spinning the
   hour down from the 12:00 PM it opens at goes to 11 PM instead
   of 11 AM, so setting 9 in the morning the natural way lands on
@@ -98,10 +104,27 @@ STILL BROKEN OR UNFINISHED (small bugs)
   down on the chore now, so the app puts it straight back. Never
   been on a phone — it came in with #9-new, which hasn't been
   built. Small fix, and it belongs to a My Week session.
-- Waiting on your phone: steps 3, 4 and 5, none of which have
-  run. And the test steps 1 and 2 still haven't had — the morning
-  after. Something you check off today has to still remind you
-  tomorrow. That's the thing that used to go quiet.
+- The "Snoozed till:" line can't be read (#11-new, your find on
+  the phone). It shows up where it should on both My Day and
+  Pets, but it was given the color meant for writing on a solid
+  colored button. On the light theme that's white, and the row
+  behind it is white too, so it's invisible; on the dark theme
+  it's a very dark brown on a dark brown row. It needs a color
+  meant for text on a row. Small fix, not made.
+- Waiting on your phone: the morning after. Something you check
+  off today has to still remind you tomorrow. That's the thing
+  that used to go quiet, and it's the one test that matters most.
+  At the close of #11-new you rebuilt, loaded, and confirmed
+  three things on the phone: the Memory Test's five-minute
+  recall, a Pets snooze all the way through, and My Week. The
+  rest of steps 3 and 4 still hasn't been tried.
+- "+1 Day" has quietly gone from every My Week banner (#11-new,
+  found while working out what to test). Every My Week reminder
+  now carries the shared routine buttons — Done, OK, Skip and
+  three Delays — so the "+1 Day" button never appears and the
+  code behind it can't run. Postponing still works, just only
+  from the page. Nothing is proposed; written down in case you
+  miss the button.
 - One more for when you test: the Memory Test only lets you run
   one a day. Once the day's score is logged the Start button is
   replaced by that score and "Come back tomorrow", so step 5 can
@@ -128,7 +151,11 @@ PARKED ON PURPOSE (bigger items, on hold for now)
 -------------------------------------------------
 - Tapping a reminder lands on the right page (tested #55), but
   taking you to the exact item on that page is still not built.
-  (Moved here from Still broken, #1-new.)
+  (Moved here from Still broken, #1-new.) You raised this again
+  at #11-new and said what you want: no scrolling, just the item
+  highlighted once the page opens. It was looked at and it is
+  smaller than it sounds — the fuller account is in
+  docs/handoff.md. Still parked; nothing proposed.
 - Voice control through Siri. Set aside after much effort; revisit only
   if a future iPhone update fixes the name-matching. (The app-name revert
   above assumes this stays shelved.)

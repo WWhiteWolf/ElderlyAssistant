@@ -17,6 +17,7 @@ import { runLookAheadTests } from './lookahead.test.ts';
 import { runToDoTests } from './todo.test.ts';
 import { runMemoryTestTests } from './memorytest.test.ts';
 import { runReconcileTests } from './reconcile.test.ts';
+import { runDailyResetTests } from './dailyreset.test.ts';
 
 console.log('\nMy Day reader');
 runMyDayTests();
@@ -38,5 +39,8 @@ runMemoryTestTests();
 
 console.log('\nReconcile');
 runReconcileTests();
+
+console.log('\nDaily reset');
+runDailyResetTests();
 
 report();

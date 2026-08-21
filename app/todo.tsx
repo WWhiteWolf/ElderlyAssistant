@@ -21,6 +21,7 @@ import DateTimeControl, { formatDateMMDDYY, formatTime24 } from '../components/D
 import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 import { runScheduler } from '../scheduler/scheduler';
+import { warnIfFull } from '../scheduler/warn';
 
 // Priority removed entirely (Patrick, #58 scope, built #60): no form
 // buttons, no tile side bar or colored priority word. Old saved tasks may
@@ -165,8 +166,10 @@ export default function TodoScreen() {
         await AsyncStorage.setItem('todo_tasks', JSON.stringify(t));
         // The saved list has changed, so let the module work the whole answer
         // out again. It reads storage itself, matches by key, and touches only
-        // what actually differs (#8-new, plan step 3).
-        await runScheduler();
+        // what actually differs (#8-new, plan step 3). If it could not hold
+        // everything the lists asked for, the warning speaks here and nowhere
+        // else (plan step 6).
+        warnIfFull(await runScheduler());
     };
 
     const saveLog = async (l: LogEntry[]) => {

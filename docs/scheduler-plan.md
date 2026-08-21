@@ -222,8 +222,11 @@ open.
 5. Bring Memory Test in. Timer is deliberately left out.
 6. Turn on the budget and the near-the-ceiling warning.
 7. Move the daily reset into the module, sweep stale banners, and take
-   the past-day branch out of the Done handler.
-8. Build the screen that shows the queue.
+   the past-day branch out of the Done handler. Built at #11-new. My
+   Week's past-cycle guard came out with the past-day branch, the same
+   reasoning covering both: once yesterday's banners are swept, a banner
+   still there to be tapped is one from today.
+8. Build the screen that shows the queue. It goes into Settings.
 
 A one-time clearing runs the first time the new module starts: cancel
 everything iOS holds, then build from the saved data. That sweeps out
@@ -260,11 +263,30 @@ never warns about anything — it is the module working. The warning is
 for the real case only: there are now more reminders than the phone can
 hold, so something asked for will not arrive.
 
-Exactly what it says, and where it appears, is still open.
+**What it says and where it appears, settled at #11-new.** It is a plain
+pop-up on the screen the item was just entered on, the same kind the app
+already gives for "No Reminder Set", shown the moment the save finishes.
+Its words are:
+
+> **No room for this reminder**
+> Your phone holds only so many reminders and it is full. This one is
+> saved, but the one furthest in the future will not go off until
+> something makes room.
+
+It names what happened, what is still safe, and what fixes it, with no
+number in it and no word about the machinery.
+
+Two things were settled with it. A save that lands while the module is
+already running gets nothing back and says nothing, the warning being a
+guard and the next save asking again. And the line between ordinary
+rolling and the real case does not exist in Memory, because nothing here
+rolls — anything left out is the real case. That line begins to matter in
+Students-Assistant and belongs to that app's own session.
 
 ## Open questions, for Patrick
 
-- The wording of that warning, and where on the screen it shows.
+- None. The warning's wording and placement was the last one, and it was
+  settled at #11-new.
 
 ## What the ceiling is, and why the number matters more later
 
