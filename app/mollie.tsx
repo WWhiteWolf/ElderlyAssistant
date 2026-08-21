@@ -22,6 +22,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl from '../components/DateTimeControl';
 import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
+import { runScheduler } from '../scheduler/scheduler';
 
 interface FeedItem {
     id: string;
@@ -135,58 +136,20 @@ export default function PetsScreen() {
         }
     };
 
-    // Mount-time load: read storage, then arm this screen's reminders.
+    // Mount-time load: read storage. The reminders are not this screen's job
+    // any more — the scheduler module owns them, and the housing runs it on
+    // launch and on every return to the front (#7-new, plan step 2).
     const loadData = async () => {
         await refreshFromStorage();
-        try {
-            await scheduleAllPetsNotifications();
-        } catch (e) {
-            console.error(e);
-        }
     };
 
     const saveData = async (f: FeedItem[], h: HistoryEntry[]) => {
         await AsyncStorage.setItem('pets_feeds', JSON.stringify(f));
         await AsyncStorage.setItem('pets_history', JSON.stringify(h));
-        await scheduleAllPetsNotifications();
-    };
-
-    const scheduleAllPetsNotifications = async () => {
-        // Cancel only Pets Day's own notifications (tagged source: 'pets'),
-        // leaving My Day, To-Do and Timer reminders untouched.
-        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-        for (const notif of scheduled) {
-            if (notif.content.data?.source === 'pets') {
-                await Notifications.cancelScheduledNotificationAsync(notif.identifier);
-            }
-        }
-        // Read the saved feeds list from storage (source of truth) so we never
-        // schedule from a stale in-memory copy of state.
-        const saved = await AsyncStorage.getItem('pets_feeds');
-        const items: FeedItem[] = saved ? JSON.parse(saved) : INITIAL_FEEDS;
-        for (const item of items) {
-            // #3-new: an item with no time set gets no reminder.
-            if (!item.completed && item.hour !== null && item.minute !== null) {
-                await Notifications.scheduleNotificationAsync({
-                    content: {
-                        title: 'Pets Routine',
-                        body: `Time for ${item.label}!`,
-                        // Carry the item id + label so a Snooze button tap can
-                        // reschedule just this item; category adds the buttons.
-                        // 'routineactions' = the shared routine popup (#39):
-                        // OK / Skip / Delay 15-30-60 / Done.
-                        data: { source: 'pets', itemId: item.id, label: item.label },
-                        categoryIdentifier: 'routineactions',
-                        sound: 'default',
-                    },
-                    trigger: {
-                        type: SchedulableTriggerInputTypes.DAILY,
-                        hour: item.hour,
-                        minute: item.minute,
-                    } as Notifications.DailyTriggerInput,
-                });
-            }
-        }
+        // The saved list has changed, so let the module work the whole answer
+        // out again. It reads storage itself, matches by key, and touches only
+        // what actually differs.
+        await runScheduler();
     };
 
     const format12Hour = (h: number, m: number) => {

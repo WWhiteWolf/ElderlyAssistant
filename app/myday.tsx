@@ -23,6 +23,7 @@ import DateTimeControl from '../components/DateTimeControl';
 import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 import * as AppGroup from '../modules/app-group';
+import { runScheduler } from '../scheduler/scheduler';
 
 interface ScheduleItem {
     id: string;
@@ -162,14 +163,11 @@ export default function MyDayScreen() {
         }
     };
 
-    // Mount-time load: read storage, then arm this screen's reminders.
+    // Mount-time load: read storage. The reminders are not this screen's job
+    // any more — the scheduler module owns them, and the housing runs it on
+    // launch and on every return to the front (#7-new, plan step 2).
     const loadData = async () => {
         await refreshFromStorage();
-        try {
-            await scheduleAllNotifications();
-        } catch (e) {
-            console.error(e);
-        }
     };
 
     const saveData = async (r: ScheduleItem[], h: HistoryEntry[]) => {
@@ -178,44 +176,10 @@ export default function MyDayScreen() {
         // Publish the current items to the shared App Group box so Siri can offer
         // them by voice (live list). Only id + label are needed on the Siri side.
         AppGroup.setMyDayItems(r.map(i => ({ id: i.id, label: i.label })));
-        await scheduleAllNotifications();
-    };
-
-    const scheduleAllNotifications = async () => {
-        // Cancel only My Day's own notifications (tagged source: 'myday'),
-        // leaving To-Do and Timer reminders untouched.
-        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-        for (const notif of scheduled) {
-            if (notif.content.data?.source === 'myday') {
-                await Notifications.cancelScheduledNotificationAsync(notif.identifier);
-            }
-        }
-        // Read the saved Routine list from storage (source of truth) so we never
-        // schedule from a stale in-memory copy of state.
-        const items = await getMigratedRoutine();
-        for (const item of items) {
-            // #3-new: an item with no time set gets no reminder.
-            if (!item.completed && item.hour !== null && item.minute !== null) {
-                await Notifications.scheduleNotificationAsync({
-                    content: {
-                        title: 'Daily Routine',
-                        body: `Time for ${item.label}!`,
-                        // Carry the item id + label so a Snooze button tap can
-                        // reschedule just this item; category adds the buttons.
-                        // 'routineactions' = the shared routine popup (#39):
-                        // OK / Skip / Delay 15-30-60 / Done.
-                        data: { source: 'myday', itemId: item.id, label: item.label },
-                        categoryIdentifier: 'routineactions',
-                        sound: 'default',
-                    },
-                    trigger: {
-                        type: SchedulableTriggerInputTypes.DAILY,
-                        hour: item.hour,
-                        minute: item.minute,
-                    } as Notifications.DailyTriggerInput,
-                });
-            }
-        }
+        // The saved list has changed, so let the module work the whole answer
+        // out again. It reads storage itself, matches by key, and touches only
+        // what actually differs.
+        await runScheduler();
     };
 
     const format12Hour = (h: number, m: number) => {
