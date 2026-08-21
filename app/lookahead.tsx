@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -193,21 +192,13 @@ export default function LookAheadScreen() {
         await runScheduler();
     };
 
-    // Drop any pending delayed reminder for one item (used when it's logged, edited,
-    // or deleted, so a stale delay can't fire after the item has moved on).
-    const cancelDelays = async (itemId: string) => {
-        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-        for (const n of scheduled) {
-            if (n.content.data?.source === 'lookaheaddelay' && n.content.data?.itemId === itemId) {
-                await Notifications.cancelScheduledNotificationAsync(n.identifier);
-            }
-        }
-    };
-
-    // On-tile Delay: schedule a one-off reminder for this item a day / week / month
-    // from now (tagged 'lookaheaddelay' so reschedule-on-load leaves it alone), replace
-    // any prior delay, and stamp the item so the "▶ Delayed <amount>" line shows. Same
-    // mechanism the notification banner's Delay buttons use.
+    // On-tile Delay: push this item's reminder out by a day, a week or a month.
+    // Nothing is armed here: the stamp IS the delay, and the save asks the
+    // module to work the whole set out again, which puts the reminder on the
+    // phone. A prior delay needs no cancelling either — one stamp per item, so
+    // the module sees one wanted reminder under one name and moves it. The
+    // item's own date is untouched, and the tile reads the same stamp to show
+    // the "▶ Delayed <amount>" line.
     const delayItem = async (unit: '1 day' | '1 week' | '1 month') => {
         if (!delayItemId) return;
         const item = items.find(it => it.id === delayItemId);
@@ -216,20 +207,6 @@ export default function LookAheadScreen() {
         if (unit === '1 day') target.setDate(target.getDate() + 1);
         else if (unit === '1 week') target.setDate(target.getDate() + 7);
         else target.setMonth(target.getMonth() + 1);
-        await cancelDelays(item.id);
-        await Notifications.scheduleNotificationAsync({
-            content: {
-                title: '🔭 Look Ahead',
-                body: `Time for ${item.label}!`,
-                data: { source: 'lookaheaddelay', itemId: item.id, label: item.label },
-                categoryIdentifier: 'lookaheadactions',
-                sound: 'default',
-            },
-            trigger: {
-                type: SchedulableTriggerInputTypes.DATE,
-                date: target,
-            } as Notifications.DateTriggerInput,
-        });
         const updated = items.map(it =>
             it.id === item.id ? { ...it, delayedUntil: target.getTime(), delayedLabel: unit } : it
         );
@@ -302,10 +279,9 @@ export default function LookAheadScreen() {
             const editedId = activeId;
             const updated = items.map(it => (it.id === editedId ? { ...it, ...fields, delayedUntil: undefined, delayedLabel: undefined } : it));
             setItems(updated);
+            // The delay stamp is cleared above, so the save takes its reminder
+            // off the phone along with re-working the item's own.
             saveData(updated, history);
-            // The date may have changed, so drop any stale delay. The base
-            // reminder is re-worked by the module from the saved list.
-            cancelDelays(editedId);
         } else {
             const newItem: LookAheadItem = { id: Date.now().toString(), ...fields };
             const updated = [...items, newItem];
@@ -320,12 +296,11 @@ export default function LookAheadScreen() {
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Delete', style: 'destructive', onPress: () => {
+                    // A deleted item wants nothing, its delay included, so the
+                    // save clears both off the phone.
                     const updated = items.filter(it => it.id !== id);
                     setItems(updated);
                     saveData(updated, history);
-                    // Remove this item's delay so a deleted item can't still
-                    // fire. Its base reminder goes when the module next runs.
-                    cancelDelays(id);
                 },
             },
         ]);
@@ -381,8 +356,9 @@ export default function LookAheadScreen() {
         const updatedItems = items.map(it => (it.id === item.id ? advanced : it));
         setHistory(updatedHist);
         setItems(updatedItems);
+        // Rolling the item forward clears its delay stamp, so the save takes
+        // the delayed reminder off the phone and arms the new date.
         saveData(updatedItems, updatedHist);
-        cancelDelays(item.id);
         setShowLogModal(false);
         setPendingLogId(null);
     };

@@ -249,59 +249,45 @@ export default function RootLayout() {
     }
 
     // Look Ahead "Delay" buttons: push just THIS reminder out by a day / week /
-    // month from now. No log, no change to the item's real due date — tagged
-    // 'lookaheaddelay' so the page's reschedule-on-load (which only clears the base
-    // 'lookahead' source) leaves it alone.
+    // month from now. No log, and no change to the item's real due date.
+    //
+    // Nothing is armed here. The stamp on the item IS the delay: the scheduler
+    // reads it back and puts the reminder on the phone, so a delay made from a
+    // banner and one made on the page are now the same act written the same way.
+    // A prior delay needs no cancelling — one stamp per item means one wanted
+    // reminder under one name, which the module moves rather than duplicates.
     if (action === 'delayday' || action === 'delayweek' || action === 'delaymonth') {
-      const label = (data?.label as string) || 'your reminder';
       const itemId = data?.itemId as string | undefined;
+      if (!itemId) return;
       const target = new Date();
       let delayedLabel = '1 day';
       if (action === 'delayday') { target.setDate(target.getDate() + 1); delayedLabel = '1 day'; }
       else if (action === 'delayweek') { target.setDate(target.getDate() + 7); delayedLabel = '1 week'; }
       else { target.setMonth(target.getMonth() + 1); delayedLabel = '1 month'; }
       (async () => {
-        // One pending delay per item: drop any prior delayed reminder first.
-        if (itemId) {
-          const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-          for (const n of scheduled) {
-            if (n.content.data?.source === 'lookaheaddelay' && n.content.data?.itemId === itemId) {
-              await Notifications.cancelScheduledNotificationAsync(n.identifier);
-            }
-          }
-        }
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: '🔭 Look Ahead',
-            body: `Time for ${label}!`,
-            data: { source: 'lookaheaddelay', itemId, label },
-            categoryIdentifier: 'lookaheadactions',
-            sound: 'default',
-          },
-          trigger: {
-            type: SchedulableTriggerInputTypes.DATE,
-            date: target,
-          } as Notifications.DateTriggerInput,
-        });
-        // Stamp the item so the page shows "▶ Delayed <amount>" under its name.
-        if (itemId) {
-          const raw = await AsyncStorage.getItem('lookahead_items');
-          const its = raw ? (JSON.parse(raw) as any[]) : [];
-          const updated = its.map((i) =>
-            i.id === itemId ? { ...i, delayedUntil: target.getTime(), delayedLabel } : i
-          );
-          await AsyncStorage.setItem('lookahead_items', JSON.stringify(updated));
-        }
+        // Stamp the item. The page reads the same stamp to show "▶ Delayed
+        // <amount>" under its name.
+        const raw = await AsyncStorage.getItem('lookahead_items');
+        const its = raw ? (JSON.parse(raw) as any[]) : [];
+        const updated = its.map((i) =>
+          i.id === itemId ? { ...i, delayedUntil: target.getTime(), delayedLabel } : i
+        );
+        await AsyncStorage.setItem('lookahead_items', JSON.stringify(updated));
+        await runScheduler();
       })();
       return;
     }
 
     // My Week "+1 Day" action: push this chore's reminder to tomorrow at its
-    // own time, without opening the app. Replaces any pending postpone for the
-    // chore and stamps postponedTo so the tile shows "moved to <day>" next open.
-    // We do NOT cancel the fired notification's identifier — for the base WEEKLY
-    // reminder that would kill the repeat; iOS auto-clears the shown banner when
-    // an action is tapped.
+    // own time, without opening the app.
+    //
+    // Nothing is armed here. The stamp on the chore IS the postpone: the
+    // scheduler reads it back and puts the reminder on the phone, so a postpone
+    // made from a banner and one made on the page are now the same act written
+    // the same way. A prior postpone needs no cancelling — one stamp per chore
+    // means one wanted reminder under one name, which the module moves rather
+    // than duplicates. The chore's base WEEKLY repeat is left alone, as it
+    // always was; iOS clears the shown banner itself when an action is tapped.
     if (action === 'postpone1') {
       const itemId = data?.itemId as string | undefined;
       if (!itemId) return;
@@ -310,32 +296,15 @@ export default function RootLayout() {
         const chores = raw ? (JSON.parse(raw) as any[]) : [];
         const chore = chores.find((c) => c.id === itemId);
         if (!chore) return;
-        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-        for (const n of scheduled) {
-          if (n.content.data?.source === 'myweekpostpone' && n.content.data?.itemId === itemId) {
-            await Notifications.cancelScheduledNotificationAsync(n.identifier);
-          }
-        }
         const target = new Date();
         target.setDate(target.getDate() + 1);
         target.setHours(chore.hour, chore.minute, 0, 0);
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: 'Weekly Chore',
-            body: `Time for ${chore.label}!`,
-            data: { source: 'myweekpostpone', itemId, label: chore.label },
-            categoryIdentifier: 'myweekactions',
-            sound: 'default',
-          },
-          trigger: {
-            type: SchedulableTriggerInputTypes.DATE,
-            date: target,
-          } as Notifications.DateTriggerInput,
-        });
+        // The tile reads the same stamp to show "moved to <day>" next open.
         const updated = chores.map((c) =>
           c.id === itemId ? { ...c, postponedTo: target.getTime() } : c
         );
         await AsyncStorage.setItem('week_routine', JSON.stringify(updated));
+        await runScheduler();
       })();
       return;
     }
@@ -464,16 +433,20 @@ export default function RootLayout() {
             note: '',
           };
           await AsyncStorage.setItem('week_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
-          // Clear any pending postpone/delay one-offs for this chore — but only
-          // when the Done actually checked off the current cycle; a stale
-          // banner's Done must leave this cycle's pending reminders alone.
+          // A Done that checked off the current cycle also clears the postpone
+          // stamp above, so asking the module to run takes the postponed
+          // reminder off the phone. A snooze still has to be hunted down by
+          // hand: snoozes are not written down yet and the module cannot see
+          // them. A stale banner's Done leaves both alone, having changed
+          // nothing about this cycle.
           if (!stale) {
             const scheduled = await Notifications.getAllScheduledNotificationsAsync();
             for (const n of scheduled) {
-              if ((n.content.data?.source === 'myweekpostpone' || n.content.data?.source === 'myweeksnooze') && n.content.data?.itemId === itemId) {
+              if (n.content.data?.source === 'myweeksnooze' && n.content.data?.itemId === itemId) {
                 await Notifications.cancelScheduledNotificationAsync(n.identifier);
               }
             }
+            await runScheduler();
           }
         })();
         return;
@@ -515,29 +488,10 @@ export default function RootLayout() {
           } while (d <= now);
           const advanced = { ...item, year: d.getFullYear(), month: d.getMonth(), day: d.getDate(), delayedUntil: undefined, delayedLabel: undefined };
           await AsyncStorage.setItem('lookahead_items', JSON.stringify(its.map((i) => (i.id === itemId ? advanced : i))));
-          // Clear this item's base + delayed reminders, then arm the next one.
-          const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-          for (const n of scheduled) {
-            if ((n.content.data?.source === 'lookahead' || n.content.data?.source === 'lookaheaddelay') && n.content.data?.itemId === itemId) {
-              await Notifications.cancelScheduledNotificationAsync(n.identifier);
-            }
-          }
-          const due = new Date(advanced.year, advanced.month, advanced.day, advanced.hour, advanced.minute, 0, 0);
-          if (due > new Date()) {
-            await Notifications.scheduleNotificationAsync({
-              content: {
-                title: '🔭 Look Ahead',
-                body: `Time for ${advanced.label}!`,
-                data: { source: 'lookahead', itemId, label: advanced.label },
-                categoryIdentifier: 'lookaheadactions',
-                sound: 'default',
-              },
-              trigger: {
-                type: SchedulableTriggerInputTypes.DATE,
-                date: due,
-              } as Notifications.DateTriggerInput,
-            });
-          }
+          // The new date is written down and the delay stamp is gone, so asking
+          // the module to run takes the old reminder and the delayed one off the
+          // phone and arms the next date. Nothing is cancelled or armed here.
+          await runScheduler();
         })();
         return;
       }

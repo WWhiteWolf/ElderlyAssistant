@@ -41,7 +41,64 @@ export function runLookAheadTests(): void {
 
     test('A delayed entry still keeps its own reminder', () => {
         const wanted = readLookAhead([entry({ delayedUntil: NOW + 86400000 })], NOW);
-        assert(wanted.length === 1, 'a delay must not remove the entry’s own reminder');
+        const base = wanted.filter(w => w.source === 'lookahead');
+        assert(base.length === 1, 'a delay must not remove the entry’s own reminder');
+    });
+
+    test('A delayed entry also gets a reminder at the moment it was pushed to', () => {
+        const wanted = readLookAhead([entry({ delayedUntil: NOW + 86400000 })], NOW);
+        const delayed = wanted.filter(w => w.source === 'lookaheaddelay');
+        assert(delayed.length === 1, 'expected exactly one delayed reminder');
+        assertSame(delayed[0].trigger, { kind: 'date', at: NOW + 86400000 }, 'wrong moment');
+    });
+
+    test('A delay whose moment has gone wants nothing', () => {
+        const wanted = readLookAhead([entry({ delayedUntil: NOW - 86400000 })], NOW);
+        assert(wanted.length === 1, 'a moment already gone cannot be acted on');
+        assert(wanted[0].source === 'lookahead', 'only the entry’s own reminder should be left');
+    });
+
+    test('A delay due this very minute wants nothing', () => {
+        const wanted = readLookAhead([entry({ delayedUntil: NOW })], NOW);
+        assert(wanted.length === 1, 'expected only the entry’s own reminder');
+    });
+
+    test('An entry whose own moment has gone still gets its delayed reminder', () => {
+        // The ordinary case: the reminder fired, and Delay was tapped on it.
+        const wanted = readLookAhead(
+            [entry({ year: 2026, month: 0, day: 5, delayedUntil: NOW + 86400000 })],
+            NOW,
+        );
+        assert(wanted.length === 1, 'expected exactly one reminder');
+        assert(wanted[0].source === 'lookaheaddelay', 'the delay is the only one left to arrive');
+    });
+
+    test('The delayed reminder says the same thing the entry does', () => {
+        const wanted = readLookAhead([entry({ delayedUntil: NOW + 86400000 })], NOW);
+        const delayed = wanted.find(w => w.source === 'lookaheaddelay')!;
+        assertSame(
+            { title: delayed.title, body: delayed.body, categoryIdentifier: delayed.categoryIdentifier },
+            {
+                title: '🔭 Look Ahead',
+                body: 'Time for Change the smoke alarm battery!',
+                categoryIdentifier: 'lookaheadactions',
+            },
+            'a delayed reminder must read exactly like the one it replaces',
+        );
+    });
+
+    test('An entry and its delay never share a key', () => {
+        const wanted = readLookAhead([entry({ delayedUntil: NOW + 86400000 })], NOW);
+        assert(wanted[0].key !== wanted[1].key, 'the two must be told apart');
+    });
+
+    test('Two delayed entries get two delayed reminders with different keys', () => {
+        const wanted = readLookAhead(
+            [entry({ id: 'l1', delayedUntil: NOW + 86400000 }), entry({ id: 'l2', delayedUntil: NOW + 86400000 })],
+            NOW,
+        );
+        const delayed = wanted.filter(w => w.source === 'lookaheaddelay');
+        assert(delayed.length === 2 && delayed[0].key !== delayed[1].key, 'two entries must never share a key');
     });
 
     test('The banner says what Look Ahead says today', () => {

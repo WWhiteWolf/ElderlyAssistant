@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -188,17 +187,6 @@ export default function MyWeekScreen() {
         await runScheduler();
     };
 
-    // Cancel any pending one-off Postpone reminder for a chore (tagged
-    // source:'myweekpostpone'). Used before re-postponing, on Done, and on delete.
-    const cancelPostpone = async (choreId: string) => {
-        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-        for (const notif of scheduled) {
-            if (notif.content.data?.source === 'myweekpostpone' && notif.content.data?.itemId === choreId) {
-                await Notifications.cancelScheduledNotificationAsync(notif.identifier);
-            }
-        }
-    };
-
     // The next future date whose weekday matches, at the chore's time.
     const nextDateForWeekday = (weekday: number, hour: number, minute: number): Date => {
         const now = new Date();
@@ -210,24 +198,13 @@ export default function MyWeekScreen() {
         return d;
     };
 
-    // Schedule a one-off Postpone reminder for `target` (same time of day as the
-    // chore), replacing any prior postpone. The chore's home day/time is left
-    // untouched; we only stamp postponedTo so the tile shows "moved to <day>".
+    // Postpone this cycle's reminder to `target`. Nothing is armed here: the
+    // stamp IS the postpone, and the save asks the module to work the whole set
+    // out again, which puts the reminder on the phone. A prior postpone needs no
+    // cancelling either — one stamp per chore, so the module sees one wanted
+    // reminder under one name and moves it. The chore's home day and time are
+    // left untouched, and the tile reads the same stamp to show "moved to <day>".
     const schedulePostpone = async (chore: Chore, target: Date) => {
-        await cancelPostpone(chore.id);
-        await Notifications.scheduleNotificationAsync({
-            content: {
-                title: 'Weekly Chore',
-                body: `Time for ${chore.label}!`,
-                data: { source: 'myweekpostpone', itemId: chore.id, label: chore.label },
-                categoryIdentifier: 'routineactions',
-                sound: 'default',
-            },
-            trigger: {
-                type: SchedulableTriggerInputTypes.DATE,
-                date: target,
-            } as Notifications.DateTriggerInput,
-        });
         const updated = chores.map(c =>
             c.id === chore.id ? { ...c, postponedTo: target.getTime() } : c
         );
@@ -291,7 +268,8 @@ export default function MyWeekScreen() {
         const updatedChores = chores.map(s =>
             s.id === pendingLogId ? { ...s, completed: true, doneAt: Date.now(), postponedTo: undefined } : s
         );
-        cancelPostpone(pendingLogId);
+        // The postpone stamp is cleared above, so the save takes its reminder
+        // off the phone; nothing has to be cancelled by hand.
         setChores(updatedChores);
         setHistory(updatedHist);
         saveData(updatedChores, updatedHist);
@@ -335,7 +313,8 @@ export default function MyWeekScreen() {
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Delete', style: 'destructive', onPress: () => {
-                    cancelPostpone(id);
+                    // A deleted chore wants nothing, its postpone included, so
+                    // the save clears both off the phone.
                     const updated = chores.filter(s => s.id !== id);
                     setChores(updated);
                     saveData(updated, history);

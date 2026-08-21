@@ -670,3 +670,90 @@ at the close whether a fresh start was wanted for step 4 and it was:
 step 4 lives mostly in the housing, where about six hundred of
 `_layout.tsx`'s six hundred and forty-eight lines are the seven sets of
 banner buttons and the handler beneath them.
+
+## #9-new (2026-08-21): the first half of step 4 — My Week's postpone
+and Look Ahead's delay come under the module
+
+**What was built.** The first of three pieces of step 4 in
+`docs/scheduler-plan.md`. My Week's postpone and Look Ahead's delay are
+now derived from the saved data like everything else, so nothing on
+either page or in the housing arms them by hand. Five files changed —
+two readers, the module's owned list, two screens and the housing —
+plus two test files. TypeScript clean, 81 of 81 tests passing. Nothing
+has run on a phone.
+
+**Step 4 was split into three uneven pieces**, because the four screens
+that make these one-offs were not in the same state at all. My Week's
+postpone and Look Ahead's delay were already written down — a postpone
+stamps `postponedTo` on the chore, a delay stamps `delayedUntil` on the
+item, and both readers already read the field and deliberately did
+nothing with it. My Day's and Pets' snoozes are written down nowhere.
+To-Do's snooze is the one #8-new found buying nothing. Orders needs
+nothing, the page being dead and its snoozes already swept. So the
+piece with the record already in place went first.
+
+**A snooze will be recorded on the item, and this was Claude's call.**
+Patrick handed the decision over rather than making it. The reason is
+that it costs nothing new: the reader is already handed that screen's
+list, so there is no new plumbing and no second pattern for the same
+idea; a snooze dies with its item instead of being orphaned when the
+item is deleted; and the screen can show it, where a snooze today shows
+nothing at all. It settles the shape of the second piece before that
+piece is begun.
+
+**The two readers now emit the one-off.** `readMyWeek` gained a `now`
+argument, which it never had, so it can tell whether a postpone is
+still ahead; `readLookAhead` already had one. Each emits its one-off
+under its own source — `myweekpostpone` and `lookaheaddelay`, the tags
+the app has always used and the ones a tapped banner still routes by —
+with the key's third part `base`, one stamp meaning one wanted reminder
+under one name. Both join `OWNED_SOURCES`. A one-off whose moment has
+already gone is dropped, the same rule Look Ahead's own date already
+followed.
+
+**Look Ahead's two reminders became independent.** The base was
+previously emitted only inside a `continue` that skipped the whole
+item once its date had passed. That is the ordinary case for a delay —
+the reminder fired, and Delay was tapped on it — so the skip had to
+stop covering the delay. An item can now want both, or the delay
+alone.
+
+**One judgment call, and it changes a banner.** The banner's "+1 Day"
+armed `myweekactions` while the page's own postpone armed
+`routineactions`, so the same act produced two different button sets
+depending on where it was made. One reader can only send one. It went
+to `routineactions`, matching the page and the chore's own weekly
+reminder. A postponed chore's banner therefore shows Done, OK, Skip and
+the three Delays instead of Done and "+1 Day", and can no longer be
+pushed a second day from the banner — which a postpone made on the page
+never could.
+
+**The housing stopped arming Look Ahead as well.** The Look Ahead
+`done` handler was still cancelling the item's base and delayed
+reminders by hand and re-arming its next date, which is scheduling in
+the housing and belongs to step 3's intent rather than step 4's. About
+twenty-five lines became one call to `runScheduler()`. My Week's `done`
+handler kept its snooze hunt, `myweeksnooze` not being owned yet, and
+lost only its postpone half.
+
+**What came out.** `cancelPostpone` in `app/myweek.tsx` and
+`cancelDelays` in `app/lookahead.tsx`, and every call to them — five
+between the two — because clearing the stamp and letting the module run
+does the same work. Two `SchedulableTriggerInputTypes` imports fell out
+of use with them.
+
+**Fourteen new tests, not a few.** Sixty-seven to eighty-one. They
+cover the moment the one-off fires, a one-off already gone, one due
+this very minute, the base surviving alongside it, the words and
+buttons matching, and two items never sharing a key — plus the Look
+Ahead case where the item's own moment has passed and the delay is the
+only thing left to arrive.
+
+**How the session ran.** It opened with the plan read and no report,
+which Patrick stopped. He then asked whether the plan is best practice
+overall and the answer ran too long; his instruction is recorded as the
+shape to use — the answer and its caveat, then stop. Asked where a
+snooze should be recorded, he handed the decision back with "You tell
+me", which is the SA-6 finding again: he would rather Claude work
+things out with him than sit asking what he wants. He called for the
+fresh session himself at the close.

@@ -19,9 +19,11 @@ export interface Chore {
     hour: number;
     minute: number;
     completed: boolean;
-    // Set when a chore is postponed for this cycle only. It is read here so
-    // the field is not forgotten, but nothing is done with it yet — postpones
-    // come under the scheduler at a later step, along with snoozes and delays.
+    // The moment a postponed chore is to be reminded about instead, held as an
+    // ordinary count of milliseconds. It is written down when the postpone is
+    // made — by the page's own button or by the banner's — and this reader
+    // turns it back into the reminder, so a postpone that went missing comes
+    // back like everything else.
     postponedTo?: number;
 }
 
@@ -31,8 +33,15 @@ export interface Chore {
  * One weekly repeat for each chore, on its own day and at its own time. A
  * weekly repeat is one request that returns of its own accord every week, so
  * there is nothing to re-create and nothing to lose.
+ *
+ * A postponed chore wants a second reminder on top of that one, at the moment
+ * it was pushed to. The weekly repeat is deliberately left alone: a postpone
+ * moves this week's reminder and says nothing about the ones after it.
+ *
+ * `now` is handed in rather than read from the clock, so a test can say what
+ * time it is.
  */
-export function readMyWeek(chores: Chore[]): WantedReminder[] {
+export function readMyWeek(chores: Chore[], now: number): WantedReminder[] {
     const wanted: WantedReminder[] = [];
     for (const chore of chores) {
         if (chore.day == null || chore.hour == null || chore.minute == null) continue;
@@ -51,6 +60,21 @@ export function readMyWeek(chores: Chore[]): WantedReminder[] {
                 minute: chore.minute,
             },
         });
+        // A postpone whose moment has already gone wants nothing. It cannot be
+        // acted on, and the page drops the stamp when the chore's own day comes
+        // round again.
+        if (chore.postponedTo != null && chore.postponedTo > now) {
+            wanted.push({
+                key: makeKey('myweekpostpone', chore.id, 'base'),
+                source: 'myweekpostpone',
+                itemId: chore.id,
+                label: chore.label,
+                title: 'Weekly Chore',
+                body: `Time for ${chore.label}!`,
+                categoryIdentifier: 'routineactions',
+                trigger: { kind: 'date', at: chore.postponedTo },
+            });
+        }
     }
     return wanted;
 }
