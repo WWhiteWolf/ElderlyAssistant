@@ -6,6 +6,7 @@ import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import { ThemeProvider } from '../constants/Themes';
 import * as AppGroup from '../modules/app-group';
+import { runScheduler } from '../scheduler/scheduler';
 
 export default function RootLayout() {
   const router = useRouter();
@@ -154,6 +155,23 @@ export default function RootLayout() {
         { identifier: 'snooze60', buttonTitle: 'Delay 60 min' },
       ]);
     })();
+  }, []);
+
+  // The scheduler owns every reminder. It runs once on launch and again every
+  // time the app comes back to the front, and each time it works the whole set
+  // of reminders out afresh from the saved lists and makes the phone match. So
+  // a reminder that went missing — for any reason at all — comes back on its
+  // own, without the screen that owns it ever being opened.
+  //
+  // While the screens are still arming their own reminders, this is safe: the
+  // scheduler matches by name, so a reminder that is already right is left
+  // exactly where it is and nothing is ever created twice.
+  useEffect(() => {
+    runScheduler();
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') runScheduler();
+    });
+    return () => sub.remove();
   }, []);
 
   useEffect(() => {

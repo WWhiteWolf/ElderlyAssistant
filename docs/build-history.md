@@ -440,3 +440,103 @@ until there is a screen to put it on.
 without being asked, and Patrick named it. And a recommendation about
 snoozes was written as law — "one rule, no exceptions" — which he
 said sounded like being made to promise. Both were his to catch.
+
+## #6-new (2026-08-21): step 1 of the scheduler plan built whole,
+and nothing on the phone yet
+
+**What was built.** Step 1 of `docs/scheduler-plan.md` — the module
+with its readers and its reconcile, the test setup, and the housing
+calling it on launch and on every return to the front. It went in four
+pieces, each one proven under Node before the next was started, and
+each piece got its own go.
+
+**The new folder is `scheduler/`.** It sits at the project root rather
+than inside `app`, which Expo Router treats as screens, and rather than
+inside `modules`, which holds the native Siri piece.
+
+- `types.ts` — the shape of a wanted reminder, the key that names it,
+  and a trigger comparison.
+- `readers/` — one small function per screen: `myday`, `pets`,
+  `myweek`, `lookahead`, `todo`, `memorytest`. Each is handed a parsed
+  list and returns plain objects. None of them reads storage, touches
+  the phone, or imports anything from React Native or Expo.
+- `reconcile.ts` — what to cancel, what to create, what to leave
+  alone, and the budget trim. Plain arithmetic and comparison.
+- `scheduler.ts` — the one impure file: it reads storage, reads the
+  phone's queue, calls the reconcile and applies the answer.
+- `tests/` — a ten-line runner in Mystery's shape, no framework, and
+  66 tests. They run headless under Node in about a second with no
+  build, no simulator and no phone.
+
+**Only two existing files changed.** `app/_layout.tsx` gained one
+import and one small effect, which calls the scheduler on launch and
+on every return to the front — reusing the shape of the AppState
+listener the Siri note already had. And `tsconfig.json` gained one
+line, `"allowImportingTsExtensions": true`, because Node needs the
+`.ts` on the end of an import in order to run these files without a
+build. It is safe because the type check emits nothing; Metro bundles
+the app.
+
+**No screen was touched, and both places still arm.** That is what
+step 1 is meant to be. It is safe because the reconcile matches by
+name, so a reminder that is already right is left exactly where it is
+and nothing can be created twice.
+
+**Orders gets no reader (Patrick).** He is removing the Orders page as
+soon as it is convenient. The consequence was named rather than
+guessed at: the reconcile cancels anything not wanted, so an Orders
+page still in the app with no reader would have had its reminders
+cancelled on every run. The answer is that the module owns only the
+sources it has readers for and leaves everything else where it is,
+counting it against the room the phone has — which is exactly how the
+plan already treats the Timer.
+
+**The always-arm rule was applied at step 1 rather than step 2.**
+Named as a judgment call before it was agreed. The My Day and Pets
+readers ignore whether an item is checked off, because a daily
+reminder's next firing is tomorrow and tomorrow the item needs doing
+again. Writing the readers the old way would only have meant rewriting
+them one step later.
+
+**Each reminder carries its own name and its own firing times inside
+it.** The reconcile reads those straight back instead of trying to
+interpret the phone's own description of a trigger, which differs
+between kinds and between versions. A reminder that cannot be read is
+treated as wrong and made afresh rather than guessed at.
+
+**The To-Do background daily now has one name**, so the pile-up cannot
+happen again. It was created afresh every time a task was saved and
+nothing ever removed the old one.
+
+**Three smaller decisions, all named at the time.** The module checks
+that notifications are allowed but does not ask — the screens still do
+the asking. The ceiling is sixty-four less eight kept free for the
+Timer and anything else not ours, and the eight is Claude's number.
+And To-Do's banner sentence, "Due: 06/10/26 at 14:00", is written out
+again inside its reader in two short lines, because the app builds it
+in `components/DateTimeControl.tsx`, which brings React Native with it
+and so cannot be imported by a plain reader.
+
+**Left to their own step, though already saved.** My Week's postpone
+and Look Ahead's delay are both in storage and could have been read
+now. They were left to step 4, which is where the plan puts snoozes,
+delays and postpones together. Both fields are named in their readers
+so they are not forgotten.
+
+**One test failed and the code was right.** A To-Do test counting days
+back across a month boundary had been given a date already in the
+past, and the reader correctly dropped the reminder. The test was
+fixed, not the reader.
+
+**Checked rather than assumed.** Whether Metro accepts a `.ts` on the
+end of an import was not guessed at: the whole app was bundled with
+`npx expo export`, 1,657 modules, and the scheduler is in the output.
+The Hermes bytecode step cannot run in Claude's Linux sandbox, which
+is a limit of the sandbox and not a fault in the code.
+
+**What is owed is a build and Patrick's phone.** Nothing in this
+session has run on a device.
+
+**Patrick asked twice for shorter replies**, the second time after a
+report that ran long. Rule 25 was already in the rules; this session
+is where it started being applied.
