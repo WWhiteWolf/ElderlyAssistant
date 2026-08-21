@@ -199,7 +199,35 @@ export default function RootLayout() {
       const itemId = data?.itemId as string | undefined;
       if (!itemId) return;
       (async () => {
-        const oneOffSources = ['mydaysnooze', 'petssnooze', 'myweeksnooze', 'myweekpostpone'];
+        // #10-new: a My Day or Pets snooze is written down on the item now, so
+        // taking it off the phone by hand would not hold — the module would
+        // read the stamp on its next run and put the reminder straight back.
+        // The stamp is what has to go, and then the module does the taking off.
+        const source = data?.source as string | undefined;
+        const storageKey =
+          source === 'myday' || source === 'mydaysnooze' ? 'my_routine'
+            : source === 'pets' || source === 'petssnooze' ? 'pets_feeds'
+              : null;
+        if (storageKey) {
+          const raw = await AsyncStorage.getItem(storageKey);
+          if (raw) {
+            const items = JSON.parse(raw) as { id: string; snoozedUntil?: number }[];
+            const updated = items.map((it) => {
+              if (it.id !== itemId) return it;
+              const { snoozedUntil, ...rest } = it;
+              return rest;
+            });
+            await AsyncStorage.setItem(storageKey, JSON.stringify(updated));
+          }
+          await runScheduler();
+          return;
+        }
+
+        // My Week's snooze and postpone still go by hand. The snooze is written
+        // down nowhere, so the queue is the only place to find it; the postpone
+        // IS written down, so cancelling it here does not hold either — that is
+        // a My Week fault, recorded and left for the session that fixes it.
+        const oneOffSources = ['myweeksnooze', 'myweekpostpone'];
         const scheduled = await Notifications.getAllScheduledNotificationsAsync();
         for (const n of scheduled) {
           if (oneOffSources.includes(n.content.data?.source as string) && n.content.data?.itemId === itemId) {
@@ -217,9 +245,44 @@ export default function RootLayout() {
       const label = (data?.label as string) || 'your reminder';
       const source = data?.source as string | undefined;
       const isTodo = source === 'todo';
+      const isDay = source === 'myday' || source === 'mydaysnooze';
       const isPets = source === 'pets' || source === 'petssnooze';
       const isWeek = source === 'myweek' || source === 'myweekpostpone' || source === 'myweeksnooze';
       const isOrders = source === 'orders' || source === 'orderssnooze';
+
+      // #10-new: My Day and Pets write the snooze down on the item instead of
+      // arming it here.
+      //
+      // Nothing is scheduled. The stamp on the item IS the snooze: the module
+      // reads it back and puts the reminder on the phone, so a snooze made from
+      // a banner and one made on the page are the same act written the same
+      // way. A prior snooze needs no cancelling — one stamp per item means one
+      // wanted reminder under one name, which the module moves rather than
+      // duplicates. The item's base DAILY repeat is left alone, as it always
+      // was; iOS clears the shown banner itself when an action is tapped.
+      //
+      // The other pages still arm their own snoozes below, because those are
+      // not written down anywhere and the module cannot see them yet.
+      if (isDay || isPets) {
+        const itemId = data?.itemId as string | undefined;
+        if (!itemId) return;
+        (async () => {
+          const storageKey = isPets ? 'pets_feeds' : 'my_routine';
+          const raw = await AsyncStorage.getItem(storageKey);
+          const items = raw ? (JSON.parse(raw) as any[]) : [];
+          const target = Date.now() + minutes * 60 * 1000;
+          const updated = items.map((i) =>
+            i.id === itemId ? { ...i, snoozedUntil: target } : i
+          );
+          await AsyncStorage.setItem(storageKey, JSON.stringify(updated));
+          await runScheduler();
+        })();
+        return;
+      }
+
+      // Everything below is To-Do, My Week and Orders only. The My Day and Pets
+      // wordings still stand in the choices as the last fallback, but neither
+      // page can reach this any more.
       Notifications.scheduleNotificationAsync({
         content: {
           title: isTodo ? `📋 Reminder: ${label}` : isPets ? 'Pets Routine' : isWeek ? 'Weekly Chore' : isOrders ? '📦 Orders' : 'Daily Routine',
@@ -508,10 +571,16 @@ export default function RootLayout() {
         if (itemId && !firedOnPastDay) {
           const raw = await AsyncStorage.getItem(storageKey);
           if (raw) {
-            const items = JSON.parse(raw) as { id: string; completed: boolean }[];
-            const updated = items.map((it) =>
-              it.id === itemId ? { ...it, completed: true } : it
-            );
+            const items = JSON.parse(raw) as { id: string; completed: boolean; snoozedUntil?: number }[];
+            // #10-new: the same write drops any snooze on the item. It is done,
+            // so nothing should nag about it again today, and taking the stamp
+            // off is all that takes — the module reads the item afresh and
+            // takes the reminder back off the phone.
+            const updated = items.map((it) => {
+              if (it.id !== itemId) return it;
+              const { snoozedUntil, ...rest } = it;
+              return { ...rest, completed: true };
+            });
             await AsyncStorage.setItem(storageKey, JSON.stringify(updated));
           }
         }
@@ -540,18 +609,13 @@ export default function RootLayout() {
         // We do NOT cancel the fired notification's id — the base reminder is a
         // DAILY repeat that must fire again tomorrow; iOS auto-clears the shown
         // banner on an action tap. (Same rule My Week's Done follows above.)
-        // Clear this item's pending snooze one-offs so nothing nags after a Done
-        // — but only when the Done actually checked off today's occurrence; a
-        // stale banner's Done must leave today's pending reminders alone.
-        if (itemId && !firedOnPastDay) {
-          const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-          for (const n of scheduled) {
-            const src = n.content.data?.source as string | undefined;
-            if ((src === 'mydaysnooze' || src === 'petssnooze') && n.content.data?.itemId === itemId) {
-              await Notifications.cancelScheduledNotificationAsync(n.identifier);
-            }
-          }
-        }
+        //
+        // #10-new: the snooze needs no hunting through the phone's queue any
+        // more. The stamp came off with the checkmark above, so asking the
+        // module to run takes the snooze reminder off the phone and leaves the
+        // daily repeat where it is. A stale banner's Done changed nothing, so
+        // the run finds nothing to do and today's reminders stand.
+        await runScheduler();
       })();
       return;
     }

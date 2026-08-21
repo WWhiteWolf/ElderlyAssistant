@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -31,6 +30,11 @@ interface FeedItem {
     hour: number | null;
     minute: number | null;
     completed: boolean;
+    // #10-new: the moment a snoozed feed is to be reminded about again. The
+    // scheduler reads this back and puts the reminder on the phone, so a
+    // snooze is written down rather than fired and forgotten. The row shows
+    // it as "Snoozed till: 4:15 PM". My Day's twin.
+    snoozedUntil?: number;
 }
 
 interface HistoryEntry {
@@ -121,7 +125,13 @@ export default function PetsScreen() {
             const parsedFeeds: FeedItem[] = savedFeeds ? JSON.parse(savedFeeds) : INITIAL_FEEDS;
             const savedTreats = await AsyncStorage.getItem('pets_treats');
             if (savedDate !== today) {
-                const resetFeeds = parsedFeeds.map(f => ({ ...f, completed: false }));
+                // A new day clears yesterday's checkmarks, and yesterday's
+                // snoozes with them — a snooze belongs to the day it was made,
+                // and the feed's own daily reminder carries today.
+                const resetFeeds = parsedFeeds.map(f => {
+                    const { snoozedUntil, ...rest } = f;
+                    return { ...rest, completed: false };
+                });
                 setFeeds(resetFeeds);
                 setTreatCount(0);
                 await AsyncStorage.setItem('pets_last_date', today);
@@ -173,9 +183,15 @@ export default function PetsScreen() {
             what: '',
             note: '',
         };
-        const updatedFeeds = feeds.map(f =>
-            f.id === id ? { ...f, completed: true } : f
-        );
+        // Logging the feed drops any snooze on it — the thing is done, so
+        // nothing should nag about it again today. The stamp coming off is all
+        // it takes; the module reads the feed afresh and takes the reminder
+        // back off the phone.
+        const updatedFeeds = feeds.map(f => {
+            if (f.id !== id) return f;
+            const { snoozedUntil, ...rest } = f;
+            return { ...rest, completed: true };
+        });
         const updatedHist = [newEntry, ...history].slice(0, 50);
         setFeeds(updatedFeeds);
         setHistory(updatedHist);
@@ -223,26 +239,25 @@ export default function PetsScreen() {
         saveData(feeds, updatedHist);
     };
 
-    // On-page Snooze: schedule a one-off reminder for this feed N minutes from
-    // now, tagged 'petssnooze' so the daily reschedule-on-load won't wipe it.
-    // Same mechanism the notification banner's Snooze buttons use.
-    const snoozeItem = async (minutes: number) => {
+    // On-page Snooze: write the moment down on the feed, N minutes from now.
+    //
+    // Nothing is armed here. The stamp on the feed IS the snooze: the scheduler
+    // reads it back and puts the reminder on the phone, so a snooze made on the
+    // page and one made from a banner are the same act written the same way. A
+    // prior snooze needs no cancelling — one stamp per feed means one wanted
+    // reminder under one name, which the module moves rather than duplicates,
+    // so tapping Snooze twice can no longer leave two reminders behind. The
+    // feed's own daily repeat is left alone.
+    const snoozeItem = (minutes: number) => {
         if (!snoozeItemId) return;
         const item = feeds.find(f => f.id === snoozeItemId);
         if (!item) { setSnoozeItemId(null); return; }
-        await Notifications.scheduleNotificationAsync({
-            content: {
-                title: 'Pets Routine',
-                body: `Time for ${item.label}!`,
-                data: { source: 'petssnooze', itemId: item.id, label: item.label },
-                categoryIdentifier: 'routineactions',
-                sound: 'default',
-            },
-            trigger: {
-                type: SchedulableTriggerInputTypes.TIME_INTERVAL,
-                seconds: minutes * 60,
-            } as Notifications.TimeIntervalTriggerInput,
-        });
+        const target = Date.now() + minutes * 60 * 1000;
+        const updated = feeds.map(f =>
+            f.id === item.id ? { ...f, snoozedUntil: target } : f
+        );
+        setFeeds(updated);
+        saveData(updated, history);
         setSnoozeItemId(null);
         Alert.alert('Snoozed', `${item.label} reminder set for ${minutes} minutes from now.`);
     };
@@ -394,6 +409,11 @@ export default function PetsScreen() {
                                     onPress={() => toggleSelect(item.id)}
                                 >
                                     <Text style={styles.itemLabel}>{item.hour !== null && item.minute !== null ? `${format12Hour(item.hour, item.minute)} ` : ''}{item.label}</Text>
+                                    {item.snoozedUntil != null && item.snoozedUntil > Date.now() && (
+                                        <Text style={styles.snoozedNote}>
+                                            Snoozed till: {format12Hour(new Date(item.snoozedUntil).getHours(), new Date(item.snoozedUntil).getMinutes())}
+                                        </Text>
+                                    )}
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={styles.editBtn}
@@ -637,6 +657,9 @@ const makeStyles = (t: Theme) =>
     },
     labelArea: { flex: 1, marginRight: 10 },
     itemLabel: { fontSize: 17, color: t.bodyText, fontWeight: '500' },
+    // #10-new: the line under a snoozed feed's name, in the same colour the
+    // Snooze button already uses so the two read as one idea.
+    snoozedNote: { fontSize: 13, color: t.delayText, fontWeight: '600', marginTop: 2 },
     logBtn: {
         backgroundColor: t.buttonPrimary,
         paddingVertical: 8,

@@ -32,14 +32,20 @@ import type { MemoryTestSession } from './readers/memorytest.ts';
 /**
  * The screens the scheduler answers for.
  *
- * A reminder from anywhere else — the Timer's alerts, and the snoozes until
- * they come under the module — is never cancelled and never re-created. It is
- * simply left where it is, and counted against the room the phone has.
+ * A reminder from anywhere else — the Timer's alerts, and the snoozes that
+ * have not come under the module yet — is never cancelled and never
+ * re-created. It is simply left where it is, and counted against the room the
+ * phone has.
  *
- * My Week's postpone and Look Ahead's delay are here as sources of their own,
- * because that is how the app has always tagged them and how a tapped banner
- * still finds its way to the right page. Both are written down on the item
- * itself, so their readers can answer for them like anything else.
+ * My Week's postpone, Look Ahead's delay and the My Day and Pets snoozes are
+ * here as sources of their own, because that is how the app has always tagged
+ * them and how a tapped banner still finds its way to the right page. All four
+ * are written down on the item itself, so their readers can answer for them
+ * like anything else.
+ *
+ * My Week's own snooze and To-Do's are not here yet. They are still armed
+ * straight onto the phone and written down nowhere, so the module must leave
+ * them alone until they are brought across.
  *
  * Orders is here without a reader, and that is deliberate. The page is being
  * taken out of the app, so nothing wants any of its reminders back; naming its
@@ -49,7 +55,9 @@ import type { MemoryTestSession } from './readers/memorytest.ts';
  */
 export const OWNED_SOURCES = [
     'myday',
+    'mydaysnooze',
     'pets',
+    'petssnooze',
     'myweek',
     'myweekpostpone',
     'lookahead',
@@ -117,8 +125,8 @@ export async function gatherWanted(now: number): Promise<WantedReminder[]> {
     }
 
     return [
-        ...readMyDay(routine),
-        ...readPets(feeds),
+        ...readMyDay(routine, now),
+        ...readPets(feeds, now),
         ...readMyWeek(chores, now),
         ...readLookAhead(lookahead, now),
         ...readToDo(tasks, times, now),

@@ -17,6 +17,10 @@ export interface PetsItem {
     hour: number | null;
     minute: number | null;
     completed: boolean;
+    // The moment a snoozed feed is to be reminded about again, held as an
+    // ordinary count of milliseconds and written down when the snooze is made.
+    // My Day's twin in this as in everything else.
+    snoozedUntil?: number;
 }
 
 /**
@@ -26,10 +30,30 @@ export interface PetsItem {
  * without one. Whether it has been checked off today makes no difference, for
  * the same reason it makes none in My Day: the next firing is tomorrow, and
  * tomorrow the dog still needs feeding.
+ *
+ * A snoozed feed wants a second reminder on top of that one, at the moment it
+ * was pushed to, and the daily repeat is left alone.
+ *
+ * `now` is handed in rather than read from the clock, so a test can say what
+ * time it is.
  */
-export function readPets(items: PetsItem[]): WantedReminder[] {
+export function readPets(items: PetsItem[], now: number): WantedReminder[] {
     const wanted: WantedReminder[] = [];
     for (const item of items) {
+        // A snooze stands on its own, so it does not depend on the feed still
+        // having a time of day.
+        if (item.snoozedUntil != null && item.snoozedUntil > now) {
+            wanted.push({
+                key: makeKey('petssnooze', item.id, 'base'),
+                source: 'petssnooze',
+                itemId: item.id,
+                label: item.label,
+                title: 'Pets Routine',
+                body: `Time for ${item.label}!`,
+                categoryIdentifier: 'routineactions',
+                trigger: { kind: 'date', at: item.snoozedUntil },
+            });
+        }
         if (item.hour == null || item.minute == null) continue;
         wanted.push({
             key: makeKey('pets', item.id, 'base'),

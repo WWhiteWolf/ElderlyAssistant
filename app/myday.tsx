@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -32,6 +31,11 @@ interface ScheduleItem {
     hour: number | null;
     minute: number | null;
     completed: boolean;
+    // #10-new: the moment a snoozed item is to be reminded about again. The
+    // scheduler reads this back and puts the reminder on the phone, so a
+    // snooze is written down rather than fired and forgotten. The row shows
+    // it as "Snoozed till: 4:15 PM".
+    snoozedUntil?: number;
 }
 
 interface HistoryEntry {
@@ -142,7 +146,13 @@ export default function MyDayScreen() {
             const savedCoffee = await AsyncStorage.getItem('my_coffee');
             const savedWater = await AsyncStorage.getItem('my_water');
             if (savedDate !== today) {
-                const resetRoutine = parsedRoutine.map((s: ScheduleItem) => ({ ...s, completed: false }));
+                // A new day clears yesterday's checkmarks, and yesterday's
+                // snoozes with them — a snooze belongs to the day it was made,
+                // and the item's own daily reminder carries today.
+                const resetRoutine = parsedRoutine.map((s: ScheduleItem) => {
+                    const { snoozedUntil, ...rest } = s;
+                    return { ...rest, completed: false };
+                });
                 setRoutine(resetRoutine);
                 setCoffeeCount(0);
                 setWaterCount(0);
@@ -208,9 +218,15 @@ export default function MyDayScreen() {
             note: '',
         };
         const updatedHist = [newEntry, ...history].slice(0, 50);
-        const updatedRoutine = routine.map(s =>
-            s.id === id ? { ...s, completed: true } : s
-        );
+        // Logging the item drops any snooze on it — the thing is done, so
+        // nothing should nag about it again today. The stamp coming off is all
+        // it takes; the module reads the item afresh and takes the reminder
+        // back off the phone.
+        const updatedRoutine = routine.map(s => {
+            if (s.id !== id) return s;
+            const { snoozedUntil, ...rest } = s;
+            return { ...rest, completed: true };
+        });
         setRoutine(updatedRoutine);
         setHistory(updatedHist);
         saveData(updatedRoutine, updatedHist);
@@ -238,26 +254,26 @@ export default function MyDayScreen() {
         ]);
     };
 
-    // On-page Snooze: schedule a one-off reminder for this item N minutes from
-    // now, tagged 'mydaysnooze' so the daily reschedule-on-load won't wipe it.
-    // Same mechanism the notification banner's Snooze buttons use.
-    const snoozeItem = async (minutes: number) => {
+    // On-page Snooze: write the moment down on the item, N minutes from now.
+    //
+    // Nothing is armed here. The stamp on the item IS the snooze: the scheduler
+    // reads it back and puts the reminder on the phone, so a snooze made on the
+    // page and one made from a banner are the same act written the same way. A
+    // prior snooze needs no cancelling — one stamp per item means one wanted
+    // reminder under one name, which the module moves rather than duplicates,
+    // so tapping Snooze twice can no longer leave two reminders behind. The
+    // item's own daily repeat is left alone; a snooze moves today's reminder
+    // and says nothing about tomorrow's.
+    const snoozeItem = (minutes: number) => {
         if (!snoozeItemId) return;
         const item = routine.find(i => i.id === snoozeItemId);
         if (!item) { setSnoozeItemId(null); return; }
-        await Notifications.scheduleNotificationAsync({
-            content: {
-                title: 'Daily Routine',
-                body: `Time for ${item.label}!`,
-                data: { source: 'mydaysnooze', itemId: item.id, label: item.label },
-                categoryIdentifier: 'routineactions',
-                sound: 'default',
-            },
-            trigger: {
-                type: SchedulableTriggerInputTypes.TIME_INTERVAL,
-                seconds: minutes * 60,
-            } as Notifications.TimeIntervalTriggerInput,
-        });
+        const target = Date.now() + minutes * 60 * 1000;
+        const updated = routine.map(s =>
+            s.id === item.id ? { ...s, snoozedUntil: target } : s
+        );
+        setRoutine(updated);
+        saveData(updated, history);
         setSnoozeItemId(null);
         Alert.alert('Snoozed', `${item.label} reminder set for ${minutes} minutes from now.`);
     };
@@ -454,6 +470,11 @@ export default function MyDayScreen() {
                                     onPress={() => toggleSelect(item.id)}
                                 >
                                     <Text style={styles.itemLabel}>{item.hour !== null && item.minute !== null ? `${format12Hour(item.hour, item.minute)} ` : ''}{item.label}</Text>
+                                    {item.snoozedUntil != null && item.snoozedUntil > Date.now() && (
+                                        <Text style={styles.snoozedNote}>
+                                            Snoozed till: {format12Hour(new Date(item.snoozedUntil).getHours(), new Date(item.snoozedUntil).getMinutes())}
+                                        </Text>
+                                    )}
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={styles.editBtn}
@@ -715,6 +736,9 @@ const makeStyles = (t: Theme) =>
     },
     labelArea: { flex: 1, marginRight: 10 },
     itemLabel: { fontSize: 17, color: t.bodyText, fontWeight: '500' },
+    // #10-new: the line under a snoozed item's name, in the same colour the
+    // Snooze button already uses so the two read as one idea.
+    snoozedNote: { fontSize: 13, color: t.delayText, fontWeight: '600', marginTop: 2 },
     hintText: { fontSize: 11, color: t.mutedText, marginTop: 2, marginBottom: 8 },
     logBtn: {
         backgroundColor: t.buttonPrimary,

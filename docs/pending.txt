@@ -1,10 +1,12 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-08-21 (#8-new — the reminder rebuild is three
-steps in. Steps 1 and 2 are on your phone as build 57; step 3 is
-written and has never run. Orders is now out of the reminding for
-good. One new bug is written down: snoozing a To-Do banner buys
-you nothing today. Bare session numbers below mean the old shared
-chain.)
+Last updated: 2026-08-21 (#10-new — the reminder rebuild is three
+steps in, and step 4 is two-thirds built. My Day's and Pets'
+Snooze buttons now write the snooze down instead of firing it and
+forgetting it, so snoozing twice can no longer leave two
+reminders, and the row says "Snoozed till:" while one is set.
+Steps 1 and 2 are on your phone as build 57; step 3 and both
+pieces of step 4 have never run anywhere. Bare session numbers
+below mean the old shared chain.)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. Finished work isn't tracked here — git history keeps the
@@ -23,10 +25,16 @@ WHAT'S NEXT
       This is the fix for the silence.
     Step 3 (#8-new) — My Week, Look Ahead and To-Do stopped too,
       and Orders came out of the reminding altogether.
-  Steps 1 and 2 are on your phone as build 57. Step 3 has never
-  run anywhere. You asked for all eight before the next build,
-  one at a time. Step 4 is next: snoozes, delays and postpones
-  get saved so the piece owns them as well.
+  Step 4 got split into three pieces, because the four screens
+  that make these were not in the same state. Two are built:
+    Piece 1 (#9-new) — My Week's postpone and Look Ahead's delay.
+    Piece 2 (#10-new) — My Day's and Pets' snoozes, on the page
+      and on the banner both.
+    Piece 3 — To-Do's snooze. Not started. It is the biggest of
+      the three.
+  Steps 1 and 2 are on your phone as build 57. Step 3 and both
+  pieces of step 4 have never run anywhere. You asked for all
+  eight before the next build, one at a time.
 - The clock setter is off by twelve hours (#5-new). Spinning the
   hour down from the 12:00 PM it opens at goes to 11 PM instead
   of 11 AM, so setting 9 in the morning the natural way lands on
@@ -73,12 +81,19 @@ STILL BROKEN OR UNFINISHED (small bugs)
   The snooze gets set, but the new reminder piece doesn't
   recognise it as one of its own and cancels it the next time it
   runs — which is the next time you open the app. This is live
-  on build 57. Step 4 of the plan is where it's cured, so it
-  needs nothing from you.
-- Waiting on your phone: step 3, which has never run. And the
-  test steps 1 and 2 still haven't had — the morning after.
-  Something you check off today has to still remind you
-  tomorrow. That's the thing that used to go quiet.
+  on build 57. The third piece of step 4 is where it's cured, so
+  it needs nothing from you.
+- My Week's Skip doesn't skip a postponed chore (#10-new, found
+  while working next door and left alone). Skip takes the
+  postponed reminder off the phone, but the postpone is written
+  down on the chore now, so the app puts it straight back. Never
+  been on a phone — it came in with #9-new, which hasn't been
+  built. Small fix, and it belongs to a My Week session.
+- Waiting on your phone: step 3 and both pieces of step 4, none
+  of which have run. And the test steps 1 and 2 still haven't
+  had — the morning after. Something you check off today has to
+  still remind you tomorrow. That's the thing that used to go
+  quiet.
 
 
 DECISIONS TO MAKE WHEN YOU'RE READY
