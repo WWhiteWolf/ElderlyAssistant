@@ -1,10 +1,11 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-08-18 (#4-new — the three notification defects
-fixed across six files, written but not yet built or tested, so
-they sit under "Needs a phone test"; the Look Ahead banner-delay
-bug moved there with them, its own fix having gone in. The three
-"What's Next" items are untouched. Bare session numbers below
-mean the old shared chain.)
+Last updated: 2026-08-21 (#5-new — you built #4-new and the
+reminders still didn't work. The whole reminder path was read and
+the reasons found. The fix is a plan, not code yet, and it's the
+new top item under "What's Next". Two new bugs are written down:
+the clock setter puts a 9 in the morning down as 9 at night, and
+the Timer isn't right. Bare session numbers below mean the old
+shared chain.)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. Finished work isn't tracked here — git history keeps the
@@ -13,6 +14,21 @@ full record — so this list stays short.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
+- THE REMINDERS. Build the one piece that owns them all (#5-new).
+  Right now every page arms its own reminders, and only while
+  that page is open. So when you check something off, My Day and
+  Pets throw away tomorrow's reminder for it, and nothing ever
+  puts it back — which is why things go quiet and stay quiet.
+  The plan is written out in full in docs/scheduler-plan.md and
+  every decision in it is yours and already made. It builds in
+  eight steps, each one testable on the phone. Step 1 is the new
+  piece plus a test setup, with no page touched.
+- The clock setter is off by twelve hours (#5-new). Spinning the
+  hour down from the 12:00 PM it opens at goes to 11 PM instead
+  of 11 AM, so setting 9 in the morning the natural way lands on
+  9 at night — which is your evening banner. Typing the time is
+  fine, and so is the AM/PM button. Small fix on its own. After
+  it, any time you set by spinning needs checking.
 - Look Ahead: change the tile format, and change or drop the
   Snooze (#3-new).
 - Timer: add a Stop (Pause) / Continue (Go) button to the tile,
@@ -23,15 +39,6 @@ WHAT'S NEXT
 
 NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
 ----------------------------------------------------------------------------
-- The notification fixes (#4-new). Three things: your Done on a
-  banner no longer wipes out tomorrow's reminder; a Done now also
-  clears any snooze still waiting for that same item, so nothing
-  rings after you've said you're finished; and every routine
-  screen now re-reads what's saved when you come back to it, so a
-  checkmark you made from a banner is really there instead of
-  quietly disappearing. Covers My Day, Pets, My Week, Look Ahead
-  and Orders. Nothing has been on the phone yet — you'll only
-  know by living with it for a while.
 - Look Ahead: delaying from the BANNER doesn't show the "▶ Delayed"
   line on the tile (your #61-build phone test). Reading the code
   found the likely cause: the page only re-reads its saved items
@@ -46,6 +53,17 @@ NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
 
 STILL BROKEN OR UNFINISHED (small bugs)
 ---------------------------------------
+- The #4-new notification fixes went onto the phone and did NOT
+  cure it (#5-new). What went in was real and stays in — a banner
+  Done no longer wipes out tomorrow's reminder, and every routine
+  page re-reads what's saved when you come back to it. It just
+  wasn't the whole story. The rest is the top "What's Next" item.
+- The Timer isn't working right (#5-new, your word). Not looked
+  at yet, and not described. Written down so it isn't lost.
+- To-Do quietly stacks up an 8:00 AM daily reminder every time
+  you save a task with background tasks on the list, and nothing
+  ever removes them (#5-new). They sit there forever taking up
+  room. The new reminder piece clears them out.
 
 
 DECISIONS TO MAKE WHEN YOU'RE READY

@@ -6,66 +6,63 @@ stands and what is open in front of it. Finished work goes to
 
 ## Where things stand
 
-**Alpha, and #4-new's notification work is written but unbuilt.**
-The three defects in `docs/ElderlyAssistant-notification-findings.md`
-are all fixed: My Day's and Pets' banner Done no longer destroys
-the daily repeat and now sweeps up the item's pending snoozes, and
-all five routine screens — My Day, Pets, My Week, Look Ahead and
-Orders — re-read storage when they regain focus and when the app
-returns to the front. Six files changed, TypeScript clean, nothing
-run and nothing on the phone.
+**Alpha, and the #4-new notification work failed its phone trial.**
+Patrick built it, loaded it, and the reminders still do not work. He
+uses this app daily and calls the notifications his biggest gripe; a
+second app is being modelled on this one, and his word is that without
+reliable reminders there are no apps.
 
-Behind it, #3-new is still the last thing proven: the round header
-buttons on all fifteen screens, the optional times in My Day and
-Pets Day, and the header re-leveling, all phone-verified through a
-full EAS build and committed by Patrick (2026-07-31). Store prep
-waits until the Mystery rehearsal is done; Android eventually (#72).
+**#5-new read the whole reminder path and found why.** My Day and Pets
+cancel an item's daily repeat when it is checked off and re-create it
+only for items not yet done, so the repeat is destroyed. Nothing puts
+it back, because only the owning screen re-arms and only while it is
+open — the housing arms nothing, the Home screen arms nothing, and
+there is no background task. A separate bug in the hour stepper of
+`components/DateTimeControl.tsx` stores a nine o'clock morning time as
+9:00 PM. The detail is in `build-history.md`.
+
+**The answer is written and decided: `docs/scheduler-plan.md`.** One
+module owns every reminder, rebuilds the queue from the saved data, and
+runs on launch and on every return to the front. Nothing has been built
+and no code has been changed.
+
+Behind it, #3-new is still the last thing proven on the phone: the
+round header buttons on all fifteen screens, the optional times in My
+Day and Pets Day, and the header re-leveling, all phone-verified
+through a full EAS build (2026-07-31). Store prep waits until the
+Mystery rehearsal is done; Android eventually (#72).
 
 ## What is open in front of it
 
-**First, the build and the trial.** Patrick's own word is that he
-will only know the notifications work after using them on the phone
-for a while. Nothing else should be decided about them until he has.
+**First, step 1 of the plan.** Build the module with its readers and
+its reconcile, add the test setup, and have the housing call it on
+launch and on return to the front. No screen changes at that stage —
+the app arms in two places, which the reconcile makes safe. Steps 2
+through 8 follow in the plan's own order.
+
+**The plan's one open item** is the wording of the budget warning and
+where it shows, deliberately left until there is a screen to put it on.
+
+**The hour stepper fix** is small, separate, and not structural. Any
+time Patrick set by spinning through the twelve o'clock boundary is
+stored in the wrong half of the day and needs re-setting afterwards.
+
+**Timer is not working right** (Patrick, #5-new), said in passing and
+not examined. It is deliberately outside the new module.
 
 **Still to come, and untouched:** the three "What's Next" items in
 `pending.txt` — Look Ahead's tile format and its Snooze changed or
-dropped, the Timer tile's Stop (Pause) / Continue (Go) button and
-log, and the Vault restructuring's "Home"-to-"Back" button change.
-Each is a code change; scope them together at the session start.
+dropped, the Timer tile's Stop (Pause) / Continue (Go) button and log,
+and the Vault restructuring's "Home"-to-"Back" button change.
 
-**Raised and not ruled on:** the comment heading the `done` handler
-in `app/_layout.tsx` still says it cancels the fired reminder, which
-is no longer true of the My Day / Pets branch and has never been
-true of My Week's.
+**Raised and not ruled on:** the comment heading the `done` handler in
+`app/_layout.tsx` still says it cancels the fired reminder, which is
+untrue of the My Day / Pets branch and has never been true of My
+Week's. The plan removes that branch, so this closes itself at step 7.
 
-**Recorded, not diagnosed:** the 64-request ceiling, Finding 4 of
-the review. Patrick holds about a dozen reminders at a time, so it
-is probably not in play.
-
-**The Look Ahead banner-delay bug** has moved from "Still broken" to
-"Needs a phone test" in `pending.txt` — its own described fix was
-re-reading the saved items on every visit, which is what Look Ahead
-received.
-
-## The other thing #4-new produced
-
-A feature draft for a college student's assistant, which would live
-on the web first. It and a copy of the chat behind it now sit in a
-folder of their own at `Projects/Sudents-Assistant` —
-`college-app-draft-v1.md` and `Campus travel.rtf`, the second still
-unread. That folder name went in misspelled; Patrick renames it to
-`Students-Assistant` next session. The new app has no session of its
-own yet.
-
-One fact from the draft worth carrying: an iPhone web app saved to
-the Home Screen cannot schedule its own local alarms, so Memory's
-notification code will not carry across to it — only the thinking
-behind it will.
-
-## Quiet-file note (this one session only)
-
-`docs/publishing.md` gained a "Build steps" section at its end —
-Patrick's EAS build-and-submit steps, in his own words (#3-new).
+**The Look Ahead banner-delay bug** sits in `pending.txt` under "Needs
+a phone test". It was never separately confirmed, and the trial that
+would have confirmed it is the one that failed.
 
 ## A fact worth carrying
 

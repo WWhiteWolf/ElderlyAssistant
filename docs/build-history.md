@@ -314,3 +314,129 @@ word.
 
 **The refresh.** Next session's goal is unset; the phone trial
 comes first.
+
+## #5-new (2026-08-21): the phone trial failed, the reminders read end
+to end, and a plan written for one scheduler that owns them
+
+**Patrick built #4-new and the notifications still do not work.** That
+is the session's starting fact and it overturned the opener's goal. He
+opened by saying he had questions rather than answers, and the first
+was whether an early choice between two ways of building the app —
+one easier, one with more reliable notifications — was why the heart
+of his app is broken.
+
+**No such choice is written down anywhere.** `docs/build-history.md`
+begins at the transition sessions and says the older record lives in
+git and the quiet files; git is never touched here, and the three
+quiet files carry nothing about it. What the record does say is that
+the app schedules native local notifications through
+`expo-notifications` in real EAS builds, which is the only road on an
+iPhone that fires alarms with no server and with the app closed. So
+the platform was never the easier of two roads. Patrick's answer to
+all of it was that he does not care why — he wants it to work.
+
+**The read.** He switched to maximum effort and asked for the whole
+thing: `app/_layout.tsx` end to end and the scheduling code in all
+eight screens that touch notifications, 7,434 lines in reach. Three
+faults came out of it, and two are the same fault in different
+clothes.
+
+- **My Day and Pets destroy their own daily repeats.** Their
+  `scheduleAllNotifications` cancels every one of that screen's
+  reminders, then re-creates one only where `!item.completed`. Checking
+  an item off therefore removes its daily repeat outright.
+- **Nothing ever puts a lost reminder back.** Only the owning screen
+  re-arms, and only while it is open. The housing arms nothing, the
+  Home screen arms nothing, and there is no background task registered
+  anywhere — verified in `app.json`, which declares no background
+  modes. So the loop is: mark done, repeat gone, no reminder next
+  morning, no prompt to open the app, still no reminder.
+- **Nothing knows the total.** Nine screens add to the iOS queue blind
+  to each other. `scheduleBackgroundReminder` in `todo.tsx` adds a
+  permanent eight o'clock daily on every save, never cancels the old
+  one, and carries no identifier anything can match on.
+
+**My Week does not have the first fault**, arming every chore whether
+completed or not, which is both the proof the fix is right and the
+shape of it.
+
+**The second bug is separate and is not structural.** The hour stepper
+in `components/DateTimeControl.tsx` is wrong across the twelve
+o'clock crossing — stepping down from 12:00 PM gives 11:00 PM instead
+of 11:00 AM. The control opens at noon, so setting a nine o'clock
+morning time by spinning down lands on 9:00 PM. That is Patrick's own
+symptom: a banner at nine in the evening for a nine in the morning
+item, twice now. The AM/PM button and the typed box are both correct.
+Any time set by spinning through that boundary is stored in the wrong
+half of the day and needs re-setting after the fix.
+
+**Patrick stopped the session to say so.** Claude had named the
+structure as the fault and then went tracing an individual bug without
+being asked. His words were that he wants the reminders rock solid,
+that he is modelling a second app on this one, and that without
+reliable reminders there are no apps.
+
+**The plan is `docs/scheduler-plan.md`, written this session and
+decided through.** One module owns the whole queue: readers that turn
+each saved list into wanted reminders, one gathered list keyed so
+duplicates cannot exist, a reconcile that cancels what is unwanted and
+creates what is missing and leaves matches alone, and a budget below
+Apple's sixty-four. It runs on launch, on every return to the front,
+and after any save. Patrick settled six things into it.
+
+- **Snoozes, delays and postpones get saved to storage** so the module
+  owns them. He asked which was better for a seventy-two-year-old who
+  needs reminders and an eighteen-year-old freshman who cannot afford
+  to space out, and the answer is that a snooze is the second chance —
+  the reminder most likely to matter and least likely to be missed
+  when it vanishes, being already expected later rather than now.
+- **A clean slate every day.** The midnight holdover goes in both
+  halves: no stale banner left to tap, and no past-day branch. His
+  reason is that a thing not done on time is of no use as a reminder —
+  the old behaviour existed for the log, not the reminding, and he
+  would rather lose that road. A missed item stays unchecked.
+- **The daily reset moves into the module**, since today it only
+  happens when My Day or Pets is opened.
+- **A reader stays plain** — no storage, no iOS, nothing imported from
+  React Native or Expo — so Node can run it without a build. Storage is
+  read once at the top of the module. Decided before the readers exist
+  because pulling the reads back out later means rewriting all seven.
+- **The tests follow Mystery's shape**, read this session at
+  `MysteryCluesTracker/engine-tests.html`: a ten-line hand-rolled
+  runner, no framework, headless under Node, and tests writing to their
+  own storage keys. This project has no test runner and no test files
+  at all today.
+- **Timer stays outside the module**, being a special case — and
+  Patrick said in passing that Timer is not working right now either,
+  which is written down and not examined.
+
+**A screen showing the queue goes into Settings**, his call once the
+choice was put plainly. Its point is that a missing reminder is
+invisible until the moment it fails.
+
+**The ceiling was worked through.** Sixty-four is pending scheduled
+requests for the whole app; a repeat is one slot forever, a one-shot
+frees its slot on firing, and a delivered banner costs nothing. Memory
+will not come near it. Students-Assistant might, which is where the
+budget becomes working machinery rather than a guard, and the answer
+there is rolling — arm what is near, re-arm as the module runs, which
+works only because the app gets opened.
+
+**The warning comes as the item goes in**, Patrick's own call, the
+same shape as Students-Assistant's squeeze warning. The line is that
+rolling never warns, being ordinary business; the warning fires only
+when something asked for will not arrive.
+
+**One decision belonging to the other project came out of it.** The
+leave-by alert is dropped rather than deferred, because travel is
+already handled by the bus route apps she has. That overturns SA-2 and
+SA-5 and is recorded in that project's own files.
+
+**Nothing was built and no code was changed.** The plan's only open
+item is the wording of the budget warning and where it shows, left
+until there is a screen to put it on.
+
+**Two slips worth keeping.** Claude drifted into tracing the time bug
+without being asked, and Patrick named it. And a recommendation about
+snoozes was written as law — "one rule, no exceptions" — which he
+said sounded like being made to promise. Both were his to catch.
