@@ -106,11 +106,12 @@ export default function RootLayout() {
       // To-Do banners carry ONE button (Patrick, #56 — softens #40's
       // buttonless call after living with it): press-and-hold shows just OK,
       // which closes the banner without opening the app (the 'ok' action is
-      // a no-op in the handler below). Still no Done/Snooze — a To-Do is a
-      // one-time appointment; Done happens in-app after the appointment.
-      // The old 'todosnooze' category (OK + Done) stays unregistered; its
-      // banner Done handler code below remains harmlessly for any banners
-      // scheduled before #40.
+      // a no-op in the handler below). A To-Do has no need of a snooze
+      // (Patrick), so the banner carries that single OK button only.
+      // The old 'todosnooze' category (OK + Done) is not registered anywhere,
+      // so no To-Do banner can show a Done or a Snooze button. The handler
+      // below therefore answers no To-Do button at all: those two branches
+      // could never run and have been taken out.
       await Notifications.setNotificationCategoryAsync('todook', [
         { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
       ]);
@@ -244,7 +245,6 @@ export default function RootLayout() {
       const minutes = action === 'snooze15' ? 15 : action === 'snooze30' ? 30 : 60;
       const label = (data?.label as string) || 'your reminder';
       const source = data?.source as string | undefined;
-      const isTodo = source === 'todo';
       const isDay = source === 'myday' || source === 'mydaysnooze';
       const isPets = source === 'pets' || source === 'petssnooze';
       const isWeek = source === 'myweek' || source === 'myweekpostpone' || source === 'myweeksnooze';
@@ -280,25 +280,23 @@ export default function RootLayout() {
         return;
       }
 
-      // Everything below is To-Do, My Week and Orders only. The My Day and Pets
+      // Everything below is My Week and Orders only. The My Day and Pets
       // wordings still stand in the choices as the last fallback, but neither
       // page can reach this any more.
       Notifications.scheduleNotificationAsync({
         content: {
-          title: isTodo ? `📋 Reminder: ${label}` : isPets ? 'Pets Routine' : isWeek ? 'Weekly Chore' : isOrders ? '📦 Orders' : 'Daily Routine',
-          body: isTodo ? label : isOrders ? `Delivery reminder: ${label}` : `Time for ${label}!`,
+          title: isPets ? 'Pets Routine' : isWeek ? 'Weekly Chore' : isOrders ? '📦 Orders' : 'Daily Routine',
+          body: isOrders ? `Delivery reminder: ${label}` : `Time for ${label}!`,
           // Tag with the snooze source (not 'myday'/'pets'/'myweek') so each
           // screen's reschedule-on-load, which only cancels its own base source,
-          // won't wipe this snooze. To-Do has no reschedule-on-load, keeps 'todo'.
-          data: isTodo
-            ? { source: 'todo', taskId: data?.itemId, itemId: data?.itemId, label }
-            : { source: isPets ? 'petssnooze' : isWeek ? 'myweeksnooze' : isOrders ? 'orderssnooze' : 'mydaysnooze', itemId: data?.itemId, label },
+          // won't wipe this snooze.
+          data: { source: isPets ? 'petssnooze' : isWeek ? 'myweeksnooze' : isOrders ? 'orderssnooze' : 'mydaysnooze', itemId: data?.itemId, label },
           // Keep whatever button set the fired popup had, so a delayed popup
           // re-appears with the same buttons (old per-page category before a
           // page is switched over, 'routineactions' after).
           categoryIdentifier:
             response.notification.request.content.categoryIdentifier ||
-            (isTodo ? 'todosnooze' : isPets ? 'petssnooze' : isWeek ? 'routineactions' : isOrders ? 'orderactions' : 'mydaysnooze'),
+            (isPets ? 'petssnooze' : isWeek ? 'routineactions' : isOrders ? 'orderactions' : 'mydaysnooze'),
           // Same sound rule as the on-page Snooze buttons — a banner-tapped
           // snooze was silently rescheduled without this (audit item #1).
           sound: 'default',
@@ -417,41 +415,8 @@ export default function RootLayout() {
       const source = data?.source as string | undefined;
       const itemId = data?.itemId as string | undefined;
 
-      // To-Do "Done": log the completion, then remove the task and cancel all of
-      // its alerts. Every To-Do is a one-time task now (recurrence removed, #35),
-      // so a Done always finishes the task for good. Mirrors completeTask.
-      if (source === 'todo') {
-        (async () => {
-          const raw = await AsyncStorage.getItem('todo_tasks');
-          const tasks = raw ? (JSON.parse(raw) as any[]) : [];
-          const task = tasks.find((t) => t.id === itemId);
-          if (task) {
-            const logRaw = await AsyncStorage.getItem('todo_log');
-            const log = logRaw ? (JSON.parse(logRaw) as any[]) : [];
-            // To-Do log records the task's ORIGINAL set date/time plus when
-            // Done was TAPPED (Patrick, #27). The reminder's fire time is not
-            // recorded here.
-            let scheduledFor = task.dueDate || '';
-            if (task.dueTime) scheduledFor += (scheduledFor ? ' at ' : '') + task.dueTime;
-            const entry = {
-              id: Date.now().toString(),
-              taskTitle: task.title,
-              completedDate: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' }),
-              scheduledFor,
-              notes: task.notes,
-            };
-            await AsyncStorage.setItem('todo_log', JSON.stringify([entry, ...log].slice(0, 50)));
-            await AsyncStorage.setItem('todo_tasks', JSON.stringify(tasks.filter((t) => t.id !== itemId)));
-            const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-            for (const n of scheduled) {
-              if (n.content.data?.taskId === itemId) {
-                await Notifications.cancelScheduledNotificationAsync(n.identifier);
-              }
-            }
-          }
-        })();
-        return;
-      }
+      // A To-Do banner has no Done button, so nothing answers one here. Its
+      // branch came out with the snooze above.
 
       // My Week "Done": mark the chore complete for the week + log it, and clear
       // any pending postpone. We do NOT cancel the fired notification's id — the

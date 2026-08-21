@@ -838,3 +838,87 @@ than letting them pass, and answering his end-of-session question about
 capacity by counting the read — about two thousand lines of documents
 and fourteen hundred of code — rather than by feel. He stopped before
 the third piece on that count.
+
+## #11-new (2026-08-21): step 4 finished as a removal, and step 5 built
+
+**What was built.** The third piece of step 4 turned out to be a
+removal rather than a build, and step 5 followed it in the same
+session. Four files changed — the housing, the To-Do screen, the
+Memory Test screen and the module's own comments. No test was written
+or changed, 93 of 93 still pass, TypeScript is clean, and nothing of
+either piece has run on a phone.
+
+**To-Do had no snooze to bring across.** This was the session's real
+finding, and it was made by reading rather than assumed. The To-Do
+banner carries a single OK button and nothing else, which was
+Patrick's own call at #56, so no Snooze can ever be tapped on one. The
+snooze code in the housing could only answer a banner carrying the old
+`todosnooze` button set, which is registered nowhere in the app. The
+To-Do screen has no Snooze button either. There was therefore nothing
+to move under the module — only code that could never run.
+
+**That corrects the record.** #8-new recorded that a To-Do banner
+snooze "already buys nothing" because the module would sweep it, and
+that was carried into `pending.txt` as something live on build 57. It
+was never live: the snooze could not be made in the first place, the
+button having gone at #56.
+
+**Patrick's reason, and it is the durable part.** A To-Do reminder is
+advance warning that something is coming — an appointment fifteen
+minutes out, say — rather than a prod to do the task itself. Other
+reminders for the same task are still coming along behind it. So the
+banner needs nothing but an OK that makes it go away, and a snooze
+would defeat the point, because the appointment does not move. He
+twice trimmed the comment recording this, his words being that it
+"doesn't need to say all that, just the fact that it doesn't need it."
+Both comments now say only that To-Do has no need of a snooze and so
+carries a single OK button.
+
+**What came out.** The To-Do path in the housing's snooze handler,
+including the `isTodo` choices in the title, body, data and category;
+the To-Do "Done" branch beneath it, unreachable for the same reason;
+and `cancelReminders` in `app/todo.tsx` with both of its calls. That
+last one had been kept at #8-new to clear a pending snooze the module
+could not see, and it was already idle: it matched on a task id that
+only the old way of scheduling ever wrote, so it could no longer find
+anything the module had made. The saves that follow a delete or a
+completion are what actually clear those reminders.
+
+**Step 5 — Memory Test comes under the module.** The reader and the
+owned source were already there from step 1, so this was the same move
+steps 2 and 3 made on the other screens: the screen no longer arms its
+five-minute recall banner and no longer cancels anything, and its save
+asks the module to run instead. One thing differed from the piece as
+described — the screen's own cancelling was in three places rather than
+two. The third is in the load, where a session left over from another
+day is thrown away; with the session gone the module takes any waiting
+reminder off by itself, so that became a run of the module too. The
+permission ask and the notification handler stayed, as they did on the
+other screens.
+
+**Where step 6's warning would live, looked at but not built.** Every
+screen that takes an entry funnels through a single save that already
+calls the module and waits for it, and the module's answer already
+includes the reminders it had to leave out under the ceiling. So the
+warning is one line in each of six saves, with no new mechanism. Two
+things want settling first: the module answers with nothing at all when
+a run is skipped because another is already going, so a save landing at
+that moment would have nothing to warn from; and the plan's line
+between ordinary rolling, which never warns, and the real case cannot
+yet be seen in the code, which reports only that something did not fit.
+
+**Memory Test cannot be tested twice in a day**, checked when Patrick
+raised it. The screen looks for a logged entry carrying today's date
+and, finding one, shows the score and "Come back tomorrow" in place of
+the Start button. Deleting today's entry would bring Start back but
+would cost the day's real score, which is what the test exists to
+keep.
+
+**How the session ran.** It opened cleanly and Patrick's own note was
+read back rather than queried. The session number had to be asked for:
+the chat was titled #10-new, a number already spent, and he said the
+chat names keep being changed on him — he had gone back and retyped the
+labels for #5-new through #10-new by hand. The one real miss was a
+report he could not follow, his words being "I don't know what you're
+trying to say", after which he stated the To-Do reason plainly himself
+and it went into the comments in his words rather than in Claude's.

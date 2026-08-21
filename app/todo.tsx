@@ -288,7 +288,9 @@ export default function TodoScreen() {
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Delete', style: 'destructive', onPress: () => {
-                    cancelReminders(id);
+                    // The save asks the module to run, and with the task gone
+                    // from the list it takes that task's reminders off the
+                    // phone. Nothing has to be cancelled here by hand.
                     saveTasks(tasks.filter(t => t.id !== id));
                 },
             },
@@ -300,7 +302,9 @@ export default function TodoScreen() {
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Done', onPress: () => {
-                    cancelReminders(task.id);
+                    // Same as the delete above: the task leaves the list, the
+                    // save runs the module, and the module clears its
+                    // reminders.
                     const completedDate = new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' });
                     // Original set date/time (#27). #60: built from the stored
                     // numbers; an old string task logs an empty scheduledFor
@@ -374,18 +378,13 @@ export default function TodoScreen() {
         });
     };
 
-    // This page no longer arms anything. The scheduler module owns a task's
-    // reminders and the background daily alike, reading them from the saved
-    // list every time it runs (#8-new, plan step 3). Cancelling stays, because
-    // a banner-tapped snooze is still this page's own until plan step 4.
-    const cancelReminders = async (taskId: string) => {
-        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-        for (const notif of scheduled) {
-            if (notif.content.data?.taskId === taskId) {
-                await Notifications.cancelScheduledNotificationAsync(notif.identifier);
-            }
-        }
-    };
+    // This page neither arms nor cancels anything. The scheduler module owns a
+    // task's reminders and the background daily alike, reading them from the
+    // saved list every time it runs (#8-new, plan step 3), and every change
+    // this page makes to the list ends in a save that asks the module to run.
+    // The page's own cancelling has gone: it matched on a task id that only
+    // the old way of scheduling ever wrote, so it could no longer find
+    // anything the module had made.
 
     // Does the current selection already contain this preset?
     const isPresetSelected = (p: ReminderPreset): boolean => {

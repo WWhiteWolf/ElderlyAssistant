@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -19,6 +18,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
+import { runScheduler } from '../scheduler/scheduler';
 
 // Memory Test — a 5-word recall test, built so Patrick can track his scores
 // before and after starting the PAP mask. The flow matches what his doctor
@@ -213,7 +213,9 @@ export default function MemoryTestScreen() {
                 // to score late — drop it so today starts clean. (A finished
                 // one was already logged; the session copy is just stale.)
                 await AsyncStorage.removeItem(SESSION_KEY);
-                await cancelOurNotifications();
+                // With the session gone there is nothing to recall, so the
+                // module takes any waiting reminder off the phone.
+                await runScheduler();
                 return;
             }
             // If the 5 minutes passed while the app was closed, come back
@@ -231,21 +233,18 @@ export default function MemoryTestScreen() {
     const saveSession = async (s: Session) => {
         setSession(s);
         await AsyncStorage.setItem(SESSION_KEY, JSON.stringify(s));
+        // The saved session has changed, so let the module work the whole
+        // answer out again. It reads the session itself and decides whether the
+        // five-minute recall reminder should exist (plan step 5).
+        await runScheduler();
     };
 
-    // Only ever touch our own notifications (source:'memorytest') — the house
-    // rule so My Day / Pets / To-Do / Orders reminders are never disturbed.
-    const cancelOurNotifications = async () => {
-        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-        for (const notif of scheduled) {
-            if (notif.content.data?.source === 'memorytest') {
-                await Notifications.cancelScheduledNotificationAsync(notif.identifier);
-            }
-        }
-    };
+    // This page neither arms nor cancels anything. The module owns the one
+    // reminder the test ever sets — the five-minute recall — and reads the
+    // moment it falls due straight from the saved session, so every save above
+    // is all it takes to put that reminder on the phone or take it off again.
 
     const startSession = async () => {
-        await cancelOurNotifications();
         const s: Session = {
             date: localDateKey(),
             words: pickWords(),
@@ -286,24 +285,12 @@ export default function MemoryTestScreen() {
         await saveSession({ ...session, round: session.round + 1, phase: 'show' });
     };
 
-    // "I Got It" after round five → schedule the 5-minute banner and
-    // let him get on with his day.
+    // "I Got It" after round five → write down when the recall falls due and
+    // let him get on with his day. Saving it is what puts the banner on the
+    // phone: the module reads the waiting session and arms the five minutes.
     const beginWait = async () => {
         if (!session) return;
         const due = Date.now() + DELAY_MINUTES * 60000;
-        await cancelOurNotifications();
-        await Notifications.scheduleNotificationAsync({
-            content: {
-                title: '🧠 Memory Test',
-                body: 'Time to recall your 5 words.',
-                data: { source: 'memorytest' },
-                sound: 'default',
-            },
-            trigger: {
-                type: SchedulableTriggerInputTypes.DATE,
-                date: new Date(due),
-            } as Notifications.DateTriggerInput,
-        });
         setAnswers(['', '', '', '', '']);
         await saveSession({ ...session, phase: 'waiting', recallDue: due });
     };

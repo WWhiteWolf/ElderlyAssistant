@@ -43,9 +43,12 @@ import type { MemoryTestSession } from './readers/memorytest.ts';
  * are written down on the item itself, so their readers can answer for them
  * like anything else.
  *
- * My Week's own snooze and To-Do's are not here yet. They are still armed
- * straight onto the phone and written down nowhere, so the module must leave
- * them alone until they are brought across.
+ * My Week's own snooze is not here yet. It is still armed straight onto the
+ * phone and written down nowhere, so the module must leave it alone until it
+ * is brought across.
+ *
+ * To-Do has no need of a snooze (Patrick), so its banner carries a single OK
+ * button and nothing else.
  *
  * Orders is here without a reader, and that is deliberate. The page is being
  * taken out of the app, so nothing wants any of its reminders back; naming its

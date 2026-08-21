@@ -1,11 +1,11 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-08-21 (#10-new — the reminder rebuild is three
-steps in, and step 4 is two-thirds built. My Day's and Pets'
-Snooze buttons now write the snooze down instead of firing it and
-forgetting it, so snoozing twice can no longer leave two
-reminders, and the row says "Snoozed till:" while one is set.
-Steps 1 and 2 are on your phone as build 57; step 3 and both
-pieces of step 4 have never run anywhere. Bare session numbers
+Last updated: 2026-08-21 (#11-new — the reminder rebuild is five
+steps in of eight. Step 4 is finished: To-Do turned out to need no
+snooze at all, so that last piece was taking out code that could
+never run rather than building anything. Step 5 followed in the
+same session — the Memory Test's five-minute recall now comes from
+the one piece too. Steps 1 and 2 are on your phone as build 57;
+steps 3, 4 and 5 have never run anywhere. Bare session numbers
 below mean the old shared chain.)
 
 This is the "what's still left" list in everyday words. Nothing here
@@ -18,23 +18,33 @@ WHAT'S NEXT
 - THE REMINDERS. Build the one piece that owns them all (#5-new).
   The plan is written out in full in docs/scheduler-plan.md and
   every decision in it is yours and already made. It builds in
-  eight steps. Three are done:
+  eight steps. Five are done:
     Step 1 (#6-new) — the new piece itself, plus its tests. No
       page touched.
     Step 2 (#7-new) — My Day and Pets stopped arming their own.
       This is the fix for the silence.
     Step 3 (#8-new) — My Week, Look Ahead and To-Do stopped too,
       and Orders came out of the reminding altogether.
-  Step 4 got split into three pieces, because the four screens
-  that make these were not in the same state. Two are built:
-    Piece 1 (#9-new) — My Week's postpone and Look Ahead's delay.
-    Piece 2 (#10-new) — My Day's and Pets' snoozes, on the page
-      and on the banner both.
-    Piece 3 — To-Do's snooze. Not started. It is the biggest of
-      the three.
-  Steps 1 and 2 are on your phone as build 57. Step 3 and both
-  pieces of step 4 have never run anywhere. You asked for all
-  eight before the next build, one at a time.
+    Step 4 — the snoozes, delays and postpones, in three pieces:
+      My Week's postpone and Look Ahead's delay (#9-new), then My
+      Day's and Pets' snoozes (#10-new), and then To-Do (#11-new),
+      which needed nothing built. A To-Do banner has never had a
+      Snooze button to tap, so the piece was taking out code that
+      could never run.
+    Step 5 (#11-new) — the Memory Test's five-minute recall.
+  Three are left:
+    Step 6 — the warning when the phone is close to holding all
+      the reminders it can. It waits on you: what it should say,
+      and where it should show. The building after that is small.
+    Step 7 — the daily reset moves in, yesterday's untapped
+      banners get swept out of Notification Center, and a stale
+      branch comes out of the Done handler.
+    Step 8 — the screen that shows which reminders are pending.
+      Where it lives is also yours to say. Until it exists there
+      is no way to see the pending list on the phone at all.
+  Steps 1 and 2 are on your phone as build 57. Steps 3, 4 and 5
+  have never run anywhere. You asked for all eight before the
+  next build, one at a time.
 - The clock setter is off by twelve hours (#5-new). Spinning the
   hour down from the 12:00 PM it opens at goes to 11 PM instead
   of 11 AM, so setting 9 in the morning the natural way lands on
@@ -77,23 +87,25 @@ STILL BROKEN OR UNFINISHED (small bugs)
   you save a task with background tasks on the list, and nothing
   ever removes them (#5-new). They sit there forever taking up
   room. The new reminder piece clears them out.
-- Snoozing a To-Do banner buys you nothing right now (#8-new).
-  The snooze gets set, but the new reminder piece doesn't
-  recognise it as one of its own and cancels it the next time it
-  runs — which is the next time you open the app. This is live
-  on build 57. The third piece of step 4 is where it's cured, so
-  it needs nothing from you.
+- The To-Do banner snooze written down here at #8-new was never a
+  real fault, and #11-new corrected it. A To-Do banner carries one
+  OK button and no Snooze at all, so there was never a snooze to
+  be set or lost. The code behind it could not be reached and has
+  been taken out. Nothing needed from you.
 - My Week's Skip doesn't skip a postponed chore (#10-new, found
   while working next door and left alone). Skip takes the
   postponed reminder off the phone, but the postpone is written
   down on the chore now, so the app puts it straight back. Never
   been on a phone — it came in with #9-new, which hasn't been
   built. Small fix, and it belongs to a My Week session.
-- Waiting on your phone: step 3 and both pieces of step 4, none
-  of which have run. And the test steps 1 and 2 still haven't
-  had — the morning after. Something you check off today has to
-  still remind you tomorrow. That's the thing that used to go
-  quiet.
+- Waiting on your phone: steps 3, 4 and 5, none of which have
+  run. And the test steps 1 and 2 still haven't had — the morning
+  after. Something you check off today has to still remind you
+  tomorrow. That's the thing that used to go quiet.
+- One more for when you test: the Memory Test only lets you run
+  one a day. Once the day's score is logged the Start button is
+  replaced by that score and "Come back tomorrow", so step 5 can
+  only be tried on a fresh day.
 
 
 DECISIONS TO MAKE WHEN YOU'RE READY

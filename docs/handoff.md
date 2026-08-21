@@ -6,49 +6,40 @@ stands and what is open in front of it. Finished work goes to
 
 ## Where things stand
 
-**Alpha, and steps 1, 2, 3 and two of step 4's three pieces are built.
-Only steps 1 and 2 have been on a phone, as build 57.** One module owns
-every reminder — six readers, the reconcile, 93 tests — and as of #8-new
-no screen arms anything of its own. My Day and Pets stopped at #7-new;
-My Week, Look Ahead and To-Do stopped at #8-new, each one's save asking
-the module to run instead.
+**Alpha, and five of the plan's eight steps are built. Only steps 1 and
+2 have been on a phone, as build 57.** One module owns every reminder —
+six readers, the reconcile, 93 tests — and no screen arms anything of
+its own any more. My Day and Pets stopped at #7-new; My Week, Look
+Ahead and To-Do stopped at #8-new; Memory Test stopped at #11-new.
 
-**My Week's postpone and Look Ahead's delay came under the module at
-#9-new.** Both were already written down on the item — `postponedTo` on
-the chore, `delayedUntil` on the entry — so the readers now turn those
-stamps back into reminders and nothing arms them by hand any more. The
-one visible change is a banner: a postponed chore's popup now carries
-Done, OK, Skip and the three Delays instead of Done and "+1 Day",
-because the page and the banner had been arming two different button
-sets for the same act and one reader can only send one.
+**Step 4 is finished.** My Week's postpone and Look Ahead's delay came
+under the module at #9-new, and My Day's and Pets' snoozes at #10-new.
+All four are written down on the item itself — `postponedTo`,
+`delayedUntil` and `snoozedUntil` — so the readers turn them back into
+reminders and nothing arms them by hand. Snoozing twice moves the one
+reminder rather than leaving two, and My Day's and Pets' rows show
+"Snoozed till:" with the time while a snooze is set.
 
-**My Day's and Pets' snoozes came under the module at #10-new**, the
-second of step 4's three pieces. Both screens gained a `snoozedUntil`
-field on the item, in the shape `postponedTo` and `delayedUntil`
-already had, and all four Snooze buttons — the two on the pages and the
-two on the banners — now write that moment down instead of putting a
-reminder straight on the phone. `mydaysnooze` and `petssnooze` joined
-the owned list, and both readers gained the `now` argument they needed
-to tell whether a snooze is still ahead. Snoozing twice moves the one
-reminder rather than leaving two, and a snooze that goes missing comes
-back like everything else.
+**The third piece of step 4 was a removal, not a build** (#11-new).
+To-Do has no snooze anywhere and is not meant to have one: its banner
+carries a single OK button, Patrick's own call at #56. His reason is
+worth keeping — a To-Do reminder is advance warning that something is
+coming, an appointment fifteen minutes out for instance, rather than a
+prod to do the task, and other reminders for the same task are still
+coming behind it. So the code that could never run came out: the To-Do
+paths in the housing's snooze and Done handlers, and `cancelReminders`
+in the To-Do screen with both of its calls.
 
-**The one visible change is a line on the row**, reading "Snoozed till:
-4:15 PM" under the item's name while a snooze is set — Patrick's own
-wording and his own clock format. It appears on both screens.
+**That corrects something the record carried.** #8-new said a To-Do
+banner snooze "already buys nothing" and that it was live on build 57.
+It was never live — the snooze could not be made at all, the button
+having gone at #56.
 
-**Three things beyond that had to move with it.** Skip used to cancel
-the snooze off the phone by hand, which no longer holds once the snooze
-is written down — the module would read the stamp and put the reminder
-straight back — so Skip now rubs out the stamp for those two screens.
-The on-page Log button clears it too, not just the banner's Done. And
-the banner's Done now asks the module to run, which it never did; it had
-relied on the app coming back to the front.
-
-**One judgment call, Claude's:** a snooze stands on its own, so an item
-whose time of day is cleared after it was snoozed still gets the snooze.
-The alternative was to drop it, which breaks a promise the app has
-already made to the person.
+**Step 5 came in at #11-new.** The Memory Test screen no longer arms
+its five-minute recall banner and no longer cancels anything; its save
+asks the module to run, and the module reads the moment the recall
+falls due straight from the saved session. The reader and the owned
+source had been there since step 1.
 
 **Orders is out of the reminding altogether** (Patrick, #7-new — the
 page is dead to him). It got no reader, its scheduling came out at step
@@ -66,8 +57,7 @@ back on its own.
 **What it has not had is a day.** Build 57 was installed and opened the
 same session and nothing more. The real test is the morning after:
 items checked off today must still remind tomorrow, which is exactly
-what used to go silent. Step 3 and both pieces of step 4 have had no
-phone at all.
+what used to go silent. Steps 3, 4 and 5 have had no phone at all.
 
 **The tests run on the Mac in about a second**, headless under Node,
 with no build and no simulator. 93 of 93 pass:
@@ -80,33 +70,30 @@ with no build and no simulator. 93 of 93 pass:
 (#7-new). Told that today's untapped banner will still be sitting in
 Notification Center tomorrow because the sweep is step 7, he said he
 needs another build anyway and wants it sooner rather than later. Asked
-how much of the plan he wants in first, his answer was "all" — steps 3
-through 8, one at a time, each proven before the next starts.
+how much of the plan he wants in first, his answer was "all" — one at a
+time, each proven before the next starts. At the close of #11-new he
+said he would load the phone with what is built and test what he can.
 
-**Step 4 was split into three pieces and two are done.** The four
-screens that make these one-offs were not in the same state, so they
-went in the order their records allowed. What is left is **To-Do's
-snooze**, and it is the biggest of the three: the screen is 861 lines
-against My Day's 957 and Pets' 855, but its reader is 152 lines where
-the two daily ones are under fifty, and its snooze is tangled with the
-one below that already buys nothing.
+**Step 6 — the budget and the near-the-ceiling warning.** The budget
+itself is already built and running: the reconcile trims to the
+ceiling, keeps the soonest, and hands back what it left out. What is
+missing is the warning, and it waits on Patrick's decision — what it
+says and where it shows. Where it would fire from was looked at in
+#11-new and needs no new plumbing: every screen that takes an entry
+funnels through one save that already calls the module and waits for
+it, so it is one line in each of six saves. Two things want settling
+with it. The module answers with nothing at all when a run is skipped
+because another is already going, so a save landing at that moment
+would have nothing to warn from. And the plan's line between ordinary
+rolling, which never warns, and the real case cannot yet be seen in
+the code, which reports only that something did not fit.
 
-**A snooze is recorded on the item** — settled at #9-new, built at
-#10-new for My Day and Pets, and To-Do follows the same shape. The
-reader is already handed that screen's list, so there is no new plumbing
-and no second pattern for the same idea, and a snooze dies with its item
-instead of being orphaned.
-
-**A To-Do banner snooze already buys nothing** (found #8-new, not acted
-on). It is created with `source: 'todo'` and no name of its own
-(`_layout.tsx`, in the snooze branch of the response handler), and To-Do
-has been an owned source since step 1 — so the module reads it as a
-leftover from the old way and cancels it on its next run. That is live
-on build 57 today. It is cured in the third piece of step 4.
-
-**Steps 5 through 8 follow in the plan's own order**, and two of them
-carry questions the plan leaves open: the budget warning's wording and
-where it shows, and where the pending-queue screen lives.
+**Step 7** moves the daily reset into the module, sweeps stale banners,
+and takes the past-day branch out of the Done handler. **Step 8** builds
+the screen that shows the pending queue; where it lives is the plan's
+other open question. Until that screen exists, nothing on the phone
+shows what is actually pending, so most phone testing can only be
+judged by whether the right banner turns up.
 
 **The hour stepper fix** is small, separate, and not structural. Any
 time set by spinning through the twelve o'clock boundary is stored in
@@ -125,22 +112,27 @@ and the Vault restructuring's "Home"-to-"Back" button change.
 untrue of the My Day / Pets branch and has never been true of My
 Week's. The plan removes that branch, so this closes itself at step 7.
 
-**Kept on purpose, and due to come out with the snoozes:** To-Do's
-`cancelReminders`, Orders' `cancelForItem`, and the `myweeksnooze` hunt
-left in the housing's My Week Done handler at #9-new. All three match by
-item, so they still clear a banner snooze the module cannot see yet.
+**Kept on purpose:** Orders' `cancelForItem`, and the `myweeksnooze`
+hunt left in the housing's My Week Done handler at #9-new. Both match
+by item, so they still clear a banner snooze the module cannot see yet.
+To-Do's `cancelReminders`, which was on this list, came out at #11-new.
 
-**My Week's Skip does not skip a postponed chore** (found #10-new while
-working next door, not acted on). Skip cancels the postpone's reminder
-off the phone by hand, but #9-new made the postpone a stamp on the
-chore, so the module reads it on its next run and puts the reminder
-straight back. It has never been on a phone, #9-new never having been
-built. The fix is small and belongs to a My Week session; a note sits
-beside the code in the housing's Skip branch.
+**My Week's Skip does not skip a postponed chore** (found #10-new, not
+acted on). Skip cancels the postpone's reminder off the phone by hand,
+but #9-new made the postpone something written down on the chore, so
+the module reads it on its next run and puts the reminder straight
+back. It has never been on a phone, #9-new never having been built. The
+fix is small and belongs to a My Week session; a note sits beside the
+code in the housing's Skip branch.
 
 **The Look Ahead banner-delay bug** sits in `pending.txt` under "Needs
 a phone test". It was never separately confirmed, and the trial that
 would have confirmed it is the one that failed.
+
+**Memory Test allows one session a day.** The screen shows the day's
+score and "Come back tomorrow" once an entry with today's date is
+logged, so a second test cannot be started. Worth knowing before
+planning a phone test of step 5.
 
 ## A fact worth carrying
 
