@@ -614,3 +614,59 @@ not hard to follow. He also asked twice for smaller steps and shorter
 messages: the whole step-2 read was taken as one bite and reported at
 length, and he said plainly that the code detail is not what he needs
 to be told.
+
+## #8-new (2026-08-21): step 3 built, Orders taken out of the
+reminding, and a live snooze fault found
+
+**What was built.** Step 3 of `docs/scheduler-plan.md`. My Week, Look
+Ahead and To-Do no longer schedule anything themselves, and Orders no
+longer schedules anything at all. Five files changed — four screens and
+the module's owned list — plus one test file. TypeScript clean, 67 of
+67 tests passing. Nothing has run on a phone.
+
+**The three screens that keep their reminders.** Each lost its own
+scheduling function and its mount-time call, and each save now calls
+`runScheduler()` instead — the same shape My Day and Pets took at step
+2. Their readers already existed from step 1 and already produce what
+those screens produced, so nothing had to be written to replace what
+came out.
+
+**Orders needed no new mechanism**, which was the session's one open
+question at the start and was answered by reading the reconcile rather
+than by building anything. The reconcile cancels a reminder when its
+source is one the module owns and it carries no name of its own. So
+naming `orders` and `orderssnooze` as owned, while giving Orders no
+reader, makes every reminder that page ever set a leftover to be swept
+— and with the page no longer arming, nothing brings them back.
+
+**A To-Do banner snooze already buys nothing.** Found while reading the
+housing, and not acted on. The snooze is created with `source: 'todo'`
+and no name of its own, at `app/_layout.tsx` line 230, where an old
+comment explains the choice: To-Do had no reschedule-on-load, so
+keeping the plain source was safe. It stopped being safe at step 1,
+when `todo` became an owned source — the module now reads that snooze
+as a leftover and cancels it on its next run. It is live on build 57
+today. Snoozes are step 4, so it was left alone and written down.
+
+**Three things stayed that the plan would have taken out.** To-Do's
+`cancelReminders` and Orders' `cancelForItem` both match by item rather
+than by source, so they clear a pending banner snooze as well as a base
+reminder; the module cannot do that part until snoozes are saved, so
+removing them would have lost the cleanup. Look Ahead's and Orders'
+save points each had a line that cancelled a delay and re-armed in the
+same breath — the cancelling stayed and only the re-arming came out.
+
+**One test changed its mind.** `An Orders reminder is left alone while
+the page is still there` asserted exactly what step 3 reverses, so it
+became `An Orders reminder is swept off the phone`, and a second was
+added for Orders snoozes. That is the sixty-seventh test.
+
+**How the session ran.** The read was named and sized before it was
+done — the scheduling paths in four screens and the reconcile's
+ownership test, rather than the four screens entire, which would have
+been 3,663 lines. The Orders question was raised as unanswered at the
+start rather than guessed at, and answered from the code. Patrick asked
+at the close whether a fresh start was wanted for step 4 and it was:
+step 4 lives mostly in the housing, where about six hundred of
+`_layout.tsx`'s six hundred and forty-eight lines are the seven sets of
+banner buttons and the handler beneath them.

@@ -6,11 +6,17 @@ stands and what is open in front of it. Finished work goes to
 
 ## Where things stand
 
-**Alpha, and steps 1 and 2 of the scheduler plan are built and on the
-phone as build 57.** One module owns every reminder — six readers, the
-reconcile, 66 tests — and as of #7-new My Day and Pets no longer
-schedule anything themselves. The module is the only thing arming those
-two screens now.
+**Alpha, and steps 1, 2 and 3 of the scheduler plan are built. Only
+steps 1 and 2 have been on a phone, as build 57.** One module owns every
+reminder — six readers, the reconcile, 67 tests — and as of #8-new no
+screen arms anything of its own. My Day and Pets stopped at #7-new; My
+Week, Look Ahead and To-Do stopped at #8-new, each one's save asking the
+module to run instead.
+
+**Orders is out of the reminding altogether** (Patrick, #7-new — the
+page is dead to him). It got no reader, its scheduling came out at step
+3, and its two sources are named to the module as owned so the reconcile
+sweeps everything the page ever set. Nothing re-creates them.
 
 **Why it exists.** The #4-new notification work failed its phone trial.
 #5-new found the fault: My Day and Pets cancel an item's daily repeat
@@ -23,10 +29,10 @@ back on its own.
 **What it has not had is a day.** Build 57 was installed and opened the
 same session and nothing more. The real test is the morning after:
 items checked off today must still remind tomorrow, which is exactly
-what used to go silent.
+what used to go silent. Step 3 has had no phone at all.
 
 **The tests run on the Mac in about a second**, headless under Node,
-with no build and no simulator:
+with no build and no simulator. 67 of 67 pass:
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -39,13 +45,21 @@ needs another build anyway and wants it sooner rather than later. Asked
 how much of the plan he wants in first, his answer was "all" — steps 3
 through 8, one at a time, each proven before the next starts.
 
-**Step 3's shape is agreed and not started.** My Week, Look Ahead and
-To-Do stop setting their own reminders and the module takes them over.
-Orders stops with them and its old reminders are swept off the phone
-for good — **Orders is dead to him** (Patrick, #7-new, his own words),
-so it gets no reader and nothing of its reminding is preserved.
+**Step 4 is next and not started.** The snoozes, delays and postpones
+come under the module by being saved. It is a heavier read than step 3:
+the banner buttons live in the housing, and about six hundred of
+`app/_layout.tsx`'s six hundred and forty-eight lines are those seven
+sets of buttons and the handler under them — plus the on-page Snooze
+buttons in My Day and Pets, My Week's postpone and Look Ahead's delay.
 
-**Steps 4 through 8 follow in the plan's own order**, and two of them
+**A To-Do banner snooze already buys nothing** (found #8-new, not acted
+on). It is created with `source: 'todo'` and no name of its own
+(`_layout.tsx` line 230), and To-Do has been an owned source since step
+1 — so the module reads it as a leftover from the old way and cancels it
+on its next run. That is live on build 57 today. Step 4 is where it is
+cured.
+
+**Steps 5 through 8 follow in the plan's own order**, and two of them
 carry questions the plan leaves open: the budget warning's wording and
 where it shows, and where the pending-queue screen lives.
 
@@ -65,6 +79,10 @@ and the Vault restructuring's "Home"-to-"Back" button change.
 `app/_layout.tsx` still says it cancels the fired reminder, which is
 untrue of the My Day / Pets branch and has never been true of My
 Week's. The plan removes that branch, so this closes itself at step 7.
+
+**Kept on purpose at step 3, and due to come out at step 4:** To-Do's
+`cancelReminders` and Orders' `cancelForItem`. Both match by item, so
+they still clear a banner snooze the module cannot see yet.
 
 **The Look Ahead banner-delay bug** sits in `pending.txt` under "Needs
 a phone test". It was never separately confirmed, and the trial that

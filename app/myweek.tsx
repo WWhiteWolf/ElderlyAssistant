@@ -22,6 +22,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl from '../components/DateTimeControl';
 import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
+import { runScheduler } from '../scheduler/scheduler';
 
 // A weekly chore: a label, the day of the week it belongs to (0 = Sun … 6 = Sat),
 // the time of day, and whether it's been marked Done this week.
@@ -171,59 +172,20 @@ export default function MyWeekScreen() {
         }
     };
 
-    // Mount-time load: read storage, then arm this screen's reminders.
+    // Mount-time load: read storage. The chores' reminders are not this
+    // screen's job any more — the scheduler module owns them, and the housing
+    // runs it on launch and on every return to the front (#8-new, plan step 3).
     const loadData = async () => {
         await refreshFromStorage();
-        try {
-            await scheduleAllNotifications();
-        } catch (e) {
-            console.error(e);
-        }
     };
 
     const saveData = async (c: Chore[], h: HistoryEntry[]) => {
         await AsyncStorage.setItem('week_routine', JSON.stringify(c));
         await AsyncStorage.setItem('week_history', JSON.stringify(h));
-        await scheduleAllNotifications();
-    };
-
-    // Each chore gets ONE native WEEKLY repeating reminder on its day/time. It
-    // fires once that day, then automatically returns next week and survives
-    // app restarts (no reschedule-on-load needed for the base reminder — we
-    // reschedule only so add/edit/delete take effect). Expo weekday is
-    // 1=Sun…7=Sat, so weekday = day + 1. Postpone (stage 3) adds the only other
-    // reminders. We cancel just our own (source:'myweek') so My Day / Pets /
-    // To-Do reminders are untouched, and read week_routine from storage so we
-    // never schedule from a stale in-memory copy.
-    const scheduleAllNotifications = async () => {
-        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-        for (const notif of scheduled) {
-            if (notif.content.data?.source === 'myweek') {
-                await Notifications.cancelScheduledNotificationAsync(notif.identifier);
-            }
-        }
-        const raw = await AsyncStorage.getItem('week_routine');
-        const items: Chore[] = raw ? JSON.parse(raw) : [];
-        for (const item of items) {
-            await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: 'Weekly Chore',
-                    body: `Time for ${item.label}!`,
-                    // 'routineactions' = the shared routine popup (#39):
-                    // OK / Skip / Delay 15-30-60 / Done. (The banner's old
-                    // "+1 Day" is gone — postpone lives on the page itself.)
-                    data: { source: 'myweek', itemId: item.id, label: item.label },
-                    categoryIdentifier: 'routineactions',
-                    sound: 'default',
-                },
-                trigger: {
-                    type: SchedulableTriggerInputTypes.WEEKLY,
-                    weekday: item.day + 1,
-                    hour: item.hour,
-                    minute: item.minute,
-                } as Notifications.WeeklyTriggerInput,
-            });
-        }
+        // The saved list has changed, so let the module work the whole answer
+        // out again. It reads storage itself, matches by key, and touches only
+        // what actually differs.
+        await runScheduler();
     };
 
     // Cancel any pending one-off Postpone reminder for a chore (tagged

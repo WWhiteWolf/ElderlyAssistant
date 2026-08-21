@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -156,72 +155,18 @@ export default function OrdersScreen() {
         }
     };
 
-    // Mount-time load: read storage, then self-heal — re-arm this page's
-    // reminders from the saved items every open (Look Ahead's pattern).
+    // Mount-time load: read storage. This page no longer arms anything.
     const loadData = async () => {
-        const parsed = await refreshFromStorage();
-        try {
-            if (parsed) await scheduleAll(parsed);
-        } catch (e) {
-            console.error(e);
-        }
+        await refreshFromStorage();
     };
 
-    // ----- Reminders (#62 spec) -----
-    // Per entry, re-armed whenever the entry is edited:
-    //   1. day-before, at the Settings MIDDAY time
-    //   2. morning-of, at the Settings MORNING time
-    //   3. window-open  (only when a window is set)
-    //   4. window-close (only when a window is set) — "only if HERE not yet
-    //      tapped" is handled by cancellation: HERE cancels the entry's
-    //      pending reminders, so a tapped package never gets the close nag.
-    // Date-only entries get just the first two.
-    // All one-shot dated triggers, source 'orders'. categoryIdentifier
-    // 'orderactions' is registered in _layout.tsx (step 6).
-
-    // Cancel only THIS page's base reminders, then re-schedule one per kind
-    // per item for every date still in the future. Leaves banner-delay
-    // snoozes (source 'orderssnooze') and other screens untouched.
-    const scheduleAll = async (its: OrderItem[]) => {
-        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-        for (const n of scheduled) {
-            if (n.content.data?.source === 'orders') {
-                await Notifications.cancelScheduledNotificationAsync(n.identifier);
-            }
-        }
-        // Global times from Settings — "HH:MM" strings (To-Do's read pattern).
-        const morning = ((await AsyncStorage.getItem('reminder_morning_time')) || '08:00').split(':').map(Number);
-        const midday = ((await AsyncStorage.getItem('reminder_midday_time')) || '12:00').split(':').map(Number);
-        const now = new Date();
-        const arm = async (item: OrderItem, when: Date, body: string, kind: string) => {
-            if (when <= now) return;
-            await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: '📦 Orders',
-                    body,
-                    data: { source: 'orders', itemId: item.id, label: item.name, kind },
-                    categoryIdentifier: 'orderactions',
-                    sound: 'default',
-                },
-                trigger: {
-                    type: SchedulableTriggerInputTypes.DATE,
-                    date: when,
-                } as Notifications.DateTriggerInput,
-            });
-        };
-        for (const item of its) {
-            await arm(item, new Date(item.year, item.month, item.day - 1, midday[0], midday[1], 0, 0),
-                `${item.name} is expected tomorrow.`, 'daybefore');
-            await arm(item, new Date(item.year, item.month, item.day, morning[0], morning[1], 0, 0),
-                `${item.name} is expected today.`, 'morningof');
-            if (item.startHour != null) {
-                await arm(item, new Date(item.year, item.month, item.day, item.startHour, item.startMinute!, 0, 0),
-                    `Delivery window is opening for ${item.name}.`, 'windowopen');
-                await arm(item, new Date(item.year, item.month, item.day, item.endHour!, item.endMinute!, 0, 0),
-                    `Window closed — has ${item.name} arrived? Tap HERE when it has.`, 'windowclose');
-            }
-        }
-    };
+    // ----- Reminders -----
+    // This page has none. Orders is being taken out of the app, so it was given
+    // no reader when the scheduler module was built, and at plan step 3 its own
+    // scheduling came out with the other screens' (#8-new). Its two sources,
+    // 'orders' and 'orderssnooze', are named to the module as owned so that
+    // everything this page ever set is swept off the phone for good; nothing
+    // re-creates them.
 
     // Drop EVERYTHING pending for one entry — its base reminders AND any
     // banner-delay snoozes — used by HERE and delete so a gone entry can
@@ -394,13 +339,12 @@ export default function OrdersScreen() {
             const editedId = activeId;
             const updated = items.map(it => (it.id === editedId ? { ...it, ...fields } : it));
             saveItems(updated);
-            // Edited = re-arm (the spec's rule). Also drop any pending
-            // banner-delay snooze — the date/window may have moved.
-            cancelForItem(editedId).then(() => scheduleAll(updated));
+            // Nothing is armed any more, so an edit only clears whatever this
+            // entry still has pending from before.
+            cancelForItem(editedId);
         } else {
             const updated = [...items, { id: Date.now().toString(), ...fields }];
             saveItems(updated);
-            scheduleAll(updated);
         }
         closeEdit();
     };

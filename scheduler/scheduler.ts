@@ -32,11 +32,27 @@ import type { MemoryTestSession } from './readers/memorytest.ts';
 /**
  * The screens the scheduler answers for.
  *
- * A reminder from anywhere else — the Timer, and Orders until that page is
- * taken out — is never cancelled and never re-created. It is simply left where
- * it is, and counted against the room the phone has.
+ * A reminder from anywhere else — the Timer's alerts, and the snoozes, delays
+ * and postpones until they come under the module — is never cancelled and never
+ * re-created. It is simply left where it is, and counted against the room the
+ * phone has.
+ *
+ * Orders is here without a reader, and that is deliberate. The page is being
+ * taken out of the app, so nothing wants any of its reminders back; naming its
+ * two sources as owned makes the reconcile see every one of them as a leftover
+ * with no name and cancel it. Since the page no longer arms anything, they go
+ * for good the first time the module runs.
  */
-export const OWNED_SOURCES = ['myday', 'pets', 'myweek', 'lookahead', 'todo', 'memorytest'];
+export const OWNED_SOURCES = [
+    'myday',
+    'pets',
+    'myweek',
+    'lookahead',
+    'todo',
+    'memorytest',
+    'orders',
+    'orderssnooze',
+];
 
 /** Read one saved list, tolerating a key that has never been written. */
 async function readList<T>(key: string): Promise<T[]> {

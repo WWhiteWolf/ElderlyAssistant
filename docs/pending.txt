@@ -1,11 +1,10 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-08-21 (#5-new — you built #4-new and the
-reminders still didn't work. The whole reminder path was read and
-the reasons found. The fix is a plan, not code yet, and it's the
-new top item under "What's Next". Two new bugs are written down:
-the clock setter puts a 9 in the morning down as 9 at night, and
-the Timer isn't right. Bare session numbers below mean the old
-shared chain.)
+Last updated: 2026-08-21 (#8-new — the reminder rebuild is three
+steps in. Steps 1 and 2 are on your phone as build 57; step 3 is
+written and has never run. Orders is now out of the reminding for
+good. One new bug is written down: snoozing a To-Do banner buys
+you nothing today. Bare session numbers below mean the old shared
+chain.)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. Finished work isn't tracked here — git history keeps the
@@ -15,14 +14,19 @@ full record — so this list stays short.
 WHAT'S NEXT
 ------------------------------------------------------------------
 - THE REMINDERS. Build the one piece that owns them all (#5-new).
-  Right now every page arms its own reminders, and only while
-  that page is open. So when you check something off, My Day and
-  Pets throw away tomorrow's reminder for it, and nothing ever
-  puts it back — which is why things go quiet and stay quiet.
   The plan is written out in full in docs/scheduler-plan.md and
   every decision in it is yours and already made. It builds in
-  eight steps, each one testable on the phone. Step 1 is the new
-  piece plus a test setup, with no page touched.
+  eight steps. Three are done:
+    Step 1 (#6-new) — the new piece itself, plus its tests. No
+      page touched.
+    Step 2 (#7-new) — My Day and Pets stopped arming their own.
+      This is the fix for the silence.
+    Step 3 (#8-new) — My Week, Look Ahead and To-Do stopped too,
+      and Orders came out of the reminding altogether.
+  Steps 1 and 2 are on your phone as build 57. Step 3 has never
+  run anywhere. You asked for all eight before the next build,
+  one at a time. Step 4 is next: snoozes, delays and postpones
+  get saved so the piece owns them as well.
 - The clock setter is off by twelve hours (#5-new). Spinning the
   hour down from the 12:00 PM it opens at goes to 11 PM instead
   of 11 AM, so setting 9 in the morning the natural way lands on
@@ -57,13 +61,24 @@ STILL BROKEN OR UNFINISHED (small bugs)
   cure it (#5-new). What went in was real and stays in — a banner
   Done no longer wipes out tomorrow's reminder, and every routine
   page re-reads what's saved when you come back to it. It just
-  wasn't the whole story. The rest is the top "What's Next" item.
+  wasn't the whole story. The rest is the top "What's Next" item,
+  and it's three steps along now.
 - The Timer isn't working right (#5-new, your word). Not looked
   at yet, and not described. Written down so it isn't lost.
 - To-Do quietly stacks up an 8:00 AM daily reminder every time
   you save a task with background tasks on the list, and nothing
   ever removes them (#5-new). They sit there forever taking up
   room. The new reminder piece clears them out.
+- Snoozing a To-Do banner buys you nothing right now (#8-new).
+  The snooze gets set, but the new reminder piece doesn't
+  recognise it as one of its own and cancels it the next time it
+  runs — which is the next time you open the app. This is live
+  on build 57. Step 4 of the plan is where it's cured, so it
+  needs nothing from you.
+- Waiting on your phone: step 3, which has never run. And the
+  test steps 1 and 2 still haven't had — the morning after.
+  Something you check off today has to still remind you
+  tomorrow. That's the thing that used to go quiet.
 
 
 DECISIONS TO MAKE WHEN YOU'RE READY

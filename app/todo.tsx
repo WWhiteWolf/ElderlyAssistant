@@ -20,6 +20,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl, { formatDateMMDDYY, formatTime24 } from '../components/DateTimeControl';
 import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
+import { runScheduler } from '../scheduler/scheduler';
 
 // Priority removed entirely (Patrick, #58 scope, built #60): no form
 // buttons, no tile side bar or colored priority word. Old saved tasks may
@@ -162,6 +163,10 @@ export default function TodoScreen() {
     const saveTasks = async (t: Task[]) => {
         setTasks(t);
         await AsyncStorage.setItem('todo_tasks', JSON.stringify(t));
+        // The saved list has changed, so let the module work the whole answer
+        // out again. It reads storage itself, matches by key, and touches only
+        // what actually differs (#8-new, plan step 3).
+        await runScheduler();
     };
 
     const saveLog = async (l: LogEntry[]) => {
@@ -235,8 +240,6 @@ export default function TodoScreen() {
             notes: newNotes,
         };
         saveTasks([...tasks, task]);
-        scheduleReminders(task);
-        scheduleBackgroundReminder();
         resetForm();
         setShowAddTask(false);
     };
@@ -273,12 +276,9 @@ export default function TodoScreen() {
             notes: newNotes,
         };
         const updated = tasks.map(t => (t.id === editing.id ? updatedTask : t));
-        saveTasks(updated);
-        // Editing used to schedule nothing, so changes to due time/reminders
-        // never took effect. Cancel this task's old reminders first, then
-        // reschedule from the new values (mirrors the Add path).
-        await cancelReminders(editing.id);
-        await scheduleReminders(updatedTask);
+        // The save runs the module, which reads the new due time and reminders
+        // and changes only the requests that actually differ.
+        await saveTasks(updated);
         resetForm();
         setShowAddTask(false);
     };
@@ -374,61 +374,10 @@ export default function TodoScreen() {
         });
     };
 
-    const scheduleReminders = async (task: Task) => {
-        console.log('scheduleReminders called', task.taskType, taskDueDate(task), task.reminders.length);
-        if (task.taskType === 'background') return;
-
-        // #60: the due Date comes straight from the stored numbers. No numbers
-        // (an old string task) = nothing to schedule — it gets its reminders
-        // back when it's edited and re-saved.
-        const dueDateTime = taskDueDate(task);
-        if (!dueDateTime || task.reminders.length === 0) return;
-
-        // Global morning/midday/evening times (set in Settings) drive 'clock' reminders.
-        const morningTime = (await AsyncStorage.getItem('reminder_morning_time')) || '08:00';
-        const middayTime = (await AsyncStorage.getItem('reminder_midday_time')) || '12:00';
-        const eveningTime = (await AsyncStorage.getItem('reminder_evening_time')) || '17:00';
-
-        for (const reminder of task.reminders) {
-            let fireTime: Date;
-            if (reminder.kind === 'clock') {
-                // Fire at the chosen global time, `daysBefore` days before the date.
-                const which = reminder.timeOfDay === 'evening' ? eveningTime
-                    : reminder.timeOfDay === 'midday' ? middayTime
-                    : morningTime;
-                const [chStr, cmStr] = which.split(':');
-                fireTime = new Date(task.year, task.month, task.day, 0, 0, 0, 0);
-                fireTime.setDate(fireTime.getDate() - (reminder.daysBefore ?? 0));
-                fireTime.setHours(parseInt(chStr, 10) || 0, parseInt(cmStr, 10) || 0, 0, 0);
-            } else {
-                let msOffset = 0;
-                if (reminder.unit === 'minutes') msOffset = reminder.amount * 60 * 1000;
-                if (reminder.unit === 'hours') msOffset = reminder.amount * 60 * 60 * 1000;
-                if (reminder.unit === 'days') msOffset = reminder.amount * 24 * 60 * 60 * 1000;
-                fireTime = new Date(dueDateTime.getTime() - msOffset);
-            }
-            console.log('Fire time:', fireTime, 'Now:', new Date(), 'Future?', fireTime > new Date());
-            if (fireTime > new Date()) {
-                await Notifications.scheduleNotificationAsync({
-                    content: {
-                        title: `📋 Reminder: ${task.title}`,
-                        body: scheduleLabel(task),
-                        // 'todook' (Patrick, #56; softens #40's buttonless call): press-and-hold
-                        // shows a single OK that just closes the banner. Still no Done/Snooze —
-                        // a To-Do is a one-time appointment; Done happens in-app afterward.
-                        categoryIdentifier: 'todook',
-                        data: { taskId: task.id, itemId: task.id, label: task.title, source: 'todo' },
-                        sound: 'default',
-                    },
-                    trigger: {
-                        type: Notifications.SchedulableTriggerInputTypes.DATE,
-                        date: fireTime,
-                    },
-                });
-            }
-        }
-    };
-
+    // This page no longer arms anything. The scheduler module owns a task's
+    // reminders and the background daily alike, reading them from the saved
+    // list every time it runs (#8-new, plan step 3). Cancelling stays, because
+    // a banner-tapped snooze is still this page's own until plan step 4.
     const cancelReminders = async (taskId: string) => {
         const scheduled = await Notifications.getAllScheduledNotificationsAsync();
         for (const notif of scheduled) {
@@ -436,27 +385,6 @@ export default function TodoScreen() {
                 await Notifications.cancelScheduledNotificationAsync(notif.identifier);
             }
         }
-    };
-
-    const scheduleBackgroundReminder = async () => {
-        const backgroundTasks = tasks.filter(t => t.taskType === 'background');
-        if (backgroundTasks.length === 0) return;
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        tomorrow.setHours(8, 0, 0, 0);
-        await Notifications.scheduleNotificationAsync({
-            content: {
-                title: '📋 Background Tasks',
-                body: `You have ${backgroundTasks.length} background task${backgroundTasks.length > 1 ? 's' : ''} to review.`,
-                data: { source: 'todo' },
-                sound: 'default',
-            },
-            trigger: {
-                type: Notifications.SchedulableTriggerInputTypes.DAILY,
-                hour: 8,
-                minute: 0,
-            } as Notifications.DailyTriggerInput,
-        });
     };
 
     // Does the current selection already contain this preset?

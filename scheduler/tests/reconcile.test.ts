@@ -11,7 +11,7 @@ import { assert, assertSame, test } from './runner.ts';
 // Monday the first of June 2026, at nine in the morning.
 const NOW = new Date(2026, 5, 1, 9, 0, 0, 0).getTime();
 
-const OWNED = ['myday', 'pets', 'myweek', 'lookahead', 'todo', 'memorytest'];
+const OWNED = ['myday', 'pets', 'myweek', 'lookahead', 'todo', 'memorytest', 'orders', 'orderssnooze'];
 
 function want(key: string, trigger: WantedTrigger, source = 'myday'): WantedReminder {
     return {
@@ -68,10 +68,16 @@ export function runReconcileTests(): void {
         assertSame(plan.others, 1, 'but it does take up room');
     });
 
-    test('An Orders reminder is left alone while the page is still there', () => {
-        const queue: QueueEntry[] = [{ identifier: 'o1', key: 'orders:x:daybefore', source: 'orders', trigger: { kind: 'date', at: NOW + 60000 } }];
+    test('An Orders reminder is swept off the phone', () => {
+        const queue: QueueEntry[] = [{ identifier: 'o1', source: 'orders', trigger: { kind: 'date', at: NOW + 60000 } }];
         const plan = reconcile([], queue, OWNED, NOW);
-        assertSame(plan.cancel, [], 'Orders has no reader, so it is not ours');
+        assertSame(plan.cancel, ['o1'], 'Orders is owned with no reader, so everything of its goes');
+    });
+
+    test('An Orders snooze is swept off the phone too', () => {
+        const queue: QueueEntry[] = [{ identifier: 'o2', source: 'orderssnooze', trigger: { kind: 'date', at: NOW + 60000 } }];
+        const plan = reconcile([], queue, OWNED, NOW);
+        assertSame(plan.cancel, ['o2'], 'the page is going, so its snoozes go with it');
     });
 
     test('One of ours with no name is a leftover and is cancelled', () => {

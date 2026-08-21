@@ -22,6 +22,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl from '../components/DateTimeControl';
 import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
+import { runScheduler } from '../scheduler/scheduler';
 
 // Look Ahead — long-lead reminders grouped by repeat interval.
 // STEP 2 (#36): page + add/edit + subheadings + history ONLY.
@@ -176,51 +177,20 @@ export default function LookAheadScreen() {
         }
     };
 
-    // Mount-time load: read storage, then self-heal — re-arm this page's
-    // reminders from the saved items every open.
+    // Mount-time load: read storage. The entries' reminders are not this
+    // page's job any more — the scheduler module owns them, and the housing
+    // runs it on launch and on every return to the front (#8-new, plan step 3).
     const loadData = async () => {
-        const cleaned = await refreshFromStorage();
-        try {
-            if (cleaned) await scheduleAll(cleaned);
-        } catch (e) {
-            console.error(e);
-        }
+        await refreshFromStorage();
     };
 
     const saveData = async (i: LookAheadItem[], h: HistoryEntry[]) => {
         await AsyncStorage.setItem('lookahead_items', JSON.stringify(i));
         await AsyncStorage.setItem('lookahead_history', JSON.stringify(h));
-    };
-
-    // Cancel only THIS page's base reminders (source 'lookahead'), then schedule one
-    // dated reminder per item whose due date/time is still in the future. Leaves
-    // delayed reminders (source 'lookaheaddelay') and every other screen untouched.
-    const scheduleAll = async (its: LookAheadItem[]) => {
-        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-        for (const n of scheduled) {
-            if (n.content.data?.source === 'lookahead') {
-                await Notifications.cancelScheduledNotificationAsync(n.identifier);
-            }
-        }
-        const now = new Date();
-        for (const item of its) {
-            const due = new Date(item.year, item.month, item.day, item.hour, item.minute, 0, 0);
-            if (due > now) {
-                await Notifications.scheduleNotificationAsync({
-                    content: {
-                        title: '🔭 Look Ahead',
-                        body: `Time for ${item.label}!`,
-                        data: { source: 'lookahead', itemId: item.id, label: item.label },
-                        categoryIdentifier: 'lookaheadactions',
-                        sound: 'default',
-                    },
-                    trigger: {
-                        type: SchedulableTriggerInputTypes.DATE,
-                        date: due,
-                    } as Notifications.DateTriggerInput,
-                });
-            }
-        }
+        // The saved list has changed, so let the module work the whole answer
+        // out again. It reads storage itself, matches by key, and touches only
+        // what actually differs.
+        await runScheduler();
     };
 
     // Drop any pending delayed reminder for one item (used when it's logged, edited,
@@ -333,14 +303,14 @@ export default function LookAheadScreen() {
             const updated = items.map(it => (it.id === editedId ? { ...it, ...fields, delayedUntil: undefined, delayedLabel: undefined } : it));
             setItems(updated);
             saveData(updated, history);
-            // The date may have changed; drop any stale delay and re-arm from the new date.
-            cancelDelays(editedId).then(() => scheduleAll(updated));
+            // The date may have changed, so drop any stale delay. The base
+            // reminder is re-worked by the module from the saved list.
+            cancelDelays(editedId);
         } else {
             const newItem: LookAheadItem = { id: Date.now().toString(), ...fields };
             const updated = [...items, newItem];
             setItems(updated);
             saveData(updated, history);
-            scheduleAll(updated);
         }
         closeEdit();
     };
@@ -353,8 +323,9 @@ export default function LookAheadScreen() {
                     const updated = items.filter(it => it.id !== id);
                     setItems(updated);
                     saveData(updated, history);
-                    // Remove this item's reminders so a deleted item can't still fire.
-                    cancelDelays(id).then(() => scheduleAll(updated));
+                    // Remove this item's delay so a deleted item can't still
+                    // fire. Its base reminder goes when the module next runs.
+                    cancelDelays(id);
                 },
             },
         ]);
@@ -403,14 +374,15 @@ export default function LookAheadScreen() {
             note: '',
         };
         const updatedHist = [newEntry, ...history].slice(0, 50);
-        // Mark-done = log it AND roll this item forward to its next future date, then
-        // re-arm. Nothing else on the list moves; the item is never removed.
+        // Mark-done = log it AND roll this item forward to its next future date.
+        // Nothing else on the list moves; the item is never removed, and the
+        // module re-arms it from the new date when the save runs it.
         const advanced = advanceItem(item);
         const updatedItems = items.map(it => (it.id === item.id ? advanced : it));
         setHistory(updatedHist);
         setItems(updatedItems);
         saveData(updatedItems, updatedHist);
-        cancelDelays(item.id).then(() => scheduleAll(updatedItems));
+        cancelDelays(item.id);
         setShowLogModal(false);
         setPendingLogId(null);
     };
