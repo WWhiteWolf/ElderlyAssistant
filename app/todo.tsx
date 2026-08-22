@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
     Alert,
@@ -125,6 +125,32 @@ export default function TodoScreen() {
     const [newTaskType, setNewTaskType] = useState<'scheduled' | 'background'>('scheduled');
     const [newReminders, setNewReminders] = useState<Reminder[]>([]);
     const [showBackgroundTasks, setShowBackgroundTasks] = useState(false);
+    // #13-new: the card a tapped reminder was about. Nothing on this page has a
+    // selection of its own, so unlike the other four screens there is no
+    // reorder state to keep clear of.
+    const [highlightId, setHighlightId] = useState<string | null>(null);
+
+    // The housing hands the item's id over as `highlight` when a banner is
+    // tapped. Depend on the string and not on the params object: its identity
+    // changes on every redraw, which is what once put the Vault's Face ID gate
+    // into a loop.
+    //
+    // The background daily is the one reminder here that is about a group
+    // rather than a task — it carries the word `background` and stands for all
+    // of them at once, so there is no card to light. Instead the background
+    // list is opened, which is where those tasks live and is otherwise shut
+    // (Patrick, #13-new): the thing the banner was about is then in front of
+    // the reader, which is the same promise kept by the only means this page
+    // allows.
+    const { highlight } = useLocalSearchParams<{ highlight?: string }>();
+    useEffect(() => {
+        if (typeof highlight !== 'string' || !highlight) return;
+        if (highlight === 'background') {
+            setShowBackgroundTasks(true);
+        } else {
+            setHighlightId(highlight);
+        }
+    }, [highlight]);
 
     useEffect(() => {
         const setup = async () => {
@@ -504,7 +530,16 @@ export default function TodoScreen() {
                             </TouchableOpacity>
                         )}
                     >
-                        <View style={styles.taskCard}>
+                        <TouchableOpacity
+                            style={[styles.taskCard, highlightId === task.id && styles.taskCardHighlighted]}
+                            activeOpacity={1}
+                            // #13-new: the card's only tap. A lit card is put out
+                            // by it and nothing else happens; with nothing lit it
+                            // does nothing at all, exactly as this page behaved
+                            // before. The Done and Edit buttons sit above it and
+                            // take their own taps as they always did.
+                            onPress={() => { if (highlightId === task.id) setHighlightId(null); }}
+                        >
                             <View style={styles.taskContent}>
                                 <View style={styles.taskTopRow}>
                                     <Text style={styles.taskTitle}>{task.title}</Text>
@@ -525,7 +560,7 @@ export default function TodoScreen() {
                                 </View>
                                 {task.notes ? <Text style={styles.taskNotes}>{task.notes}</Text> : null}
                             </View>
-                        </View>
+                        </TouchableOpacity>
                     </Swipeable>
                 ))}
 
@@ -686,6 +721,17 @@ const makeStyles = (t: Theme) =>
         borderWidth: 0.5,
         borderColor: t.cardBorder,
         overflow: 'hidden',
+    },
+    // #13-new: the card a tapped reminder was about. An outline in the theme's
+    // own `rowReminderBorder`, matching the other four screens. The card
+    // already carries a hairline border, so the extra thickness is taken back
+    // out in the margins — the card's outer footprint is unchanged and nothing
+    // on the page shifts when the outline comes and goes.
+    taskCardHighlighted: {
+        borderWidth: 2,
+        borderColor: t.rowReminderBorder,
+        margin: -1.5,
+        marginBottom: 6.5,
     },
     taskContent: { flex: 1, padding: 6 },
     taskTopRow: {

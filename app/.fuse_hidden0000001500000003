@@ -21,22 +21,25 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl from '../components/DateTimeControl';
 import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
-import * as AppGroup from '../modules/app-group';
-import { runDailyReset, runScheduler } from '../scheduler/scheduler';
+import { runScheduler } from '../scheduler/scheduler';
 import { warnIfFull } from '../scheduler/warn';
 
-interface ScheduleItem {
+// A weekly chore: a label, the day of the week it belongs to (0 = Sun … 6 = Sat),
+// the time of day, and whether it's been marked Done this week.
+interface Chore {
     id: string;
     label: string;
-    // #3-new: null = no time set — the item shows no time and gets no reminder.
-    hour: number | null;
-    minute: number | null;
+    day: number;
+    hour: number;
+    minute: number;
     completed: boolean;
-    // #10-new: the moment a snoozed item is to be reminded about again. The
-    // scheduler reads this back and puts the reminder on the phone, so a
-    // snooze is written down rather than fired and forgotten. The row shows
-    // it as "Snoozed till: 4:15 PM".
-    snoozedUntil?: number;
+    // Epoch ms of when the chore was last marked Done. Used by the weekly reset
+    // to clear the ✓ once the chore's next scheduled occurrence has passed.
+    doneAt?: number;
+    // Epoch ms of a one-time Postpone target (this cycle only). When set, the
+    // tile shows "moved to <day>" and a one-off reminder is scheduled for then.
+    // The chore's home day/time never changes; this clears next cycle.
+    postponedTo?: number;
 }
 
 interface HistoryEntry {
@@ -48,38 +51,39 @@ interface HistoryEntry {
     note?: string;
 }
 
-// Kept only as fallbacks for the one-time migration into the merged Routine list.
-const INITIAL_MEALS: ScheduleItem[] = [
-    { id: '1', label: 'Breakfast', hour: 8, minute: 0, completed: false },
-    { id: '2', label: 'Lunch', hour: 12, minute: 0, completed: false },
-    { id: '3', label: 'Snack', hour: 15, minute: 0, completed: false },
-    { id: '4', label: 'Dinner', hour: 18, minute: 0, completed: false },
-];
-const INITIAL_MEDS: ScheduleItem[] = [
-    { id: 'med1', label: 'Morning Medication', hour: 8, minute: 0, completed: false },
-];
-const INITIAL_ROUTINE: ScheduleItem[] = [...INITIAL_MEALS, ...INITIAL_MEDS];
+const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export default function MyDayScreen() {
+// Starter chores so the page isn't empty on first open — Patrick can edit the
+// day/time, rename, or swipe any of them away.
+const INITIAL_CHORES: Chore[] = [
+    { id: 'c1', label: 'Trash', day: 2, hour: 19, minute: 0, completed: false },
+    { id: 'c2', label: 'Laundry', day: 6, hour: 9, minute: 0, completed: false },
+    { id: 'c3', label: 'Groceries', day: 6, hour: 10, minute: 0, completed: false },
+];
+
+export default function MyWeekScreen() {
     const router = useRouter();
     const theme = useTheme();
     const styles = makeStyles(theme);
-    const [routine, setRoutine] = useState<ScheduleItem[]>(INITIAL_ROUTINE);
+    const [chores, setChores] = useState<Chore[]>(INITIAL_CHORES);
     const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [activeId, setActiveId] = useState<string | null>(null);
     const [tempName, setTempName] = useState('');
+    const [tempWhat, setTempWhat] = useState('');
+    const [tempNote, setTempNote] = useState('');
+    const [showLogModal, setShowLogModal] = useState(false);
+    const [pendingLogId, setPendingLogId] = useState<string | null>(null);
     const [editEntry, setEditEntry] = useState<HistoryEntry | null>(null);
-    const [coffeeCount, setCoffeeCount] = useState(0);
     const [editWhat, setEditWhat] = useState('');
     const [editNote, setEditNote] = useState('');
     const [pendingTime, setPendingTime] = useState<Date | null>(null);
     // True while the shared control's typed time box holds a real time;
     // Save is blocked with a warning while false (#61, Look Ahead's pattern).
     const [pendingTimeValid, setPendingTimeValid] = useState(true);
-    const [waterCount, setWaterCount] = useState(0);
+    const [pendingDay, setPendingDay] = useState<number>(0);
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
     const [showEditModal, setShowEditModal] = useState(false);
-    const [snoozeItemId, setSnoozeItemId] = useState<string | null>(null);
+    const [postponeItemId, setPostponeItemId] = useState<string | null>(null);
     // #13-new: the row a tapped reminder was about. This is deliberately NOT
     // `selectedItemId` — that one is the reorder selection and brings the ▲▼
     // arrows on screen with it, which is not wanted on arrival from a banner.
@@ -128,68 +132,120 @@ export default function MyDayScreen() {
         }, [])
     );
 
-    // Build the merged Routine list, migrating old separate keys the first time.
-    const getMigratedRoutine = async (): Promise<ScheduleItem[]> => {
-        const savedRoutine = await AsyncStorage.getItem('my_routine');
-        if (savedRoutine) return JSON.parse(savedRoutine);
-        // First run after the merge: fold the old Meals + Meds lists into one.
-        const savedSched = await AsyncStorage.getItem('my_schedule');
-        const savedMeds = await AsyncStorage.getItem('my_meds');
-        const oldMeals: ScheduleItem[] = savedSched ? JSON.parse(savedSched) : INITIAL_MEALS;
-        const oldMeds: ScheduleItem[] = savedMeds ? JSON.parse(savedMeds) : INITIAL_MEDS;
-        const merged = [...oldMeals, ...oldMeds];
-        await AsyncStorage.setItem('my_routine', JSON.stringify(merged));
-        return merged;
+    // The epoch-ms of a chore's most recent past occurrence (its weekday at its
+    // time, on or before now). If today IS its day but the time hasn't arrived
+    // yet, the last occurrence was a week ago.
+    const lastOccurrence = (day: number, hour: number, minute: number): number => {
+        const now = new Date();
+        const d = new Date(now);
+        d.setHours(hour, minute, 0, 0);
+        let diff = (now.getDay() - day + 7) % 7;
+        if (diff === 0 && d.getTime() > now.getTime()) diff = 7;
+        d.setDate(d.getDate() - diff);
+        return d.getTime();
     };
 
-    // Read the saved lists back into the screen. Called on mount, and again
-    // whenever the screen regains focus or the app returns to the front — so a
-    // Done tapped on a banner, which _layout.tsx writes straight to storage,
-    // shows up here instead of being overwritten by this screen's stale
-    // in-memory copy the next time anything is saved.
-    // It deliberately does NOT rebuild the reminders; the module owns those.
-    // Nor does it roll the day over any more — that moved into the module at
-    // plan step 7, so the checkmarks clear whether or not this screen is
-    // opened. It is asked to run first all the same, because it costs two reads
-    // on a day already rolled over and it means this screen can never draw
-    // yesterday's checkmarks while waiting for the module's own run.
+    // Weekly reset: a chore marked Done stays ✓ only until its next scheduled
+    // occurrence comes around — then it's "fresh" again. We detect that by
+    // comparing when it was marked Done (doneAt) to its most recent occurrence.
+    const applyWeeklyReset = (list: Chore[]): Chore[] =>
+        list.map(c => {
+            let next = c;
+            if (next.completed && next.doneAt != null && next.doneAt < lastOccurrence(next.day, next.hour, next.minute)) {
+                next = { ...next, completed: false, doneAt: undefined };
+            }
+            // A postpone belongs to its cycle. Once the chore's normal day comes
+            // around again (its latest occurrence is newer than the postpone
+            // target), last cycle's postpone is stale — drop it.
+            if (next.postponedTo != null && next.postponedTo < lastOccurrence(next.day, next.hour, next.minute)) {
+                next = { ...next, postponedTo: undefined };
+            }
+            return next;
+        });
+
+    // Read the saved chores and log back into the screen. Called on mount, and
+    // again whenever the screen regains focus or the app returns to the front —
+    // so a Done tapped on a banner, which _layout.tsx writes straight to
+    // storage, shows up here instead of being overwritten by this screen's
+    // stale in-memory copy the next time anything is saved.
+    // It deliberately does NOT rebuild the reminders; that is loadData's job.
+    // The weekly reset still runs here, since a cycle can roll over while the
+    // screen sits open.
     const refreshFromStorage = async () => {
         try {
-            await runDailyReset();
-            const savedHist = await AsyncStorage.getItem('my_history');
+            const savedChores = await AsyncStorage.getItem('week_routine');
+            const parsed: Chore[] = savedChores ? JSON.parse(savedChores) : INITIAL_CHORES;
+            const reset = applyWeeklyReset(parsed);
+            setChores(reset);
+            await AsyncStorage.setItem('week_routine', JSON.stringify(reset));
+            const savedHist = await AsyncStorage.getItem('week_history');
             if (savedHist) setHistory(JSON.parse(savedHist));
-            const parsedRoutine = await getMigratedRoutine();
-            const savedCoffee = await AsyncStorage.getItem('my_coffee');
-            const savedWater = await AsyncStorage.getItem('my_water');
-            setRoutine(parsedRoutine);
-            setCoffeeCount(savedCoffee ? parseInt(savedCoffee, 10) : 0);
-            setWaterCount(savedWater ? parseInt(savedWater, 10) : 0);
-            // This read doesn't go through saveData, so publish here too to keep
-            // Siri's live item list fresh.
-            AppGroup.setMyDayItems(parsedRoutine.map(i => ({ id: i.id, label: i.label })));
         } catch (e) {
             console.error(e);
         }
     };
 
-    // Mount-time load: read storage. The reminders are not this screen's job
-    // any more — the scheduler module owns them, and the housing runs it on
-    // launch and on every return to the front (#7-new, plan step 2).
+    // Mount-time load: read storage. The chores' reminders are not this
+    // screen's job any more — the scheduler module owns them, and the housing
+    // runs it on launch and on every return to the front (#8-new, plan step 3).
     const loadData = async () => {
         await refreshFromStorage();
     };
 
-    const saveData = async (r: ScheduleItem[], h: HistoryEntry[]) => {
-        await AsyncStorage.setItem('my_routine', JSON.stringify(r));
-        await AsyncStorage.setItem('my_history', JSON.stringify(h));
-        // Publish the current items to the shared App Group box so Siri can offer
-        // them by voice (live list). Only id + label are needed on the Siri side.
-        AppGroup.setMyDayItems(r.map(i => ({ id: i.id, label: i.label })));
+    const saveData = async (c: Chore[], h: HistoryEntry[]) => {
+        await AsyncStorage.setItem('week_routine', JSON.stringify(c));
+        await AsyncStorage.setItem('week_history', JSON.stringify(h));
         // The saved list has changed, so let the module work the whole answer
         // out again. It reads storage itself, matches by key, and touches only
         // what actually differs. If it could not hold everything the lists
         // asked for, the warning speaks here and nowhere else (plan step 6).
         warnIfFull(await runScheduler());
+    };
+
+    // The next future date whose weekday matches, at the chore's time.
+    const nextDateForWeekday = (weekday: number, hour: number, minute: number): Date => {
+        const now = new Date();
+        const d = new Date(now);
+        d.setHours(hour, minute, 0, 0);
+        let diff = (weekday - now.getDay() + 7) % 7;
+        if (diff === 0 && d.getTime() <= now.getTime()) diff = 7;
+        d.setDate(d.getDate() + diff);
+        return d;
+    };
+
+    // Postpone this cycle's reminder to `target`. Nothing is armed here: the
+    // stamp IS the postpone, and the save asks the module to work the whole set
+    // out again, which puts the reminder on the phone. A prior postpone needs no
+    // cancelling either — one stamp per chore, so the module sees one wanted
+    // reminder under one name and moves it. The chore's home day and time are
+    // left untouched, and the tile reads the same stamp to show "moved to <day>".
+    const schedulePostpone = async (chore: Chore, target: Date) => {
+        const updated = chores.map(c =>
+            c.id === chore.id ? { ...c, postponedTo: target.getTime() } : c
+        );
+        setChores(updated);
+        saveData(updated, history);
+        setPostponeItemId(null);
+    };
+
+    // "Tomorrow": push one day past the current target (the existing postpone if
+    // it's still ahead, otherwise today), keeping the chore's time.
+    const postponeTomorrow = () => {
+        const chore = chores.find(c => c.id === postponeItemId);
+        if (!chore) { setPostponeItemId(null); return; }
+        const base = chore.postponedTo && chore.postponedTo > Date.now()
+            ? new Date(chore.postponedTo)
+            : new Date();
+        base.setDate(base.getDate() + 1);
+        base.setHours(chore.hour, chore.minute, 0, 0);
+        schedulePostpone(chore, base);
+    };
+
+    const postponeToDay = (weekday: number) => {
+        const chore = chores.find(c => c.id === postponeItemId);
+        if (!chore) { setPostponeItemId(null); return; }
+        const target = nextDateForWeekday(weekday, chore.hour, chore.minute);
+        schedulePostpone(chore, target);
     };
 
     const format12Hour = (h: number, m: number) => {
@@ -199,10 +255,16 @@ export default function MyDayScreen() {
         return `${hr}:${m.toString().padStart(2, '0')} ${period}`;
     };
 
-    // #2-new: one-tap Log — no notes modal. A note is added afterward,
-    // if wanted, through My Log's tap-to-edit modal.
-    const logItem = (id: string) => {
-        const item = routine.find(i => i.id === id);
+    const openLogModal = (id: string) => {
+        setPendingLogId(id);
+        setTempWhat('');
+        setTempNote('');
+        setShowLogModal(true);
+    };
+
+    const confirmLog = () => {
+        if (!pendingLogId) return;
+        const item = chores.find(i => i.id === pendingLogId);
         if (!item) return;
         const now = new Date().toLocaleTimeString([], {
             hour: 'numeric',
@@ -214,136 +276,66 @@ export default function MyDayScreen() {
             date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
             sched: item.label,
             actual: now,
-            what: '',
-            note: '',
+            what: tempWhat || '',
+            note: tempNote || '',
         };
         const updatedHist = [newEntry, ...history].slice(0, 50);
-        // Logging the item drops any snooze on it — the thing is done, so
-        // nothing should nag about it again today. The stamp coming off is all
-        // it takes; the module reads the item afresh and takes the reminder
-        // back off the phone.
-        const updatedRoutine = routine.map(s => {
-            if (s.id !== id) return s;
-            const { snoozedUntil, ...rest } = s;
-            return { ...rest, completed: true };
-        });
-        setRoutine(updatedRoutine);
+        const updatedChores = chores.map(s =>
+            s.id === pendingLogId ? { ...s, completed: true, doneAt: Date.now(), postponedTo: undefined } : s
+        );
+        // The postpone stamp is cleared above, so the save takes its reminder
+        // off the phone; nothing has to be cancelled by hand.
+        setChores(updatedChores);
         setHistory(updatedHist);
-        saveData(updatedRoutine, updatedHist);
+        saveData(updatedChores, updatedHist);
+        setShowLogModal(false);
+        setPendingLogId(null);
     };
 
-    // Un-check (Patrick, #42, mirrors My Week's undoDone): tapping the ✓ asks,
-    // then clears only the checkmark. The existing log entry stays untouched —
-    // logging it again later adds a fresh entry. saveData re-runs the reminder
-    // scheduling, so the un-checked item's daily reminder is armed again.
+    // Un-done / reset: clear the ✓ so a chore goes active again before its next
+    // scheduled day (e.g. out of food, need clean pants). Only the checkmark is
+    // cleared — the weekly reminder and the existing log entry are left alone, so
+    // when the chore is actually done again it logs a fresh entry.
     const undoDone = (id: string) => {
-        const item = routine.find(i => i.id === id);
+        const item = chores.find(i => i.id === id);
         if (!item) return;
-        Alert.alert('Un-check Item', `Mark "${item.label}" as not done?`, [
+        Alert.alert('Reactivate Chore', `Mark "${item.label}" as not done?`, [
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Mark not done',
                 onPress: () => {
-                    const updated = routine.map(s =>
-                        s.id === id ? { ...s, completed: false } : s
+                    const updated = chores.map(s =>
+                        s.id === id ? { ...s, completed: false, doneAt: undefined } : s
                     );
-                    setRoutine(updated);
+                    setChores(updated);
                     saveData(updated, history);
                 },
             },
         ]);
-    };
-
-    // On-page Snooze: write the moment down on the item, N minutes from now.
-    //
-    // Nothing is armed here. The stamp on the item IS the snooze: the scheduler
-    // reads it back and puts the reminder on the phone, so a snooze made on the
-    // page and one made from a banner are the same act written the same way. A
-    // prior snooze needs no cancelling — one stamp per item means one wanted
-    // reminder under one name, which the module moves rather than duplicates,
-    // so tapping Snooze twice can no longer leave two reminders behind. The
-    // item's own daily repeat is left alone; a snooze moves today's reminder
-    // and says nothing about tomorrow's.
-    const snoozeItem = (minutes: number) => {
-        if (!snoozeItemId) return;
-        const item = routine.find(i => i.id === snoozeItemId);
-        if (!item) { setSnoozeItemId(null); return; }
-        const target = Date.now() + minutes * 60 * 1000;
-        const updated = routine.map(s =>
-            s.id === item.id ? { ...s, snoozedUntil: target } : s
-        );
-        setRoutine(updated);
-        saveData(updated, history);
-        setSnoozeItemId(null);
-        Alert.alert('Snoozed', `${item.label} reminder set for ${minutes} minutes from now.`);
     };
 
     const addEntry = () => {
         setActiveId(null);
         setTempName('');
-        // #3-new: a new item starts with no time — the control opens asleep.
-        setPendingTime(null);
+        setPendingDay(new Date().getDay());
+        setPendingTime(new Date(new Date().setHours(12, 0, 0, 0)));
         setPendingTimeValid(true);
         setShowEditModal(true);
     };
 
     const deleteEntry = (id: string) => {
-        Alert.alert('Delete', 'Remove this entry from your routine?', [
+        Alert.alert('Delete', 'Remove this chore from My Week?', [
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Delete', style: 'destructive', onPress: () => {
-                    const updated = routine.filter(s => s.id !== id);
-                    setRoutine(updated);
+                    // A deleted chore wants nothing, its postpone included, so
+                    // the save clears both off the phone.
+                    const updated = chores.filter(s => s.id !== id);
+                    setChores(updated);
                     saveData(updated, history);
                 },
             },
         ]);
-    };
-
-    // #2-new: one-tap count — no notes modal (same pattern as logItem).
-    const confirmCoffee = () => {
-        const now = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false });
-        const newEntry: HistoryEntry = {
-            id: Date.now().toString(),
-            date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
-            sched: 'Coffee',
-            actual: now,
-            what: '',
-            note: '',
-        };
-        const updatedHist = [newEntry, ...history].slice(0, 50);
-        const newCount = coffeeCount + 1;
-        setCoffeeCount(newCount);
-        AsyncStorage.setItem('my_coffee', String(newCount));
-        setHistory(updatedHist);
-        saveData(routine, updatedHist);
-    };
-
-    const decrementCoffee = () => {
-        if (coffeeCount > 0) {
-            const newCount = coffeeCount - 1;
-            setCoffeeCount(newCount);
-            AsyncStorage.setItem('my_coffee', String(newCount));
-        }
-    };
-
-    // #2-new: one-tap count — no notes modal (same pattern as logItem).
-    const confirmWater = () => {
-        const now = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false });
-        const newEntry: HistoryEntry = {
-            id: Date.now().toString(),
-            date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
-            sched: 'Water',
-            actual: now,
-            what: '',
-            note: '',
-        };
-        const updatedHist = [newEntry, ...history].slice(0, 50);
-        const newCount = waterCount + 1;
-        setWaterCount(newCount);
-        AsyncStorage.setItem('my_water', String(newCount));
-        setHistory(updatedHist);
-        saveData(routine, updatedHist);
     };
 
     const toggleSelect = (id: string) => {
@@ -364,14 +356,14 @@ export default function MyDayScreen() {
 
     const moveItem = (direction: 'up' | 'down') => {
         if (!selectedItemId) return;
-        const index = routine.findIndex(i => i.id === selectedItemId);
+        const index = chores.findIndex(i => i.id === selectedItemId);
         if (index === -1) return;
         if (direction === 'up' && index === 0) return;
-        if (direction === 'down' && index === routine.length - 1) return;
-        const updated = [...routine];
+        if (direction === 'down' && index === chores.length - 1) return;
+        const updated = [...chores];
         const swap = direction === 'up' ? index - 1 : index + 1;
         [updated[index], updated[swap]] = [updated[swap], updated[index]];
-        setRoutine(updated);
+        setChores(updated);
         saveData(updated, history);
     };
 
@@ -385,23 +377,23 @@ export default function MyDayScreen() {
             Alert.alert('Check Time', 'The typed time is not a real one. Fix the box outlined in red, then save.');
             return;
         }
-        // #3-new: no pending time means the item is saved with no time.
-        const hour = pendingTime ? pendingTime.getHours() : null;
-        const minute = pendingTime ? pendingTime.getMinutes() : null;
+        const hour = pendingTime ? pendingTime.getHours() : 12;
+        const minute = pendingTime ? pendingTime.getMinutes() : 0;
         if (activeId) {
-            const updated = routine.map(s => s.id === activeId ? { ...s, label: name, hour, minute } : s);
-            setRoutine(updated);
+            const updated = chores.map(s => s.id === activeId ? { ...s, label: name, day: pendingDay, hour, minute } : s);
+            setChores(updated);
             saveData(updated, history);
         } else {
-            const newItem: ScheduleItem = {
+            const newItem: Chore = {
                 id: Date.now().toString(),
                 label: name,
+                day: pendingDay,
                 hour,
                 minute,
                 completed: false,
             };
-            const updated = [...routine, newItem];
-            setRoutine(updated);
+            const updated = [...chores, newItem];
+            setChores(updated);
             saveData(updated, history);
         }
         setShowEditModal(false);
@@ -420,7 +412,7 @@ export default function MyDayScreen() {
     const deleteHistoryEntry = (id: string) => {
         const updated = history.filter(h => h.id !== id);
         setHistory(updated);
-        saveData(routine, updated);
+        saveData(chores, updated);
     };
 
     const clearAllHistory = () => {
@@ -432,7 +424,7 @@ export default function MyDayScreen() {
                 {
                     text: 'Clear All', style: 'destructive', onPress: () => {
                         setHistory([]);
-                        saveData(routine, []);
+                        saveData(chores, []);
                     },
                 },
             ]
@@ -446,7 +438,7 @@ export default function MyDayScreen() {
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
                         <Text style={styles.headerBtnText}>Home</Text>
                     </TouchableOpacity>
-                    <Text style={styles.title}>My Day</Text>
+                    <Text style={styles.title}>My Week</Text>
                     <TouchableOpacity onPress={addEntry} style={styles.headerBtn}>
                         <Text style={styles.headerBtnText}>+ Add</Text>
                     </TouchableOpacity>
@@ -458,9 +450,9 @@ export default function MyDayScreen() {
             <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }} scrollEventThrottle={16} directionalLockEnabled={true}>
 
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Routine</Text>
-                    <Text style={styles.hintText}>Tap to select for reorder · Edit to change · Swipe to delete</Text>
-                    {routine.map(item => (
+                    <Text style={styles.sectionTitle}>Weekly Chores</Text>
+                    <Text style={styles.hintText}>Tap to select for reorder · Edit to change day/time · Swipe to delete</Text>
+                    {chores.map(item => (
                         <Swipeable
                             key={item.id}
                             renderRightActions={() => (
@@ -477,11 +469,10 @@ export default function MyDayScreen() {
                                     style={styles.labelArea}
                                     onPress={() => toggleSelect(item.id)}
                                 >
-                                    <Text style={styles.itemLabel}>{item.hour !== null && item.minute !== null ? `${format12Hour(item.hour, item.minute)} ` : ''}{item.label}</Text>
-                                    {item.snoozedUntil != null && item.snoozedUntil > Date.now() && (
-                                        <Text style={styles.snoozedNote}>
-                                            Snoozed till: {format12Hour(new Date(item.snoozedUntil).getHours(), new Date(item.snoozedUntil).getMinutes())}
-                                        </Text>
+                                    <Text style={styles.itemLabel}>{DAY_NAMES[item.day]} {format12Hour(item.hour, item.minute)}</Text>
+                                    <Text style={styles.choreName}>{item.label}</Text>
+                                    {item.postponedTo != null && (
+                                        <Text style={styles.postponedLabel}>▶ moved to {DAY_NAMES[new Date(item.postponedTo).getDay()]}</Text>
                                     )}
                                 </TouchableOpacity>
                                 <TouchableOpacity
@@ -490,9 +481,8 @@ export default function MyDayScreen() {
                                     onPress={() => {
                                         setActiveId(item.id);
                                         setTempName(item.label);
-                                        setPendingTime(item.hour !== null && item.minute !== null
-                                            ? new Date(new Date().setHours(item.hour, item.minute, 0, 0))
-                                            : null);
+                                        setPendingDay(item.day);
+                                        setPendingTime(new Date(new Date().setHours(item.hour, item.minute, 0, 0)));
                                         setPendingTimeValid(true);
                                         setShowEditModal(true);
                                     }}
@@ -500,16 +490,16 @@ export default function MyDayScreen() {
                                     <Text style={styles.editBtnText}>Edit</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
-                                    style={styles.snoozeRowBtn}
-                                    onPress={() => setSnoozeItemId(item.id)}
+                                    style={styles.postponeBtn}
+                                    onPress={() => setPostponeItemId(item.id)}
                                 >
-                                    <Text style={styles.snoozeRowBtnText}>Snooze</Text>
+                                    <Text style={styles.postponeBtnText}>Postpone</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={[styles.logBtn, item.completed && styles.loggedBtn]}
-                                    onPress={() => item.completed ? undoDone(item.id) : logItem(item.id)}
+                                    onPress={() => item.completed ? undoDone(item.id) : openLogModal(item.id)}
                                 >
-                                    <Text style={[styles.logBtnText, item.completed && styles.loggedBtnText]}>{item.completed ? '✓' : 'Log'}</Text>
+                                    <Text style={[styles.logBtnText, item.completed && styles.loggedBtnText]}>{item.completed ? '✓' : 'Done'}</Text>
                                 </TouchableOpacity>
                             </View>
                         </Swipeable>
@@ -551,39 +541,21 @@ export default function MyDayScreen() {
 
             </ScrollView>
 
-            <View style={styles.counterBox}>
-                <View style={styles.counterItem}>
-                    <Text style={styles.counterTitle}>Coffee</Text>
-                    <View style={styles.counterControls}>
-                        <TouchableOpacity style={styles.minusBtn} onPress={decrementCoffee}>
-                            <Text style={styles.minusBtnText}>-</Text>
+            {showLogModal && (
+                <View style={styles.modal}>
+                    <Text style={styles.modalTitle}>Mark Done</Text>
+                    <Text style={styles.inputLabel}>Notes (optional)</Text>
+                    <TextInput style={styles.input} value={tempWhat} onChangeText={setTempWhat} placeholder="Add a note about this chore..." placeholderTextColor={theme.mutedText} />
+                    <View style={styles.modalBtns}>
+                        <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowLogModal(false)}>
+                            <Text style={styles.cancelBtnText}>Cancel</Text>
                         </TouchableOpacity>
-                        <Text style={styles.coffeeCount}>{coffeeCount}</Text>
-                        <TouchableOpacity style={styles.plusBtn} onPress={confirmCoffee}>
-                            <Text style={styles.counterBtnText}>+</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <View style={styles.counterDivider} />
-                <View style={styles.counterItem}>
-                    <Text style={styles.counterTitle}>Water</Text>
-                    <View style={styles.counterControls}>
-                        <TouchableOpacity style={styles.minusBtn} onPress={() => {
-                            if (waterCount > 0) {
-                                const newCount = waterCount - 1;
-                                setWaterCount(newCount);
-                                AsyncStorage.setItem('my_water', String(newCount));
-                            }
-                        }}>
-                            <Text style={styles.minusBtnText}>-</Text>
-                        </TouchableOpacity>
-                        <Text style={styles.coffeeCount}>{waterCount}</Text>
-                        <TouchableOpacity style={styles.plusBtn} onPress={confirmWater}>
-                            <Text style={styles.counterBtnText}>+</Text>
+                        <TouchableOpacity style={styles.confirmBtn} onPress={confirmLog}>
+                            <Text style={styles.confirmBtnText}>Done</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
-            </View>
+            )}
 
             {editEntry && (
                 <View style={styles.modal}>
@@ -599,7 +571,7 @@ export default function MyDayScreen() {
                                 h.id === editEntry.id ? { ...h, what: editWhat, note: editNote } : h
                             );
                             setHistory(updated);
-                            saveData(routine, updated);
+                            saveData(chores, updated);
                             setEditEntry(null);
                         }}>
                             <Text style={styles.confirmBtnText}>Save</Text>
@@ -619,27 +591,31 @@ export default function MyDayScreen() {
                 </View>
             )}
 
-            {snoozeItemId && (
-                <Modal transparent={true} animationType="fade" visible={!!snoozeItemId}>
+            {postponeItemId && (
+                <Modal transparent={true} animationType="fade" visible={!!postponeItemId}>
                     <View style={styles.modalOverlay}>
                         <View style={styles.pickerModal}>
-                            <Text style={styles.modalTitle}>Snooze Reminder</Text>
+                            <Text style={styles.modalTitle}>Postpone Chore</Text>
                             <Text style={styles.inputLabel}>
-                                {routine.find(i => i.id === snoozeItemId)?.label} — remind me again in:
+                                {chores.find(c => c.id === postponeItemId)?.label} — remind me instead on:
                             </Text>
-                            <View style={styles.snoozeOptionRow}>
-                                <TouchableOpacity style={styles.snoozeOption} onPress={() => snoozeItem(15)}>
-                                    <Text style={styles.snoozeOptionText}>15 min</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.snoozeOption} onPress={() => snoozeItem(30)}>
-                                    <Text style={styles.snoozeOptionText}>30 min</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.snoozeOption} onPress={() => snoozeItem(60)}>
-                                    <Text style={styles.snoozeOptionText}>60 min</Text>
-                                </TouchableOpacity>
+                            <TouchableOpacity style={styles.postponeTomorrowBtn} onPress={postponeTomorrow}>
+                                <Text style={styles.postponeTomorrowText}>Tomorrow (+1 day)</Text>
+                            </TouchableOpacity>
+                            <Text style={[styles.inputLabel, { marginTop: 6 }]}>…or pick a day:</Text>
+                            <View style={styles.dayRow}>
+                                {DAY_NAMES.map((d, i) => (
+                                    <TouchableOpacity
+                                        key={i}
+                                        style={styles.dayChip}
+                                        onPress={() => postponeToDay(i)}
+                                    >
+                                        <Text style={styles.dayChipText}>{d}</Text>
+                                    </TouchableOpacity>
+                                ))}
                             </View>
                             <View style={styles.modalBtns}>
-                                <TouchableOpacity style={styles.cancelBtn} onPress={() => setSnoozeItemId(null)}>
+                                <TouchableOpacity style={styles.cancelBtn} onPress={() => setPostponeItemId(null)}>
                                     <Text style={styles.cancelBtnText}>Cancel</Text>
                                 </TouchableOpacity>
                             </View>
@@ -658,7 +634,7 @@ export default function MyDayScreen() {
                     <View style={styles.modalOverlay}>
                         <View style={styles.pickerModal}>
                             <Text style={styles.modalTitle}>
-                                {activeId ? 'Edit Entry' : 'New Entry'}
+                                {activeId ? 'Edit Chore' : 'New Chore'}
                             </Text>
 
                             <Text style={styles.inputLabel}>Name</Text>
@@ -666,10 +642,23 @@ export default function MyDayScreen() {
                                 style={styles.input}
                                 value={tempName}
                                 onChangeText={setTempName}
-                                placeholder="e.g. Breakfast, Morning Medication"
+                                placeholder="e.g. Trash, Laundry, Groceries"
                                 placeholderTextColor={theme.mutedText}
                                 autoFocus={!activeId}
                             />
+
+                            <Text style={styles.inputLabel}>Day</Text>
+                            <View style={styles.dayRow}>
+                                {DAY_NAMES.map((d, i) => (
+                                    <TouchableOpacity
+                                        key={i}
+                                        style={[styles.dayChip, pendingDay === i && styles.dayChipActive]}
+                                        onPress={() => setPendingDay(i)}
+                                    >
+                                        <Text style={[styles.dayChipText, pendingDay === i && styles.dayChipTextActive]}>{d}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
 
                             {/* Shared date/time control, time-only (#61) — spinners +
                                 type-in box, auto-padding, red-border bad-value hint. */}
@@ -679,9 +668,6 @@ export default function MyDayScreen() {
                                 onChange={setPendingTime}
                                 timeLabel="Time"
                                 onValidityChange={setPendingTimeValid}
-                                optionalTime
-                                timeSet={pendingTime !== null}
-                                onClearTime={() => setPendingTime(null)}
                             />
 
                             <View style={styles.modalBtns}>
@@ -748,18 +734,8 @@ const makeStyles = (t: Theme) =>
         borderColor: 'transparent',
     },
     labelArea: { flex: 1, marginRight: 10 },
-    itemLabel: { fontSize: 17, color: t.bodyText, fontWeight: '500' },
-    // The line under a snoozed item's name. #10-new wanted it to read as one
-    // idea with the Snooze button, but reached for `delayText`, which is the
-    // colour for text sitting ON a solid delay button — white, on a white row in
-    // the light theme, and a near-black brown on a dark brown row in the dark
-    // one. Patrick could read it on neither (#12-new).
-    //
-    // It is now `delay` itself, which is what My Week's postponed line and Look
-    // Ahead's delayed line have always used. Patrick's ruling, and his reason is
-    // consistency: one colour, working in both themes, saying the same thing on
-    // all four pages. He has looked at every one of these screens in both themes.
-    snoozedNote: { fontSize: 13, color: t.delay, fontWeight: '600', marginTop: 2 },
+    itemLabel: { fontSize: 15, color: t.pill, fontWeight: '500' },
+    choreName: { fontSize: 17, color: t.bodyText, fontWeight: '600', marginTop: 2 },
     hintText: { fontSize: 11, color: t.mutedText, marginTop: 2, marginBottom: 8 },
     logBtn: {
         backgroundColor: t.buttonPrimary,
@@ -770,23 +746,23 @@ const makeStyles = (t: Theme) =>
     loggedBtn: { backgroundColor: t.buttonDone },
     logBtnText: { color: t.buttonPrimaryText, fontWeight: '600' },
     loggedBtnText: { color: t.buttonDoneText },
-    coffeeCount: { fontSize: 22, fontWeight: 'bold', width: 40, textAlign: 'center', color: t.bodyText },
-    minusBtn: {
-        backgroundColor: t.counterMinus,
-        width: 40, height: 40,
-        borderRadius: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
+    postponeBtn: {
+        backgroundColor: t.delay,
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        borderRadius: 8,
+        marginRight: 8,
     },
-    plusBtn: {
-        backgroundColor: t.bridge,
-        width: 40, height: 40,
-        borderRadius: 20,
-        justifyContent: 'center',
+    postponeBtnText: { color: t.delayText, fontSize: 13, fontWeight: '600' },
+    postponedLabel: { fontSize: 13, color: t.delay, fontWeight: '600', marginTop: 2 },
+    postponeTomorrowBtn: {
+        backgroundColor: t.delay,
+        paddingVertical: 14,
+        borderRadius: 8,
         alignItems: 'center',
+        marginVertical: 8,
     },
-    counterBtnText: { fontSize: 24, color: t.buttonPrimaryText, fontWeight: 'bold' },
-    minusBtnText: { fontSize: 24, color: t.counterMinusText, fontWeight: 'bold' },
+    postponeTomorrowText: { color: t.delayText, fontWeight: '600', fontSize: 16 },
     historySection: { marginHorizontal: 12, marginBottom: 12 },
     historyScroll: {
         height: 385,
@@ -831,6 +807,27 @@ const makeStyles = (t: Theme) =>
         marginBottom: 10,
         color: t.bodyText,
     },
+    dayRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 10,
+        gap: 4,
+    },
+    dayChip: {
+        flex: 1,
+        paddingVertical: 10,
+        borderRadius: 8,
+        borderWidth: 0.5,
+        borderColor: t.cardBorder,
+        backgroundColor: t.pageBackground,
+        alignItems: 'center',
+    },
+    dayChipActive: {
+        backgroundColor: t.buttonPrimary,
+        borderColor: t.buttonPrimary,
+    },
+    dayChipText: { fontSize: 13, color: t.bodyText, fontWeight: '600' },
+    dayChipTextActive: { color: t.buttonPrimaryText },
     modalBtns: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 },
     cancelBtn: {
         backgroundColor: t.buttonNeutral,
@@ -879,38 +876,6 @@ const makeStyles = (t: Theme) =>
         borderColor: t.cardBorder,
         width: '100%',
     },
-    counterBox: {
-        flexDirection: 'row',
-        backgroundColor: t.card,
-        borderRadius: 12,
-        padding: 15,
-        marginHorizontal: 12,
-        marginBottom: 12,
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        borderWidth: 0.5,
-        borderColor: t.cardBorder,
-    },
-    counterItem: {
-        flex: 1,
-        alignItems: 'center',
-    },
-    counterTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: t.cardTitle,
-        marginBottom: 8,
-    },
-    counterControls: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    counterDivider: {
-        width: 1,
-        height: '80%',
-        backgroundColor: t.cardBorder,
-        marginHorizontal: 10,
-    },
     headerBtn: {
         width: 54,
         height: 54,
@@ -921,19 +886,19 @@ const makeStyles = (t: Theme) =>
         justifyContent: 'center',
     },
     headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
-    rowSelected: {
-        backgroundColor: t.rowSelected,
-        borderRadius: 8,
-    },
     // #13-new: the row a tapped reminder was about. An outline only, in the
-    // theme's own `rowReminderBorder`, used by nothing but this. It
+    // theme's `rowSelectedBorder`, which nothing else on this page uses. It
     // deliberately does NOT take the reorder selection's filled background
     // (Patrick): if it did, the two lit states would differ by a thin line
     // alone, which is the hardest difference to catch at a glance. This way
     // they are different things — reorder fills the row, a reminder outlines it.
     rowHighlighted: {
         borderRadius: 8,
-        borderColor: t.rowReminderBorder,
+        borderColor: t.rowSelectedBorder,
+    },
+    rowSelected: {
+        backgroundColor: t.rowSelected,
+        borderRadius: 8,
     },
     editBtn: {
         backgroundColor: t.pageBackground,
@@ -945,28 +910,6 @@ const makeStyles = (t: Theme) =>
         marginRight: 8,
     },
     editBtnText: { color: t.pill, fontSize: 13, fontWeight: '600' },
-    snoozeRowBtn: {
-        backgroundColor: t.delay,
-        paddingVertical: 5,
-        paddingHorizontal: 10,
-        borderRadius: 8,
-        marginRight: 8,
-    },
-    snoozeRowBtnText: { color: t.delayText, fontSize: 13, fontWeight: '600' },
-    snoozeOptionRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginVertical: 12,
-    },
-    snoozeOption: {
-        flex: 1,
-        backgroundColor: t.delay,
-        paddingVertical: 14,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginHorizontal: 4,
-    },
-    snoozeOptionText: { color: t.delayText, fontWeight: '600', fontSize: 16 },
     historyHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -988,7 +931,7 @@ const makeStyles = (t: Theme) =>
     arrowOverlay: {
         position: 'absolute',
         right: 16,
-        bottom: 140,
+        bottom: 40,
         backgroundColor: t.buttonPrimary,
         borderRadius: 12,
         padding: 8,

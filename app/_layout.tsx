@@ -574,20 +574,32 @@ export default function RootLayout() {
     if (action !== Notifications.DEFAULT_ACTION_IDENTIFIER) return;
 
     const source = data?.source as string | undefined;
+
+    // #13-new: carry the item's own id along with the page. Every reminder the
+    // module makes already holds the id of the thing it is about, and it was
+    // being dropped right here — so the tap landed on the right page and left
+    // the reader to find their own item on it. It now travels as `highlight`,
+    // and a page that knows what to do with it lights that row. A page that
+    // does not simply ignores it, so this is safe for all of them at once.
+    const highlight = data?.itemId as string | undefined;
+    const params = highlight ? { highlight } : undefined;
+
     if (source === 'todo') {
-      router.push('/todo');
+      router.push({ pathname: '/todo', params });
     } else if (source === 'myday' || source === 'mydaysnooze') {
-      router.push('/myday');
+      router.push({ pathname: '/myday', params });
     } else if (source === 'myweek' || source === 'myweekpostpone' || source === 'myweeksnooze') {
-      router.push('/myweek');
+      router.push({ pathname: '/myweek', params });
     } else if (source === 'pets' || source === 'petssnooze') {
-      router.push('/mollie');
+      router.push({ pathname: '/mollie', params });
     } else if (source === 'lookahead' || source === 'lookaheaddelay') {
-      router.push('/lookahead');
+      router.push({ pathname: '/lookahead', params });
     } else if (source === 'orders' || source === 'orderssnooze') {
-      router.push('/orders');
+      router.push({ pathname: '/orders', params });
     } else if (source === 'memorytest') {
-      // The 5-minute recall banner — land straight on the recall screen.
+      // The 5-minute recall banner — land straight on the recall screen. There
+      // is only ever one reminder from that page, so it needs no highlight
+      // (Patrick, #13-new).
       router.push('/memorytest');
     }
   }, [response]);

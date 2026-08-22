@@ -21,64 +21,54 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl from '../components/DateTimeControl';
 import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
-import * as AppGroup from '../modules/app-group';
 import { runDailyReset, runScheduler } from '../scheduler/scheduler';
 import { warnIfFull } from '../scheduler/warn';
 
-interface ScheduleItem {
+interface FeedItem {
     id: string;
     label: string;
     // #3-new: null = no time set — the item shows no time and gets no reminder.
     hour: number | null;
     minute: number | null;
     completed: boolean;
-    // #10-new: the moment a snoozed item is to be reminded about again. The
+    // #10-new: the moment a snoozed feed is to be reminded about again. The
     // scheduler reads this back and puts the reminder on the phone, so a
     // snooze is written down rather than fired and forgotten. The row shows
-    // it as "Snoozed till: 4:15 PM".
+    // it as "Snoozed till: 4:15 PM". My Day's twin.
     snoozedUntil?: number;
 }
 
 interface HistoryEntry {
     id: string;
     date: string;
-    sched: string;
     actual: string;
+    sched: string;
     what?: string;
     note?: string;
 }
 
-// Kept only as fallbacks for the one-time migration into the merged Routine list.
-const INITIAL_MEALS: ScheduleItem[] = [
-    { id: '1', label: 'Breakfast', hour: 8, minute: 0, completed: false },
-    { id: '2', label: 'Lunch', hour: 12, minute: 0, completed: false },
-    { id: '3', label: 'Snack', hour: 15, minute: 0, completed: false },
-    { id: '4', label: 'Dinner', hour: 18, minute: 0, completed: false },
+const INITIAL_FEEDS: FeedItem[] = [
+    { id: 'f1', label: 'Morning Feed', hour: 7, minute: 0, completed: false },
+    { id: 'f2', label: 'Evening Feed', hour: 17, minute: 0, completed: false },
 ];
-const INITIAL_MEDS: ScheduleItem[] = [
-    { id: 'med1', label: 'Morning Medication', hour: 8, minute: 0, completed: false },
-];
-const INITIAL_ROUTINE: ScheduleItem[] = [...INITIAL_MEALS, ...INITIAL_MEDS];
 
-export default function MyDayScreen() {
+export default function PetsScreen() {
     const router = useRouter();
     const theme = useTheme();
     const styles = makeStyles(theme);
-    const [routine, setRoutine] = useState<ScheduleItem[]>(INITIAL_ROUTINE);
+    const [feeds, setFeeds] = useState<FeedItem[]>(INITIAL_FEEDS);
     const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [activeId, setActiveId] = useState<string | null>(null);
     const [tempName, setTempName] = useState('');
-    const [editEntry, setEditEntry] = useState<HistoryEntry | null>(null);
-    const [coffeeCount, setCoffeeCount] = useState(0);
-    const [editWhat, setEditWhat] = useState('');
-    const [editNote, setEditNote] = useState('');
+    const [treatCount, setTreatCount] = useState(0);
     const [pendingTime, setPendingTime] = useState<Date | null>(null);
     // True while the shared control's typed time box holds a real time;
     // Save is blocked with a warning while false (#61, Look Ahead's pattern).
     const [pendingTimeValid, setPendingTimeValid] = useState(true);
-    const [waterCount, setWaterCount] = useState(0);
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [editEntry, setEditEntry] = useState<HistoryEntry | null>(null);
+    const [editWhat, setEditWhat] = useState('');
     const [snoozeItemId, setSnoozeItemId] = useState<string | null>(null);
     // #13-new: the row a tapped reminder was about. This is deliberately NOT
     // `selectedItemId` — that one is the reorder selection and brings the ▲▼
@@ -128,20 +118,6 @@ export default function MyDayScreen() {
         }, [])
     );
 
-    // Build the merged Routine list, migrating old separate keys the first time.
-    const getMigratedRoutine = async (): Promise<ScheduleItem[]> => {
-        const savedRoutine = await AsyncStorage.getItem('my_routine');
-        if (savedRoutine) return JSON.parse(savedRoutine);
-        // First run after the merge: fold the old Meals + Meds lists into one.
-        const savedSched = await AsyncStorage.getItem('my_schedule');
-        const savedMeds = await AsyncStorage.getItem('my_meds');
-        const oldMeals: ScheduleItem[] = savedSched ? JSON.parse(savedSched) : INITIAL_MEALS;
-        const oldMeds: ScheduleItem[] = savedMeds ? JSON.parse(savedMeds) : INITIAL_MEDS;
-        const merged = [...oldMeals, ...oldMeds];
-        await AsyncStorage.setItem('my_routine', JSON.stringify(merged));
-        return merged;
-    };
-
     // Read the saved lists back into the screen. Called on mount, and again
     // whenever the screen regains focus or the app returns to the front — so a
     // Done tapped on a banner, which _layout.tsx writes straight to storage,
@@ -156,17 +132,16 @@ export default function MyDayScreen() {
     const refreshFromStorage = async () => {
         try {
             await runDailyReset();
-            const savedHist = await AsyncStorage.getItem('my_history');
+            // One-time cleanup: remove the orphaned legacy key from the old
+            // multi-pet storage (no longer read anywhere). No-op if absent.
+            await AsyncStorage.removeItem('pets_data');
+            const savedHist = await AsyncStorage.getItem('pets_history');
             if (savedHist) setHistory(JSON.parse(savedHist));
-            const parsedRoutine = await getMigratedRoutine();
-            const savedCoffee = await AsyncStorage.getItem('my_coffee');
-            const savedWater = await AsyncStorage.getItem('my_water');
-            setRoutine(parsedRoutine);
-            setCoffeeCount(savedCoffee ? parseInt(savedCoffee, 10) : 0);
-            setWaterCount(savedWater ? parseInt(savedWater, 10) : 0);
-            // This read doesn't go through saveData, so publish here too to keep
-            // Siri's live item list fresh.
-            AppGroup.setMyDayItems(parsedRoutine.map(i => ({ id: i.id, label: i.label })));
+            const savedFeeds = await AsyncStorage.getItem('pets_feeds');
+            const parsedFeeds: FeedItem[] = savedFeeds ? JSON.parse(savedFeeds) : INITIAL_FEEDS;
+            const savedTreats = await AsyncStorage.getItem('pets_treats');
+            setFeeds(parsedFeeds);
+            setTreatCount(savedTreats ? parseInt(savedTreats, 10) : 0);
         } catch (e) {
             console.error(e);
         }
@@ -179,12 +154,9 @@ export default function MyDayScreen() {
         await refreshFromStorage();
     };
 
-    const saveData = async (r: ScheduleItem[], h: HistoryEntry[]) => {
-        await AsyncStorage.setItem('my_routine', JSON.stringify(r));
-        await AsyncStorage.setItem('my_history', JSON.stringify(h));
-        // Publish the current items to the shared App Group box so Siri can offer
-        // them by voice (live list). Only id + label are needed on the Siri side.
-        AppGroup.setMyDayItems(r.map(i => ({ id: i.id, label: i.label })));
+    const saveData = async (f: FeedItem[], h: HistoryEntry[]) => {
+        await AsyncStorage.setItem('pets_feeds', JSON.stringify(f));
+        await AsyncStorage.setItem('pets_history', JSON.stringify(h));
         // The saved list has changed, so let the module work the whole answer
         // out again. It reads storage itself, matches by key, and touches only
         // what actually differs. If it could not hold everything the lists
@@ -199,16 +171,12 @@ export default function MyDayScreen() {
         return `${hr}:${m.toString().padStart(2, '0')} ${period}`;
     };
 
-    // #2-new: one-tap Log — no notes modal. A note is added afterward,
-    // if wanted, through My Log's tap-to-edit modal.
+    // #2-new: one-tap Log — no notes modal (mirrors My Day). A note is
+    // added afterward, if wanted, through the Pets Log's tap-to-edit modal.
     const logItem = (id: string) => {
-        const item = routine.find(i => i.id === id);
+        const item = feeds.find(f => f.id === id);
         if (!item) return;
-        const now = new Date().toLocaleTimeString([], {
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: false,
-        });
+        const now = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false });
         const newEntry: HistoryEntry = {
             id: Date.now().toString(),
             date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
@@ -217,19 +185,19 @@ export default function MyDayScreen() {
             what: '',
             note: '',
         };
-        const updatedHist = [newEntry, ...history].slice(0, 50);
-        // Logging the item drops any snooze on it — the thing is done, so
+        // Logging the feed drops any snooze on it — the thing is done, so
         // nothing should nag about it again today. The stamp coming off is all
-        // it takes; the module reads the item afresh and takes the reminder
+        // it takes; the module reads the feed afresh and takes the reminder
         // back off the phone.
-        const updatedRoutine = routine.map(s => {
-            if (s.id !== id) return s;
-            const { snoozedUntil, ...rest } = s;
+        const updatedFeeds = feeds.map(f => {
+            if (f.id !== id) return f;
+            const { snoozedUntil, ...rest } = f;
             return { ...rest, completed: true };
         });
-        setRoutine(updatedRoutine);
+        const updatedHist = [newEntry, ...history].slice(0, 50);
+        setFeeds(updatedFeeds);
         setHistory(updatedHist);
-        saveData(updatedRoutine, updatedHist);
+        saveData(updatedFeeds, updatedHist);
     };
 
     // Un-check (Patrick, #42, mirrors My Week's undoDone): tapping the ✓ asks,
@@ -237,42 +205,60 @@ export default function MyDayScreen() {
     // logging it again later adds a fresh entry. saveData re-runs the reminder
     // scheduling, so the un-checked item's daily reminder is armed again.
     const undoDone = (id: string) => {
-        const item = routine.find(i => i.id === id);
+        const item = feeds.find(f => f.id === id);
         if (!item) return;
         Alert.alert('Un-check Item', `Mark "${item.label}" as not done?`, [
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Mark not done',
                 onPress: () => {
-                    const updated = routine.map(s =>
-                        s.id === id ? { ...s, completed: false } : s
+                    const updated = feeds.map(f =>
+                        f.id === id ? { ...f, completed: false } : f
                     );
-                    setRoutine(updated);
+                    setFeeds(updated);
                     saveData(updated, history);
                 },
             },
         ]);
     };
 
-    // On-page Snooze: write the moment down on the item, N minutes from now.
+    // #2-new: one-tap count — no notes modal (same pattern as logItem).
+    const confirmTreat = () => {
+        const now = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false });
+        const newEntry: HistoryEntry = {
+            id: Date.now().toString(),
+            date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
+            sched: 'Treat',
+            actual: now,
+            what: '',
+            note: '',
+        };
+        const updatedHist = [newEntry, ...history].slice(0, 50);
+        const newCount = treatCount + 1;
+        setTreatCount(newCount);
+        AsyncStorage.setItem('pets_treats', String(newCount));
+        setHistory(updatedHist);
+        saveData(feeds, updatedHist);
+    };
+
+    // On-page Snooze: write the moment down on the feed, N minutes from now.
     //
-    // Nothing is armed here. The stamp on the item IS the snooze: the scheduler
+    // Nothing is armed here. The stamp on the feed IS the snooze: the scheduler
     // reads it back and puts the reminder on the phone, so a snooze made on the
     // page and one made from a banner are the same act written the same way. A
-    // prior snooze needs no cancelling — one stamp per item means one wanted
+    // prior snooze needs no cancelling — one stamp per feed means one wanted
     // reminder under one name, which the module moves rather than duplicates,
     // so tapping Snooze twice can no longer leave two reminders behind. The
-    // item's own daily repeat is left alone; a snooze moves today's reminder
-    // and says nothing about tomorrow's.
+    // feed's own daily repeat is left alone.
     const snoozeItem = (minutes: number) => {
         if (!snoozeItemId) return;
-        const item = routine.find(i => i.id === snoozeItemId);
+        const item = feeds.find(f => f.id === snoozeItemId);
         if (!item) { setSnoozeItemId(null); return; }
         const target = Date.now() + minutes * 60 * 1000;
-        const updated = routine.map(s =>
-            s.id === item.id ? { ...s, snoozedUntil: target } : s
+        const updated = feeds.map(f =>
+            f.id === item.id ? { ...f, snoozedUntil: target } : f
         );
-        setRoutine(updated);
+        setFeeds(updated);
         saveData(updated, history);
         setSnoozeItemId(null);
         Alert.alert('Snoozed', `${item.label} reminder set for ${minutes} minutes from now.`);
@@ -288,62 +274,16 @@ export default function MyDayScreen() {
     };
 
     const deleteEntry = (id: string) => {
-        Alert.alert('Delete', 'Remove this entry from your routine?', [
+        Alert.alert('Delete', 'Remove this entry?', [
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Delete', style: 'destructive', onPress: () => {
-                    const updated = routine.filter(s => s.id !== id);
-                    setRoutine(updated);
+                    const updated = feeds.filter(f => f.id !== id);
+                    setFeeds(updated);
                     saveData(updated, history);
                 },
             },
         ]);
-    };
-
-    // #2-new: one-tap count — no notes modal (same pattern as logItem).
-    const confirmCoffee = () => {
-        const now = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false });
-        const newEntry: HistoryEntry = {
-            id: Date.now().toString(),
-            date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
-            sched: 'Coffee',
-            actual: now,
-            what: '',
-            note: '',
-        };
-        const updatedHist = [newEntry, ...history].slice(0, 50);
-        const newCount = coffeeCount + 1;
-        setCoffeeCount(newCount);
-        AsyncStorage.setItem('my_coffee', String(newCount));
-        setHistory(updatedHist);
-        saveData(routine, updatedHist);
-    };
-
-    const decrementCoffee = () => {
-        if (coffeeCount > 0) {
-            const newCount = coffeeCount - 1;
-            setCoffeeCount(newCount);
-            AsyncStorage.setItem('my_coffee', String(newCount));
-        }
-    };
-
-    // #2-new: one-tap count — no notes modal (same pattern as logItem).
-    const confirmWater = () => {
-        const now = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false });
-        const newEntry: HistoryEntry = {
-            id: Date.now().toString(),
-            date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
-            sched: 'Water',
-            actual: now,
-            what: '',
-            note: '',
-        };
-        const updatedHist = [newEntry, ...history].slice(0, 50);
-        const newCount = waterCount + 1;
-        setWaterCount(newCount);
-        AsyncStorage.setItem('my_water', String(newCount));
-        setHistory(updatedHist);
-        saveData(routine, updatedHist);
     };
 
     const toggleSelect = (id: string) => {
@@ -364,14 +304,14 @@ export default function MyDayScreen() {
 
     const moveItem = (direction: 'up' | 'down') => {
         if (!selectedItemId) return;
-        const index = routine.findIndex(i => i.id === selectedItemId);
+        const index = feeds.findIndex(i => i.id === selectedItemId);
         if (index === -1) return;
         if (direction === 'up' && index === 0) return;
-        if (direction === 'down' && index === routine.length - 1) return;
-        const updated = [...routine];
+        if (direction === 'down' && index === feeds.length - 1) return;
+        const updated = [...feeds];
         const swap = direction === 'up' ? index - 1 : index + 1;
         [updated[index], updated[swap]] = [updated[swap], updated[index]];
-        setRoutine(updated);
+        setFeeds(updated);
         saveData(updated, history);
     };
 
@@ -389,19 +329,21 @@ export default function MyDayScreen() {
         const hour = pendingTime ? pendingTime.getHours() : null;
         const minute = pendingTime ? pendingTime.getMinutes() : null;
         if (activeId) {
-            const updated = routine.map(s => s.id === activeId ? { ...s, label: name, hour, minute } : s);
-            setRoutine(updated);
+            const updated = feeds.map(f =>
+                f.id === activeId ? { ...f, label: name, hour, minute } : f
+            );
+            setFeeds(updated);
             saveData(updated, history);
         } else {
-            const newItem: ScheduleItem = {
+            const newFeed: FeedItem = {
                 id: Date.now().toString(),
                 label: name,
                 hour,
                 minute,
                 completed: false,
             };
-            const updated = [...routine, newItem];
-            setRoutine(updated);
+            const updated = [...feeds, newFeed];
+            setFeeds(updated);
             saveData(updated, history);
         }
         setShowEditModal(false);
@@ -420,7 +362,7 @@ export default function MyDayScreen() {
     const deleteHistoryEntry = (id: string) => {
         const updated = history.filter(h => h.id !== id);
         setHistory(updated);
-        saveData(routine, updated);
+        saveData(feeds, updated);
     };
 
     const clearAllHistory = () => {
@@ -432,7 +374,7 @@ export default function MyDayScreen() {
                 {
                     text: 'Clear All', style: 'destructive', onPress: () => {
                         setHistory([]);
-                        saveData(routine, []);
+                        saveData(feeds, []);
                     },
                 },
             ]
@@ -441,12 +383,14 @@ export default function MyDayScreen() {
 
     return (
         <GestureHandlerRootView style={styles.container}>
+            {/* #62: no edges prop (default all edges), matching the seven taller-header
+                pages — Patrick standardized on the taller header look. */}
             <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
                         <Text style={styles.headerBtnText}>Home</Text>
                     </TouchableOpacity>
-                    <Text style={styles.title}>My Day</Text>
+                    <Text style={styles.title}>Pets 🐾</Text>
                     <TouchableOpacity onPress={addEntry} style={styles.headerBtn}>
                         <Text style={styles.headerBtnText}>+ Add</Text>
                     </TouchableOpacity>
@@ -460,14 +404,11 @@ export default function MyDayScreen() {
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Routine</Text>
                     <Text style={styles.hintText}>Tap to select for reorder · Edit to change · Swipe to delete</Text>
-                    {routine.map(item => (
+                    {feeds.map(item => (
                         <Swipeable
                             key={item.id}
                             renderRightActions={() => (
-                                <TouchableOpacity
-                                    style={styles.swipeDelete}
-                                    onPress={() => deleteEntry(item.id)}
-                                >
+                                <TouchableOpacity style={styles.swipeDelete} onPress={() => deleteEntry(item.id)}>
                                     <Text style={styles.swipeDeleteText}>Delete</Text>
                                 </TouchableOpacity>
                             )}
@@ -518,7 +459,7 @@ export default function MyDayScreen() {
 
                 <View style={styles.historySection}>
                     <View style={styles.historyHeader}>
-                        <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>My Log</Text>
+                        <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>Pets Log</Text>
                         {history.length > 0 && (
                             <TouchableOpacity style={styles.clearAllBtn} onPress={clearAllHistory}>
                                 <Text style={styles.clearAllBtnText}>Clear All</Text>
@@ -538,7 +479,6 @@ export default function MyDayScreen() {
                                 <TouchableOpacity style={styles.historyItem} onPress={() => {
                                     setEditEntry(l);
                                     setEditWhat(l.what || '');
-                                    setEditNote(l.note || '');
                                 }}>
                                     <Text style={styles.historyText}>
                                         {l.date} | {l.actual} | {l.sched}{l.what ? ` | ${l.what}` : ''}
@@ -553,32 +493,19 @@ export default function MyDayScreen() {
 
             <View style={styles.counterBox}>
                 <View style={styles.counterItem}>
-                    <Text style={styles.counterTitle}>Coffee</Text>
-                    <View style={styles.counterControls}>
-                        <TouchableOpacity style={styles.minusBtn} onPress={decrementCoffee}>
-                            <Text style={styles.minusBtnText}>-</Text>
-                        </TouchableOpacity>
-                        <Text style={styles.coffeeCount}>{coffeeCount}</Text>
-                        <TouchableOpacity style={styles.plusBtn} onPress={confirmCoffee}>
-                            <Text style={styles.counterBtnText}>+</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <View style={styles.counterDivider} />
-                <View style={styles.counterItem}>
-                    <Text style={styles.counterTitle}>Water</Text>
+                    <Text style={styles.counterTitle}>Treats</Text>
                     <View style={styles.counterControls}>
                         <TouchableOpacity style={styles.minusBtn} onPress={() => {
-                            if (waterCount > 0) {
-                                const newCount = waterCount - 1;
-                                setWaterCount(newCount);
-                                AsyncStorage.setItem('my_water', String(newCount));
+                            if (treatCount > 0) {
+                                const newCount = treatCount - 1;
+                                setTreatCount(newCount);
+                                AsyncStorage.setItem('pets_treats', String(newCount));
                             }
                         }}>
                             <Text style={styles.minusBtnText}>-</Text>
                         </TouchableOpacity>
-                        <Text style={styles.coffeeCount}>{waterCount}</Text>
-                        <TouchableOpacity style={styles.plusBtn} onPress={confirmWater}>
+                        <Text style={styles.counterCount}>{treatCount}</Text>
+                        <TouchableOpacity style={styles.plusBtn} onPress={confirmTreat}>
                             <Text style={styles.counterBtnText}>+</Text>
                         </TouchableOpacity>
                     </View>
@@ -596,10 +523,10 @@ export default function MyDayScreen() {
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.confirmBtn} onPress={() => {
                             const updated = history.map(h =>
-                                h.id === editEntry.id ? { ...h, what: editWhat, note: editNote } : h
+                                h.id === editEntry.id ? { ...h, what: editWhat } : h
                             );
                             setHistory(updated);
-                            saveData(routine, updated);
+                            saveData(feeds, updated);
                             setEditEntry(null);
                         }}>
                             <Text style={styles.confirmBtnText}>Save</Text>
@@ -625,7 +552,7 @@ export default function MyDayScreen() {
                         <View style={styles.pickerModal}>
                             <Text style={styles.modalTitle}>Snooze Reminder</Text>
                             <Text style={styles.inputLabel}>
-                                {routine.find(i => i.id === snoozeItemId)?.label} — remind me again in:
+                                {feeds.find(f => f.id === snoozeItemId)?.label} — remind me again in:
                             </Text>
                             <View style={styles.snoozeOptionRow}>
                                 <TouchableOpacity style={styles.snoozeOption} onPress={() => snoozeItem(15)}>
@@ -649,24 +576,18 @@ export default function MyDayScreen() {
             )}
 
             {showEditModal && (
-                <Modal
-                    transparent={true}
-                    animationType="fade"
-                    visible={showEditModal}
-                >
+                <Modal transparent={true} animationType="fade" visible={showEditModal}>
                     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
                     <View style={styles.modalOverlay}>
                         <View style={styles.pickerModal}>
-                            <Text style={styles.modalTitle}>
-                                {activeId ? 'Edit Entry' : 'New Entry'}
-                            </Text>
+                            <Text style={styles.modalTitle}>{activeId ? 'Edit Entry' : 'New Entry'}</Text>
 
                             <Text style={styles.inputLabel}>Name</Text>
                             <TextInput
                                 style={styles.input}
                                 value={tempName}
                                 onChangeText={setTempName}
-                                placeholder="e.g. Breakfast, Morning Medication"
+                                placeholder="e.g. Morning Feed"
                                 placeholderTextColor={theme.mutedText}
                                 autoFocus={!activeId}
                             />
@@ -701,13 +622,14 @@ export default function MyDayScreen() {
         </GestureHandlerRootView>
     );
 }
+
 // makeStyles(theme) pattern from home.tsx (#45).
 const makeStyles = (t: Theme) =>
     StyleSheet.create({
     container: { flex: 1, backgroundColor: t.pageBackground },
     header: {
         paddingTop: 20,
-        paddingHorizontal: 20,
+        paddingHorizontal: 16,
         flexDirection: 'row',
         alignItems: 'center',
         paddingBottom: 8,
@@ -736,6 +658,7 @@ const makeStyles = (t: Theme) =>
         color: t.cardTitle,
         marginBottom: 10,
     },
+    hintText: { fontSize: 11, color: t.mutedText, marginTop: 2, marginBottom: 8 },
     row: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -749,7 +672,7 @@ const makeStyles = (t: Theme) =>
     },
     labelArea: { flex: 1, marginRight: 10 },
     itemLabel: { fontSize: 17, color: t.bodyText, fontWeight: '500' },
-    // The line under a snoozed item's name. #10-new wanted it to read as one
+    // The line under a snoozed feed's name. #10-new wanted it to read as one
     // idea with the Snooze button, but reached for `delayText`, which is the
     // colour for text sitting ON a solid delay button — white, on a white row in
     // the light theme, and a near-black brown on a dark brown row in the dark
@@ -760,7 +683,6 @@ const makeStyles = (t: Theme) =>
     // consistency: one colour, working in both themes, saying the same thing on
     // all four pages. He has looked at every one of these screens in both themes.
     snoozedNote: { fontSize: 13, color: t.delay, fontWeight: '600', marginTop: 2 },
-    hintText: { fontSize: 11, color: t.mutedText, marginTop: 2, marginBottom: 8 },
     logBtn: {
         backgroundColor: t.buttonPrimary,
         paddingVertical: 8,
@@ -770,7 +692,37 @@ const makeStyles = (t: Theme) =>
     loggedBtn: { backgroundColor: t.buttonDone },
     logBtnText: { color: t.buttonPrimaryText, fontWeight: '600' },
     loggedBtnText: { color: t.buttonDoneText },
-    coffeeCount: { fontSize: 22, fontWeight: 'bold', width: 40, textAlign: 'center', color: t.bodyText },
+    historySection: { marginHorizontal: 12, marginBottom: 12 },
+    historyScroll: {
+        height: 375,
+        backgroundColor: t.card,
+        borderRadius: 8,
+        padding: 8,
+        borderWidth: 0.5,
+        borderColor: t.cardBorder,
+    },
+    historyItem: {
+        borderBottomWidth: 0.5,
+        borderBottomColor: t.progressTrack,
+        paddingVertical: 6,
+    },
+    historyText: { fontSize: 13, color: t.bodyText, lineHeight: 18 },
+    counterBox: {
+        flexDirection: 'row',
+        backgroundColor: t.card,
+        borderRadius: 12,
+        padding: 15,
+        marginHorizontal: 12,
+        marginBottom: 12,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderWidth: 0.5,
+        borderColor: t.cardBorder,
+    },
+    counterItem: { flex: 1, alignItems: 'center' },
+    counterTitle: { fontSize: 18, fontWeight: '600', color: t.cardTitle, marginBottom: 8 },
+    counterControls: { flexDirection: 'row', alignItems: 'center' },
+    counterCount: { fontSize: 22, fontWeight: 'bold', width: 40, textAlign: 'center', color: t.bodyText },
     minusBtn: {
         backgroundColor: t.counterMinus,
         width: 40, height: 40,
@@ -787,21 +739,6 @@ const makeStyles = (t: Theme) =>
     },
     counterBtnText: { fontSize: 24, color: t.buttonPrimaryText, fontWeight: 'bold' },
     minusBtnText: { fontSize: 24, color: t.counterMinusText, fontWeight: 'bold' },
-    historySection: { marginHorizontal: 12, marginBottom: 12 },
-    historyScroll: {
-        height: 385,
-        backgroundColor: t.card,
-        borderRadius: 8,
-        padding: 8,
-        borderWidth: 0.5,
-        borderColor: t.cardBorder,
-    },
-    historyItem: {
-        borderBottomWidth: 0.5,
-        borderBottomColor: t.progressTrack,
-        paddingVertical: 6,
-    },
-    historyText: { fontSize: 13, color: t.bodyText, lineHeight: 18 },
     modal: {
         position: 'absolute',
         top: 100,
@@ -818,6 +755,19 @@ const makeStyles = (t: Theme) =>
         shadowOpacity: 0.15,
         shadowRadius: 4,
         zIndex: 999,
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    pickerModal: {
+        backgroundColor: t.card,
+        borderRadius: 12,
+        padding: 16,
+        width: '100%',
     },
     modalTitle: { fontSize: 18, fontWeight: '600', color: t.cardTitle, marginBottom: 10 },
     inputLabel: { fontSize: 14, color: t.mutedText, marginBottom: 4 },
@@ -859,58 +809,7 @@ const makeStyles = (t: Theme) =>
         borderRadius: 10,
         marginBottom: 12,
     },
-    swipeDeleteText: {
-        color: t.buttonDeleteText,
-        fontWeight: '600',
-        fontSize: 15,
-    },
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.4)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-    },
-    pickerModal: {
-        backgroundColor: t.card,
-        borderRadius: 12,
-        padding: 16,
-        borderWidth: 0.5,
-        borderColor: t.cardBorder,
-        width: '100%',
-    },
-    counterBox: {
-        flexDirection: 'row',
-        backgroundColor: t.card,
-        borderRadius: 12,
-        padding: 15,
-        marginHorizontal: 12,
-        marginBottom: 12,
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        borderWidth: 0.5,
-        borderColor: t.cardBorder,
-    },
-    counterItem: {
-        flex: 1,
-        alignItems: 'center',
-    },
-    counterTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: t.cardTitle,
-        marginBottom: 8,
-    },
-    counterControls: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    counterDivider: {
-        width: 1,
-        height: '80%',
-        backgroundColor: t.cardBorder,
-        marginHorizontal: 10,
-    },
+    swipeDeleteText: { color: t.buttonDeleteText, fontWeight: '600', fontSize: 15 },
     headerBtn: {
         width: 54,
         height: 54,
@@ -921,19 +820,19 @@ const makeStyles = (t: Theme) =>
         justifyContent: 'center',
     },
     headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
-    rowSelected: {
-        backgroundColor: t.rowSelected,
-        borderRadius: 8,
-    },
     // #13-new: the row a tapped reminder was about. An outline only, in the
-    // theme's own `rowReminderBorder`, used by nothing but this. It
+    // theme's `rowSelectedBorder`, which nothing else on this page uses. It
     // deliberately does NOT take the reorder selection's filled background
     // (Patrick): if it did, the two lit states would differ by a thin line
     // alone, which is the hardest difference to catch at a glance. This way
     // they are different things — reorder fills the row, a reminder outlines it.
     rowHighlighted: {
         borderRadius: 8,
-        borderColor: t.rowReminderBorder,
+        borderColor: t.rowSelectedBorder,
+    },
+    rowSelected: {
+        backgroundColor: t.rowSelected,
+        borderRadius: 8,
     },
     editBtn: {
         backgroundColor: t.pageBackground,

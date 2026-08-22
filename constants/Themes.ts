@@ -51,6 +51,12 @@ export interface Theme {
     stockedButtonText: string;
     rowSelected: string;        // selected list-row background (Shopping move-arrows)
     rowSelectedBorder: string;  // selected list-row border
+    // #13-new: the outline on the row a tapped reminder was about. It has a
+    // name of its own rather than borrowing rowSelectedBorder, because that
+    // one sits on Shopping's pale filled row and needs its darkness to stand
+    // apart from it — while this outline sits on the plain page and reads
+    // better lighter (Patrick, seen on the phone in both themes).
+    rowReminderBorder: string;
     // timer & settings (added #48: timer + settings conversion)
     pill: string;             // Timer minute-preset pill border + text, unselected (light: teal; dark: outlined gold)
     pillSelected: string;     // selected pill fill (light: teal; dark: solid orange); text = buttonPrimaryText
@@ -142,6 +148,8 @@ export const Themes: Record<ThemeName, Theme> = {
         stockedButtonText: '#ffffff',
         rowSelected: '#d6eef8',
         rowSelectedBorder: '#1a6e8a',
+        // The same teal at its own hue and strength, with the darkness halved.
+        rowReminderBorder: '#6dc6e3',
         pill: '#2d9e8f',
         pillSelected: '#2d9e8f',
         switchTrackOn: '#1a6e8a',
@@ -213,6 +221,9 @@ export const Themes: Record<ThemeName, Theme> = {
         stockedButtonText: '#f0a83a',
         rowSelected: '#5c5044',
         rowSelectedBorder: '#f0a83a',
+        // Unchanged from rowSelectedBorder: the dark theme's orange was right
+        // on the phone as it stood, so only the light theme was lightened.
+        rowReminderBorder: '#f0a83a',
         pill: '#f0a83a',
         pillSelected: '#c9622e',
         switchTrackOn: '#c9622e',

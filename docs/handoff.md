@@ -6,6 +6,48 @@ stands and what is open in front of it. Finished work goes to
 
 ## Where things stand
 
+**A tapped reminder now lands on its own item, on all five pages that have
+one** (#13-new). The housing hands the item's id to the page it opens, as
+`highlight`, and the page draws an outline round that row. The id was already
+travelling with every reminder the module makes and was simply being dropped
+at the last step. My Day, Pets, My Week and Look Ahead share one shape; To-Do
+took a shape of its own. Memory Test gets none — one reminder comes off that
+page, so there is nothing to point at (Patrick).
+
+- **The highlight is its own piece of state on every page**, never the reorder
+  selection. Borrowing that one would have put the ▲▼ arrows on screen the
+  moment a banner was tapped.
+- **A tap on the lit row puts it out and does nothing else** (Patrick). On the
+  four reorder pages the row-tap handler answers the highlight first and
+  returns, so the clearing tap cannot select for reorder; the next tap selects
+  in the ordinary way.
+- **The outline has a colour name of its own, `rowReminderBorder`** — a light
+  teal `#6dc6e3` in the light theme, the same orange as `rowSelectedBorder` in
+  the dark. It is deliberately not `rowSelectedBorder` itself: Shopping uses
+  that one on its pale filled row and needs its darkness to stand apart from
+  it, while this outline sits on the plain page and reads better lighter.
+  Patrick asked for the light one to be halved after seeing it on the phone.
+  He said nothing about the dark theme's orange, so it was left as it was.
+- **Outline only, no filled background** (Patrick's ruling, and the reason is
+  the durable part): if the highlight took the reorder selection's background
+  as well, the two lit states would differ by a thin line alone, which is the
+  hardest difference to catch at a glance. Reorder fills the row; a reminder
+  outlines it.
+- **Nothing shifts when a row lights up or goes out.** The four reorder pages
+  hold the outline's space open on every row in a transparent colour; To-Do's
+  card already had a hairline border, so there the extra thickness is taken
+  back out in the margins.
+- **To-Do's background daily is about a group, not a task.** It carries the
+  word `background` rather than any task's id and stands for all of them at
+  once, so there is no card to light — the page instead arrives with the
+  background list open, which is otherwise shut.
+- **To-Do's task card had no tap at all** before this; the Done and Edit
+  buttons carried the only ones. It now has a tap that does one thing only,
+  put out its own highlight, and nothing at all when no row is lit.
+
+**Scrolling to the row was never wanted** (Patrick, #11-new) — only the
+highlight. The lists have no handle to scroll with, so this is the whole of it.
+
 **Alpha, and the scheduler plan is finished — all eight steps are built.**
 One module owns every reminder: six readers, the reconcile, the daily
 reset, the budget warning, the queue view, and 146 tests. No screen arms
@@ -129,21 +171,12 @@ confirmed it is the one that failed.
 test cannot be started. Deleting the day's entry brings the Start button back,
 at the cost of that day's real score.
 
-**Wanted, and not written down anywhere else yet:** a reminder tapped with the
-app closed should open the app, land on the right page, and highlight the item
-that fired, rather than only opening the page. Patrick raised it at #11-new as
-a question carried since the original build. The half usually hard is already
-done — every reminder the module creates carries the item's own id, and the
-housing already reads that id for its buttons — and both My Day and Pets
-already draw a highlighted row for the reorder selection, with a matching
-border color in the theme they do not yet use. What is missing is carrying the
-id along when the housing opens the page, and the page turning it into that
-highlight. The housing's page-opening carries nothing with it today; the Vault
-is the one screen that already receives something that way, so there is a
-working example. Scrolling to the row is separate and harder, the lists having
-no handle to scroll with — but Patrick said scrolling is not wanted, only the
-highlight. This entry supersedes the parked line in `pending.txt` that says the
-same thing more briefly.
+**The reminder highlight is built** (#13-new) and is described under "Where
+things stand" above. What it has not had is a banner: Patrick loaded the four
+reorder pages and confirmed they look right, and the light theme's outline was
+lightened on his word after that — but no reminder has actually been tapped to
+open a page, and To-Do was built after the load. The whole of it is waiting on
+a real banner tap, To-Do's background daily among them.
 
 ## A fact worth carrying
 

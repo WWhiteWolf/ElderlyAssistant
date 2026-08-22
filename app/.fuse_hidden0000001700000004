@@ -841,12 +841,12 @@ const makeStyles = (t: Theme) =>
     headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
     rowSelected: { backgroundColor: t.rowSelected, borderRadius: 8 },
     // #13-new: the row a tapped reminder was about. An outline only, in the
-    // theme's own `rowReminderBorder`, used by nothing but this. It
+    // theme's `rowSelectedBorder`, which nothing else on this page uses. It
     // deliberately does NOT take the reorder selection's filled background
     // (Patrick): if it did, the two lit states would differ by a thin line
     // alone, which is the hardest difference to catch at a glance. This way
     // they are different things — reorder fills the row, a reminder outlines it.
-    rowHighlighted: { borderRadius: 8, borderColor: t.rowReminderBorder },
+    rowHighlighted: { borderRadius: 8, borderColor: t.rowSelectedBorder },
     arrowOverlay: {
         position: 'absolute',
         right: 16,

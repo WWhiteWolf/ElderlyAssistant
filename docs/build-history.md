@@ -1120,6 +1120,100 @@ lesson is plain: a converter that names its own output can land on the file
 being checked, so never run one in the folder that holds the original.
 
 
+## #13-new (2026-08-21): a tapped reminder lands on its own item, on
+all five pages that have one
+
+**What was built.** The housing now hands the item's id to the page it opens,
+and five pages draw an outline round that row. Nothing was added to the
+scheduler and no test changed; the whole of it is the last step of a road that
+was already built. Every reminder the module makes has always carried the id of
+the thing it is about, and the housing has always read that id for its banner
+buttons — it was being dropped at the one place it was needed, so the tap
+landed on the right page and left the reader to find their own item on it.
+
+**The reading came first and it corrected the record.** The hand-off's account
+had named the Vault as the one screen that already receives a value that way,
+and Patrick's first words were that the Vault has no reminders. It was named
+only as a working example of the mechanism, which the read bore out — the Vault
+reads a `verified` flag from its Face ID gate — but the entry read as though it
+were a reminder page. The read also found the thing the account had missed: the
+highlighted row those pages already draw is bound to the reorder selection, and
+the same state puts the ▲▼ arrows on screen, so it could not simply be lent to
+a reminder.
+
+**Patrick's rulings, in the order they came.**
+
+- **Memory Test gets no highlight** — only one reminder comes off that page, so
+  there is nothing to point at.
+- **The lit row is put out by a tap**, the way the reorder selection already
+  clears. When it was put to him that the same tap would then select the row
+  for reorder and raise the arrows, his answer was to gate it: while a row
+  carries the reminder highlight, the tap clears it and does nothing else.
+- **All five at once rather than one page proven first.** He saw little risk
+  in it and he was right about the four that share a shape; To-Do was held
+  back as its own piece because it is not one of them.
+- **Outline only, no filled background.** This came after he had the four
+  pages on the phone. The first build gave the highlight the reorder
+  selection's background as well as the outline, and the reason for dropping
+  the background is the durable part: two lit states that differ by a thin
+  line alone give the eye the hardest difference there is to catch. Reorder
+  fills the row; a reminder outlines it, and they are different things.
+- **The light theme's outline was too dark**, seen on the phone — half as dark
+  would do.
+
+**The colour got a name of its own, and the reason matters.** The outline had
+been borrowing `rowSelectedBorder`. Asked what should happen to Shopping, which
+uses that same colour, Patrick's answer was the finding: Shopping draws it on
+its pale filled row, so lightening it would cost Shopping the distinction it
+has. So `rowReminderBorder` was added — `#6dc6e3` in the light theme, the same
+teal at its own hue and strength with the darkness halved, and the dark theme's
+`#f0a83a` carried across unchanged because it was right on the phone as it
+stood. `rowSelectedBorder` is untouched and Shopping is untouched.
+
+**How each page took it.**
+
+- **My Day, Pets, My Week and Look Ahead** are one shape four times: a
+  `highlightId` of its own, an effect reading the `highlight` parameter, the
+  gate at the top of `toggleSelect`, and a `rowHighlighted` style. The
+  parameter is depended on as a string rather than as the params object, whose
+  identity changes on every redraw — the very thing that once put the Vault's
+  Face ID gate into a loop, recorded in a comment in that file.
+- **To-Do is its own shape.** Its cards have no selection of any kind and no
+  whole-card tap, only Done and Edit sitting on top. The card was made
+  tappable for one purpose: to put out its own highlight, doing nothing at all
+  when none is lit.
+- **To-Do's background daily is about a group.** Background tasks get no
+  reminder of their own — one daily banner stands for all of them — so it
+  carries the word `background` where an id would be and there is no card to
+  light. The page instead arrives with the background list open, which is
+  otherwise shut. Proposed and agreed rather than asked about.
+
+**Nothing shifts when a row lights or goes out**, and it is done two ways
+because the pages differ. The four reorder pages had no border on a row at
+all, so every row now holds the outline's space open in a transparent colour.
+To-Do's card already carried a hairline, so there the extra thickness is taken
+back out in the card's margins and the outer footprint is identical either way.
+
+**Where it stands.** TypeScript reports only the stale generated-route error
+that predates this work and rewrites itself on the next build; 146 of 146 tests
+pass, and none of them touch this code, so they say only that nothing broke.
+Patrick built and loaded the four reorder pages mid-session and said they all
+look good — that is what produced the colour change. To-Do was built after
+that load, and no reminder has yet been tapped to open any page.
+
+**How the session ran.** It opened cleanly and the reads were named for size
+before they were done, which is what Y-40 asked for. Two things are worth
+carrying. The first is that an account in a hand-off is not the same as the
+code: the Vault line was accurate about the mechanism and misleading about the
+subject, and Patrick caught it in one sentence. The second is a miscount —
+after Memory Test was ruled out, five pages were reported as four, quietly
+dropping To-Do, and he caught that too; it was a slip rather than a decision
+and was named as such. What worked was putting the shared-colour finding to
+him with the Shopping consequence attached instead of changing the value
+quietly, which produced the separate colour name that neither side had
+proposed.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

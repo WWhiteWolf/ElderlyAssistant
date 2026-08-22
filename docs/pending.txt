@@ -1,10 +1,11 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-08-21 (#12-new — the reminder rebuild is DONE.
-All eight steps are built. The last one is the Scheduled Reminders
-screen, in Settings, which shows you every reminder your phone is
-actually holding. The "Snoozed till:" line you couldn't read is
-fixed as well. You built it, put it on the phone, and said it all
-came out very readable. The morning-after test is still to come.
+Last updated: 2026-08-21 (#13-new — tapping a reminder now takes you
+to the item itself, not just to the page. The item's row is outlined
+when the page opens, and a tap on it puts the outline out. It is
+built on all five pages that have reminders. You saw four of them on
+the phone and had the light theme's outline lightened; To-Do was
+built after that. No reminder has been tapped yet to try it for
+real. The morning-after test is still to come.
 Bare session numbers below mean the old shared chain.)
 
 This is the "what's still left" list in everyday words. Nothing here
@@ -88,6 +89,18 @@ NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
   only Done logs. That part is by design.
   #4-new: that fix is now in — Look Ahead re-reads on every visit.
   Very likely cured, but unconfirmed until the phone says so.
+- Tapping a reminder and landing on the item — BUILT (#13-new),
+  and not yet tried with a real banner. Tap a reminder and the
+  page opens with that item's row outlined, so you can see which
+  one it was about. Tap the row and the outline goes out. The
+  page does not scroll to it, which was your call. It is built on
+  My Day, Pets, My Week, Look Ahead and To-Do. The Memory Test
+  has none, your call — only one reminder comes off that page.
+  Two things to look at when you try it: the outline on To-Do,
+  which you have not seen at all, and the To-Do background
+  reminder, the 8 AM one about background tasks. That one is
+  about the whole group rather than any one task, so instead of
+  outlining a row it opens the background list for you.
 
 
 STILL BROKEN OR UNFINISHED (small bugs)
@@ -168,13 +181,6 @@ NICE-TO-HAVE LATER (polish, low priority)
 
 PARKED ON PURPOSE (bigger items, on hold for now)
 -------------------------------------------------
-- Tapping a reminder lands on the right page (tested #55), but
-  taking you to the exact item on that page is still not built.
-  (Moved here from Still broken, #1-new.) You raised this again
-  at #11-new and said what you want: no scrolling, just the item
-  highlighted once the page opens. It was looked at and it is
-  smaller than it sounds — the fuller account is in
-  docs/handoff.md. Still parked; nothing proposed.
 - Voice control through Siri. Set aside after much effort; revisit only
   if a future iPhone update fixes the name-matching. (The app-name revert
   above assumes this stays shelved.)

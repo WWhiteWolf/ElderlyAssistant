@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
     Alert,
@@ -84,6 +84,19 @@ export default function MyWeekScreen() {
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
     const [showEditModal, setShowEditModal] = useState(false);
     const [postponeItemId, setPostponeItemId] = useState<string | null>(null);
+    // #13-new: the row a tapped reminder was about. This is deliberately NOT
+    // `selectedItemId` — that one is the reorder selection and brings the ▲▼
+    // arrows on screen with it, which is not wanted on arrival from a banner.
+    const [highlightId, setHighlightId] = useState<string | null>(null);
+
+    // The housing hands the item's id over as `highlight` when a banner is
+    // tapped. Depend on the string and not on the params object: its identity
+    // changes on every redraw, which is what once put the Vault's Face ID gate
+    // into a loop.
+    const { highlight } = useLocalSearchParams<{ highlight?: string }>();
+    useEffect(() => {
+        if (typeof highlight === 'string' && highlight) setHighlightId(highlight);
+    }, [highlight]);
 
     useEffect(() => {
         const setup = async () => {
@@ -326,6 +339,14 @@ export default function MyWeekScreen() {
     };
 
     const toggleSelect = (id: string) => {
+        // #13-new: a row lit by a tapped reminder is put out by a tap, and that
+        // tap does nothing else — no reorder selection, so no arrows appear as
+        // the highlight goes (Patrick). The next tap on it selects for reorder
+        // in the ordinary way.
+        if (highlightId === id) {
+            setHighlightId(null);
+            return;
+        }
         if (selectedItemId === id) {
             setSelectedItemId(null);
         } else {
@@ -443,7 +464,7 @@ export default function MyWeekScreen() {
                                 </TouchableOpacity>
                             )}
                         >
-                            <View style={[styles.row, selectedItemId === item.id && styles.rowSelected]}>
+                            <View style={[styles.row, selectedItemId === item.id && styles.rowSelected, highlightId === item.id && styles.rowHighlighted]}>
                                 <TouchableOpacity
                                     style={styles.labelArea}
                                     onPress={() => toggleSelect(item.id)}
@@ -706,6 +727,11 @@ const makeStyles = (t: Theme) =>
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 12,
+        // #13-new: the space for the highlight's outline is held open on every
+        // row, so a row does not shift when it lights up and back when it goes
+        // out. Invisible until `rowHighlighted` gives it a colour.
+        borderWidth: 2,
+        borderColor: 'transparent',
     },
     labelArea: { flex: 1, marginRight: 10 },
     itemLabel: { fontSize: 15, color: t.pill, fontWeight: '500' },
@@ -860,6 +886,16 @@ const makeStyles = (t: Theme) =>
         justifyContent: 'center',
     },
     headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
+    // #13-new: the row a tapped reminder was about. An outline only, in the
+    // theme's own `rowReminderBorder`, used by nothing but this. It
+    // deliberately does NOT take the reorder selection's filled background
+    // (Patrick): if it did, the two lit states would differ by a thin line
+    // alone, which is the hardest difference to catch at a glance. This way
+    // they are different things — reorder fills the row, a reminder outlines it.
+    rowHighlighted: {
+        borderRadius: 8,
+        borderColor: t.rowReminderBorder,
+    },
     rowSelected: {
         backgroundColor: t.rowSelected,
         borderRadius: 8,
