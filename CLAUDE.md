@@ -7,10 +7,21 @@
    connected.
 
 2. This project's opening read is `docs/handoff.md`, and only
-   that. `docs/pending.txt` is Patrick's plain-language list —
-   his direct read, no Word copy — opened at the end-of-session
-   refresh. `docs/build-history.md` is opened only when
-   something finished needs tracing.
+   that. `docs/pending.txt` is Patrick's plain-language list,
+   opened at the end-of-session refresh.
+   `docs/build-history.md` is opened only when something
+   finished needs tracing.
+
+   `docs/pending.rtf` is the copy Patrick actually reads, and
+   it is generated from the txt, never hand-edited (#12-new).
+   He had been converting the txt to rich text himself every
+   time, so the app does it for him. The txt stays because
+   plain text is what Claude can edit precisely; the rtf is
+   his, and it is never allowed to lag — regenerated word for
+   word at every refresh and machine-checked against the txt,
+   or the refresh is not done. There is no Word copy: one
+   existed once and this rule had said there was none, which
+   is how it went missing unnoticed.
 
 3. At a session start, ask Patrick whether the previous
    session's work was committed — he prefers being asked. Never

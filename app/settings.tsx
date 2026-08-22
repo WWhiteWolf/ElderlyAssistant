@@ -277,6 +277,15 @@ export default function SettingsScreen() {
                             </View>
                             <Text style={styles.settingValue}>{format12Hour(eveningTime)}</Text>
                         </TouchableOpacity>
+                        {/* Step 8 of the scheduler plan (#12-new). It lives here on
+                            Patrick's ruling at #5-new. */}
+                        <TouchableOpacity style={[styles.settingRow, styles.settingRowBorder]} onPress={() => router.push('/reminders')}>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.settingLabel}>Scheduled Reminders</Text>
+                                <Text style={styles.settingHint}>See what the app is set to remind you about</Text>
+                            </View>
+                            <Text style={styles.settingArrow}>›</Text>
+                        </TouchableOpacity>
                     </View>
 
                     <Text style={styles.sectionHeader}>Security</Text>

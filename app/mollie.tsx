@@ -646,9 +646,17 @@ const makeStyles = (t: Theme) =>
     },
     labelArea: { flex: 1, marginRight: 10 },
     itemLabel: { fontSize: 17, color: t.bodyText, fontWeight: '500' },
-    // #10-new: the line under a snoozed feed's name, in the same colour the
-    // Snooze button already uses so the two read as one idea.
-    snoozedNote: { fontSize: 13, color: t.delayText, fontWeight: '600', marginTop: 2 },
+    // The line under a snoozed feed's name. #10-new wanted it to read as one
+    // idea with the Snooze button, but reached for `delayText`, which is the
+    // colour for text sitting ON a solid delay button — white, on a white row in
+    // the light theme, and a near-black brown on a dark brown row in the dark
+    // one. Patrick could read it on neither (#12-new).
+    //
+    // It is now `delay` itself, which is what My Week's postponed line and Look
+    // Ahead's delayed line have always used. Patrick's ruling, and his reason is
+    // consistency: one colour, working in both themes, saying the same thing on
+    // all four pages. He has looked at every one of these screens in both themes.
+    snoozedNote: { fontSize: 13, color: t.delay, fontWeight: '600', marginTop: 2 },
     logBtn: {
         backgroundColor: t.buttonPrimary,
         paddingVertical: 8,

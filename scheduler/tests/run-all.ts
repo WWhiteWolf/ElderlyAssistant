@@ -18,6 +18,7 @@ import { runToDoTests } from './todo.test.ts';
 import { runMemoryTestTests } from './memorytest.test.ts';
 import { runReconcileTests } from './reconcile.test.ts';
 import { runDailyResetTests } from './dailyreset.test.ts';
+import { runQueueViewTests } from './queueview.test.ts';
 
 console.log('\nMy Day reader');
 runMyDayTests();
@@ -42,5 +43,8 @@ runReconcileTests();
 
 console.log('\nDaily reset');
 runDailyResetTests();
+
+console.log('\nQueue view');
+runQueueViewTests();
 
 report();

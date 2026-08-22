@@ -1,13 +1,11 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-08-21 (#11-new — the reminder rebuild is seven
-steps in of eight, and only the pending-queue screen is left. Step
-4 is finished: To-Do turned out to need no snooze at all. Step 5
-brought the Memory Test in. Step 6 gave the budget a voice. Step 7
-is the clean slate — yesterday's checkmarks clear and yesterday's
-banners get taken down whether or not you open those pages. You
-rebuilt and tested three things on the phone; the morning-after
-test is still to come. Bare session numbers below mean the old
-shared chain.)
+Last updated: 2026-08-21 (#12-new — the reminder rebuild is DONE.
+All eight steps are built. The last one is the Scheduled Reminders
+screen, in Settings, which shows you every reminder your phone is
+actually holding. The "Snoozed till:" line you couldn't read is
+fixed as well. You built it, put it on the phone, and said it all
+came out very readable. The morning-after test is still to come.
+Bare session numbers below mean the old shared chain.)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. Finished work isn't tracked here — git history keeps the
@@ -16,10 +14,12 @@ full record — so this list stays short.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-- THE REMINDERS. Build the one piece that owns them all (#5-new).
-  The plan is written out in full in docs/scheduler-plan.md and
-  every decision in it is yours and already made. It builds in
-  eight steps. Seven are done:
+- THE REMINDERS — FINISHED (#12-new). Nothing left to build. All
+  eight steps are in, and one piece of the app now owns every
+  reminder on the phone. The plan that ran this work is no longer
+  a live file; it is kept whole at the end of docs/build-history.md
+  in case anyone ever needs to know why a thing was done its way.
+  What was built, step by step:
     Step 1 (#6-new) — the new piece itself, plus its tests. No
       page touched.
     Step 2 (#7-new) — My Day and Pets stopped arming their own.
@@ -42,15 +42,26 @@ WHAT'S NEXT
       or Pets, and any banner from before today is taken down as
       the app opens or comes back to the front. A Done always
       means today now.
-  One is left:
-    Step 8 — the screen that shows which reminders are pending.
-      It goes into Settings, which you settled back at #5-new.
-      Until it exists there is no way to see the pending list on
-      the phone at all. You said you'd take it up next session.
-  You rebuilt at the close of #11-new and confirmed three things
-  on the phone: the Memory Test's five-minute recall, a Pets
-  snooze, and My Week. Steps 6 and 7 have never run anywhere. You
-  asked for all eight before the next build, one at a time.
+    Step 8 (#12-new) — Scheduled Reminders, in Settings under the
+      three reminder times. It shows every reminder your phone is
+      holding, under Today, Tomorrow, This Week and Later, with
+      the soonest first. Tap any one and you get the whole story
+      of it: what it is, which page it came from, when it fires
+      and whether it repeats, when it was last due and when it's
+      next due, exactly what the banner will say, and which
+      buttons it will carry. At the foot it tells you how full
+      the phone is. Timer alerts are counted there but not
+      listed, your call — the Timer is for short stretches and
+      isn't something you'd look up.
+      It cannot tell you whether a reminder actually went off.
+      The phone keeps no record of that once a banner is
+      dismissed, so there is nothing to read. What it does
+      instead is show you when each one was DUE — so if a
+      repeating reminder is missing from the list, that's the
+      problem; if it's sitting there properly set and you heard
+      nothing, the app did its part.
+  You built all of this, put it on the phone, and it was all
+  readable. What still hasn't happened is the morning after.
 - The clock setter is off by twelve hours (#5-new). Spinning the
   hour down from the 12:00 PM it opens at goes to 11 PM instead
   of 11 AM, so setting 9 in the morning the natural way lands on
@@ -104,20 +115,28 @@ STILL BROKEN OR UNFINISHED (small bugs)
   down on the chore now, so the app puts it straight back. Never
   been on a phone — it came in with #9-new, which hasn't been
   built. Small fix, and it belongs to a My Week session.
-- The "Snoozed till:" line can't be read (#11-new, your find on
-  the phone). It shows up where it should on both My Day and
-  Pets, but it was given the color meant for writing on a solid
-  colored button. On the light theme that's white, and the row
-  behind it is white too, so it's invisible; on the dark theme
-  it's a very dark brown on a dark brown row. It needs a color
-  meant for text on a row. Small fix, not made.
+- The "Snoozed till:" line can't be read — FIXED (#12-new). It
+  had been given the color meant for writing on a solid colored
+  button: white, on a white row in the light theme, and a very
+  dark brown on a dark brown row in the dark one. It now uses
+  the same orange My Week's postponed line and Look Ahead's
+  delayed line have always used, so all four say that kind of
+  thing the same way. Your call, and your reason — consistency,
+  and you've looked at all those screens in both themes. Seen
+  on the phone and readable.
 - Waiting on your phone: the morning after. Something you check
   off today has to still remind you tomorrow. That's the thing
   that used to go quiet, and it's the one test that matters most.
-  At the close of #11-new you rebuilt, loaded, and confirmed
-  three things on the phone: the Memory Test's five-minute
-  recall, a Pets snooze all the way through, and My Week. The
-  rest of steps 3 and 4 still hasn't been tried.
+  At the close of #11-new you confirmed three things on the
+  phone: the Memory Test's five-minute recall, a Pets snooze all
+  the way through, and My Week. At #12-new you built again and
+  everything you looked at was readable. The rest of steps 3 and
+  4 still hasn't been tried, and no day has turned over yet.
+- The Timer's loud alarm doesn't work (#12-new, your word). It
+  was meant to sound five minutes after the first alert if you
+  hadn't answered. The code for it is there but only runs when
+  two things are both true, and one of them has never been
+  looked at. Not chased — it goes with the Timer item above.
 - "+1 Day" has quietly gone from every My Week banner (#11-new,
   found while working out what to test). Every My Week reminder
   now carries the shared routine buttons — Done, OK, Skip and

@@ -232,6 +232,15 @@ export async function readQueue(): Promise<QueueEntry[]> {
             key: typeof data.key === 'string' ? data.key : undefined,
             source: typeof data.source === 'string' ? data.source : undefined,
             trigger: (data.fires as WantedTrigger | undefined) ?? null,
+
+            // The reconcile has no use for any of this. It is carried so the
+            // Scheduled Reminders screen can say what a reminder is and what it
+            // will show, without asking the phone a second time (#12-new).
+            label: typeof data.label === 'string' ? data.label : undefined,
+            itemId: typeof data.itemId === 'string' ? data.itemId : undefined,
+            title: request.content.title ?? undefined,
+            body: request.content.body ?? undefined,
+            categoryIdentifier: request.content.categoryIdentifier ?? undefined,
         };
     });
 }

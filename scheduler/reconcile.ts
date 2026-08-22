@@ -22,6 +22,19 @@ export interface QueueEntry {
     source?: string;
     // When it fires. Null when it could not be read.
     trigger: WantedTrigger | null;
+
+    // Everything below is for the Scheduled Reminders screen to show and the
+    // reconcile never looks at any of it (#12-new). It is carried here rather
+    // than read a second time so the phone's queue is only ever asked once.
+    //
+    // The item's own name, and which item on its page.
+    label?: string;
+    itemId?: string;
+    // The heading and the sentence the banner will actually show.
+    title?: string;
+    body?: string;
+    // Which set of buttons it carries when pressed and held.
+    categoryIdentifier?: string;
 }
 
 /** What the reconcile decided. */

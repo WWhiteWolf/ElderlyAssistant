@@ -6,197 +6,144 @@ stands and what is open in front of it. Finished work goes to
 
 ## Where things stand
 
-**Alpha, and seven of the plan's eight steps are built.** One module owns
-every reminder — six readers, the reconcile, the daily reset, 103 tests —
-and no screen arms anything of its own any more. My Day and Pets stopped at #7-new; My Week, Look
-Ahead and To-Do stopped at #8-new; Memory Test stopped at #11-new.
+**Alpha, and the scheduler plan is finished — all eight steps are built.**
+One module owns every reminder: six readers, the reconcile, the daily
+reset, the budget warning, the queue view, and 146 tests. No screen arms
+anything of its own any more. My Day and Pets stopped at #7-new; My Week,
+Look Ahead and To-Do stopped at #8-new; Memory Test stopped at #11-new.
 
-**Step 4 is finished.** My Week's postpone and Look Ahead's delay came
-under the module at #9-new, and My Day's and Pets' snoozes at #10-new.
-All four are written down on the item itself — `postponedTo`,
-`delayedUntil` and `snoozedUntil` — so the readers turn them back into
-reminders and nothing arms them by hand. Snoozing twice moves the one
-reminder rather than leaving two, and My Day's and Pets' rows show
-"Snoozed till:" with the time while a snooze is set.
+**The plan itself is gone as a live file** (#12-new). It is kept whole as
+an appendix at the foot of `build-history.md`, which is where to look for
+why the ceiling is sixty-four less eight, why a reader stays plain enough
+for Node to run it, why the always-arm rule exists, why Orders gets no
+reader, and why the clean slate works by a day boundary. Patrick's ruling
+behind the move: these documents are Claude's and `pending.txt` is his, so
+a document Claude has no use for should go.
 
-**The third piece of step 4 was a removal, not a build** (#11-new).
-To-Do has no snooze anywhere and is not meant to have one: its banner
-carries a single OK button, Patrick's own call at #56. His reason is
-worth keeping — a To-Do reminder is advance warning that something is
-coming, an appointment fifteen minutes out for instance, rather than a
-prod to do the task, and other reminders for the same task are still
-coming behind it. So the code that could never run came out: the To-Do
-paths in the housing's snooze and Done handlers, and `cancelReminders`
-in the To-Do screen with both of its calls.
+**`pending.rtf` is what Patrick reads** (#12-new), generated from the txt and
+never hand-edited. He had been converting the txt to rich text himself every
+time. The txt stays because plain text is what can be edited precisely; the
+rtf is his and is never allowed to lag — regenerated word for word at every
+refresh and machine-checked against the txt, or the refresh is not done. The
+rule sits in this project's `CLAUDE.md`. There is no Word copy.
 
-**That corrects something the record carried.** #8-new said a To-Do
-banner snooze "already buys nothing" and that it was live on build 57.
-It was never live — the snooze could not be made at all, the button
-having gone at #56.
+**Step 8 is the Scheduled Reminders screen** (#12-new), `app/reminders.tsx`,
+reached from a row of that name in Settings under the three reminder times.
+It lists every reminder the phone is holding, broken under Today, Tomorrow,
+This Week and Later, soonest first inside each, with a plain sentence at
+the foot saying how full the phone is. A tap opens a pop-up carrying the
+item's name, its page, when it fires and whether it repeats, when it was
+last due and when it is next due, the exact heading and sentence the banner
+will show, and its buttons.
 
-**Step 5 came in at #11-new.** The Memory Test screen no longer arms
-its five-minute recall banner and no longer cancels anything; its save
-asks the module to run, and the module reads the moment the recall
-falls due straight from the saved session. The reader and the owned
-source had been there since step 1.
+- **The arithmetic is in `scheduler/queueview.ts`**, plain and testable, and
+  every sentence the screen says lives there too. The screen only draws.
+- **Timer alerts are counted but never listed** (Patrick, #12-new). The
+  Timer is for short stretches, a pot left on the stove; it does not need
+  looking up.
+- **There is no firing history and there cannot be one.** iOS keeps no
+  record of a delivered banner once it is dismissed. The last-due line is
+  arithmetic from the trigger, not a log.
+- **The banner's buttons are asked of the phone** rather than written down
+  a second time, so the screen cannot drift from what the housing
+  registers.
 
-**Orders is out of the reminding altogether** (Patrick, #7-new — the
-page is dead to him). It got no reader, its scheduling came out at step
-3, and its two sources are named to the module as owned so the reconcile
-sweeps everything the page ever set. Nothing re-creates them.
+**Everything named above is on the phone and readable** (#12-new). Patrick
+built, loaded and looked; his word was that it all came out very readable.
+The screen's own behaviour beyond that has not been put through its paces.
 
-**Why it exists.** The #4-new notification work failed its phone trial.
-#5-new found the fault: My Day and Pets cancel an item's daily repeat
-when it is checked off, and nothing ever puts it back, because only the
-owning screen re-arms and only while it is open. The module answers the
-whole question from the saved lists every time it runs — on launch and
-on every return to the front — so a reminder that goes missing comes
-back on its own.
+**The "Snoozed till:" line is fixed** (#12-new). It had been given
+`delayText`, the colour for text on a solid delay button, which was white
+on a white row in the light theme and near-black brown on a dark brown row
+in the dark one. It is now `delay` itself, matching My Week's postponed
+line and Look Ahead's delayed line. All four read identically. Patrick's
+ruling, his reason being consistency, and he has looked at every one of
+those screens in both themes. Every other use of `delayText` in the app was
+checked and all of them sit correctly on a solid delay button.
 
-**Three things passed on the phone at the close of #11-new.** Patrick
-rebuilt and loaded, and tested what he could in the time he had. The
-build number was not recorded.
+**What it still has not had is a day.** The real test is the morning after:
+items checked off today must still remind tomorrow, which is exactly what
+used to go silent. Most of steps 3 and 4 has never been tried on a device.
 
-- **Memory Test's five-minute recall** — step 5's own work. He tapped
-  "I Got It", left the app, and the banner arrived. Tapping it brought
-  him to the recall screen. He took the first banner before a second
-  had a chance to appear, so "only one arrives" is still unconfirmed.
-  He had to delete today's logged score to get a second test started,
-  the once-a-day block having held.
-- **Pets' snooze, end to end** — step 4's first confirmation on a
-  device. The reminder came back at the snoozed time, tapping it opened
-  the Pets page, and the "Snoozed till:" line was gone afterward.
-- **My Week** — the banner arriving from the module, its buttons, a
-  postpone made on the page, and Done. His verdict was that it does it
-  correctly.
-
-**What it still has not had is a day.** The real test is the morning
-after: items checked off today must still remind tomorrow, which is
-exactly what used to go silent. Nothing else of steps 3 and 4 has been
-tried on a device.
-
-**The "Snoozed till:" line cannot be read.** Patrick's find on the
-phone: barely legible on the dark theme, invisible on the light one, on
-both My Day and Pets. The cause was traced and is plain — the line's
-style uses `t.delayText`, which is the color for text sitting on a
-solid delay button. In the light theme that is white, and the row
-behind it is white; in the dark theme it is a very dark brown on a dark
-brown row. It wants a color meant for text on a row. Not fixed.
-
-**"+1 Day" is dead on every My Week banner.** Found while working out
-what to test. Both the base weekly and the postpone now carry the
-shared routine buttons, so `myweekactions` is registered but never
-asked for, and the `postpone1` branch in the housing cannot fire. It is
-the same kind of unreachable code that came out of To-Do earlier in the
-session. Postponing still works, but only from the page. Nothing is
-proposed about it.
-
-**The tests run on the Mac in about a second**, headless under Node,
-with no build and no simulator. 103 of 103 pass:
+**The tests run on the Mac in about a second**, headless under Node, with
+no build and no simulator. 146 of 146 pass:
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
+**One TypeScript error stands and is not a fault.** Expo keeps its own
+generated list of the app's screens at `.expo/types/router.d.ts`, gitignored
+and untracked, and it predates the Scheduled Reminders page. It rewrites
+itself on the next build. Nothing else reports.
+
 ## What is open in front of it
 
-**Patrick wants the whole rest of the plan before the next build**
-(#7-new). Told that today's untapped banner will still be sitting in
-Notification Center tomorrow because the sweep is step 7, he said he
-needs another build anyway and wants it sooner rather than later. Asked
-how much of the plan he wants in first, his answer was "all" — one at a
-time, each proven before the next starts. At the close of #11-new he
-said he would load the phone with what is built and test what he can.
+**Nothing of the scheduler plan.** It is finished. What follows belongs to
+the app at large.
 
-**Step 6 is built** (#11-new). The budget
-itself was already running — the reconcile trims to the ceiling, keeps
-the soonest and hands back what it left out — so this step only gave it
-a voice. `scheduler/warn.ts` holds the wording in one place and the
-check that decides whether to speak, and each of the six saves hands it
-the module's answer: My Day, Pets, My Week, Look Ahead, To-Do and Memory
-Test. It stays silent on the housing's own runs, which is what makes it
-speak as an item goes in and at no other time. The words and the
-reasoning behind them are recorded in `docs/scheduler-plan.md`, which
-now has no open questions left. No test came with it — the check is one
-comparison and it raises a pop-up, so it sits outside what Node can run.
-One judgment call, Claude's: the Memory Test screen asks the module to
-run in two places, and only the save warns, since throwing away a stale
-session is not an item going in.
+**"+1 Day" is dead on every My Week banner** (found #11-new). Both the base
+weekly and the postpone now carry the shared routine buttons, so
+`myweekactions` is registered but never asked for and the `postpone1` branch
+in the housing cannot fire. Postponing still works from the page. Nothing is
+proposed about it.
 
-**Step 7 is built** (#11-new), the clean slate in both its halves.
-`scheduler/dailyreset.ts` decides whether the day has turned and what a
-cleared list looks like, and the module does the reading and writing, so
-the checkmarks, the snoozes, the coffee and water counts and the treat
-count all clear on launch and on every return to the front whether or
-not My Day or Pets is opened. The module also takes down any banner
-delivered before today. The past-day branch is gone from the My Day and
-Pets Done handler, and My Week's past-cycle guard went with it — a Done
-always means now, because a banner still sitting to be tapped is one
-from today. Ten new tests came with it, 93 to 103. Two judgment calls
-were Claude's and were named: removing My Week's guard, which the plan
-did not name but the same reasoning covers; and having both daily
-screens still ask the module to roll the day over before they read, so
-neither can draw yesterday's checkmarks while waiting for the module's
-own run. **The honest limit is recorded in the code:** the sweep can
-only happen while the app is running or as it comes to the front, so a
-phone left unopened for two days keeps those banners until it is opened.
+**My Week's Skip does not skip a postponed chore** (found #10-new, not acted
+on). Skip cancels the postpone's reminder off the phone by hand, but #9-new
+made the postpone something written down on the chore, so the module reads it
+on its next run and puts the reminder straight back. It has never been on a
+phone. The fix is small and belongs to a My Week session; a note sits beside
+the code in the housing's Skip branch.
 
-**Step 8 is the only one left** — the screen that shows the pending
-queue, which goes into Settings (Patrick, #5-new; this hand-off had
-wrongly carried its home as an open question). Patrick said at the close
-of #11-new that he will take it up next session. Until it exists,
-nothing on the phone shows what is actually pending, so most phone
-testing can only be judged by whether the right banner turns up.
+**The hour stepper fix** is small, separate, and not structural. Any time set
+by spinning through the twelve o'clock boundary is stored in the wrong half of
+the day and needs re-setting afterwards.
 
-**The hour stepper fix** is small, separate, and not structural. Any
-time set by spinning through the twelve o'clock boundary is stored in
-the wrong half of the day and needs re-setting afterwards.
+**Timer is not working right** (Patrick, #5-new), said in passing and not
+examined. It is deliberately outside the module. Two things noticed since and
+not chased: its alerts carry only a timer id, no name and no record of when
+they fire; and the loud alarm meant to follow five minutes after the base
+alert is created only when two conditions are both true, one of them a
+`profile` value that has never been looked at. Patrick raised the loud alarm
+himself at #12-new as something that was meant to work and does not.
 
-**Timer is not working right** (Patrick, #5-new), said in passing and
-not examined. It is deliberately outside the new module.
+**Kept on purpose:** Orders' `cancelForItem`, and the `myweeksnooze` hunt left
+in the housing's My Week Done handler at #9-new. Both match by item, so they
+still clear a banner snooze the module cannot see yet.
+
+**My Week's banner snooze is still armed by hand**, in the housing at
+`_layout.tsx` line 286. It carries the item's name, its id and its source but
+no key and no record of when it fires, so it shows on the Scheduled Reminders
+screen with its name and page and no time. It is the one source the module
+does not own.
 
 **Still to come, and untouched:** the three "What's Next" items in
-`pending.txt` — Look Ahead's tile format and its Snooze changed or
-dropped, the Timer tile's Stop (Pause) / Continue (Go) button and log,
-and the Vault restructuring's "Home"-to-"Back" button change.
+`pending.txt` — Look Ahead's tile format and its Snooze changed or dropped,
+the Timer tile's Stop (Pause) / Continue (Go) button and log, and the Vault
+restructuring's "Home"-to-"Back" button change.
 
-**Kept on purpose:** Orders' `cancelForItem`, and the `myweeksnooze`
-hunt left in the housing's My Week Done handler at #9-new. Both match
-by item, so they still clear a banner snooze the module cannot see yet.
-To-Do's `cancelReminders`, which was on this list, came out at #11-new.
+**The Look Ahead banner-delay bug** sits in `pending.txt` under "Needs a
+phone test". It was never separately confirmed, and the trial that would have
+confirmed it is the one that failed.
 
-**My Week's Skip does not skip a postponed chore** (found #10-new, not
-acted on). Skip cancels the postpone's reminder off the phone by hand,
-but #9-new made the postpone something written down on the chore, so
-the module reads it on its next run and puts the reminder straight
-back. It has never been on a phone, #9-new never having been built. The
-fix is small and belongs to a My Week session; a note sits beside the
-code in the housing's Skip branch.
+**Memory Test allows one session a day.** The screen shows the day's score and
+"Come back tomorrow" once an entry with today's date is logged, so a second
+test cannot be started. Deleting the day's entry brings the Start button back,
+at the cost of that day's real score.
 
-**The Look Ahead banner-delay bug** sits in `pending.txt` under "Needs
-a phone test". It was never separately confirmed, and the trial that
-would have confirmed it is the one that failed.
-
-**Memory Test allows one session a day.** The screen shows the day's
-score and "Come back tomorrow" once an entry with today's date is
-logged, so a second test cannot be started. Deleting the day's entry
-brings the Start button back, at the cost of that day's real score —
-which is what Patrick did at #11-new to test twice.
-
-**Wanted, and not written down anywhere else yet:** a reminder tapped
-with the app closed should open the app, land on the right page, and
-highlight the item that fired, rather than only opening the page.
-Patrick raised it at #11-new as a question carried since the original
-build. The half usually hard is already done — every reminder the
-module creates carries the item's own id, and the housing already reads
-that id for its buttons — and both My Day and Pets already draw a
-highlighted row for the reorder selection, with a matching border color
-in the theme they do not yet use. What is missing is carrying the id
-along when the housing opens the page, and the page turning it into
-that highlight. The housing's page-opening carries nothing with it
-today; the Vault is the one screen that already receives something that
-way, so there is a working example. Scrolling to the row is separate
-and harder, the lists having no handle to scroll with — but Patrick
-said scrolling is not wanted, only the highlight. This entry supersedes
-the parked line in `pending.txt` that says the same thing more briefly.
+**Wanted, and not written down anywhere else yet:** a reminder tapped with the
+app closed should open the app, land on the right page, and highlight the item
+that fired, rather than only opening the page. Patrick raised it at #11-new as
+a question carried since the original build. The half usually hard is already
+done — every reminder the module creates carries the item's own id, and the
+housing already reads that id for its buttons — and both My Day and Pets
+already draw a highlighted row for the reorder selection, with a matching
+border color in the theme they do not yet use. What is missing is carrying the
+id along when the housing opens the page, and the page turning it into that
+highlight. The housing's page-opening carries nothing with it today; the Vault
+is the one screen that already receives something that way, so there is a
+working example. Scrolling to the row is separate and harder, the lists having
+no handle to scroll with — but Patrick said scrolling is not wanted, only the
+highlight. This entry supersedes the parked line in `pending.txt` that says the
+same thing more briefly.
 
 ## A fact worth carrying
 
