@@ -2,9 +2,15 @@
 
 1. How Claude conducts itself lives in `Projects/CLAUDE.md`, at
    the root of the parent folder, which arrives on its own at
-   every session start. None of it is repeated here. This file
-   arrives on its own too, whenever this project's folder is
-   connected.
+   every session start. None of it is repeated here — with one
+   exception, which Patrick asked to stand in every rules file:
+
+   > **Instead of spending my time and money on proving yourself
+   > right, work much harder to understand what I tell you**
+   > (Patrick, SA-17).
+
+   This file arrives on its own too, whenever this project's
+   folder is connected.
 
 2. This project's opening read is `docs/handoff.md`, and only
    that. `docs/pending.txt` is Patrick's plain-language list,
