@@ -23,8 +23,12 @@ its own reading and not this project's conclusions handed back:
 It read the code as it stood after #17-new's build, so it sees `occurrences.ts`
 and the moved My Day reader.
 
-**Nothing in the report below has been acted on.** It is recorded so it is not
-lost, not because it has been accepted.
+**Nothing in the report below had been acted on when this file was written.** It
+was recorded so it would not be lost, not because it had been accepted. At
+#18-new it was checked against the code, and the marking section at the foot now
+says what stands, what is deliberate, and what is still unread. **The largest
+result of that checking is that most of the report describes features this
+project decided on purpose**, which Cursor had no way of knowing.
 
 ## The request it answers, word for word
 
@@ -287,21 +291,65 @@ Each of these was read in the code during #17-new.
 - **My Day and Pets ask for the snooze before looking at anything else**, and
   neither consults `completed` when doing so.
 
-### Not checked
+### Checked at #18-new, and confirmed true
 
-Claude has not opened these files or functions at all. Everything the report says
-about them stands on the report alone.
+`app/_layout.tsx` and `scheduler.ts` were read end to end, every `runScheduler`
+call site in `app/` was found by search, and the test folder was listed.
 
-- `app/_layout.tsx` entire — so the banner Done branches, the Siri
-  `applyPendingNote` path, and My Week's by-hand snooze are all unverified.
+- **Siri's `applyPendingNote` writes the tick and stops.** It sets
+  `completed: true`, writes a history entry, clears the note and pushes to
+  `/myday`. It does not drop `snoozedUntil` and it does not call `runScheduler`.
+- **And landing on My Day does not make up for it.** `refreshFromStorage` in
+  `myday.tsx` and `mollie.tsx` calls `runDailyReset` only. No screen but the
+  housing calls `runScheduler` on becoming active, so nothing re-plans the phone
+  after a Siri Done. On a cold launch the mount-time run in `_layout.tsx` races
+  the Siri write rather than following it. **This is sharper than the report and
+  was in no record.**
+- **The banner Done branches are as described.** My Day and Pets drop the snooze
+  and set the tick in one write, then run the module. My Week writes `completed`,
+  `doneAt` and clears `postponedTo`, hunts down a `myweeksnooze` by hand, then
+  runs the module.
+- **My Week's snooze is still armed by hand**, in the `snooze15/30/60` branch
+  that falls through to `scheduleNotificationAsync` for My Week and Orders only.
+  It carries no key and no record of when it fires.
+- **A To-Do banner really has no Done button.** Only the `todook` category is
+  registered, carrying `ok` alone, and `ok` returns at the top of the handler.
+- **The test files are ten, all of them plain pieces.** There is no test for
+  `scheduler.ts`, none for any screen, and none for `_layout.tsx` — so every
+  claim in section 5 holds. The test named *A chore already ticked still gets
+  its weekly reminder* was read: it asserts `readMyWeek(...).length === 1` with
+  the message *the repeat must survive a tick*.
+- **`faultSpeaks` admits only `permission`, `create`, `list` and `stopped`.** So
+  a `reset` fault never reaches the pop-up at all, and `faultSentence`'s reset
+  wording is dead text. The report did not find this.
+
+### Checked, and found to be deliberate rather than a fault
+
+Patrick's own framing, and it accounts for most of the report: Cursor knew
+nothing of the features this project decided on purpose. Each of these was put
+to him at #18-new and confirmed as still standing.
+
+- **Done never cancels the fired reminder** — the base repeat must fire again.
+- **The To-Do banner's single OK** — his reason is now recorded in
+  `reminder-rebuild.md`: an appointment cannot be snoozed, and a lead-up
+  reminder has nothing to mark Done.
+- **Orders has no reader** — verified rather than taken from the comment.
+  `app/orders.tsx` arms nothing at all; `cancelForItem` only clears leftovers.
+- **Two occurrences ahead, then silence** — his ruling at #16-new, with the
+  missed-firing notice as the answer for a longer absence.
+- **An unreadable list cancelling that screen's reminders** — known, commented,
+  and it raises a loud fault the pop-up speaks.
+- **`runScheduler` returning null while running** — a deliberate guard against
+  two runs reading the queue at once, and already on the fix list.
+
+### Still not checked
+
+Everything the report says about these stands on the report alone.
+
 - `scheduler/readers/lookahead.ts`, `readers/todo.ts`, `readers/memorytest.ts`.
-- `scheduler/reconcile.ts`, and `gatherWanted`, `applyPlan` and
-  `sweepStaleBanners` in `scheduler.ts`.
+- `scheduler/reconcile.ts`.
 - `app/lookahead.tsx`, `app/todo.tsx`, `app/memorytest.tsx`.
-- The test files, other than My Day's and Pets'. In particular the test named
-  *A chore already ticked still gets its weekly reminder* has not been read, only
-  reported.
-- Every claim in section 5 about what the suite does not cover.
+- The test files other than My Day's, Pets' and My Week's.
 
 ### Partly seen
 

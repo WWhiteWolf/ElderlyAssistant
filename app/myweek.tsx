@@ -21,7 +21,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl from '../components/DateTimeControl';
 import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
-import { runScheduler } from '../scheduler/scheduler';
+import { runScheduler, runWeeklyReset } from '../scheduler/scheduler';
 import { warnIfFull } from '../scheduler/warn';
 
 // A weekly chore: a label, the day of the week it belongs to (0 = Sun … 6 = Sat),
@@ -132,52 +132,27 @@ export default function MyWeekScreen() {
         }, [])
     );
 
-    // The epoch-ms of a chore's most recent past occurrence (its weekday at its
-    // time, on or before now). If today IS its day but the time hasn't arrived
-    // yet, the last occurrence was a week ago.
-    const lastOccurrence = (day: number, hour: number, minute: number): number => {
-        const now = new Date();
-        const d = new Date(now);
-        d.setHours(hour, minute, 0, 0);
-        let diff = (now.getDay() - day + 7) % 7;
-        if (diff === 0 && d.getTime() > now.getTime()) diff = 7;
-        d.setDate(d.getDate() - diff);
-        return d.getTime();
-    };
-
-    // Weekly reset: a chore marked Done stays ✓ only until its next scheduled
-    // occurrence comes around — then it's "fresh" again. We detect that by
-    // comparing when it was marked Done (doneAt) to its most recent occurrence.
-    const applyWeeklyReset = (list: Chore[]): Chore[] =>
-        list.map(c => {
-            let next = c;
-            if (next.completed && next.doneAt != null && next.doneAt < lastOccurrence(next.day, next.hour, next.minute)) {
-                next = { ...next, completed: false, doneAt: undefined };
-            }
-            // A postpone belongs to its cycle. Once the chore's normal day comes
-            // around again (its latest occurrence is newer than the postpone
-            // target), last cycle's postpone is stale — drop it.
-            if (next.postponedTo != null && next.postponedTo < lastOccurrence(next.day, next.hour, next.minute)) {
-                next = { ...next, postponedTo: undefined };
-            }
-            return next;
-        });
-
     // Read the saved chores and log back into the screen. Called on mount, and
     // again whenever the screen regains focus or the app returns to the front —
     // so a Done tapped on a banner, which _layout.tsx writes straight to
     // storage, shows up here instead of being overwritten by this screen's
     // stale in-memory copy the next time anything is saved.
     // It deliberately does NOT rebuild the reminders; that is loadData's job.
-    // The weekly reset still runs here, since a cycle can roll over while the
-    // screen sits open.
+    //
+    // The weekly reset is asked for before the read, the way My Day and Pets
+    // ask for the daily one. The arithmetic used to live on this page, which
+    // meant a chore's checkmark could only be cleared by visiting this screen;
+    // it now lives in the module and runs wherever the module runs. Asking for
+    // it here as well costs nothing on a cycle that has not come round, and it
+    // keeps this screen from ever drawing a stale checkmark while waiting for
+    // the module's own run.
     const refreshFromStorage = async () => {
         try {
+            await runWeeklyReset();
             const savedChores = await AsyncStorage.getItem('week_routine');
             const parsed: Chore[] = savedChores ? JSON.parse(savedChores) : INITIAL_CHORES;
-            const reset = applyWeeklyReset(parsed);
-            setChores(reset);
-            await AsyncStorage.setItem('week_routine', JSON.stringify(reset));
+            setChores(parsed);
+            await AsyncStorage.setItem('week_routine', JSON.stringify(parsed));
             const savedHist = await AsyncStorage.getItem('week_history');
             if (savedHist) setHistory(JSON.parse(savedHist));
         } catch (e) {

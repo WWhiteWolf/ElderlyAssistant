@@ -86,12 +86,18 @@ read in the installed package rather than taken from memory.
 the phone, each is handed the moment it should treat as "now", and 146
 tests run against them under Node on the Mac in about a second.
 
+**A To-Do banner carries a single OK button and nothing else**
+(Patrick, #18-new, said more than once before it was written down). An
+appointment cannot be snoozed, and a lead-up reminder has nothing to
+mark Done, because the appointment has not happened yet. Acknowledging
+the notice is all that is wanted.
+
 ## The findings
 
 Eight, largest first. None has been ruled on and none has been acted
 on.
 
-### 1. A finished item still reminds — CURED FOR PETS (#16-new)
+### 1. A finished item still reminds — CURED FOR PETS (#16-new) AND MY DAY (#17-new); MY WEEK PART-WAY (#18-new)
 
 **Where it lives:** `scheduler/readers/myday.ts` and
 `scheduler/readers/pets.ts`, which both declare `completed` on the item
@@ -127,8 +133,39 @@ second mechanism is needed to explain what he saw, and none was found.
 
 **Built for Pets at #16-new**, and the rule it was built to is
 Patrick's: a thing ticked off should not remind for that occurrence.
-My Day and My Week are unchanged and still on repeating alarms. See
-"What #16-new built" at the foot of this file.
+**My Day followed at #17-new.** See "What #16-new built" at the foot of
+this file.
+
+**My Week is three steps, and #18-new built the first.** The order was
+forced by the code and is worth keeping, because the obvious order is
+the wrong one:
+
+- **The reset had to move before the reader could be touched.** My
+  Week's reminder is the phone's weekly repeat. A reader that simply
+  skipped a ticked chore would cancel that repeat, and it would only
+  come back when the tick cleared — and until #18-new the tick cleared
+  only when `app/myweek.tsx` was opened. A chore ticked once, page
+  never revisited, would have gone silent for good. That is worse than
+  the fault being cured.
+- **Step one, built.** The arithmetic came off the page into
+  `scheduler/weeklyreset.ts`, unchanged in what it decides, with `now`
+  handed in so tests can say what time it is. `runWeeklyReset` in
+  `scheduler.ts` applies it — a sibling of `runDailyReset` rather than
+  part of it, because My Week has no single boundary to turn on: each
+  chore rolls on its own weekday, so each is judged against its own
+  last occurrence. It runs in the same clean-slate step, writes only
+  when something has come round, and the page asks for it before it
+  reads the way the two daily pages do. Twenty new tests; 230 of 230
+  pass.
+- **Step two, still to do.** `occurrences.ts` counts only in days.
+  `nextOccurrences` steps a day at a time and has no weekday in it, so
+  it cannot serve a weekly chore — its own comment about a weekly thing
+  getting a fortnight describes Patrick's rule rather than this
+  function. A weekly companion is wanted beside it.
+- **Step three, still to do.** Rewrite `readMyWeek` on that companion
+  and make it honour the tick. The header comment calling My Week "the
+  one screen that never had the fault" and the test named *A chore
+  already ticked still gets its weekly reminder* both go out with it.
 
 ### 2. A failure is swallowed and never recorded — CURED (#15-new)
 
@@ -264,25 +301,39 @@ rather than by size.
    whether it worked. What it became is below.
 
 2. **One rule for a finished item, applied the same way everywhere.**
-   — **PETS DONE (#16-new); MY DAY AND MY WEEK STILL OWED.** This is
-   the fix for both of the reported faults. It means moving the three
-   repeating screens onto single moments aimed at the next occurrence,
-   so that the reader can step past an occurrence already marked done.
-   Pets went first because it is the smallest and My Day is its twin.
-   My Day should follow it almost unchanged; My Week is the odd one and
-   goes last, because it clears its own checkmarks on the page rather
-   than through the module's daily reset.
+   — **PETS DONE (#16-new); MY DAY DONE (#17-new); MY WEEK ONE STEP OF
+   THREE (#18-new).** This is the fix for both of the reported faults.
+   It means moving the three repeating screens onto single moments
+   aimed at the next occurrence, so that the reader can step past an
+   occurrence already marked done. Pets went first because it is the
+   smallest and My Day is its twin. My Week went last because it is the
+   odd one, and the reason it is odd has now been dealt with: its
+   checkmarks cleared on the page, and as of #18-new they clear in the
+   module. The reader itself is still owed. See finding 1 for the three
+   steps and why the reset had to move first.
 
-3. **Hold a dropped run instead of discarding it**, so a save always
+3. **Tell the module when Siri marks something done** (found #18-new,
+   in no earlier record). `applyPendingNote` writes the tick and stops.
+   Nothing re-plans the phone, and the snooze stamp is left in place.
+   This is the smallest of the real holes and probably the cheapest.
+
+4. **Make a failed clear-out speak.** A `reset` fault is classed quiet
+   and never reaches the pop-up, on the reasoning that no reminder is
+   lost by it. That reasoning is now known to be false: a failed reset
+   leaves yesterday's tick in place and the readers then cancel today's
+   reminder. Patrick's call at #18-new was to leave it for now; the
+   corrected wording is already in `faultSentence` and unused.
+
+5. **Hold a dropped run instead of discarding it**, so a save always
    reaches the phone.
 
-4. **Say the banner instruction once, in the housing**, and take the
+6. **Say the banner instruction once, in the housing**, and take the
    eight copies out.
 
-5. **Bring My Week's snooze under the module**, written down on the
+7. **Bring My Week's snooze under the module**, written down on the
    chore the way My Day's and Look Ahead's already are.
 
-6. **The dead "+1 Day" button** — either wake it or take it out.
+8. **The dead "+1 Day" button** — either wake it or take it out.
 
 ## What is not decided
 
@@ -290,12 +341,19 @@ rather than by size.
   alerts are counted but not owned, and Patrick has said twice that it
   is not working right.
 - Whether Pets keeps a stamp of when it was done, the way My Week's
-  `doneAt` does, or My Week's page-side reset moves into the module so
-  both clear the same way. The question was raised at #16-new and
-  Patrick did not rule on it. Pets did not need it in the end — the
-  plain `completed` flag plus the module's daily reset was enough — but
-  the two screens are still built unlike each other and My Week has not
-  been touched.
+  `doneAt` does. The other half of this question is now answered: My
+  Week's page-side reset moved into the module at #18-new, so both
+  clear where the module runs. What is still open is the stamp itself —
+  Pets and My Day carry a plain `completed` and lean on a saved date,
+  My Week carries `doneAt` and is judged against its own last
+  occurrence. Neither was made to match the other.
+- **Whether My Week records misses.** The daily reset writes down what
+  was left undone before it wipes a tick, so the pop-up can say what
+  never reached Patrick. `runWeeklyReset` does not, because that was
+  not in the piece agreed at #18-new. `missesForRollover` is built
+  around a day — it takes `yesterday` and a gap flag — so a weekly
+  equivalent needs arithmetic of its own and a decision about what the
+  notice says.
 - Whether the Scheduled Reminders screen wants anything doing now that
   one feed shows as two rows rather than one. Nobody has looked at that
   screen's code since the change.

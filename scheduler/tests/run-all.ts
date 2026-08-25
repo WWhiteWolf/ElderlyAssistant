@@ -18,6 +18,7 @@ import { runToDoTests } from './todo.test.ts';
 import { runMemoryTestTests } from './memorytest.test.ts';
 import { runReconcileTests } from './reconcile.test.ts';
 import { runDailyResetTests } from './dailyreset.test.ts';
+import { runWeeklyResetTests } from './weeklyreset.test.ts';
 import { runQueueViewTests } from './queueview.test.ts';
 import { runHealthTests } from './health.test.ts';
 
@@ -44,6 +45,9 @@ runReconcileTests();
 
 console.log('\nDaily reset');
 runDailyResetTests();
+
+console.log('\nWeekly reset');
+runWeeklyResetTests();
 
 console.log('\nQueue view');
 runQueueViewTests();

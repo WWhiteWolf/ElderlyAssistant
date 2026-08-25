@@ -16,6 +16,8 @@ import { reconcile } from './reconcile.ts';
 import type { Plan, QueueEntry } from './reconcile.ts';
 import { isNewDay, resetForNewDay } from './dailyreset.ts';
 import type { ResettableItem } from './dailyreset.ts';
+import { resetForNewCycle } from './weeklyreset.ts';
+import type { ResettableChore } from './weeklyreset.ts';
 import { HEALTH_KEY, MISSES_KEY, addRun, faultSignature, mergeMisses, missesForRollover } from './health.ts';
 import type { Miss, MissableItem, RunFault, RunRecord } from './health.ts';
 import type { WantedReminder, WantedTrigger } from './types.ts';
@@ -133,6 +135,50 @@ export async function runDailyReset(): Promise<RunFault[]> {
     }
 
     return faults;
+}
+
+/**
+ * Roll My Week's chores on, for any whose cycle has come round again.
+ *
+ * This is the daily reset's sibling rather than a part of it, because My Week
+ * has no single boundary to turn on: each chore rolls over on its own day of
+ * the week, so every chore is judged separately against its own last
+ * occurrence. That is why there is no saved date here and no guard like
+ * `isNewDay` — the chores themselves carry when they were done.
+ *
+ * Like the daily reset it runs wherever the module runs, so a chore's
+ * checkmark now clears whether or not My Week is ever opened. That is what
+ * makes the tick worth reading at all: until this existed, a tick could only
+ * be cleared by visiting the page.
+ *
+ * It is safe to call at any time. When nothing has come round it reads the
+ * list and writes nothing, which is what lets the page call it before it
+ * draws, so My Week cannot show a stale checkmark while waiting for the
+ * module's own run.
+ *
+ * It answers with whatever went wrong, which is nothing on an ordinary run.
+ */
+export async function runWeeklyReset(): Promise<RunFault[]> {
+    try {
+        const saved = await readList<ResettableChore>('week_routine');
+        // A list we cannot read is a fault of the rolling-over here, and the
+        // quiet kind. The loud one is raised below, where the same unreadable
+        // list means My Week's reminders are worked out as none.
+        if (saved.failed) return [{ kind: 'reset', listKey: 'week_routine' }];
+        if (saved.items.length === 0) return [];
+
+        const rolled = resetForNewCycle(saved.items, Date.now());
+        // A chore with nothing to clear is handed back as the very same object,
+        // so this says plainly whether the list changed at all. Nothing is
+        // written on a run that found nothing spent.
+        const changed = rolled.some((chore, index) => chore !== saved.items[index]);
+        if (changed) {
+            await AsyncStorage.setItem('week_routine', JSON.stringify(rolled));
+        }
+        return [];
+    } catch {
+        return [{ kind: 'reset', listKey: 'week_routine' }];
+    }
 }
 
 /**
@@ -488,6 +534,7 @@ export async function runScheduler(): Promise<Plan | null> {
         // happen before the lists are read, or a snooze made yesterday would be
         // armed for today; the sweep is independent and simply belongs here.
         faults.push(...(await runDailyReset()));
+        faults.push(...(await runWeeklyReset()));
         faults.push(...(await sweepStaleBanners()));
 
         const now = Date.now();

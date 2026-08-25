@@ -6,37 +6,83 @@ stands and what is open in front of it. Finished work goes to
 
 ## Where things stand
 
-**An outside reading of the whole reminder machinery now exists, and it changes
-the ground** (#17-new). Grok 4.6, in Cursor, was pointed at `scheduler/` and
-`app/` with the documents and Claude's own conclusions deliberately withheld.
-The full report, the request it answers, and a section marking every finding
-checked or unchecked live in `docs/outside-review.md`. **The unchecked part is
-the larger part, and a session must not quote an unchecked claim as
-established.** Nothing in it has been acted on.
+**The outside report has been checked, and the answer is mend rather than
+rebuild** (#18-new). Patrick asked to verify what could be verified before
+deciding, and set the lens himself: *Cursor knew nothing of the "helpful"
+features we are considering.* That turned out to be most of it. `_layout.tsx`
+and `scheduler.ts` were read entire, every `runScheduler` call site was found,
+and the test folder was listed. The joins are careful and reasoned, not loose.
+What is left is a short list of specific holes.
 
-**My Week has the fault, and this project's own record says it does not**
-(#17-new, verified in the code). `readMyWeek` never looks at `completed`, so a
-ticked chore still gets its weekly reminder. The header comment of
-`scheduler/readers/myweek.ts` calls My Week "the one screen that never had the
-fault", and a test named *A chore already ticked still gets its weekly reminder*
-holds it in place. That reverses what #16-new recorded. The comment and the test
-were both written in good faith and both describe an older rule.
+**Six things the report flagged are deliberate, and all six still hold**
+(#18-new, put to Patrick one at a time and confirmed by him). Done never
+cancelling the fired repeat; the To-Do banner carrying only OK; Orders having no
+reader — checked rather than taken from the comment, `app/orders.tsx` arms
+nothing at all now; two occurrences ahead; the snooze written on the item; and
+the loud fault on an unreadable list. Only one was decided this month.
 
-**Two more verified in the code** (#17-new). A failed `runDailyReset` records
-its fault and `runScheduler` carries on to `gatherWanted` regardless, so a stale
-`completed: true` can reach a reader and cancel a day that was never done. And
-`runScheduler` returns null when already running, so a save landing mid-run
-never reaches the phone.
+**Patrick's reason for the To-Do banner is now on record**, in
+`docs/reminder-rebuild.md` under what is not to be "fixed": an appointment
+cannot be snoozed, and a lead-up reminder has nothing to mark Done, because the
+appointment has not happened yet. He said he had given that reason more than
+once before it was written down.
 
-**Whether this wants mending or rebuilding is open.** Patrick offered to start
-over and was not talked out of it — he was told it did not need one, pushed
-back, and was right to. Nothing is decided.
+**The three real holes.** My Week's reader ignores the tick — the header comment
+of `scheduler/readers/myweek.ts` and a test named *A chore already ticked still
+gets its weekly reminder* both hold the old rule in place, and both were read
+this session. Siri marks an item done without telling the module. And a failed
+`runDailyReset` does not stop `gatherWanted`, so a stale tick can cancel a day
+that was never done.
+
+**One hole is new and was in no record** (#18-new). `applyPendingNote` in
+`_layout.tsx` writes `completed: true`, writes history, and sends Patrick to My
+Day — and nothing re-plans the phone. My Day's `refreshFromStorage` calls
+`runDailyReset` but never `runScheduler`; every call site was checked. On a cold
+launch the mount-time run happens, but it races the Siri write rather than
+following it. Siri also leaves any `snoozedUntil` stamp in place.
+
+**A failed reset is classed as quiet, and that classification is now wrong**
+(#18-new). `faultSpeaks` admits only `permission`, `create`, `list` and
+`stopped`, so a `reset` fault never reaches the pop-up and `faultSentence`'s
+reset wording is dead text. It was called quiet because no reminder was thought
+to be lost by it. A failed reset can cancel a day that was never done, so one
+is. **Patrick's call was to leave it** — the dead sentence stays as it is.
+
+**The test suite has no test for the module's top, any screen, or the housing**
+(#18-new, confirmed by listing the folder). Ten test files, every one of them a
+plain piece on its own.
+
+**My Week's cure is three steps and the first is built** (#18-new). The order
+matters and the reason is the durable part: My Week's reminder is a weekly
+repeat, so a reader that simply skipped a ticked chore would cancel that repeat,
+and it would only return when the tick cleared — which happened only when the
+page was opened. A chore ticked once, page never revisited, would have gone
+silent for good. **So the reset had to move before the reader could be touched.**
+
+- **Step one, built.** `scheduler/weeklyreset.ts` holds the arithmetic lifted
+  off `app/myweek.tsx`, unchanged in what it decides, with `now` handed in so
+  tests can say what time it is. `runWeeklyReset` in `scheduler.ts` is its
+  sibling — a sibling and not part of `runDailyReset`, because My Week has no
+  single boundary to turn on: each chore rolls on its own weekday. It runs in
+  the same clean-slate step and writes only when something has come round.
+  `app/myweek.tsx` asks for it before it reads, the way the two daily pages ask
+  for theirs, and its own two copies of the arithmetic are gone. 230 of 230
+  tests pass, up from 210.
+- **Step two, to do.** `occurrences.ts` counts only in days — `nextOccurrences`
+  steps a day at a time and has no weekday in it, so it cannot serve a weekly
+  chore. Its own comment about a weekly thing getting a fortnight describes
+  Patrick's rule, not this function. A weekly companion is wanted beside it.
+- **Step three, to do.** Rewrite `readMyWeek` on that companion and make it
+  honour the tick, and replace the header comment and the test that assert the
+  opposite.
+
+**Nothing reached the phone**, and the reader has not been touched.
 
 **My Day is cured** (#17-new). It moved to single moments the way Pets did, two
 occurrences ahead, keys `myday:a1:20260825`, snooze half untouched. The shared
 calendar arithmetic now lives in `scheduler/readers/occurrences.ts` and both
 daily readers use it, which closes the #16-new note about `OCCURRENCES_AHEAD`.
-210 of 210 tests pass. **Pets was cured at #16-new.** Before them, #15-new made
+**Pets was cured at #16-new.** Before them, #15-new made
 a failing run impossible to hide and a missed reminder told. The account of the
 reminder work, including everything still unbuilt, lives in
 `docs/reminder-rebuild.md` — what was read, what is already right and must not
@@ -83,23 +129,28 @@ from the item's own saved state and clears yesterday's before it draws, so no
 second mechanism is involved. Pets was cured at #16-new and My Day at #17-new.
 My Week still has it, and until #17-new the record said it never did.
 
-**The three screens record "done" three different ways, and nothing has been
-decided about it.** Pets and My Day carry a plain `completed` cleared by the
-module's daily reset. My Week carries `completed` plus `doneAt`, clears on the
-page in `applyWeeklyReset`, and its reader reads neither. The outside report
-says Look Ahead, To-Do and Memory Test each use a fourth, fifth and sixth way —
-a moved date, a deleted row, and a phase — which is unverified.
+**The three screens record "done" three different ways, and one of the three
+differences is now closed.** Pets and My Day carry a plain `completed` cleared
+by the module's daily reset. My Week carries `completed` plus `doneAt`, and as
+of #18-new those clear in the module too — but its reader still reads neither.
+The outside report says Look Ahead, To-Do and Memory Test each use a fourth,
+fifth and sixth way — a moved date, a deleted row, and a phase. The Look Ahead
+roll-forward and To-Do's missing Done were both seen in `_layout.tsx` at
+#18-new; the readers behind them are still unopened.
 
-**My Week's own arithmetic is not the arithmetic that was lifted out** (#17-new,
-read directly). `lastOccurrence` looks backwards to the most recent past
-occurrence and `nextDateForWeekday` forward to one date only, so neither is the
-run of the next few that `occurrences.ts` provides. The #16-new note saying My
-Week "already holds the next-occurrence arithmetic" was too generous.
+**My Week's own arithmetic was never the arithmetic in `occurrences.ts`**
+(#17-new, read directly). `lastOccurrence` looks backwards to the most recent
+past occurrence and `nextDateForWeekday` forward to one date only, so neither is
+the run of the next few. The #16-new note saying My Week "already holds the
+next-occurrence arithmetic" was too generous. `lastOccurrence` has since moved
+into `scheduler/weeklyreset.ts` (#18-new); `nextDateForWeekday` stays on the
+page, where the postpone buttons use it.
 
-**"The module's own shape is sound" is a claim under question, not a fact**
-(#17-new). It was written before the outside reading and it was quoted back as
-evidence in this session by Claude, which is exactly how a borrowed conclusion
-does its damage. What is still true and was checked at the time: working the
+**"The module's own shape is sound" was a claim under question and now has an
+answer** (#17-new, answered #18-new). It had been quoted back as evidence before
+anything was verified, which is how a borrowed conclusion does its damage. The
+verifying was done at #18-new and the shape held up: the joins in `_layout.tsx`
+are careful and reasoned. What is still true and was checked at the time: working the
 whole set out afresh, matching by a name built from what a reminder is, and
 trimming the furthest away under Apple's ceiling is established practice,
 confirmed against Apple's and the notification library's own published guidance;
@@ -221,7 +272,7 @@ record on that screen was held back from #15-new so all three are done in one
 visit.
 
 **The tests run on the Mac in about a second**, headless under Node, with
-no build and no simulator. 210 of 210 pass — and see the outside reading on what
+no build and no simulator. 230 of 230 pass — and see the outside reading on what
 that does not mean:
 
     node --experimental-strip-types scheduler/tests/run-all.ts
@@ -233,24 +284,22 @@ itself on the next build. Nothing else reports.
 
 ## What is open in front of it
 
-**The scope question comes before any build.** The outside reading widened the
-problem from three screens to six and from the readers to the joins around
-them. Deciding whether this is mended or rebuilt is Patrick's, and he has said
-he is willing to spend what it takes either way. Nothing should be built until
-that is settled.
+**The scope question is settled: mend** (#18-new). The verifying was done and
+most of what the outside reading widened turned out to be deliberate. Nothing
+about the joins argues for starting over.
 
-**Verifying the outside report is the obvious next read**, and it has not been
-done. Unopened: `app/_layout.tsx` entire, including the Siri path and the
-banner Done branches; `readers/lookahead.ts`, `readers/todo.ts` and
-`readers/memorytest.ts`; `reconcile.ts`, and `gatherWanted`, `applyPlan` and
-`sweepStaleBanners` in `scheduler.ts`; the pages for those three screens; and
-every test file but My Day's and Pets'.
+**My Week steps two and three are the work in front of us**, in that order —
+the weekly companion to `nextOccurrences`, then `readMyWeek` rewritten on it and
+made to honour the tick. The header comment and the test that assert the
+opposite go out with step three.
 
-**My Week, whenever it is built, is no longer a copy of anything.** Its
-checkmarks clear on the page in `applyWeeklyReset`, weekly and only when the
-page is opened, and its reader ignores the tick entirely. Its header comment now
-says the opposite of the truth and must be corrected whenever the file is next
-opened.
+**Still unread, and the report's claims about them still stand on the report
+alone**: `readers/lookahead.ts`, `readers/todo.ts`, `readers/memorytest.ts`;
+`reconcile.ts`; `app/lookahead.tsx`, `app/todo.tsx`, `app/memorytest.tsx`; and
+the test files other than My Day's, Pets' and My Week's.
+
+**Nothing should reach the phone until the reminder work is whole** (Patrick,
+#15-new). Three screens are cured or half-cured and none of it has been built.
 
 **One loose end from #16-new is closed.** `OCCURRENCES_AHEAD` moved out of
 `readers/pets.ts` into `readers/occurrences.ts`, where all three screens can see

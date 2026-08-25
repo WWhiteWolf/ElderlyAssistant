@@ -176,6 +176,13 @@ export function faultSentence(fault: RunFault): string {
             + 'not arrive.';
     }
     if (fault.kind === 'reset') {
+        // My Week rolls over on each chore's own day rather than at midnight,
+        // so the daily wording — "the day", "yesterday" — would say something
+        // untrue of it.
+        if (fault.listKey === 'week_routine') {
+            return `The week did not roll over for ${screenName(fault.listKey)}, so a `
+                + 'chore that is due again may still be showing its checkmark.';
+        }
         return `The day did not roll over for ${screenName(fault.listKey)}, so `
             + "yesterday's checkmarks are still showing.";
     }

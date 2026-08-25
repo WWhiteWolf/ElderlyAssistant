@@ -1438,6 +1438,114 @@ worked was his own move to an independent reader, and his instruction to
 record the report in full with the verification marks kept separate from
 its text.
 
+**Committed.** Patrick confirmed it at #18-new.
+
+
+## #18-new (2026-08-25): the outside report checked, the answer is mend, and My Week's first step built
+
+**What the session was for.** Patrick opened it as Reminder Fix 2 for My
+Day and My Week. My Day had already been cured at #17-new, so the live
+question was My Week — but he set a different order first: *I would like
+to verify what can be done before we decide what to do.* Nothing was
+built until that verifying was finished.
+
+**His lens, and it is the durable part of the session.** Partway through
+he said: *In whatever you do keep in mind that Cursor knew nothing of
+"helpful" features we are considering.* That single sentence accounts for
+most of the outside report. Grok had read the code cold, so every
+deliberate decision in it looked like a defect. Sorting the report by
+that lens is what turned a frightening document into a short list.
+
+**Six flagged things are deliberate and all six still stand.** Each was
+put to Patrick and confirmed: Done never cancelling the fired repeat; the
+To-Do banner's single OK; Orders having no reader; two occurrences ahead;
+the snooze written on the item; and the loud fault on an unreadable list.
+He asked whether these were recent decisions — most carry old-chain
+numbers (#39, #56, #62, #63) and predate the whole reminder effort; only
+two occurrences ahead is recent, being his own ruling from the day
+before.
+
+**Orders was verified rather than believed.** The comment says the page
+is being taken out, which would have made the module cancelling its
+banners either right or badly wrong depending on whether the page still
+armed anything. `app/orders.tsx` was read: it arms nothing at all, and
+`cancelForItem` only clears leftovers. The decision holds.
+
+**The To-Do reason is now on record, in his words.** He supplied it
+himself: an appointment cannot be snoozed, and the "2B" and "1B"
+pre-appointment reminders have nothing to mark Done, because the
+appointment has not happened yet — acknowledging the notice is all that
+is wanted. The record had only carried the thinner "a To-Do has no need
+of a snooze". He asked for it written down because he had said it more
+than once. His correction to the first draft is worth keeping: *Don't
+put the reason that it's not. Put the reason that it is.* It sits in
+`reminder-rebuild.md` under what is not to be "fixed".
+
+**What the verifying found.** `app/_layout.tsx` and `scheduler.ts` were
+read end to end, every `runScheduler` call site was found by search, and
+the test folder was listed. The joins are careful and reasoned. The
+answer to mend-or-rebuild is **mend**, and it was reached from the code
+rather than from this project's own claims.
+
+**One hole was found that was in no record.** Siri's `applyPendingNote`
+writes `completed: true`, writes history, and pushes to My Day — and
+nothing re-plans the phone. My Day's `refreshFromStorage` calls
+`runDailyReset` but never `runScheduler`, which was checked at every call
+site rather than assumed. On a cold launch the housing's mount-time run
+races the Siri write instead of following it. Siri also leaves a
+`snoozedUntil` stamp in place.
+
+**A second thing the report did not find.** `faultSpeaks` admits only
+`permission`, `create`, `list` and `stopped`, so a `reset` fault never
+reaches the pop-up and `faultSentence`'s reset wording is dead text. It
+was classed quiet because no reminder was thought lost by it — and a
+failed reset can cancel a day that was never done, so one is.
+
+**My Week, step one of three, built.** The order was forced by the code
+and is the durable finding: the reset had to move before the reader could
+be touched. My Week's reminder is the phone's weekly repeat; a reader
+that simply skipped a ticked chore would cancel it, and it would only
+return when the tick cleared — which happened only when the page was
+opened. A chore ticked once would have gone silent for good, which is
+worse than the fault being cured.
+
+- `scheduler/weeklyreset.ts` holds `lastOccurrence` and
+  `resetForNewCycle`, lifted off `app/myweek.tsx` unchanged in what they
+  decide, with `now` handed in so tests can say what time it is.
+- `runWeeklyReset` in `scheduler.ts` applies it, in the same clean-slate
+  step as the daily reset. It is a sibling rather than part of
+  `runDailyReset` because My Week has no single boundary to turn on:
+  each chore rolls on its own weekday and is judged against its own last
+  occurrence. It writes only when something has actually come round,
+  which it can tell because a chore with nothing to clear comes back as
+  the very same object.
+- `app/myweek.tsx` asks for it before it reads, the way My Day and Pets
+  ask for the daily one, so the page cannot draw a stale checkmark while
+  waiting for the module's run. Its own two copies of the arithmetic are
+  gone.
+- Twenty new tests, 230 of 230 passing, up from 210. One guards the
+  awkward case: a chore ticked at five past eight is not cleared again at
+  nine the same morning.
+
+Steps two and three are owed. `occurrences.ts` counts only in days —
+`nextOccurrences` steps a day at a time and carries no weekday — so a
+weekly companion is wanted before `readMyWeek` can be rewritten on it.
+
+**Where the session went wrong, and Patrick called it.** Two warnings
+about the reset fault's wording were reported side by side as though they
+were the same kind of thing, when one was wrong and the other merely
+absent. He caught that. Then the wording was offered as a fix and
+approved by him — and only afterwards was it checked and found to be text
+that never reaches the screen. His words: *You are thinning. You are
+having me approve fixing wording for sentences that never are seen, and
+you leave the useless stay.* He was right. The lesson is the ordinary
+one, in a new place: verify that a thing matters before offering to fix
+it, not after. He then ended the session and ruled that the dead sentence
+stays as it is.
+
+**Owed to the phone:** nothing built since #15-new has been on it. That
+is deliberate — Patrick wants the reminder work to arrive whole.
+
 
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
