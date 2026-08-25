@@ -1338,6 +1338,107 @@ And "nothing has gone onto the phone" was said at the end of several
 reports until he asked for it to stop.
 
 
+## #17-new (2026-08-25): My Day moved to single moments, and an outside
+reading of the whole reminder machinery
+
+**The session's shape.** It began as fix 2's second screen and ended
+somewhere else entirely. My Day was built and agreed in the first hour.
+The rest went to a question of Patrick's about consistency, to Claude
+reversing itself twice, and finally to an evaluation carried out in
+Cursor by a reader with no connection to this project. Nothing went onto
+the phone.
+
+**What was built.** `scheduler/readers/occurrences.ts` is new and holds
+the calendar arithmetic the daily screens share — `OCCURRENCES_AHEAD`,
+`sameDay`, `dayStamp` and `nextOccurrences` — with its reasoning carried
+across word for word. Pets was pointed at it and lost those forty-five
+lines; `readers/myday.ts` was rewritten to ask for two single moments
+instead of one repeating alarm, keys `myday:a1:20260825`, the snooze half
+untouched; and `tests/myday.test.ts` was brought into line, the test
+asserting the old rule inverted and Pets' occurrence and naming tests
+brought over in My Day's words. 210 of 210 tests pass, up from 202.
+TypeScript reports only the stale generated-route error. That closes the
+#16-new note about `OCCURRENCES_AHEAD` belonging where all three screens
+can see it.
+
+**The `daily` trigger stays live.** To-Do's background reminder still
+asks for one, so nothing was left dead by the move. This was checked
+rather than assumed.
+
+**Patrick's question, and it turned the session.** He asked whether the
+daily screens would benefit from a timestamp like My Week's `doneAt`.
+Claude answered yes, on the ground that a bare `completed` depends on the
+daily reset having run; then read `runScheduler`, found the reset called
+first by design, and withdrew the recommendation as tidiness rather than
+a cure. Patrick then said that rock solid is the top goal but not the
+only one, and named consistency beside it — which reversed the answer
+again, because under consistency the timestamp stops being tidiness and
+becomes the point. He then said the resulting explanation sounded like a
+casserole mess and that he had stopped reading it half way through. The
+fault was in the writing, not the code, and it was Claude's second
+reversal inside an hour.
+
+**Patrick offered to bulldoze.** He said he was willing to spend what it
+takes, even starting over. Claude said it did not need one — and he
+pushed back, that the previous eight sessions and this one made him think
+otherwise. He was right to. The claim that "the module is sound" had been
+lifted from the hand-off, written by the same run of sessions that left
+him eight faults, and Claude had read three of six readers. The 210
+passing tests are weak evidence by his own record: the one test that
+would have caught the reported fault had never been written since #6-new.
+He then pointed out that Look Ahead and To-Do had not even been
+mentioned, which was the same fault in miniature — the problem had been
+sized to what Claude happened to have read.
+
+**The outside reading.** Patrick proposed taking the evaluation into
+Cursor, where he has an account, and used Grok 4.6 in Ask mode. Two
+things were withheld deliberately so the answer would be its own: the
+documents, because `docs/` and `App-docs/` carry the very claims a fresh
+reader would otherwise absorb and repeat, and Claude's own conclusions.
+The full report, the exact request it answers, and a section marking
+every finding as checked or unchecked now live in `docs/outside-review.md`.
+Patrick asked for it in full rather than condensed, on the reasoning
+Claude had itself given — that condensing is where a claim gets softened.
+
+**The finding that matters most.** `readMyWeek` never looks at
+`completed`. A ticked chore still gets its weekly reminder. My Week has
+the fault, and the project's own record says it does not: the header
+comment of `scheduler/readers/myweek.ts` calls it "the one screen that
+never had the fault", and a test named *A chore already ticked still gets
+its weekly reminder* holds it in place. The record and the code were
+allowed to disagree without anything noticing. Claude verified the reader
+and the comment directly; the test was reported and not read.
+
+**Two more that were verified in the code.** A failed `runDailyReset`
+records its fault and `runScheduler` carries straight on to
+`gatherWanted`, so a stale `completed: true` can reach a reader and
+suppress a day that was never done — which is exactly the danger Claude
+had described and then wrongly withdrawn. And `runScheduler` returns null
+when already running, so a save landing mid-run never reaches the phone.
+
+**What the report says the tests do not cover.** The suite runs the
+readers alone and never runs a screen, `_layout.tsx`, storage or the
+module end to end — so "done means it will not sound" has never been
+tested at all. Unverified, and the plainest available explanation of the
+eight sessions.
+
+**Left owed, and nothing decided.** My Week, now known to have the fault
+rather than to be the shape others are brought round to — its header
+comment is wrong in the opposite direction from what #16-new recorded.
+The unchecked majority of the outside report: `_layout.tsx` entire,
+including the Siri path and the banner Done branches; the Look Ahead,
+To-Do and Memory Test readers; `reconcile.ts`, `gatherWanted`,
+`applyPlan` and `sweepStaleBanners`; and every claim about test coverage.
+Whether this wants mending or rebuilding is open, and Patrick has not
+decided.
+
+**How the session ran.** Patrick called it: rushing is a big part of what
+got us here. Both reversals came from answering before reading. What
+worked was his own move to an independent reader, and his instruction to
+record the report in full with the verification marks kept separate from
+its text.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

@@ -6,6 +6,7 @@
 
 import { makeKey } from '../types.ts';
 import type { WantedReminder } from '../types.ts';
+import { OCCURRENCES_AHEAD, dayStamp, nextOccurrences } from './occurrences.ts';
 
 /** One My Day item, exactly as it is saved under `my_routine`. */
 export interface MyDayItem {
@@ -28,18 +29,18 @@ export interface MyDayItem {
 /**
  * Every reminder the My Day list calls for.
  *
- * One daily repeat for each item that has a time, and nothing at all for an
- * item without one.
+ * An item with a time gets its next few occurrences as single moments, each
+ * under a name of its own; an item without a time gets nothing.
  *
- * Whether the item is checked off makes no difference. A daily reminder's next
- * firing is tomorrow, and tomorrow the item needs doing again — so checking
- * something off today has nothing to say about it. This is the rule that My
- * Week has always followed and the two daily screens never did, and it is the
- * fault at the centre of the silence.
+ * An item ticked off gets no reminder for today and keeps the ones after it,
+ * which is the change. It used to get one alarm repeating daily, armed whether
+ * or not the item was done, because a repeating alarm cannot be told to skip a
+ * day — and so a thing already seen to still called out. A tick says what
+ * happened today and nothing about tomorrow, when the item needs doing again.
  *
- * A snoozed item wants a second reminder on top of that one, at the moment it
- * was pushed to. The daily repeat is deliberately left alone: a snooze moves
- * today's reminder and says nothing about tomorrow's.
+ * A snoozed item wants a reminder on top of those, at the moment it was pushed
+ * to. The occurrences are left alone: a snooze moves today's reminder and says
+ * nothing about the days after it.
  *
  * `now` is handed in rather than read from the clock, so a test can say what
  * time it is.
@@ -63,16 +64,29 @@ export function readMyDay(items: MyDayItem[], now: number): WantedReminder[] {
             });
         }
         if (item.hour == null || item.minute == null) continue;
-        wanted.push({
-            key: makeKey('myday', item.id, 'base'),
-            source: 'myday',
-            itemId: item.id,
-            label: item.label,
-            title: 'Daily Routine',
-            body: `Time for ${item.label}!`,
-            categoryIdentifier: 'routineactions',
-            trigger: { kind: 'daily', hour: item.hour, minute: item.minute },
-        });
+
+        const moments = nextOccurrences(
+            item.hour,
+            item.minute,
+            now,
+            item.completed,
+            OCCURRENCES_AHEAD,
+        );
+        for (const at of moments) {
+            wanted.push({
+                // Each occurrence is named for the day it falls on, so it keeps
+                // its name from one run to the next and the reconcile leaves it
+                // where it is. One that has fired simply stops being asked for.
+                key: makeKey('myday', item.id, dayStamp(at)),
+                source: 'myday',
+                itemId: item.id,
+                label: item.label,
+                title: 'Daily Routine',
+                body: `Time for ${item.label}!`,
+                categoryIdentifier: 'routineactions',
+                trigger: { kind: 'date', at },
+            });
+        }
     }
     return wanted;
 }

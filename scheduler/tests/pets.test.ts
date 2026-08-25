@@ -1,7 +1,8 @@
 // Tests for the Pets reader.
 
-import { OCCURRENCES_AHEAD, readPets } from '../readers/pets.ts';
+import { readPets } from '../readers/pets.ts';
 import type { PetsItem } from '../readers/pets.ts';
+import { OCCURRENCES_AHEAD } from '../readers/occurrences.ts';
 import { assert, assertSame, test } from './runner.ts';
 
 /**

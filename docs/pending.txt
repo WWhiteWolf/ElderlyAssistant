@@ -1,14 +1,15 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-08-25 (#16-new — the big one is fixed on the first
-of the three screens. Pets no longer reminds you about a feed you have
-already seen to. My Day and My Week still do; they are next, one at a
-time.
-Each feed is now set two days ahead instead of using the phone's
-repeating alarm. Two was your number. If you are away longer than
-that, the reminder does not arrive and the pop-up tells you about it
-afterwards.
-The improvements are still waiting to go onto the phone, your call, so
-they can be tested together over time.
+Last updated: 2026-08-25 (#17-new — My Day is now fixed too, the same
+way Pets was. Only My Week still has the fault.
+The bigger news is that you had the code looked at by an outsider.
+Grok, in Cursor, read the reminder machinery with none of our notes in
+front of it, and it found things we had not. The most important: My
+Week has the fault as well, and our own notes have been saying for
+weeks that it does not. Everything it found is written down in
+docs/outside-review.md, with a mark on each item saying whether it has
+been double-checked or not. Most of it has not been.
+Nothing from that report has been acted on, and nothing has gone onto
+the phone.
 Bare session numbers below mean the old shared chain.)
 
 This is the "what's still left" list in everyday words. Nothing here
@@ -49,9 +50,32 @@ WHAT'S NEXT
       feed shows up twice on the Scheduled Reminders screen instead
       of once, because two days are set; and it says it does not
       repeat, which is now true.
-  My Day is next and should go almost the same way. My Week goes
-  last, because it clears its checkmarks differently from the other
-  two and that difference is not settled yet.
+  What #17-new put in:
+    My Day is cured, the same way Pets was. A thing you have already
+      logged does not call out again that day, and still calls out
+      the next day.
+    The day-counting the two screens share now lives in one place
+      instead of being written out twice.
+  What #17-new found out, and this is the part that matters:
+    My Week has the fault too. Its reminder never looks at the
+      checkmark at all, so a chore you have ticked still sounds on
+      its day. Our own notes have been saying the opposite — that My
+      Week was the one screen that never had this problem — and
+      there is even a test in place holding the wrong behaviour
+      still. The note and the code were allowed to disagree and
+      nothing caught it.
+    The tests that pass do not test the thing you care about. They
+      check the pieces on their own. Nothing checks the whole chain —
+      you tick something, and the reminder does not sound. That has
+      never been tested, which is the plainest explanation yet for
+      why eight sessions of work still left faults.
+    There may be more. The outsider only had one look, and most of
+      what it reported has not been double-checked yet. What is
+      confirmed and what is not is marked item by item in
+      docs/outside-review.md.
+  What is not decided: whether the reminder machinery gets mended or
+  rebuilt. You said you are willing to spend what it takes either
+  way. Nothing should be built until you have decided that.
   What #15-new put in:
     A pop-up when you open the app, if something went wrong. Until
       now the app could fail at reminders completely and look

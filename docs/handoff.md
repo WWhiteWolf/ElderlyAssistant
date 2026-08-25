@@ -6,15 +6,42 @@ stands and what is open in front of it. Finished work goes to
 
 ## Where things stand
 
-**Pets no longer reminds about a feed already seen to** (#16-new). That is the
-first screen of fix 2, the fault Patrick reported, and it is cured for Pets
-alone — My Day and My Week are untouched and still on the phone's repeating
-alarms. Before it, #15-new made a failing run impossible to hide and a missed
-reminder told. The account of all of it, including everything still unbuilt,
-lives in `docs/reminder-rebuild.md` and is the file to open for this work —
-what was read, what is already right and must not be undone, eight findings, a
-fix list in order, Patrick's rulings, and what is still undecided. It is not
-repeated here.
+**An outside reading of the whole reminder machinery now exists, and it changes
+the ground** (#17-new). Grok 4.6, in Cursor, was pointed at `scheduler/` and
+`app/` with the documents and Claude's own conclusions deliberately withheld.
+The full report, the request it answers, and a section marking every finding
+checked or unchecked live in `docs/outside-review.md`. **The unchecked part is
+the larger part, and a session must not quote an unchecked claim as
+established.** Nothing in it has been acted on.
+
+**My Week has the fault, and this project's own record says it does not**
+(#17-new, verified in the code). `readMyWeek` never looks at `completed`, so a
+ticked chore still gets its weekly reminder. The header comment of
+`scheduler/readers/myweek.ts` calls My Week "the one screen that never had the
+fault", and a test named *A chore already ticked still gets its weekly reminder*
+holds it in place. That reverses what #16-new recorded. The comment and the test
+were both written in good faith and both describe an older rule.
+
+**Two more verified in the code** (#17-new). A failed `runDailyReset` records
+its fault and `runScheduler` carries on to `gatherWanted` regardless, so a stale
+`completed: true` can reach a reader and cancel a day that was never done. And
+`runScheduler` returns null when already running, so a save landing mid-run
+never reaches the phone.
+
+**Whether this wants mending or rebuilding is open.** Patrick offered to start
+over and was not talked out of it — he was told it did not need one, pushed
+back, and was right to. Nothing is decided.
+
+**My Day is cured** (#17-new). It moved to single moments the way Pets did, two
+occurrences ahead, keys `myday:a1:20260825`, snooze half untouched. The shared
+calendar arithmetic now lives in `scheduler/readers/occurrences.ts` and both
+daily readers use it, which closes the #16-new note about `OCCURRENCES_AHEAD`.
+210 of 210 tests pass. **Pets was cured at #16-new.** Before them, #15-new made
+a failing run impossible to hide and a missed reminder told. The account of the
+reminder work, including everything still unbuilt, lives in
+`docs/reminder-rebuild.md` — what was read, what is already right and must not
+be undone, eight findings, a fix list in order, Patrick's rulings, and what is
+still undecided. It is not repeated here.
 
 **Two occurrences ahead is Patrick's number** (#16-new). A single moment is
 spent once it fires, so several stand ready; it counts occurrences rather than
@@ -26,14 +53,17 @@ afterwards rather than making the reminder arrive.
 **An occurrence is named for the day it falls on**, `pets:p1:20260825`, so it
 keeps its name until it fires and the reconcile leaves it alone. Naming by
 place in the run was tried first and is wrong — those names slide as days pass,
-so every run would take all of them down and put them all back. Whatever My Day
-and My Week do, they should do this.
+so every run would take all of them down and put them all back. Pets and My
+Day both do this. Whatever My Week does, it should do this too.
 
 Patrick's ruling opens the work and governs it: reminders being rock solid is
-the only purpose of this app. His second is that when something has to give,
-the old reminder is thrown away and the new one kept. His third is that the
-reminders should follow established practice rather than a private arrangement
-that happens to work.
+the top goal. **He corrected this at #17-new: it is the top goal but not the
+only one, and consistency is another high priority.** That correction reversed a
+recommendation Claude had made minutes earlier — a change dismissed as tidiness
+becomes worth making once consistency is a goal in its own right. His second
+ruling is that when something has to give, the old reminder is thrown away and
+the new one kept. His third is that the reminders should follow established
+practice rather than a private arrangement that happens to work.
 
 **His verdict on the eight sessions before it is on the record at his asking**,
 at the top of `docs/reminder-rebuild.md`. He is disappointed that #5-new
@@ -41,34 +71,42 @@ through #13-new had the reminders as their sole focus and the read still found
 eight faults, one of them the thing he had reported.
 
 **The move to single moments is agreed**, on his condition that a missed firing
-is noted when he opens the app. That safety net is built; the move itself is
-not.
+is noted when he opens the app. The safety net is built, and the move itself is
+done on Pets (#16-new) and My Day (#17-new). My Week has not moved.
 
-**The two faults Patrick reported are one fault, and it is still there on two
-screens of three.** An item ticked off before its time still reminds, because
-the repeating screens arm the phone's own repeating alarm and their readers
-never look at the checkmark. The banner that then arrives for an
+**The two faults Patrick reported are one fault, and it is still there on My
+Week.** An item ticked off before its time still reminds, because the reader
+never looks at the checkmark. The banner that then arrives for an
 already-finished item lands on a row correctly showing its checkmark, which is
 what he saw first. `app/myday.tsx` was read to be sure of it; the page draws
 from the item's own saved state and clears yesterday's before it draws, so no
-second mechanism is involved. Pets was cured at #16-new; My Day and My Week
-still have it.
+second mechanism is involved. Pets was cured at #16-new and My Day at #17-new.
+My Week still has it, and until #17-new the record said it never did.
 
-**Pets and My Week are not built alike, and nothing has been decided about it**
-(#16-new, both pages read entire). Pets carries a plain `completed` and leans on
-the module's daily reset. My Week carries `doneAt` and clears its own checkmarks
-on the page, in `applyWeeklyReset`, weekly and only when the page is opened — so
-the daily clearing named in fix 2 never reaches it. My Week also already holds
-the next-occurrence arithmetic, in `lastOccurrence` and `nextDateForWeekday`.
-The open question is whether Pets gains a stamp like `doneAt` or My Week's reset
-moves into the module. Pets did not need it; My Week may.
+**The three screens record "done" three different ways, and nothing has been
+decided about it.** Pets and My Day carry a plain `completed` cleared by the
+module's daily reset. My Week carries `completed` plus `doneAt`, clears on the
+page in `applyWeeklyReset`, and its reader reads neither. The outside report
+says Look Ahead, To-Do and Memory Test each use a fourth, fifth and sixth way —
+a moved date, a deleted row, and a phase — which is unverified.
 
-**The module's own shape is sound and is not the fault.** Working the whole set
-out afresh, matching by a name built from what a reminder is, and trimming the
-furthest away under Apple's ceiling is the established practice, confirmed
-against Apple's and the notification library's own published guidance. The
-repeating alarms are also asked for correctly for the version of the library
-installed here, which was read in the package rather than recalled.
+**My Week's own arithmetic is not the arithmetic that was lifted out** (#17-new,
+read directly). `lastOccurrence` looks backwards to the most recent past
+occurrence and `nextDateForWeekday` forward to one date only, so neither is the
+run of the next few that `occurrences.ts` provides. The #16-new note saying My
+Week "already holds the next-occurrence arithmetic" was too generous.
+
+**"The module's own shape is sound" is a claim under question, not a fact**
+(#17-new). It was written before the outside reading and it was quoted back as
+evidence in this session by Claude, which is exactly how a borrowed conclusion
+does its damage. What is still true and was checked at the time: working the
+whole set out afresh, matching by a name built from what a reminder is, and
+trimming the furthest away under Apple's ceiling is established practice,
+confirmed against Apple's and the notification library's own published guidance;
+and the repeating alarms are asked for correctly for the version installed here,
+read in the package rather than recalled. What the outside reading disputes is
+narrower and sharper: that the tick in storage and the banner on the phone are
+not one record, and that everything joining them sits outside the tested part.
 
 **A tapped reminder now lands on its own item, on all five pages that have
 one** (#13-new). **Patrick has run it on the phone and it works** (#14-new),
@@ -183,7 +221,8 @@ record on that screen was held back from #15-new so all three are done in one
 visit.
 
 **The tests run on the Mac in about a second**, headless under Node, with
-no build and no simulator. 202 of 202 pass:
+no build and no simulator. 210 of 210 pass — and see the outside reading on what
+that does not mean:
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -194,26 +233,28 @@ itself on the next build. Nothing else reports.
 
 ## What is open in front of it
 
-**My Day is next, and should be nearly a copy of Pets** (#16-new). It is the
-same shape — a list of items, each with a time of day, leaning on the module's
-daily reset — so the same two occurrences ahead, the same day-stamped names,
-and the same narrow skip of today's occurrence when the item is ticked.
-`scheduler/readers/myday.ts` and its tests, with the snooze half left alone.
+**The scope question comes before any build.** The outside reading widened the
+problem from three screens to six and from the readers to the joins around
+them. Deciding whether this is mended or rebuilt is Patrick's, and he has said
+he is willing to spend what it takes either way. Nothing should be built until
+that is settled.
 
-**My Week goes last and is the odd one.** Its checkmarks clear on the page
-rather than in the module, so the asymmetry above has to be settled before it
-is built.
+**Verifying the outside report is the obvious next read**, and it has not been
+done. Unopened: `app/_layout.tsx` entire, including the Siri path and the
+banner Done branches; `readers/lookahead.ts`, `readers/todo.ts` and
+`readers/memorytest.ts`; `reconcile.ts`, and `gatherWanted`, `applyPlan` and
+`sweepStaleBanners` in `scheduler.ts`; the pages for those three screens; and
+every test file but My Day's and Pets'.
 
-**Two loose ends from #16-new, neither acted on.** The comment at the head of
-`scheduler/readers/myweek.ts` says My Week "never had the fault" and is "the
-shape the two daily screens are being brought round to" — which stops being
-true the moment My Week itself moves. And `OCCURRENCES_AHEAD` lives inside
-`readers/pets.ts`; it belongs somewhere all three screens can see once they
-have all moved.
+**My Week, whenever it is built, is no longer a copy of anything.** Its
+checkmarks clear on the page in `applyWeeklyReset`, weekly and only when the
+page is opened, and its reader ignores the tick entirely. Its header comment now
+says the opposite of the truth and must be corrected whenever the file is next
+opened.
 
-**All the reading fix 2 was owed is done** (#16-new). `app/mollie.tsx` and
-`app/myweek.tsx` were read entire, and so were the types, the reconcile, the
-scheduler's top and the three readers.
+**One loose end from #16-new is closed.** `OCCURRENCES_AHEAD` moved out of
+`readers/pets.ts` into `readers/occurrences.ts`, where all three screens can see
+it (#17-new).
 
 **The rest of the fix list** is in `docs/reminder-rebuild.md` and unstarted:
 holding a dropped run instead of discarding it, saying the banner instruction
