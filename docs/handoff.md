@@ -6,8 +6,36 @@ stands and what is open in front of it. Finished work goes to
 
 ## Where things stand
 
+**The whole reminder machinery was read and nothing was built** (#14-new).
+Patrick's ruling opens the work and governs it: reminders being rock solid is
+the only purpose of this app. His second is that when something has to give,
+the old reminder is thrown away and the new one kept. His third is that the
+reminders should follow established practice rather than a private arrangement
+that happens to work.
+
+**The account lives in `docs/reminder-rebuild.md`** and is the file to open for
+this work. It carries what was read, what is already right and must not be
+undone, eight findings, a fix list in order, and what is undecided. Nothing in
+it is agreed and nothing has been acted on. It is not repeated here.
+
+**The two faults Patrick reported are one fault.** An item ticked off before
+its time still reminds, because the three repeating screens arm the phone's own
+repeating alarm and their readers never look at the checkmark. The banner that
+then arrives for an already-finished item lands on a row correctly showing its
+checkmark, which is what he saw first. `app/myday.tsx` was read to be sure of
+it; the page draws from the item's own saved state and clears yesterday's
+before it draws, so no second mechanism is involved.
+
+**The module's own shape is sound and is not the fault.** Working the whole set
+out afresh, matching by a name built from what a reminder is, and trimming the
+furthest away under Apple's ceiling is the established practice, confirmed
+against Apple's and the notification library's own published guidance. The
+repeating alarms are also asked for correctly for the version of the library
+installed here, which was read in the package rather than recalled.
+
 **A tapped reminder now lands on its own item, on all five pages that have
-one** (#13-new). The housing hands the item's id to the page it opens, as
+one** (#13-new). **Patrick has run it on the phone and it works** (#14-new),
+which closes the last open piece of that session. The housing hands the item's id to the page it opens, as
 `highlight`, and the page draws an outline round that row. The id was already
 travelling with every reminder the module makes and was simply being dropped
 at the last step. My Day, Pets, My Week and Look Ahead share one shape; To-Do
@@ -119,6 +147,17 @@ itself on the next build. Nothing else reports.
 
 ## What is open in front of it
 
+**The reminder work, which is now the live work** (#14-new). Everything about
+it is in `docs/reminder-rebuild.md` — eight findings and a fix list, none of it
+agreed. The next session decides what is built and in what order. Two of the
+items already standing below, My Week's hand-armed snooze and the dead "+1 Day"
+button, are carried in that file as well because they belong to this piece of
+work.
+
+**Two reads are owed before the second fix can be built** (#14-new):
+`app/mollie.tsx` and `app/myweek.tsx`. Both draw a checkmark, and My Week holds
+the one reminder the module cannot see.
+
 **Nothing of the scheduler plan.** It is finished. What follows belongs to
 the app at large.
 
@@ -171,12 +210,9 @@ confirmed it is the one that failed.
 test cannot be started. Deleting the day's entry brings the Start button back,
 at the cost of that day's real score.
 
-**The reminder highlight is built** (#13-new) and is described under "Where
-things stand" above. What it has not had is a banner: Patrick loaded the four
-reorder pages and confirmed they look right, and the light theme's outline was
-lightened on his word after that — but no reminder has actually been tapped to
-open a page, and To-Do was built after the load. The whole of it is waiting on
-a real banner tap, To-Do's background daily among them.
+**The reminder highlight is finished and confirmed** (#13-new, run on the phone
+at #14-new). Patrick tapped a banner and it landed on the right item with the
+row lit. Nothing is owed on it.
 
 ## A fact worth carrying
 
