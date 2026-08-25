@@ -1547,6 +1547,115 @@ stays as it is.
 is deliberate — Patrick wants the reminder work to arrive whole.
 
 
+## #19-new (2026-08-25): Patrick's epiphany — the app gets one shape, designed once, and no code was touched
+
+**The session belongs to Patrick.** It opened as Reminder Fix 2 for My
+Week continued, and he stopped it before it began: *I HAVE HAD AN
+EPIPHANY.* Everything below came out of him thinking aloud, with the
+reading done only to check him. Not a line of app code was changed.
+
+**His framing, which governs the rest.** The heart and the original
+purpose of this app is the reminder pages. The scheduler is the brain,
+the engine, the processing part; everything else is packaging and
+screens. What the sessions before it had been doing was piecing and
+patching, one screen at a time, each in its own way. What is wanted
+instead is one shape — in his words, that is where the work is, but it
+is logical work rather than juggling.
+
+**The five pieces are his.** Input screens, an input store, the
+scheduler, an output store, and the reminder itself. The two stores are
+the contracts: one shape going in means every screen writes the same
+thing, one shape coming out means the reminder side reads the same
+thing.
+
+**It is a loop, and the returning arrow was also his.** Told that done,
+snoozed and skipped come back from the far end and have to land at the
+front, he answered in flowchart terms — the arrows come back to a
+decision block, and the arrow from the store arrives at that same block.
+That is stronger than the rule Claude had offered, which was that every
+write must turn the loop: a rule has to be remembered at every call site
+and an arrow does not. If the store feeds the block, anything written
+down flows on by construction, Siri included.
+
+**The two decision blocks.** *Is this still wanted?* is the first, and
+every returning arrow lands on it; the kinds answer it differently and
+that must be held as a rule rather than an exception, his own standing
+example being that an appointment cannot be snoozed and has nothing to
+mark done. *How far ahead do we arm?* is the second, and it belongs to
+the scheduler rather than the item, because only the scheduler can see
+how full the phone is.
+
+**What the reading found, and it changed the size of the job.**
+`types.ts`, `readers/occurrences.ts` and all six readers were read,
+about seven hundred lines. The output half of what Patrick wanted is
+already built and already common: `WantedReminder`, produced by all six
+readers, with exactly three trigger kinds. The six shapes are all on the
+input side, and four of their five differences are only different words
+— `label` against `title`; `completed`, nothing, a removal and a
+`phase`; `snoozedUntil`, `snoozedUntil`, `postponedTo` and
+`delayedUntil`; and four ways of saying when a thing is due. The fifth
+was a real difference in kind — a To-Do task carries several reminders —
+and **Patrick collapsed it himself**: a task has one end date, and its
+several reminders are lead times off that one date. So the input shape
+is an item, a rule for when it comes due, and how far ahead to speak.
+
+**Five screens through the shape, two handled their own way**
+(Patrick). My Day, Pets, My Week, Look Ahead and To-Do go through it;
+the Memory Test and the Timer do not. The code bears the Memory Test
+out — its reader is handed one session with a `phase` and a moment
+already worked out, so there is no item and no due rule for the shape to
+hold. The caveat recorded with it: the two specials skip the input
+shape, not the engine, and must still pass the depth block or they
+quietly spend places nothing is watching.
+
+**Mend, and neither road.** Patrick asked directly whether this is a
+total bulldoze and whether it would be worth it. The answer given: no,
+because half of what he wants is already built, and the mess is five
+screens each saving in its own way rather than the scheduler's mess.
+The road is a translator at the boundary — leave what the screens save
+exactly as it is, put the one shape between them and the scheduler, and
+the readers become five small translators plus one engine. No screen
+changes, nothing on the phone breaks, and a screen can be brought round
+later or never. It is his own split doing the work: the screens are
+packaging, and the translator is the boundary.
+
+**The shape overtakes My Week's steps two and three** (Patrick's
+ruling). The weekly companion to `nextOccurrences` and the `readMyWeek`
+rewrite both sit inside the thing just redesigned — the tick question
+*is* the first decision block and the weekly arithmetic *is* the common
+due rule — so building them the old way would be one more patch. My Week
+gets cured by being one of the five.
+
+**The order of work, agreed.** Read `scheduler.ts` and `reconcile.ts`,
+718 lines, because everything plugs into them and the confidence there is
+still borrowed; settle the one input shape on paper with Patrick before
+any code; build the shape and the two decision blocks as plain tested
+files that nothing yet calls; write the five translators one screen at a
+time; swap the screens over one at a time, retiring each old reader as
+its replacement is proved; and only then the phone.
+
+**Two documents came out of it**, and they are the session's whole
+output. `docs/reminder-shape.md` carries the shape, the five pieces, the
+two blocks, what each store holds, what was read, the road, and a list of
+what is expressly not decided. `docs/reminder-shape.drawio` is the same
+thing drawn — Patrick asked for a diagram he could open in draw.io, and
+the name he was reaching for is a data flow diagram with flowchart
+diamonds in it. He opened it and his word was *very good*. Two things
+Claude decided while drawing were named to him: the *Dropped* box, so the
+first diamond has a second way out, and Siri drawn as its own outside
+box, since that is the arrow the app does not really have.
+
+**Two things raised and dropped.** He proposed renaming To-Do to
+Appointments; told that the same screen also holds background tasks,
+which have no date and get one daily eight o'clock notice, he asked what
+background tasks were, and on being told plainly that Claude had not
+opened the page and only knew what the reader declared, he left both the
+question and the rename alone. His words: *Not even shelved. Forgotten.*
+
+**Nothing reached the phone, and no test count changed.** 230 of 230
+still stands from #18-new.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

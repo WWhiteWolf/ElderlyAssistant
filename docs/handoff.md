@@ -6,6 +6,45 @@ stands and what is open in front of it. Finished work goes to
 
 ## Where things stand
 
+**The work has a shape now, and it is Patrick's** (#19-new). He stopped the
+session at its first sentence with an epiphany: the heart and the original
+purpose of this app is the reminder pages, the scheduler is the engine, and
+everything else is packaging and screens. What the sessions before it had been
+doing was piecing and patching one screen at a time. What replaces it is one
+shape, designed once. **The whole of it lives in `docs/reminder-shape.md`, with
+the same thing drawn in `docs/reminder-shape.drawio`, and it is not repeated
+here.** In outline: five pieces, two of them stores that act as the contracts;
+a loop rather than a line, with the returning arrow landing on the same block
+the store feeds; and two decision blocks, *is this still wanted?* and *how far
+ahead do we arm?*
+
+**The reading changed the size of the job** (#19-new, `types.ts`,
+`readers/occurrences.ts` and all six readers, about seven hundred lines).
+`WantedReminder` is already the one common output and all six readers produce
+it. Every one of the six shapes is on the input side, and four of their five
+differences are only different words. The fifth — a To-Do task carrying several
+reminders — Patrick collapsed himself: one end date, and the several reminders
+are lead times off it.
+
+**The road is a translator at the boundary, not a bulldoze** (#19-new).
+Patrick asked directly whether it was worth starting over. It is not: half of
+what he wants is built. Leave what the screens save exactly as it is and put
+the one shape between them and the scheduler, so the readers become five small
+translators plus one engine. No screen changes and nothing on the phone breaks.
+
+**Five screens go through the shape** — My Day, Pets, My Week, Look Ahead and
+To-Do. The Memory Test and the Timer are handled their own way (Patrick). They
+skip the input shape but **not** the engine: they still produce a
+`WantedReminder` and still pass the depth block, or they spend places nothing
+is watching.
+
+**The order of work is agreed** (#19-new). Read `scheduler.ts` and
+`reconcile.ts`, 718 lines, which is where the next session starts; settle the
+input shape on paper with Patrick before any code; build the shape and the two
+decision blocks as plain tested files nothing yet calls; write the five
+translators one at a time; swap the screens over one at a time, retiring each
+old reader as its replacement is proved; then the phone.
+
 **The outside report has been checked, and the answer is mend rather than
 rebuild** (#18-new). Patrick asked to verify what could be verified before
 deciding, and set the lens himself: *Cursor knew nothing of the "helpful"
@@ -68,13 +107,16 @@ silent for good. **So the reset had to move before the reader could be touched.*
   `app/myweek.tsx` asks for it before it reads, the way the two daily pages ask
   for theirs, and its own two copies of the arithmetic are gone. 230 of 230
   tests pass, up from 210.
-- **Step two, to do.** `occurrences.ts` counts only in days — `nextOccurrences`
-  steps a day at a time and has no weekday in it, so it cannot serve a weekly
-  chore. Its own comment about a weekly thing getting a fortnight describes
-  Patrick's rule, not this function. A weekly companion is wanted beside it.
-- **Step three, to do.** Rewrite `readMyWeek` on that companion and make it
-  honour the tick, and replace the header comment and the test that assert the
-  opposite.
+- **Steps two and three are superseded** (Patrick, #19-new). They were a
+  weekly companion to `nextOccurrences`, then `readMyWeek` rewritten on it to
+  honour the tick. Both sit inside the thing the shape redesigns — the tick
+  question *is* the first decision block and the weekly arithmetic *is* the
+  common due rule — so building them the old way would be one more patch. My
+  Week gets cured by being one of the five screens that go through the shape.
+  What still goes out with that work, whenever it lands: the header comment of
+  `scheduler/readers/myweek.ts` and the test named *A chore already ticked
+  still gets its weekly reminder*, both of which assert the opposite of what
+  is wanted.
 
 **Nothing reached the phone**, and the reader has not been touched.
 
@@ -288,15 +330,19 @@ itself on the next build. Nothing else reports.
 most of what the outside reading widened turned out to be deliberate. Nothing
 about the joins argues for starting over.
 
-**My Week steps two and three are the work in front of us**, in that order —
-the weekly companion to `nextOccurrences`, then `readMyWeek` rewritten on it and
-made to honour the tick. The header comment and the test that assert the
-opposite go out with step three.
+**The next session's first piece is the read of `scheduler.ts` and
+`reconcile.ts`** (#19-new), 718 lines together — a moderate read, not a heavy
+one. It comes first because every step of the shape plugs into them, and the
+confidence in the engine's core is still borrowed from the record rather than
+first-hand. Patrick asked for a fresh session for it, wanting the reading done
+sharp.
 
-**Still unread, and the report's claims about them still stand on the report
-alone**: `readers/lookahead.ts`, `readers/todo.ts`, `readers/memorytest.ts`;
-`reconcile.ts`; `app/lookahead.tsx`, `app/todo.tsx`, `app/memorytest.tsx`; and
-the test files other than My Day's, Pets' and My Week's.
+**Still unread**: `reconcile.ts`; `app/lookahead.tsx`, `app/todo.tsx`,
+`app/memorytest.tsx`; and the test files other than My Day's, Pets' and My
+Week's. The six readers and `types.ts` were read at #19-new, so the report's
+claims about *those* no longer stand on the report alone. `app/todo.tsx` in
+particular has never been opened — the background tasks are known only from
+what `readers/todo.ts` declares.
 
 **Nothing should reach the phone until the reminder work is whole** (Patrick,
 #15-new). Three screens are cured or half-cured and none of it has been built.

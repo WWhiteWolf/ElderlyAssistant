@@ -1,13 +1,14 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-08-25 (#18-new — the outsider's report has now been
-checked, and most of what it flagged turns out to be things we decided
-on purpose. It had no way of knowing that. The code is in better shape
-than the report made it sound, so the answer to "mend or rebuild" is
-mend.
-Three real holes were left. My Week's cure was started and its first
-step is built and tested: a chore's checkmark now clears wherever the
-app runs instead of only when you open My Week. Nothing has gone onto
-the phone.
+Last updated: 2026-08-25 (#19-new — your epiphany, and the reminder
+work now has one shape instead of six. The reminder pages are the
+heart of the app; the scheduler is the engine; everything else is
+packaging. Rather than curing one screen at a time, five screens will
+be brought to one common shape and the engine written once against it.
+Nothing was built and no code was touched — the session made two
+documents, docs/reminder-shape.md and the drawing beside it.
+Before it, #18-new checked the outsider's report and the answer was
+mend rather than rebuild, and built the first step of My Week's cure.
+Nothing has gone onto the phone.
 Bare session numbers below mean the old shared chain.)
 
 This is the "what's still left" list in everyday words. Nothing here
@@ -103,10 +104,51 @@ WHAT'S NEXT
       cleared when you opened the page. A chore ticked once would
       have gone silent for good. Worse than the fault we started
       with.
-    Steps two and three, still to do: teach the day-counting to
-      count in weeks, then rewrite My Week's reminder to use it and
-      to look at the checkmark. The wrong note and the wrong test
-      that say My Week never had the fault go out with step three.
+    Steps two and three are now overtaken by #19-new, your call.
+      They were: teach the day-counting to count in weeks, then
+      rewrite My Week's reminder to use it and to look at the
+      checkmark. Both sit inside the very thing the new shape
+      redesigns, so doing them the old way would be one more patch.
+      My Week gets cured instead by being one of the five screens
+      brought to the common shape. The wrong note and the wrong test
+      that say My Week never had the fault still go out with it.
+  What #19-new settled — the shape, and nothing built:
+    The reminder pages are the heart of this app. The scheduler is
+      the engine. Everything else is packaging and screens. That is
+      your framing and it governs the rest.
+    Five pieces: the screens you type into, a store holding what
+      exists, the engine, a store holding what should be armed, and
+      the reminder itself. The two stores are the contracts — one
+      shape in, one shape out — and that is what ends six screens
+      saying the same things six different ways.
+    It is a loop, not a line. Done, snoozed and skipped come back
+      from the far end and land on the same decision block the store
+      feeds, so nothing has to remember to set it turning. That was
+      your drawing, and it is better than the rule it replaced.
+    Two decision blocks: is this still wanted, and how far ahead do
+      we arm. The second belongs to the engine, because only the
+      engine can see how full the phone is.
+    Good news from the reading: the output half is already built and
+      already common. All six readers already produce one shape. The
+      six different shapes are all on the input side, and four of
+      their five differences are only different words for the same
+      idea.
+    You collapsed the fifth yourself: a To-Do task has one end date,
+      and its several reminders are just lead times off that date.
+    Five screens go through the shape — My Day, Pets, My Week, Look
+      Ahead and To-Do. The Memory Test and the Timer are handled
+      their own way, your call, and the code agrees.
+    Not a bulldoze. What the screens save stays exactly as it is,
+      and the common shape goes between the screens and the engine.
+      No screen changes and nothing on your phone breaks.
+    The order from here: read the engine itself (718 lines, and the
+      one thing not yet read first-hand); settle the shape on paper
+      with you; build it and the two decision blocks with tests,
+      touching nothing that exists; then the five screens one at a
+      time; then the phone.
+    Two documents came out of it and they are the whole output:
+      docs/reminder-shape.md and docs/reminder-shape.drawio, the
+      same thing drawn for draw.io.
   Also found and left alone (#18-new, your call): the warning about
   a failed clear-out is never actually shown to you. It is written
   down but filtered out before it reaches the pop-up, because it was
@@ -126,12 +168,14 @@ WHAT'S NEXT
       the most recent, in your Still To Do wording. Shown once and
       gone when you tap it. Being away a fortnight gives you a
       short list, not a wall.
-  Still to do, in order: My Week steps two and three; Siri telling
-  the module what it has done; making a failed clear-out speak;
-  holding a run that gets dropped when two happen at once; saying
-  the show-a-banner instruction once instead of on eight pages;
-  bringing My Week's snooze under the module; and the dead "+1 Day"
-  button.
+  Still to do, in order (reordered at #19-new): read the engine;
+  settle the common shape with you; build it with its tests; the
+  five screens one at a time, which is where My Week is cured; Siri
+  telling the module what it has done; making a failed clear-out
+  speak; holding a run that gets dropped when two happen at once;
+  saying the show-a-banner instruction once instead of on eight
+  pages; bringing My Week's snooze under the module; and the dead
+  "+1 Day" button.
   The plan that ran the earlier work is no longer
   a live file; it is kept whole at the end of docs/build-history.md
   in case anyone ever needs to know why a thing was done its way.
