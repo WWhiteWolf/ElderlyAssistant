@@ -6,6 +6,7 @@ import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import { ThemeProvider } from '../constants/Themes';
 import * as AppGroup from '../modules/app-group';
+import { showHealthNotice } from '../scheduler/notice';
 import { runScheduler } from '../scheduler/scheduler';
 
 export default function RootLayout() {
@@ -167,10 +168,16 @@ export default function RootLayout() {
   // While the screens are still arming their own reminders, this is safe: the
   // scheduler matches by name, so a reminder that is already right is left
   // exactly where it is and nothing is ever created twice.
+  //
+  // #15-new: the run now writes down how it went, and the pop-up speaks if a
+  // reminder is not going to arrive. It waits for the run to finish rather than
+  // being hung on a page, because on a cold launch the first page draws long
+  // before the run is done — and it is shown from here so it finds Patrick
+  // wherever he is, not only on the home page.
   useEffect(() => {
-    runScheduler();
+    runScheduler().then(showHealthNotice);
     const sub = AppState.addEventListener('change', (state) => {
-      if (state === 'active') runScheduler();
+      if (state === 'active') runScheduler().then(showHealthNotice);
     });
     return () => sub.remove();
   }, []);

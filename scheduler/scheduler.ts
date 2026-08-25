@@ -16,6 +16,8 @@ import { reconcile } from './reconcile.ts';
 import type { Plan, QueueEntry } from './reconcile.ts';
 import { isNewDay, resetForNewDay } from './dailyreset.ts';
 import type { ResettableItem } from './dailyreset.ts';
+import { HEALTH_KEY, MISSES_KEY, addRun, faultSignature, mergeMisses, missesForRollover } from './health.ts';
+import type { Miss, MissableItem, RunFault, RunRecord } from './health.ts';
 import type { WantedReminder, WantedTrigger } from './types.ts';
 
 import { readMyDay } from './readers/myday.ts';
@@ -89,9 +91,14 @@ export const OWNED_SOURCES = [
  * The counts go back to zero with the checkmarks — the cups of coffee and
  * glasses of water on My Day, and the treats on Pets — because each of those
  * counts a day.
+ *
+ * It answers with whatever went wrong, which is nothing on an ordinary day. One
+ * screen failing still must not stop the other, and must not stop the reminders
+ * being worked out below — but it is now written down instead of vanishing.
  */
-export async function runDailyReset(): Promise<void> {
+export async function runDailyReset(): Promise<RunFault[]> {
     const today = new Date().toLocaleDateString();
+    const faults: RunFault[] = [];
 
     const screens = [
         { dateKey: 'my_last_date', listKey: 'my_routine', counters: ['my_coffee', 'my_water'] },
@@ -103,18 +110,72 @@ export async function runDailyReset(): Promise<void> {
             const savedDate = await AsyncStorage.getItem(screen.dateKey);
             if (!isNewDay(savedDate, today)) continue;
 
-            const items = await readList<ResettableItem>(screen.listKey);
-            if (items.length > 0) {
-                await AsyncStorage.setItem(screen.listKey, JSON.stringify(resetForNewDay(items)));
+            const saved = await readList<ResettableItem>(screen.listKey);
+            // A list we cannot read is a fault of the rolling-over here, and the
+            // quiet kind. The loud one is raised below, where the same unreadable
+            // list means that screen's reminders are worked out as none.
+            if (saved.failed) faults.push({ kind: 'reset', listKey: screen.listKey });
+
+            // What was left undone has to be written down before the reset wipes
+            // it, because this is the last moment it can be seen at all.
+            await recordMisses(saved.items as unknown as MissableItem[], screen.listKey, savedDate);
+
+            if (saved.items.length > 0) {
+                await AsyncStorage.setItem(screen.listKey, JSON.stringify(resetForNewDay(saved.items)));
             }
             for (const counter of screen.counters) {
                 await AsyncStorage.setItem(counter, '0');
             }
             await AsyncStorage.setItem(screen.dateKey, today);
         } catch {
-            // One screen failing to roll over must not stop the other, and must
-            // not stop the reminders being worked out below.
+            faults.push({ kind: 'reset', listKey: screen.listKey });
         }
+    }
+
+    return faults;
+}
+
+/**
+ * Yesterday, written the same way the phone writes a date.
+ *
+ * It counts back from the clock rather than reading the date string the app
+ * saved, because that string is written in the phone's own locale — 8/25/2026
+ * here, 25/08/2026 elsewhere — and a string like that cannot be safely parsed
+ * back into a day.
+ */
+function yesterdaysDate(): string {
+    const when = new Date();
+    when.setDate(when.getDate() - 1);
+    return when.toLocaleDateString();
+}
+
+/**
+ * Write down the reminders that never reached Patrick, as the day rolls over.
+ *
+ * `savedDate` is the last day this screen rolled over. When that is the day
+ * before today, the app was open yesterday and the checkmarks mean what they
+ * say. When it is older, the app went unopened for at least a whole day and
+ * every reminding item missed yesterday whatever its checkmark shows. When
+ * there is none at all, this screen has never rolled over and there is nothing
+ * to claim was missed.
+ */
+async function recordMisses(
+    items: MissableItem[],
+    listKey: string,
+    savedDate: string | null,
+): Promise<void> {
+    try {
+        if (!savedDate) return;
+        const yesterday = yesterdaysDate();
+        const fresh = missesForRollover(items, listKey, yesterday, savedDate !== yesterday);
+        if (fresh.length === 0) return;
+
+        const raw = await AsyncStorage.getItem(MISSES_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        const waiting: Miss[] = Array.isArray(parsed) ? parsed : [];
+        await AsyncStorage.setItem(MISSES_KEY, JSON.stringify(mergeMisses(waiting, fresh)));
+    } catch {
+        // Nothing can be done, and the reset itself must still go ahead.
     }
 }
 
@@ -129,8 +190,12 @@ export async function runDailyReset(): Promise<void> {
  * The honest limit: this can only happen while the app is running or as it
  * comes to the front. A phone left unopened for two days keeps those banners
  * until it is opened.
+ *
+ * It answers with whatever went wrong. A banner that has already gone is still
+ * nothing to worry about, and this is one of the two quiet faults — no reminder
+ * is lost by it — but it is written down rather than swallowed.
  */
-export async function sweepStaleBanners(): Promise<void> {
+export async function sweepStaleBanners(): Promise<RunFault[]> {
     try {
         const startOfToday = new Date();
         startOfToday.setHours(0, 0, 0, 0);
@@ -143,20 +208,30 @@ export async function sweepStaleBanners(): Promise<void> {
                 await Notifications.dismissNotificationAsync(banner.request.identifier);
             }
         }
+        return [];
     } catch {
-        // A banner that has already gone is nothing to worry about.
+        return [{ kind: 'sweep' }];
     }
 }
 
-/** Read one saved list, tolerating a key that has never been written. */
-async function readList<T>(key: string): Promise<T[]> {
+/**
+ * Read one saved list.
+ *
+ * A key that has never been written is not a fault — that is simply a screen
+ * with nothing on it yet. A key holding something that cannot be read is, and
+ * it is the worst kind: the list is treated as empty, so that screen's
+ * reminders are worked out as none and the ones already on the phone are then
+ * taken off as leftovers. Reminders would disappear and nothing would be said.
+ */
+async function readList<T>(key: string): Promise<{ items: T[]; failed: boolean }> {
     try {
         const raw = await AsyncStorage.getItem(key);
-        if (!raw) return [];
+        if (!raw) return { items: [], failed: false };
         const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? (parsed as T[]) : [];
+        if (!Array.isArray(parsed)) return { items: [], failed: true };
+        return { items: parsed as T[], failed: false };
     } catch {
-        return [];
+        return { items: [], failed: true };
     }
 }
 
@@ -184,8 +259,13 @@ async function readClockTimes(): Promise<ClockTimes> {
  *
  * The storage reading all happens here, once, and the parsed lists are handed
  * down to the readers — which is what keeps a reader plain enough to test.
+ *
+ * It answers with the reminders and with any list it could not read. A list
+ * that fails here is the loud fault: that screen's reminders come out as none.
  */
-export async function gatherWanted(now: number): Promise<WantedReminder[]> {
+export async function gatherWanted(
+    now: number,
+): Promise<{ wanted: WantedReminder[]; faults: RunFault[] }> {
     const [routine, feeds, chores, lookahead, tasks, times] = await Promise.all([
         readList<MyDayItem>('my_routine'),
         readList<PetsItem>('pets_feeds'),
@@ -195,6 +275,18 @@ export async function gatherWanted(now: number): Promise<WantedReminder[]> {
         readClockTimes(),
     ]);
 
+    const faults: RunFault[] = [];
+    const lists: [{ failed: boolean }, string][] = [
+        [routine, 'my_routine'],
+        [feeds, 'pets_feeds'],
+        [chores, 'week_routine'],
+        [lookahead, 'lookahead_items'],
+        [tasks, 'todo_tasks'],
+    ];
+    for (const [list, listKey] of lists) {
+        if (list.failed) faults.push({ kind: 'list', listKey });
+    }
+
     // The memory test saves one session rather than a list.
     let session: MemoryTestSession | null = null;
     try {
@@ -202,16 +294,20 @@ export async function gatherWanted(now: number): Promise<WantedReminder[]> {
         if (raw) session = JSON.parse(raw) as MemoryTestSession;
     } catch {
         session = null;
+        faults.push({ kind: 'list', listKey: 'memtest_session' });
     }
 
-    return [
-        ...readMyDay(routine, now),
-        ...readPets(feeds, now),
-        ...readMyWeek(chores, now),
-        ...readLookAhead(lookahead, now),
-        ...readToDo(tasks, times, now),
-        ...readMemoryTest(session, now),
-    ];
+    return {
+        wanted: [
+            ...readMyDay(routine.items, now),
+            ...readPets(feeds.items, now),
+            ...readMyWeek(chores.items, now),
+            ...readLookAhead(lookahead.items, now),
+            ...readToDo(tasks.items, times, now),
+            ...readMemoryTest(session, now),
+        ],
+        faults,
+    };
 }
 
 /**
@@ -268,11 +364,24 @@ function triggerInput(trigger: WantedTrigger): Notifications.NotificationTrigger
     } as Notifications.DateTriggerInput;
 }
 
-/** Cancel what the plan says to cancel, then create what it says to create. */
-export async function applyPlan(plan: Plan): Promise<void> {
+/**
+ * Cancel what the plan says to cancel, then create what it says to create.
+ *
+ * It answers with what it managed. One reminder failing must still not stop the
+ * rest — but a reminder that could not be created simply does not exist, and
+ * that is the fault that matters most, so it is counted and handed back.
+ */
+export async function applyPlan(
+    plan: Plan,
+): Promise<{ cancelled: number; created: number; failedToCreate: number }> {
+    let cancelled = 0;
+    let created = 0;
+    let failedToCreate = 0;
+
     for (const identifier of plan.cancel) {
         try {
             await Notifications.cancelScheduledNotificationAsync(identifier);
+            cancelled++;
         } catch {
             // A reminder that has already fired or gone is nothing to worry
             // about; the next run will see the truth either way.
@@ -300,9 +409,41 @@ export async function applyPlan(plan: Plan): Promise<void> {
                 },
                 trigger: triggerInput(reminder.trigger),
             });
+            created++;
         } catch {
             // One reminder failing must not stop the rest.
+            failedToCreate++;
         }
+    }
+
+    return { cancelled, created, failedToCreate };
+}
+
+/**
+ * Write down how a run went.
+ *
+ * This is the one place that can fail with nowhere to report it, so it stays
+ * silent: a phone that cannot write to storage cannot be told about it either.
+ * Faults that name the same trouble twice are folded into one, so the pop-up
+ * never says the same sentence two lines running.
+ */
+async function recordRun(record: RunRecord): Promise<void> {
+    try {
+        const seen = new Set<string>();
+        const faults: RunFault[] = [];
+        for (const fault of record.faults) {
+            const signature = faultSignature(fault);
+            if (seen.has(signature)) continue;
+            seen.add(signature);
+            faults.push(fault);
+        }
+
+        const raw = await AsyncStorage.getItem(HEALTH_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        const previous: RunRecord[] = Array.isArray(parsed) ? parsed : [];
+        await AsyncStorage.setItem(HEALTH_KEY, JSON.stringify(addRun(previous, { ...record, faults })));
+    } catch {
+        // Nothing can be done and nowhere to say so.
     }
 }
 
@@ -320,27 +461,62 @@ let running = false;
  *
  * It returns what it did, which is what the queue screen will show later, or
  * null when it did nothing at all.
+ *
+ * Every run also writes down how it went, so a failure is no longer invisible.
+ * A run that was skipped writes nothing: it is the module protecting itself
+ * rather than a failure, and the run already going will write for both.
  */
 export async function runScheduler(): Promise<Plan | null> {
     if (running) return null;
     running = true;
     try {
         const permission = await Notifications.getPermissionsAsync();
-        if (!permission.granted) return null;
+        if (!permission.granted) {
+            await recordRun({
+                at: Date.now(),
+                faults: [{ kind: 'permission' }],
+                created: 0,
+                cancelled: 0,
+                kept: 0,
+            });
+            return null;
+        }
+
+        const faults: RunFault[] = [];
 
         // The clean slate comes first, in both its halves. The reset has to
         // happen before the lists are read, or a snooze made yesterday would be
         // armed for today; the sweep is independent and simply belongs here.
-        await runDailyReset();
-        await sweepStaleBanners();
+        faults.push(...(await runDailyReset()));
+        faults.push(...(await sweepStaleBanners()));
 
         const now = Date.now();
-        const wanted = await gatherWanted(now);
+        const gathered = await gatherWanted(now);
+        faults.push(...gathered.faults);
+
         const queue = await readQueue();
-        const plan = reconcile(wanted, queue, OWNED_SOURCES, now);
-        await applyPlan(plan);
+        const plan = reconcile(gathered.wanted, queue, OWNED_SOURCES, now);
+        const applied = await applyPlan(plan);
+        if (applied.failedToCreate > 0) {
+            faults.push({ kind: 'create', count: applied.failedToCreate });
+        }
+
+        await recordRun({
+            at: now,
+            faults,
+            created: applied.created,
+            cancelled: applied.cancelled,
+            kept: plan.keep,
+        });
         return plan;
     } catch {
+        await recordRun({
+            at: Date.now(),
+            faults: [{ kind: 'stopped' }],
+            created: 0,
+            cancelled: 0,
+            kept: 0,
+        });
         return null;
     } finally {
         running = false;

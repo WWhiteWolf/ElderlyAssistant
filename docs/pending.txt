@@ -1,11 +1,13 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-08-21 (#13-new — tapping a reminder now takes you
-to the item itself, not just to the page. The item's row is outlined
-when the page opens, and a tap on it puts the outline out. It is
-built on all five pages that have reminders. You saw four of them on
-the phone and had the light theme's outline lightened; To-Do was
-built after that. No reminder has been tapped yet to try it for
-real. The morning-after test is still to come.
+Last updated: 2026-08-25 (#15-new — the app can no longer fail at
+reminders quietly. When something goes wrong, a pop-up tells you as
+you open it. And when a reminder never reached you, that is now
+told too, one line per item in your own words: "Take pills from
+yesterday is hanging!"
+The big one — a thing you tick off early still reminding you — is
+NOT fixed yet. That is the next session's work.
+Nothing has gone onto the phone, your call, so that all the
+improvements can be tested together over time.
 Bare session numbers below mean the old shared chain.)
 
 This is the "what's still left" list in everyday words. Nothing here
@@ -15,9 +17,36 @@ full record — so this list stays short.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-- THE REMINDERS — FINISHED (#12-new). Nothing left to build. All
-  eight steps are in, and one piece of the app now owns every
-  reminder on the phone. The plan that ran this work is no longer
+- THE REMINDERS — OPEN AGAIN (#14-new, #15-new). Reading the whole
+  of the reminder machinery found eight faults, and two are now
+  fixed. The next and biggest one is the fault you reported: a
+  thing you tick off early still reminds you, because those three
+  screens use the phone's own repeating alarm and a repeating alarm
+  fires whether or not the item is done. The cure is to give each
+  one a single moment aimed at the next time it is due, worked out
+  fresh every time the app runs, so it can skip one you have
+  already done. You agreed to that on one condition — that a
+  missed firing is noted when you open the app — and that part is
+  already built.
+  What #15-new put in:
+    A pop-up when you open the app, if something went wrong. Until
+      now the app could fail at reminders completely and look
+      perfectly well. It speaks about the four things that mean a
+      reminder will not arrive, and stays quiet about the two that
+      do not. It comes back once a day rather than every time you
+      come back to the app, so it does not become something you
+      tap away without reading.
+    A note of what never reached you, in the same pop-up. Written
+      down as the day rolls over, since that is the last moment the
+      app can still see what was left undone. One line per item,
+      the most recent, in your Still To Do wording. Shown once and
+      gone when you tap it. Being away a fortnight gives you a
+      short list, not a wall.
+  Still to do, in order: the big fix above; holding a run that gets
+  dropped when two happen at once; saying the show-a-banner
+  instruction once instead of on eight pages; bringing My Week's
+  snooze under the module; and the dead "+1 Day" button.
+  The plan that ran the earlier work is no longer
   a live file; it is kept whole at the end of docs/build-history.md
   in case anyone ever needs to know why a thing was done its way.
   What was built, step by step:
@@ -75,6 +104,9 @@ WHAT'S NEXT
   and add a log (#3-new).
 - Vault restructuring: the "Home" header button becomes a "Back"
   button (#3-new).
+- Scheduled Reminders, two layout fixes (#15-new): the header sits
+  too low on the screen, and the total number of reminders should
+  be noticeable directly under the header.
 
 
 NEEDS A PHONE TEST (built, just not confirmed on the phone yet)

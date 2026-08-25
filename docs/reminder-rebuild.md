@@ -1,8 +1,24 @@
 # Making the reminders rock solid — the working file
 
-Started at #14-new, 2026-08-25. Nothing in this file has been
-built. It is the account of a whole read of the reminder machinery,
-the faults that read found, and the order they would be fixed in.
+Started at #14-new, 2026-08-25, as the account of a whole read of the
+reminder machinery, the faults that read found, and the order they
+would be fixed in. #15-new built the first of them; what is done is
+marked as such below, and everything unmarked is still only an account.
+
+## Patrick's verdict, recorded at his asking (#15-new)
+
+He is disappointed, and said so plainly: eight sessions — #5-new
+through #13-new — had improving the reminders as their sole focus, and
+the read at #14-new still found eight faults, one of them the very
+thing he had reported. With a feature as established as this one, in
+his own shorthand, it should have been plug-and-play.
+
+Recorded beside it, and not as a defence of it: every one of those
+eight sessions was proved by tests and by his eye on a screen, and the
+one test that would have caught the main fault — a day passing, an item
+ticked off still reminding tomorrow — has never run, going back to
+#6-new. The faults were not exotic. They were in the half nobody
+looked at.
 
 ## Why this file exists
 
@@ -106,7 +122,7 @@ second mechanism is needed to explain what he saw, and none was found.
 **Decided:** nothing. But Patrick has said plainly what the rule should
 be — a thing ticked off should not remind for that occurrence.
 
-### 2. A failure is swallowed and never recorded
+### 2. A failure is swallowed and never recorded — CURED (#15-new)
 
 **Where it lives:** throughout `scheduler/scheduler.ts`. The whole run
 is wrapped so that any error returns nothing at all. Reading a saved
@@ -123,7 +139,9 @@ real fault from a mis-set time. Each of those guards is individually
 sensible — one reminder failing should not stop the rest — but together
 they mean the module can fail completely and silently.
 
-**Decided:** nothing.
+**Built at #15-new.** Each of the six places still catches, so one failure
+never stops the rest, but every one of them now says what happened. See
+"What #15-new built" at the foot of this file.
 
 ### 3. A second run is thrown away rather than held
 
@@ -233,10 +251,9 @@ invisible until it fails to arrive.
 Nothing here is agreed. The order is by what makes the next fix safer
 rather than by size.
 
-1. **Make a failure visible.** Until this is in, every other fix is
-   built without being able to tell whether it worked. It wants a plain
-   record of what the last run did and whether it failed, and somewhere
-   to read it — the Scheduled Reminders screen being the natural home.
+1. **Make a failure visible.** — **DONE (#15-new).** Until this was in,
+   every other fix would have been built without being able to tell
+   whether it worked. What it became is below.
 
 2. **One rule for a finished item, applied the same way everywhere.**
    This is the fix for both of the reported faults. It means moving the
@@ -259,15 +276,111 @@ rather than by size.
 
 ## What is not decided
 
-- Whether the move to single moments is made at all, and if so whether
-  all three repeating screens move together or one is proven first.
-- What a failure should look like when it is made visible, and whether
-  it ever interrupts Patrick or only sits waiting to be looked at.
-- What happens to the cost of single moments — that a stretch with the
-  app unopened arms nothing further ahead. In the other project
-  Patrick's ruling was that a week never opened was not a week being
-  relied on. Whether the same holds for this app, whose whole purpose
-  is recall, has not been asked.
+- Whether all three repeating screens move to single moments together
+  or one is proven first. **That the move is made at all is now
+  settled** — see the rulings below.
 - Whether the Timer comes under the module. It is outside it today, its
   alerts are counted but not owned, and Patrick has said twice that it
   is not working right.
+
+Two questions that stood here at #14-new are now answered and are
+recorded with the rulings below: what a failure looks like when it is
+made visible, and what happens to the cost of single moments.
+
+## Patrick's rulings at #15-new
+
+**The move to single moments is agreed, on one condition** — that a
+missed firing is noted when he opens the app. His words: "Yes as long
+as a missed firing is noted on opening."
+
+**A failure speaks in a pop-up when the app is opened.** Four of the
+six faults speak, because each one means a reminder he is expecting
+will not arrive: a reminder that failed to go onto the phone, a saved
+list that could not be read, a run that stopped part-way, and
+permission being off. Two are written down and never interrupt him —
+the day failing to roll over, and yesterday's banners not coming
+down — because neither stops a reminder arriving. The run skipped
+because another was already going is not a failure at all and says
+nothing; fix 3 cures it properly.
+
+**The pop-up comes back once a day, not on every open.** Tapping a
+fault away silences that same fault until the next day; a fault he has
+not tapped away shows at once. His agreement to the reasoning is the
+durable part: a notice that appears every time the app comes to the
+front is one you learn to tap away without reading, which costs the
+very thing it was for.
+
+**A miss is cleared by having been shown, never by the item being done
+again.** This was his correction of a rule proposed the other way
+round, and his reason is that the pop-up always comes first — the app
+cannot be used without being opened, and opening it is what raises the
+pop-up. So a miss is written down as the day rolls over, shown the next
+time he opens the app, and gone for good once he taps it away.
+
+**One pop-up carries both kinds**, faults first and then misses,
+because two pop-ups stacking on opening is what teaches a person to tap
+without reading. The heading widened to cover both.
+
+**His Still To Do wording is carried across whole** for a miss —
+"[This] from [when] is hanging!" — with his rule from there that a
+repeating item lists its most recent miss only, so a fortnight away
+gives one line per item rather than fourteen.
+
+**And an instruction about how the work is done:** give a suggestion
+without being asked for it, especially where the good answer is already
+known. He said this after being asked three times in a row what he
+wanted when there was a plain recommendation to make.
+
+## What #15-new built
+
+Nothing of fix 2 itself. Two pieces, both plain-and-tested in the shape
+the six readers already use, and 192 of 192 tests pass where 146 did
+before.
+
+**The record and the pop-up.**
+
+- `scheduler/health.ts` is the new plain file: what a run's outcome
+  looks like, which faults speak and which stay quiet, the once-a-day
+  rule, the misses, and every sentence either kind puts on screen.
+  Node tests all of it.
+- `scheduler/notice.ts` is its thin impure half — the alert box and the
+  storage reading — which is exactly the split `warn.ts` already has.
+- `scheduler/scheduler.ts` stops swallowing silently. Every one of the
+  six places still catches, so one failure never stops the rest, and
+  each now says what happened. The last ten runs are kept, so a failure
+  at breakfast is not wiped out by a good run at noon.
+- The pop-up is raised from `app/_layout.tsx` after the run finishes,
+  not from the home page. On a cold launch the first page draws long
+  before the run is done, so a pop-up hung on a page would miss the
+  very moment it is for; from the housing it also finds him wherever
+  he is.
+- It is the phone's own alert box, the same one the near-the-ceiling
+  warning uses, so the closing line is not in smaller type.
+- One thing is now a fault that was not before: a saved list holding
+  something that is not a list at all. It used to be read silently as
+  empty, which is the path where a screen's reminders vanish and the
+  ones on the phone are then taken off as leftovers.
+
+**The missed-firing safety net**, which is the condition his ruling
+put on fix 2 and is built ahead of it.
+
+- The day's rollover is the only moment the truth can still be seen,
+  because it wipes the checkmarks and afterwards yesterday's undone
+  item and today's not-yet-done item look exactly alike. So each
+  undone item leaves one line behind as it rolls over.
+- A gap needs nothing written down. The app already saves the last day
+  it rolled over, so every day between that and today is a day nothing
+  was done — which is arithmetic, and it closes the hole where a
+  fortnight away would otherwise have caught the last day only.
+- Yesterday is counted back from the clock rather than parsed out of
+  the saved date, because that date is written in the phone's own
+  wording — 8/25/2026 here, 25/08/2026 elsewhere — and cannot be
+  safely read back.
+- A week-old drop rule was proposed and deliberately not built: one
+  miss per item, plus a miss cleared for good on the tap, already
+  bounds the list, and a rule that can never fire is worse than none.
+- My Day and Pets only. My Week clears on its own cycle and that page
+  is still unread.
+
+**Still owed as reading before fix 2:** `app/mollie.tsx` and
+`app/myweek.tsx`, unchanged from #14-new.

@@ -19,6 +19,7 @@ import { runMemoryTestTests } from './memorytest.test.ts';
 import { runReconcileTests } from './reconcile.test.ts';
 import { runDailyResetTests } from './dailyreset.test.ts';
 import { runQueueViewTests } from './queueview.test.ts';
+import { runHealthTests } from './health.test.ts';
 
 console.log('\nMy Day reader');
 runMyDayTests();
@@ -46,5 +47,8 @@ runDailyResetTests();
 
 console.log('\nQueue view');
 runQueueViewTests();
+
+console.log('\nRun health');
+runHealthTests();
 
 report();

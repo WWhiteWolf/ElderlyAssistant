@@ -6,25 +6,37 @@ stands and what is open in front of it. Finished work goes to
 
 ## Where things stand
 
-**The whole reminder machinery was read and nothing was built** (#14-new).
+**A failing run can no longer hide, and a missed reminder is now told**
+(#15-new). Those are the first two pieces of the reminder work. The account of
+all of it, including everything still unbuilt, lives in
+`docs/reminder-rebuild.md` and is the file to open for this work — what was
+read, what is already right and must not be undone, eight findings, a fix list
+in order, Patrick's rulings, and what is still undecided. It is not repeated
+here.
+
 Patrick's ruling opens the work and governs it: reminders being rock solid is
 the only purpose of this app. His second is that when something has to give,
 the old reminder is thrown away and the new one kept. His third is that the
 reminders should follow established practice rather than a private arrangement
 that happens to work.
 
-**The account lives in `docs/reminder-rebuild.md`** and is the file to open for
-this work. It carries what was read, what is already right and must not be
-undone, eight findings, a fix list in order, and what is undecided. Nothing in
-it is agreed and nothing has been acted on. It is not repeated here.
+**His verdict on the eight sessions before it is on the record at his asking**,
+at the top of `docs/reminder-rebuild.md`. He is disappointed that #5-new
+through #13-new had the reminders as their sole focus and the read still found
+eight faults, one of them the thing he had reported.
 
-**The two faults Patrick reported are one fault.** An item ticked off before
-its time still reminds, because the three repeating screens arm the phone's own
-repeating alarm and their readers never look at the checkmark. The banner that
-then arrives for an already-finished item lands on a row correctly showing its
-checkmark, which is what he saw first. `app/myday.tsx` was read to be sure of
-it; the page draws from the item's own saved state and clears yesterday's
-before it draws, so no second mechanism is involved.
+**The move to single moments is agreed**, on his condition that a missed firing
+is noted when he opens the app. That safety net is built; the move itself is
+not.
+
+**The two faults Patrick reported are one fault, and it is still there.** An
+item ticked off before its time still reminds, because the three repeating
+screens arm the phone's own repeating alarm and their readers never look at the
+checkmark. The banner that then arrives for an already-finished item lands on a
+row correctly showing its checkmark, which is what he saw first. `app/myday.tsx`
+was read to be sure of it; the page draws from the item's own saved state and
+clears yesterday's before it draws, so no second mechanism is involved. Fix 2
+is what cures it.
 
 **The module's own shape is sound and is not the fault.** Working the whole set
 out afresh, matching by a name built from what a reminder is, and trimming the
@@ -135,8 +147,18 @@ checked and all of them sit correctly on a solid delay button.
 items checked off today must still remind tomorrow, which is exactly what
 used to go silent. Most of steps 3 and 4 has never been tried on a device.
 
+**The build waits on purpose** (Patrick, #15-new). He wants the reminder
+improvements to go onto the phone together and be lived with over time, rather
+than a build per session.
+
+**Two layout fixes are waiting for the Scheduled Reminders screen** (Patrick,
+#15-new), logged in `pending.txt`: the header sits too low, and the total
+number of reminders should be noticeable directly under it. Showing the run
+record on that screen was held back from #15-new so all three are done in one
+visit.
+
 **The tests run on the Mac in about a second**, headless under Node, with
-no build and no simulator. 146 of 146 pass:
+no build and no simulator. 192 of 192 pass:
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -147,16 +169,31 @@ itself on the next build. Nothing else reports.
 
 ## What is open in front of it
 
-**The reminder work, which is now the live work** (#14-new). Everything about
-it is in `docs/reminder-rebuild.md` — eight findings and a fix list, none of it
-agreed. The next session decides what is built and in what order. Two of the
-items already standing below, My Week's hand-armed snooze and the dead "+1 Day"
-button, are carried in that file as well because they belong to this piece of
-work.
+**Fix 2, which is the next piece and the largest** (#15-new). It is one rule
+for a finished item, applied the same way everywhere: the three repeating
+screens move onto single moments aimed at the next occurrence, so a reader can
+step past an occurrence already marked done. It reaches the three readers, the
+three pages that draw the checkmarks, and the daily clearing. It cures both of
+the faults Patrick reported. It was deliberately given a fresh session rather
+than the tail of #15-new. Still undecided inside it: whether all three screens
+move together or one is proven first.
 
-**Two reads are owed before the second fix can be built** (#14-new):
-`app/mollie.tsx` and `app/myweek.tsx`. Both draw a checkmark, and My Week holds
-the one reminder the module cannot see.
+**Two reads are owed before it can be built** (#14-new): `app/mollie.tsx` and
+`app/myweek.tsx`. Both draw a checkmark, and My Week holds the one reminder the
+module cannot see.
+
+**The rest of the fix list** is in `docs/reminder-rebuild.md` and unstarted:
+holding a dropped run instead of discarding it, saying the banner instruction
+once in the housing instead of on eight pages, bringing My Week's snooze under
+the module, and the dead "+1 Day" button. The last two also stand on their own
+below.
+
+**Check My Reminders, from Still To Do** (raised by Patrick, #15-new). Its six
+checks and its shape are already settled in that project at SA-19 and SA-20 —
+whether it was ever actually built there has not been checked. It answers a
+different half than the failure record does: it asks why the phone stayed
+quiet, where the record asks whether the app armed anything at all. Agreed to
+come after the reminders themselves are solid.
 
 **Nothing of the scheduler plan.** It is finished. What follows belongs to
 the app at large.
