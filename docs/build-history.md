@@ -1214,6 +1214,130 @@ quietly, which produced the separate colour name that neither side had
 proposed.
 
 
+## A gap in this file, found at #16-new
+
+Neither #14-new nor #15-new has an entry here. Both happened on
+2026-08-25 — #14-new read the whole reminder machinery and wrote the
+eight findings, and #15-new built the failure record and the
+missed-firing net — and both are accounted for in
+`docs/reminder-rebuild.md` and in App-Docs' master hand-off, but
+neither was ever written into the build history. The gap is recorded
+rather than filled: writing those two entries is its own piece of work
+and was not asked for. #16-new's entry follows directly after
+#13-new's, so this file reads 13 then 16 until they are written.
+
+
+## #16-new (2026-08-25): Pets moved to single moments — the reported
+fault cured on the first of the three screens
+
+**The session's shape.** It opened on fix 2 and spent most of itself
+reading and deciding rather than building. Two app pages were read
+entire, the scheduler's naming machinery was read to answer a question
+of Patrick's, Apple's published guidance was checked, and one reader
+was rebuilt with its tests. My Day and My Week were deliberately not
+touched.
+
+**What was read.** `app/mollie.tsx` and `app/myweek.tsx`, the two reads
+owed since #14-new, both entire. Then `scheduler/types.ts`,
+`scheduler/reconcile.ts`, `scheduler/scheduler.ts` and the three
+readers for My Day, Pets and My Week, gone over for how a reminder is
+named. Nothing in any of them was changed.
+
+**What the two pages showed, and it matters.** Pets carries a plain
+`completed` and no record of when a feed was done; it leans entirely on
+the module's daily reset, which the page asks for itself at the top of
+`refreshFromStorage`. My Week is not built like it at all: it carries
+`doneAt` and runs its own `applyWeeklyReset` on the page, weekly, only
+when the page is opened — so the daily clearing named in fix 2 never
+reaches My Week. My Week also already holds the next-occurrence
+arithmetic fix 2 needs. The asymmetry was put to Patrick and he did not
+rule on it; it stands open.
+
+**The naming question, asked by Patrick.** He asked whether reminders
+are given ids. Three names travel: the phone's own `identifier`, used
+only to cancel; the module's `key`, built as `source:itemId:part` from
+what the reminder *is*, which is what the reconcile matches on; and the
+item's own `itemId`, carried so a tapped banner finds its row. A
+reminder of ours found with no key is treated as a leftover and
+cancelled. This was read in the code rather than taken from the
+hand-off.
+
+**Best practice, checked at his asking.** A recommendation had been
+made from memory against filling the queue to capacity, and it was
+withdrawn once the sources were read. Apple's own engineers confirm the
+sixty-four limit counts scheduled requests rather than deliveries, and
+that a repeating trigger is one request however many times it fires —
+so leaving repeating alarms has a real cost, and that cost is precisely
+what fix 2 spends. For a conditional reminder, which a repeating
+trigger cannot express, the documented pattern is to fill the queue
+with the nearest upcoming occurrences on every launch and top it up
+each run, which is what the reconcile already does.
+
+**Patrick's ruling on depth: two occurrences ahead, not two days.** He
+first said three and settled on two once the arithmetic was in front of
+him — fourteen items at three deep take forty-two of the fifty-six
+places the module has to spend, and two deep take twenty-eight. It
+counts occurrences rather than days on purpose, so a weekly chore gets
+a fortnight rather than nothing. His words: "I think 2 will have to be
+enough. And with notices everything should be covered." What the
+notice actually does was stated back to him and accepted: it tells him
+a reminder was missed when he next opens the app; it does not make the
+reminder arrive.
+
+**His ruling on order: Pets first, then My Day, then My Week**, one
+screen at a time with both halves of the fix built together in each.
+That closed the question #15-new left open. The reasoning he agreed to
+was that both halves live in the same few lines of each reader, so
+splitting them means writing that code twice, and that My Week goes
+last because it is the odd one.
+
+**What was built.** `scheduler/readers/pets.ts` now asks for a feed's
+next two occurrences as single moments instead of one repeating daily
+alarm. The skip is narrow on purpose: an upcoming occurrence falling
+today is dropped when the feed is ticked, and one on any later day is
+never dropped, because `completed` only ever means "done today". The
+snooze half of the file is untouched.
+
+**A fault caught mid-build, before anything was run.** The occurrences
+were first named by their place in the run — `next1`, `next2`. Those
+names slide as days pass, so every run would find every name pointing
+at a new moment and cancel and re-create all of them. Each occurrence
+is now named for the day it falls on, `pets:p1:20260825`, built from
+the date's own parts rather than a written-out date, which would come
+in the phone's own locale. Named that way an occurrence keeps its name
+until it fires and the reconcile leaves it alone. The day is also
+stepped a day at a time rather than by adding twenty-four hours, so a
+feed keeps its time of day across the clocks changing.
+
+**The tests.** `scheduler/tests/pets.test.ts` went from eleven to
+twenty-one and was rebuilt around a real date rather than a bare
+number, the change being about calendar days and times of day. The test
+that had never run since #6-new now runs: a day passing, an item ticked
+off, and whether it still reminds tomorrow. 202 of 202 pass, up from
+192. `npx tsc` reports only the stale generated-route error that
+predates this work.
+
+**Two consequences.** Each feed now takes two of the phone's places
+instead of one. And the Scheduled Reminders screen will show two rows
+per feed rather than one and will say a Pets reminder does not repeat —
+expected rather than verified, since that screen's code was not opened.
+
+**Left owed.** My Day, which should be nearly a copy of Pets. My Week,
+which waits on the asymmetry above. The comment at the head of
+`readers/myweek.ts` calling My Week the shape the others are being
+brought round to, which stops being true once My Week itself moves.
+And `OCCURRENCES_AHEAD`, which lives inside `readers/pets.ts` and
+belongs somewhere all three can see it.
+
+**How the session ran.** Reads were asked for and their size named
+before they were done. Two things worth carrying. A recommendation was
+made from memory, argued for, and then found wrong when the sources
+were actually read — the checking should have come first, since Patrick
+had asked for established practice rather than what happens to work.
+And "nothing has gone onto the phone" was said at the end of several
+reports until he asked for it to stop.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

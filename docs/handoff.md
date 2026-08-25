@@ -6,13 +6,28 @@ stands and what is open in front of it. Finished work goes to
 
 ## Where things stand
 
-**A failing run can no longer hide, and a missed reminder is now told**
-(#15-new). Those are the first two pieces of the reminder work. The account of
-all of it, including everything still unbuilt, lives in
-`docs/reminder-rebuild.md` and is the file to open for this work — what was
-read, what is already right and must not be undone, eight findings, a fix list
-in order, Patrick's rulings, and what is still undecided. It is not repeated
-here.
+**Pets no longer reminds about a feed already seen to** (#16-new). That is the
+first screen of fix 2, the fault Patrick reported, and it is cured for Pets
+alone — My Day and My Week are untouched and still on the phone's repeating
+alarms. Before it, #15-new made a failing run impossible to hide and a missed
+reminder told. The account of all of it, including everything still unbuilt,
+lives in `docs/reminder-rebuild.md` and is the file to open for this work —
+what was read, what is already right and must not be undone, eight findings, a
+fix list in order, Patrick's rulings, and what is still undecided. It is not
+repeated here.
+
+**Two occurrences ahead is Patrick's number** (#16-new). A single moment is
+spent once it fires, so several stand ready; it counts occurrences rather than
+days, so a weekly chore gets a fortnight. At fourteen items across the three
+screens that is twenty-eight of the fifty-six places the module has to spend.
+What covers a longer stretch away is the missed-firing notice, which tells him
+afterwards rather than making the reminder arrive.
+
+**An occurrence is named for the day it falls on**, `pets:p1:20260825`, so it
+keeps its name until it fires and the reconcile leaves it alone. Naming by
+place in the run was tried first and is wrong — those names slide as days pass,
+so every run would take all of them down and put them all back. Whatever My Day
+and My Week do, they should do this.
 
 Patrick's ruling opens the work and governs it: reminders being rock solid is
 the only purpose of this app. His second is that when something has to give,
@@ -29,14 +44,24 @@ eight faults, one of them the thing he had reported.
 is noted when he opens the app. That safety net is built; the move itself is
 not.
 
-**The two faults Patrick reported are one fault, and it is still there.** An
-item ticked off before its time still reminds, because the three repeating
-screens arm the phone's own repeating alarm and their readers never look at the
-checkmark. The banner that then arrives for an already-finished item lands on a
-row correctly showing its checkmark, which is what he saw first. `app/myday.tsx`
-was read to be sure of it; the page draws from the item's own saved state and
-clears yesterday's before it draws, so no second mechanism is involved. Fix 2
-is what cures it.
+**The two faults Patrick reported are one fault, and it is still there on two
+screens of three.** An item ticked off before its time still reminds, because
+the repeating screens arm the phone's own repeating alarm and their readers
+never look at the checkmark. The banner that then arrives for an
+already-finished item lands on a row correctly showing its checkmark, which is
+what he saw first. `app/myday.tsx` was read to be sure of it; the page draws
+from the item's own saved state and clears yesterday's before it draws, so no
+second mechanism is involved. Pets was cured at #16-new; My Day and My Week
+still have it.
+
+**Pets and My Week are not built alike, and nothing has been decided about it**
+(#16-new, both pages read entire). Pets carries a plain `completed` and leans on
+the module's daily reset. My Week carries `doneAt` and clears its own checkmarks
+on the page, in `applyWeeklyReset`, weekly and only when the page is opened — so
+the daily clearing named in fix 2 never reaches it. My Week also already holds
+the next-occurrence arithmetic, in `lastOccurrence` and `nextDateForWeekday`.
+The open question is whether Pets gains a stamp like `doneAt` or My Week's reset
+moves into the module. Pets did not need it; My Week may.
 
 **The module's own shape is sound and is not the fault.** Working the whole set
 out afresh, matching by a name built from what a reminder is, and trimming the
@@ -158,7 +183,7 @@ record on that screen was held back from #15-new so all three are done in one
 visit.
 
 **The tests run on the Mac in about a second**, headless under Node, with
-no build and no simulator. 192 of 192 pass:
+no build and no simulator. 202 of 202 pass:
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -169,18 +194,26 @@ itself on the next build. Nothing else reports.
 
 ## What is open in front of it
 
-**Fix 2, which is the next piece and the largest** (#15-new). It is one rule
-for a finished item, applied the same way everywhere: the three repeating
-screens move onto single moments aimed at the next occurrence, so a reader can
-step past an occurrence already marked done. It reaches the three readers, the
-three pages that draw the checkmarks, and the daily clearing. It cures both of
-the faults Patrick reported. It was deliberately given a fresh session rather
-than the tail of #15-new. Still undecided inside it: whether all three screens
-move together or one is proven first.
+**My Day is next, and should be nearly a copy of Pets** (#16-new). It is the
+same shape — a list of items, each with a time of day, leaning on the module's
+daily reset — so the same two occurrences ahead, the same day-stamped names,
+and the same narrow skip of today's occurrence when the item is ticked.
+`scheduler/readers/myday.ts` and its tests, with the snooze half left alone.
 
-**Two reads are owed before it can be built** (#14-new): `app/mollie.tsx` and
-`app/myweek.tsx`. Both draw a checkmark, and My Week holds the one reminder the
-module cannot see.
+**My Week goes last and is the odd one.** Its checkmarks clear on the page
+rather than in the module, so the asymmetry above has to be settled before it
+is built.
+
+**Two loose ends from #16-new, neither acted on.** The comment at the head of
+`scheduler/readers/myweek.ts` says My Week "never had the fault" and is "the
+shape the two daily screens are being brought round to" — which stops being
+true the moment My Week itself moves. And `OCCURRENCES_AHEAD` lives inside
+`readers/pets.ts`; it belongs somewhere all three screens can see once they
+have all moved.
+
+**All the reading fix 2 was owed is done** (#16-new). `app/mollie.tsx` and
+`app/myweek.tsx` were read entire, and so were the types, the reconcile, the
+scheduler's top and the three readers.
 
 **The rest of the fix list** is in `docs/reminder-rebuild.md` and unstarted:
 holding a dropped run instead of discarding it, saying the banner instruction

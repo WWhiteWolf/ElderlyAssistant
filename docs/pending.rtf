@@ -7,15 +7,16 @@
 \pard\pardeftab720\sl276\slmult1\partightenfactor0
 
 \f0\fs36 \cf0 A PLACE TO REMEMBER (badge: Memory) \'97 PENDING WORK, plain-language list\
-Last updated: 2026-08-25 (#15-new \'97 the app can no longer fail at\
-reminders quietly. When something goes wrong, a pop-up tells you as\
-you open it. And when a reminder never reached you, that is now\
-told too, one line per item in your own words: "Take pills from\
-yesterday is hanging!"\
-The big one \'97 a thing you tick off early still reminding you \'97 is\
-NOT fixed yet. That is the next session's work.\
-Nothing has gone onto the phone, your call, so that all the\
-improvements can be tested together over time.\
+Last updated: 2026-08-25 (#16-new \'97 the big one is fixed on the first\
+of the three screens. Pets no longer reminds you about a feed you have\
+already seen to. My Day and My Week still do; they are next, one at a\
+time.\
+Each feed is now set two days ahead instead of using the phone's\
+repeating alarm. Two was your number. If you are away longer than\
+that, the reminder does not arrive and the pop-up tells you about it\
+afterwards.\
+The improvements are still waiting to go onto the phone, your call, so\
+they can be tested together over time.\
 Bare session numbers below mean the old shared chain.)\
 \
 This is the "what's still left" list in everyday words. Nothing here\
@@ -25,17 +26,40 @@ full record \'97 so this list stays short.\
 \
 WHAT'S NEXT\
 ------------------------------------------------------------------\
-- THE REMINDERS \'97 OPEN AGAIN (#14-new, #15-new). Reading the whole\
-  of the reminder machinery found eight faults, and two are now\
-  fixed. The next and biggest one is the fault you reported: a\
-  thing you tick off early still reminds you, because those three\
-  screens use the phone's own repeating alarm and a repeating alarm\
-  fires whether or not the item is done. The cure is to give each\
-  one a single moment aimed at the next time it is due, worked out\
-  fresh every time the app runs, so it can skip one you have\
-  already done. You agreed to that on one condition \'97 that a\
+- THE REMINDERS \'97 OPEN AGAIN (#14-new, #15-new, #16-new). Reading\
+  the whole of the reminder machinery found eight faults. Two are\
+  fixed and the third \'97 the big one, the fault you reported \'97 is\
+  fixed on one screen of three.\
+  The fault: a thing you tick off early still reminds you, because\
+  those three screens use the phone's own repeating alarm and a\
+  repeating alarm fires whether or not the item is done. The cure is\
+  to give each one a single moment aimed at the next time it is due,\
+  worked out fresh every time the app runs, so it can skip one you\
+  have already done. You agreed to that on one condition \'97 that a\
   missed firing is noted when you open the app \'97 and that part is\
   already built.\
+  What #16-new put in:\
+    Pets is cured. A feed you have already logged does not call out\
+      again that day, and still calls out the next day.\
+    Each feed is set two days ahead rather than repeating forever.\
+      Two was your call. The trade is real and worth knowing: if the\
+      app goes unopened longer than that, nothing new gets set and\
+      the reminder simply does not arrive. The pop-up tells you\
+      afterwards; it cannot make it arrive.\
+    Your places on the phone: the app can hold 56 reminders. At two\
+      days ahead, your fourteen items will use 28 of them, so there\
+      is room to spare. The Scheduled Reminders screen tells you how\
+      full it is, so you never have to take my word for the number.\
+    One test that had never been run since the very beginning now\
+      runs on the Mac: a day passing, an item ticked off, and\
+      whether it still reminds tomorrow.\
+    Two small things you may notice when this reaches the phone: a\
+      feed shows up twice on the Scheduled Reminders screen instead\
+      of once, because two days are set; and it says it does not\
+      repeat, which is now true.\
+  My Day is next and should go almost the same way. My Week goes\
+  last, because it clears its checkmarks differently from the other\
+  two and that difference is not settled yet.\
   What #15-new put in:\
     A pop-up when you open the app, if something went wrong. Until\
       now the app could fail at reminders completely and look\
@@ -50,10 +74,11 @@ WHAT'S NEXT\
       the most recent, in your Still To Do wording. Shown once and\
       gone when you tap it. Being away a fortnight gives you a\
       short list, not a wall.\
-  Still to do, in order: the big fix above; holding a run that gets\
-  dropped when two happen at once; saying the show-a-banner\
-  instruction once instead of on eight pages; bringing My Week's\
-  snooze under the module; and the dead "+1 Day" button.\
+  Still to do, in order: the big fix on My Day and then My Week;\
+  holding a run that gets dropped when two happen at once; saying\
+  the show-a-banner instruction once instead of on eight pages;\
+  bringing My Week's snooze under the module; and the dead "+1 Day"\
+  button.\
   The plan that ran the earlier work is no longer\
   a live file; it is kept whole at the end of docs/build-history.md\
   in case anyone ever needs to know why a thing was done its way.\
