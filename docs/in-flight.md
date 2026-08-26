@@ -84,6 +84,24 @@ a single design question, which is what it was written to do. Then My Week, Look
 Ahead and To-Do. Then swapping the screens over one at a time, retiring each old
 reader as its replacement is proved. Then the phone.
 
+## Running elsewhere: the Super-Projects chain
+
+**`App-Docs/master-handoff.md` has grown into a session-by-session history**,
+which its own opening forbids — 2,914 lines, about sixty-six thousand tokens,
+where its stated job is three status lines and the cross-project loose ends. It
+is the same disease `in-flight.md` was invented to stop, in a file that never
+got the cure.
+
+Patrick named a chain of its own for it, **Super-Projects**, because the file
+belongs to all three projects rather than to this one. Its opener is written and
+the work is: cut the file back to what its header says it is, prove every
+removed paragraph already exists in that project's own `build-history.md` and
+move rather than drop what does not, give the file this file's rule — replaced
+each time, never added to, with a stated size limit — and bring the Memory
+status line current to #24-new, which it is one session behind on.
+
+**Nothing here waits on it**, and this chain should not do it.
+
 ## Parked, at Patrick's choosing
 
 **Running the worker sessions on a different AI**, Claude in Cursor being the one
