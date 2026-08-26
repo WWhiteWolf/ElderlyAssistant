@@ -82,11 +82,98 @@ its own form code; an empty lead-time list is answered by the kind; and one
 bit says a reminder stands for a group rather than one item. **All five
 screens go through the shape and nothing is left outside it.**
 
+**The field names are settled too, and the rule behind them is Patrick's**
+(#22-new). The name says what the thing does and carries its own kind in the
+name, so a bit reads as a bit and a code reads as a code. The full list is in
+`docs/reminder-shape.md` under "The field names, settled at #22-new" and is not
+repeated here. He asked what established practice said about holding the bits
+and then took the answer: **separate named fields rather than one packed field
+of bits**, because this app saves plain text on the phone where packing buys
+nothing, and **codes written as named sets of allowed words**, which is what
+makes an impossible value impossible to write down. The three files have their
+names and their homes as well — `scheduler/inputshape.ts`,
+`scheduler/stillwanted.ts` and `scheduler/armdepth.ts`, with tests beside the
+others — so nothing about where they live is still open.
+
+**The depth number was reopened by Patrick and it survived** (#22-new). He
+raised it himself: two occurrences ahead was decided under the old structure, so
+it should not be carried across as settled. The reading is written up in
+`docs/reminder-shape.md` under "How far ahead do we arm — the number, reopened
+at #22-new" and is not repeated here. In outline: the number is imported by My
+Day and Pets alone; the reason recorded for it describes something the code does
+not do; the second occurrence buys exactly one day on which the app is never
+opened; it is worth more to a daily item than to a weekly one; and it is still
+needed, because it exists only to serve single moments and single moments exist
+only because a repeating alarm cannot skip the day an item was ticked off.
+**Curing My Week is what makes the number expensive** — a chore costs one place
+today as a true weekly repeat, and will cost one per occurrence once it moves
+across.
+
+**The plain fact under all of it is Patrick's, and he found it himself**
+(#22-new). He had been thinking the intelligence could tell these things, and
+then saw it: *if the app isn't open, then the intelligence isn't running.* The
+decision blocks are code inside the app, so when the app is not running nothing
+is deciding anything, and everything the phone will do while he is away must be
+in the queue before he leaves. **The blocks do not react — they decide, at the
+moment they do run, how much to leave standing for the stretch when nothing will
+be running at all.** It had never been said plainly to him, only in pieces.
+
+**Two roads that do not need the app opened were checked and both are weak**
+(#22-new, written up in `docs/reminder-shape.md`). A banner button registered
+not to open the app does reach the module — `skip` already calls the scheduler
+and `ok` throws the chance away by returning immediately — but the housing
+handles presses with a React hook and nothing background is registered, so a
+press does nothing once the phone has shut the app down, which is the likely
+state after a day unused. And the background-task road has none of its pieces
+installed. Patrick's answer to that was **"we can repackage"**, and the rebuild
+is indeed not the obstacle; the obstacle is that the phone gives fewest
+background runs to the app that has gone unused and none at all after a
+swipe-away.
+
+**Patrick's ruling: "rock solid is for when you use it"** (#22-new). The top
+goal covers the app in use, not a stretch when it is not — an app that is not
+being opened is not being used, and what the second occurrence protects is one
+day and no more. That places it outside the standard.
+
+**Recovery on opening is the heart of it, and it is his** (#22-new, written up
+in `docs/reminder-shape.md`). The phone's queue is the phone's best effort and
+may drop things, but the truth was never in the queue — it is in the app's own
+saved lists, so on opening the app can look and know where things stand. **His
+two parts: it tells you what you missed, and it puts back what you need going
+forward.** And **it is not a rule, it is part of the decision machinery**, which
+are his words — the block, from
+data it already holds, sees an occurrence whose moment has gone by and which was
+never marked done, and both the telling and the re-queueing fall out of that, so
+nothing anywhere has to remember to recover.
+
+**That settles the depth, and settles it his way: one, for every kind.** Rather
+than a spare copy of everything queued constantly against a day that mostly does
+not come, one reminder stands per item and the app re-queues when it opens and
+sees the gap. Nothing is doubled anywhere and My Week comes across for the same
+one place a chore costs today. **And the telling is deliberately small** (Patrick, asked directly at #22-new).
+It tells you what you missed, and that is it; then the firings are reissued and
+the queue rebuilt. **Two acts on opening and nothing more** — no screen to
+design and no flow.
+
+**Both halves are already built, and the record had said otherwise** (#22-new,
+read in `health.ts`, `notice.ts` and the daily reset). The re-queueing is every
+run rebuilding the whole set from the lists. The telling exists too, tested, and
+does very nearly what Patrick had just specified from nothing: misses worked out
+at the rollover because that is the last moment the truth can be seen, **the
+unopened-day case handled by name** through a `hadGap` flag that makes every
+reminding item a miss when the app has been shut for a whole day or more, one
+miss per item as he ruled, his own sentence — *"<name> from yesterday is
+hanging!"* — and one pop-up carrying faults and misses together on launch and on
+returning to the front. **The one real gap is that it covers My Day and Pets
+only**: the rollover loop names those two lists and no others, so My Week, Look
+Ahead and To-Do record no misses at all. **So the work is extending the telling
+to those three, not building it.**
+
 **The order of work is agreed** (#19-new), and its first two steps are done.
 Read `scheduler.ts` and `reconcile.ts` — done at #20-new; settle the input
-shape on paper with Patrick — done at #21-new; **build the shape and the two
-decision blocks as plain tested files nothing yet calls, which is where the
-next session starts**; write the five translators one at a time; swap the
+shape on paper with Patrick — done at #21-new, its field names at #22-new;
+**build the shape and the two decision blocks as plain tested files nothing yet
+calls, which is where the next session starts**; write the five translators one at a time; swap the
 screens over one at a time, retiring each old reader as its replacement is
 proved; then the phone.
 
@@ -379,12 +466,30 @@ about the joins argues for starting over.
 
 **The next session's first piece is building the shape and the two decision
 blocks** (#19-new order, third step) as plain tested files that nothing yet
-calls. The input shape they are written against is settled at #21-new.
+calls. Nothing stands in the way of writing them now: the structure was settled
+at #21-new, the field names and the three file names at #22-new. Nothing was
+built at #22-new and no app code was touched.
 
-**Field names are still open** (#21-new settled the structure, not the
-names), along with where in the code the two decision blocks live, how the
-arrow from the store to the block is actually made, and whether any screen
-is ever brought round to save in the common shape rather than being
+**The depth is settled at one for every kind** (#22-new), because recovery on
+opening carries what the second copy was carrying. The telling that goes with it
+is settled too and is deliberately small — say what was missed, then reissue and
+rebuild the queue, and nothing more. **It is also already built**, and the one
+piece of work left on it is extending it from My Day and Pets to My Week, Look
+Ahead and To-Do.
+
+**One claim still unchecked**: that a repeating alarm cannot be told to skip a
+single instance. The whole case for arming ahead rests on it, and it is general
+knowledge of the phone rather than something read in the installed notification
+package.
+
+**A thing to add later if wanted, and never underneath**: a background task, so
+the phone can top the queue up on days the app is not opened. None of its pieces
+are installed. It can only ever sit on top of arming ahead, because the days it
+fails are the days the arming is for.
+
+**Still open from the shape work**: how the arrow from the store to the block
+is actually made so a write cannot fail to turn the loop, and whether any
+screen is ever brought round to save in the common shape rather than being
 translated at the boundary for good.
 
 **Still unread**: `app/lookahead.tsx`, `app/memorytest.tsx`; and the test
