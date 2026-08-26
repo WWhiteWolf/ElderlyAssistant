@@ -7,7 +7,15 @@
 \pard\pardeftab720\sl276\slmult1\partightenfactor0
 
 \f0\fs36 \cf0 A PLACE TO REMEMBER (badge: Memory) \'97 PENDING WORK, plain-language list\
-Last updated: 2026-08-25 (#20-new \'97 My Week's Delay is now written\
+Last updated: 2026-08-25 (#21-new \'97 the common shape is settled on\
+paper, which was the second step of your plan. Nothing was built and\
+nothing changed on the phone. The way it is put together is yours: a\
+value that can only be one thing gets a code, and anything that stands\
+on its own gets a single bit, both set on the way in so the engine only\
+has to look. All five screens now fit the one shape, including the\
+8 AM background-tasks reminder, which we had written off as not\
+fitting until you said it could be given a bit like everything else.\
+Before it, #20-new \'97 My Week's Delay is now written\
 down like the others, and the engine's last unread part was read and\
 holds up. Your call was to fix that one first, ahead of the new shape,\
 because leaving it would have been more patching.\
@@ -161,6 +169,60 @@ WHAT'S NEXT\
     Two documents came out of it and they are the whole output:\
       docs/reminder-shape.md and docs/reminder-shape.drawio, the\
       same thing drawn for draw.io.\
+  What #21-new settled \'97 the shape on paper, and nothing built:\
+    The way it is put together is yours, and you gave it before you\
+      were asked. Shown three ways the app could write down when a\
+      thing comes due, you said to put a field in the data with the\
+      bits set on the way in, so the engine only has to look at it to\
+      know what to do. Then you gave both forms \'97 one bit each where\
+      several can be true at once, or several bits together as a code\
+      for something that can only ever be one thing. Everything else\
+      followed from that.\
+    What kind of reminder it is \'97 every day, every week, or once \'97 is\
+      a code, because it can only ever be one of the three. That means\
+      an impossible pair can't even be written down.\
+    Two different sorts of fact are kept apart, and this is the piece\
+      the whole thing rests on. Some facts say what a KIND of thing is\
+      allowed to do \'97 can it be ticked off, can it be pushed back \'97\
+      and those are set once and never change. The rest say what has\
+      actually happened to this one, and those change all the time.\
+      Keeping them apart is what lets an appointment behave\
+      differently from a chore as a matter of rule, instead of the\
+      code having to make an exception for appointments.\
+    "Done" turned out to mean two different things in your app, and\
+      one bit can't hold both. On My Day, Pets and My Week, done means\
+      done for today and it clears overnight. On To-Do, done means the\
+      appointment is over for good. So there is one "done", plus one\
+      bit saying how far it reaches. Look Ahead has no done at all,\
+      and it fits without needing a special case.\
+    Snoozed, postponed and delayed are all one idea with three names,\
+      so they become one. One note per item, so pushing something back\
+      twice moves the one reminder instead of leaving two behind. It\
+      adds a reminder rather than replacing one, which is what your\
+      app already does everywhere.\
+    How far ahead to speak is a list. A To-Do appointment can have\
+      several reminders ahead of it; a daily routine item has an empty\
+      list, meaning speak at the time itself. Your collapse from\
+      #19-new holds up \'97 it was checked in the code.\
+    A question was put to you badly and you corrected it. Asked\
+      whether an empty list should mean "speak at the moment" or\
+      "speak never", you said the engine already knows what kind of\
+      reminder it is and can decide which way to go. So daily and\
+      weekly speak at the moment, and a one-off with nothing set stays\
+      quiet \'97 which is exactly what the app does today, so nothing\
+      changes for you.\
+    The 8 AM background-tasks reminder was written off as not fitting\
+      the shape, and you brought it back in. It is one banner standing\
+      for a whole group rather than for any one task, so it gets a bit\
+      saying so. All five screens now go through the one shape and\
+      nothing is left outside.\
+    Three things Claude had told you about the app were wrong, and you\
+      caught it by sending it to the code first rather than reading a\
+      list that hadn't been checked. Skip isn't something the reminder\
+      code looks at at all. Every one of the five screens quietly\
+      checks whether an item even has a time set, which had been left\
+      off the list entirely. And To-Do checks a second thing nobody had\
+      mentioned. All three are written down so it isn't repeated.\
   Also found and left alone (#18-new, your call): the warning about\
   a failed clear-out is never actually shown to you. It is written\
   down but filtered out before it reaches the pop-up, because it was\
@@ -180,8 +242,9 @@ WHAT'S NEXT\
       the most recent, in your Still To Do wording. Shown once and\
       gone when you tap it. Being away a fortnight gives you a\
       short list, not a wall.\
-  Still to do, in order (reordered at #19-new): read the engine;\
-  settle the common shape with you; build it with its tests; the\
+  Still to do, in order (reordered at #19-new; the first two are now\
+  done \'97 the engine was read at #20-new and the shape settled with you\
+  at #21-new): build it with its tests; the\
   five screens one at a time, which is where My Week is cured; Siri\
   telling the module what it has done; making a failed clear-out\
   speak; holding a run that gets dropped when two happen at once;\

@@ -1762,6 +1762,88 @@ it was rule 6 doing its job and the rest was padding, which is rule 25's
 own point.
 
 
+## #21-new (2026-08-25): the input shape settled on paper — Patrick's code-or-bit answer, and all five screens brought inside it
+
+**The session's whole output is paper**, as the #19-new order intended. No
+app code was touched. The settled shape is written into
+`docs/reminder-shape.md` under "The input shape, settled at #21-new" and
+is not repeated here.
+
+**The form of the shape is Patrick's, and he gave it unprompted.** Shown
+three ways the due rule could be written, he answered with a different
+thing altogether: put a field in the data where each bit stands for one of
+the options, set on the way in, so the decision block only has to look at
+it. Asked how many bits would be true at once, he gave both forms — one bit
+per option where several can be true, or several bits together as a code
+for something that can only ever be one thing. That single answer shaped
+everything after it. A value with one possible answer is a code; an
+independent fact is a bit; and the translator sets both at the boundary.
+
+**Seven things were settled**, each put to him and agreed:
+
+- **The trigger kind is a code** — daily, weekly or once — because the
+  three are mutually exclusive and an impossible pair should not be
+  writable at all.
+- **Capability bits and state are different things.** A capability bit says
+  what a kind of item is allowed to do and never changes; state says what
+  has happened to this occurrence and changes constantly. This is the
+  load-bearing distinction, and it is what lets the kinds answer *is this
+  still wanted?* differently as a rule rather than as an exception.
+- **Done is one state plus a bit saying how far it reaches** — this
+  occurrence only, or the whole item. Two kinds of done exist in the app
+  today and cannot share one bit. It absorbs Look Ahead, which has no done
+  field at all, without an exception.
+- **Push-back is one stamp, and it adds rather than replaces.**
+  `snoozedUntil`, `postponedTo` and `delayedUntil` collapse to one field
+  with one meaning, plus one capability bit for whether an item can be
+  pushed back at all.
+- **How far ahead to speak is a list of lead times**, each carrying a small
+  code for which of the two forms it is — counted back from the
+  appointment, or counted back in whole days to a named time of day.
+- **An empty lead-time list is answered by the kind.** Patrick's ruling,
+  and it corrected the question as put. He was asked which single reading
+  should hold and answered that the block already knows what kind of
+  reminder it is and should decide which way to go. Daily and weekly speak
+  at the moment itself; once speaks never.
+- **One bit says a reminder stands for a group rather than one item**, which
+  brought To-Do's background banner inside the shape after it had been
+  recorded as not fitting. Again his answer: if it needs identifying, give
+  it a code or a bit.
+
+**The reading corrected three things Claude had asserted from the record.**
+Patrick stopped the conversation to send it to the code first — *before I
+even read it and waste my time, go open the reader and find out* — and he
+was right to. All five readers and the shared arithmetic were read, about
+five hundred lines. Skip is not a state any reader reads and needs no bit
+at all; every one of the five guards on whether the item has a time at all,
+which was missing from the list entirely; and To-Do carries a second guard
+on whether the item wants reminders at all. Each of the three is recorded
+in `docs/reminder-shape.md` so a later session does not repeat them.
+
+**One targeted read of `app/todo.tsx`**, its save path only, out of 909
+lines. A task with no reminders can be saved but the app asks first — *"Are
+you sure you don't want to set a Reminder?"*, a confirm rather than a
+block, recorded as #58 folding in #55. So the ruling that a one-off with no
+lead times gets no reminder matches a decision already made.
+
+**A session rule was deleted at Patrick's instruction.** The last sentence
+of rule 1 in `Projects/CLAUDE.md` had told Claude to report when a rules
+file did not arrive on its own. The session opened with exactly that report
+and it was false — both files had arrived and were in front of Claude from
+the first moment. Patrick said it has happened a dozen times in the
+Students-Assistant project. His own argument closed it: reading a file by
+hand and having it arrive amount to the same thing once it is read. The
+rule's defence does not survive that, because in a session where Claude
+never thinks to read the file it also never thinks to report — so the
+warning can only fire where nothing is wrong. The sentence was removed; the
+two folder asks and their reasoning stand unchanged.
+
+**Nothing was built and nothing reached the phone.** 230 of 230 tests still
+stand from #20-new. Next is the third step of the #19-new order: building
+the shape and the two decision blocks as plain tested files that nothing
+yet calls.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

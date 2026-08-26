@@ -71,13 +71,24 @@ skip the input shape but **not** the engine: they still produce a
 `WantedReminder` and still pass the depth block, or they spend places nothing
 is watching.
 
-**The order of work is agreed** (#19-new), and its first step is done. Read
-`scheduler.ts` and `reconcile.ts` — done at #20-new; **settle the input shape
-on paper with Patrick before any code, which is where the next session
-starts**; build the shape and the two decision blocks as plain tested files
-nothing yet calls; write the five translators one at a time; swap the screens
-over one at a time, retiring each old reader as its replacement is proved;
-then the phone.
+**The input shape is settled and on paper** (#21-new). It is written into
+`docs/reminder-shape.md` under "The input shape, settled at #21-new" and is
+not repeated here. In outline: a value that can only be one thing is a code
+and an independent fact is a bit, both set by the translator; the trigger
+kind is a code; capability bits and state are kept apart; done is one state
+plus a bit for how far it reaches; push-back is one stamp that adds rather
+than replaces; how far ahead to speak is a list of lead times each carrying
+its own form code; an empty lead-time list is answered by the kind; and one
+bit says a reminder stands for a group rather than one item. **All five
+screens go through the shape and nothing is left outside it.**
+
+**The order of work is agreed** (#19-new), and its first two steps are done.
+Read `scheduler.ts` and `reconcile.ts` — done at #20-new; settle the input
+shape on paper with Patrick — done at #21-new; **build the shape and the two
+decision blocks as plain tested files nothing yet calls, which is where the
+next session starts**; write the five translators one at a time; swap the
+screens over one at a time, retiring each old reader as its replacement is
+proved; then the phone.
 
 **The outside report has been checked, and the answer is mend rather than
 rebuild** (#18-new). Patrick asked to verify what could be verified before
@@ -366,17 +377,22 @@ itself on the next build. Nothing else reports.
 most of what the outside reading widened turned out to be deliberate. Nothing
 about the joins argues for starting over.
 
-**The next session's first piece is settling the input shape on paper**
-(#19-new), with no code written. It is a long conversation rather than a read,
-and #20-new stopped short of it deliberately, the session having already had
-the engine read and a build in it.
+**The next session's first piece is building the shape and the two decision
+blocks** (#19-new order, third step) as plain tested files that nothing yet
+calls. The input shape they are written against is settled at #21-new.
 
-**Still unread**: `app/lookahead.tsx`, `app/todo.tsx`, `app/memorytest.tsx`;
-and the test files other than My Day's, Pets' and My Week's. The six readers
-and `types.ts` were read at #19-new and the two engine files at #20-new, so
-the outside report's claims about any of those no longer stand on the report
-alone. `app/todo.tsx` in particular has never been opened — the background
-tasks are known only from what `readers/todo.ts` declares.
+**Field names are still open** (#21-new settled the structure, not the
+names), along with where in the code the two decision blocks live, how the
+arrow from the store to the block is actually made, and whether any screen
+is ever brought round to save in the common shape rather than being
+translated at the boundary for good.
+
+**Still unread**: `app/lookahead.tsx`, `app/memorytest.tsx`; and the test
+files other than My Day's, Pets' and My Week's. The six readers and
+`types.ts` were read at #19-new, the two engine files at #20-new, and all
+five readers again at #21-new, so the outside report's claims about any of
+those no longer stand on the report alone. `app/todo.tsx` has had its save
+path read at #21-new and nothing else of it.
 
 **Nothing should reach the phone until the reminder work is whole** (Patrick,
 #15-new). Three screens are cured or half-cured and none of it has been built.
