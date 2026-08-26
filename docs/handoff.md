@@ -4,7 +4,47 @@ This file carries the continuity and nothing else: where the work
 stands and what is open in front of it. Finished work goes to
 `build-history.md`, opened only when something needs tracing.
 
+> **That work is done** (#23-new). `docs/build-sheet.md` was the self-contained
+> sheet the input shape and the two decision blocks were built from, and it
+> served exactly as intended. It is now the standing description of what those
+> three files hold, corrected at #23-new where it and the code disagreed, and it
+> is kept current with them rather than reopened.
+
 ## Where things stand
+
+**The shape and the two decision blocks are built** (#23-new), which is the
+third step of the #19-new order. `scheduler/inputshape.ts`,
+`scheduler/stillwanted.ts` and `scheduler/armdepth.ts` stand with their tests
+and **nothing in the app calls any of them**, which is deliberate — the piece
+was specified to be built before anything depends on it, so the shape can be
+argued with while changing it costs nothing. No reader, no screen, no engine
+file was touched; the only existing file edited is `scheduler/tests/run-all.ts`,
+which gained its two new lines. **248 of 248 tests pass**, up from 230, and
+`npx tsc` reports only the standing Expo router error. It was built from
+`docs/build-sheet.md` alone and asked Patrick nothing about the design, which is
+what that sheet was written to make possible.
+
+- **`inputshape.ts`** is types and comments and no behaviour, every field name
+  as settled at #22-new, the four groups kept apart on the page.
+- **`stillwanted.ts`** asks the four questions in order — no due time, then done
+  and how far the done reaches, then the push-back — with the capability bits
+  gating the state throughout.
+- **`armdepth.ts`** answers one for every kind, written as a switch on the
+  trigger kind so a later change is a change to one line.
+- **The five choices made where the sheet was silent** are recorded at the foot
+  of this file and are settled.
+
+**The trigger kind is `'daily' | 'weekly' | 'date'`, not `once`** (Patrick,
+#23-new). The shape had been settled at #22-new with `once` as its third kind,
+on the belief that it matched the output store; it did not — `WantedTrigger` in
+`types.ts` has said `date` since long before any of this. His instruction was to
+change the shape rather than the engine, and the reason is worth keeping:
+`types.ts` is what the phone's own queue speaks in and is already on the phone,
+so a translator bridging one word between two documents that mean the same thing
+would be a cost paid at every boundary forever in exchange for nothing.
+`docs/build-sheet.md` was corrected to match. **The other documents keep their
+`once`** on his ruling — that word is history there and a session record is
+wrong the moment it is tidied.
 
 **The work has a shape now, and it is Patrick's** (#19-new). He stopped the
 session at its first sentence with an epiphany: the heart and the original
@@ -169,13 +209,13 @@ only**: the rollover loop names those two lists and no others, so My Week, Look
 Ahead and To-Do record no misses at all. **So the work is extending the telling
 to those three, not building it.**
 
-**The order of work is agreed** (#19-new), and its first two steps are done.
+**The order of work is agreed** (#19-new), and its first three steps are done.
 Read `scheduler.ts` and `reconcile.ts` — done at #20-new; settle the input
 shape on paper with Patrick — done at #21-new, its field names at #22-new;
-**build the shape and the two decision blocks as plain tested files nothing yet
-calls, which is where the next session starts**; write the five translators one at a time; swap the
-screens over one at a time, retiring each old reader as its replacement is
-proved; then the phone.
+build the shape and the two decision blocks as plain tested files nothing yet
+calls — done at #23-new; **write the five translators one at a time, which is
+where the next session starts**; swap the screens over one at a time, retiring
+each old reader as its replacement is proved; then the phone.
 
 **The outside report has been checked, and the answer is mend rather than
 rebuild** (#18-new). Patrick asked to verify what could be verified before
@@ -448,7 +488,7 @@ record on that screen was held back from #15-new so all three are done in one
 visit.
 
 **The tests run on the Mac in about a second**, headless under Node, with
-no build and no simulator. 230 of 230 pass — and see the outside reading on what
+no build and no simulator. 248 of 248 pass — and see the outside reading on what
 that does not mean:
 
     node --experimental-strip-types scheduler/tests/run-all.ts
@@ -464,11 +504,16 @@ itself on the next build. Nothing else reports.
 most of what the outside reading widened turned out to be deliberate. Nothing
 about the joins argues for starting over.
 
-**The next session's first piece is building the shape and the two decision
-blocks** (#19-new order, third step) as plain tested files that nothing yet
-calls. Nothing stands in the way of writing them now: the structure was settled
-at #21-new, the field names and the three file names at #22-new. Nothing was
-built at #22-new and no app code was touched.
+**The next session's first piece is the five translators, one at a time**
+(#19-new order, fourth step). The shape and the two blocks they hand to are
+built and tested (#23-new), and each translator is a small piece of its own: it
+reads one screen's saved list exactly as that screen saves it and sets the codes
+and bits at the boundary. No screen changes and nothing on the phone breaks.
+
+**One thing to settle before or during the first translator**: nothing yet joins
+the two new blocks to `gatherWanted`, which is where the five translators plug
+in. The blocks were deliberately built with nothing calling them, so how they
+are called is still to be decided.
 
 **The depth is settled at one for every kind** (#22-new), because recovery on
 opening carries what the second copy was carrying. The telling that goes with it
@@ -580,3 +625,38 @@ live elyfont.com home page. If it is ever edited, the live copy
 must be re-uploaded to the public `WWhiteWolf/mystery-tracker`
 repo — upload replaces; never rename anything to or from
 `index.html` there (see `MysteryTracker/docs/DEPLOY.md`).
+
+## Choices made where the build sheet was silent
+
+These five came up while the shape and the two blocks were built at #23-new.
+The sheet said nothing about any of them, each was put to Patrick afterwards,
+and all five stand as made. They are settled, not open.
+
+**The wanted-block answers in four parts rather than yes or no.**
+`isStillWanted` returns whether the item wants reminders at all, whether this
+one occurrence is dropped, the pushed-back moment if there is one, and a plain
+sentence saying why. A single yes or no cannot carry the difference the sheet
+itself draws — a task finished outright and a chore ticked off for today are
+both "done", and only one of them has occurrences still standing behind it.
+
+**Done clears the push-back.** When an occurrence is dropped because it is
+done, no pushed-back moment comes back with it. The stamp belongs to the
+occurrence it was written on, and Done already clears it on the pages, so the
+block behaving otherwise would put back a reminder the page had taken away.
+
+**`sourceScreenCode` is a named set of the five screen words** — `myday`,
+`pets`, `myweek`, `lookahead`, `todo` — rather than plain text. It is a value
+that can only ever be one thing, which by the settled rule makes it a code, and
+writing it as a named set is what stops a sixth screen name being written down
+by mistake.
+
+**Three fields are optional rather than always present.**
+`pushedBackToStamp`, `dueWeekday` and `dueMoment` are absent on the items they
+do not apply to, rather than carrying a stand-in value. A weekly item has no
+due moment and a daily one has no weekday, and an absent field says that
+plainly where a zero would have to be interpreted.
+
+**`inputshape.ts` has no test file**, because it holds no behaviour — it is
+types and comments and nothing else, so there is nothing a test could ask it.
+It is therefore not named in `run-all.ts` either. The moment anything in it
+does something, it earns its test file.

@@ -651,9 +651,9 @@ treated as settled by a later session:
 
 - How the arrow from the store to the decision block is actually made,
   so that a write cannot fail to turn the loop.
-- How the telling half of recovery on opening actually reaches Patrick — what
-  he is shown, and where. The re-queueing half already works. How far the
-  existing missed-firing notice goes was not read at #22-new.
+- Nothing about recovery on opening. Both halves are settled and both are
+  built; the only work left on it is extending the telling from My Day and Pets
+  to the other three screens, which is building rather than deciding.
 - Whether a repeating alarm can be told to skip one instance, which the whole
   case for arming ahead rests on. Not checked in the installed notification
   package.

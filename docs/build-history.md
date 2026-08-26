@@ -2057,6 +2057,84 @@ clear enough to go on, went on, and the best part of the session followed.
 building the shape and the two decision blocks as plain tested files that
 nothing yet calls.
 
+## #23-new (2026-08-26): the shape and the two decision blocks built, and the trigger kind brought into line with the engine
+
+**The third step of the #19-new order is built.** Three new files stand in
+`scheduler` with their tests, and nothing in the app calls any of them. That is
+deliberate: the piece was specified to be built before anything depends on it,
+so the shape can be looked at and argued with while changing it costs nothing.
+No reader, no screen, `scheduler.ts` and `reconcile.ts` were touched. The only
+existing file edited is `scheduler/tests/run-all.ts`, which gained its two new
+lines. **248 of 248 tests pass**, up from 230, and `npx tsc` reports only the
+standing Expo router error.
+
+**The session was built from `docs/build-sheet.md` and asked Patrick nothing
+about the design**, which is what that sheet was written at the end of #22-new
+to make possible. It held every decision rather than pointers to them, and it
+worked — the build ran from the sheet alone, and the only questions put to him
+were about acting, not about deciding.
+
+- **`scheduler/inputshape.ts`** holds the shape and its types and no behaviour
+  at all. Every field name is the one settled at #22-new, with the four groups
+  kept apart on the page as they are in the reasoning: what the item is, when it
+  comes due, the capability bits, and the state.
+- **`scheduler/stillwanted.ts`** holds *is this still wanted?*, asking the four
+  questions in the sheet's order — no due time first, then done and how far the
+  done reaches, then the push-back, with the capability bits gating the state
+  throughout.
+- **`scheduler/armdepth.ts`** holds *how far ahead do we arm?* and answers one
+  for every kind. It is written as a switch on the trigger kind even though all
+  three answer alike today, because that is where the judgment belongs and it
+  makes a later change a change to one line.
+- **Eighteen new tests**, fourteen on the wanted-block and four on the depth.
+  `inputshape.ts` has no test file, holding nothing a test could ask it.
+
+**Patrick's one change to the code is the trigger kind, and it was his catch to
+make.** The build report had recorded, as a thing the sheet said that the code
+did not bear out, that `triggerKindCode` was settled as `'daily' | 'weekly' |
+'once'` while `WantedTrigger` in `types.ts` has named its third kind `date`
+since long before any of this. His instruction was to change the shape rather
+than the engine, so the shape now says `date` and the two agree. **It is worth
+recording why this was the right way round**: `types.ts` is what the phone's own
+queue speaks in and it is already on the phone, so a translator bridging one
+word between two documents that mean the same thing would have been a cost paid
+at every boundary forever, in exchange for nothing.
+
+**The change reached one place his instruction had excluded, and it was raised
+rather than assumed.** He had said to rename nothing outside `inputshape.ts` and
+its tests, but `armdepth.ts` switches on the kind and still carried `case
+'once'`, which stopped compiling the moment the type changed — two errors,
+checked and quoted to him rather than described. He gave the go for that one
+label. The reading offered at the time is the durable part: his sentence was
+plainly meant to keep the change out of `types.ts` and the readers, not out of
+one of the three files built an hour earlier, but that was Claude's reading and
+was put to him as one instead of acted on.
+
+**He then had the build sheet corrected to match**, which is the part that keeps
+the documents from drifting. Five lines in it said `once`; three he named, and
+two more were found and put to him — one of them the arm-depth list, which was
+naming a code value the type no longer allowed. The remaining two hits in that
+file are the ordinary English word. **His ruling on the other documents is the
+one to carry**: their `once` is history and stays. A build sheet describes code
+that exists now and must agree with it; a session record describes what was
+decided at the time and is wrong the moment it is tidied.
+
+**Five choices were made where the sheet was silent, and all five were put to
+him and stand.** They are written at the foot of `docs/handoff.md` under a
+heading of their own, at his instruction and recorded as settled rather than as
+open questions. In outline: the wanted-block answers in four parts rather than
+yes or no, because a task finished outright and a chore ticked off for today are
+both "done" and only one has occurrences still standing behind it; a done
+occurrence carries no push-back moment with it, matching what Done already does
+on the pages; `sourceScreenCode` is a named set of the five screen words, being
+a value that can only ever be one thing; `pushedBackToStamp`, `dueWeekday` and
+`dueMoment` are absent rather than carrying a stand-in, since an absent field
+says plainly what a zero would have to be interpreted into; and `inputshape.ts`
+earns no test file until something in it does something.
+
+**Nothing reached the phone**, per the #15-new rule. Next is the fourth step of
+the #19-new order: the five translators, one at a time.
+
 
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 

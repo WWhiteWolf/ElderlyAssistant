@@ -7,7 +7,43 @@
 \pard\pardeftab720\sl276\slmult1\partightenfactor0
 
 \f0\fs36 \cf0 A PLACE TO REMEMBER (badge: Memory) \'97 PENDING WORK, plain-language list\
-Last updated: 2026-08-25 (#21-new \'97 the common shape is settled on\
+Last updated: 2026-08-26 (#23-new \'97 the first building in a while.\
+The three new files are written and tested: the common shape itself,\
+the block that asks whether a reminder is still wanted, and the block\
+that says how far ahead to set them. Nothing in the app calls any of\
+them yet, and that is on purpose \'97 they were built first so you could\
+look at them and argue with them while changing them still costs\
+nothing. Nothing changed on the phone. The tests went from 230 to 248\
+and all of them pass.\
+Your one change to the code was catching that the new shape and the\
+engine were using different words for the same thing \'97 the shape said\
+"once" where the engine has always said "date". You had the new work\
+change rather than the engine, which was right: the engine's word is\
+the one the phone itself already uses.\
+Everything was built from docs/build-sheet.md without asking you a\
+single design question, which is exactly what that sheet was written\
+for last session.\
+Next is the five translators, one screen at a time.\
+Before it, #22-new \'97 the design is finished. Nothing\
+was built and nothing changed on the phone. All the fields have names\
+now, and the rule for them is yours: the name says what the thing\
+does and carries its own kind, so a bit reads as a bit. You asked\
+what the usual practice was for holding the bits and took the answer\
+\'97 each one its own named field rather than packed together.\
+Then you reopened setting reminders two deep, because that was\
+decided under the old way of working. It is now one, not two. Your\
+own reasoning closed it: rock solid is for when you use it, an app\
+that is not being opened is not being used, and the second copy only\
+ever covered a single day. What carries the load instead is the app\
+putting itself right when you open it \'97 it tells you what you missed,\
+then sets the reminders again, and that is the whole of it.\
+That last part turned out to be built already, and it even handles\
+the case where the app has been shut for a whole day. But it only\
+covers My Day and My Pets Day. My Week, Look Ahead and To-Do record\
+nothing, and adding them is real work still to do.\
+There is now a docs/build-sheet.md holding every decision in one\
+place, so the next session can build without asking you anything.\
+Before it, #21-new \'97 the common shape is settled on\
 paper, which was the second step of your plan. Nothing was built and\
 nothing changed on the phone. The way it is put together is yours: a\
 value that can only be one thing gets a code, and anything that stands\
@@ -58,6 +94,9 @@ WHAT'S NEXT\
       app goes unopened longer than that, nothing new gets set and\
       the reminder simply does not arrive. The pop-up tells you\
       afterwards; it cannot make it arrive.\
+      (Overtaken at #22-new: it is one now, not two. The reason is at\
+      the top of this file. The change is decided and not yet built,\
+      so what is on the phone today is still two.)\
     Your places on the phone: the app can hold 56 reminders. At two\
       days ahead, your fourteen items will use 28 of them, so there\
       is room to spare. The Scheduled Reminders screen tells you how\
@@ -69,6 +108,8 @@ WHAT'S NEXT\
       feed shows up twice on the Scheduled Reminders screen instead\
       of once, because two days are set; and it says it does not\
       repeat, which is now true.\
+      (The showing-twice part goes away with the #22-new change to\
+      one.)\
   What #17-new put in:\
     My Day is cured, the same way Pets was. A thing you have already\
       logged does not call out again that day, and still calls out\

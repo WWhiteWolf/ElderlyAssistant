@@ -21,6 +21,8 @@ import { runDailyResetTests } from './dailyreset.test.ts';
 import { runWeeklyResetTests } from './weeklyreset.test.ts';
 import { runQueueViewTests } from './queueview.test.ts';
 import { runHealthTests } from './health.test.ts';
+import { runStillWantedTests } from './stillwanted.test.ts';
+import { runArmDepthTests } from './armdepth.test.ts';
 
 console.log('\nMy Day reader');
 runMyDayTests();
@@ -54,5 +56,11 @@ runQueueViewTests();
 
 console.log('\nRun health');
 runHealthTests();
+
+console.log('\nIs this still wanted?');
+runStillWantedTests();
+
+console.log('\nHow far ahead do we arm?');
+runArmDepthTests();
 
 report();
