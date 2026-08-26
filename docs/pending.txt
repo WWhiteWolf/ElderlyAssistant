@@ -1,12 +1,16 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-08-25 (#19-new — your epiphany, and the reminder
-work now has one shape instead of six. The reminder pages are the
-heart of the app; the scheduler is the engine; everything else is
-packaging. Rather than curing one screen at a time, five screens will
-be brought to one common shape and the engine written once against it.
-Nothing was built and no code was touched — the session made two
-documents, docs/reminder-shape.md and the drawing beside it.
-Before it, #18-new checked the outsider's report and the answer was
+Last updated: 2026-08-25 (#20-new — My Week's Delay is now written
+down like the others, and the engine's last unread part was read and
+holds up. Your call was to fix that one first, ahead of the new shape,
+because leaving it would have been more patching.
+Before it, #19-new was your epiphany, and the reminder work now has
+one shape instead of six. The reminder pages are the heart of the app;
+the scheduler is the engine; everything else is packaging. Rather than
+curing one screen at a time, five screens will be brought to one
+common shape and the engine written once against it. That session
+built nothing — it made two documents, docs/reminder-shape.md and the
+drawing beside it.
+Before that, #18-new checked the outsider's report and the answer was
 mend rather than rebuild, and built the first step of My Week's cure.
 Nothing has gone onto the phone.
 Bare session numbers below mean the old shared chain.)
@@ -241,6 +245,19 @@ WHAT'S NEXT
 
 NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
 ----------------------------------------------------------------------------
+- My Week's Delay now works the way My Day's and Pets' do (#20-new).
+  Tapping Delay on a My Week banner used to set a fresh reminder on
+  the phone there and then, with nothing written down, so the
+  scheduler never knew it existed. It now writes the delay onto the
+  chore itself — the same note the page's Postpone button writes —
+  and the scheduler sets the reminder from that. A delay and a
+  postpone are the same thing at different distances, so a chore only
+  ever carries one.
+  Two things came with it. Skip on a My Week banner now really does
+  skip a postponed chore; before, it cancelled the reminder and the
+  scheduler put it straight back. And the tile's "moved to" line
+  shows a time when the delay lands later today, and a day name when
+  it lands on another day.
 - Look Ahead: delaying from the BANNER doesn't show the "▶ Delayed"
   line on the tile (your #61-build phone test). Reading the code
   found the likely cause: the page only re-reads its saved items

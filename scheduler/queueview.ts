@@ -33,10 +33,10 @@ export const PAGE_NAMES: Record<string, string> = {
     pets: 'Pets',
     petssnooze: 'Pets — snoozed',
     myweek: 'My Week',
+    // A Delay tapped on a My Week banner is written down as a postpone and
+    // shows under this same name (#20-new). There is no separate snoozed row
+    // for My Week, because there is no separate stamp behind one.
     myweekpostpone: 'My Week — postponed',
-    // Armed by hand in the housing rather than by the module, so it carries the
-    // item's name and its page but no record of when it fires.
-    myweeksnooze: 'My Week — snoozed',
     lookahead: 'Look Ahead',
     lookaheaddelay: 'Look Ahead — delayed',
     todo: 'To-Do',

@@ -18,6 +18,39 @@ a loop rather than a line, with the returning arrow landing on the same block
 the store feeds; and two decision blocks, *is this still wanted?* and *how far
 ahead do we arm?*
 
+**The engine has been read first-hand and it holds up** (#20-new,
+`scheduler.ts` and `reconcile.ts`, 718 lines). Three things it settled, all
+in the shape's favour. The **output store is the phone's own queue**, not a
+file — `applyPlan` writes the key, the firing times, the source, the item and
+the label into each banner's own data and `readQueue` reads them straight
+back. The **input store is five saved lists plus one session**, all read in one
+place, `gatherWanted`, so the five translators plug in exactly there. And the
+**depth block already half exists where Patrick said it belongs**: the real
+judgment is in `reconcile`, sixty-four less eight less whatever belongs to
+something else, furthest away trimmed first. *Is this still wanted?* is the
+block with no home — every reader answers it its own way.
+
+**My Week's snooze is gone, and with it the last reminder the module could not
+see** (#20-new). Patrick ruled it be fixed first, before the shape work, his
+reason being that leaving it is patching. The cure was his own question —
+whether a postpone could be treated as a long snooze. It can: both are one
+moment in the future for this occurrence only, both leave the chore's home day
+and time alone, both are cleared by Done, and the only difference is distance.
+So a Delay tapped on a My Week banner writes `postponedTo`, exactly as the
+page's Postpone button does.
+
+- **The reader needed no new code.** It already turns that stamp into a
+  reminder. `myweeksnooze` stopped existing altogether.
+- **Both hand-written notification searches went**, in Skip and in Done. They
+  existed only because the module could not see that snooze.
+- **The #10-new Skip fault is cured as a side effect.** Skip now clears the
+  stamp instead of cancelling a reminder the module would put straight back.
+- **The tile shows the time when the stamp lands on today**, and the day name
+  when it does not — because a postpone moves the day and a delay moves the
+  time, so the line shows whichever part actually changed.
+- **One test changed**: the Scheduled Reminders test that used `myweeksnooze`
+  as its unreadable-trigger example now uses a My Week postpone.
+
 **The reading changed the size of the job** (#19-new, `types.ts`,
 `readers/occurrences.ts` and all six readers, about seven hundred lines).
 `WantedReminder` is already the one common output and all six readers produce
@@ -38,12 +71,13 @@ skip the input shape but **not** the engine: they still produce a
 `WantedReminder` and still pass the depth block, or they spend places nothing
 is watching.
 
-**The order of work is agreed** (#19-new). Read `scheduler.ts` and
-`reconcile.ts`, 718 lines, which is where the next session starts; settle the
-input shape on paper with Patrick before any code; build the shape and the two
-decision blocks as plain tested files nothing yet calls; write the five
-translators one at a time; swap the screens over one at a time, retiring each
-old reader as its replacement is proved; then the phone.
+**The order of work is agreed** (#19-new), and its first step is done. Read
+`scheduler.ts` and `reconcile.ts` — done at #20-new; **settle the input shape
+on paper with Patrick before any code, which is where the next session
+starts**; build the shape and the two decision blocks as plain tested files
+nothing yet calls; write the five translators one at a time; swap the screens
+over one at a time, retiring each old reader as its replacement is proved;
+then the phone.
 
 **The outside report has been checked, and the answer is mend rather than
 rebuild** (#18-new). Patrick asked to verify what could be verified before
@@ -118,7 +152,9 @@ silent for good. **So the reset had to move before the reader could be touched.*
   still gets its weekly reminder*, both of which assert the opposite of what
   is wanted.
 
-**Nothing reached the phone**, and the reader has not been touched.
+**Nothing has reached the phone.** `readers/myweek.ts` still decides exactly
+what it always decided — #20-new changed only its comment, where the
+`postponedTo` field now says that a banner's Delay writes it too.
 
 **My Day is cured** (#17-new). It moved to single moments the way Pets did, two
 occurrences ahead, keys `myday:a1:20260825`, snooze half untouched. The shared
@@ -330,19 +366,17 @@ itself on the next build. Nothing else reports.
 most of what the outside reading widened turned out to be deliberate. Nothing
 about the joins argues for starting over.
 
-**The next session's first piece is the read of `scheduler.ts` and
-`reconcile.ts`** (#19-new), 718 lines together — a moderate read, not a heavy
-one. It comes first because every step of the shape plugs into them, and the
-confidence in the engine's core is still borrowed from the record rather than
-first-hand. Patrick asked for a fresh session for it, wanting the reading done
-sharp.
+**The next session's first piece is settling the input shape on paper**
+(#19-new), with no code written. It is a long conversation rather than a read,
+and #20-new stopped short of it deliberately, the session having already had
+the engine read and a build in it.
 
-**Still unread**: `reconcile.ts`; `app/lookahead.tsx`, `app/todo.tsx`,
-`app/memorytest.tsx`; and the test files other than My Day's, Pets' and My
-Week's. The six readers and `types.ts` were read at #19-new, so the report's
-claims about *those* no longer stand on the report alone. `app/todo.tsx` in
-particular has never been opened — the background tasks are known only from
-what `readers/todo.ts` declares.
+**Still unread**: `app/lookahead.tsx`, `app/todo.tsx`, `app/memorytest.tsx`;
+and the test files other than My Day's, Pets' and My Week's. The six readers
+and `types.ts` were read at #19-new and the two engine files at #20-new, so
+the outside report's claims about any of those no longer stand on the report
+alone. `app/todo.tsx` in particular has never been opened — the background
+tasks are known only from what `readers/todo.ts` declares.
 
 **Nothing should reach the phone until the reminder work is whole** (Patrick,
 #15-new). Three screens are cured or half-cured and none of it has been built.
@@ -353,9 +387,10 @@ it (#17-new).
 
 **The rest of the fix list** is in `docs/reminder-rebuild.md` and unstarted:
 holding a dropped run instead of discarding it, saying the banner instruction
-once in the housing instead of on eight pages, bringing My Week's snooze under
-the module, and the dead "+1 Day" button. The last two also stand on their own
-below.
+once in the housing instead of on eight pages, and the dead "+1 Day" button,
+which still stands on its own below. Bringing My Week's snooze under the
+module came off that list at #20-new, by the snooze becoming a postpone rather
+than by being brought across.
 
 **Check My Reminders, from Still To Do** (raised by Patrick, #15-new). Its six
 checks and its shape are already settled in that project at SA-19 and SA-20 —
@@ -373,12 +408,10 @@ weekly and the postpone now carry the shared routine buttons, so
 in the housing cannot fire. Postponing still works from the page. Nothing is
 proposed about it.
 
-**My Week's Skip does not skip a postponed chore** (found #10-new, not acted
-on). Skip cancels the postpone's reminder off the phone by hand, but #9-new
-made the postpone something written down on the chore, so the module reads it
-on its next run and puts the reminder straight back. It has never been on a
-phone. The fix is small and belongs to a My Week session; a note sits beside
-the code in the housing's Skip branch.
+**My Week's Skip is cured** (found #10-new, fixed #20-new). It had cancelled
+the postpone's reminder off the phone by hand, which could not hold — the
+module read the stamp on its next run and put the reminder straight back. Skip
+now clears the stamp and asks the module to run. It has never been on a phone.
 
 **The hour stepper fix** is small, separate, and not structural. Any time set
 by spinning through the twelve o'clock boundary is stored in the wrong half of
@@ -392,15 +425,14 @@ alert is created only when two conditions are both true, one of them a
 `profile` value that has never been looked at. Patrick raised the loud alarm
 himself at #12-new as something that was meant to work and does not.
 
-**Kept on purpose:** Orders' `cancelForItem`, and the `myweeksnooze` hunt left
-in the housing's My Week Done handler at #9-new. Both match by item, so they
-still clear a banner snooze the module cannot see yet.
+**Kept on purpose:** Orders' `cancelForItem`. The `myweeksnooze` hunt that
+stood beside it in the housing's My Week Done handler came out at #20-new,
+along with the one in Skip — both existed only because the module could not
+see that snooze, and there is no longer a snooze for them to find.
 
-**My Week's banner snooze is still armed by hand**, in the housing at
-`_layout.tsx` line 286. It carries the item's name, its id and its source but
-no key and no record of when it fires, so it shows on the Scheduled Reminders
-screen with its name and page and no time. It is the one source the module
-does not own.
+**Every reminder in the app is now written down where the module can see it**
+(#20-new). Nothing is armed by hand any more except Orders' own delay, and
+Orders has no reader because the page is being taken out.
 
 **Still to come, and untouched:** the three "What's Next" items in
 `pending.txt` — Look Ahead's tile format and its Snooze changed or dropped,

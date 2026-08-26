@@ -138,11 +138,11 @@ export function runQueueViewTests(): void {
         assertSame(row?.label, 'Unnamed reminder', 'expected the fallback');
     });
 
-    test('A reminder armed by hand keeps its name but has no times', () => {
-        const row = toPending(entry({ source: 'myweeksnooze', trigger: null }), NOW);
+    test('A reminder whose firing time cannot be read keeps its name but has no times', () => {
+        const row = toPending(entry({ source: 'myweekpostpone', trigger: null }), NOW);
         assertSame(
             { page: row?.page, label: row?.label, nextDue: row?.nextDue, lastDue: row?.lastDue },
-            { page: 'My Week — snoozed', label: 'Morning pills', nextDue: null, lastDue: null },
+            { page: 'My Week — postponed', label: 'Morning pills', nextDue: null, lastDue: null },
             'expected a named row with no times',
         );
     });

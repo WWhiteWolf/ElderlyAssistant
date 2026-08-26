@@ -49,9 +49,11 @@ import type { MemoryTestSession } from './readers/memorytest.ts';
  * are written down on the item itself, so their readers can answer for them
  * like anything else.
  *
- * My Week's own snooze is not here yet. It is still armed straight onto the
- * phone and written down nowhere, so the module must leave it alone until it
- * is brought across.
+ * My Week has no snooze source of its own, and that is the point rather than an
+ * omission (#20-new). A Delay tapped on a chore's banner writes the same
+ * `postponedTo` stamp the page's Postpone button writes, so it comes back
+ * through `myweekpostpone` like any other postpone. There is no longer any
+ * reminder in the app armed where the module cannot see it.
  *
  * To-Do has no need of a snooze (Patrick), so its banner carries a single OK
  * button and nothing else.

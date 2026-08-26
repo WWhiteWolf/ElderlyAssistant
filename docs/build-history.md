@@ -1656,6 +1656,112 @@ question and the rename alone. His words: *Not even shelved. Forgotten.*
 still stands from #18-new.
 
 
+## #20-new (2026-08-25): the engine read first-hand, and My Week's snooze brought under the module by becoming a postpone
+
+**The engine's last unread part was read.** `scheduler.ts` and
+`reconcile.ts`, 718 lines together, were the one piece of the module the
+record described but nobody in this chain had opened. They hold up. The
+loop is one function, `runScheduler` — permission, daily reset, weekly
+reset, banner sweep, `gatherWanted`, `readQueue`, `reconcile`,
+`applyPlan`, `recordRun` — with a `running` flag that lets a second run
+pass rather than collide.
+
+**Three things the read settled about the shape**, all of them in the
+shape's favour:
+
+- **The output store is the phone's own queue, not a file.** `applyPlan`
+  writes `key`, `fires`, `source`, `itemId` and `label` into each
+  banner's own data and `readQueue` reads them straight back, which is
+  why the module never has to interpret the phone's description of a
+  trigger.
+- **The input store is five saved lists plus one session**, all read in
+  one place, `gatherWanted`, and handed down to the readers. The five
+  translators plug in exactly there — six lines of joining and nothing
+  else.
+- **The depth block already half exists where Patrick said it belongs.**
+  `OCCURRENCES_AHEAD` sits in the readers, but the real judgment is in
+  `reconcile`: sixty-four less eight less however many reminders belong
+  to something else, then sorted by next firing with the furthest away
+  trimmed. Only the reconcile can see how full the phone is, which is
+  his own reason for putting the block in the scheduler. *Is this still
+  wanted?* is the block with no home — every reader answers it its own
+  way and `gatherWanted` only joins them up.
+
+**Patrick set the order himself, and it was to fix My Week's snooze
+first.** Told that the returning arrow already works for done, postpone
+and delay but not for a My Week snooze — which is armed straight onto
+the phone and written down nowhere — he said that leaving it is patching,
+which is the thing the shape exists to stop. He was asked once whether
+"first" meant ahead of the shape work, restated it, and it was taken as
+said. His reason held up: it brings My Week into line with the other two
+screens *before* the shape arrives, so the shape meets no special case.
+
+**The cure was his question, not Claude's proposal.** Asked how a snooze
+should sit beside a postpone on the same chore, he asked instead whether
+a postpone could be treated as a long snooze. It can, and it is cleaner
+than the two stamps that were about to be proposed. Both are one moment
+in the future for this occurrence only, both leave the chore's home day
+and time alone, both are cleared by Done; the only difference is
+distance. So the banner's Delay writes `postponedTo`, exactly as the
+page's Postpone button does.
+
+**What that bought, none of which needed new code:**
+
+- One stamp per chore, the rule My Day and Pets already follow, so a
+  chore can never carry two competing delays.
+- The reader needed nothing at all — it already turns that stamp into a
+  reminder.
+- `myweeksnooze` stopped existing. Nothing to bring under the module and
+  nothing to own.
+- Both hand-written notification searches went, in Skip and in Done. They
+  existed only because the module could not see that snooze.
+- **The #10-new fault is cured as a side effect** — My Week's Skip did
+  not skip a postponed chore, because it cancelled the reminder by hand
+  and the module put it straight back. Skip now clears the stamp.
+
+**The Skip search came out altogether rather than being changed.** The
+category registrations were checked: `skip` is registered on
+`routineactions` and on no other button set, and that set belongs to My
+Day, Pets and My Week alone. Once all three write their delay down,
+nothing is left for a by-hand search to answer for.
+
+**One wrinkle was found while drafting and Patrick settled the wording.**
+The chore's tile reads "▶ moved to Tuesday" whenever the stamp is set,
+which after a fifteen-minute delay names today — true, and it tells
+nothing. It now shows the time when the stamp lands on today and the day
+name when it does not. The reason is the durable part: a postpone lands
+on another day and keeps the chore's own time, so the day is what moved;
+a delay lands later the same day and changes the time, so the time is
+what moved. The line shows whichever part actually changed.
+
+**One test changed, where none had been promised.** The Scheduled
+Reminders screen had a test using `myweeksnooze` as its example of a
+reminder whose firing time cannot be read. That source no longer exists,
+so it uses a My Week postpone instead — same behaviour, same assertion,
+and the test's name no longer says "armed by hand", which is now true of
+nothing in the app.
+
+**Also simplified:** the Orders arming block, which still carried
+wordings for My Day, Pets and My Week that nothing could reach. Orders is
+the one source left that arms its own delay, having no reader to write a
+stamp for it.
+
+**Touched:** `app/_layout.tsx` in four places, `app/myweek.tsx`,
+`scheduler/readers/myweek.ts` and `scheduler/scheduler.ts` for their
+comments, `scheduler/queueview.ts`, and one test file. 230 of 230 tests
+pass. `npx tsc` reports only the standing Expo router error, which is not
+a fault. **Nothing reached the phone**, in line with the #15-new rule
+that nothing goes across until the reminder work is whole.
+
+**A miss worth recording.** The session-start question this project's own
+rules require — whether the previous session's work was committed — was
+never asked, and Claude raised it only at the wrap-up. Patrick also
+called out the hedging in the middle of the session: *for something that
+doesn't have any feelings, you sure love to cover your backside.* Some of
+it was rule 6 doing its job and the rest was padding, which is rule 25's
+own point.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

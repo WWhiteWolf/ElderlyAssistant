@@ -21,9 +21,15 @@ export interface Chore {
     completed: boolean;
     // The moment a postponed chore is to be reminded about instead, held as an
     // ordinary count of milliseconds. It is written down when the postpone is
-    // made — by the page's own button or by the banner's — and this reader
-    // turns it back into the reminder, so a postpone that went missing comes
-    // back like everything else.
+    // made — by the page's Postpone button or by a Delay tapped on the chore's
+    // banner — and this reader turns it back into the reminder, so a postpone
+    // that went missing comes back like everything else.
+    //
+    // The banner's Delay writes this field rather than one of its own
+    // (#20-new). A delay and a postpone are the same thing at different
+    // distances: one moment in the future for this occurrence only, leaving the
+    // weekly repeat alone. One stamp per chore means the module moves the one
+    // reminder rather than leaving a second behind.
     postponedTo?: number;
 }
 

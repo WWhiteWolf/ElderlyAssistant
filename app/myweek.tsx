@@ -37,8 +37,13 @@ interface Chore {
     // to clear the ✓ once the chore's next scheduled occurrence has passed.
     doneAt?: number;
     // Epoch ms of a one-time Postpone target (this cycle only). When set, the
-    // tile shows "moved to <day>" and a one-off reminder is scheduled for then.
-    // The chore's home day/time never changes; this clears next cycle.
+    // tile shows "moved to <day or time>" and the module puts a one-off
+    // reminder on the phone for then. The chore's home day/time never changes;
+    // this clears next cycle.
+    //
+    // A Delay tapped on the chore's banner writes this same field (#20-new). A
+    // delay and a postpone are one thing at different distances, so a chore
+    // carries one stamp and never two competing ones.
     postponedTo?: number;
 }
 
@@ -228,6 +233,25 @@ export default function MyWeekScreen() {
         let hr = h % 12;
         if (hr === 0) hr = 12;
         return `${hr}:${m.toString().padStart(2, '0')} ${period}`;
+    };
+
+    // What the tile says a postponed chore was moved to.
+    //
+    // A postpone made on this page lands on another day and keeps the chore's
+    // own time, so the day is what moved. A Delay tapped on a banner lands
+    // later the same day and changes the time, so the time is what moved. The
+    // line shows whichever part actually changed, because naming today's
+    // weekday after a fifteen-minute delay is true and tells nothing.
+    const movedToText = (stamp: number) => {
+        const when = new Date(stamp);
+        const today = new Date();
+        const sameDay =
+            when.getFullYear() === today.getFullYear() &&
+            when.getMonth() === today.getMonth() &&
+            when.getDate() === today.getDate();
+        return sameDay
+            ? format12Hour(when.getHours(), when.getMinutes())
+            : DAY_NAMES[when.getDay()];
     };
 
     const openLogModal = (id: string) => {
@@ -447,7 +471,7 @@ export default function MyWeekScreen() {
                                     <Text style={styles.itemLabel}>{DAY_NAMES[item.day]} {format12Hour(item.hour, item.minute)}</Text>
                                     <Text style={styles.choreName}>{item.label}</Text>
                                     {item.postponedTo != null && (
-                                        <Text style={styles.postponedLabel}>▶ moved to {DAY_NAMES[new Date(item.postponedTo).getDay()]}</Text>
+                                        <Text style={styles.postponedLabel}>▶ moved to {movedToText(item.postponedTo)}</Text>
                                     )}
                                 </TouchableOpacity>
                                 <TouchableOpacity

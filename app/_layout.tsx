@@ -207,41 +207,39 @@ export default function RootLayout() {
       const itemId = data?.itemId as string | undefined;
       if (!itemId) return;
       (async () => {
-        // #10-new: a My Day or Pets snooze is written down on the item now, so
-        // taking it off the phone by hand would not hold — the module would
-        // read the stamp on its next run and put the reminder straight back.
-        // The stamp is what has to go, and then the module does the taking off.
+        // #10-new, and My Week joins them at #20-new: all three routine screens
+        // write their one-off reminder down on the item, so taking it off the
+        // phone by hand would not hold — the module would read the stamp on its
+        // next run and put the reminder straight back. The stamp is what has to
+        // go, and then the module does the taking off.
+        //
+        // My Day and Pets call theirs a snooze and My Week calls its one a
+        // postpone, which is the same thing at a different distance: one moment
+        // in the future for this occurrence only. So the only difference here is
+        // which field the stamp lives in.
+        //
+        // Skip is registered on 'routineactions' and on no other category, and
+        // that category belongs to these three screens alone, so there is no
+        // other source for this to answer for.
         const source = data?.source as string | undefined;
-        const storageKey =
-          source === 'myday' || source === 'mydaysnooze' ? 'my_routine'
-            : source === 'pets' || source === 'petssnooze' ? 'pets_feeds'
-              : null;
-        if (storageKey) {
-          const raw = await AsyncStorage.getItem(storageKey);
-          if (raw) {
-            const items = JSON.parse(raw) as { id: string; snoozedUntil?: number }[];
-            const updated = items.map((it) => {
-              if (it.id !== itemId) return it;
-              const { snoozedUntil, ...rest } = it;
-              return rest;
-            });
-            await AsyncStorage.setItem(storageKey, JSON.stringify(updated));
-          }
-          await runScheduler();
-          return;
-        }
+        const isDay = source === 'myday' || source === 'mydaysnooze';
+        const isPets = source === 'pets' || source === 'petssnooze';
+        const isWeek = source === 'myweek' || source === 'myweekpostpone';
+        const storageKey = isDay ? 'my_routine' : isPets ? 'pets_feeds' : isWeek ? 'week_routine' : null;
+        if (!storageKey) return;
+        const stampField = isWeek ? 'postponedTo' : 'snoozedUntil';
 
-        // My Week's snooze and postpone still go by hand. The snooze is written
-        // down nowhere, so the queue is the only place to find it; the postpone
-        // IS written down, so cancelling it here does not hold either — that is
-        // a My Week fault, recorded and left for the session that fixes it.
-        const oneOffSources = ['myweeksnooze', 'myweekpostpone'];
-        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-        for (const n of scheduled) {
-          if (oneOffSources.includes(n.content.data?.source as string) && n.content.data?.itemId === itemId) {
-            await Notifications.cancelScheduledNotificationAsync(n.identifier);
-          }
+        const raw = await AsyncStorage.getItem(storageKey);
+        if (raw) {
+          const items = JSON.parse(raw) as { id: string;[key: string]: unknown }[];
+          const updated = items.map((it) => {
+            if (it.id !== itemId) return it;
+            const { [stampField]: _cleared, ...rest } = it;
+            return rest;
+          });
+          await AsyncStorage.setItem(storageKey, JSON.stringify(updated));
         }
+        await runScheduler();
       })();
       return;
     }
@@ -254,32 +252,36 @@ export default function RootLayout() {
       const source = data?.source as string | undefined;
       const isDay = source === 'myday' || source === 'mydaysnooze';
       const isPets = source === 'pets' || source === 'petssnooze';
-      const isWeek = source === 'myweek' || source === 'myweekpostpone' || source === 'myweeksnooze';
+      const isWeek = source === 'myweek' || source === 'myweekpostpone';
       const isOrders = source === 'orders' || source === 'orderssnooze';
 
-      // #10-new: My Day and Pets write the snooze down on the item instead of
-      // arming it here.
+      // #10-new, and My Week joins them at #20-new: the three routine screens
+      // write the delay down on the item instead of arming it here.
       //
-      // Nothing is scheduled. The stamp on the item IS the snooze: the module
-      // reads it back and puts the reminder on the phone, so a snooze made from
+      // Nothing is scheduled. The stamp on the item IS the delay: the module
+      // reads it back and puts the reminder on the phone, so a delay made from
       // a banner and one made on the page are the same act written the same
-      // way. A prior snooze needs no cancelling — one stamp per item means one
+      // way. A prior stamp needs no cancelling — one stamp per item means one
       // wanted reminder under one name, which the module moves rather than
-      // duplicates. The item's base DAILY repeat is left alone, as it always
-      // was; iOS clears the shown banner itself when an action is tapped.
+      // duplicates. The item's base repeat is left alone, as it always was;
+      // iOS clears the shown banner itself when an action is tapped.
       //
-      // The other pages still arm their own snoozes below, because those are
-      // not written down anywhere and the module cannot see them yet.
-      if (isDay || isPets) {
+      // My Week's field is called `postponedTo` because that is the word its own
+      // page uses on its own button. A snooze and a postpone are the same thing
+      // at different distances — one moment in the future for this occurrence
+      // only — so they share the one stamp instead of each having its own, and a
+      // chore can never be carrying two delays at once.
+      if (isDay || isPets || isWeek) {
         const itemId = data?.itemId as string | undefined;
         if (!itemId) return;
         (async () => {
-          const storageKey = isPets ? 'pets_feeds' : 'my_routine';
+          const storageKey = isPets ? 'pets_feeds' : isWeek ? 'week_routine' : 'my_routine';
+          const stampField = isWeek ? 'postponedTo' : 'snoozedUntil';
           const raw = await AsyncStorage.getItem(storageKey);
           const items = raw ? (JSON.parse(raw) as any[]) : [];
           const target = Date.now() + minutes * 60 * 1000;
           const updated = items.map((i) =>
-            i.id === itemId ? { ...i, snoozedUntil: target } : i
+            i.id === itemId ? { ...i, [stampField]: target } : i
           );
           await AsyncStorage.setItem(storageKey, JSON.stringify(updated));
           await runScheduler();
@@ -287,23 +289,21 @@ export default function RootLayout() {
         return;
       }
 
-      // Everything below is My Week and Orders only. The My Day and Pets
-      // wordings still stand in the choices as the last fallback, but neither
-      // page can reach this any more.
+      // Orders only. It is the one source left that still arms its own delay,
+      // having no reader to write a stamp for it.
+      if (!isOrders) return;
       Notifications.scheduleNotificationAsync({
         content: {
-          title: isPets ? 'Pets Routine' : isWeek ? 'Weekly Chore' : isOrders ? '📦 Orders' : 'Daily Routine',
-          body: isOrders ? `Delivery reminder: ${label}` : `Time for ${label}!`,
-          // Tag with the snooze source (not 'myday'/'pets'/'myweek') so each
-          // screen's reschedule-on-load, which only cancels its own base source,
-          // won't wipe this snooze.
-          data: { source: isPets ? 'petssnooze' : isWeek ? 'myweeksnooze' : isOrders ? 'orderssnooze' : 'mydaysnooze', itemId: data?.itemId, label },
+          title: '📦 Orders',
+          body: `Delivery reminder: ${label}`,
+          // Tag with the snooze source rather than 'orders', so the page's own
+          // reschedule-on-load, which only cancels its base source, won't wipe
+          // this one.
+          data: { source: 'orderssnooze', itemId: data?.itemId, label },
           // Keep whatever button set the fired popup had, so a delayed popup
-          // re-appears with the same buttons (old per-page category before a
-          // page is switched over, 'routineactions' after).
+          // re-appears with the same buttons.
           categoryIdentifier:
-            response.notification.request.content.categoryIdentifier ||
-            (isPets ? 'petssnooze' : isWeek ? 'routineactions' : isOrders ? 'orderactions' : 'mydaysnooze'),
+            response.notification.request.content.categoryIdentifier || 'orderactions',
           // Same sound rule as the on-page Snooze buttons — a banner-tapped
           // snooze was silently rescheduled without this (audit item #1).
           sound: 'default',
@@ -433,7 +433,7 @@ export default function RootLayout() {
       // base reminder is a WEEKLY repeat that must fire again next week; iOS
       // auto-clears the shown banner on an action tap. (The weekly reset clears
       // the ✓ when the chore's day comes around again.)
-      if (source === 'myweek' || source === 'myweekpostpone' || source === 'myweeksnooze') {
+      if (source === 'myweek' || source === 'myweekpostpone') {
         (async () => {
           const raw = await AsyncStorage.getItem('week_routine');
           const chores = raw ? (JSON.parse(raw) as any[]) : [];
@@ -460,15 +460,10 @@ export default function RootLayout() {
           };
           await AsyncStorage.setItem('week_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
           // The Done cleared the postpone above, so asking the module to run
-          // takes the postponed reminder off the phone. A snooze still has to be
-          // hunted down by hand: My Week's snoozes are not written down yet and
-          // the module cannot see them.
-          const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-          for (const n of scheduled) {
-            if (n.content.data?.source === 'myweeksnooze' && n.content.data?.itemId === itemId) {
-              await Notifications.cancelScheduledNotificationAsync(n.identifier);
-            }
-          }
+          // takes that reminder off the phone. Nothing has to be hunted down by
+          // hand any more (#20-new): a banner's Delay now writes the very same
+          // stamp the page's Postpone button writes, so there is no My Week
+          // reminder left that the module cannot see.
           await runScheduler();
         })();
         return;
@@ -595,7 +590,7 @@ export default function RootLayout() {
       router.push({ pathname: '/todo', params });
     } else if (source === 'myday' || source === 'mydaysnooze') {
       router.push({ pathname: '/myday', params });
-    } else if (source === 'myweek' || source === 'myweekpostpone' || source === 'myweeksnooze') {
+    } else if (source === 'myweek' || source === 'myweekpostpone') {
       router.push({ pathname: '/myweek', params });
     } else if (source === 'pets' || source === 'petssnooze') {
       router.push({ pathname: '/mollie', params });
