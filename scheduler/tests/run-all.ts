@@ -24,6 +24,7 @@ import { runHealthTests } from './health.test.ts';
 import { runStillWantedTests } from './stillwanted.test.ts';
 import { runArmDepthTests } from './armdepth.test.ts';
 import { runTranslatorMyDayTests } from './translatormyday.test.ts';
+import { runTranslatorPetsTests } from './translatorpets.test.ts';
 
 console.log('\nMy Day reader');
 runMyDayTests();
@@ -66,5 +67,8 @@ runArmDepthTests();
 
 console.log('\nMy Day translator');
 runTranslatorMyDayTests();
+
+console.log('\nPets translator');
+runTranslatorPetsTests();
 
 report();

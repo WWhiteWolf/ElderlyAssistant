@@ -12,6 +12,42 @@ stands and what is open in front of it. Finished work goes to
 
 ## Where things stand
 
+**The second of the five translators is built, and it needed no design decision
+at all** (#25-new). `scheduler/translators/pets.ts` turns a saved Pets feed into
+a shaped item and **nothing in the app calls it**. `scheduler/readers/pets.ts` is
+untouched and still does all the work. **286 of 286 tests pass**, up from 267,
+and `npx tsc` reports only the standing Expo router error. It was built from
+`docs/build-sheet-translator-pets.md` alone.
+
+- **Pets is My Day's twin and the file says so on its face.** Same fields in the
+  same order with the same comments, differing only in the banner's words —
+  `'Pets Routine'` where My Day says `'Daily Routine'`. The body sentence and the
+  button set are identical.
+- **The `'petssnooze'` trap was named in the sheet and held.** That word is both
+  a registered category name and the `source` name the old reader puts in a
+  snoozed feed's key, but the old reader uses `'routineactions'` as the actual
+  button set in both places. The translator sets `'routineactions'`, with a
+  comment in the file saying why, so the next reader does not reach for the
+  apt-looking name.
+- **The reordered wanted-block carried Pets' snooze across untouched.** The cure
+  made at #24-new was general, so the case that needed a change to the block for
+  My Day needed nothing at all here. It is proved by its own test.
+- **`translatormyday.test.ts` was brought up to the standard the Pets tests set**
+  (Patrick, #25-new). Its two null-time tests checked only `hasDueTimeBit` and
+  now also assert that `dueHour` and `dueMinute` are absent. They were written
+  before those fields became optional at #24-new and were never brought forward.
+  `translators/myday.ts` already behaved correctly and was not touched, so the
+  count is unchanged.
+- **The build sheet's read list was incomplete and the worker stopped rather
+  than guessing** (#25-new). It named two files to read, but the twin pattern
+  needs `PetsItem` from `readers/pets.ts` and the last required test needs
+  `isStillWanted` from `stillwanted.ts`. Patrick's ruling: the ban on those two
+  files was about editing, not reading, and reading them was right. **A sheet's
+  read list should name what the pattern it points at actually imports.**
+- **Noted by Patrick and deliberately not acted on**: the translator takes its
+  item type from the old reader, which ties it to a file meant to be retired.
+  That is his to solve at the swap step, not the translator's.
+
 **The first of the five translators is built, and the wanted-block's questions
 were reordered to let it work** (#24-new). This is the fourth step of the
 #19-new order, begun. `scheduler/translators/myday.ts` turns a saved My Day item
@@ -259,8 +295,8 @@ Read `scheduler.ts` and `reconcile.ts` — done at #20-new; settle the input
 shape on paper with Patrick — done at #21-new, its field names at #22-new;
 build the shape and the two decision blocks as plain tested files nothing yet
 calls — done at #23-new; write the five translators one at a time — **My Day is
-built at #24-new and Pets, its twin, is where the next session starts**, then My
-Week, Look Ahead and To-Do; swap the screens over one at a time, retiring each
+built at #24-new and Pets at #25-new, so My Week is where the next session
+starts**, then Look Ahead and To-Do; swap the screens over one at a time, retiring each
 old reader as its replacement is proved; then the phone.
 
 **The outside report has been checked, and the answer is mend rather than
@@ -534,7 +570,7 @@ record on that screen was held back from #15-new so all three are done in one
 visit.
 
 **The tests run on the Mac in about a second**, headless under Node, with
-no build and no simulator. 267 of 267 pass — and see the outside reading on what
+no build and no simulator. 286 of 286 pass — and see the outside reading on what
 that does not mean:
 
     node --experimental-strip-types scheduler/tests/run-all.ts
@@ -550,15 +586,22 @@ itself on the next build. Nothing else reports.
 most of what the outside reading widened turned out to be deliberate. Nothing
 about the joins argues for starting over.
 
-**The next session's first piece is the Pets translator, My Day's twin**
-(#19-new order, fourth step, begun at #24-new). The shape and the two blocks they
-hand to are built and tested (#23-new), and each translator is a small piece of
-its own: it reads one screen's saved list exactly as that screen saves it and
-sets the codes and bits at the boundary. No screen changes and nothing on the
-phone breaks. **`docs/build-sheet-translator-myday.md` is the pattern** — a
-self-contained sheet carrying the answers themselves rather than pointing at
-other documents, which is what let #24-new build without asking a design
-question.
+**The next session's first piece is the My Week translator** (#19-new order,
+fourth step, two of five done). The shape and the two blocks they hand to are
+built and tested (#23-new), and each translator is a small piece of its own: it
+reads one screen's saved list exactly as that screen saves it and sets the codes
+and bits at the boundary. No screen changes and nothing on the phone breaks.
+**`docs/build-sheet-translator-pets.md` is the pattern** — a self-contained sheet
+carrying the answers themselves rather than pointing at other documents, which is
+what let #24-new and #25-new build without asking a design question.
+
+**My Week is the first translator that is not a twin of one already built.** My
+Day and Pets are the same screen twice; My Week is weekly, carries `doneAt`
+beside `completed`, and holds a `postponedTo` stamp that a banner's Delay writes
+as well as the page's Postpone. **Its cure rides on this piece** — its reader
+still ignores the tick, and the header comment of `scheduler/readers/myweek.ts`
+and the test named *A chore already ticked still gets its weekly reminder* both
+assert the opposite of what is wanted and go out with the swap.
 
 **`docs/build-sheet.md` has not been brought level with the reorder** (#24-new).
 It is the standing description of what the three shape files hold, and it

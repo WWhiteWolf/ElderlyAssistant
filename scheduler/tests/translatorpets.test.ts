@@ -1,11 +1,11 @@
-// Tests for the My Day translator.
+// Tests for the Pets translator.
 //
-// The translator's whole job is to say what a My Day item IS, so these tests
+// The translator's whole job is to say what a Pets feed IS, so these tests
 // ask only that: the right facts came across, in the right fields, unchanged.
 // Nothing here asks what the engine then does about them.
 
-import { translateMyDay } from '../translators/myday.ts';
-import type { MyDayItem } from '../readers/myday.ts';
+import { translatePets } from '../translators/pets.ts';
+import type { PetsItem } from '../readers/pets.ts';
 import { isStillWanted } from '../stillwanted.ts';
 import { assert, assertSame, test } from './runner.ts';
 
@@ -20,13 +20,13 @@ function at(year: number, month: number, day: number, hour: number, minute: numb
 }
 
 /**
- * A plain saved My Day item with a time and nothing done to it. Each test
+ * A plain saved Pets feed with a time and nothing done to it. Each test
  * changes only the fields it is about.
  */
-function saved(changes: Partial<MyDayItem> = {}): MyDayItem {
+function saved(changes: Partial<PetsItem> = {}): PetsItem {
     return {
-        id: 'a1',
-        label: 'Take the tablets',
+        id: 'p1',
+        label: 'Feed the dog',
         hour: 18,
         minute: 0,
         completed: false,
@@ -34,43 +34,43 @@ function saved(changes: Partial<MyDayItem> = {}): MyDayItem {
     };
 }
 
-/** Translate one saved item and hand back the one shaped item it becomes. */
-function shapeOf(item: MyDayItem, now: number = NOW) {
-    return translateMyDay([item], now)[0];
+/** Translate one saved feed and hand back the one shaped item it becomes. */
+function shapeOf(item: PetsItem, now: number = NOW) {
+    return translatePets([item], now)[0];
 }
 
-export function runTranslatorMyDayTests(): void {
+export function runTranslatorPetsTests(): void {
     // ---- what the item is ----
 
-    test('A saved item keeps its screen, its id and its name', () => {
+    test('A saved feed keeps its screen, its id and its name', () => {
         const shaped = shapeOf(saved());
         assertSame(
             [shaped.sourceScreenCode, shaped.itemIdText, shaped.itemNameText],
-            ['myday', 'a1', 'Take the tablets'],
-            'the three facts about what the item is should come straight across',
+            ['pets', 'p1', 'Feed the dog'],
+            'the three facts about what the feed is should come straight across',
         );
     });
 
-    test('Every saved item becomes one shaped item, in order', () => {
-        const shapedList = translateMyDay(
-            [saved({ id: 'a1' }), saved({ id: 'a2' }), saved({ id: 'a3' })],
+    test('Every saved feed becomes one shaped item, in order', () => {
+        const shapedList = translatePets(
+            [saved({ id: 'p1' }), saved({ id: 'p2' }), saved({ id: 'p3' })],
             NOW,
         );
         assertSame(
             shapedList.map((one) => one.itemIdText),
-            ['a1', 'a2', 'a3'],
+            ['p1', 'p2', 'p3'],
             'the translator drops nothing, because dropping is a judgment made further along',
         );
     });
 
     // ---- when it comes due ----
 
-    test('An item with an hour and a minute is a daily item with its time', () => {
+    test('A feed with an hour and a minute is a daily item with its time', () => {
         const shaped = shapeOf(saved({ hour: 8, minute: 30 }));
         assertSame(
             [shaped.triggerKindCode, shaped.hasDueTimeBit, shaped.dueHour, shaped.dueMinute],
             ['daily', true, 8, 30],
-            'a My Day item is a daily routine at the time it was given',
+            'a Pets feed is a daily routine at the time it was given',
         );
     });
 
@@ -82,11 +82,11 @@ export function runTranslatorMyDayTests(): void {
         assertSame(
             [shaped.hasDueTimeBit, shaped.dueHour, shaped.dueMinute],
             [true, 0, 0],
-            'an item set to midnight has a time',
+            'a feed set to midnight has a time',
         );
     });
 
-    test('An item with a null hour has no due time and no hour or minute at all', () => {
+    test('A feed with a null hour has no due time and no hour or minute at all', () => {
         const shaped = shapeOf(saved({ hour: null }));
         assertSame(
             [shaped.hasDueTimeBit, shaped.dueHour, shaped.dueMinute],
@@ -95,7 +95,7 @@ export function runTranslatorMyDayTests(): void {
         );
     });
 
-    test('An item with a null minute has no due time and no hour or minute at all', () => {
+    test('A feed with a null minute has no due time and no hour or minute at all', () => {
         const shaped = shapeOf(saved({ minute: null }));
         assertSame(
             [shaped.hasDueTimeBit, shaped.dueHour, shaped.dueMinute],
@@ -104,10 +104,10 @@ export function runTranslatorMyDayTests(): void {
         );
     });
 
-    test('An older item with no hour or minute at all has no due time', () => {
+    test('An older feed with no hour or minute at all has no due time', () => {
         // Saved before the fields existed. It counts as the same thing as a
         // time that was cleared.
-        const older = { id: 'a1', label: 'Take the tablets', completed: false } as unknown as MyDayItem;
+        const older = { id: 'p1', label: 'Feed the dog', completed: false } as unknown as PetsItem;
         assert(!shapeOf(older).hasDueTimeBit, 'a missing time is the same as a cleared one');
     });
 
@@ -122,31 +122,31 @@ export function runTranslatorMyDayTests(): void {
 
     // ---- capability bits ----
 
-    test('A My Day item can be done and can be pushed back', () => {
+    test('A Pets feed can be done and can be pushed back', () => {
         const shaped = shapeOf(saved());
         assertSame(
             [shaped.canBeDoneBit, shaped.canBePushedBackBit],
             [true, true],
-            'My Day items are ticked off and can be snoozed from page and banner',
+            'Pets feeds are ticked off and can be snoozed from page and banner',
         );
     });
 
-    test('A ticked item is done, but the done does not end it', () => {
+    test('A ticked feed is done, but the done does not end it', () => {
         const shaped = shapeOf(saved({ completed: true }));
         assertSame(
             [shaped.isDoneBit, shaped.doneEndsItemBit],
             [true, false],
-            'My Day done covers today only; the item comes back tomorrow',
+            'Pets done covers today only; the feed comes back tomorrow',
         );
     });
 
-    test('A My Day reminder stands for one item, never a group', () => {
+    test('A Pets reminder stands for one feed, never a group', () => {
         assert(!shapeOf(saved()).standsForGroupBit, 'standing for a group is To-Do background only');
     });
 
     // ---- state ----
 
-    test('An untouched item is not done and carries no push-back', () => {
+    test('An untouched feed is not done and carries no push-back', () => {
         const shaped = shapeOf(saved());
         assertSame(
             [shaped.isDoneBit, shaped.pushedBackToStamp],
@@ -155,7 +155,7 @@ export function runTranslatorMyDayTests(): void {
         );
     });
 
-    test('A snoozed item carries its stamp through untouched', () => {
+    test('A snoozed feed carries its stamp through untouched', () => {
         const later = at(2026, 5, 1, 22, 0);
         assertSame(shapeOf(saved({ snoozedUntil: later })).pushedBackToStamp, later,
             'the stamp is copied, not interpreted');
@@ -169,7 +169,7 @@ export function runTranslatorMyDayTests(): void {
 
     // ---- how far ahead to speak ----
 
-    test('A My Day item has no lead times', () => {
+    test('A Pets feed has no lead times', () => {
         assertSame(shapeOf(saved()).leadTimeList, [],
             'a daily item speaks at the moment itself, which is what an empty list means');
     });
@@ -180,17 +180,17 @@ export function runTranslatorMyDayTests(): void {
         const shaped = shapeOf(saved({ label: 'Feed the cat' }));
         assertSame(
             [shaped.bannerTitleText, shaped.bannerBodyText, shaped.bannerButtonsCode],
-            ['Daily Routine', 'Time for Feed the cat!', 'routineactions'],
+            ['Pets Routine', 'Time for Feed the cat!', 'routineactions'],
             'the swap over must change nothing a person sees',
         );
     });
 
     // ---- the one thing that must survive the move ----
 
-    test('An item with no time but a live snooze keeps both', () => {
-        // My Day's snooze deliberately stands on its own. In the old reader
-        // the snooze is armed BEFORE the guard on the item having a time,
-        // because an item whose time was cleared after it was snoozed still
+    test('A feed with no time but a live snooze keeps both', () => {
+        // The Pets snooze deliberately stands on its own. In the old reader
+        // the snooze is armed BEFORE the guard on the feed having a time,
+        // because a feed whose time was cleared after it was snoozed still
         // owes the reminder it promised. The translator's part of keeping
         // that is to let the two states stand side by side.
         const later = at(2026, 5, 1, 22, 0);
@@ -202,8 +202,8 @@ export function runTranslatorMyDayTests(): void {
         );
     });
 
-    test('The wanted-block keeps a live snooze on an item with no time', () => {
-        // The whole point of the case. The item has no base occurrence left to
+    test('The wanted-block keeps a live snooze on a feed with no time', () => {
+        // The whole point of the case. The feed has no base occurrence left to
         // arm, so this occurrence is dropped — but the promise was already
         // made, so the moment stands beside it. This is what the old reader
         // did by arming the snooze before its own time guard, now answered
@@ -214,13 +214,13 @@ export function runTranslatorMyDayTests(): void {
         assertSame(
             [said.wantsRemindersBit, said.dropsThisOccurrenceBit, said.pushedBackToMoment],
             [true, true, later],
-            'a promised push-back survives the item losing its time',
+            'a promised push-back survives the feed losing its time',
         );
     });
 
-    test('An item with no time and no live snooze is still not wanted', () => {
+    test('A feed with no time and no live snooze is still not wanted', () => {
         // The last-resort question, held in place. Nothing above it has
-        // anything to say about this item, so the plain answer stands: no due
+        // anything to say about this feed, so the plain answer stands: no due
         // time, nothing to arm.
         const shaped = shapeOf(saved({ hour: null, minute: null }));
         const said = isStillWanted(shaped, NOW);
@@ -228,7 +228,7 @@ export function runTranslatorMyDayTests(): void {
             [said.wantsRemindersBit, said.dropsThisOccurrenceBit, said.pushedBackToMoment,
                 said.becauseText],
             [false, false, null, 'the item has no due time'],
-            'without a promise standing, an item with no time is not a reminder',
+            'without a promise standing, a feed with no time is not a reminder',
         );
     });
 }
