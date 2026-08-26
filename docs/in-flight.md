@@ -24,6 +24,10 @@ Last written: 2026-08-26, at Super-1-new, after #25-new closed.
 - **The commit is the handover.** When Patrick says he has committed, this
   session catches up by reading that worker's own entry in `build-history.md`
   and nothing more.
+- **Finish all of a piece before handing it over** (Patrick, Super-1-new).
+  Writing a build sheet and bringing this file current are one piece of work,
+  not two. Do both, then hand him one commit. Never ask for two commits in a row
+  when the second was foreseeable while making the first.
 
 ## No worker out right now
 
@@ -86,13 +90,29 @@ made when the first screen is actually swapped over, one screen at a time.
 
 ## Next piece
 
-**The My Week translator. Its sheet is not written.** Write it from
-`docs/build-sheet-translator-pets.md` as the pattern. My Week is the first that
-is not a twin: it is weekly rather than daily, its push-back is saved as
-`postponedTo` rather than `snoozedUntil`, and its old reader arms one true
-weekly repeat rather than single moments — which is the thing curing it changes,
-and which `reminder-shape.md` covers under the depth section. Read its reader
-before writing the sheet.
+**The My Week translator, and its sheet is written**:
+`docs/build-sheet-translator-myweek.md`. Hand that to a worker session and
+nothing else. It is the first that is not a twin — weekly rather than daily,
+`postponedTo` rather than `snoozedUntil`, and an old reader that arms one true
+weekly repeat rather than single moments.
+
+**Two rulings were settled writing it, both this session's.**
+
+- **The weekday stays as the app saves it**, Sunday as 0. The old reader adds
+  one because the phone counts from one, and that addition belongs at the phone
+  boundary. The shape is the app's own truth, and `weeklyreset.ts` already works
+  in the saved counting, so the shape now agrees with the app's arithmetic and
+  disagrees with nothing. The sheet asks for a test pinning it, because it is
+  the sort of thing a later session would "fix" by adding one.
+- **The chore's tick goes into the shape though the old reader ignores it.** My
+  Week arms a chore whether or not it is ticked, because a weekly repeat cannot
+  skip a week — its own long-standing fault, written up in
+  `reminder-shape.md`. The translator tells the truth instead: `isDoneBit` is
+  `completed`, `canBeDoneBit` set, `doneEndsItemBit` clear. **Nothing changes on
+  the phone**, because nothing calls the translator. The behaviour only moves at
+  the swap, and **the swap is this session's problem, not a worker's.** Checked
+  before settling it: `resetForNewCycle` clears the tick once each chore's own
+  cycle comes round, so reading it is safe.
 
 After it: Look Ahead, then To-Do. Then swapping the screens over one at a time,
 retiring each old reader as its replacement is proved. Then the phone.
