@@ -1,5 +1,23 @@
 # Build sheet — the My Week translator
 
+> ## WITHDRAWN at Super-2-new, 2026-08-26. Do not build from this file.
+>
+> **It was never sent to a worker.** It asks for a fifth per-screen translator
+> file, and there is no such thing to build: nothing in the engine goes by page.
+> The reasoning is in `docs/reminder-shape.md` under "The translator is one, not
+> five".
+>
+> **The sheet is kept because it is the evidence.** Its "translation, field by
+> field" section below is a table row — about a dozen constants and field names
+> — written out as two hundred lines of English and handed to a session to build
+> a file around. Read that section and the case makes itself.
+>
+> **Both of its rulings still stand** and are carried forward unchanged into the
+> replacement sheet: the weekday stays as the app saves it with Sunday as 0, and
+> the chore's tick goes into the shape though the old reader ignores it.
+>
+> **Build from `docs/build-sheet-translator-table.md` instead.**
+
 **Read this file and build. Read only the files on the read list below. Do not
 ask Patrick anything about the design. Every decision here is already made and
 is not to be reopened.**

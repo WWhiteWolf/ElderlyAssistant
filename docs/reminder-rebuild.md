@@ -1,5 +1,44 @@
 # Making the reminders rock solid — the working file
 
+> ## This file is the record of #15-new through #18-new. It is not the live design.
+>
+> **Headed this way at Super-2-new, 2026-08-26, at Patrick's asking.** He went
+> looking in this file for decisions taken since, did not find them, and was
+> right to expect them somewhere findable.
+>
+> **The live design document is `docs/reminder-shape.md`.** Everything from
+> #19-new onward is there and none of it is here: the five pieces, the two
+> decision blocks, the codes and bits, the field names, depth, recovery on
+> opening, and the translator at the boundary. **When this file and the shape
+> document disagree, the shape document wins.**
+>
+> **What this file is still good for**, and why it is kept whole rather than
+> rewritten: it is the only record of what was actually found wrong and what was
+> cured, finding by finding, across four sessions. "What is already right, and is
+> not to be 'fixed'" is live and is added to — the newest entry there was written
+> at Super-2-new.
+>
+> **Two things in it now read as current and are not:**
+>
+> - **Anything saying a daily item takes two of the phone's places.** That was
+>   true when it was written. Depth was reopened at #22-new and settled at **one
+>   for every kind**, the second copy's work being done instead by the app
+>   re-queueing when it opens. The closing lines about a Pets feed taking two
+>   places are the clearest instance.
+> - **The fix list's note that how far ahead to arm was settled at #16-new.** It
+>   was settled, then reopened by Patrick and re-settled the other way.
+>
+> **"What is not decided" is largely still live** — the Timer, the `doneAt`
+> stamp, My Week's misses, the Scheduled Reminders screen. The shape document
+> keeps its own list, which does not repeat these.
+>
+> **Why it drifted, recorded so it does not happen again.** This file was in no
+> session's reading order. A supervising session opens `in-flight.md` and
+> `reminder-shape.md`; a worker opens its build sheet; the project's opening read
+> is `handoff.md`. Nothing named this file, so nobody owned it, and it stood still
+> from #16-new while the design moved on around it. It now has a line in
+> `CLAUDE.md` saying what it is and when it is opened.
+
 Started at #14-new, 2026-08-25, as the account of a whole read of the
 reminder machinery, the faults that read found, and the order they
 would be fixed in. #15-new built the first of them and #16-new began
@@ -91,6 +130,40 @@ tests run against them under Node on the Mac in about a second.
 appointment cannot be snoozed, and a lead-up reminder has nothing to
 mark Done, because the appointment has not happened yet. Acknowledging
 the notice is all that is wanted.
+
+**Background tasks are absent from the daily reset, and the absence is
+correct** (Patrick, Super-2-new). `runDailyReset` names `my_routine` and
+`pets_feeds` and not `todo_tasks`, and that is deliberate rather than an
+oversight.
+
+A To-Do background task is a **long-range reminder that something is not
+done yet**. It has no appointment, so nothing says when — but it stands
+until it is finished, and its `completed` is the lasting answer to
+whether it is, not a mark about today. `resetForNewDay` clears
+`completed` on everything it is handed, so sweeping To-Do with it would
+un-finish every background task every morning and resurrect work already
+done. **Adding `todo_tasks` to that loop looks like a missing line and is
+not one.**
+
+**The eight o'clock background banner is correct** for the same reason.
+It says something is still outstanding, which is its job. It is not
+nagging about a record.
+
+**And there is an opposite kind of record that only looks the same.** It
+says a thing WAS done, is kept for recall rather than for prompting, is
+one day long, and never leaves its page — Patrick's own example being
+whether he has had a second coffee today, too routine to remember and
+genuinely unrecoverable by evening. It wants no banner and no report
+anywhere. The daily-cleared counters `my_coffee`, `my_water` and
+`pets_treats` appear to be it, though only their storage keys were read
+at Super-2-new and not the screens.
+
+**The two are told apart by what they are for, never by their shape.**
+One must survive the rollover; the other must be wiped by it. Anything
+that would give the first a daily clear, or the second a banner, has
+confused them. This is written down because Claude had them the wrong way
+round inside a single conversation and would otherwise have written the
+mistake into a build sheet.
 
 ## The findings
 

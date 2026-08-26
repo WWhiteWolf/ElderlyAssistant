@@ -10,7 +10,20 @@ A supervising session opens this and `docs/reminder-shape.md`, and nothing else.
 one across all of them. Each project keeps its own `in-flight.md` in its own
 docs.
 
-Last written: 2026-08-26, at Super-1-new, after #25-new closed.
+Last written: 2026-08-26, at the close of Super-2-new.
+
+## Read this first, Super-3-new
+
+**Super-2-new ended here, tired, having spent the whole session on one question
+Patrick asked in passing: why five translators?** No code was written. Six
+documents were, and the commit for them was handed to Patrick at the close.
+
+- **Ask him whether that commit went in** before anything else. He prefers being
+  asked.
+- **Nothing is out with a worker.** The next act is handing
+  `build-sheet-translator-table.md` to one, and nothing else with it.
+- **Do not reopen the translator question.** It is settled and the evidence is in
+  `reminder-shape.md`. Reopening it is how this session went.
 
 ## The role
 
@@ -26,123 +39,167 @@ Last written: 2026-08-26, at Super-1-new, after #25-new closed.
   and nothing more.
 - **Finish all of a piece before handing it over** (Patrick, Super-1-new).
   Writing a build sheet and bringing this file current are one piece of work,
-  not two. Do both, then hand him one commit. Never ask for two commits in a row
-  when the second was foreseeable while making the first.
+  not two. Do both, then hand him one commit.
 
 ## No worker out right now
 
-**#24-new and #25-new are both closed and committed.** Two of the five
-translators are built and proved. Nothing calls any of them and nothing has
-reached the phone.
+**Nothing is out, and nothing should go out until Patrick has committed this
+session's docs.** The My Week worker opener was written at the start of
+Super-2-new and deliberately **never sent** — see below.
 
-## Where the translator work stands
+**What was not touched at the close, so nobody assumes it was:**
+`docs/handoff.md`, `docs/pending.txt` and `docs/pending.rtf`. This session
+changed no code and nothing a person sees on the phone, so it had nothing to add
+to Patrick's own list. The one item that may belong there one day is his
+short-range "did I do it today" record, and it is described in
+`reminder-shape.md` rather than promised anywhere.
 
-**286 of 286 tests pass.** `npx tsc` reports only the standing Expo router error
-in `app/settings.tsx`, which nothing in this work touches.
+## What Super-2-new found, and it is the thing to know
 
-- **#24-new built the My Day translator**, and the defect it was sent to look
-  for was real. `stillwanted.ts` asked *no due time* first and returned before
-  the push-back question, so an item whose time was cleared after it was snoozed
-  lost the reminder it had already promised. The questions now run done,
-  push-back, no due time. A no-time item with a live push-back answers wanted,
-  this occurrence dropped, the moment standing. It stays a rule rather than an
-  exception because `canBePushedBackBit` gates the branch.
-- **`dueHour` and `dueMinute` were made optional** in the same session, matching
-  `dueWeekday` and `dueMoment` and the #23-new reasoning that an absent field
-  says plainly what a zero has to be interpreted into.
-- **#25-new built the Pets translator**, My Day's twin, differing only in the
-  banner title `'Pets Routine'`. The `petssnooze` trap the sheet named is real
-  in the file and the worker left a comment in the code about it.
-- **The twins were made even.** The Pets tests checked that `dueHour` and
-  `dueMinute` are absent, which the My Day tests had not been brought forward to
-  do. Those two tests were widened rather than added to, so the count did not
-  move.
+**Patrick asked why we were going with five translators, and the answer did not
+survive the question.**
+
+- **`stillwanted.ts` never mentions `sourceScreenCode`.** It branches on the
+  capability bits, the state fields and `hasDueTimeBit`, and nothing else.
+- **`armdepth.ts` branches on `triggerKindCode` alone.**
+- **The two built translators differ by two string literals** —
+  `sourceScreenCode` and `bannerTitleText`. Every other difference between
+  `translators/myday.ts` and `translators/pets.ts` is comment text, "item"
+  reworded to "feed". #24-new and #25-new built the same file twice.
+
+**Nothing in the engine goes by page.** That is not luck — it is what Patrick's
+codes and bits were designed to do, and his own words on seeing it: *that is what
+I wanted when we designed the fields of codes and bits.*
+
+**How the five arose.** Chosen at #19-new, when the shape did not exist and the
+only division available was the readers' own one-function-per-screen. The shape
+settled at #21-new and #22-new dissolved that division, and nobody went back.
+**It is the same fault as the two-occurrences number** — decided under the old
+structure, carried forward as though still settled. Watch for it a third time.
+
+## What was done about it, all in docs, no code touched
+
+- **`reminder-shape.md`** — the translator section keeps its road and loses its
+  count. New subsection "The translator is one, not five" carries the evidence
+  and the history. **The nine-hundred-lines claim is struck** as unverified: it
+  was the stated evidence for the whole road, and #19-new's own note says the
+  screens were never opened.
+- **`build-sheet-translator-myweek.md`** — **withdrawn**, header at the top, file
+  kept. Its field-by-field section is a table row written out as two hundred
+  lines of English, which is the clearest evidence there is.
+- **`build-sheet-translator-table.md`** — **written, and this is what goes to the
+  next worker.** One translator, a `ScreenRules` table, four screens: My Day,
+  Pets, My Week, Look Ahead. The two per-screen translator files are deleted.
+
+## Three rulings settled writing that sheet
+
+- **The weekday stays as the app saves it**, Sunday 0. Carried unchanged from the
+  withdrawn sheet.
+- **The chore's tick goes into the shape** though the old reader ignores it.
+  Carried unchanged from the withdrawn sheet.
+- **A date item carries `dueMoment` alone**, leaving `dueHour` and `dueMinute`
+  off. **This one is new.** `inputshape.ts` says hour and minute are used by all
+  three kinds; for a date item that is the same fact stored twice, and two copies
+  can disagree. **Patrick has not seen this ruling yet — it wants his eye.**
+
+## The proof the sheet leans on
+
+**The two existing translator tests must pass with only their import line
+changed.** They were written against the files being deleted, so if the table
+produces the same shaped items they pass untouched. A test that needs altering
+means behaviour moved, which is the one thing the build must not do. 286 tests
+before, none of them to be lost or edited.
+
+## Next, after this commit
+
+1. Hand `build-sheet-translator-table.md` to a worker. Nothing else with it.
+2. Then To-Do's own sheet. **It has one thing that does not fit the table**, and
+   it is not its lead times — those are another accessor. It is the eight
+   o'clock background banner with `standsForGroupBit`, built from the whole list
+   rather than from one saved item: a reduction where everything else is a
+   mapping. That is a difference in kind, which the shape already names, not a
+   difference in page.
+3. Then swapping the screens over one at a time, retiring each old reader as its
+   replacement is proved. Then the phone.
+
+## One thing written down this session that is not about translators
+
+**What a To-Do background task is for** — Patrick's own words, settled at
+Super-2-new and written into `reminder-shape.md` under section seven. **It is a
+long-range reminder that something is NOT done yet**, so the eight o'clock banner
+is correct and `standsForGroupBit` keeps its user.
+
+**The trap, and it is a live one.** Background tasks are deliberately absent from
+`runDailyReset`, which names `my_routine` and `pets_feeds` only. Adding
+`todo_tasks` to that loop would un-finish every background task every morning,
+because `resetForNewDay` clears `completed` on everything handed to it. **The
+absence is correct. Do not "fix" it.**
+
+**The opposite kind exists too and must not be merged with it** — the
+short-range record that something WAS done, kept for recall, one day long, never
+leaving its page. The daily-cleared counters `my_coffee`, `my_water` and
+`pets_treats` look to be it, though only their storage keys were read.
+
+**Claude had these two backwards inside one conversation** and would have written
+the mistake into a build sheet. That is why they are written down.
+
+## The docs themselves, sorted at Super-2-new
+
+**Patrick went looking in `reminder-rebuild.md` for decisions taken since
+#18-new and found none of them.** He was right to expect them findable.
+
+- **`reminder-rebuild.md` had no owner.** No reading order named it, so it stood
+  still from #16-new while the design moved on. It now carries a header saying it
+  is the record of #15-new through #18-new, names `reminder-shape.md` as the live
+  design and the winner wherever the two disagree, and flags the two places in it
+  that read as current and are not — anything saying a daily item takes two of
+  the phone's places, depth having been re-settled at one.
+- **`CLAUDE.md` now gives it a line**, so it cannot drift unowned again. **Its
+  one live part is "What is already right, and is not to be 'fixed'"**, which any
+  session may add to.
+
+**The pattern to watch for, now seen three times.** A decision made under an
+older structure, still written down, nobody going back once the ground moved:
+the two-occurrences number, the five translators, and this file. **When something
+turns out to have been settled before the current design existed, that is not a
+decision. It is a leftover.**
 
 ## The loose threads, named on purpose
 
 - **The three banner fields are optional** because making them required would
-  have broken test files a sheet forbade touching. That is a build constraint
-  showing through into the shape. Tighten it whenever something else opens
+  have broken test files a sheet forbade touching. A build constraint showing
+  through into the shape. Tighten it whenever something else opens
   `inputshape.ts`.
 - **Each translator imports its item type from the old reader it replaces**, so
-  it is tied to a file meant to be retired. Both workers were told to note it
-  and not act. **It is settled at the swap step, not before.**
-- **What would turn this into patchwork**: another screen wanting the push-back
-  question answered differently, and conditions starting to be added to the
-  block. That is the moment to stop and redesign, not to add a third case.
+  it is tied to a file meant to be retired. **Settled at the swap step, not
+  before.**
+- **Nothing joins the shape or the two blocks to `gatherWanted` yet.** Deliberate
+  — the join is made when the first screen is actually swapped over, one screen
+  at a time.
+- **What would turn this into patchwork**: conditions starting to be added to
+  `stillwanted.ts` for one screen's sake. The moment a `sourceScreenCode` appears
+  in that file, stop and redesign.
 
-## What the two sheets taught, for the next one
+## Where the tests and the checks stand
 
-- **A sheet's read list must include everything the build legitimately needs to
-  read.** The Pets sheet banned editing several files and the worker rightly
-  stopped, because it needed to *read* two of them — the item type and
-  `isStillWanted`. Say reading and editing separately.
-- **The sheets work.** Both workers built from the sheet alone and asked nothing
-  about the design. Every question either raised was about acting or about a gap
-  in the sheet, which is what they are for.
-
-## Open on purpose, not overlooked
-
-**Nothing joins the shape or the two blocks to `gatherWanted` yet.** It is the
-arrow from the store to the block in `reminder-shape.md`, and it is deliberately
-unanswered until the swap step: the translators are built first, and the join is
-made when the first screen is actually swapped over, one screen at a time.
-
-## Next piece
-
-**The My Week translator, and its sheet is written**:
-`docs/build-sheet-translator-myweek.md`. Hand that to a worker session and
-nothing else. It is the first that is not a twin — weekly rather than daily,
-`postponedTo` rather than `snoozedUntil`, and an old reader that arms one true
-weekly repeat rather than single moments.
-
-**Two rulings were settled writing it, both this session's.**
-
-- **The weekday stays as the app saves it**, Sunday as 0. The old reader adds
-  one because the phone counts from one, and that addition belongs at the phone
-  boundary. The shape is the app's own truth, and `weeklyreset.ts` already works
-  in the saved counting, so the shape now agrees with the app's arithmetic and
-  disagrees with nothing. The sheet asks for a test pinning it, because it is
-  the sort of thing a later session would "fix" by adding one.
-- **The chore's tick goes into the shape though the old reader ignores it.** My
-  Week arms a chore whether or not it is ticked, because a weekly repeat cannot
-  skip a week — its own long-standing fault, written up in
-  `reminder-shape.md`. The translator tells the truth instead: `isDoneBit` is
-  `completed`, `canBeDoneBit` set, `doneEndsItemBit` clear. **Nothing changes on
-  the phone**, because nothing calls the translator. The behaviour only moves at
-  the swap, and **the swap is this session's problem, not a worker's.** Checked
-  before settling it: `resetForNewCycle` clears the tick once each chore's own
-  cycle comes round, so reading it is safe.
-
-After it: Look Ahead, then To-Do. Then swapping the screens over one at a time,
-retiring each old reader as its replacement is proved. Then the phone.
+**286 of 286 passing** as of #25-new. `npx tsc` reports only the standing Expo
+router error in `app/settings.tsx`, which nothing in this work touches.
 
 ## Running elsewhere: the Super-Projects chain
 
 **`App-Docs/master-handoff.md` has grown into a session-by-session history**,
-which its own opening forbids — 2,914 lines, about sixty-six thousand tokens,
-where its stated job is three status lines and the cross-project loose ends. It
-is the same disease this file was invented to stop, in a file that never got the
-cure.
-
-Patrick named a chain of its own for it, **Super-Projects**, because the file
-belongs to all three projects rather than to this one. Its opener is written and
-the work is: cut the file back to what its header says it is, prove every
-removed paragraph already exists in that project's own `build-history.md` and
-move rather than drop what does not, give the file this file's rule, and bring
-the Memory status line current — it is now two sessions behind, ending at
-#23-new.
-
-**Nothing here waits on it**, and this chain should not do it.
+which its own opening forbids — about 2,900 lines where its stated job is three
+status lines and the cross-project loose ends. Same disease this file was
+invented to stop, in a file that never got the cure. Patrick named a chain of its
+own for it, **Super-Projects**. **Nothing here waits on it**, and this chain
+should not do it.
 
 ## Parked, at Patrick's choosing
 
 **Running the worker sessions on a different AI**, Claude in Cursor being the one
-he named, because two sessions open here eats his time. The arrangement already
-suits it: the handover is a plain sheet and a commit rather than a conversation.
-Two things unchecked — whether Cursor picks up a `CLAUDE.md` on its own or wants
-its own rules file, and that **rule 10, no git commands at all in his repos,
-would have to be said to it explicitly**, since its agent can run a terminal.
+he named. Two things unchecked — whether Cursor picks up a `CLAUDE.md` on its own,
+and that **rule 10, no git commands at all, would have to be said to it
+explicitly.**
 
 ## The one thing not to reopen
 

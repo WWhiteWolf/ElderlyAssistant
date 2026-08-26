@@ -149,21 +149,96 @@ rebuilds the same thing.
 
 **The mess is on the input side, and it is not really the scheduler's
 mess.** It is five screens each saving in its own way. Changing what
-they save means touching five pages of around nine hundred lines each,
-and the data already sitting on the phone.
+they save means touching all five pages and the data already sitting on
+the phone.
 
 **So neither.** Leave what the screens save exactly as it is, and put
-the one shape *between* the screens and the scheduler — a small
-translator for each screen, turning whatever that screen saved into the
-common item. Then the two decision blocks and the engine are written
-once against one shape, no screen is changed, nothing already on the
-phone breaks, and the readers shrink to five little translators plus
-one engine. A screen can be brought round to the common shape later, at
-leisure, or never.
+the one shape *between* the screens and the scheduler — a translator at
+the boundary, turning whatever a screen saved into the common item. Then
+the two decision blocks and the engine are written once against one
+shape, no screen is changed, and nothing already on the phone breaks. A
+screen can be brought round to the common shape later, at leisure, or
+never.
 
 That is Patrick's own split doing the work: the screens are packaging,
 and the translator is the boundary between the packaging and the
 engine.
+
+### The translator is one, not five — corrected at Super-2-new
+
+**This section replaces what stood here before, which said one small
+translator per screen and gave five as the count.** That was written at
+#19-new. It is wrong, and the way it went wrong is worth keeping,
+because it is the same fault twice in one project.
+
+**Why the five arose.** At #19-new the shape did not exist yet. The only
+thing to look at was the six readers, and those genuinely are one
+function per screen — they have to be, because each is handed a
+different saved shape and there is nothing common to write against. The
+count of five was inherited from the readers' own division, at a moment
+when no other division was available. The shape was then settled at
+#21-new and #22-new, and it dissolved that division; nobody went back to
+re-examine the road it had made unnecessary. **It is the same fault as
+the two-occurrences number** — a thing decided under the old structure
+and carried forward as though still settled.
+
+**What the code shows, read first-hand at Super-2-new.** The five
+readers, `types.ts`, `inputshape.ts`, `stillwanted.ts`, `armdepth.ts`,
+and both built translators:
+
+- **`stillwanted.ts` never mentions `sourceScreenCode`.** It branches on
+  the capability bits, the state fields and `hasDueTimeBit`, and on
+  nothing else.
+- **`armdepth.ts` branches on `triggerKindCode` alone**, and all three
+  arms return one.
+- **`sourceScreenCode` is carried, not branched on.** It exists so a
+  tapped banner can be routed back to its screen. That is one field
+  travelling through, not a reason for a file.
+- **The two built translators differ by two string literals** —
+  `sourceScreenCode` and `bannerTitleText`. Every other difference
+  between `translators/myday.ts` and `translators/pets.ts` is comment
+  text, "item" reworded to "feed". Two sessions built the same file
+  twice.
+
+**So nothing in the engine goes by page**, and that is not an accident.
+It is what the codes and bits were designed to do: turn a per-screen
+difference into data, set once at the boundary, so a kind answers
+differently as a rule rather than as an exception. The shape had already
+removed the need for per-screen code before the first translator was
+built.
+
+**What the translator actually is.** One translator, driven by a table
+with one entry per screen holding that screen's constants and the names
+of the fields it saves — the source code, the trigger kind, which saved
+field carries the name, which carries the push-back stamp, the four
+capability bits, and the banner's words and button set.
+
+**Three things are genuinely per-screen code and do not fit the table:**
+
+- **Which saved fields make up the due time**, and therefore
+  `hasDueTimeBit`. Hour and minute on My Day and Pets, the weekday as
+  well on My Week, a full date on Look Ahead and To-Do.
+- **To-Do's lead times.** No other screen has any.
+- **To-Do's background banner**, the one thing carrying
+  `standsForGroupBit`, and the only place a reminder is built from the
+  list rather than from an item.
+
+My Day, Pets, My Week and Look Ahead are pure table. To-Do carries the
+only two real special cases, and they are small and named.
+
+**What this does not change.** The shape itself is untouched — every
+field in `inputshape.ts` stands exactly as settled at #21-new and
+#22-new, and this correction is a vindication of it rather than a
+revision. Nothing about the screens changes, nothing on the phone
+changes, and the swap step is unaffected.
+
+**One claim struck as unverified.** What stood here said that changing
+the screens would mean touching five pages of around nine hundred lines
+each, and it was given as the evidence for the whole road. The screens
+were never opened — #19-new says so plainly in its own reading note. The
+number is removed rather than repeated. The road does not rest on it: it
+rests on the screens being packaging and the data already being on the
+phone, both of which hold without a line count.
 
 **One honest limit on that judgment.** At the time it was given,
 `scheduler.ts` and `reconcile.ts` had not been read this session, so
@@ -318,6 +393,59 @@ at #13-new rather than from a reading of the housing.
 
 With this bit, all five screens go through the one shape and none is left
 outside it.
+
+### What a background task is for, settled at Super-2-new
+
+**Patrick's own words, and they are written here because Claude got this
+backwards inside one conversation and would have written the mistake into
+the code.**
+
+**A To-Do background task is a long-range reminder that something is not
+done yet.** It has no appointment, so nothing says when — but it is still
+outstanding, and the eight o'clock banner exists to say so. That is the
+banner working correctly, not nagging.
+
+**Two consequences, and the second is a trap.**
+
+- **A background task persists until it is done.** Its `completed` is the
+  real and lasting answer to "is this finished", not a mark about today.
+- **It must never be added to `runDailyReset`.** That loop names
+  `my_routine` and `pets_feeds` and deliberately not `todo_tasks`, and
+  `resetForNewDay` clears `completed` on everything it is handed. Sweeping
+  To-Do with it would un-finish every background task every morning and
+  resurrect work already done. **The absence is correct. Do not "fix" it.**
+
+### The other thing, which only looks the same
+
+**There is a second kind of record in the app and it is the opposite of the
+first**, near enough in shape that the two invite being merged. They must
+not be.
+
+**It is a short-range record that something WAS done**, kept for recall
+rather than for prompting. Patrick's own example: whether he has had a
+second coffee today. Too routine to remember, and by six in the evening
+genuinely unrecoverable without somewhere to have written it down. It wants
+a box that goes green, a log beneath it, and nothing beyond that page — no
+reminder, no banner, no report anywhere else.
+
+**The two differ in every way that matters:**
+
+- **Direction.** One says a thing is not yet done. The other says a thing
+  was done.
+- **Range.** One is long — it stands until finished. The other is one day
+  and is meaningless the morning after.
+- **Lifetime.** One must survive the rollover. The other must be wiped by
+  it, or it answers today's question with yesterday's tick.
+- **Reach.** One speaks to the phone. The other never leaves its page.
+
+**Where the second one appears to live already**, though only its storage
+keys were read at Super-2-new and not the screens: `runDailyReset` clears
+`my_coffee` and `my_water` on My Day, and `pets_treats` on Pets, setting
+each to zero on every new day. That is the right lifetime for this kind.
+
+**The rule that falls out.** The two are told apart by what they are for,
+never by their shape. Anything that would give the first a daily clear, or
+the second a banner, has confused them.
 
 ### What the reading corrected
 

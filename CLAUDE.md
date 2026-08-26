@@ -18,6 +18,16 @@
    `docs/build-history.md` is opened only when something
    finished needs tracing.
 
+   `docs/reminder-rebuild.md` is the record of #15-new through
+   #18-new and is **not** the live design — `docs/reminder-shape.md`
+   is, and wins wherever the two disagree. It is opened when a
+   reminder fault needs tracing to what was found and cured. **The
+   one live part of it is "What is already right, and is not to be
+   'fixed'"**, which any session may add to when it establishes that
+   something is deliberate rather than missing. It had no owner
+   before Super-2-new, which is how it stood still from #16-new
+   while the design moved on around it.
+
    `docs/pending.rtf` is the copy Patrick actually reads, and
    it is generated from the txt, never hand-edited (#12-new).
    He had been converting the txt to rich text himself every
