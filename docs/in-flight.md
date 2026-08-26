@@ -77,12 +77,25 @@ made when the first screen is actually swapped over, one screen at a time.
 
 ## Next piece
 
-**The Pets translator, which is My Day's twin. Its sheet is not written yet.**
-Write it from `docs/build-sheet-translator-myday.md` as the pattern — that sheet
-carried every decision, and a worker ran the whole build from it without asking
-a single design question, which is what it was written to do. Then My Week, Look
-Ahead and To-Do. Then swapping the screens over one at a time, retiring each old
-reader as its replacement is proved. Then the phone.
+**The Pets translator, and its sheet is written**:
+`docs/build-sheet-translator-pets.md`. Hand that to a worker session and nothing
+else. Pets is My Day's twin, differing in one word — the banner title is `'Pets
+Routine'` — so the sheet is the My Day one with three changes: no field is added
+to `inputshape.ts`, since #24-new already put them there; the translator leaves
+`dueHour` and `dueMinute` out entirely when a feed has no time, rather than
+writing zeros; and the snooze-that-stands-on-its-own is already protected by the
+#24-new question order, so the worker only has to prove it rather than find it.
+
+**One trap the sheet names outright.** `petssnooze` means two things in this
+app: it is a registered category, so it sits in `BannerButtonsCode`, and it is
+also the `source` name the old reader puts in a snoozed feed's key. The old
+reader uses `routineactions` as the actual button set in both places, which is
+what the translator sets. A worker following the name rather than the code would
+get it wrong.
+
+After Pets: My Week, then Look Ahead, then To-Do. Then swapping the screens over
+one at a time, retiring each old reader as its replacement is proved. Then the
+phone.
 
 ## Running elsewhere: the Super-Projects chain
 
