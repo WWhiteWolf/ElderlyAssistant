@@ -6,14 +6,11 @@ what happened to the hand-offs. Half a page is the limit.
 
 A supervising session opens this and `docs/reminder-shape.md`, and nothing else.
 
-**The chain is Super-1-new, Super-2-new and so on** — Patrick's name, with the
-project carried in it the way his other chains do. One chain per project, not
-one across all of them: a supervisor's value is depth in a single design, and a
-chain that switches between projects is the thinning this whole arrangement
-exists to stop. Each project keeps its own `in-flight.md` in its own docs.
+**The chain is Super-1-new, Super-2-new and so on** — one chain per project, not
+one across all of them. Each project keeps its own `in-flight.md` in its own
+docs.
 
-Last written: 2026-08-26, end of #22-new, which was the last session before the
-supervising chain had a name of its own.
+Last written: 2026-08-26, at Super-1-new, after #24-new closed.
 
 ## The role
 
@@ -28,59 +25,73 @@ supervising chain had a name of its own.
   session catches up by reading that worker's own entry in `build-history.md`
   and nothing more.
 
-## Out with a worker right now
+## No worker out right now
 
-A worker session built the third step of the #19-new order — `inputshape.ts`,
-`stillwanted.ts`, `armdepth.ts` and their tests, nothing calling them. 248 of
-248 tests pass. It has been asked to write the note recording the five choices
-it made where the build sheet was silent, and then to refresh the docs and hand
-Patrick the commit paste.
+**#24-new is closed and committed.** Its docs refresh is done and `pending.rtf`
+was regenerated and machine-checked.
 
 ## What came back, and what was done about it
 
-- **Five choices where the sheet was silent** — the four-part answer from the
-  wanted-block, done clearing the push-back, `sourceScreenCode` as a named set,
-  optional fields, and no test file for `inputshape.ts`. All five reviewed and
-  all five stand.
-- **One mistake in the sheet, mine.** It said the output store speaks `once`;
-  `types.ts` says `date`. Settled by keeping `date` everywhere, because it was
-  already in the working code and `once` was in one new file. Fixed in the code
-  and in the sheet.
+**The My Day translator is built and the defect it was sent to look for was
+real.** 267 of 267 tests pass. Nothing calls any of it and nothing reached the
+phone.
+
+- **The defect, settled here and built as a correction.** `stillwanted.ts` asked
+  *no due time* first and returned before the push-back question, so an item
+  whose time was cleared after it was snoozed lost the reminder it had already
+  promised. The questions now run done, push-back, no due time. A no-time item
+  with a live push-back answers wanted, this occurrence dropped, the moment
+  standing.
+- **It is a rule, not an exception**, because `canBePushedBackBit` gates the
+  branch. A screen that cannot be pushed back never enters it.
+- **`dueHour` and `dueMinute` were made optional**, matching `dueWeekday` and
+  `dueMoment` and the #23-new reasoning that an absent field says plainly what a
+  zero has to be interpreted into.
+- **Two tests in `stillwanted.test.ts`** were rewritten rather than removed,
+  because a test whose job is to hold an ordering must hold the new one. A stale
+  section heading there was corrected too.
+- **`docs/build-sheet.md` was corrected here**, in the gap after #24-new closed,
+  since it describes code that exists now and must agree with it. Patrick
+  commits it with this file, separately from the worker's commit.
+
+## The one loose thread, named on purpose
+
+**The three banner fields are optional because making them required would have
+broken test files the sheet forbade touching.** That is a build constraint
+showing through into the shape. It was left because the output side is not
+designed yet and the placement is already marked reversible — but it is the one
+thing in this batch that is not elegant, and it should be tightened whenever
+something else opens `inputshape.ts`.
+
+**And the thing that would turn this into patchwork**: if another screen later
+wants the push-back question answered differently and conditions start being
+added to the block. That is the moment to stop and redesign, not to add a third
+case.
 
 ## Open on purpose, not overlooked
 
-**Nothing joins the two blocks to `gatherWanted` yet**, and the worker was right
-to put that under what is open rather than treat it as missed. It is the same
-thing `reminder-shape.md` lists as the arrow from the store to the block, and it
-is deliberately unanswered until the swap step: the translators are built first,
-and the join is made when the first screen is actually swapped over, one screen
-at a time. Deciding it now would be deciding it without a single translator to
-look at.
-
-## Owed
-
-- That worker's note and docs refresh, then Patrick's commit.
+**Nothing joins the shape or the two blocks to `gatherWanted` yet.** It is the
+arrow from the store to the block in `reminder-shape.md`, and it is deliberately
+unanswered until the swap step: the translators are built first, and the join is
+made when the first screen is actually swapped over, one screen at a time.
 
 ## Next piece
 
-**The My Day translator, and its sheet is written**:
-`docs/build-sheet-translator-myday.md`. Hand that to a worker session and
-nothing else. My Day was chosen first because it is the smallest and already
-runs on single moments, so proving the pattern there makes the other four
-repetition rather than design.
+**The Pets translator, which is My Day's twin. Its sheet is not written yet.**
+Write it from `docs/build-sheet-translator-myday.md` as the pattern — that sheet
+carried every decision, and a worker ran the whole build from it without asking
+a single design question, which is what it was written to do. Then My Week, Look
+Ahead and To-Do. Then swapping the screens over one at a time, retiring each old
+reader as its replacement is proved. Then the phone.
 
-Settled while writing it: **the banner's words live in the shape**, as
-`bannerTitleText`, `bannerBodyText` and `bannerButtonsCode`, set by the
-translator. The words were already the translator's work from #21-new; the only
-question was whether they ride inside the shaped item or beside it, and inside
-means the engine has everything in one thing. Deliberately reversible, because
-the output side has not been designed yet.
+## Parked, at Patrick's choosing
 
-**One thing that sheet asks the worker to check and not fix**: My Day's snooze
-stands on its own, armed before the guard on the item having a time, so an item
-whose time was cleared still owes the reminder it promised. If
-`stillwanted.ts` throws that away at its first step, the worker writes it up as
-a defect and leaves it — the decision is this session's.
+**Running the worker sessions on a different AI**, Claude in Cursor being the one
+he named, because two sessions open here eats his time. The arrangement already
+suits it: the handover is a plain sheet and a commit rather than a conversation.
+Two things unchecked — whether Cursor picks up a `CLAUDE.md` on its own or wants
+its own rules file, and that **rule 10, no git commands at all in his repos,
+would have to be said to it explicitly**, since its agent can run a terminal.
 
 ## The one thing not to reopen
 

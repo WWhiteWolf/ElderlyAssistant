@@ -83,8 +83,11 @@ These names are settled. Use them as written.
   they are what the output store already speaks in, `WantedTrigger` in
   `types.ts` naming its third kind `date`.
 - `hasDueTimeBit` — the item actually has a time. Every one of the five readers
-  guards on this today, and it is the first question the wanted-block asks.
-- `dueHour`, `dueMinute` — used by all three kinds.
+  guards on this today. The wanted-block asks it last rather than first, for the
+  reason given under `stillwanted.ts` below.
+- `dueHour`, `dueMinute` — used by all three kinds, and optional: an item with
+  no time leaves them out rather than writing zeros a reader would have to
+  interpret.
 - `dueWeekday` — weekly only.
 - `dueMoment` — date items only.
 
@@ -128,19 +131,34 @@ and push-back bits clear, so nothing anywhere special-cases appointments.
 One function taking a shaped item and `now`, answering whether the item should
 produce reminders at all. In order:
 
-1. **No due time — not wanted.** If `hasDueTimeBit` is clear, nothing is wanted.
-   Five of five readers guard on this today.
-2. **Done — how far it reaches.** If `isDoneBit` is set: when `doneEndsItemBit`
+1. **Done — how far it reaches.** If `isDoneBit` is set: when `doneEndsItemBit`
    is set the item produces nothing further at all; when it is clear, only this
    occurrence is dropped and the ones after it stand. Nothing here knows about
    the day's rollover clearing the tick — that is the daily reset's job and it
    already works, so this block only ever asks whether the item is done now.
-3. **Push-back.** If `pushedBackToStamp` holds a moment still ahead of `now`, it
+2. **Push-back.** If `pushedBackToStamp` holds a moment still ahead of `now`, it
    adds a reminder at that moment; the base occurrence still stands. A stamp
    already in the past is ignored. A stamp on an item whose `canBePushedBackBit`
    is clear is ignored.
+   - **And when the item has no due time**, the push-back still stands on its
+     own: the answer is wanted, with this occurrence dropped and the moment
+     standing. There is no base occurrence left to arm, but the promise the app
+     already made is still spoken.
+3. **No due time — not wanted.** If `hasDueTimeBit` is clear and neither
+   question above has answered, nothing is wanted. Five of five readers guard on
+   this today.
 4. **Capability bits gate the questions.** An item with `canBeDoneBit` clear is
    never treated as done whatever its state says.
+
+**Why no due time is asked last and not first** (settled at Super-1-new, built
+at #24-new). It was written first here and built that way, and it was wrong. My
+Day's own reader arms a snooze *before* it checks for a time, deliberately and
+with a comment saying why: an item whose time was cleared after it was snoozed
+still owes the reminder it promised. Asked first, the block returned before the
+push-back question was ever reached and that promise was dropped in silence.
+Asked last, the behaviour is kept. It stays a rule rather than an exception
+because `canBePushedBackBit` gates the branch, so a screen that cannot be pushed
+back never enters it.
 
 **Look Ahead falls out of this without an exception**: it has no done field, so
 its done state is simply always false and `doneEndsItemBit` never matters.

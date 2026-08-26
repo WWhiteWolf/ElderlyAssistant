@@ -52,6 +52,24 @@ export type LeadUnitCode = 'minutes' | 'hours' | 'days';
 export type LeadNamedTimeCode = 'morning' | 'midday' | 'evening';
 
 /**
+ * Which registered set of banner buttons an item's reminder carries.
+ *
+ * These are exactly the category names the housing registers at launch, in
+ * `app/_layout.tsx`, and no others. Writing them out as a named set is what
+ * makes a button set that was never registered impossible to ask for: a
+ * banner naming a category the phone does not know shows no buttons at all,
+ * and that has bitten this app before.
+ */
+export type BannerButtonsCode =
+    | 'mydaysnooze'
+    | 'petssnooze'
+    | 'todook'
+    | 'myweekactions'
+    | 'lookaheadactions'
+    | 'routineactions'
+    | 'orderactions';
+
+/**
  * One lead time — how far ahead of the due moment to speak.
  *
  * The form code says which of the two sets of fields is the live one, so a
@@ -101,14 +119,21 @@ export interface ShapedItem {
     /**
      * The item actually has a time.
      *
-     * Every one of the five readers guards on this today, and it is the first
-     * question the wanted-block asks. An item with no time is not a reminder
-     * at all, whatever else is set on it.
+     * Every one of the five readers guards on this today, and the wanted-block
+     * asks it as its last question: an item with no time has nothing to arm,
+     * though a promise already made to it can still stand.
      */
     hasDueTimeBit: boolean;
-    /** The time of day it comes due. Used by all three kinds. */
-    dueHour: number;
-    dueMinute: number;
+    /**
+     * The time of day it comes due. Used by all three kinds.
+     *
+     * Both are left off when the item has no time, the way a weekday and a
+     * single moment are left off when they do not belong. An absent field says
+     * plainly that there is nothing here; a zero has to be interpreted, and
+     * midnight is a real time, so the two could not be told apart.
+     */
+    dueHour?: number;
+    dueMinute?: number;
     /** Which day of the week. Weekly items only. */
     dueWeekday?: number;
     /**
@@ -163,4 +188,30 @@ export interface ShapedItem {
      * no lead time speaks never.
      */
     leadTimeList: LeadTime[];
+
+    // ---- the banner's words ----
+
+    /**
+     * What the banner says, and which buttons it carries.
+     *
+     * These three ride inside the shaped item because the words are the
+     * translator's work, settled the same way the background banner's count
+     * was: each screen builds its own sentence, exactly as each reader does
+     * today. Carrying them here means the engine has everything one reminder
+     * needs in one thing, and never has to reach back to the screen it came
+     * from to find out what to say.
+     *
+     * They are optional so that a test or a caller concerned only with when an
+     * item comes due can write a shaped item without them. Every translator
+     * sets all three.
+     *
+     * The placement is deliberately reversible. The output side has not been
+     * designed yet, so if that work wants the words held somewhere else, it is
+     * three fields moving.
+     */
+    bannerTitleText?: string;
+    /** The sentence under the heading. */
+    bannerBodyText?: string;
+    /** Which registered button set the banner carries. */
+    bannerButtonsCode?: BannerButtonsCode;
 }

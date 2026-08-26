@@ -38,7 +38,10 @@ function item(changes: Partial<ShapedItem> = {}): ShapedItem {
 }
 
 export function runStillWantedTests(): void {
-    // ---- the first question: is there a time at all ----
+    // ---- the last question: is there a time at all ----
+    //
+    // It is asked only when done and the push-back have not already answered,
+    // because it is the one answer that throws the whole item away.
 
     test('An item with nothing done to it is wanted', () => {
         const said = isStillWanted(item(), NOW);
@@ -54,13 +57,21 @@ export function runStillWantedTests(): void {
         assert(!said.wantsRemindersBit, 'an item without a time is not a reminder');
     });
 
-    test('No due time is asked first, before done or push-back', () => {
+    test('Done is asked first, before the push-back and before no due time', () => {
+        // The one item that touches all three questions at once, so it is what
+        // holds the order in place. No due time used to be asked first and
+        // threw the whole item away, which lost a push-back that had already
+        // been promised. It is asked last now, and done is asked first.
         const said = isStillWanted(item({
             hasDueTimeBit: false,
             isDoneBit: true,
             pushedBackToStamp: at(2026, 5, 1, 22, 0),
         }), NOW);
-        assertSame(said.becauseText, 'the item has no due time', 'the first question should answer it');
+        assertSame(
+            said.becauseText,
+            'this occurrence is done, later ones stand',
+            'the first question should answer it',
+        );
     });
 
     // ---- done, and how far the done reaches ----

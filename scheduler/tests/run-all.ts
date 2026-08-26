@@ -23,6 +23,7 @@ import { runQueueViewTests } from './queueview.test.ts';
 import { runHealthTests } from './health.test.ts';
 import { runStillWantedTests } from './stillwanted.test.ts';
 import { runArmDepthTests } from './armdepth.test.ts';
+import { runTranslatorMyDayTests } from './translatormyday.test.ts';
 
 console.log('\nMy Day reader');
 runMyDayTests();
@@ -62,5 +63,8 @@ runStillWantedTests();
 
 console.log('\nHow far ahead do we arm?');
 runArmDepthTests();
+
+console.log('\nMy Day translator');
+runTranslatorMyDayTests();
 
 report();

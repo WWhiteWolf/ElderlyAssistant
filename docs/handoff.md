@@ -12,6 +12,50 @@ stands and what is open in front of it. Finished work goes to
 
 ## Where things stand
 
+**The first of the five translators is built, and the wanted-block's questions
+were reordered to let it work** (#24-new). This is the fourth step of the
+#19-new order, begun. `scheduler/translators/myday.ts` turns a saved My Day item
+into a shaped item and **nothing in the app calls it**, the same deliberate way
+the shape and the blocks were built. `scheduler/readers/myday.ts` is untouched
+and still does all the work; it is retired only when this replacement is proved,
+which is Patrick's own order from #19-new. **267 of 267 tests pass**, up from
+248, and `npx tsc` reports only the standing Expo router error.
+
+- **The translator sets what a My Day item IS and nothing more.** Daily kind
+  always; done and push-back both allowed; done does not end the item, because
+  a routine comes back tomorrow; no lead times, so it speaks at the moment
+  itself; the banner's three words word for word as the old reader writes them.
+  It drops nothing — dropping is a judgment and belongs to `stillwanted.ts`.
+- **The snooze that stands on its own survived the move, but only after the
+  block was changed.** The old reader arms a My Day snooze *before* its own
+  guard on the item having a time, because an item whose time was cleared after
+  it was snoozed still owes the reminder it promised. `stillwanted.ts` asked no
+  due time first and returned straight away, which threw that promise out. The
+  worker session found it, left the block alone and reported it, and Patrick
+  ruled the order be changed.
+- **The questions are now done, then the push-back, then no due time.** The done
+  rules are exactly as they were. The push-back gained one new answer for the
+  case this is all about: an item with no due time, not done, with a live
+  push-back is **wanted, this occurrence dropped, the moment standing** — dropped
+  because there is no base occurrence left to arm, standing because the promise
+  was already made. No due time is asked last, and answers exactly what it always
+  answered when nothing above it has spoken.
+- **`dueHour` and `dueMinute` are optional now**, the way `dueWeekday` and
+  `dueMoment` already are, on the reasoning settled at #23-new: an absent field
+  says plainly what a zero has to be interpreted into, and midnight is a real
+  time. The translator leaves them out rather than writing zeros.
+- **Three banner fields joined the shape** — `bannerTitleText`, `bannerBodyText`
+  and `bannerButtonsCode`, the last a named set of the seven category names
+  `app/_layout.tsx` actually registers. The words are the translator's work, the
+  way #21-new settled the background banner's count, so the engine has everything
+  one reminder needs in one thing. They are optional, and **the placement is
+  deliberately reversible**: the output side is not designed yet, and moving them
+  later is three fields in five small files.
+- **Two tests in `stillwanted.test.ts` were rewritten** to hold the new order
+  rather than the old, and the section heading above them corrected. Nothing else
+  in that file assumed the old order. The test that holds *done before push-back*
+  was already holding a real rule and stands untouched.
+
 **The shape and the two decision blocks are built** (#23-new), which is the
 third step of the #19-new order. `scheduler/inputshape.ts`,
 `scheduler/stillwanted.ts` and `scheduler/armdepth.ts` stand with their tests
@@ -26,9 +70,10 @@ what that sheet was written to make possible.
 
 - **`inputshape.ts`** is types and comments and no behaviour, every field name
   as settled at #22-new, the four groups kept apart on the page.
-- **`stillwanted.ts`** asks the four questions in order — no due time, then done
-  and how far the done reaches, then the push-back — with the capability bits
-  gating the state throughout.
+- **`stillwanted.ts`** asks its questions in order, with the capability bits
+  gating the state throughout. It was built asking no due time first; **the
+  order was changed at #24-new** to done, then the push-back, then no due time,
+  and the entry above says why.
 - **`armdepth.ts`** answers one for every kind, written as a switch on the
   trigger kind so a later change is a change to one line.
 - **The five choices made where the sheet was silent** are recorded at the foot
@@ -213,9 +258,10 @@ to those three, not building it.**
 Read `scheduler.ts` and `reconcile.ts` — done at #20-new; settle the input
 shape on paper with Patrick — done at #21-new, its field names at #22-new;
 build the shape and the two decision blocks as plain tested files nothing yet
-calls — done at #23-new; **write the five translators one at a time, which is
-where the next session starts**; swap the screens over one at a time, retiring
-each old reader as its replacement is proved; then the phone.
+calls — done at #23-new; write the five translators one at a time — **My Day is
+built at #24-new and Pets, its twin, is where the next session starts**, then My
+Week, Look Ahead and To-Do; swap the screens over one at a time, retiring each
+old reader as its replacement is proved; then the phone.
 
 **The outside report has been checked, and the answer is mend rather than
 rebuild** (#18-new). Patrick asked to verify what could be verified before
@@ -488,7 +534,7 @@ record on that screen was held back from #15-new so all three are done in one
 visit.
 
 **The tests run on the Mac in about a second**, headless under Node, with
-no build and no simulator. 248 of 248 pass — and see the outside reading on what
+no build and no simulator. 267 of 267 pass — and see the outside reading on what
 that does not mean:
 
     node --experimental-strip-types scheduler/tests/run-all.ts
@@ -504,11 +550,19 @@ itself on the next build. Nothing else reports.
 most of what the outside reading widened turned out to be deliberate. Nothing
 about the joins argues for starting over.
 
-**The next session's first piece is the five translators, one at a time**
-(#19-new order, fourth step). The shape and the two blocks they hand to are
-built and tested (#23-new), and each translator is a small piece of its own: it
-reads one screen's saved list exactly as that screen saves it and sets the codes
-and bits at the boundary. No screen changes and nothing on the phone breaks.
+**The next session's first piece is the Pets translator, My Day's twin**
+(#19-new order, fourth step, begun at #24-new). The shape and the two blocks they
+hand to are built and tested (#23-new), and each translator is a small piece of
+its own: it reads one screen's saved list exactly as that screen saves it and
+sets the codes and bits at the boundary. No screen changes and nothing on the
+phone breaks. **`docs/build-sheet-translator-myday.md` is the pattern** — a
+self-contained sheet carrying the answers themselves rather than pointing at
+other documents, which is what let #24-new build without asking a design
+question.
+
+**`docs/build-sheet.md` has not been brought level with the reorder** (#24-new).
+It is the standing description of what the three shape files hold, and it
+describes `stillwanted.ts` asking no due time first. The code no longer does.
 
 **One thing to settle before or during the first translator**: nothing yet joins
 the two new blocks to `gatherWanted`, which is where the five translators plug
@@ -654,7 +708,9 @@ by mistake.
 `pushedBackToStamp`, `dueWeekday` and `dueMoment` are absent on the items they
 do not apply to, rather than carrying a stand-in value. A weekly item has no
 due moment and a daily one has no weekday, and an absent field says that
-plainly where a zero would have to be interpreted.
+plainly where a zero would have to be interpreted. **`dueHour` and `dueMinute`
+joined them at #24-new** on this same reasoning, once a translator had a real
+item with no time to write down.
 
 **`inputshape.ts` has no test file**, because it holds no behaviour — it is
 types and comments and nothing else, so there is nothing a test could ask it.

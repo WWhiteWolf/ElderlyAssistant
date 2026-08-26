@@ -7,7 +7,29 @@
 \pard\pardeftab720\sl276\slmult1\partightenfactor0
 
 \f0\fs36 \cf0 A PLACE TO REMEMBER (badge: Memory) \'97 PENDING WORK, plain-language list\
-Last updated: 2026-08-26 (#23-new \'97 the first building in a while.\
+Last updated: 2026-08-26 (#24-new \'97 the first of the five\
+translators is built, the My Day one. It takes a My Day item as\
+the screen saves it and turns it into the one common shape.\
+Nothing in the app calls it yet and the old My Day code is\
+untouched and still doing all the work \'97 it only gets retired\
+once the new one is proved, which was your own instruction.\
+Nothing changed on the phone. The tests went from 248 to 267.\
+One real thing turned up while building it. My Day's snooze has\
+always been deliberately stubborn: if you snooze something and\
+then clear its time, it still reminds you, because the promise\
+was already made. The block that decides whether a reminder is\
+still wanted asked "has it got a time?" first and threw the\
+whole item away, promise and all. So the new way would have\
+quietly lost that.\
+Your call was to change the order of the questions. It now asks\
+whether it is done, then whether something was promised, and\
+only last whether it has a time at all. An item with no time and\
+a live promise now keeps the promise and nothing else, which is\
+exactly what your old code did. The done rules are untouched.\
+Two tests that were holding the old order in place were rewritten\
+to hold the new one.\
+Next is the Pets translator, which is My Day's twin.\
+Before it, #23-new \'97 the first building in a while.\
 The three new files are written and tested: the common shape itself,\
 the block that asks whether a reminder is still wanted, and the block\
 that says how far ahead to set them. Nothing in the app calls any of\

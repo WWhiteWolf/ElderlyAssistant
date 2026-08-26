@@ -48,14 +48,7 @@ export interface StillWantedAnswer {
  * The questions are asked in the order below, and the order matters.
  */
 export function isStillWanted(item: ShapedItem, now: number): StillWantedAnswer {
-    // 1. No due time, so there is nothing to arm. Every one of the five
-    //    readers guards on this today, and it comes first because an item
-    //    without a time is not a reminder whatever else is set on it.
-    if (!item.hasDueTimeBit) {
-        return answer(false, false, null, 'the item has no due time');
-    }
-
-    // 2. Done, and how far the done reaches. The capability bit gates the
+    // 1. Done, and how far the done reaches. The capability bit gates the
     //    state: an item that cannot be marked done is never treated as done,
     //    whatever its state field happens to say. Look Ahead falls out here
     //    without an exception, having no done field at all.
@@ -73,7 +66,7 @@ export function isStillWanted(item: ShapedItem, now: number): StillWantedAnswer 
         return answer(true, true, null, 'this occurrence is done, later ones stand');
     }
 
-    // 3. Pushed back. The stamp adds a reminder at that moment; the base
+    // 2. Pushed back. The stamp adds a reminder at that moment; the base
     //    occurrence is left exactly where it was. A stamp already in the past
     //    has been spent and is ignored, and a stamp on an item that cannot be
     //    pushed back is ignored as well — the capability bit gates the state
@@ -81,7 +74,29 @@ export function isStillWanted(item: ShapedItem, now: number): StillWantedAnswer 
     if (item.canBePushedBackBit
         && item.pushedBackToStamp !== undefined
         && item.pushedBackToStamp > now) {
+        // An item whose time was cleared after it was snoozed still owes the
+        // reminder it promised, and this is why the push-back is asked before
+        // the due-time question rather than after it. There is no base
+        // occurrence left to arm, so this occurrence is dropped; the promised
+        // moment stands beside it all the same. My Day's snooze has always
+        // worked this way — its old reader armed the snooze before its own
+        // guard on the item having a time — and asking in this order is what
+        // keeps that true for every screen at once, as a rule rather than as
+        // an exception.
+        if (!item.hasDueTimeBit) {
+            return answer(true, true, item.pushedBackToStamp,
+                'the item has no due time, but a promised push-back still stands');
+        }
         return answer(true, false, item.pushedBackToStamp, 'wanted, with a push-back standing');
+    }
+
+    // 3. No due time, so there is nothing to arm. Every one of the five
+    //    readers guards on this today. It is asked last rather than first
+    //    because it is the only answer that throws the whole item away, and
+    //    the two questions above can each have something to say about an item
+    //    that has lost its time.
+    if (!item.hasDueTimeBit) {
+        return answer(false, false, null, 'the item has no due time');
     }
 
     return answer(true, false, null, 'wanted');
