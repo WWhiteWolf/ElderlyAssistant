@@ -49,8 +49,8 @@ decision has a home.
   `scheduler/tests/translatorpets.test.ts` — **the import line and nothing
   else.** See "How you prove it" below; this matters.
 - **Edit:** `scheduler/tests/run-all.ts` — two new imports, two new headed calls.
-- **Edit:** `scheduler/inputshape.ts` — **one stale comment only**, described at
-  the end. No field changes.
+- **Edit:** `scheduler/inputshape.ts` — **two stale comments only**, both
+  described at the end. No field changes.
 
 **Nothing else in `inputshape.ts` changes.** Every field this needs is already
 there. **No screen is touched. No reader is touched. Nothing in the app calls
@@ -388,13 +388,23 @@ none of the old 286 lost or altered.
 
 ---
 
-## The one comment to fix
+## The two comments to fix
 
-`scheduler/inputshape.ts` opens with a paragraph saying **"A small translator per
+**Both are in `scheduler/inputshape.ts`, and they are comment text only. No
+field changes, no type changes, and nothing else in that file is touched.**
+
+**The first.** The file opens with a paragraph saying **"A small translator per
 screen sets the fields below at the boundary."** That is now false. Reword that
 one sentence to say that one translator, driven by a table of rules per screen,
-sets the fields at the boundary. **Change nothing else in that file** — no
-fields, no types, no other comment.
+sets the fields at the boundary.
+
+**The second.** The doc comment above `dueHour` and `dueMinute` begins **"The
+time of day it comes due. Used by all three kinds."** Ruling three above makes
+that false as well: a date item carries its moment alone. Reword that opening
+sentence to say the time of day it comes due, set by daily and weekly items,
+a date item carrying the hour inside `dueMoment` instead. **Leave the rest of
+that comment exactly as it stands** — the paragraph about absent fields and
+midnight is still true and is the reason ruling three went the way it did.
 
 ---
 
