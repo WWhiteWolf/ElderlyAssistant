@@ -10,7 +10,7 @@ A supervising session opens this and `docs/reminder-shape.md`, and nothing else.
 one across all of them. Each project keeps its own `in-flight.md` in its own
 docs.
 
-Last written: 2026-08-26, at Super-1-new, after #24-new closed.
+Last written: 2026-08-26, at Super-1-new, after #25-new closed.
 
 ## The role
 
@@ -27,46 +27,55 @@ Last written: 2026-08-26, at Super-1-new, after #24-new closed.
 
 ## No worker out right now
 
-**#24-new is closed and committed.** Its docs refresh is done and `pending.rtf`
-was regenerated and machine-checked.
+**#24-new and #25-new are both closed and committed.** Two of the five
+translators are built and proved. Nothing calls any of them and nothing has
+reached the phone.
 
-## What came back, and what was done about it
+## Where the translator work stands
 
-**The My Day translator is built and the defect it was sent to look for was
-real.** 267 of 267 tests pass. Nothing calls any of it and nothing reached the
-phone.
+**286 of 286 tests pass.** `npx tsc` reports only the standing Expo router error
+in `app/settings.tsx`, which nothing in this work touches.
 
-- **The defect, settled here and built as a correction.** `stillwanted.ts` asked
-  *no due time* first and returned before the push-back question, so an item
-  whose time was cleared after it was snoozed lost the reminder it had already
-  promised. The questions now run done, push-back, no due time. A no-time item
-  with a live push-back answers wanted, this occurrence dropped, the moment
-  standing.
-- **It is a rule, not an exception**, because `canBePushedBackBit` gates the
-  branch. A screen that cannot be pushed back never enters it.
-- **`dueHour` and `dueMinute` were made optional**, matching `dueWeekday` and
-  `dueMoment` and the #23-new reasoning that an absent field says plainly what a
-  zero has to be interpreted into.
-- **Two tests in `stillwanted.test.ts`** were rewritten rather than removed,
-  because a test whose job is to hold an ordering must hold the new one. A stale
-  section heading there was corrected too.
-- **`docs/build-sheet.md` was corrected here**, in the gap after #24-new closed,
-  since it describes code that exists now and must agree with it. Patrick
-  commits it with this file, separately from the worker's commit.
+- **#24-new built the My Day translator**, and the defect it was sent to look
+  for was real. `stillwanted.ts` asked *no due time* first and returned before
+  the push-back question, so an item whose time was cleared after it was snoozed
+  lost the reminder it had already promised. The questions now run done,
+  push-back, no due time. A no-time item with a live push-back answers wanted,
+  this occurrence dropped, the moment standing. It stays a rule rather than an
+  exception because `canBePushedBackBit` gates the branch.
+- **`dueHour` and `dueMinute` were made optional** in the same session, matching
+  `dueWeekday` and `dueMoment` and the #23-new reasoning that an absent field
+  says plainly what a zero has to be interpreted into.
+- **#25-new built the Pets translator**, My Day's twin, differing only in the
+  banner title `'Pets Routine'`. The `petssnooze` trap the sheet named is real
+  in the file and the worker left a comment in the code about it.
+- **The twins were made even.** The Pets tests checked that `dueHour` and
+  `dueMinute` are absent, which the My Day tests had not been brought forward to
+  do. Those two tests were widened rather than added to, so the count did not
+  move.
 
-## The one loose thread, named on purpose
+## The loose threads, named on purpose
 
-**The three banner fields are optional because making them required would have
-broken test files the sheet forbade touching.** That is a build constraint
-showing through into the shape. It was left because the output side is not
-designed yet and the placement is already marked reversible — but it is the one
-thing in this batch that is not elegant, and it should be tightened whenever
-something else opens `inputshape.ts`.
+- **The three banner fields are optional** because making them required would
+  have broken test files a sheet forbade touching. That is a build constraint
+  showing through into the shape. Tighten it whenever something else opens
+  `inputshape.ts`.
+- **Each translator imports its item type from the old reader it replaces**, so
+  it is tied to a file meant to be retired. Both workers were told to note it
+  and not act. **It is settled at the swap step, not before.**
+- **What would turn this into patchwork**: another screen wanting the push-back
+  question answered differently, and conditions starting to be added to the
+  block. That is the moment to stop and redesign, not to add a third case.
 
-**And the thing that would turn this into patchwork**: if another screen later
-wants the push-back question answered differently and conditions start being
-added to the block. That is the moment to stop and redesign, not to add a third
-case.
+## What the two sheets taught, for the next one
+
+- **A sheet's read list must include everything the build legitimately needs to
+  read.** The Pets sheet banned editing several files and the worker rightly
+  stopped, because it needed to *read* two of them — the item type and
+  `isStillWanted`. Say reading and editing separately.
+- **The sheets work.** Both workers built from the sheet alone and asked nothing
+  about the design. Every question either raised was about acting or about a gap
+  in the sheet, which is what they are for.
 
 ## Open on purpose, not overlooked
 
@@ -77,41 +86,32 @@ made when the first screen is actually swapped over, one screen at a time.
 
 ## Next piece
 
-**The Pets translator, and its sheet is written**:
-`docs/build-sheet-translator-pets.md`. Hand that to a worker session and nothing
-else. Pets is My Day's twin, differing in one word — the banner title is `'Pets
-Routine'` — so the sheet is the My Day one with three changes: no field is added
-to `inputshape.ts`, since #24-new already put them there; the translator leaves
-`dueHour` and `dueMinute` out entirely when a feed has no time, rather than
-writing zeros; and the snooze-that-stands-on-its-own is already protected by the
-#24-new question order, so the worker only has to prove it rather than find it.
+**The My Week translator. Its sheet is not written.** Write it from
+`docs/build-sheet-translator-pets.md` as the pattern. My Week is the first that
+is not a twin: it is weekly rather than daily, its push-back is saved as
+`postponedTo` rather than `snoozedUntil`, and its old reader arms one true
+weekly repeat rather than single moments — which is the thing curing it changes,
+and which `reminder-shape.md` covers under the depth section. Read its reader
+before writing the sheet.
 
-**One trap the sheet names outright.** `petssnooze` means two things in this
-app: it is a registered category, so it sits in `BannerButtonsCode`, and it is
-also the `source` name the old reader puts in a snoozed feed's key. The old
-reader uses `routineactions` as the actual button set in both places, which is
-what the translator sets. A worker following the name rather than the code would
-get it wrong.
-
-After Pets: My Week, then Look Ahead, then To-Do. Then swapping the screens over
-one at a time, retiring each old reader as its replacement is proved. Then the
-phone.
+After it: Look Ahead, then To-Do. Then swapping the screens over one at a time,
+retiring each old reader as its replacement is proved. Then the phone.
 
 ## Running elsewhere: the Super-Projects chain
 
 **`App-Docs/master-handoff.md` has grown into a session-by-session history**,
 which its own opening forbids — 2,914 lines, about sixty-six thousand tokens,
 where its stated job is three status lines and the cross-project loose ends. It
-is the same disease `in-flight.md` was invented to stop, in a file that never
-got the cure.
+is the same disease this file was invented to stop, in a file that never got the
+cure.
 
 Patrick named a chain of its own for it, **Super-Projects**, because the file
 belongs to all three projects rather than to this one. Its opener is written and
 the work is: cut the file back to what its header says it is, prove every
 removed paragraph already exists in that project's own `build-history.md` and
-move rather than drop what does not, give the file this file's rule — replaced
-each time, never added to, with a stated size limit — and bring the Memory
-status line current to #24-new, which it is one session behind on.
+move rather than drop what does not, give the file this file's rule, and bring
+the Memory status line current — it is now two sessions behind, ending at
+#23-new.
 
 **Nothing here waits on it**, and this chain should not do it.
 
