@@ -2246,6 +2246,92 @@ the next act.
 
 **No screen was edited.** The old readers were not deleted.
 
+### #27-new, later the same session (2026-08-27): five screen fixes, all seen working
+
+**This half was built in conversation with Patrick rather than from a sheet, and
+he confirmed every one of the five on the simulator as it landed.** The engine
+above was untouched. **391 of 391 tests still pass, and `npx tsc` is now clean —
+the standing `app/settings.tsx` error no longer appears.**
+
+**The way of working changed, and it is Patrick's call.** The
+supervisor-and-worker split is retired. One session does the work, in the
+conversation that discussed it; big mechanical builds go to Cursor with a sheet
+written here. His reasoning was that the value had always been in the sheet
+rather than in the second session — the engine above was finished in
+forty-five minutes because every decision was already made on paper.
+
+**The Scheduled Reminders page sat half an inch low.** `app/reminders.tsx` was
+the only route in the app never registered in `app/_layout.tsx`, so it fell back
+to the navigator's default header and drew one above its own. Every other screen
+carries `headerShown: false`. One line added. The page itself was correct all
+along and was not touched.
+
+**The reminder count moved under the header.** It had been one sentence at the
+foot of the scroll. It is now a band directly beneath the header — the number
+large and alone, the ceiling small and grey below it — because the number is
+what the page is opened for. `describeHowFull` is no longer called and its
+import came out; the Timer's "not shown here" line stays at the foot, since it
+explains the list rather than the count. **Both of that page's layout notes from
+#15-new are now closed.**
+
+**The hour stepper was off by twelve hours** (`components/DateTimeControl.tsx`).
+`adjustHour` read AM or PM before spinning, held it fixed, and rotated only the
+1-to-12 digit — but crossing between 11 and 12 is exactly the moment AM and PM
+must swap. Down from 12:00 PM gave 11:00 PM, up from 11:00 AM gave 12:00 AM, up
+from 11:00 PM gave 12:00 PM. The whole twelve-hour conversion was unnecessary,
+since the display does it: the three lines became one, stepping on the 24-hour
+clock. **Any time set by spinning through noon or midnight before this is stored
+in the wrong half of the day and needs re-setting.**
+
+**The Vault's header button now says where it goes.** Vault is one page with two
+states, and the button said Home in both. Inside a category it is **Back** and
+steps back to the category list; on the list it is **Home**. The
+"← All Categories" row and its styles came out, since Back does that job. Going
+home now pops rather than replacing — Vault is only ever entered from Home, so
+it is the same destination, but popping is what the rest of the app does — and
+the `router.dismissAll()` beside it went, because it dismisses modal *routes*
+and this app's pop-ups are plain `<Modal>` components.
+
+**A To-Do task may now have no date and no time**, built from
+`docs/build-sheet-optional-date.md`, written and built the same day.
+
+- **The fault, in Patrick's words:** *a pop-up already asks it, it just ignores
+  it.* Leave both boxes alone, say yes to "Are you sure you don't want to set a
+  Reminder?", and the page wrote today's date at noon onto the task anyway.
+- **The cause:** `DateTimeControl` repainted an empty date box from the spinners
+  on blur, and To-Do never turned on the optional-time mode that already
+  existed, so the same happened to the time. Both save paths then wrote all five
+  date fields unconditionally.
+- **`optionalDate` was built to match `optionalTime` exactly** — dulled
+  spinners, an empty box with a "No date set" hint, waking on any arrow or a
+  typed date, `onClearDate` when emptied. **The two halves sleep independently**,
+  so a task may carry a date and no time.
+- **`onChange` now carries which half was touched.** Without it, spinning the
+  date would have claimed a time was set too. Callers that do not care ignore
+  the second argument, so no other page changed.
+- **`Task`'s five date fields are optional, and absent is the form that means
+  "no date"** — never a zero or a null to be tested for, because `taskDueDate`
+  asks `typeof` and already understood absent. `finishUpdate` strips the old
+  fields before spreading the new ones, or clearing a date would silently do
+  nothing.
+- **More than half already worked.** `taskDueDate`, `scheduleLabel` and the sort
+  all coped with a dateless task, and `todoRules.dueOf` already gives back no
+  due time when there is no date. The work was letting the blank through.
+- **A dateless task shows its title and nothing else** (Patrick, on
+  consistency). My Day and Mollie already show an item with no time that way,
+  and the "No time set" wording exists only as a hint inside the entry box,
+  never on a tile.
+- **The "No Reminder Set" pop-up is unchanged.** It was always the right
+  question; the fault was never in the asking.
+
+**What the session got wrong, kept because the pattern is worth catching.**
+Three times it stated a stale or partial reading as settled fact — that nothing
+had been built, that the docs needed refreshing, that the swap was still ahead —
+each time from a single check whose conditions it had not examined, and each
+time it took Patrick pushing back to get the check re-run. The folder had in
+fact been read through a stale view. **A negative result is the weakest kind of
+evidence and was the one stated most confidently.**
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

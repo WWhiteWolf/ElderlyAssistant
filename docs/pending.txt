@@ -1,5 +1,36 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-08-26 (#25-new — the second of the five
+Last updated: 2026-08-27 (#27-new — five fixes, and you checked
+every one of them on the simulator as it landed.
+The Scheduled Reminders page had been sitting half an inch low.
+It was the only page in the app that had never been told to hide
+the phone's own header bar, so it was drawing one on top of its
+own. One line, and both of that page's long-standing layout notes
+are now done — the number of reminders has also moved up under
+the header, large, with "room for 56" small underneath.
+The clock setter is fixed. Spinning the hour down from 12:00 PM
+gave 11 PM instead of 11 AM, so setting nine in the morning the
+natural way landed on nine at night. It had been holding AM or PM
+still while it spun the digits, and crossing between 11 and 12 is
+exactly when AM and PM have to swap. Worth knowing: any time you
+set by spinning through noon or midnight before today is stored
+in the wrong half of the day and wants re-setting.
+The Vault's header button now says where it goes. Inside a
+category it says Back and steps back to the category list; on the
+list itself it still says Home. The "All Categories" button under
+the header is gone, since Back does its job.
+And the To-Do date fault you found is cured. You could leave the
+date and time boxes alone, the pop-up would ask whether you really
+meant to save without a reminder, you would say yes — and the app
+would write today's date at noon onto the task anyway. It asked
+the question and then overruled the answer. Now blank means blank.
+Both boxes open empty on a new task, and a task saved with no date
+sits at the bottom of the list showing just its title.
+One change to how we work, and it is yours: no more separate
+worker sessions. The value was always in the build sheet, not in
+the second session, so the work is done in the conversation that
+discussed it. Big mechanical builds still go to Cursor with a
+sheet written here.
+Before it, #25-new — the second of the five
 translators is built, the Pets one. It takes a feed as the Pets
 page saves it and turns it into the one common shape. Nothing in
 the app calls it yet and the old Pets code is untouched and still
@@ -378,21 +409,15 @@ WHAT'S NEXT
       nothing, the app did its part.
   You built all of this, put it on the phone, and it was all
   readable. What still hasn't happened is the morning after.
-- The clock setter is off by twelve hours (#5-new). Spinning the
-  hour down from the 12:00 PM it opens at goes to 11 PM instead
-  of 11 AM, so setting 9 in the morning the natural way lands on
-  9 at night — which is your evening banner. Typing the time is
-  fine, and so is the AM/PM button. Small fix on its own. After
-  it, any time you set by spinning needs checking.
 - Look Ahead: change the tile format, and change or drop the
   Snooze (#3-new).
 - Timer: add a Stop (Pause) / Continue (Go) button to the tile,
   and add a log (#3-new).
-- Vault restructuring: the "Home" header button becomes a "Back"
-  button (#3-new).
-- Scheduled Reminders, two layout fixes (#15-new): the header sits
-  too low on the screen, and the total number of reminders should
-  be noticeable directly under the header.
+  (The clock setter, the Vault's Home button and both Scheduled
+  Reminders layout fixes were all done at #27-new and checked on
+  the simulator. The clock one leaves a tail: any time set by
+  spinning through noon or midnight before that day is stored in
+  the wrong half of the day and needs re-setting.)
 
 
 NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
@@ -436,6 +461,17 @@ NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
 
 STILL BROKEN OR UNFINISHED (small bugs)
 ---------------------------------------
+- The To-Do date stamp — FIXED (#27-new, your report, and you
+  confirmed the cure on the simulator). You could leave the date
+  and time boxes alone, say yes to the pop-up asking whether you
+  really meant to save with no reminder, and the app would write
+  today's date at noon onto the task regardless. Blank now means
+  blank. Both boxes open empty on a new task, either can be
+  cleared on an existing one, and a task with no date shows only
+  its title and sits at the bottom of the list — the same way My
+  Day and Mollie show an item that has no time.
+  Worth knowing for later: any task saved before this carries a
+  date it was given rather than one you chose.
 - The #4-new notification fixes went onto the phone and did NOT
   cure it (#5-new). What went in was real and stays in — a banner
   Done no longer wipes out tomorrow's reminder, and every routine

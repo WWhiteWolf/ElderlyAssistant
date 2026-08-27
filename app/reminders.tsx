@@ -26,7 +26,6 @@ import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 import { CEILING } from '../scheduler/reconcile';
 import {
-    describeHowFull,
     describeTrigger,
     describeWhatIsNotShown,
     describeWhenNext,
@@ -112,6 +111,22 @@ export default function RemindersScreen() {
             <Bridge />
 
             <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 16 }}>
+                {/* The count sits directly under the header because the number is
+                    the thing being looked for. It used to be at the foot of the
+                    scroll, where it had to be hunted for (Patrick, #15-new). The
+                    ceiling stays quiet on the line beneath — it is reassurance
+                    rather than news. */}
+                {loaded && (
+                    <View style={styles.countBand}>
+                        <Text style={styles.countBig}>
+                            {held} {held === 1 ? 'reminder' : 'reminders'} set
+                        </Text>
+                        <Text style={styles.countSmall}>
+                            Your phone has room for {CEILING}.
+                        </Text>
+                    </View>
+                )}
+
                 <Text style={styles.intro}>
                     Everything your phone is set to remind you about. If something you
                     expect is not here, that is the reminder to look at. Tap any one for
@@ -149,7 +164,9 @@ export default function RemindersScreen() {
 
                 {loaded && (
                     <View style={styles.footer}>
-                        <Text style={styles.footerText}>{describeHowFull(held, CEILING)}</Text>
+                        {/* How full the phone is now lives under the header. What
+                            stays here is what the list is not showing, which
+                            explains the list rather than the count. */}
                         {notShown && <Text style={styles.footerText}>{notShown}</Text>}
                     </View>
                 )}
@@ -244,6 +261,25 @@ const makeStyles = (t: Theme) =>
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
 
         scroll: { flex: 1 },
+
+        // The count, directly under the header. The number is read at a glance,
+        // so it is large and on its own line; the ceiling is small and grey.
+        countBand: {
+            paddingHorizontal: 16,
+            paddingTop: 14,
+            paddingBottom: 2,
+        },
+        countBig: {
+            fontSize: 22,
+            fontWeight: '700',
+            color: t.cardTitle,
+        },
+        countSmall: {
+            fontSize: 13,
+            color: t.mutedText,
+            paddingTop: 2,
+        },
+
         intro: {
             fontSize: 15,
             color: t.bodyText,

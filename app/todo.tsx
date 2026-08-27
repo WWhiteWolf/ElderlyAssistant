@@ -54,11 +54,16 @@ interface Task {
     // now the app-wide standard. (Was dueDate/dueTime MM/DD/YY + HH:MM
     // strings; no compat code — old string tasks open via the today-noon
     // fallback until edited, per Patrick's rule.)
-    year: number;
-    month: number; // 0-11
-    day: number;   // 1-31
-    hour: number;
-    minute: number;
+    // #27-new: all five are optional, because a task may have no date at all.
+    // The pop-up had always asked whether you meant to save without a
+    // reminder, and the page then wrote today's date on anyway. Absent is the
+    // form that says "no date" — never a zero or a null to be tested for — and
+    // `taskDueDate` below is the one place that decides.
+    year?: number;
+    month?: number; // 0-11
+    day?: number;   // 1-31
+    hour?: number;
+    minute?: number;
     reminders: Reminder[];
     completed: boolean;
     createdDate: string;
@@ -121,6 +126,12 @@ export default function TodoScreen() {
     // A new form opens at today, 12:00 noon (Patrick's call, like Look Ahead).
     const [newDueAt, setNewDueAt] = useState<Date>(() => new Date(new Date().setHours(12, 0, 0, 0)));
     const [newDueValid, setNewDueValid] = useState(true);
+    // #27-new: whether this task actually has a date and a time. `newDueAt`
+    // always holds a real Date because the spinners need somewhere to rest,
+    // so it cannot answer the question by itself — these two do. They sleep
+    // independently: a task may carry a date and no time.
+    const [newDateSet, setNewDateSet] = useState(false);
+    const [newTimeSet, setNewTimeSet] = useState(false);
     const [newNotes, setNewNotes] = useState('');
     const [newTaskType, setNewTaskType] = useState<'scheduled' | 'background'>('scheduled');
     const [newReminders, setNewReminders] = useState<Reminder[]>([]);
@@ -220,10 +231,33 @@ export default function TodoScreen() {
         return due ? `Due: ${formatDateMMDDYY(due)} at ${formatTime24(due)}` : '';
     };
 
+    // #27-new: the date fields a save should actually write. No date means all
+    // five are left off the task entirely rather than written as zeros or
+    // nulls, because `taskDueDate` asks `typeof` and absent is the form it
+    // already understands. A date with no time keeps the existing behaviour —
+    // `taskDueDate` shows such a task at twelve noon.
+    const dueFieldsToSave = (): Partial<Task> => {
+        if (!newDateSet) return {};
+        const fields: Partial<Task> = {
+            year: newDueAt.getFullYear(),
+            month: newDueAt.getMonth(),
+            day: newDueAt.getDate(),
+        };
+        if (newTimeSet) {
+            fields.hour = newDueAt.getHours();
+            fields.minute = newDueAt.getMinutes();
+        }
+        return fields;
+    };
+
     const resetForm = () => {
         setNewTitle('');
         setNewTaskType('scheduled');
+        // The Date is only where the spinners rest. A new task starts with
+        // neither a date nor a time, so both boxes open empty (#27-new).
         setNewDueAt(new Date(new Date().setHours(12, 0, 0, 0)));
+        setNewDateSet(false);
+        setNewTimeSet(false);
         setNewDueValid(true);
         setNewNotes('');
         setNewReminders([]);
@@ -258,11 +292,7 @@ export default function TodoScreen() {
             id: Date.now().toString(),
             title: newTitle.trim(),
             taskType: newTaskType,
-            year: newDueAt.getFullYear(),
-            month: newDueAt.getMonth(),
-            day: newDueAt.getDate(),
-            hour: newDueAt.getHours(),
-            minute: newDueAt.getMinutes(),
+            ...dueFieldsToSave(),
             reminders: newReminders,
             completed: false,
             createdDate: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' }),
@@ -292,15 +322,16 @@ export default function TodoScreen() {
     };
 
     const finishUpdate = async (editing: Task) => {
+        // The five date fields are stripped off the task being edited before
+        // the new ones are spread in. Spreading `editing` alone would leave
+        // yesterday's date sitting there when the person has just cleared the
+        // box, and clearing would silently do nothing (#27-new).
+        const { year, month, day, hour, minute, ...withoutDue } = editing;
         const updatedTask: Task = {
-            ...editing,
+            ...withoutDue,
             title: newTitle.trim(),
             taskType: newTaskType,
-            year: newDueAt.getFullYear(),
-            month: newDueAt.getMonth(),
-            day: newDueAt.getDate(),
-            hour: newDueAt.getHours(),
-            minute: newDueAt.getMinutes(),
+            ...dueFieldsToSave(),
             reminders: newReminders,
             notes: newNotes,
         };
@@ -385,6 +416,12 @@ export default function TodoScreen() {
         // #60: numbers → Date directly. An old string task (no numbers) opens
         // at today-noon — the same fallback the string parser used to provide.
         setNewDueAt(taskDueDate(task) ?? new Date(new Date().setHours(12, 0, 0, 0)));
+        // #27-new: that fallback is only where the spinners rest. It must not
+        // be mistaken for a date the person chose, or opening a dateless task
+        // and saving it unchanged would quietly give it today's date. The task
+        // itself is the only thing asked.
+        setNewDateSet(typeof task.day === 'number');
+        setNewTimeSet(typeof task.hour === 'number');
         setNewDueValid(true);
         setNewNotes(task.notes);
         setNewReminders(task.reminders || []);
@@ -653,7 +690,26 @@ export default function TodoScreen() {
                                     <Text style={styles.inputLabel}>Title</Text>
                                     <TextInput style={styles.input} value={newTitle} onChangeText={setNewTitle} placeholder="What needs to be done?" autoFocus={true} />
 
-                                    <DateTimeControl value={newDueAt} onChange={setNewDueAt} onValidityChange={setNewDueValid} />
+                                    {/* #27-new: both halves optional. Blank means blank —
+                                        the pop-up below already asks whether you meant to
+                                        save without a reminder, and the page used to
+                                        overrule the answer by writing today's date on. Any
+                                        arrow or a typed value wakes the half it belongs to. */}
+                                    <DateTimeControl
+                                        value={newDueAt}
+                                        onChange={(d, half) => {
+                                            setNewDueAt(d);
+                                            if (half === 'date') setNewDateSet(true);
+                                            if (half === 'time') setNewTimeSet(true);
+                                        }}
+                                        onValidityChange={setNewDueValid}
+                                        optionalDate
+                                        dateSet={newDateSet}
+                                        onClearDate={() => setNewDateSet(false)}
+                                        optionalTime
+                                        timeSet={newTimeSet}
+                                        onClearTime={() => setNewTimeSet(false)}
+                                    />
 
                                     {/* #60: Reminders moved up under the date/time (Patrick) —
                                         they lived at the bottom, out of sight, and got forgotten.

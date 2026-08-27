@@ -27,6 +27,12 @@ import { Theme, useTheme } from '../constants/Themes';
 //   box clears it (onClearTime fires). Meant for mode='time' pages; the
 //   #59 empty-box rule (empty repaints from the spinners) applies only
 //   when optionalTime is off.
+// - #27-new: optionalDate — the same again for the date half, and it
+//   behaves identically: dulled spinners, an empty box with a "No date
+//   set" hint, waking on any arrow or a typed date, and onClearDate when
+//   the box is emptied. The two halves sleep independently, so a task can
+//   have a date and no time, or neither. Built for To-Do, where a task
+//   left blank on purpose was having today's date written onto it.
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -67,7 +73,10 @@ const parseTimeText = (text: string): { hour: number; minute: number } | null =>
 
 interface Props {
     value: Date;
-    onChange: (d: Date) => void;
+    // #27-new: `half` says which side the person actually touched, so a page
+    // with both halves optional can wake the date without also claiming a time
+    // was set. Callers that do not care simply ignore the second argument.
+    onChange: (d: Date, half?: 'date' | 'time') => void;
     mode?: 'datetime' | 'time' | 'date';
     dateLabel?: string;
     timeLabel?: string;
@@ -81,6 +90,14 @@ interface Props {
     optionalTime?: boolean;
     timeSet?: boolean;
     onClearTime?: () => void;
+    // #27-new: the date is optional on this page, built to match optionalTime
+    // above and behaving the same way. To-Do needed it because a task may be
+    // saved with no date at all; before this the empty box repainted itself
+    // from the spinners on blur, so today's date was written onto a task the
+    // person had deliberately left blank.
+    optionalDate?: boolean;
+    dateSet?: boolean;
+    onClearDate?: () => void;
 }
 
 export default function DateTimeControl({
@@ -93,15 +110,21 @@ export default function DateTimeControl({
     optionalTime = false,
     timeSet = true,
     onClearTime,
+    optionalDate = false,
+    dateSet = true,
+    onClearDate,
 }: Props) {
     const theme = useTheme();
     const styles = makeStyles(theme);
 
-    // Asleep = the page says time is optional and none is set right now.
-    const asleep = optionalTime && !timeSet;
+    // Asleep = the page says this half is optional and none is set right now.
+    // The two halves sleep independently: a task may have a date and no time,
+    // or neither, so one flag could not have covered both.
+    const timeAsleep = optionalTime && !timeSet;
+    const dateAsleep = optionalDate && !dateSet;
 
-    const [dateText, setDateText] = useState(formatDateMMDDYY(value));
-    const [timeText, setTimeText] = useState(asleep ? '' : formatTime24(value));
+    const [dateText, setDateText] = useState(dateAsleep ? '' : formatDateMMDDYY(value));
+    const [timeText, setTimeText] = useState(timeAsleep ? '' : formatTime24(value));
     const [dateBad, setDateBad] = useState(false);
     const [timeBad, setTimeBad] = useState(false);
 
@@ -128,48 +151,53 @@ export default function DateTimeControl({
     // When the page hands in a new value (form opened, item edited, or a
     // spin just happened), repaint any box that isn't being typed in.
     useEffect(() => {
-        if (!dateFocused.current) { setDateText(formatDateMMDDYY(value)); setDateBad(false); }
-        if (!timeFocused.current) { setTimeText(asleep ? '' : formatTime24(value)); setTimeBad(false); }
-    }, [value, asleep]);
+        if (!dateFocused.current) { setDateText(dateAsleep ? '' : formatDateMMDDYY(value)); setDateBad(false); }
+        if (!timeFocused.current) { setTimeText(timeAsleep ? '' : formatTime24(value)); setTimeBad(false); }
+    }, [value, dateAsleep, timeAsleep]);
 
     // ---- spinner adjustments (same moves as Look Ahead's) ----
 
-    const spin = (change: (d: Date) => void) => {
+    // `half` says which side of the control is being spun, because only that
+    // side's sleep matters. Asleep: the first tap only wakes that half at the
+    // value already shown — the adjustment itself starts with the next tap.
+    const spin = (half: 'date' | 'time', change: (d: Date) => void) => {
         const next = new Date(value);
-        // Asleep: the first tap only wakes the control at the shown
-        // 12:00 PM — the adjustment itself starts with the next tap.
-        if (!asleep) change(next);
-        onChange(next);
+        const halfAsleep = half === 'date' ? dateAsleep : timeAsleep;
+        if (!halfAsleep) change(next);
+        onChange(next, half);
     };
 
-    const adjustMonth = (delta: number) => spin(d => {
+    const adjustMonth = (delta: number) => spin('date', d => {
         const m = (d.getMonth() + delta + 12) % 12;
         d.setMonth(m, Math.min(d.getDate(), daysInMonth(d.getFullYear(), m)));
     });
 
-    const adjustDay = (delta: number) => spin(d => {
+    const adjustDay = (delta: number) => spin('date', d => {
         const max = daysInMonth(d.getFullYear(), d.getMonth());
         d.setDate(((d.getDate() - 1 + delta + max) % max) + 1);
     });
 
-    const adjustYear = (delta: number) => spin(d => {
+    const adjustYear = (delta: number) => spin('date', d => {
         const y = d.getFullYear() + delta;
         d.setFullYear(y, d.getMonth(), Math.min(d.getDate(), daysInMonth(y, d.getMonth())));
     });
 
-    const adjustHour = (dir: 'up' | 'down') => spin(d => {
-        const h = d.getHours();
-        const isPM = h >= 12;
-        let h12 = h % 12; if (h12 === 0) h12 = 12;
-        h12 = dir === 'up' ? (h12 % 12) + 1 : (h12 + 10) % 12 + 1;
-        d.setHours(isPM ? (h12 % 12) + 12 : h12 % 12);
+    // Step the hour on the 24-hour clock, which is the only place the true
+    // hour lives. This used to read AM or PM first, hold it fixed, and spin
+    // only the 1-to-12 digit — but crossing between 11 and 12 is exactly the
+    // moment AM and PM must swap, so stepping down from 12:00 PM gave 11:00 PM
+    // instead of 11:00 AM. The display turns 24-hour into 12-hour on its own,
+    // so nothing here needs to know about AM and PM at all. Adding 23 is
+    // stepping back one without going negative.
+    const adjustHour = (dir: 'up' | 'down') => spin('time', d => {
+        d.setHours((d.getHours() + (dir === 'up' ? 1 : 23)) % 24);
     });
 
-    const adjustMinute = (delta: number) => spin(d => {
+    const adjustMinute = (delta: number) => spin('time', d => {
         d.setMinutes((d.getMinutes() + delta + 60) % 60);
     });
 
-    const toggleAmPm = () => spin(d => {
+    const toggleAmPm = () => spin('time', d => {
         d.setHours((d.getHours() + 12) % 24);
     });
 
@@ -177,13 +205,18 @@ export default function DateTimeControl({
 
     const onDateTyped = (text: string) => {
         setDateText(text);
-        if (text.trim() === '') { setDateBad(false); return; }
+        if (text.trim() === '') {
+            setDateBad(false);
+            // Optional date: an emptied box means "no date" — tell the page.
+            if (optionalDate) onClearDate?.();
+            return;
+        }
         const p = parseDateText(text);
         if (p) {
             setDateBad(false);
             const next = new Date(value);
             next.setFullYear(p.year, p.month, p.day);
-            onChange(next);
+            onChange(next, 'date');
         }
     };
 
@@ -200,16 +233,20 @@ export default function DateTimeControl({
             setTimeBad(false);
             const next = new Date(value);
             next.setHours(p.hour, p.minute, 0, 0);
-            onChange(next);
+            onChange(next, 'time');
         }
     };
 
     const onDateBlur = () => {
         dateFocused.current = false;
         const p = parseDateText(dateText);
+        // Optional date + empty box: stay empty — empty MEANS "no date" here,
+        // so blur must not repaint it from the spinners (#27-new). This is the
+        // whole of the fault it was built to cure.
+        if (optionalDate && dateText.trim() === '') { setDateBad(false); }
         // Empty or valid: repaint from the spinners' value, no red. Only a
         // non-empty value that isn't a real date goes red.
-        if (p || dateText.trim() === '') { setDateText(formatDateMMDDYY(value)); setDateBad(false); }
+        else if (p || dateText.trim() === '') { setDateText(formatDateMMDDYY(value)); setDateBad(false); }
         else setDateBad(true);
     };
 
@@ -251,7 +288,7 @@ export default function DateTimeControl({
             {mode !== 'time' && (
                 <>
                     <Text style={styles.inputLabel}>{dateLabel}</Text>
-                    <View style={styles.stepperRow}>
+                    <View style={[styles.stepperRow, dateAsleep && styles.rowAsleep]}>
                         <Stepper display={MONTH_NAMES[value.getMonth()]} caption="Month"
                             up={() => adjustMonth(1)} down={() => adjustMonth(-1)} displayStyle={styles.dateDisplay} />
                         <Stepper display={pad2(value.getDate())} caption="Day"
@@ -269,14 +306,18 @@ export default function DateTimeControl({
                         placeholderTextColor={theme.mutedText}
                         keyboardType="numbers-and-punctuation"
                     />
-                    <Text style={styles.hint}>Type the date (MM/DD/YY) — zeros added for you</Text>
+                    <Text style={styles.hint}>
+                        {dateAsleep
+                            ? 'No date set — tap the arrows or type a date to set one'
+                            : 'Type the date (MM/DD/YY) — zeros added for you'}
+                    </Text>
                 </>
             )}
 
             {mode !== 'date' && (
                 <>
                     <Text style={styles.inputLabel}>{timeLabel}</Text>
-                    <View style={[styles.timeRow, asleep && styles.timeRowAsleep]}>
+                    <View style={[styles.timeRow, timeAsleep && styles.rowAsleep]}>
                         <Stepper display={pad2(h12)} caption="Hour"
                             up={() => adjustHour('up')} down={() => adjustHour('down')} displayStyle={styles.timeDisplay} />
                         <Text style={styles.timeDisplay}>:</Text>
@@ -296,7 +337,7 @@ export default function DateTimeControl({
                         keyboardType="numbers-and-punctuation"
                     />
                     <Text style={styles.hint}>
-                        {asleep
+                        {timeAsleep
                             ? 'No time set — tap the arrows or type a time to set one'
                             : 'Type the time (24-hour clock)'}
                     </Text>
@@ -311,7 +352,9 @@ const makeStyles = (t: Theme) => StyleSheet.create({
     stepperRow: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 6 },
     timeRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 14, marginBottom: 6 },
     // #3-new: the whole spinner row dulled while no time is set.
-    timeRowAsleep: { opacity: 0.4 },
+    // Dulls whichever half is asleep. Named for the job rather than for the
+    // time row, since #27-new gave the date half the same treatment.
+    rowAsleep: { opacity: 0.4 },
     // Look Ahead's circles were 50 with 22pt arrows; #58 sized them down to 34
     // to keep the whole form visible, but Patrick found 34 hard to tap on the
     // phone (#62) — now 40 with 18pt arrows, plus hitSlop above for ~50px of

@@ -12,6 +12,40 @@ stands and what is open in front of it. Finished work goes to
 
 ## Where things stand
 
+**Five fixes went in at #27-new, and Patrick checked every one on the
+simulator.** The Scheduled Reminders page had been sitting half an inch low —
+`app/reminders.tsx` was the only route never registered in `app/_layout.tsx`, so
+it drew the navigator's default header above its own; the reminder count moved
+from the foot of that page to a band under its header; the hour stepper's
+twelve-hour fault is cured; the Vault's header button says Back inside a
+category and Home on the list, with the "← All Categories" row gone; and **a
+To-Do task may now be saved with no date and no time.**
+
+- **Blank now means blank on To-Do.** The pop-up had always asked whether he
+  meant to save without a reminder, and the page then wrote today's date at noon
+  on anyway. `DateTimeControl` gained an optional-date mode built to match its
+  optional-time one; the two halves sleep independently, so a task may have a
+  date and no time; and `onChange` now says which half was touched, or spinning
+  the date would have claimed a time was set. `Task`'s five date fields are
+  optional and **absent is the form that means "no date"** — never a zero or a
+  null. `taskDueDate` is the one place that decides.
+- **Most of that already worked.** `taskDueDate`, `scheduleLabel` and the sort
+  all coped with a dateless task already, and the translator gives back no due
+  time when there is no date. The work was letting the blank through.
+- **A dateless task shows its title and nothing else** (Patrick, #27-new, on
+  consistency). My Day and Mollie already show an item with no time that way.
+  The "No time set" wording is a hint inside the entry box, never on a tile.
+- **The hour fix leaves a tail**: any time set by spinning through noon or
+  midnight before #27-new is stored in the wrong half of the day.
+
+**The way of working changed** (Patrick, #27-new). The supervisor-and-worker
+split is retired — one session does the work, in the conversation that discussed
+it, and **big mechanical builds go to Cursor** with a sheet written here. The
+value was always in the sheet rather than in the second session. Build sheets
+are still the pattern for a big piece;
+`docs/build-sheet-optional-date.md` is the most recent, and it was built the same
+day it was written.
+
 **All five reminder screens now go through the one machine** (#27-new).
 `gatherWanted` sends My Day, Pets, My Week, Look Ahead and To-Do through the
 translator, then `scheduler/remindersfor.ts`, which writes the reminders the
@@ -592,11 +626,11 @@ used to go silent. Most of steps 3 and 4 has never been tried on a device.
 improvements to go onto the phone together and be lived with over time, rather
 than a build per session.
 
-**Two layout fixes are waiting for the Scheduled Reminders screen** (Patrick,
-#15-new), logged in `pending.txt`: the header sits too low, and the total
-number of reminders should be noticeable directly under it. Showing the run
-record on that screen was held back from #15-new so all three are done in one
-visit.
+**Both Scheduled Reminders layout fixes are done** (#27-new). The header no
+longer sits low — the page had never been registered in `app/_layout.tsx` — and
+the reminder count now sits under the header instead of at the foot. Showing the
+run record on that screen was held back from #15-new and has still not been
+built.
 
 **The tests run on the Mac in about a second**, headless under Node, with
 no build and no simulator. 286 of 286 pass — and see the outside reading on what
@@ -615,10 +649,10 @@ itself on the next build. Nothing else reports.
 most of what the outside reading widened turned out to be deliberate. Nothing
 about the joins argues for starting over.
 
-**The next piece is `scheduler/leadmoments.ts`**, built from
-`docs/build-sheet-lead-moments.md` alone. Then To-Do's own work, written against
-a lead-time piece that already exists. Then swapping the screens over one at a
-time, retiring each old reader as its replacement is proved. Then the phone.
+**Lead moments, To-Do and the swap are all built** (#27-new).
+`scheduler/leadmoments.ts` exists, To-Do is one more row in the table, and the
+live run goes through the translator for all five screens. **What is left is the
+phone**, then retiring each old reader once its replacement is proved.
 
 **My Week's cure still rides on the swap, not on the translator.** Its reader
 still ignores the tick, and the header comment of `scheduler/readers/myweek.ts`
@@ -703,9 +737,10 @@ the postpone's reminder off the phone by hand, which could not hold — the
 module read the stamp on its next run and put the reminder straight back. Skip
 now clears the stamp and asks the module to run. It has never been on a phone.
 
-**The hour stepper fix** is small, separate, and not structural. Any time set
-by spinning through the twelve o'clock boundary is stored in the wrong half of
-the day and needs re-setting afterwards.
+**The hour stepper is fixed** (#27-new). `adjustHour` now steps on the 24-hour
+clock and nothing there knows about AM and PM. Any time set by spinning through
+the twelve o'clock boundary **before** that is still stored in the wrong half of
+the day and needs re-setting.
 
 **Timer is not working right** (Patrick, #5-new), said in passing and not
 examined. It is deliberately outside the module. Two things noticed since and
@@ -724,10 +759,11 @@ see that snooze, and there is no longer a snooze for them to find.
 (#20-new). Nothing is armed by hand any more except Orders' own delay, and
 Orders has no reader because the page is being taken out.
 
-**Still to come, and untouched:** the three "What's Next" items in
-`pending.txt` — Look Ahead's tile format and its Snooze changed or dropped,
-the Timer tile's Stop (Pause) / Continue (Go) button and log, and the Vault
-restructuring's "Home"-to-"Back" button change.
+**Still to come, and untouched:** the two "What's Next" items left in
+`pending.txt` — Look Ahead's tile format and its Snooze changed or dropped, and
+the Timer tile's Stop (Pause) / Continue (Go) button and log. **The Vault's
+"Home"-to-"Back" change was done at #27-new**, along with both Scheduled
+Reminders layout fixes.
 
 **The Look Ahead banner-delay bug** sits in `pending.txt` under "Needs a
 phone test". It was never separately confirmed, and the trial that would have

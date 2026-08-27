@@ -266,9 +266,23 @@ export default function VaultScreen() {
                 pages — Patrick standardized on the taller header look. */}
             <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
-                    <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>Home</Text>
-                    </TouchableOpacity>
+                    {/* One page, two states, so the left button says where it
+                        actually goes. Inside a category it steps back to the
+                        category list, which is what the "All Categories" row
+                        under the header used to do; on the list itself it leaves
+                        the Vault. Going home pops the page rather than replacing
+                        it — the Vault is only ever entered from Home, so it is
+                        the same destination either way, but popping is what the
+                        rest of the app does. */}
+                    {selectedCategory ? (
+                        <TouchableOpacity onPress={() => setSelectedCategory(null)} style={styles.headerBtn}>
+                            <Text style={styles.headerBtnText}>Back</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
+                            <Text style={styles.headerBtnText}>Home</Text>
+                        </TouchableOpacity>
+                    )}
                     <Text style={styles.title}>
                         {selectedCategory ? getCategoryData(selectedCategory)?.name : 'Vault 🔒'}
                     </Text>
@@ -318,10 +332,6 @@ export default function VaultScreen() {
                 </ScrollView>
             ) : (
                 <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 100 }}>
-                    <TouchableOpacity style={styles.backToList} onPress={() => setSelectedCategory(null)}>
-                        <Text style={styles.backToListText}>← All Categories</Text>
-                    </TouchableOpacity>
-
                     {getCategoryItems().length === 0 && (
                         <Text style={styles.emptyText}>No items yet. Tap + to add one.</Text>
                     )}
@@ -460,16 +470,6 @@ const makeStyles = (t: Theme) =>
         categoryName: { fontSize: 18, fontWeight: '600', color: t.cardTitle },
         categoryCount: { fontSize: 13, color: t.mutedText, marginTop: 2 },
         categoryArrow: { fontSize: 28, color: t.mutedText },
-        backToList: {
-            alignSelf: 'flex-start',
-            borderWidth: 1,
-            borderColor: t.cardTitle,
-            borderRadius: 20,
-            paddingVertical: 6,
-            paddingHorizontal: 14,
-            marginBottom: 8,
-        },
-        backToListText: { color: t.cardTitle, fontSize: 16, fontWeight: '500' },
         emptyText: { textAlign: 'center', color: t.mutedText, marginTop: 40, fontSize: 16 },
         itemCard: {
             backgroundColor: t.card,
