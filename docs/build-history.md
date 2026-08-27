@@ -37,8 +37,7 @@ where-things-stand, exactly as it carries Mystery's; the numbering
 rule above; the name and badge; Memory runs in its own chat stream.
 pending.txt was part-tidied at Patrick's word: the "Where things
 stand right now" snapshot dropped whole, "What's next" / "Needs a
-phone test" / "Decisions to make" emptied with their headings
-standing, the #40/#41 tombstone section deleted, and the
+phone test" / "Decisions to make" emptied with their headingsfstanding, the #40/#41 tombstone section deleted, and the
 Vault-import item re-homed under "Parked on purpose". The old files
 — handoff.md, session-start.md, parked-items.md, publishing.md — go
 quiet in place, unedited and undeleted; the archives
