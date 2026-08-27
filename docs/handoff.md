@@ -12,47 +12,34 @@ stands and what is open in front of it. Finished work goes to
 
 ## Where things stand
 
-**There is one translator now, not five, and four screens go through it**
-(#26-new). `scheduler/translators/translate.ts` holds the core and a table with
-one rule set per screen — My Day, Pets, My Week and Look Ahead. The two
-per-screen translator files are deleted. **Nothing in the app calls it**, every
-old reader is untouched, and **319 of 319 tests pass**, up from 286, with the two
-existing translator test files changed only in their import line. That last part
-is the proof no behaviour moved.
+**All five reminder screens now go through the one machine** (#27-new).
+`gatherWanted` sends My Day, Pets, My Week, Look Ahead and To-Do through the
+translator, then `scheduler/remindersfor.ts`, which writes the reminders the
+phone should hold. Lead moments are in `scheduler/leadmoments.ts`. To-Do is one
+more row in the table, not a special case. **391 of 391 tests pass**, up from
+319. `npx tsc` reports only the standing Expo router error. **This has not been
+proved on the phone.**
 
-- **The five were a leftover** (Super-2-new). Chosen at #19-new when the shape
-  did not exist and the readers' one-function-per-screen was the only division
-  available. The shape dissolved it at #21-new and #22-new and nobody went back.
-  Nothing in the engine goes by page: `stillwanted.ts` never mentions
-  `sourceScreenCode` and `armdepth.ts` branches on the trigger kind alone.
-- **A date item carries its moment alone** (Super-2-new, checked Super-3-new).
-  `dueMoment` is set and `dueHour` and `dueMinute` are left off, because the hour
-  is already inside the moment and two copies of one fact can come to disagree.
-- **The banner words and button sets were checked against all four old readers
-  and match word for word**, so nothing a person sees moves at the swap.
-  `'myweekpostpone'` is only a key name, never a button set.
+- **Depth is one**, live. My Day and Pets arm one reminder each, not two.
+  Opening the app arms the next. That is recovery on opening.
+- **A ticked My Week chore stays quiet this week.** The old path was a weekly
+  repeat, which could not skip. It is now one moment on the next due day.
+- **The eight o'clock To-Do banner is gone from the live run.** A background
+  task is an item with no time. Patrick's two items labelled background — one
+  on My Day, one on To-Do — both expect no banner, for opposite reasons. Claude
+  had said the banner was needed or the item would not reset. That claim is
+  not to be listened to again.
+- **A To-Do task with no reminders stays silent**, even at the appointment.
+- **The old readers are still in the project.** The live run no longer calls
+  them, except the Memory Test, which still skips the common shape. The Timer
+  sits outside the module.
+- **Banner words were kept.** Snooze, postpone and delay still use the source
+  names the housing already routes.
 
-**A piece of the machine is missing, and To-Do cannot be built without it**
-(Super-3-new). Nothing yet turns a lead time into an actual moment — "thirty
-minutes before" into a time on a clock. Every screen built so far has an empty
-lead-time list, so none of them needed it; every To-Do reminder is one.
-`docs/build-sheet-lead-moments.md` is the instructions for building it as
-`scheduler/leadmoments.ts`, and it goes out before To-Do's own work.
-
-**The empty-list decision was replaced** (Patrick, Super-3-new). It used to mean
-different things for different kinds of item, which would have silenced Look
-Ahead — a one-off with no lead times that must speak at its own moment — while a
-To-Do task with no reminders must stay silent. Same kind, opposite answers. Now
-**every screen states its own lead times**: the four built screens each give one
-lead time of nothing-before, and To-Do gives the list the person chose. An empty
-list means nothing to say, everywhere, with nothing to remember. The reasoning is
-in `docs/reminder-shape.md`, section six and the replacement under it.
-
-**To-Do needs far less of its own than the record kept saying** (Patrick,
-Super-3-new). Its lead times are one more accessor in the table. Its eight
-o'clock background banner was folded into the shape at Super-2-new by
-`standsForGroupBit`. What is actually left is only that the banner is made from
-the whole list rather than from one task, and that may fold in as well.
+**The next act is the phone**, then retiring each old reader once its
+replacement is proved. Miss-telling still covers My Day and Pets only. Whether
+any screen is ever brought round to save in the common shape is still not
+decided.
 
 **The second of the five translators is built, and it needed no design decision
 at all** (#25-new). `scheduler/translators/pets.ts` turns a saved Pets feed into

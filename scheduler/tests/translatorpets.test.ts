@@ -169,9 +169,10 @@ export function runTranslatorPetsTests(): void {
 
     // ---- how far ahead to speak ----
 
-    test('A Pets feed has no lead times', () => {
-        assertSame(shapeOf(saved()).leadTimeList, [],
-            'a daily item speaks at the moment itself, which is what an empty list means');
+    test('A Pets feed speaks at the moment itself', () => {
+        assertSame(shapeOf(saved()).leadTimeList,
+            [{ leadFormCode: 'offset', leadAmount: 0, leadUnitCode: 'minutes' }],
+            'one lead time of nothing-before is the moment itself');
     });
 
     // ---- the banner's words ----

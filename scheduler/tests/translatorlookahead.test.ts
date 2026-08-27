@@ -174,9 +174,10 @@ export function runTranslatorLookAheadTests(): void {
 
     // ---- how far ahead to speak ----
 
-    test('A Look Ahead entry has no lead times', () => {
-        assertSame(shapeOf(saved()).leadTimeList, [],
-            'Look Ahead has never had lead times');
+    test('A Look Ahead entry speaks at the moment itself', () => {
+        assertSame(shapeOf(saved()).leadTimeList,
+            [{ leadFormCode: 'offset', leadAmount: 0, leadUnitCode: 'minutes' }],
+            'one lead time of nothing-before is the moment itself');
     });
 
     // ---- the banner's words ----

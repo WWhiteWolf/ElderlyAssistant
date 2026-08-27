@@ -1,9 +1,10 @@
 // The scheduler's top.
 //
 // This is the one file in the scheduler that touches storage and the phone.
-// Everything it decides is decided by the readers and the reconcile, which are
-// plain and are tested; this file only fetches, converts and applies. It is
-// kept thin on purpose, because it is the part Node cannot check.
+// Everything it decides is decided by the translators, the blocks and the
+// reconcile, which are plain and are tested; this file only fetches, converts
+// and applies. It is kept thin on purpose, because it is the part Node cannot
+// check.
 //
 // It answers one question — given everything saved on this phone right now,
 // which reminders should exist? — and then makes that true.
@@ -22,15 +23,13 @@ import { HEALTH_KEY, MISSES_KEY, addRun, faultSignature, mergeMisses, missesForR
 import type { Miss, MissableItem, RunFault, RunRecord } from './health.ts';
 import type { WantedReminder, WantedTrigger } from './types.ts';
 
-import { readMyDay } from './readers/myday.ts';
+import { translateMyDay, translatePets, translateMyWeek, translateLookAhead, translateToDo } from './translators/translate.ts';
+import { remindersFor } from './remindersfor.ts';
 import type { MyDayItem } from './readers/myday.ts';
-import { readPets } from './readers/pets.ts';
 import type { PetsItem } from './readers/pets.ts';
-import { readMyWeek } from './readers/myweek.ts';
 import type { Chore } from './readers/myweek.ts';
-import { readLookAhead } from './readers/lookahead.ts';
 import type { LookAheadItem } from './readers/lookahead.ts';
-import { DEFAULT_CLOCK_TIMES, readToDo } from './readers/todo.ts';
+import { DEFAULT_CLOCK_TIMES } from './readers/todo.ts';
 import type { ClockTimes, Task, TimeOfDay } from './readers/todo.ts';
 import { readMemoryTest } from './readers/memorytest.ts';
 import type { MemoryTestSession } from './readers/memorytest.ts';
@@ -347,11 +346,11 @@ export async function gatherWanted(
 
     return {
         wanted: [
-            ...readMyDay(routine.items, now),
-            ...readPets(feeds.items, now),
-            ...readMyWeek(chores.items, now),
-            ...readLookAhead(lookahead.items, now),
-            ...readToDo(tasks.items, times, now),
+            ...remindersFor(translateMyDay(routine.items, now), now, times),
+            ...remindersFor(translatePets(feeds.items, now), now, times),
+            ...remindersFor(translateMyWeek(chores.items, now), now, times),
+            ...remindersFor(translateLookAhead(lookahead.items, now), now, times),
+            ...remindersFor(translateToDo(tasks.items, now), now, times),
             ...readMemoryTest(session, now),
         ],
         faults,

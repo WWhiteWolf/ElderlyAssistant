@@ -2197,6 +2197,54 @@ spreads each of the four conditionally on the field being present, which is the
 plainest way to keep the sheet's rule that absent fields are left off rather
 than filled with zeros, and matches what the deleted translators did inline.
 
+## #27-new (2026-08-26): lead moments, To-Do in the table, and all five screens on the one live machine
+
+**The missing piece was built, To-Do joined the same table as the others, and
+`gatherWanted` now sends all five reminder screens through that path.** The old
+readers are still in the project; the live run no longer calls them, except the
+Memory Test, which still skips the common shape. **391 of 391 tests pass**, up
+from 319, and `npx tsc` reports only the standing Expo router error. Nothing
+here has been proved on the phone.
+
+**Lead moments** (`scheduler/leadmoments.ts`) turn each lead time into a clock
+moment. An empty list means nothing to say, for every kind. My Day, Pets, My
+Week and Look Ahead each give one lead time of nothing-before. Offset amounts
+use the same multiplication `readToDo` uses. It was built from
+`docs/build-sheet-lead-moments.md`.
+
+**To-Do is one more row in the table**, not a special case. Its reminders are
+lead times off one appointment. A task with no reminders stays silent. A
+background task is an item with no time, so it gets no banner.
+
+**The eight o'clock group banner is not part of the machine.** Patrick has two
+items labelled background, one on My Day and one on To-Do, both with no time and
+no banner, for opposite reasons: the My Day one is a short-range tick so he
+knows a daily thing was done; the To-Do one is long-range outstanding work with
+no deadline, and he does not want the phone telling him to do it. Claude had
+kept saying the banner was needed or the item would not reset. That is
+backwards. A banner does not reset anything. The morning sweep does, and To-Do
+must not go through it.
+
+**The heading is now an accessor for every screen**, the same way the sentence
+already was, because To-Do puts the task's name in the heading. The other four
+screens still produce the same words they did.
+
+**The join** (`scheduler/remindersfor.ts`) turns shaped items into the reminders
+the phone should hold. Depth is one. A ticked daily item is not pre-armed for
+tomorrow. A ticked weekly chore stays quiet this week, which is the cure the
+repeat could not give. Snooze, postpone and delay keep the source names the
+housing already routes. Date items with one moment keep the name `base`; To-Do
+names each lead by the reminder's own id.
+
+**The live swap is `gatherWanted`.** My Day, Pets, My Week, Look Ahead and To-Do
+each go translator then join. The Memory Test and the Timer are unchanged.
+
+**On the phone, once Memory comes to the front:** one reminder per My Day item
+and per Pets feed, not two; a ticked My Week chore silent this week; no eight
+o'clock To-Do banner. Banner words on each screen were kept. The phone proof is
+the next act.
+
+**No screen was edited.** The old readers were not deleted.
 
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 

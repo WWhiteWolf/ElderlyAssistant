@@ -81,12 +81,17 @@ export type LeadTime =
         // Counted straight back from the due moment.
         leadAmount: number;
         leadUnitCode: LeadUnitCode;
+        // Which of this item's reminders this is, when the saved list names
+        // them. Used as the third part of the key so two leads on one task
+        // never share a name. Look Ahead has one moment and leaves it off.
+        leadPartText?: string;
     }
     | {
         leadFormCode: 'clock';
         // Counted back this many whole days, then set to the named time.
         leadDaysBefore: number;
         leadNamedTimeCode: LeadNamedTimeCode;
+        leadPartText?: string;
     };
 
 /**

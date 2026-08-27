@@ -169,9 +169,10 @@ export function runTranslatorMyDayTests(): void {
 
     // ---- how far ahead to speak ----
 
-    test('A My Day item has no lead times', () => {
-        assertSame(shapeOf(saved()).leadTimeList, [],
-            'a daily item speaks at the moment itself, which is what an empty list means');
+    test('A My Day item speaks at the moment itself', () => {
+        assertSame(shapeOf(saved()).leadTimeList,
+            [{ leadFormCode: 'offset', leadAmount: 0, leadUnitCode: 'minutes' }],
+            'one lead time of nothing-before is the moment itself');
     });
 
     // ---- the banner's words ----

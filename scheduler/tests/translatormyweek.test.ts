@@ -183,9 +183,10 @@ export function runTranslatorMyWeekTests(): void {
 
     // ---- how far ahead to speak ----
 
-    test('A chore has no lead times', () => {
-        assertSame(shapeOf(saved()).leadTimeList, [],
-            'a weekly item speaks at the moment itself, which is what an empty list means');
+    test('A chore speaks at the moment itself', () => {
+        assertSame(shapeOf(saved()).leadTimeList,
+            [{ leadFormCode: 'offset', leadAmount: 0, leadUnitCode: 'minutes' }],
+            'one lead time of nothing-before is the moment itself');
     });
 
     // ---- the banner's words ----

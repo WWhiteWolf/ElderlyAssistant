@@ -27,6 +27,9 @@ import { runTranslatorMyDayTests } from './translatormyday.test.ts';
 import { runTranslatorPetsTests } from './translatorpets.test.ts';
 import { runTranslatorMyWeekTests } from './translatormyweek.test.ts';
 import { runTranslatorLookAheadTests } from './translatorlookahead.test.ts';
+import { runTranslatorToDoTests } from './translatortodo.test.ts';
+import { runLeadMomentsTests } from './leadmoments.test.ts';
+import { runRemindersForTests } from './remindersfor.test.ts';
 
 console.log('\nMy Day reader');
 runMyDayTests();
@@ -78,5 +81,14 @@ runTranslatorMyWeekTests();
 
 console.log('\nLook Ahead translator');
 runTranslatorLookAheadTests();
+
+console.log('\nTo-Do translator');
+runTranslatorToDoTests();
+
+console.log('\nLead moments');
+runLeadMomentsTests();
+
+console.log('\nReminders for a shaped item');
+runRemindersForTests();
 
 report();

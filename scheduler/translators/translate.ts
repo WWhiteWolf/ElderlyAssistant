@@ -29,6 +29,7 @@
 
 import type {
     BannerButtonsCode,
+    LeadTime,
     ShapedItem,
     SourceScreenCode,
     TriggerKindCode,
@@ -37,6 +38,7 @@ import type { MyDayItem } from '../readers/myday.ts';
 import type { PetsItem } from '../readers/pets.ts';
 import type { Chore } from '../readers/myweek.ts';
 import type { LookAheadItem } from '../readers/lookahead.ts';
+import type { Task } from '../readers/todo.ts';
 
 // ---------------------------------------------------------------------------
 // One: what a screen's rules are
@@ -80,8 +82,6 @@ export interface ScreenRules<TSaved> {
     doneEndsItemBit: boolean;
     /** The reminder stands for a group rather than one item. */
     standsForGroupBit: boolean;
-    /** The banner's heading, word for word as the old reader writes it. */
-    bannerTitleText: string;
     /** Which registered button set the banner carries. */
     bannerButtonsCode: BannerButtonsCode;
 
@@ -92,6 +92,8 @@ export interface ScreenRules<TSaved> {
     isDoneOf: (saved: TSaved) => boolean;
     pushedBackStampOf: (saved: TSaved) => number | undefined;
     dueOf: (saved: TSaved) => DueFields;
+    leadTimesOf: (saved: TSaved) => LeadTime[];
+    bannerTitleTextOf: (saved: TSaved) => string;
     bannerBodyTextOf: (saved: TSaved) => string;
 }
 
@@ -166,26 +168,37 @@ function translateOne<TSaved>(rules: ScreenRules<TSaved>, saved: TSaved): Shaped
 
         // ---- how far ahead to speak ----
 
-        // Empty for all four of these screens, which for a daily or weekly item
-        // means it speaks at the moment itself. None of the four has ever had
-        // lead times: each is about the thing happening now. When To-Do joins
-        // the table its lead times are one more accessor beside `dueOf`, not a
-        // special case.
-        leadTimeList: [],
+        // Each screen states its own lead times. An empty list means nothing
+        // to say. My Day, Pets, My Week and Look Ahead each give one lead
+        // time of nothing-before. To-Do gives the reminders the person set.
+        leadTimeList: rules.leadTimesOf(saved),
 
         // ---- the banner's words ----
 
         // Word for word what the existing readers write, so the swap over
-        // changes nothing a person sees.
-        bannerTitleText: rules.bannerTitleText,
+        // changes nothing a person sees. The heading is an accessor like the
+        // sentence, because To-Do puts the task's name in it and the others
+        // do not — that is a saved field, not a second kind of table.
+        bannerTitleText: rules.bannerTitleTextOf(saved),
         bannerBodyText: rules.bannerBodyTextOf(saved),
         bannerButtonsCode: rules.bannerButtonsCode,
     };
 }
 
 // ---------------------------------------------------------------------------
-// Three: the four rule sets, and the named wrapper for each
+// Three: the five rule sets, and the named wrapper for each
 // ---------------------------------------------------------------------------
+
+/**
+ * One lead time of nothing-before: speak at the moment itself.
+ *
+ * My Day, Pets, My Week and Look Ahead each want that and only that. Writing
+ * it once is what keeps the four from drifting apart. An amount of zero is
+ * not a special case later on — zero taken from the base is the base.
+ */
+const atTheMomentItself: LeadTime[] = [
+    { leadFormCode: 'offset', leadAmount: 0, leadUnitCode: 'minutes' },
+];
 
 /**
  * My Day's rules.
@@ -207,7 +220,7 @@ export const myDayRules: ScreenRules<MyDayItem> = {
     // Every My Day reminder stands for one item. Standing for a group is
     // To-Do's eight o'clock banner and nothing here.
     standsForGroupBit: false,
-    bannerTitleText: 'Daily Routine',
+    bannerTitleTextOf: () => 'Daily Routine',
     bannerButtonsCode: 'routineactions',
 
     idOf: (item) => item.id,
@@ -222,6 +235,7 @@ export const myDayRules: ScreenRules<MyDayItem> = {
         typeof item.hour === 'number' && typeof item.minute === 'number'
             ? { hasDueTimeBit: true, dueHour: item.hour, dueMinute: item.minute }
             : { hasDueTimeBit: false },
+    leadTimesOf: () => atTheMomentItself,
     bannerBodyTextOf: (item) => `Time for ${item.label}!`,
 };
 
@@ -247,7 +261,7 @@ export const petsRules: ScreenRules<PetsItem> = {
     // feeding again.
     doneEndsItemBit: false,
     standsForGroupBit: false,
-    bannerTitleText: 'Pets Routine',
+    bannerTitleTextOf: () => 'Pets Routine',
     bannerButtonsCode: 'routineactions',
 
     idOf: (item) => item.id,
@@ -260,6 +274,7 @@ export const petsRules: ScreenRules<PetsItem> = {
         typeof item.hour === 'number' && typeof item.minute === 'number'
             ? { hasDueTimeBit: true, dueHour: item.hour, dueMinute: item.minute }
             : { hasDueTimeBit: false },
+    leadTimesOf: () => atTheMomentItself,
     bannerBodyTextOf: (item) => `Time for ${item.label}!`,
 };
 
@@ -301,7 +316,7 @@ export const myWeekRules: ScreenRules<Chore> = {
     // Clear. A chore done this week comes round next week.
     doneEndsItemBit: false,
     standsForGroupBit: false,
-    bannerTitleText: 'Weekly Chore',
+    bannerTitleTextOf: () => 'Weekly Chore',
     // The shared routine button set, the same trap as Pets: `'myweekpostpone'`
     // is the name of the postpone's key in the old reader, not a button set.
     bannerButtonsCode: 'routineactions',
@@ -324,6 +339,7 @@ export const myWeekRules: ScreenRules<Chore> = {
                 dueMinute: chore.minute,
             }
             : { hasDueTimeBit: false },
+    leadTimesOf: () => atTheMomentItself,
     bannerBodyTextOf: (chore) => `Time for ${chore.label}!`,
 };
 
@@ -357,7 +373,7 @@ export const lookAheadRules: ScreenRules<LookAheadItem> = {
     standsForGroupBit: false,
     // The emoji is part of the heading, word for word as the old reader writes
     // it, so the swap over changes nothing a person sees.
-    bannerTitleText: '🔭 Look Ahead',
+    bannerTitleTextOf: () => '🔭 Look Ahead',
     bannerButtonsCode: 'lookaheadactions',
 
     idOf: (item) => item.id,
@@ -384,7 +400,124 @@ export const lookAheadRules: ScreenRules<LookAheadItem> = {
                 ).getTime(),
             }
             : { hasDueTimeBit: false },
+    leadTimesOf: () => atTheMomentItself,
     bannerBodyTextOf: (item) => `Time for ${item.label}!`,
+};
+
+/**
+ * The banner's sentence for a To-Do appointment, word for word as the old
+ * reader writes it. The app also builds this in a screen file that brings
+ * React Native with it, so the two lines that matter are written out here
+ * to keep the translator plain.
+ */
+function twoDigits(n: number): string {
+    return n < 10 ? `0${n}` : `${n}`;
+}
+
+function dueSentence(year: number, month: number, day: number, hour: number, minute: number): string {
+    const date = `${twoDigits(month + 1)}/${twoDigits(day)}/${twoDigits(year % 100)}`;
+    const time = `${twoDigits(hour)}:${twoDigits(minute)}`;
+    return `Due: ${date} at ${time}`;
+}
+
+/**
+ * To-Do's rules.
+ *
+ * A To-Do task is a date item. Its name is saved as `title` rather than
+ * `label`, and its several reminders are lead times off one due moment. An
+ * empty reminder list means nothing to say, not even at the appointment —
+ * that is what the app does today, and it falls out of the empty list rather
+ * than out of a rule about kinds.
+ *
+ * A task finished on the page is finished. Done ends the item. An appointment
+ * cannot be snoozed or delayed, so the push-back bit is clear and there is
+ * no stamp to copy.
+ *
+ * A background task is the same shape with no time. No time means nothing to
+ * arm, so it needs no banner and no extra bit. The eight o'clock group banner
+ * the old reader still builds is not a To-Do item and is not produced here.
+ *
+ * A missing hour counts as noon, as the old reader has it. Look Ahead counts
+ * a missing hour as midnight. Both stay as they are until the swap.
+ */
+export const todoRules: ScreenRules<Task> = {
+    sourceScreenCode: 'todo',
+    triggerKindCode: 'date',
+    canBeDoneBit: true,
+    canBePushedBackBit: false,
+    doneEndsItemBit: true,
+    standsForGroupBit: false,
+    bannerButtonsCode: 'todook',
+
+    idOf: (task) => task.id,
+    nameOf: (task) => task.title,
+    isDoneOf: (task) => task.completed,
+    pushedBackStampOf: () => undefined,
+    dueOf: (task) => {
+        // A background task has no appointment. Any date sitting on it is not
+        // a due time, and reading the saved kind here is the same act as
+        // reading a chore's weekday.
+        if (task.taskType === 'background') {
+            return { hasDueTimeBit: false };
+        }
+        if (typeof task.year === 'number'
+            && typeof task.month === 'number'
+            && typeof task.day === 'number') {
+            return {
+                hasDueTimeBit: true,
+                dueMoment: new Date(
+                    task.year,
+                    task.month,
+                    task.day,
+                    task.hour ?? 12,
+                    task.minute ?? 0,
+                    0,
+                    0,
+                ).getTime(),
+            };
+        }
+        return { hasDueTimeBit: false };
+    },
+    leadTimesOf: (task) => {
+        if (!task.reminders || task.reminders.length === 0) {
+            return [];
+        }
+        return task.reminders.map((reminder) => {
+            if (reminder.kind === 'clock') {
+                const named = reminder.timeOfDay === 'evening' ? 'evening'
+                    : reminder.timeOfDay === 'midday' ? 'midday'
+                        : 'morning';
+                return {
+                    leadFormCode: 'clock' as const,
+                    leadDaysBefore: reminder.daysBefore ?? 0,
+                    leadNamedTimeCode: named,
+                    leadPartText: reminder.id,
+                };
+            }
+            return {
+                leadFormCode: 'offset' as const,
+                leadAmount: reminder.amount,
+                leadUnitCode: reminder.unit,
+                leadPartText: reminder.id,
+            };
+        });
+    },
+    bannerTitleTextOf: (task) => `📋 Reminder: ${task.title}`,
+    bannerBodyTextOf: (task) => {
+        if (task.taskType === 'background'
+            || typeof task.year !== 'number'
+            || typeof task.month !== 'number'
+            || typeof task.day !== 'number') {
+            return '';
+        }
+        return dueSentence(
+            task.year,
+            task.month,
+            task.day,
+            task.hour ?? 12,
+            task.minute ?? 0,
+        );
+    },
 };
 
 /** Turn every saved My Day item into a shaped item. */
@@ -405,4 +538,9 @@ export function translateMyWeek(chores: Chore[], now: number): ShapedItem[] {
 /** Turn every saved Look Ahead entry into a shaped item. */
 export function translateLookAhead(items: LookAheadItem[], now: number): ShapedItem[] {
     return translateWith(lookAheadRules, items, now);
+}
+
+/** Turn every saved To-Do task into a shaped item. */
+export function translateToDo(tasks: Task[], now: number): ShapedItem[] {
+    return translateWith(todoRules, tasks, now);
 }
