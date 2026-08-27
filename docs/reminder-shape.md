@@ -359,6 +359,36 @@ also matches a decision already made: `app/todo.tsx` lets a task be saved
 with no reminders but asks first — *"Are you sure you don't want to set a
 Reminder?"*, a confirm rather than a block, recorded as #58 folding in #55.
 
+#### This section is superseded — see below
+
+**What stands above is kept for its reasoning, but the mechanism it describes is
+replaced by the next section.** Keying the empty list on the trigger kind breaks
+Look Ahead, which is a one-off item with no lead times that must speak at its own
+moment. Look Ahead and a To-Do task with no reminders are the same kind and need
+opposite answers, so the kind cannot tell them apart.
+
+### Six, replaced: every screen says outright when it wants speaking
+
+**Settled with Patrick at Super-3-new, and it removes a rule rather than adding
+one.**
+
+The rule above had to be remembered by whatever read the list, and remembering is
+the thing this design keeps trying to stop needing. **Instead each screen's rules
+state their own lead times.** My Day, Pets, My Week and Look Ahead each give one
+lead time of nothing-before — an offset of zero, which is the moment itself.
+To-Do gives the list the person actually chose.
+
+**So an empty list means one thing everywhere: nothing to say.** Nothing branches
+on the trigger kind to interpret it, and nothing is to be added that does.
+
+**Patrick's ruling on To-Do stands unchanged and was confirmed this session:** a
+task saved with no reminders never speaks, not even at the appointment time. With
+the change above that falls out of an empty list rather than out of a rule about
+kinds.
+
+**What it costs:** `leadTimeList` becomes an accessor in the translator's table
+and each of the four rule sets gains one line. Nothing a person sees moves.
+
 ### Seven: one bit says a reminder stands for a group
 
 **Patrick's, and it brought the last odd one in.** To-Do's background

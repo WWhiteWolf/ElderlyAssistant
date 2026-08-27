@@ -4,7 +4,7 @@
 // ask only that: the right facts came across, in the right fields, unchanged.
 // Nothing here asks what the engine then does about them.
 
-import { translatePets } from '../translators/pets.ts';
+import { translatePets } from '../translators/translate.ts';
 import type { PetsItem } from '../readers/pets.ts';
 import { isStillWanted } from '../stillwanted.ts';
 import { assert, assertSame, test } from './runner.ts';

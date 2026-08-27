@@ -3,9 +3,9 @@
 //
 // The app's five reminder screens each save their items their own way, and
 // that is left exactly as it is. What changes is that nothing downstream reads
-// those five shapes any more. A small translator per screen sets the fields
-// below at the boundary, and from there on the engine is written once against
-// one shape.
+// those five shapes any more. One translator, driven by a table of rules per
+// screen, sets the fields below at the boundary, and from there on the engine
+// is written once against one shape.
 //
 // Two rules from Patrick govern every name here. The name says what the thing
 // does and carries its own kind in the name, so a bit reads as a bit and a code
@@ -125,7 +125,8 @@ export interface ShapedItem {
      */
     hasDueTimeBit: boolean;
     /**
-     * The time of day it comes due. Used by all three kinds.
+     * The time of day it comes due, set by daily and weekly items. A date item
+     * carries the hour inside `dueMoment` instead.
      *
      * Both are left off when the item has no time, the way a weekday and a
      * single moment are left off when they do not belong. An absent field says

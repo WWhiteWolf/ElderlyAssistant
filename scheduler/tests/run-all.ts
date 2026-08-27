@@ -25,6 +25,8 @@ import { runStillWantedTests } from './stillwanted.test.ts';
 import { runArmDepthTests } from './armdepth.test.ts';
 import { runTranslatorMyDayTests } from './translatormyday.test.ts';
 import { runTranslatorPetsTests } from './translatorpets.test.ts';
+import { runTranslatorMyWeekTests } from './translatormyweek.test.ts';
+import { runTranslatorLookAheadTests } from './translatorlookahead.test.ts';
 
 console.log('\nMy Day reader');
 runMyDayTests();
@@ -70,5 +72,11 @@ runTranslatorMyDayTests();
 
 console.log('\nPets translator');
 runTranslatorPetsTests();
+
+console.log('\nMy Week translator');
+runTranslatorMyWeekTests();
+
+console.log('\nLook Ahead translator');
+runTranslatorLookAheadTests();
 
 report();

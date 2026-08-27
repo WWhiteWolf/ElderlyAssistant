@@ -12,6 +12,48 @@ stands and what is open in front of it. Finished work goes to
 
 ## Where things stand
 
+**There is one translator now, not five, and four screens go through it**
+(#26-new). `scheduler/translators/translate.ts` holds the core and a table with
+one rule set per screen — My Day, Pets, My Week and Look Ahead. The two
+per-screen translator files are deleted. **Nothing in the app calls it**, every
+old reader is untouched, and **319 of 319 tests pass**, up from 286, with the two
+existing translator test files changed only in their import line. That last part
+is the proof no behaviour moved.
+
+- **The five were a leftover** (Super-2-new). Chosen at #19-new when the shape
+  did not exist and the readers' one-function-per-screen was the only division
+  available. The shape dissolved it at #21-new and #22-new and nobody went back.
+  Nothing in the engine goes by page: `stillwanted.ts` never mentions
+  `sourceScreenCode` and `armdepth.ts` branches on the trigger kind alone.
+- **A date item carries its moment alone** (Super-2-new, checked Super-3-new).
+  `dueMoment` is set and `dueHour` and `dueMinute` are left off, because the hour
+  is already inside the moment and two copies of one fact can come to disagree.
+- **The banner words and button sets were checked against all four old readers
+  and match word for word**, so nothing a person sees moves at the swap.
+  `'myweekpostpone'` is only a key name, never a button set.
+
+**A piece of the machine is missing, and To-Do cannot be built without it**
+(Super-3-new). Nothing yet turns a lead time into an actual moment — "thirty
+minutes before" into a time on a clock. Every screen built so far has an empty
+lead-time list, so none of them needed it; every To-Do reminder is one.
+`docs/build-sheet-lead-moments.md` is the instructions for building it as
+`scheduler/leadmoments.ts`, and it goes out before To-Do's own work.
+
+**The empty-list decision was replaced** (Patrick, Super-3-new). It used to mean
+different things for different kinds of item, which would have silenced Look
+Ahead — a one-off with no lead times that must speak at its own moment — while a
+To-Do task with no reminders must stay silent. Same kind, opposite answers. Now
+**every screen states its own lead times**: the four built screens each give one
+lead time of nothing-before, and To-Do gives the list the person chose. An empty
+list means nothing to say, everywhere, with nothing to remember. The reasoning is
+in `docs/reminder-shape.md`, section six and the replacement under it.
+
+**To-Do needs far less of its own than the record kept saying** (Patrick,
+Super-3-new). Its lead times are one more accessor in the table. Its eight
+o'clock background banner was folded into the shape at Super-2-new by
+`standsForGroupBit`. What is actually left is only that the banner is made from
+the whole list rather than from one task, and that may fold in as well.
+
 **The second of the five translators is built, and it needed no design decision
 at all** (#25-new). `scheduler/translators/pets.ts` turns a saved Pets feed into
 a shaped item and **nothing in the app calls it**. `scheduler/readers/pets.ts` is
@@ -586,22 +628,20 @@ itself on the next build. Nothing else reports.
 most of what the outside reading widened turned out to be deliberate. Nothing
 about the joins argues for starting over.
 
-**The next session's first piece is the My Week translator** (#19-new order,
-fourth step, two of five done). The shape and the two blocks they hand to are
-built and tested (#23-new), and each translator is a small piece of its own: it
-reads one screen's saved list exactly as that screen saves it and sets the codes
-and bits at the boundary. No screen changes and nothing on the phone breaks.
-**`docs/build-sheet-translator-pets.md` is the pattern** — a self-contained sheet
-carrying the answers themselves rather than pointing at other documents, which is
-what let #24-new and #25-new build without asking a design question.
+**The next piece is `scheduler/leadmoments.ts`**, built from
+`docs/build-sheet-lead-moments.md` alone. Then To-Do's own work, written against
+a lead-time piece that already exists. Then swapping the screens over one at a
+time, retiring each old reader as its replacement is proved. Then the phone.
 
-**My Week is the first translator that is not a twin of one already built.** My
-Day and Pets are the same screen twice; My Week is weekly, carries `doneAt`
-beside `completed`, and holds a `postponedTo` stamp that a banner's Delay writes
-as well as the page's Postpone. **Its cure rides on this piece** — its reader
+**My Week's cure still rides on the swap, not on the translator.** Its reader
 still ignores the tick, and the header comment of `scheduler/readers/myweek.ts`
 and the test named *A chore already ticked still gets its weekly reminder* both
-assert the opposite of what is wanted and go out with the swap.
+assert the opposite of what is wanted. Both go out when the screen is swapped
+over. The translator already tells the truth about the tick.
+
+**The build sheets are the pattern for this work** — each self-contained,
+carrying the answers themselves rather than pointing at other documents, which is
+what lets a worker session build without asking a design question.
 
 **`docs/build-sheet.md` has not been brought level with the reorder** (#24-new).
 It is the standing description of what the three shape files hold, and it

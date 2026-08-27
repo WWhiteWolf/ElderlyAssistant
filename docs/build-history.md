@@ -2136,6 +2136,68 @@ earns no test file until something in it does something.
 the #19-new order: the five translators, one at a time.
 
 
+## #26-new (2026-08-26): the two per-screen translators became one translator and a table, and My Week and Look Ahead joined it
+
+**The two translators built at the step before differed from each other by two
+string literals**, and a third was about to be built the same way. They are now
+one file: `scheduler/translators/translate.ts`, holding the rules type, the core
+`translateWith`, and four rule sets — My Day, Pets, My Week and Look Ahead —
+each with a thin named wrapper in front of it. `translators/myday.ts` and
+`translators/pets.ts` are deleted, everything in them having moved into the
+table. **319 of 319 tests pass**, up from 286, and `npx tsc` reports only the
+standing Expo router error in `app/settings.tsx`.
+
+**The consolidation is proved to have moved no behaviour.** The two existing
+test files, `translatormyday.test.ts` and `translatorpets.test.ts`, were written
+against the deleted files. **Their import line was changed and nothing else** —
+not a case, not an assertion, not a value — and all of the old 286 still pass.
+That was the test the sheet set for this build and it is the reason the old
+tests were kept exactly as they stood.
+
+**The rules are accessors, not field-name strings.** That is what lets the
+compiler check each rule set against the screen's real saved shape; a table of
+strings could not be checked. It is the same trade the #22-new ruling against
+packing bits was made on — readability and the compiler's checking.
+
+**Two new test files, thirty-three tests.** `translatormyweek.test.ts` has
+eighteen and `translatorlookahead.test.ts` fifteen, both added to `run-all.ts`
+with headings of their own.
+
+- **The weekday stays as the app saves it**, Sunday as 0. The old reader adds
+  one when it builds the trigger because the phone counts from one, and that
+  addition belongs at the phone boundary. A test pins it, because adding one
+  here is exactly what a later session would "fix" into place.
+- **A date item carries its moment alone.** `dueMoment` is set and `dueHour` and
+  `dueMinute` are left off, so the hour does not exist twice. A test pins that
+  too.
+- **A chore's tick goes into the shape though the old reader ignores it.** That
+  is deliberate and not a mistake: the reader arms one true weekly repeat
+  whatever the tick says, because a repeating alarm cannot skip a week, and the
+  translator tells the truth instead. Nothing moves on the phone until the
+  screen is swapped over, which is the cure.
+- **Look Ahead's `due.getTime() > now` guard was not carried across.** Whether a
+  past entry still wants arming is a judgment and belongs in `stillwanted.ts`.
+  An entry whose moment has gone comes through with its moment intact.
+
+**Two stale comments in `inputshape.ts` were reworded and nothing else in that
+file was touched** — the opening paragraph, which still said a small translator
+per screen sets the fields, and the `dueHour`/`dueMinute` comment, which still
+said all three kinds use them.
+
+**No screen, no reader and nothing in the app was touched, and nothing calls
+any of this yet.** To-Do is not in this build: its background banner is built
+from the whole list rather than from one saved item, a reduction where
+everything else is a mapping, and it gets its own sheet. Nothing reached the
+phone, per the #15-new rule.
+
+**One choice was made where the sheet was silent, and it is in the build report
+rather than written into any document.** The sheet gives `DueFields` as a
+returned record and the core spreads its fields into the shaped item; the core
+spreads each of the four conditionally on the field being present, which is the
+plainest way to keep the sheet's rule that absent fields are left off rather
+than filled with zeros, and matches what the deleted translators did inline.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and
