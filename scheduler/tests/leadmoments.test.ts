@@ -40,9 +40,9 @@ function item(changes: Partial<ShapedItem> = {}): ShapedItem {
         sourceScreenCode: 'lookahead',
         itemIdText: 'a1',
         itemNameText: 'Book the boiler',
-        triggerKindCode: 'date',
         hasDueTimeBit: true,
         dueMoment: at(2026, 5, 3, 14, 0),
+        floatsWithPhoneBit: true,
         canBeDoneBit: false,
         canBePushedBackBit: true,
         doneEndsItemBit: false,
@@ -72,7 +72,7 @@ export function runLeadMomentsTests(): void {
         assertSame(
             momentsOf({
                 sourceScreenCode: 'myday',
-                triggerKindCode: 'daily',
+                repeatUnitCode: 'day',
                 dueHour: 18,
                 dueMinute: 0,
             }),
@@ -85,7 +85,7 @@ export function runLeadMomentsTests(): void {
         assertSame(
             momentsOf({
                 sourceScreenCode: 'myday',
-                triggerKindCode: 'daily',
+                repeatUnitCode: 'day',
                 dueHour: 8,
                 dueMinute: 0,
             }),
@@ -99,8 +99,8 @@ export function runLeadMomentsTests(): void {
         assertSame(
             momentsOf({
                 sourceScreenCode: 'myweek',
-                triggerKindCode: 'weekly',
-                dueWeekday: 3,
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 3 }],
                 dueHour: 18,
                 dueMinute: 0,
             }),
@@ -114,8 +114,8 @@ export function runLeadMomentsTests(): void {
         assertSame(
             momentsOf({
                 sourceScreenCode: 'myweek',
-                triggerKindCode: 'weekly',
-                dueWeekday: 1,
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 1 }],
                 dueHour: 18,
                 dueMinute: 0,
             }),
@@ -128,8 +128,8 @@ export function runLeadMomentsTests(): void {
         assertSame(
             momentsOf({
                 sourceScreenCode: 'myweek',
-                triggerKindCode: 'weekly',
-                dueWeekday: 1,
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 1 }],
                 dueHour: 8,
                 dueMinute: 0,
             }),
@@ -205,7 +205,7 @@ export function runLeadMomentsTests(): void {
         assertSame(
             momentsOf({
                 sourceScreenCode: 'myday',
-                triggerKindCode: 'daily',
+                repeatUnitCode: 'day',
                 dueHour: 18,
                 dueMinute: 0,
                 leadTimeList: [],
@@ -219,8 +219,8 @@ export function runLeadMomentsTests(): void {
         assertSame(
             momentsOf({
                 sourceScreenCode: 'myweek',
-                triggerKindCode: 'weekly',
-                dueWeekday: 3,
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 3 }],
                 dueHour: 18,
                 dueMinute: 0,
                 leadTimeList: [],
@@ -260,7 +260,7 @@ export function runLeadMomentsTests(): void {
         assertSame(
             momentsOf({
                 sourceScreenCode: 'myday',
-                triggerKindCode: 'daily',
+                repeatUnitCode: 'day',
                 dueHour: undefined,
                 dueMinute: undefined,
             }),
@@ -279,6 +279,144 @@ export function runLeadMomentsTests(): void {
             }),
             [at(2026, 5, 3, 13, 30), at(2026, 5, 3, 12, 0)],
             'the order of the lead times is kept; sorting is the reconcile\'s',
+        );
+    });
+
+    // ---- the repeat group, constructed directly ----
+
+    test('Every other week is interval 2 on unit week', () => {
+        // NOW is Monday. The next Wednesday is the 3rd. Interval 2 then adds
+        // one extra week, so the armed moment is the Wednesday after that.
+        assertSame(
+            momentsOf({
+                sourceScreenCode: 'myweek',
+                repeatUnitCode: 'week',
+                repeatIntervalCount: 2,
+                repeatWeekdayList: [{ weekdayNumber: 3 }],
+                dueHour: 18,
+                dueMinute: 0,
+            }),
+            [at(2026, 5, 10, 18, 0)],
+            'the next matching weekday, then seven times (interval minus one) days',
+        );
+    });
+
+    test('The second Thursday is unit month, Thursday with ordinal 2', () => {
+        assertSame(
+            momentsOf({
+                repeatUnitCode: 'month',
+                repeatWeekdayList: [{ weekdayNumber: 4, weekdayOrdinalCount: 2 }],
+                dueHour: 8,
+                dueMinute: 0,
+            }),
+            [at(2026, 5, 11, 8, 0)],
+            'June 2026\'s Thursdays are the 4th, 11th, 18th and 25th; the second is the 11th',
+        );
+    });
+
+    test('Wednesday after the 6th, at eight in the morning, is the Social Security stretch', () => {
+        assertSame(
+            momentsOf({
+                repeatUnitCode: 'month',
+                repeatWeekdayList: [{ weekdayNumber: 3 }],
+                repeatAfterDayCount: 6,
+                dueHour: 8,
+                dueMinute: 0,
+            }),
+            [at(2026, 5, 10, 8, 0)],
+            'from Monday 1 June 2026 at nine, the next moment is Wednesday 10 June at eight',
+        );
+    });
+
+    test('The 31st of every month at noon, from 15 January 2026, is 31 January', () => {
+        assertSame(
+            momentsFor(
+                item({
+                    repeatUnitCode: 'month',
+                    dueHour: 12,
+                    dueMinute: 0,
+                    dueMoment: at(2026, 0, 31, 12, 0),
+                }),
+                at(2026, 0, 15, 9, 0),
+                CLOCK,
+            ),
+            [at(2026, 0, 31, 12, 0)],
+            'January has a 31st, so that day stands unshifted',
+        );
+    });
+
+    test('The 31st of every month at noon, from 1 February 2026, is 28 February', () => {
+        assertSame(
+            momentsFor(
+                item({
+                    repeatUnitCode: 'month',
+                    dueHour: 12,
+                    dueMinute: 0,
+                    dueMoment: at(2026, 0, 31, 12, 0),
+                }),
+                at(2026, 1, 1, 9, 0),
+                CLOCK,
+            ),
+            [at(2026, 1, 28, 12, 0)],
+            'February 2026 has no 31st, so the last day that exists is used',
+        );
+    });
+
+    test('A last date of 1 March 2026 on a daily item due at eight, from 1 March at nine, produces no moment', () => {
+        assertSame(
+            momentsFor(
+                item({
+                    repeatUnitCode: 'day',
+                    repeatUntilMoment: at(2026, 2, 1, 0, 0),
+                    dueHour: 8,
+                    dueMinute: 0,
+                }),
+                at(2026, 2, 1, 9, 0),
+                CLOCK,
+            ),
+            [],
+            'the next moment would be 2 March, which is after the last date',
+        );
+    });
+
+    // ---- time: float with the phone, or a named zone ----
+
+    test('A daily eight o\'clock with the bit true still matches step 1', () => {
+        assertSame(
+            momentsOf({
+                sourceScreenCode: 'myday',
+                repeatUnitCode: 'day',
+                floatsWithPhoneBit: true,
+                dueHour: 8,
+                dueMinute: 0,
+            }),
+            [at(2026, 5, 2, 8, 0)],
+            'NOW is nine, so eight o\'clock has gone by and the base is tomorrow',
+        );
+    });
+
+    test('A daily eight o\'clock in America/New_York, from noon UTC in June, arms eight in that zone', () => {
+        // 15 June 2026 at 12:00 UTC is 08:00 in America/New_York (EDT, UTC-4).
+        // Eight o\'clock today is at or before now, so the next moment is
+        // 16 June at 08:00 in that zone, which is 16 June 12:00 UTC. The
+        // expected value is written as UTC so the test does not depend on
+        // where it is run.
+        const noonUtc = Date.UTC(2026, 5, 15, 12, 0, 0);
+        const eightNextMorningInZone = Date.UTC(2026, 5, 16, 12, 0, 0);
+        assertSame(
+            momentsFor(
+                item({
+                    repeatUnitCode: 'day',
+                    floatsWithPhoneBit: false,
+                    dueTimeZoneText: 'America/New_York',
+                    dueHour: 8,
+                    dueMinute: 0,
+                }),
+                noonUtc,
+                CLOCK,
+            ),
+            [eightNextMorningInZone],
+            'eight o\'clock in that zone, not eight o\'clock on the machine',
         );
     });
 }

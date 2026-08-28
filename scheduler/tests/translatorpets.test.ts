@@ -68,8 +68,8 @@ export function runTranslatorPetsTests(): void {
     test('A feed with an hour and a minute is a daily item with its time', () => {
         const shaped = shapeOf(saved({ hour: 8, minute: 30 }));
         assertSame(
-            [shaped.triggerKindCode, shaped.hasDueTimeBit, shaped.dueHour, shaped.dueMinute],
-            ['daily', true, 8, 30],
+            [shaped.repeatUnitCode, shaped.repeatIntervalCount, shaped.hasDueTimeBit, shaped.dueHour, shaped.dueMinute],
+            ['day', 1, true, 8, 30],
             'a Pets feed is a daily routine at the time it was given',
         );
     });
@@ -114,7 +114,7 @@ export function runTranslatorPetsTests(): void {
     test('A daily item carries neither a weekday nor a single moment', () => {
         const shaped = shapeOf(saved());
         assertSame(
-            [shaped.dueWeekday, shaped.dueMoment],
+            [shaped.repeatWeekdayList, shaped.dueMoment],
             [undefined, undefined],
             'neither belongs to a daily item, so neither is filled in',
         );
@@ -173,6 +173,15 @@ export function runTranslatorPetsTests(): void {
         assertSame(shapeOf(saved()).leadTimeList,
             [{ leadFormCode: 'offset', leadAmount: 0, leadUnitCode: 'minutes' }],
             'one lead time of nothing-before is the moment itself');
+    });
+
+    test('The translator writes float-with-the-phone and leaves the zone off', () => {
+        const shaped = shapeOf(saved());
+        assertSame(
+            [shaped.floatsWithPhoneBit, shaped.dueTimeZoneText],
+            [true, undefined],
+            'no saved field yet; every row floats with the phone',
+        );
     });
 
     // ---- the banner's words ----

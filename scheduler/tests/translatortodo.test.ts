@@ -78,8 +78,8 @@ export function runTranslatorToDoTests(): void {
     test('A task is a date item whose moment is its own date and time', () => {
         const shaped = shapeOf(saved());
         assertSame(
-            [shaped.triggerKindCode, shaped.hasDueTimeBit, shaped.dueMoment],
-            ['date', true, at(2026, 5, 10, 14, 0)],
+            [shaped.repeatUnitCode, shaped.hasDueTimeBit, shaped.dueMoment],
+            [undefined, true, at(2026, 5, 10, 14, 0)],
             'a To-Do appointment comes due at one moment, worked out from what was saved',
         );
     });
@@ -87,9 +87,9 @@ export function runTranslatorToDoTests(): void {
     test('A date task carries its moment alone, with no hour or minute beside it', () => {
         const shaped = shapeOf(saved());
         assertSame(
-            [shaped.dueHour, shaped.dueMinute, shaped.dueWeekday],
-            [undefined, undefined, undefined],
-            'each trigger kind sets exactly the fields its own kind needs',
+            [shaped.dueHour, shaped.dueMinute, shaped.repeatWeekdayList, shaped.repeatUnitCode],
+            [undefined, undefined, undefined, undefined],
+            'a one-off leaves the repeat group off and carries the moment alone',
         );
     });
 
@@ -199,6 +199,15 @@ export function runTranslatorToDoTests(): void {
             shapeOf(saved({ reminders: [] })).leadTimeList,
             [],
             'an empty list means nothing to say, not even at the appointment',
+        );
+    });
+
+    test('The translator writes float-with-the-phone and leaves the zone off', () => {
+        const shaped = shapeOf(saved());
+        assertSame(
+            [shaped.floatsWithPhoneBit, shaped.dueTimeZoneText],
+            [true, undefined],
+            'no saved field yet; every row floats with the phone',
         );
     });
 

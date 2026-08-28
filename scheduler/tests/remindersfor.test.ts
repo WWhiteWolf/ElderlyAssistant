@@ -7,6 +7,7 @@
 import { translateMyDay, translatePets, translateMyWeek, translateLookAhead, translateToDo } from '../translators/translate.ts';
 import { remindersFor } from '../remindersfor.ts';
 import type { ClockTimes } from '../leadmoments.ts';
+import type { ShapedItem } from '../inputshape.ts';
 import type { MyDayItem } from '../readers/myday.ts';
 import type { PetsItem } from '../readers/pets.ts';
 import type { Chore } from '../readers/myweek.ts';
@@ -442,6 +443,157 @@ export function runRemindersForTests(): void {
             [wanted[0].title, wanted[0].body, wanted[0].categoryIdentifier],
             ['📋 Reminder: Dentist', 'Due: 06/10/26 at 14:00', 'todook'],
             'the swap over must change nothing a person sees on the banner',
+        );
+    });
+
+    // ---- the repeat group, constructed directly ----
+
+    function shaped(changes: Partial<ShapedItem> = {}): ShapedItem {
+        return {
+            sourceScreenCode: 'myday',
+            itemIdText: 'm1',
+            itemNameText: 'The 31st',
+            hasDueTimeBit: true,
+            floatsWithPhoneBit: true,
+            canBeDoneBit: true,
+            canBePushedBackBit: true,
+            doneEndsItemBit: false,
+            standsForGroupBit: false,
+            isDoneBit: false,
+            leadTimeList: [{ leadFormCode: 'offset', leadAmount: 0, leadUnitCode: 'minutes' }],
+            ...changes,
+        };
+    }
+
+    test('The 31st of every month from 15 January arms 31 January, unshifted', () => {
+        const wanted = remindersFor(
+            [shaped({
+                repeatUnitCode: 'month',
+                dueHour: 12,
+                dueMinute: 0,
+                dueMoment: new Date(2026, 0, 31, 12, 0, 0, 0).getTime(),
+            })],
+            new Date(2026, 0, 15, 9, 0, 0, 0).getTime(),
+            CLOCK,
+        );
+        assertSame(wanted.length, 1, 'one occurrence');
+        assertSame(
+            wanted[0].trigger,
+            { kind: 'date', at: new Date(2026, 0, 31, 12, 0, 0, 0).getTime() },
+            'January has a 31st',
+        );
+        assertSame(wanted[0].shiftedForMissingDayBit, undefined, 'that day exists, so the bit is left off');
+    });
+
+    test('The 31st of every month from 1 February arms 28 February, shifted', () => {
+        const wanted = remindersFor(
+            [shaped({
+                repeatUnitCode: 'month',
+                dueHour: 12,
+                dueMinute: 0,
+                dueMoment: new Date(2026, 0, 31, 12, 0, 0, 0).getTime(),
+            })],
+            new Date(2026, 1, 1, 9, 0, 0, 0).getTime(),
+            CLOCK,
+        );
+        assertSame(
+            wanted[0].trigger,
+            { kind: 'date', at: new Date(2026, 1, 28, 12, 0, 0, 0).getTime() },
+            'February 2026 has no 31st, so the last day that exists is used',
+        );
+        assertSame(wanted[0].shiftedForMissingDayBit, true, 'the rest of the engine must see that the day moved');
+    });
+
+    test('A weekly Tuesday chore, skipped this Tuesday, from Monday arms the following Tuesday', () => {
+        const tuesday = new Date(2026, 5, 2, 18, 0, 0, 0).getTime();
+        const monday = new Date(2026, 5, 1, 9, 0, 0, 0).getTime();
+        const wanted = remindersFor(
+            [shaped({
+                sourceScreenCode: 'myweek',
+                itemIdText: 'c1',
+                itemNameText: 'Take the bins out',
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 2 }],
+                dueHour: 18,
+                dueMinute: 0,
+                skippedCycleStamp: tuesday,
+            })],
+            monday,
+            CLOCK,
+        );
+        const base = wanted.filter((r) => r.source === 'myweek');
+        assertSame(base.length, 1, 'skip arms the next event; the item is not treated as done');
+        assertSame(
+            readable((base[0].trigger as { at: number }).at),
+            '2026-6-9 18:00',
+            'the following Tuesday, not this one',
+        );
+    });
+
+    test('The same chore, from the Wednesday after the skipped Tuesday, uses the ordinary next', () => {
+        const tuesday = new Date(2026, 5, 2, 18, 0, 0, 0).getTime();
+        const wednesday = new Date(2026, 5, 3, 9, 0, 0, 0).getTime();
+        const wanted = remindersFor(
+            [shaped({
+                sourceScreenCode: 'myweek',
+                itemIdText: 'c1',
+                itemNameText: 'Take the bins out',
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 2 }],
+                dueHour: 18,
+                dueMinute: 0,
+                skippedCycleStamp: tuesday,
+            })],
+            wednesday,
+            CLOCK,
+        );
+        const base = wanted.filter((r) => r.source === 'myweek');
+        assertSame(
+            readable((base[0].trigger as { at: number }).at),
+            '2026-6-9 18:00',
+            'the stamp is spent, and the next Tuesday is the ordinary next',
+        );
+    });
+
+    test('A one-off with a skip stamp still arms the one-off', () => {
+        const now = new Date(2026, 5, 1, 9, 0, 0, 0).getTime();
+        const due = new Date(2026, 5, 10, 14, 0, 0, 0).getTime();
+        const wanted = remindersFor(
+            [shaped({
+                sourceScreenCode: 'lookahead',
+                itemIdText: 'l1',
+                dueMoment: due,
+                skippedCycleStamp: new Date(2026, 5, 1, 18, 0, 0, 0).getTime(),
+            })],
+            now,
+            CLOCK,
+        );
+        assertSame(wanted.length, 1, 'skip does not apply to a one-off');
+        assertSame(wanted[0].trigger, { kind: 'date', at: due }, 'the one-off still stands');
+        assertSame(wanted[0].key, 'lookahead:l1:base', 'named as a one-off, not as a skipped cycle');
+    });
+
+    test('Done still wins over a skip stamp, so the next event is not armed', () => {
+        const tuesday = new Date(2026, 5, 2, 18, 0, 0, 0).getTime();
+        const monday = new Date(2026, 5, 1, 9, 0, 0, 0).getTime();
+        const wanted = remindersFor(
+            [shaped({
+                sourceScreenCode: 'myweek',
+                itemIdText: 'c1',
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 2 }],
+                dueHour: 18,
+                dueMinute: 0,
+                isDoneBit: true,
+                skippedCycleStamp: tuesday,
+            })],
+            monday,
+            CLOCK,
+        );
+        assertSame(
+            wanted.filter((r) => r.source === 'myweek').length,
+            0,
+            'done keeps the weekly path that arms nothing further',
         );
     });
 }

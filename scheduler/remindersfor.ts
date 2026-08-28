@@ -13,7 +13,7 @@
 // writes nothing, and knows nothing about the phone, so Node can check it.
 
 import { isStillWanted } from './stillwanted.ts';
-import { momentsFor } from './leadmoments.ts';
+import { baseMoment, momentsFor } from './leadmoments.ts';
 import type { ClockTimes } from './leadmoments.ts';
 import { armDepthFor } from './armdepth.ts';
 import type { ShapedItem, SourceScreenCode } from './inputshape.ts';
@@ -44,11 +44,15 @@ export function remindersFor(
             wanted.push(pushBackReminder(item, answer.pushedBackToMoment));
         }
 
-        if (answer.dropsThisOccurrenceBit && item.triggerKindCode === 'weekly') {
+        const skippedThisCycle = answer.becauseText === 'this cycle was skipped, the next event stands';
+
+        // A weekly item that is done arms nothing further. Skip must not take
+        // that path: it arms the next event on this run.
+        if (answer.dropsThisOccurrenceBit && item.repeatUnitCode === 'week' && !skippedThisCycle) {
             continue;
         }
 
-        if (item.triggerKindCode === 'date') {
+        if (item.repeatUnitCode === undefined) {
             // Depth is how many occurrences to arm, not how many lead times
             // one occurrence carries. A To-Do task's several reminders all
             // belong to the one appointment.
@@ -64,15 +68,22 @@ export function remindersFor(
             continue;
         }
 
-        let moments = momentsFor(item, now, clockTimes);
-        if (answer.dropsThisOccurrenceBit) {
+        // Skip asks for the cycle after the skipped one, so the clock handed
+        // to momentsFor is the skipped stamp rather than now.
+        const from = skippedThisCycle && item.skippedCycleStamp !== undefined
+            ? item.skippedCycleStamp
+            : now;
+        let moments = momentsFor(item, from, clockTimes);
+        if (answer.dropsThisOccurrenceBit && !skippedThisCycle) {
             const today = new Date(now);
             moments = moments.filter((at) => !sameDay(new Date(at), today));
         }
-        moments = moments.slice(0, armDepthFor(item.triggerKindCode));
+        moments = moments.slice(0, armDepthFor());
 
+        const base = baseMoment(item, from);
+        const shifted = base !== null && base.shiftedForMissingDayBit;
         for (const at of moments) {
-            wanted.push(baseReminder(item, at));
+            wanted.push(baseReminder(item, at, undefined, shifted));
         }
     }
     return wanted;
@@ -108,14 +119,19 @@ function pushBackReminder(item: ShapedItem, at: number): WantedReminder {
     };
 }
 
-function baseReminder(item: ShapedItem, at: number, partText?: string): WantedReminder {
+function baseReminder(
+    item: ShapedItem,
+    at: number,
+    partText?: string,
+    shiftedForMissingDayBit?: boolean,
+): WantedReminder {
     const source = item.sourceScreenCode;
-    // Daily and weekly items are named for the day they fall on. A date item
-    // with one moment uses `base`, which is what Look Ahead already answers
-    // to. A date item with several lead times uses each reminder's own id,
-    // which is what To-Do already answers to.
+    // A repeating item is named for the day it falls on. A one-off with one
+    // moment uses `base`, which is what Look Ahead already answers to. A
+    // one-off with several lead times uses each reminder's own id, which is
+    // what To-Do already answers to.
     const part = partText
-        ?? (item.triggerKindCode === 'date' ? 'base' : dayStamp(at));
+        ?? (item.repeatUnitCode === undefined ? 'base' : dayStamp(at));
     return {
         key: makeKey(source, item.itemIdText, part),
         source,
@@ -125,5 +141,6 @@ function baseReminder(item: ShapedItem, at: number, partText?: string): WantedRe
         body: item.bannerBodyText ?? '',
         categoryIdentifier: item.bannerButtonsCode,
         trigger: { kind: 'date', at },
+        ...(shiftedForMissingDayBit ? { shiftedForMissingDayBit: true } : {}),
     };
 }

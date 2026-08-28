@@ -23,10 +23,11 @@ function item(changes: Partial<ShapedItem> = {}): ShapedItem {
         sourceScreenCode: 'myday',
         itemIdText: 'a1',
         itemNameText: 'Take the tablets',
-        triggerKindCode: 'daily',
+        repeatUnitCode: 'day',
         hasDueTimeBit: true,
         dueHour: 18,
         dueMinute: 0,
+        floatsWithPhoneBit: true,
         canBeDoneBit: true,
         canBePushedBackBit: true,
         doneEndsItemBit: false,
@@ -117,6 +118,63 @@ export function runStillWantedTests(): void {
         assertSame(said.pushedBackToMoment, null, 'Done clears the push-back on the pages too');
     });
 
+    // ---- skip ----
+
+    test('A skipped cycle drops this occurrence and keeps the next event', () => {
+        const said = isStillWanted(item({
+            skippedCycleStamp: at(2026, 5, 1, 18, 0),
+        }), NOW);
+        assertSame(
+            [said.wantsRemindersBit, said.dropsThisOccurrenceBit, said.pushedBackToMoment, said.becauseText],
+            [true, true, null, 'this cycle was skipped, the next event stands'],
+            'skip is this cycle, then the next event is armed; it is not done',
+        );
+    });
+
+    test('Skip does not carry a push-back forward', () => {
+        const said = isStillWanted(item({
+            skippedCycleStamp: at(2026, 5, 1, 18, 0),
+            pushedBackToStamp: at(2026, 5, 1, 22, 0),
+        }), NOW);
+        assertSame(said.pushedBackToMoment, null, 'like done, skip does not carry a push-back forward');
+    });
+
+    test('A skip stamp on a one-off is ignored', () => {
+        const said = isStillWanted(item({
+            repeatUnitCode: undefined,
+            dueMoment: at(2026, 5, 3, 14, 0),
+            skippedCycleStamp: at(2026, 5, 1, 18, 0),
+        }), NOW);
+        assertSame(
+            [said.wantsRemindersBit, said.dropsThisOccurrenceBit, said.becauseText],
+            [true, false, 'wanted'],
+            'a one-off has no next event, so skip does not apply',
+        );
+    });
+
+    test('Done still wins over a skip stamp on the same item', () => {
+        const said = isStillWanted(item({
+            isDoneBit: true,
+            skippedCycleStamp: at(2026, 5, 1, 18, 0),
+        }), NOW);
+        assertSame(
+            said.becauseText,
+            'this occurrence is done, later ones stand',
+            'done is asked first',
+        );
+    });
+
+    test('A skip stamp is spent once the skipped day has ended', () => {
+        const said = isStillWanted(item({
+            skippedCycleStamp: at(2026, 5, 2, 18, 0),
+        }), at(2026, 5, 3, 9, 0));
+        assertSame(
+            [said.dropsThisOccurrenceBit, said.becauseText],
+            [false, 'wanted'],
+            'Wednesday is after the end of Tuesday, so the stamp is spent',
+        );
+    });
+
     // ---- push-back ----
 
     test('A push-back still ahead adds its own moment', () => {
@@ -149,7 +207,6 @@ export function runStillWantedTests(): void {
         // nothing, and no exception anywhere is needed to say so.
         const said = isStillWanted(item({
             sourceScreenCode: 'todo',
-            triggerKindCode: 'date',
             canBePushedBackBit: false,
             pushedBackToStamp: at(2026, 5, 1, 22, 0),
         }), NOW);
@@ -161,7 +218,6 @@ export function runStillWantedTests(): void {
     test('A To-Do appointment with neither bit set is simply wanted', () => {
         const said = isStillWanted(item({
             sourceScreenCode: 'todo',
-            triggerKindCode: 'date',
             dueMoment: at(2026, 5, 3, 14, 0),
             canBeDoneBit: false,
             canBePushedBackBit: false,

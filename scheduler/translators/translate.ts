@@ -9,7 +9,7 @@
 // There is one translator rather than one per screen because nothing in the
 // engine goes by page. `stillwanted.ts` never mentions `sourceScreenCode`; it
 // branches on the capability bits, the state fields and `hasDueTimeBit`.
-// `armdepth.ts` branches on `triggerKindCode` alone. The screen code is carried
+// `armdepth.ts` answers one for every item. The screen code is carried
 // only so a tapped banner can be routed home. That is what the codes and the
 // bits were designed to do: turn a per-screen difference into data, set once at
 // the boundary. So the per-screen difference lives in a table of rules below,
@@ -30,9 +30,9 @@
 import type {
     BannerButtonsCode,
     LeadTime,
+    RepeatUnitCode,
     ShapedItem,
     SourceScreenCode,
-    TriggerKindCode,
 } from '../inputshape.ts';
 import type { MyDayItem } from '../readers/myday.ts';
 import type { PetsItem } from '../readers/pets.ts';
@@ -47,16 +47,14 @@ import type { Task } from '../readers/todo.ts';
 /**
  * When an item comes due, as one screen's rules work it out.
  *
- * Each trigger kind sets exactly the fields its own kind needs and nothing
- * else: a daily item sets the hour and the minute, a weekly item sets the
- * weekday as well, and a date item sets the moment alone. The fields that do
- * not belong are left off rather than filled in with something meaningless.
+ * Repeating items set the hour and the minute, and a one-off sets the moment
+ * alone. The fields that do not belong are left off rather than filled in with
+ * something meaningless.
  */
 export interface DueFields {
     hasDueTimeBit: boolean;
     dueHour?: number;
     dueMinute?: number;
-    dueWeekday?: number;
     dueMoment?: number;
 }
 
@@ -72,8 +70,22 @@ export interface ScreenRules<TSaved> {
 
     /** Which of the five screens these items came from. */
     sourceScreenCode: SourceScreenCode;
-    /** Which rule says when they come due. */
-    triggerKindCode: TriggerKindCode;
+    /**
+     * The unit they repeat in, left off for a one-off screen.
+     *
+     * The translator writes the repeat group from the row. It does not read a
+     * repeat rule from the saved item.
+     */
+    repeatUnitCode?: RepeatUnitCode;
+    /** How many units between occurrences. Written with the unit, as 1. */
+    repeatIntervalCount?: number;
+    /**
+     * The weekday this saved item comes due on, when the screen has one.
+     *
+     * My Week reads `chore.day` here, which is the same place `dueOf` used to
+     * put `dueWeekday`. Left off on the other screens.
+     */
+    weekdayNumberOf?: (saved: TSaved) => number | undefined;
     /** The items can be marked done at all. */
     canBeDoneBit: boolean;
     /** They can be snoozed, postponed or delayed. */
@@ -128,6 +140,14 @@ export function translateWith<TSaved>(
 function translateOne<TSaved>(rules: ScreenRules<TSaved>, saved: TSaved): ShapedItem {
     const due = rules.dueOf(saved);
     const pushedBackToStamp = rules.pushedBackStampOf(saved);
+    const weekdayNumber = rules.weekdayNumberOf?.(saved);
+    // The weekday list is written only when dueOf actually has a weekday, which
+    // for My Week is the same guard that used to put dueWeekday on the due
+    // fields: all three of day, hour and minute are numbers.
+    const repeatWeekdayList =
+        due.hasDueTimeBit && weekdayNumber !== undefined
+            ? [{ weekdayNumber }]
+            : undefined;
 
     return {
         // ---- what the item is ----
@@ -138,17 +158,23 @@ function translateOne<TSaved>(rules: ScreenRules<TSaved>, saved: TSaved): Shaped
 
         // ---- when it comes due ----
 
-        triggerKindCode: rules.triggerKindCode,
         hasDueTimeBit: due.hasDueTimeBit,
         // The due fields the screen's rules worked out, spread in as they came.
-        // Each rule set leaves off the fields that do not belong to its kind,
-        // and leaves off all of them when the item has no time, rather than
-        // filling them in with zeros. Midnight is a real time, so a zero would
-        // have to be interpreted before it could be told apart from an absence.
+        // Each rule set leaves off the fields that do not belong, and leaves
+        // off all of them when the item has no time, rather than filling them
+        // in with zeros. Midnight is a real time, so a zero would have to be
+        // interpreted before it could be told apart from an absence.
         ...(due.dueHour !== undefined ? { dueHour: due.dueHour } : {}),
         ...(due.dueMinute !== undefined ? { dueMinute: due.dueMinute } : {}),
-        ...(due.dueWeekday !== undefined ? { dueWeekday: due.dueWeekday } : {}),
         ...(due.dueMoment !== undefined ? { dueMoment: due.dueMoment } : {}),
+        ...(rules.repeatUnitCode !== undefined ? { repeatUnitCode: rules.repeatUnitCode } : {}),
+        ...(rules.repeatIntervalCount !== undefined
+            ? { repeatIntervalCount: rules.repeatIntervalCount }
+            : {}),
+        ...(repeatWeekdayList !== undefined ? { repeatWeekdayList } : {}),
+        // Default is float with the phone. No saved field yet, so every row
+        // is true and the zone is left off.
+        floatsWithPhoneBit: true,
 
         // ---- capability bits: what this kind of item is allowed to do ----
 
@@ -208,7 +234,8 @@ const atTheMomentItself: LeadTime[] = [
  */
 export const myDayRules: ScreenRules<MyDayItem> = {
     sourceScreenCode: 'myday',
-    triggerKindCode: 'daily',
+    repeatUnitCode: 'day',
+    repeatIntervalCount: 1,
     // My Day items are ticked off, and they can be snoozed both from the page's
     // own button and from the banner's.
     canBeDoneBit: true,
@@ -229,8 +256,8 @@ export const myDayRules: ScreenRules<MyDayItem> = {
     pushedBackStampOf: (item) => item.snoozedUntil,
     // An item has a time only when both halves of it are actually numbers. A
     // time of null means it was cleared, and an older saved item may have no
-    // hour or minute at all, which counts as the same thing. Neither a weekday
-    // nor a single moment belongs to a daily item, so both are left off.
+    // hour or minute at all, which counts as the same thing. A weekday list
+    // and a single moment do not belong to a daily item, so both are left off.
     dueOf: (item) =>
         typeof item.hour === 'number' && typeof item.minute === 'number'
             ? { hasDueTimeBit: true, dueHour: item.hour, dueMinute: item.minute }
@@ -253,7 +280,8 @@ export const myDayRules: ScreenRules<MyDayItem> = {
  */
 export const petsRules: ScreenRules<PetsItem> = {
     sourceScreenCode: 'pets',
-    triggerKindCode: 'daily',
+    repeatUnitCode: 'day',
+    repeatIntervalCount: 1,
     // Pets feeds are ticked off, and they can be snoozed from page and banner.
     canBeDoneBit: true,
     canBePushedBackBit: true,
@@ -310,7 +338,8 @@ export const petsRules: ScreenRules<PetsItem> = {
  */
 export const myWeekRules: ScreenRules<Chore> = {
     sourceScreenCode: 'myweek',
-    triggerKindCode: 'weekly',
+    repeatUnitCode: 'week',
+    repeatIntervalCount: 1,
     canBeDoneBit: true,
     canBePushedBackBit: true,
     // Clear. A chore done this week comes round next week.
@@ -325,16 +354,18 @@ export const myWeekRules: ScreenRules<Chore> = {
     nameOf: (chore) => chore.label,
     isDoneOf: (chore) => chore.completed,
     pushedBackStampOf: (chore) => chore.postponedTo,
+    weekdayNumberOf: (chore) =>
+        typeof chore.day === 'number' ? chore.day : undefined,
     // A chore has a time only when all three of its parts are actually numbers,
     // which is the guard the old reader makes. A single moment does not belong
-    // to a weekly item, so it is left off.
+    // to a weekly item, so it is left off. The weekday itself is written on
+    // the repeat group, not here.
     dueOf: (chore) =>
         typeof chore.day === 'number'
             && typeof chore.hour === 'number'
             && typeof chore.minute === 'number'
             ? {
                 hasDueTimeBit: true,
-                dueWeekday: chore.day,
                 dueHour: chore.hour,
                 dueMinute: chore.minute,
             }
@@ -362,7 +393,6 @@ export const myWeekRules: ScreenRules<Chore> = {
  */
 export const lookAheadRules: ScreenRules<LookAheadItem> = {
     sourceScreenCode: 'lookahead',
-    triggerKindCode: 'date',
     // The screen has no done at all.
     canBeDoneBit: false,
     // The page delays and the banner delays, both writing `delayedUntil`.
@@ -442,7 +472,6 @@ function dueSentence(year: number, month: number, day: number, hour: number, min
  */
 export const todoRules: ScreenRules<Task> = {
     sourceScreenCode: 'todo',
-    triggerKindCode: 'date',
     canBeDoneBit: true,
     canBePushedBackBit: false,
     doneEndsItemBit: true,

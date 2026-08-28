@@ -50,9 +50,17 @@ day it was written.
 `gatherWanted` sends My Day, Pets, My Week, Look Ahead and To-Do through the
 translator, then `scheduler/remindersfor.ts`, which writes the reminders the
 phone should hold. Lead moments are in `scheduler/leadmoments.ts`. To-Do is one
-more row in the table, not a special case. **391 of 391 tests pass**, up from
-319. `npx tsc` reports only the standing Expo router error. **This has not been
-proved on the phone.**
+more row in the table, not a special case.
+
+**Reminder Engine 4 Cursor built the repeat group, skip, and
+floating-or-named-zone time into that machine** (2026-08-28). The
+three-word trigger is gone. My Day and Pets write a daily repeat, My
+Week a weekly one, Look Ahead and To-Do stay one-offs. Skip arms the
+next event on the same run. Every row floats with the phone; a named
+zone is honoured when the bit is later written false. No screens were
+touched, and the translator does not read a repeat rule, a skip stamp
+or a zone from saved lists. **413 of 413 tests pass.** `npx tsc` was
+silent. **This has not been proved on the phone.**
 
 - **Depth is one**, live. My Day and Pets arm one reminder each, not two.
   Opening the app arms the next. That is recovery on opening.
@@ -70,10 +78,11 @@ proved on the phone.**
 - **Banner words were kept.** Snooze, postpone and delay still use the source
   names the housing already routes.
 
-**The next act is the phone**, then retiring each old reader once its
-replacement is proved. Miss-telling still covers My Day and Pets only. Whether
-any screen is ever brought round to save in the common shape is still not
-decided.
+**The next act is the phone**, to prove this engine as it now stands,
+then retiring each old reader once its replacement is proved.
+Miss-telling still covers My Day and Pets only. Skip, a named zone,
+and the extra repeat shapes have no screen yet. Whether any screen is
+ever brought round to save in the common shape is still not decided.
 
 **The second of the five translators is built, and it needed no design decision
 at all** (#25-new). `scheduler/translators/pets.ts` turns a saved Pets feed into

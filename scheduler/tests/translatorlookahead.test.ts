@@ -71,8 +71,8 @@ export function runTranslatorLookAheadTests(): void {
     test('An entry is a date item whose moment is its own date and time', () => {
         const shaped = shapeOf(saved());
         assertSame(
-            [shaped.triggerKindCode, shaped.hasDueTimeBit, shaped.dueMoment],
-            ['date', true, at(2026, 8, 14, 10, 45)],
+            [shaped.repeatUnitCode, shaped.hasDueTimeBit, shaped.dueMoment],
+            [undefined, true, at(2026, 8, 14, 10, 45)],
             'a Look Ahead entry comes due at one moment, worked out from what was saved',
         );
     });
@@ -83,9 +83,10 @@ export function runTranslatorLookAheadTests(): void {
         // moment and nothing else.
         const shaped = shapeOf(saved());
         assertSame(
-            [shaped.dueHour, shaped.dueMinute, shaped.dueWeekday],
-            [undefined, undefined, undefined],
-            'each trigger kind sets exactly the fields its own kind needs',
+            [shaped.dueHour, shaped.dueMinute, shaped.repeatWeekdayList, shaped.repeatUnitCode,
+                shaped.repeatIntervalCount],
+            [undefined, undefined, undefined, undefined, undefined],
+            'a one-off leaves the repeat group off and carries the moment alone',
         );
     });
 
@@ -178,6 +179,15 @@ export function runTranslatorLookAheadTests(): void {
         assertSame(shapeOf(saved()).leadTimeList,
             [{ leadFormCode: 'offset', leadAmount: 0, leadUnitCode: 'minutes' }],
             'one lead time of nothing-before is the moment itself');
+    });
+
+    test('The translator writes float-with-the-phone and leaves the zone off', () => {
+        const shaped = shapeOf(saved());
+        assertSame(
+            [shaped.floatsWithPhoneBit, shaped.dueTimeZoneText],
+            [true, undefined],
+            'no saved field yet; every row floats with the phone',
+        );
     });
 
     // ---- the banner's words ----

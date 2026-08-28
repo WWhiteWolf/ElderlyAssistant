@@ -28,12 +28,26 @@ export type SourceScreenCode =
     | 'todo';
 
 /**
- * The rule for when an item comes due.
+ * The unit a repeating item counts in.
  *
- * Three kinds and no others. They are the three the phone's own queue speaks
- * in, so a shaped item never has to be interpreted twice.
+ * Left off, the item is a one-off: it comes due at one moment and does not
+ * come round again. The phone still receives that moment as a single date
+ * trigger, the same as it does now.
  */
-export type TriggerKindCode = 'daily' | 'weekly' | 'date';
+export type RepeatUnitCode = 'day' | 'week' | 'month' | 'year';
+
+/**
+ * One weekday a repeating item comes due on.
+ *
+ * Sunday is 0 through Saturday is 6, the same counting as the machine's
+ * ordinary day-of-week and as My Week's saved day. An ordinal of 2 is the
+ * second such weekday of the month, and -1 is the last. Left off means every
+ * such weekday.
+ */
+export interface RepeatWeekday {
+    weekdayNumber: number;
+    weekdayOrdinalCount?: number;
+}
 
 /**
  * Which of the two forms a lead time takes.
@@ -119,8 +133,44 @@ export interface ShapedItem {
 
     // ---- when it comes due ----
 
-    /** Which rule says when it comes due. */
-    triggerKindCode: TriggerKindCode;
+    /**
+     * The unit the item repeats in, left off when it is a one-off.
+     *
+     * My Day and Pets write day, My Week writes week, and Look Ahead and To-Do
+     * leave the whole repeat group off. A later screen can write month or year
+     * without a new kind of trigger.
+     */
+    repeatUnitCode?: RepeatUnitCode;
+    /**
+     * How many units between occurrences.
+     *
+     * When the unit is present and this is left off, it is treated as 1. The
+     * translator writes 1 on the three repeating screens so a missing count
+     * and a count of one never have to be told apart downstream.
+     */
+    repeatIntervalCount?: number;
+    /**
+     * The weekdays the item comes due on, left off when it does not use them.
+     *
+     * My Week writes the chore's own day here. A monthly rule that names a
+     * weekday — the second Thursday, Wednesday after the sixth — writes that
+     * weekday here too, with or without an ordinal.
+     */
+    repeatWeekdayList?: RepeatWeekday[];
+    /**
+     * A floor on the day of the month, used with a weekday list.
+     *
+     * 6 means the date must be the 7th through the 13th. Left off means no
+     * floor.
+     */
+    repeatAfterDayCount?: number;
+    /**
+     * A last date, as the ordinary count of milliseconds.
+     *
+     * Left off means the series does not end. A candidate after this moment
+     * is not armed.
+     */
+    repeatUntilMoment?: number;
     /**
      * The item actually has a time.
      *
@@ -130,23 +180,39 @@ export interface ShapedItem {
      */
     hasDueTimeBit: boolean;
     /**
-     * The time of day it comes due, set by daily and weekly items. A date item
+     * The time of day it comes due, set by repeating items. A one-off
      * carries the hour inside `dueMoment` instead.
      *
-     * Both are left off when the item has no time, the way a weekday and a
-     * single moment are left off when they do not belong. An absent field says
-     * plainly that there is nothing here; a zero has to be interpreted, and
-     * midnight is a real time, so the two could not be told apart.
+     * Both are left off when the item has no time, the way a weekday list and
+     * a single moment are left off when they do not belong. An absent field
+     * says plainly that there is nothing here; a zero has to be interpreted,
+     * and midnight is a real time, so the two could not be told apart.
      */
     dueHour?: number;
     dueMinute?: number;
-    /** Which day of the week. Weekly items only. */
-    dueWeekday?: number;
     /**
      * The one moment it comes due, as the ordinary count of milliseconds.
-     * Date items only.
+     *
+     * A one-off uses this as the due moment itself. A monthly or yearly item
+     * may also carry it as the seed for the day of the month, and for the
+     * month of the year.
      */
     dueMoment?: number;
+    /**
+     * The due clock time floats with the phone's local zone.
+     *
+     * The translator sets this true on every row. A later button in the app
+     * will write it false and name a zone. Left true, ordinary local Date
+     * arithmetic is used, as it was in step 1.
+     */
+    floatsWithPhoneBit: boolean;
+    /**
+     * An IANA zone name, for example `America/New_York`.
+     *
+     * Left off when the item floats with the phone. Required when the bit is
+     * false: the engine will not guess a zone.
+     */
+    dueTimeZoneText?: string;
 
     // ---- capability bits: what this kind of item is allowed to do ----
 
@@ -183,15 +249,24 @@ export interface ShapedItem {
      * here.
      */
     pushedBackToStamp?: number;
+    /**
+     * The millisecond due of the cycle that was skipped, or nothing.
+     *
+     * One stamp, like push-back. Skip is this cycle, then the next event is
+     * armed. It is not done. A one-off has no next event, so a stamp on an
+     * item with no repeat unit is ignored. The translator does not read this
+     * from saved items in this step; tests construct it.
+     */
+    skippedCycleStamp?: number;
 
     // ---- how far ahead to speak ----
 
     /**
      * The lead times, if any.
      *
-     * An empty list is answered by the trigger kind rather than globally:
-     * daily and weekly items speak at the moment itself, and a date item with
-     * no lead time speaks never.
+     * An empty list is answered by whether the item repeats rather than
+     * globally: repeating items speak at the moment itself, and a one-off
+     * with no lead time speaks never.
      */
     leadTimeList: LeadTime[];
 

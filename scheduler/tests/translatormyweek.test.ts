@@ -69,9 +69,9 @@ export function runTranslatorMyWeekTests(): void {
     test('A whole chore is a weekly item with its day, hour and minute', () => {
         const shaped = shapeOf(saved({ day: 2, hour: 8, minute: 15 }));
         assertSame(
-            [shaped.triggerKindCode, shaped.hasDueTimeBit, shaped.dueWeekday,
-                shaped.dueHour, shaped.dueMinute],
-            ['weekly', true, 2, 8, 15],
+            [shaped.repeatUnitCode, shaped.repeatIntervalCount, shaped.repeatWeekdayList,
+                shaped.hasDueTimeBit, shaped.dueHour, shaped.dueMinute],
+            ['week', 1, [{ weekdayNumber: 2 }], true, 8, 15],
             'a chore comes due on its own day at its own time',
         );
     });
@@ -82,15 +82,15 @@ export function runTranslatorMyWeekTests(): void {
         // addition belongs at the phone boundary and nowhere else. This test
         // exists because adding one here is exactly the kind of thing a later
         // session would "fix" into place.
-        assertSame(shapeOf(saved({ day: 0 })).dueWeekday, 0,
+        assertSame(shapeOf(saved({ day: 0 })).repeatWeekdayList, [{ weekdayNumber: 0 }],
             'a chore saved on Sunday comes out with a weekday of 0, not 1');
     });
 
     test('Midnight is a time like any other', () => {
         const shaped = shapeOf(saved({ day: 0, hour: 0, minute: 0 }));
         assertSame(
-            [shaped.hasDueTimeBit, shaped.dueWeekday, shaped.dueHour, shaped.dueMinute],
-            [true, 0, 0, 0],
+            [shaped.hasDueTimeBit, shaped.repeatWeekdayList, shaped.dueHour, shaped.dueMinute],
+            [true, [{ weekdayNumber: 0 }], 0, 0],
             'a chore set to midnight on a Sunday has a time',
         );
     });
@@ -99,7 +99,7 @@ export function runTranslatorMyWeekTests(): void {
         const noDay = { ...saved(), day: null } as unknown as Chore;
         const shaped = shapeOf(noDay);
         assertSame(
-            [shaped.hasDueTimeBit, shaped.dueWeekday, shaped.dueHour, shaped.dueMinute],
+            [shaped.hasDueTimeBit, shaped.repeatWeekdayList, shaped.dueHour, shaped.dueMinute],
             [false, undefined, undefined, undefined],
             'without a day there is nothing to arm, and the three fields are left out entirely',
         );
@@ -109,7 +109,7 @@ export function runTranslatorMyWeekTests(): void {
         const noHour = { ...saved(), hour: null } as unknown as Chore;
         const shaped = shapeOf(noHour);
         assertSame(
-            [shaped.hasDueTimeBit, shaped.dueWeekday, shaped.dueHour, shaped.dueMinute],
+            [shaped.hasDueTimeBit, shaped.repeatWeekdayList, shaped.dueHour, shaped.dueMinute],
             [false, undefined, undefined, undefined],
             'a cleared hour means no time was set, the same guard the old reader makes',
         );
@@ -119,7 +119,7 @@ export function runTranslatorMyWeekTests(): void {
         const noMinute = { ...saved(), minute: null } as unknown as Chore;
         const shaped = shapeOf(noMinute);
         assertSame(
-            [shaped.hasDueTimeBit, shaped.dueWeekday, shaped.dueHour, shaped.dueMinute],
+            [shaped.hasDueTimeBit, shaped.repeatWeekdayList, shaped.dueHour, shaped.dueMinute],
             [false, undefined, undefined, undefined],
             'a cleared minute means no time was set, the same guard the old reader makes',
         );
@@ -187,6 +187,15 @@ export function runTranslatorMyWeekTests(): void {
         assertSame(shapeOf(saved()).leadTimeList,
             [{ leadFormCode: 'offset', leadAmount: 0, leadUnitCode: 'minutes' }],
             'one lead time of nothing-before is the moment itself');
+    });
+
+    test('The translator writes float-with-the-phone and leaves the zone off', () => {
+        const shaped = shapeOf(saved());
+        assertSame(
+            [shaped.floatsWithPhoneBit, shaped.dueTimeZoneText],
+            [true, undefined],
+            'no saved field yet; every row floats with the phone',
+        );
     });
 
     // ---- the banner's words ----

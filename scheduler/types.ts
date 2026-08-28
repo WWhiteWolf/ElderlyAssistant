@@ -35,6 +35,15 @@ export interface WantedReminder {
     // A few reminders deliberately have no buttons at all, and leave it out.
     categoryIdentifier?: string;
     trigger: WantedTrigger;
+    /**
+     * The due day did not exist in that month, so the last day that does
+     * exist was used instead.
+     *
+     * Left off means it was not shifted. A one-off and an unshifted series
+     * leave it off. A later sheet can show an extra tap from this bit; this
+     * step only makes the bit available.
+     */
+    shiftedForMissingDayBit?: boolean;
 }
 
 /**

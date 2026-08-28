@@ -14,6 +14,7 @@
 // it is.
 
 import type { ShapedItem } from './inputshape.ts';
+import { sameDay } from './readers/occurrences.ts';
 
 /**
  * What the block answers.
@@ -66,7 +67,17 @@ export function isStillWanted(item: ShapedItem, now: number): StillWantedAnswer 
         return answer(true, true, null, 'this occurrence is done, later ones stand');
     }
 
-    // 2. Pushed back. The stamp adds a reminder at that moment; the base
+    // 2. Skip. This cycle is dropped and the next event stands. It is not
+    //    done. Asked after done so a tick still wins when both are set, and
+    //    before push-back so skip, like done, does not carry a push-back
+    //    forward. A one-off has no next event, so a stamp there is ignored.
+    if (item.skippedCycleStamp !== undefined
+        && item.repeatUnitCode !== undefined
+        && skipStillHolds(now, item.skippedCycleStamp)) {
+        return answer(true, true, null, 'this cycle was skipped, the next event stands');
+    }
+
+    // 3. Pushed back. The stamp adds a reminder at that moment; the base
     //    occurrence is left exactly where it was. A stamp already in the past
     //    has been spent and is ignored, and a stamp on an item that cannot be
     //    pushed back is ignored as well — the capability bit gates the state
@@ -90,10 +101,10 @@ export function isStillWanted(item: ShapedItem, now: number): StillWantedAnswer 
         return answer(true, false, item.pushedBackToStamp, 'wanted, with a push-back standing');
     }
 
-    // 3. No due time, so there is nothing to arm. Every one of the five
+    // 4. No due time, so there is nothing to arm. Every one of the five
     //    readers guards on this today. It is asked last rather than first
     //    because it is the only answer that throws the whole item away, and
-    //    the two questions above can each have something to say about an item
+    //    the questions above can each have something to say about an item
     //    that has lost its time.
     if (!item.hasDueTimeBit) {
         return answer(false, false, null, 'the item has no due time');
@@ -110,4 +121,24 @@ function answer(
     becauseText: string,
 ): StillWantedAnswer {
     return { wantsRemindersBit, dropsThisOccurrenceBit, pushedBackToMoment, becauseText };
+}
+
+/**
+ * True while `now` is not after the end of the skipped stamp's local calendar
+ * day. That includes days before the skipped day, so a skip made ahead of the
+ * cycle still holds, and the stamp is spent as soon as the next local day
+ * begins.
+ */
+function skipStillHolds(now: number, stamp: number): boolean {
+    const stampDay = new Date(stamp);
+    const nowDay = new Date(now);
+    if (sameDay(nowDay, stampDay)) {
+        return true;
+    }
+    const startOfStampDay = new Date(
+        stampDay.getFullYear(),
+        stampDay.getMonth(),
+        stampDay.getDate(),
+    ).getTime();
+    return now < startOfStampDay;
 }
