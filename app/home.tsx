@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useRouter, type Href } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
     Image,
@@ -15,6 +15,7 @@ import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 
 const modules = [
+  { id: 'input', label: 'Input', icon: '📝' },
   { id: 'planner', label: 'Project Planner', icon: '📋' },
   { id: 'memorytest', label: 'Memory Test', icon: '🧠' },
   { id: 'orders', label: 'Orders', icon: '📦' },
@@ -47,6 +48,9 @@ export default function HomeScreen() {
     );
 
     const handleTile = (id: string) => {
+        // Expo's generated route list has not picked up app/input.tsx yet.
+        // The page is that file; this cast is only so the checker accepts the push.
+        if (id === 'input') router.push('/input' as Href);
         if (id === 'shopping') router.push('/shopping');
         if (id === 'timer') router.push('/timer');
         if (id === 'myday') router.push('/myday');

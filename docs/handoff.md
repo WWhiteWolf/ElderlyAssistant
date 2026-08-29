@@ -12,6 +12,50 @@ stands and what is open in front of it. Finished work goes to
 
 ## Where things stand
 
+**The live work is one Input page** (#29-new Cursor, 2026-08-28). A
+session that opens this file starts here. It does not start from the
+engine brief below. It does not make Patrick re-teach the four lines
+or Repeat. Think for him. Do not ask him what the session is for.
+
+**One Input page.** The five reminder pages become viewing pages after
+that page is known, and not before. The old + Add boxes are still on
+those pages on purpose, so nothing breaks while Input is tried.
+
+**First glance** is four lines: a name, a date or none, a time or none,
+and Repeat or none. Date and time start asleep, each half on its own.
+The Repeat panel begins with how often, every how many, which weekdays
+when it is a week, and stops on. Time zone is not on this page.
+Options and holidays stay later.
+
+**It is built and checked on the simulator.** Home's first tile opens
+Input. Enter writes to the existing lists, then opens that page:
+
+- Repeat **Day** and a time → My Day, or Pets if **For** is Pets
+- Repeat **Week**, a weekday, and a time → My Week
+- Repeat **Month** or **Year**, a date, and a time → Look Ahead
+  (every 3 or 6 months uses Every how many)
+- Repeat **None** → To-Do. A name is enough. A date is optional. A
+  time is stored only when there is a date. No "remind me before"
+  chips, so a task may sit on the list and stay quiet
+
+Patrick tried all five. A My Week item fired. Look Ahead's Log still
+rolls the date forward by the interval. To-Do's Done logs the task
+and it goes away. The sheet was `docs/build-sheet-input-page.md`.
+Enter to the five lists was added in this same session after that
+sheet, which had said not to write lists.
+
+**The phone build waits.** Plan usage is short. One later build will
+prove the whole app. Until then, work stays on the simulator. The old
+Add boxes stay.
+
+**Next is an automated test load on the simulator**, not more Input
+design and not a phone build. Mystery has a long sitting with no
+waiting on the clock. Memory's proof waits on firing times, so a
+sitting never finishes unless the firings are brought in close. The
+load writes one soon item on each of the five lists, a minute or two
+apart, so he can watch each banner and tap it. That load is settled
+and not built.
+
 **Five fixes went in at #27-new, and Patrick checked every one on the
 simulator.** The Scheduled Reminders page had been sitting half an inch low —
 `app/reminders.tsx` was the only route never registered in `app/_layout.tsx`, so
@@ -78,11 +122,12 @@ silent. **This has not been proved on the phone.**
 - **Banner words were kept.** Snooze, postpone and delay still use the source
   names the housing already routes.
 
-**The next act is the phone**, to prove this engine as it now stands,
-then retiring each old reader once its replacement is proved.
-Miss-telling still covers My Day and Pets only. Skip, a named zone,
-and the extra repeat shapes have no screen yet. Whether any screen is
-ever brought round to save in the common shape is still not decided.
+**The engine is on the phone** from an earlier load. My Day and To-Do
+have each sent a notice. Input is on the simulator only. Retiring
+each old reader still waits. Miss-telling still covers My Day and
+Pets only. Skip, a named zone, and the extra repeat shapes have no
+screen yet. **None of that is the live work.** The live work is the
+Input page and the test load, at the top of this file.
 
 **The second of the five translators is built, and it needed no design decision
 at all** (#25-new). `scheduler/translators/pets.ts` turns a saved Pets feed into

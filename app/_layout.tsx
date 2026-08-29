@@ -626,6 +626,7 @@ export default function RootLayout() {
       <Stack.Screen name="backup" options={{ headerShown: false }} />
       <Stack.Screen name="memorytest" options={{ headerShown: false }} />
       <Stack.Screen name="reminders" options={{ headerShown: false }} />
+      <Stack.Screen name="input" options={{ headerShown: false }} />
     </Stack>
     </ThemeProvider>
   );
