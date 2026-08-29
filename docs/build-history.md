@@ -1225,6 +1225,12 @@ rather than filled: writing those two entries is its own piece of work
 and was not asked for. #16-new's entry follows directly after
 #13-new's, so this file reads 13 then 16 until they are written.
 
+**One fact from #14-new that lived only in `handoff.md`, kept here at
+#31-new when that file was pruned:** Patrick ran the reminder highlight on
+the phone at #14-new and it worked — he tapped a banner and it landed on
+the right item with the row lit. That closes the last open piece of
+#13-new, and nothing is owed on it.
+
 
 ## #16-new (2026-08-25): Pets moved to single moments — the reported
 fault cured on the first of the three screens
@@ -2135,6 +2141,113 @@ earns no test file until something in it does something.
 the #19-new order: the five translators, one at a time.
 
 
+## #24-new (2026-08-26): the first translator built, and the wanted-block's questions reordered to let it work
+
+**Written into this file at #31-new, from `handoff.md`, having been missed at
+the time.** This is the fourth step of the #19-new order, begun.
+`scheduler/translators/myday.ts` turns a saved My Day item into a shaped item
+and **nothing in the app calls it**, the same deliberate way the shape and the
+blocks were built. `scheduler/readers/myday.ts` was untouched and still did all
+the work; it is retired only when its replacement is proved, which is Patrick's
+own order from #19-new. **267 of 267 tests pass**, up from 248, and `npx tsc`
+reports only the standing Expo router error.
+
+**Superseded two sessions later.** `translators/myday.ts` was deleted at
+#26-new, everything in it moving into the one translator and its table. What
+survives from this session is the reorder of the wanted-block and the three
+banner fields, both of which are still live.
+
+**The translator sets what a My Day item IS and nothing more.** Daily kind
+always; done and push-back both allowed; done does not end the item, because a
+routine comes back tomorrow; no lead times, so it speaks at the moment itself;
+the banner's three words word for word as the old reader wrote them. It drops
+nothing — dropping is a judgment and belongs to `stillwanted.ts`.
+
+**The snooze that stands on its own survived the move, but only after the block
+was changed.** The old reader arms a My Day snooze *before* its own guard on the
+item having a time, because an item whose time was cleared after it was snoozed
+still owes the reminder it promised. `stillwanted.ts` asked no due time first
+and returned straight away, which threw that promise out. The worker session
+found it, left the block alone and reported it, and Patrick ruled the order be
+changed.
+
+**The questions are now done, then the push-back, then no due time.** The done
+rules are exactly as they were. The push-back gained one new answer for the case
+this is all about: an item with no due time, not done, with a live push-back is
+**wanted, this occurrence dropped, the moment standing** — dropped because there
+is no base occurrence left to arm, standing because the promise was already
+made. No due time is asked last, and answers exactly what it always answered
+when nothing above it has spoken.
+
+**`dueHour` and `dueMinute` became optional**, the way `dueWeekday` and
+`dueMoment` already were, on the reasoning settled at #23-new: an absent field
+says plainly what a zero has to be interpreted into, and midnight is a real
+time. The translator leaves them out rather than writing zeros.
+
+**Three banner fields joined the shape** — `bannerTitleText`, `bannerBodyText`
+and `bannerButtonsCode`, the last a named set of the seven category names
+`app/_layout.tsx` actually registers. The words are the translator's work, the
+way #21-new settled the background banner's count, so the engine has everything
+one reminder needs in one thing. They are optional, and **the placement was
+deliberately reversible**: the output side was not designed yet, and moving them
+later is three fields in five small files.
+
+**Two tests in `stillwanted.test.ts` were rewritten** to hold the new order
+rather than the old, and the section heading above them corrected. Nothing else
+in that file assumed the old order. The test that holds *done before push-back*
+was already holding a real rule and stands untouched.
+
+**`docs/build-sheet.md` was left describing the old order** and has not been
+brought level with this reorder since.
+
+
+## #25-new (2026-08-26): the second translator built, and it needed no design decision at all
+
+**Written into this file at #31-new, from `handoff.md`, having been missed at
+the time.** `scheduler/translators/pets.ts` turns a saved Pets feed into a
+shaped item and **nothing in the app calls it**. `scheduler/readers/pets.ts` was
+untouched and still did all the work. **286 of 286 tests pass**, up from 267,
+and `npx tsc` reports only the standing Expo router error. It was built from
+`docs/build-sheet-translator-pets.md` alone.
+
+**Superseded at the next session.** `translators/pets.ts` was deleted at
+#26-new. This session is the direct evidence for that correction: two sessions
+built the same file twice, differing by two string literals.
+
+**Pets is My Day's twin and the file said so on its face.** Same fields in the
+same order with the same comments, differing only in the banner's words —
+`'Pets Routine'` where My Day said `'Daily Routine'`. The body sentence and the
+button set were identical.
+
+**The `'petssnooze'` trap was named in the sheet and held.** That word is both a
+registered category name and the `source` name the old reader puts in a snoozed
+feed's key, but the old reader uses `'routineactions'` as the actual button set
+in both places. The translator set `'routineactions'`, with a comment saying
+why, so the next reader does not reach for the apt-looking name.
+
+**The reordered wanted-block carried Pets' snooze across untouched.** The cure
+made at #24-new was general, so the case that needed a change to the block for
+My Day needed nothing at all here. It is proved by its own test.
+
+**`translatormyday.test.ts` was brought up to the standard the Pets tests set**
+(Patrick). Its two null-time tests checked only `hasDueTimeBit` and now also
+assert that `dueHour` and `dueMinute` are absent. They were written before those
+fields became optional at #24-new and were never brought forward.
+`translators/myday.ts` already behaved correctly and was not touched, so the
+count is unchanged.
+
+**The build sheet's read list was incomplete and the worker stopped rather than
+guessing.** It named two files to read, but the twin pattern needs `PetsItem`
+from `readers/pets.ts` and the last required test needs `isStillWanted` from
+`stillwanted.ts`. Patrick's ruling: the ban on those two files was about
+editing, not reading, and reading them was right. **A sheet's read list should
+name what the pattern it points at actually imports.**
+
+**Noted by Patrick and deliberately not acted on**: the translator takes its
+item type from the old reader, which ties it to a file meant to be retired. That
+is his to solve at the swap step, not the translator's.
+
+
 ## #26-new (2026-08-26): the two per-screen translators became one translator and a table, and My Week and Look Ahead joined it
 
 **The two translators built at the step before differed from each other by two
@@ -2330,6 +2443,249 @@ each time from a single check whose conditions it had not examined, and each
 time it took Patrick pushing back to get the check re-run. The folder had in
 fact been read through a stale view. **A negative result is the weakest kind of
 evidence and was the one stated most confidently.**
+
+## #28-new — Reminder Engine 4, Cursor (2026-08-28): the repeat group, skip, and floating-or-named-zone time built into the machine
+
+**Written into this file at #31-new, from `handoff.md`, having been missed at
+the time.** This was a Cursor build from a sheet rather than a chat session of
+the chain. **The number is Patrick's, given at #31-new**: the chain went from
+#27-new straight to the Reminder Engine work, and his recollection is that it
+probably began as #28-new. It is numbered here so the chain has no hole in it,
+and the qualification is kept because he said "probably" rather than
+"certainly". **413 of 413 tests pass**, up from 391. `npx tsc` was silent. **No
+screen was touched, and none of it has been proved on the phone.**
+
+**The three-word trigger is gone.** My Day and Pets write a daily repeat, My
+Week a weekly one, Look Ahead and To-Do stay one-offs. Skip arms the next event
+on the same run. Every row floats with the phone; a named zone is honoured when
+the bit is later written false.
+
+**The translator does not read a repeat rule, a skip stamp or a zone from saved
+lists.** Nothing on any screen writes those yet, so the new fields stand ready
+rather than in use.
+
+- **Depth is one**, live. My Day and Pets arm one reminder each, not two.
+  Opening the app arms the next. That is recovery on opening.
+- **A ticked My Week chore stays quiet this week.** The old path was a weekly
+  repeat, which could not skip. It is now one moment on the next due day.
+- **The eight o'clock To-Do banner is gone from the live run.** A background
+  task is an item with no time. Patrick's two items labelled background — one on
+  My Day, one on To-Do — both expect no banner, for opposite reasons. Claude had
+  said the banner was needed or the item would not reset. **That claim is not to
+  be listened to again.**
+- **A To-Do task with no reminders stays silent**, even at the appointment.
+- **The old readers are still in the project.** The live run no longer calls
+  them, except the Memory Test, which still skips the common shape. The Timer
+  sits outside the module.
+- **Banner words were kept.** Snooze, postpone and delay still use the source
+  names the housing already routes.
+
+
+## #29-new, Cursor (2026-08-28): the one Input page built as a try, and the plan it belonged to dropped a session later
+
+**Written into this file at #31-new, from `handoff.md` and
+`docs/build-sheet-input-page.md`, having been missed at the time.** Built from
+`docs/build-sheet-input-page.md` as `app/input.tsx`, with Home's first tile and
+the route in `app/_layout.tsx`. Patrick checked it on the simulator.
+
+**What it does.** First glance is four lines — a name, a date or none, a time or
+none, and Repeat or none — with date and time each starting asleep. The Repeat
+panel holds how often, every how many, which weekdays, and stops on. Enter
+writes to the existing lists and then opens that page. Patrick tried all five. A
+My Week item fired. Look Ahead's Log still rolls the date forward by the
+interval. To-Do's Done logs the task and it goes away.
+
+**Enter to the five lists was added in that same session, after the sheet**,
+which had said not to write lists.
+
+**The plan it belongs to was dropped at #30-new.** The page is still in the app
+and Home's first tile still opens it. It is a try, not the destination. The
+sheet carries a note saying so at its top.
+
+
+## #30-new (2026-08-29): the reminder pages named and shaped, the one Input page dropped, and the docs index written
+
+**Written into this file at #31-new. Nothing was built at #30-new** — it was a
+design session, and the code was not touched. The decisions below are Patrick's
+and they are the live plan; the full account of them lives at the top of
+`docs/handoff.md`.
+
+**The session began on the rest of the Input sheet** — Options, holidays, time
+zone, the float button, Skip, an extra tap on a shifted day, calendar shading, a
+Reminders-before row, a notes row, a second Thursday, a Wednesday after the 6th.
+The first item taken up, the Reminders-before row, is what brought the whole
+plan down: Enter had nowhere to keep a lead time on My Day, Pets, My Week or
+Look Ahead, because only To-Do has a home for one.
+
+**Patrick's own reason for dropping the one Input page**, and it is the durable
+part: one form has to ask every kind of question and then guess which list you
+meant, so it grows to hold the whole app, while each page only ever needs its
+own small part. His picture was of the user facing the huge input page.
+
+**Testing waits until the building is done** (Patrick). The automated test load
+is not next, and neither are the odds and ends.
+
+**The pages, as he settled them:**
+
+- **Daily** — My Day and Pets as items on one list. Daily is also a view of the
+  day: anything from Weekly, Monthly, Quarterly, Yearly or One Time that falls
+  on today shows there with the every-day items. A dateless item has no day, so
+  it does not.
+- **Weekly** — My Week.
+- **Monthly**, **Quarterly**, **Yearly** — Look Ahead's repeats, split by how
+  often. Look Ahead is not a once-only list.
+- **One Time** — a date, no repeat, carrying To-Do's Reminders before chips.
+- **Extended** — no date.
+- **Options** — its own page.
+
+**To-Do stops being a page.** Its tasks split by how they actually repeat: a
+dated task that does not repeat goes to One Time, and a dateless one to
+Extended.
+
+**Daily's own add is narrower than the others'.** It is only about this day, and
+offers two kinds — an every-day item, or a One Time for today with Reminders
+before. Pets is just another every-day item on it. The other cadence pages keep
+their own adds, because the page is the whole meaning of Repeat there.
+
+**The + Add popup is Patrick's.** It only asks where the new item belongs. The
+fields stay on that kind's own small add, and when you are finished you return
+to the page you started from. If you are already on Monthly, the popup opens
+with Monthly already chosen, so the extra step is a confirm rather than a quiz.
+
+**The Reminders-before chips already exist** on To-Do's Add box: 30 min., 1
+hour, 2 hours, Morning of, Day Before, Night Before, 2 Days Before, Week, and
+Month. **Any and all can be on at once** (Patrick), which is how To-Do already
+works, and that is what One Time carries.
+
+**One question was raised and never answered**, and it is carried forward as
+open: what these pages actually save. It was put as a split between the recipe —
+name, date, time, repeat, lead times, written once on the add — and occurrence
+state, the ticks and postpones a viewing page writes. The conversation turned to
+naming the pages before the question came back.
+
+**The 24-hour clock was read up and parked until after the building** (Patrick,
+who keeps leaving the time on the wrong half of the day). The setter is one
+file, `components/DateTimeControl.tsx`; the display is one small function copied
+six times plus `formatClock` in `scheduler/queueview.ts`; eleven assertions in
+`scheduler/tests/queueview.test.ts` hold AM/PM strings; and the arithmetic needs
+nothing, since #27-new already moved the hour stepping onto the 24-hour clock
+and the type-in box has always been 24-hour. **The box and the spinners disagree
+today**, which may be part of what trips him.
+
+**`docs/index.md` was written**, one line per file saying what it holds and
+whether it is live or history, and named in `CLAUDE.md` rule 2 as not part of
+the opening read. **`docs/in-flight.md` was rewritten** for the close of the
+session, and `docs/build-sheet-input-page.md` gained a note saying its plan is
+dropped.
+
+**`reminder-shape.drawio` is not in Memory's docs at all.** Only draw.io's
+hidden backup of it is. The drawing lives at
+`Projects/Reminder Engine/docs-ref/reminder-shape.drawio`.
+
+**The AI platform note went in two places outside this project**:
+`Projects/My-Tools-and-Extensions.md` gained a Cursor entry, and
+`App-Docs/master-handoff.md` gained one line under "True across them all"
+pointing at it.
+
+
+## #31-new (2026-08-29): the record itself put right, and the rule changed from a ceremony to a condition
+
+**No code was touched.** The session opened on the build sheet for the reminder
+pages and did not get to it. What it found instead is why the sheet kept being
+hard to write: **five whole sessions had never been written into this file** —
+#24-new, #25-new, the 2026-08-28 Cursor engine build, #29-new and #30-new — so
+the reasoning behind decisions Patrick had already made existed nowhere but in a
+chat transcript.
+
+**Patrick's own words open it**, and they are the reason the session turned:
+*"I specifically ask again and again to record the important data so that this
+does not keep happening every session. And you assure me it is. AND IT IS
+NOT!"* He said afterwards that he had been through more than half a dozen
+cleanups of this kind, each with a confident "what is needed is…", and that he
+was ready to give up coding altogether. **Every one of those rounds added, moved
+or removed a file, and a file does not change behaviour** — which is why each
+one had to be done again.
+
+**The mechanism that lost things, named plainly.** Everything was written at one
+pass at the end of a session, and at that pass a conversation is compressed to
+its conclusion: the page names survive, the reasoning and the open questions
+behind them do not. Compressing what has just happened is the wrong end to save
+space at, because that is the part no other file holds yet.
+
+**Patrick's ruling, and it is the durable part of the whole session: write the
+condition, not the ceremony.** He arrived at it through the rtf. His original
+request had been that the copy he reads must never be stale; what got written
+was a ritual — regenerate at every refresh — which is not the same thing. A
+ritual does work whether or not it is needed and fails silently the once it is
+skipped. His sentence: *"RTF regened is useless if the .txt has not moved. So
+again my request turned into a useless rule."*
+
+**`CLAUDE.md` gained rule 4**, which holds the conditions: a decision is written
+into `handoff.md` the moment it is made; the handoff holds live work and open
+questions only and stays under 400 lines; nothing is deleted from it until it
+exists here; every session has an entry here, written at its close; and the
+three-question test for pruning a block — finished, so it goes to the history;
+still decides something, so it goes to the handoff's standing rulings; undone or
+unanswered, so it stays.
+
+**`docs/check-docs.py` was written**, on the principle that a machine check beats
+attention. It reports three conditions and changes nothing: the handoff's line
+count against the limit, any session number missing an entry here, and whether
+`pending.docx` differs from `pending.txt`. **It earned itself twice on its first
+day.** It found that no #28-new existed anywhere — Patrick answered that the
+chain went straight from #27-new to the Reminder Engine work, which probably
+began as #28-new, so that build now carries the number. And it was itself nearly
+wrong: it counted any line beginning with `#` as a heading, so a wrapped line of
+body text starting `#31-new` was read as an entry that did not exist. It would
+have reported the chain complete with a session missing, which is the exact
+fault it exists to catch. It now looks at real headings only.
+
+**`handoff.md` went from 906 lines to 281.** Everything finished was checked
+against this file first and written here where it was missing. It gained a
+**Standing rulings** section, because Patrick's governing rulings — rock solid
+as the top goal but not the only one with consistency beside it, "rock solid is
+for when you use it", the old reminder thrown away and the new one kept,
+established practice over a private arrangement, and a rule built into the
+machinery rather than remembered — were sitting only in the history of the
+sessions where he said them, while they still decide things today.
+
+**One fact was rescued.** Patrick's phone confirmation of the reminder highlight
+at #14-new lived only in `handoff.md`, and #14-new has no entry here. It is kept
+in the gap note beside #13-new.
+
+**The Word copy is back, at his word.** `pending.docx` replaces `pending.rtf`,
+which is what he wanted originally — one existed at session 0 and was replaced
+by an rtf at #12-new. `docs/make-pending-docx.py` writes it by hand rather than
+with a library, so there is nothing to install, and reads it back to prove it
+matches word for word. **Arial 14, his choice after looking at the first
+attempt.** `pending.rtf` and `make-pending-rtf.py` are kept as history and are
+not current. The rule that said flatly there is no Word copy is reversed — that
+rule is why the first one went missing unnoticed.
+
+**`pending.txt` was rebuilt to Patrick's own shape**, from 675 lines to 222:
+What's Next, Pending, Facts that apply to the ongoing work, and What is done
+newest first, with three existing sections kept at the foot. **The
+session-by-session story came out entirely** — *"I don't need a session history.
+You may want to archive that for ref only"* — since this file is that archive.
+Items are numbered under each heading so either of them can point at one.
+
+**Two corrections to how the page work had been written down**, both his:
+
+- **The Input page goes away and nothing replaces it**, and the + Add popup in
+  particular is not its replacement. The work is the app's own reminder pages
+  reshaped by how often a thing repeats. Calling it a replacement makes it sound
+  smaller than it is.
+- **The + Add popup opens from the "+ Add" button the pages already have.** No
+  new control is added anywhere to reach it.
+
+**The storage question is named as open** at the head of the handoff's open
+list: what these pages actually save. It was raised at #30-new and the
+conversation turned to naming the pages before it was answered. Almost nothing
+else in the build sheet can be settled until it is.
+
+**What this session did not do.** The build sheet. It is still the next piece of
+work, and it waits on that one question.
+
 
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 

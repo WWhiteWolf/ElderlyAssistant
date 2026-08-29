@@ -1,568 +1,222 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-08-27 (#27-new — five fixes, and you checked
-every one of them on the simulator as it landed.
-The Scheduled Reminders page had been sitting half an inch low.
-It was the only page in the app that had never been told to hide
-the phone's own header bar, so it was drawing one on top of its
-own. One line, and both of that page's long-standing layout notes
-are now done — the number of reminders has also moved up under
-the header, large, with "room for 56" small underneath.
-The clock setter is fixed. Spinning the hour down from 12:00 PM
-gave 11 PM instead of 11 AM, so setting nine in the morning the
-natural way landed on nine at night. It had been holding AM or PM
-still while it spun the digits, and crossing between 11 and 12 is
-exactly when AM and PM have to swap. Worth knowing: any time you
-set by spinning through noon or midnight before today is stored
-in the wrong half of the day and wants re-setting.
-The Vault's header button now says where it goes. Inside a
-category it says Back and steps back to the category list; on the
-list itself it still says Home. The "All Categories" button under
-the header is gone, since Back does its job.
-And the To-Do date fault you found is cured. You could leave the
-date and time boxes alone, the pop-up would ask whether you really
-meant to save without a reminder, you would say yes — and the app
-would write today's date at noon onto the task anyway. It asked
-the question and then overruled the answer. Now blank means blank.
-Both boxes open empty on a new task, and a task saved with no date
-sits at the bottom of the list showing just its title.
-One change to how we work, and it is yours: no more separate
-worker sessions. The value was always in the build sheet, not in
-the second session, so the work is done in the conversation that
-discussed it. Big mechanical builds still go to Cursor with a
-sheet written here.
-Before it, #25-new — the second of the five
-translators is built, the Pets one. It takes a feed as the Pets
-page saves it and turns it into the one common shape. Nothing in
-the app calls it yet and the old Pets code is untouched and still
-doing all the work. Nothing changed on the phone. The tests went
-from 267 to 286.
-This one was quiet, and that is the good news. Pets is My Day's
-twin, so the file came out the same as My Day's with one word
-different — the banner says "Pets Routine" where My Day says
-"Daily Routine". Everything else about it is identical.
-The stubborn snooze from last session needed nothing this time.
-Changing the order of the questions last session fixed it for
-every screen at once rather than just for My Day, and there is now
-a test proving Pets gets it for free.
-You had me tidy one thing on the way past. The My Day tests were
-written before we decided that an item with no time should carry
-no hour and no minute at all, and they were only checking half of
-that. They now check the whole of it. The My Day code itself was
-already correct and was not touched, so the count did not move.
-One thing worth knowing for the sessions ahead: the build sheet
-told the worker to read two files, but doing the job properly
-needed two more. The worker stopped and asked rather than
-guessing, which was right. Next time the sheet should list what
-the pattern it points at actually needs.
-Next is My Week, and that one is not a twin of anything already
-built — it is weekly rather than daily and it carries the
-postpone. Its cure rides on it.
-Before it, #24-new — the first of the five
-translators is built, the My Day one. It takes a My Day item as
-the screen saves it and turns it into the one common shape.
-Nothing in the app calls it yet and the old My Day code is
-untouched and still doing all the work — it only gets retired
-once the new one is proved, which was your own instruction.
-Nothing changed on the phone. The tests went from 248 to 267.
-One real thing turned up while building it. My Day's snooze has
-always been deliberately stubborn: if you snooze something and
-then clear its time, it still reminds you, because the promise
-was already made. The block that decides whether a reminder is
-still wanted asked "has it got a time?" first and threw the
-whole item away, promise and all. So the new way would have
-quietly lost that.
-Your call was to change the order of the questions. It now asks
-whether it is done, then whether something was promised, and
-only last whether it has a time at all. An item with no time and
-a live promise now keeps the promise and nothing else, which is
-exactly what your old code did. The done rules are untouched.
-Two tests that were holding the old order in place were rewritten
-to hold the new one.
-Before it, #23-new — the first building in a while.
-The three new files are written and tested: the common shape itself,
-the block that asks whether a reminder is still wanted, and the block
-that says how far ahead to set them. Nothing in the app calls any of
-them yet, and that is on purpose — they were built first so you could
-look at them and argue with them while changing them still costs
-nothing. Nothing changed on the phone. The tests went from 230 to 248
-and all of them pass.
-Your one change to the code was catching that the new shape and the
-engine were using different words for the same thing — the shape said
-"once" where the engine has always said "date". You had the new work
-change rather than the engine, which was right: the engine's word is
-the one the phone itself already uses.
-Everything was built from docs/build-sheet.md without asking you a
-single design question, which is exactly what that sheet was written
-for last session.
-Next is the five translators, one screen at a time.
-Before it, #22-new — the design is finished. Nothing
-was built and nothing changed on the phone. All the fields have names
-now, and the rule for them is yours: the name says what the thing
-does and carries its own kind, so a bit reads as a bit. You asked
-what the usual practice was for holding the bits and took the answer
-— each one its own named field rather than packed together.
-Then you reopened setting reminders two deep, because that was
-decided under the old way of working. It is now one, not two. Your
-own reasoning closed it: rock solid is for when you use it, an app
-that is not being opened is not being used, and the second copy only
-ever covered a single day. What carries the load instead is the app
-putting itself right when you open it — it tells you what you missed,
-then sets the reminders again, and that is the whole of it.
-That last part turned out to be built already, and it even handles
-the case where the app has been shut for a whole day. But it only
-covers My Day and My Pets Day. My Week, Look Ahead and To-Do record
-nothing, and adding them is real work still to do.
-There is now a docs/build-sheet.md holding every decision in one
-place, so the next session can build without asking you anything.
-Before it, #21-new — the common shape is settled on
-paper, which was the second step of your plan. Nothing was built and
-nothing changed on the phone. The way it is put together is yours: a
-value that can only be one thing gets a code, and anything that stands
-on its own gets a single bit, both set on the way in so the engine only
-has to look. All five screens now fit the one shape, including the
-8 AM background-tasks reminder, which we had written off as not
-fitting until you said it could be given a bit like everything else.
-Before it, #20-new — My Week's Delay is now written
-down like the others, and the engine's last unread part was read and
-holds up. Your call was to fix that one first, ahead of the new shape,
-because leaving it would have been more patching.
-Before it, #19-new was your epiphany, and the reminder work now has
-one shape instead of six. The reminder pages are the heart of the app;
-the scheduler is the engine; everything else is packaging. Rather than
-curing one screen at a time, five screens will be brought to one
-common shape and the engine written once against it. That session
-built nothing — it made two documents, docs/reminder-shape.md and the
-drawing beside it.
-Before that, #18-new checked the outsider's report and the answer was
-mend rather than rebuild, and built the first step of My Week's cure.
-Nothing has gone onto the phone.
-Bare session numbers below mean the old shared chain.)
+Last updated: 2026-08-29 (#31-new)
 
 This is the "what's still left" list in everyday words. Nothing here
-is urgent. Finished work isn't tracked here — git history keeps the
-full record — so this list stays short.
+is urgent.
+
+The items under each heading are numbered so you can point at one —
+"Pending 4", "Facts 9" — and both of us know which you mean. The
+numbers belong to the heading above them and start again at 1 under
+each one, so they will shift as things are added and finished.
+
+The session-by-session story is not kept here any more. It lives in
+docs/build-history.md, which is the archive to look at when you want
+to know why something was done the way it was.
 
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-- THE REMINDERS — OPEN AGAIN (#14-new, #15-new, #16-new). Reading
-  the whole of the reminder machinery found eight faults. Two are
-  fixed and the third — the big one, the fault you reported — is
-  fixed on one screen of three.
-  The fault: a thing you tick off early still reminds you, because
-  those three screens use the phone's own repeating alarm and a
-  repeating alarm fires whether or not the item is done. The cure is
-  to give each one a single moment aimed at the next time it is due,
-  worked out fresh every time the app runs, so it can skip one you
-  have already done. You agreed to that on one condition — that a
-  missed firing is noted when you open the app — and that part is
-  already built.
-  What #16-new put in:
-    Pets is cured. A feed you have already logged does not call out
-      again that day, and still calls out the next day.
-    Each feed is set two days ahead rather than repeating forever.
-      Two was your call. The trade is real and worth knowing: if the
-      app goes unopened longer than that, nothing new gets set and
-      the reminder simply does not arrive. The pop-up tells you
-      afterwards; it cannot make it arrive.
-      (Overtaken at #22-new: it is one now, not two. The reason is at
-      the top of this file. The change is decided and not yet built,
-      so what is on the phone today is still two.)
-    Your places on the phone: the app can hold 56 reminders. At two
-      days ahead, your fourteen items will use 28 of them, so there
-      is room to spare. The Scheduled Reminders screen tells you how
-      full it is, so you never have to take my word for the number.
-    One test that had never been run since the very beginning now
-      runs on the Mac: a day passing, an item ticked off, and
-      whether it still reminds tomorrow.
-    Two small things you may notice when this reaches the phone: a
-      feed shows up twice on the Scheduled Reminders screen instead
-      of once, because two days are set; and it says it does not
-      repeat, which is now true.
-      (The showing-twice part goes away with the #22-new change to
-      one.)
-  What #17-new put in:
-    My Day is cured, the same way Pets was. A thing you have already
-      logged does not call out again that day, and still calls out
-      the next day.
-    The day-counting the two screens share now lives in one place
-      instead of being written out twice.
-  What #17-new found out, and this is the part that matters:
-    My Week has the fault too. Its reminder never looks at the
-      checkmark at all, so a chore you have ticked still sounds on
-      its day. Our own notes have been saying the opposite — that My
-      Week was the one screen that never had this problem — and
-      there is even a test in place holding the wrong behaviour
-      still. The note and the code were allowed to disagree and
-      nothing caught it.
-    The tests that pass do not test the thing you care about. They
-      check the pieces on their own. Nothing checks the whole chain —
-      you tick something, and the reminder does not sound. That has
-      never been tested, which is the plainest explanation yet for
-      why eight sessions of work still left faults.
-    There may be more. The outsider only had one look, and most of
-      what it reported has not been double-checked yet. What is
-      confirmed and what is not is marked item by item in
-      docs/outside-review.md.
-  What #18-new checked, and this is the good news:
-    Most of what the outsider flagged is not broken. It read the code
-      with none of our notes in front of it, so it could not know
-      which things were decided on purpose. Six of them were: a Done
-      button not silencing the repeat, the To-Do banner carrying only
-      OK, Orders no longer raising reminders, two occurrences ahead,
-      the snooze being written on the item, and the pop-up that
-      speaks when a list cannot be read. All six still hold.
-    So it is mend, not rebuild. The joins are careful and reasoned,
-      not loose. What is left is a short list of specific holes.
-    The three real holes: My Week ignoring the checkmark; Siri
-      marking something done without telling the reminder module;
-      and a failed daily clear-out not stopping the run.
-    One new one, in no record before: when Siri marks an item done,
-      nothing re-works the reminders. It sends you to My Day, and My
-      Day clears the day but does not rebuild anything. Siri also
-      leaves a snooze in place.
-    Confirmed about the tests: there is no test at all for the
-      module's top, for any screen, or for the housing. Ten test
-      files, all of them the pieces on their own.
-  What #18-new put in — My Week, step one of three:
-    A chore's checkmark now clears wherever the app runs, instead of
-      only when you open My Week. That arithmetic used to live on
-      the page; it now lives with the rest of the reminder work and
-      has twenty tests of its own.
-    Why that had to come first: My Week's reminder is the phone's
-      repeating kind, which returns forever. If the app simply
-      skipped a ticked chore, the repeat would be cancelled and only
-      come back when the checkmark cleared — and the checkmark only
-      cleared when you opened the page. A chore ticked once would
-      have gone silent for good. Worse than the fault we started
-      with.
-    Steps two and three are now overtaken by #19-new, your call.
-      They were: teach the day-counting to count in weeks, then
-      rewrite My Week's reminder to use it and to look at the
-      checkmark. Both sit inside the very thing the new shape
-      redesigns, so doing them the old way would be one more patch.
-      My Week gets cured instead by being one of the five screens
-      brought to the common shape. The wrong note and the wrong test
-      that say My Week never had the fault still go out with it.
-  What #19-new settled — the shape, and nothing built:
-    The reminder pages are the heart of this app. The scheduler is
-      the engine. Everything else is packaging and screens. That is
-      your framing and it governs the rest.
-    Five pieces: the screens you type into, a store holding what
-      exists, the engine, a store holding what should be armed, and
-      the reminder itself. The two stores are the contracts — one
-      shape in, one shape out — and that is what ends six screens
-      saying the same things six different ways.
-    It is a loop, not a line. Done, snoozed and skipped come back
-      from the far end and land on the same decision block the store
-      feeds, so nothing has to remember to set it turning. That was
-      your drawing, and it is better than the rule it replaced.
-    Two decision blocks: is this still wanted, and how far ahead do
-      we arm. The second belongs to the engine, because only the
-      engine can see how full the phone is.
-    Good news from the reading: the output half is already built and
-      already common. All six readers already produce one shape. The
-      six different shapes are all on the input side, and four of
-      their five differences are only different words for the same
-      idea.
-    You collapsed the fifth yourself: a To-Do task has one end date,
-      and its several reminders are just lead times off that date.
-    Five screens go through the shape — My Day, Pets, My Week, Look
-      Ahead and To-Do. The Memory Test and the Timer are handled
-      their own way, your call, and the code agrees.
-    Not a bulldoze. What the screens save stays exactly as it is,
-      and the common shape goes between the screens and the engine.
-      No screen changes and nothing on your phone breaks.
-    The order from here: read the engine itself (718 lines, and the
-      one thing not yet read first-hand); settle the shape on paper
-      with you; build it and the two decision blocks with tests,
-      touching nothing that exists; then the five screens one at a
-      time; then the phone.
-    Two documents came out of it and they are the whole output:
-      docs/reminder-shape.md and docs/reminder-shape.drawio, the
-      same thing drawn for draw.io.
-  What #21-new settled — the shape on paper, and nothing built:
-    The way it is put together is yours, and you gave it before you
-      were asked. Shown three ways the app could write down when a
-      thing comes due, you said to put a field in the data with the
-      bits set on the way in, so the engine only has to look at it to
-      know what to do. Then you gave both forms — one bit each where
-      several can be true at once, or several bits together as a code
-      for something that can only ever be one thing. Everything else
-      followed from that.
-    What kind of reminder it is — every day, every week, or once — is
-      a code, because it can only ever be one of the three. That means
-      an impossible pair can't even be written down.
-    Two different sorts of fact are kept apart, and this is the piece
-      the whole thing rests on. Some facts say what a KIND of thing is
-      allowed to do — can it be ticked off, can it be pushed back —
-      and those are set once and never change. The rest say what has
-      actually happened to this one, and those change all the time.
-      Keeping them apart is what lets an appointment behave
-      differently from a chore as a matter of rule, instead of the
-      code having to make an exception for appointments.
-    "Done" turned out to mean two different things in your app, and
-      one bit can't hold both. On My Day, Pets and My Week, done means
-      done for today and it clears overnight. On To-Do, done means the
-      appointment is over for good. So there is one "done", plus one
-      bit saying how far it reaches. Look Ahead has no done at all,
-      and it fits without needing a special case.
-    Snoozed, postponed and delayed are all one idea with three names,
-      so they become one. One note per item, so pushing something back
-      twice moves the one reminder instead of leaving two behind. It
-      adds a reminder rather than replacing one, which is what your
-      app already does everywhere.
-    How far ahead to speak is a list. A To-Do appointment can have
-      several reminders ahead of it; a daily routine item has an empty
-      list, meaning speak at the time itself. Your collapse from
-      #19-new holds up — it was checked in the code.
-    A question was put to you badly and you corrected it. Asked
-      whether an empty list should mean "speak at the moment" or
-      "speak never", you said the engine already knows what kind of
-      reminder it is and can decide which way to go. So daily and
-      weekly speak at the moment, and a one-off with nothing set stays
-      quiet — which is exactly what the app does today, so nothing
-      changes for you.
-    The 8 AM background-tasks reminder was written off as not fitting
-      the shape, and you brought it back in. It is one banner standing
-      for a whole group rather than for any one task, so it gets a bit
-      saying so. All five screens now go through the one shape and
-      nothing is left outside.
-    Three things Claude had told you about the app were wrong, and you
-      caught it by sending it to the code first rather than reading a
-      list that hadn't been checked. Skip isn't something the reminder
-      code looks at at all. Every one of the five screens quietly
-      checks whether an item even has a time set, which had been left
-      off the list entirely. And To-Do checks a second thing nobody had
-      mentioned. All three are written down so it isn't repeated.
-  Also found and left alone (#18-new, your call): the warning about
-  a failed clear-out is never actually shown to you. It is written
-  down but filtered out before it reaches the pop-up, because it was
-  classed as harmless. It is not harmless — a failed clear-out can
-  cancel a reminder for something you never did.
-  What #15-new put in:
-    A pop-up when you open the app, if something went wrong. Until
-      now the app could fail at reminders completely and look
-      perfectly well. It speaks about the four things that mean a
-      reminder will not arrive, and stays quiet about the two that
-      do not. It comes back once a day rather than every time you
-      come back to the app, so it does not become something you
-      tap away without reading.
-    A note of what never reached you, in the same pop-up. Written
-      down as the day rolls over, since that is the last moment the
-      app can still see what was left undone. One line per item,
-      the most recent, in your Still To Do wording. Shown once and
-      gone when you tap it. Being away a fortnight gives you a
-      short list, not a wall.
-  Still to do, in order (reordered at #19-new; the first two are now
-  done — the engine was read at #20-new and the shape settled with you
-  at #21-new): build it with its tests; the
-  five screens one at a time, which is where My Week is cured; Siri
-  telling the module what it has done; making a failed clear-out
-  speak; holding a run that gets dropped when two happen at once;
-  saying the show-a-banner instruction once instead of on eight
-  pages; bringing My Week's snooze under the module; and the dead
-  "+1 Day" button.
-  The plan that ran the earlier work is no longer
-  a live file; it is kept whole at the end of docs/build-history.md
-  in case anyone ever needs to know why a thing was done its way.
-  What was built, step by step:
-    Step 1 (#6-new) — the new piece itself, plus its tests. No
-      page touched.
-    Step 2 (#7-new) — My Day and Pets stopped arming their own.
-      This is the fix for the silence.
-    Step 3 (#8-new) — My Week, Look Ahead and To-Do stopped too,
-      and Orders came out of the reminding altogether.
-    Step 4 — the snoozes, delays and postpones, in three pieces:
-      My Week's postpone and Look Ahead's delay (#9-new), then My
-      Day's and Pets' snoozes (#10-new), and then To-Do (#11-new),
-      which needed nothing built. A To-Do banner has never had a
-      Snooze button to tap, so the piece was taking out code that
-      could never run.
-    Step 5 (#11-new) — the Memory Test's five-minute recall.
-    Step 6 (#11-new) — the warning when your phone can't hold
-      every reminder asked for. It shows as you save the item,
-      on the page you're on, and says the reminder furthest in
-      the future won't go off until something makes room.
-    Step 7 (#11-new) — the clean slate. Yesterday's checkmarks,
-      snoozes and counts now clear whether or not you open My Day
-      or Pets, and any banner from before today is taken down as
-      the app opens or comes back to the front. A Done always
-      means today now.
-    Step 8 (#12-new) — Scheduled Reminders, in Settings under the
-      three reminder times. It shows every reminder your phone is
-      holding, under Today, Tomorrow, This Week and Later, with
-      the soonest first. Tap any one and you get the whole story
-      of it: what it is, which page it came from, when it fires
-      and whether it repeats, when it was last due and when it's
-      next due, exactly what the banner will say, and which
-      buttons it will carry. At the foot it tells you how full
-      the phone is. Timer alerts are counted there but not
-      listed, your call — the Timer is for short stretches and
-      isn't something you'd look up.
-      It cannot tell you whether a reminder actually went off.
-      The phone keeps no record of that once a banner is
-      dismissed, so there is nothing to read. What it does
-      instead is show you when each one was DUE — so if a
-      repeating reminder is missing from the list, that's the
-      problem; if it's sitting there properly set and you heard
-      nothing, the app did its part.
-  You built all of this, put it on the phone, and it was all
-  readable. What still hasn't happened is the morning after.
-- Look Ahead: change the tile format, and change or drop the
-  Snooze (#3-new).
-- Timer: add a Stop (Pause) / Continue (Go) button to the tile,
-  and add a log (#3-new).
-  (The clock setter, the Vault's Home button and both Scheduled
-  Reminders layout fixes were all done at #27-new and checked on
-  the simulator. The clock one leaves a tail: any time set by
-  spinning through noon or midnight before that day is stored in
-  the wrong half of the day and needs re-setting.)
+1. THE REMINDER PAGES. Your own map from #30-new: Daily (My Day and
+   Pets together, and the day view of whatever else is due today),
+   Weekly, Monthly, Quarterly, Yearly (Look Ahead's repeats, split
+   by how often), One Time (a date, no repeat, with To-Do's
+   Reminders before), Extended (no date), and Options on its own
+   page. Not built. A build sheet is written first, and that sheet
+   is the next piece of work. Testing waits until the building is
+   done.
+2. THE 24-HOUR CLOCK. You keep leaving the time on the wrong AM or
+   PM, so the AM/PM spinner comes off and the hour reads 00 to 23.
+   Waits until after the building. The looking is done: the setter
+   is one file, the tiles are six copies of one small piece, and
+   the Scheduled Reminders screen has its own. Nothing has to be
+   worked out again.
+3. LOOK AHEAD: change the tile format, and change or drop the
+   Snooze (#3-new).
+4. TIMER: add a Stop (Pause) / Continue (Go) button to the tile,
+   and add a log (#3-new).
 
 
-NEEDS A PHONE TEST (built, just not confirmed on the phone yet)
-----------------------------------------------------------------------------
-- My Week's Delay now works the way My Day's and Pets' do (#20-new).
-  Tapping Delay on a My Week banner used to set a fresh reminder on
-  the phone there and then, with nothing written down, so the
-  scheduler never knew it existed. It now writes the delay onto the
-  chore itself — the same note the page's Postpone button writes —
-  and the scheduler sets the reminder from that. A delay and a
-  postpone are the same thing at different distances, so a chore only
-  ever carries one.
-  Two things came with it. Skip on a My Week banner now really does
-  skip a postponed chore; before, it cancelled the reminder and the
-  scheduler put it straight back. And the tile's "moved to" line
-  shows a time when the delay lands later today, and a day name when
-  it lands on another day.
-- Look Ahead: delaying from the BANNER doesn't show the "▶ Delayed"
-  line on the tile (your #61-build phone test). Reading the code
-  found the likely cause: the page only re-reads its saved items
-  when it first opens, so a banner delay done while the page was
-  already loaded never appears — and can even be lost. The Delay
-  button ON the tile is fine. Fix is small (re-read on every visit).
-  Also checked: a Delay is NOT supposed to write a log entry —
-  only Done logs. That part is by design.
-  #4-new: that fix is now in — Look Ahead re-reads on every visit.
-  Very likely cured, but unconfirmed until the phone says so.
-- Tapping a reminder and landing on the item — BUILT (#13-new),
-  and not yet tried with a real banner. Tap a reminder and the
-  page opens with that item's row outlined, so you can see which
-  one it was about. Tap the row and the outline goes out. The
-  page does not scroll to it, which was your call. It is built on
-  My Day, Pets, My Week, Look Ahead and To-Do. The Memory Test
-  has none, your call — only one reminder comes off that page.
-  Two things to look at when you try it: the outline on To-Do,
-  which you have not seen at all, and the To-Do background
-  reminder, the 8 AM one about background tasks. That one is
-  about the whole group rather than any one task, so instead of
-  outlining a row it opens the background list for you.
+PENDING
+------------------------------------------------------------------
+Things waiting on something — mostly on the phone.
+
+1. THE MORNING AFTER. Something you check off today has to still
+   remind you tomorrow. That is the thing that used to go quiet and
+   it is the one test that matters most. No day has turned over
+   yet.
+2. EVERYTHING BUILT SINCE THE LAST PHONE LOAD IS UNPROVED. The
+   engine on your phone is from an earlier build. One reminder per
+   item instead of two, a ticked weekly chore staying quiet, the
+   eight o'clock To-Do banner gone, skip and time zones — none of
+   it has been on the phone. Nothing goes on until the reminder
+   work is whole, which was your own call.
+3. LOOK AHEAD'S BANNER DELAY. Delaying from the banner did not show
+   the "▶ Delayed" line on the tile. The cause was found and the
+   fix went in at #4-new — the page now re-reads every visit — but
+   the phone has never confirmed it.
+4. MY WEEK'S DELAY. It now writes the delay onto the chore itself,
+   the same note the page's Postpone button writes, so the app
+   knows about it. Skip really skips a postponed chore now. Built
+   at #20-new and never on a phone.
+5. THE TIMER ISN'T WORKING RIGHT (#5-new, your word). Not looked at
+   and not described. Written down so it is not lost.
+6. THE TIMER'S LOUD ALARM DOESN'T WORK (#12-new, your word). It was
+   meant to sound five minutes after the first alert. The code is
+   there but only runs when two things are both true, and one of
+   them has never been looked at.
+7. "+1 DAY" IS DEAD on every My Week banner (#11-new). Every My
+   Week reminder now carries the shared routine buttons, so that
+   button never appears. Postponing still works from the page.
+   Nothing is proposed; written down in case you miss the button.
+8. A FAILED DAILY CLEAR-OUT IS NEVER SPOKEN. The warning is written
+   down but filtered out before it reaches the pop-up, because it
+   was classed as harmless. It is not harmless — a failed clear-out
+   can cancel a reminder for something you never did. Your call at
+   #18-new was to leave it as it is.
+9. SIRI MARKS SOMETHING DONE WITHOUT TELLING THE MODULE. It writes
+   the item, writes the log, sends you to My Day — and nothing
+   re-works the reminders. It also leaves any snooze in place.
+10. RETIRING THE OLD READERS. The live run no longer calls them,
+    but they stay in the project until each replacement is proved
+    on the phone. That order is yours, from #19-new.
+11. THE MISSED-FIRING NOTICE COVERS MY DAY AND PETS ONLY. My Week,
+    Look Ahead and To-Do record no misses at all. Extending it to
+    those three is real work still to do.
 
 
-STILL BROKEN OR UNFINISHED (small bugs)
----------------------------------------
-- The To-Do date stamp — FIXED (#27-new, your report, and you
-  confirmed the cure on the simulator). You could leave the date
-  and time boxes alone, say yes to the pop-up asking whether you
-  really meant to save with no reminder, and the app would write
-  today's date at noon onto the task regardless. Blank now means
-  blank. Both boxes open empty on a new task, either can be
-  cleared on an existing one, and a task with no date shows only
-  its title and sits at the bottom of the list — the same way My
-  Day and Mollie show an item that has no time.
-  Worth knowing for later: any task saved before this carries a
-  date it was given rather than one you chose.
-- The #4-new notification fixes went onto the phone and did NOT
-  cure it (#5-new). What went in was real and stays in — a banner
-  Done no longer wipes out tomorrow's reminder, and every routine
-  page re-reads what's saved when you come back to it. It just
-  wasn't the whole story. The rest is the top "What's Next" item,
-  and it's three steps along now.
-- The Timer isn't working right (#5-new, your word). Not looked
-  at yet, and not described. Written down so it isn't lost.
-- To-Do quietly stacks up an 8:00 AM daily reminder every time
-  you save a task with background tasks on the list, and nothing
-  ever removes them (#5-new). They sit there forever taking up
-  room. The new reminder piece clears them out.
-- The To-Do banner snooze written down here at #8-new was never a
-  real fault, and #11-new corrected it. A To-Do banner carries one
-  OK button and no Snooze at all, so there was never a snooze to
-  be set or lost. The code behind it could not be reached and has
-  been taken out. Nothing needed from you.
-- My Week's Skip doesn't skip a postponed chore (#10-new, found
-  while working next door and left alone). Skip takes the
-  postponed reminder off the phone, but the postpone is written
-  down on the chore now, so the app puts it straight back. Never
-  been on a phone — it came in with #9-new, which hasn't been
-  built. Small fix, and it belongs to a My Week session.
-- The "Snoozed till:" line can't be read — FIXED (#12-new). It
-  had been given the color meant for writing on a solid colored
-  button: white, on a white row in the light theme, and a very
-  dark brown on a dark brown row in the dark one. It now uses
-  the same orange My Week's postponed line and Look Ahead's
-  delayed line have always used, so all four say that kind of
-  thing the same way. Your call, and your reason — consistency,
-  and you've looked at all those screens in both themes. Seen
-  on the phone and readable.
-- Waiting on your phone: the morning after. Something you check
-  off today has to still remind you tomorrow. That's the thing
-  that used to go quiet, and it's the one test that matters most.
-  At the close of #11-new you confirmed three things on the
-  phone: the Memory Test's five-minute recall, a Pets snooze all
-  the way through, and My Week. At #12-new you built again and
-  everything you looked at was readable. The rest of steps 3 and
-  4 still hasn't been tried, and no day has turned over yet.
-- The Timer's loud alarm doesn't work (#12-new, your word). It
-  was meant to sound five minutes after the first alert if you
-  hadn't answered. The code for it is there but only runs when
-  two things are both true, and one of them has never been
-  looked at. Not chased — it goes with the Timer item above.
-- "+1 Day" has quietly gone from every My Week banner (#11-new,
-  found while working out what to test). Every My Week reminder
-  now carries the shared routine buttons — Done, OK, Skip and
-  three Delays — so the "+1 Day" button never appears and the
-  code behind it can't run. Postponing still works, just only
-  from the page. Nothing is proposed; written down in case you
-  miss the button.
-- One more for when you test: the Memory Test only lets you run
-  one a day. Once the day's score is logged the Start button is
-  replaced by that score and "Come back tomorrow", so step 5 can
-  only be tried on a fresh day.
+FACTS THAT APPLY TO THE ONGOING WORK
+------------------------------------------------------------------
+Settled things worth having in front of you while the pages are
+built. None of these is a job to do.
+
+1. THE PAGES ARE NOT A REPLACEMENT FOR THE INPUT PAGE. The Input
+   page goes away and nothing replaces it — and the + Add popup in
+   particular is not its replacement. This is your own reminder
+   pages being reshaped by how often a thing comes round.
+2. + ADD OPENS FROM THE BUTTON THE PAGES ALREADY HAVE. It asks only
+   where the new item belongs; you fill in that page's own small
+   form, then you come back to where you were, with the page you
+   were on already chosen. No new control is added anywhere.
+3. ONE TIME CARRIES TO-DO'S REMINDERS BEFORE CHIPS — 30 min., 1
+   hour, 2 hours, Morning of, Day Before, Night Before, 2 Days
+   Before, Week, Month — and any and all of them can be on at once.
+4. DAILY'S OWN ADD IS ONLY ABOUT TODAY. Two kinds: an every-day
+   item, or a One Time for today. The other pages keep their own
+   adds, because on those the page is the whole meaning of Repeat.
+5. ONE REMINDER PER ITEM, NOT TWO, and the app puts itself right
+   when you open it: it tells you what you missed, then sets the
+   reminders again. That is your own reasoning and it replaced the
+   old two-days-ahead rule.
+6. ROCK SOLID IS THE TOP GOAL BUT NOT THE ONLY ONE. Consistency
+   stands beside it. That correction is yours, from #17-new.
+7. ROCK SOLID IS FOR WHEN YOU USE IT. An app that is not being
+   opened is not being used, and what the old second copy protected
+   was one day and no more.
+8. A BACKGROUND TASK AND A DAILY TICK ARE OPPOSITES. A To-Do
+   background task says a thing is not yet done and must survive
+   the night. The coffee-and-water sort says a thing was done today
+   and is meaningless the morning after. They must never be merged.
+9. THE MEMORY TEST ALLOWS ONE SESSION A DAY. Once the day's score
+   is logged the Start button is replaced by that score and "Come
+   back tomorrow", so it can only be tried on a fresh day.
+10. TIMES SET BY SPINNING THROUGH NOON OR MIDNIGHT BEFORE #27-new
+    are stored in the wrong half of the day and want re-setting.
+11. TASKS SAVED BEFORE THE DATE FIX carry a date they were given
+    rather than one you chose.
+12. A BIG PIECE GETS A BUILD SHEET FIRST — self-contained, carrying
+    every answer, so whoever builds it never has to ask you a
+    design question.
+13. BARE SESSION NUMBERS mean the old shared chain. This project's
+    own chain is written #1-new, #2-new, and so on.
+
+
+WHAT IS DONE, NEWEST FIRST
+------------------------------------------------------------------
+One line each. The full story of any of them is in
+docs/build-history.md.
+
+1. #31-new — the record itself put right. The hand-off file went
+   from 906 lines to under 300 and now holds only live work and
+   open questions. Five whole sessions had never been written into
+   the build history at all, which is why you kept having to
+   explain the same things again; all five are written up. From now
+   on a decision goes into the record at the moment you make it.
+   The copy you read is a Word file again, and there is a checker
+   that reports when anything has drifted.
+2. #30-new — the reminder pages named and shaped, and the one Input
+   page plan dropped. Nothing was built.
+3. #28-new — the engine gained repeat groups, skip, and time zones
+   that float with the phone. 413 tests pass. Not on the phone.
+4. #27-new — all five reminder screens went onto the one machine,
+   and five screen fixes landed that you checked on the simulator:
+   the Scheduled Reminders page's header and its count, the clock
+   setter's twelve-hour fault, the Vault's Back button, and a To-Do
+   task that may now be saved with no date and no time.
+5. #26-new — the per-screen translators became one translator and a
+   table, and My Week and Look Ahead joined it.
+6. #24-new and #25-new — the first two translators, My Day and
+   Pets, and the reordering of the questions that let the stubborn
+   snooze survive.
+7. #23-new — the common shape and the two decision blocks built and
+   tested, with nothing in the app calling them yet.
+8. #22-new — the field names settled, and setting reminders two
+   deep reopened by you and closed at one.
+9. #21-new — the common shape settled on paper, all five screens
+   inside it.
+10. #20-new — My Week's Delay written down like the others, and the
+    engine's last unread part read.
+11. #19-new — your epiphany: one shape instead of six, the reminder
+    pages as the heart of the app and the scheduler as its engine.
+12. #18-new — the outsider's report checked. The answer was mend
+    rather than rebuild, and six things it flagged turned out to be
+    deliberate.
+13. #15-new to #17-new — the failure pop-up and the missed-firing
+    note built, then Pets and My Day moved off repeating alarms so
+    a thing ticked off early stops calling out.
+14. #13-new and #14-new — tapping a reminder lands on its own item
+    with the row outlined, confirmed by you on the phone.
+15. #12-new — the Scheduled Reminders screen, showing every
+    reminder the phone is holding and how full it is.
+16. #6-new to #12-new — the scheduler built in eight steps, so one
+    module owns every reminder and no screen arms its own.
+17. #4-new — the first notification fixes. Real, and kept, but not
+    the whole story.
 
 
 DECISIONS TO MAKE WHEN YOU'RE READY
------------------------------------
-- The dark startup flash (moved here from Parked, #1-new).
+------------------------------------------------------------------
+1. The dark startup flash (moved here from Parked, #1-new).
 
 
-NICE-TO-HAVE LATER (polish, low priority)
------------------------------------------
-- Whole-file backup encryption — moved here in #69 (was a #68
-  roadmap item). Today only the Vault's part of a backup is
-  encrypted; the rest is readable. You still want the whole file
-  encrypted someday; talk-through first when you take it up.
-- Watch List overhaul — its own session, talk-through first (moved
-  from What's Next, your call #55). The night-and-time-a-TV-show-airs
-  idea folds into it.
+NICE-TO-HAVE LATER
+------------------------------------------------------------------
+1. Whole-file backup encryption — moved here in #69 (was a #68
+   roadmap item). Today only the Vault's part of a backup is
+   encrypted; the rest is readable. You still want the whole file
+   encrypted someday; talk-through first when you take it up.
+2. Watch List overhaul — its own session, talk-through first (moved
+   from What's Next, your call #55). The night-and-time-a-TV-show-
+   airs idea folds into it.
 
 
-PARKED ON PURPOSE (bigger items, on hold for now)
--------------------------------------------------
-- Voice control through Siri. Set aside after much effort; revisit only
-  if a future iPhone update fixes the name-matching. (The app-name revert
-  above assumes this stays shelved.)
-- The Timer "Loud alert" isn't actually louder — a genuinely louder alarm
-  needs a custom sound built into the app and special Apple permission to
-  break through Silent / Do-Not-Disturb. Heavy — deferred.
-- Backup "Merge" option — BACK-MOST BURNER (#67): Patrick is 90%
-  sure he's dropping it. Restore keeps REPLACING everything, which
-  works fine for his one-device use. Only revisit if he raises it.
-- Import files/documents into the Vault — PARKED (#69). The idea
-  became "Vault pages" (paste text straight into a Vault item, no
-  files) in the #68 roadmap; in #69 you started the talk-through,
-  weren't ready, and parked the whole thing. The Vault stays as
-  it is until you run into a real need. Not to be re-raised.
-- The Android icon pictures and the splash (startup) image still
-  carry the old placeholder art — deliberately left for later
-  when the main icon got the new face (#65). (Moved here from
-  Nice-to-have, #1-new.)
+PARKED ON PURPOSE
+------------------------------------------------------------------
+1. Voice control through Siri. Set aside after much effort; revisit
+   only if a future iPhone update fixes the name-matching.
+2. The Timer "Loud alert" isn't actually louder — a genuinely
+   louder alarm needs a custom sound built into the app and special
+   Apple permission to break through Silent / Do-Not-Disturb.
+   Heavy — deferred.
+3. Backup "Merge" option — BACK-MOST BURNER (#67): you are 90% sure
+   you are dropping it. Restore keeps REPLACING everything, which
+   works fine for your one-device use. Only revisit if you raise
+   it.
+4. Import files/documents into the Vault — PARKED (#69). The idea
+   became "Vault pages" (paste text straight into a Vault item, no
+   files) in the #68 roadmap; in #69 you started the talk-through,
+   weren't ready, and parked the whole thing. The Vault stays as it
+   is until you run into a real need. Not to be re-raised.
+5. The Android icon pictures and the splash (startup) image still
+   carry the old placeholder art — deliberately left for later when
+   the main icon got the new face (#65). (Moved here from
+   Nice-to-have, #1-new.)

@@ -1,5 +1,12 @@
 # Build sheet — Memory Input page: first glance and Repeat
 
+> **The plan this sheet belongs to is dropped** (Patrick, #30-new). One
+> form that asks every kind of question and then files the answer onto a
+> list is not how add works. The page it describes is still in the app as
+> a try, and this sheet is still the accurate description of that try —
+> but it is history, not the road. The road is the reminder pages, at the
+> top of `docs/handoff.md`.
+
 **Built** at #29-new Cursor, 2026-08-28, as `app/input.tsx`, with
 Home's first tile and the route in `app/_layout.tsx`. Patrick checked
 it on the simulator. **Enter to the five lists was added in that same
