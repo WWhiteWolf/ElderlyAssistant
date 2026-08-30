@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-08-29 (#31-new)
+Last updated: 2026-08-29 (#32-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -21,9 +21,9 @@ WHAT'S NEXT
    Weekly, Monthly, Quarterly, Yearly (Look Ahead's repeats, split
    by how often), One Time (a date, no repeat, with To-Do's
    Reminders before), Extended (no date), and Options on its own
-   page. Not built. A build sheet is written first, and that sheet
-   is the next piece of work. Testing waits until the building is
-   done.
+   page. Not built. The phase spec is docs/spec-pages.md. The first
+   job sheet is docs/build-sheet-daily.md (Daily, and the one list
+   it needs). Testing waits until the building is done.
 2. THE 24-HOUR CLOCK. You keep leaving the time on the wrong AM or
    PM, so the AM/PM spinner comes off and the hour reads 00 to 23.
    Waits until after the building. The looking is done: the setter

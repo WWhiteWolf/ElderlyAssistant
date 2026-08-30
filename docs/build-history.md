@@ -2687,6 +2687,52 @@ else in the build sheet can be settled until it is.
 work, and it waits on that one question.
 
 
+## #32-new (2026-08-29): the pages phase spec, and Daily's first job sheet
+
+**No code was touched.** The session opened as the build sheet for the
+reminder pages. It wrote a phase spec and the first job sheet instead of
+building. The chain switched from Claude to Grok part-way through.
+
+**Storage is settled:** one saved list of items, each carrying how often
+it repeats, and a page as a filter on that list. That had been open since
+#30-new.
+
+**How a view item is changed, settled here.** On Weekly through Extended,
+each item has Done and Snooze, and a tap on the tile opens the edit page
+— a page, not a modal. Daily is the exception: no buttons, resident or
+visitor; swipe to delete when an item is done or not needed; a tap still
+opens the edit page; a visitor returns to Daily. A visitor already shows
+its name, and next to it `from Weekly` (or Monthly, and so on). "Tag" was
+only a way of saying that.
+
+**The old screens, still in the app:** a tap selects the row for reorder,
+and a separate Edit button opens a modal. `app/input.tsx` is the only
+page version of the form and it is the one being dropped.
+
+**Done.** Weekly, Monthly, Quarterly and Yearly repeat: Done finishes
+this cycle and arms the next. Display adjusting is a separate change, not
+part of that tap. One Time and Extended: Done turns the button to the
+done colour, the item stays, it no longer fires or arms, and delete is
+how it leaves. Daily's swipe-to-delete is how an every-day item leaves.
+
+**Options** is a list in the style of the iPhone's notification-apps
+list. Missing days follow the engine record: the last day that exists,
+with an extra tap for then or next day, not skip. That calendar thinking
+is from RFC 5545 and JSCalendar RFC 8984, without the file format, in
+`Reminder Engine/docs/reminder-engine.md`. JSCalendar's own `skip` is
+about dates that do not exist, not about skipping an occurrence.
+
+**The record split, settled here.** One phase spec for the pages build,
+not the whole of moving Memory onto the engine. A job sheet for one job.
+The spec is `docs/spec-pages.md`. The first job sheet is
+`docs/build-sheet-daily.md` — Daily, and the one list it needs. Not
+built. Visitors from other pages wait. The engine is not rewritten this
+job; Daily dual-writes the old keys so reminders still arm.
+
+**What this session did not do.** Build Daily. The 24-hour clock. Testing.
+The phone.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

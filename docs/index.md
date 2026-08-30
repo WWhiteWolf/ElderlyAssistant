@@ -17,8 +17,13 @@ file is added, retired or renamed, its line changes at the same refresh.
   stands and what is open in front of it.
 - **`in-flight.md`** — half a page, replaced every session, never added
   to. The desk: what is in, what is next, what not to reopen.
-- **`pending.txt`** — Patrick's plain-language list, opened at the
-  end-of-session refresh.
+- **`pending.txt`** — Patrick's plain-language list and the source the
+  Word copy is made from. **Brought up to date at every update** (#31-new),
+  since it is how he tracks the work. Four sections — What's Next,
+  Pending, Facts that apply to the ongoing work, and What is done newest
+  first — with the items numbered under each heading so either of them
+  can point at one. It holds no session history; that is
+  `build-history.md`.
 - **`pending.docx`** — the copy Patrick actually reads. **Generated from
   the txt and never hand-edited.** Restored at #31-new; a Word copy is
   what he wanted originally.
@@ -33,18 +38,26 @@ file is added, retired or renamed, its line changes at the same refresh.
   history, and whether the Word copy differs from the txt. It changes
   nothing. `python3 docs/check-docs.py`. Written at #31-new, and the rule
   it serves is `CLAUDE.md` rule 4.
-- **`pending.rtf`** and **`make-pending-rtf.py`** — **history.** The rich
-  text copy stood in for the Word one from #12-new to #31-new. Neither is
-  kept current; the rtf on disk is the last one generated and will not
-  match the txt.
+## Retired, still on disk
+
+- **`pending.rtf`** and **`make-pending-rtf.py`** — the rich text copy
+  stood in for the Word one from #12-new to #31-new. Neither is kept
+  current; the rtf on disk is the last one generated and will not match
+  the txt. Kept rather than deleted because the last Word copy went
+  missing unnoticed, and deleting things is how that happens.
 
 ## The live design
 
 - **`reminder-shape.md`** — the design of the reminder work, from
-  #19-new onward. **This is the live one** and it wins wherever another
-  document disagrees. The five pieces, the two decision blocks, the codes
-  and bits, the field names, depth, recovery on opening, and the
-  translator at the boundary.
+  #19-new onward. **This is the live one** for the engine, and it wins
+  wherever another document disagrees on that. The five pieces, the two
+  decision blocks, the codes and bits, the field names, depth, recovery
+  on opening, and the translator at the boundary.
+- **`spec-pages.md`** — the phase spec for the reminder pages, written
+  at #32-new. Live for this phase. Job sheets for page work copy the
+  answers they need from it.
+- **`build-sheet-daily.md`** — #32-new. First job of the pages phase:
+  Daily, and the one list it needs. **Not yet built.**
 - **`build-sheet.md`** — written as a sheet at #22-new, and now the
   standing description of what `inputshape.ts`, `stillwanted.ts` and
   `armdepth.ts` hold. It has not been brought level with the #24-new
@@ -104,6 +117,5 @@ quiet until needed.
 
 - **`reminder-shape.drawio`** — the drawing of the shape. It is **not in
   this folder**; only draw.io's hidden backup of it is. The drawing lives
-  at `Projects/Reminder Engine/docs-ref/reminder-shape.drawio`. Places in
-  `handoff.md` that name it as `docs/reminder-shape.drawio` are pointing
-  at where it used to be.
+  at `Projects/Reminder Engine/docs-ref/reminder-shape.drawio`, and
+  `handoff.md` now says so under "Facts worth carrying".

@@ -4,7 +4,7 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-08-29, at the close of #31-new.
+Last written: 2026-08-29, at the close of #32-new.
 
 ## Read this first
 
@@ -18,30 +18,30 @@ Last written: 2026-08-29, at the close of #31-new.
 
 ## What is in
 
-**No code was touched at #31-new.** It went to the record instead: the
-handoff pruned from 906 lines to 281, five missing sessions written into
-`build-history.md`, `CLAUDE.md` rule 4 added, the checker written, and
-`pending.txt` rebuilt to Patrick's own shape with a Word copy again.
+**No code was touched at #32-new.** The phase spec is `docs/spec-pages.md`.
+The first job sheet is `docs/build-sheet-daily.md`. Storage is one list,
+page as a filter. Daily has no buttons; the other view pages have Done
+and Snooze.
 
 ## What is decided
 
-**Write the condition, not the ceremony** (Patrick, #31-new). A decision
-goes into `handoff.md` the moment it is made, not at the end. The pages
-themselves are settled and are at the top of `handoff.md`.
+A phase spec for the pages, a job sheet for one job. Missing days follow
+the engine and RFC 8984, not skip. Tile rules live in the spec, not as
+the thing a builder re-opens.
 
 ## What is next
 
-**The build sheet for the pages** — and it is blocked. **What these pages
-save has never been answered.** It is the first thing in the handoff's
-open list. Do not write the sheet around it.
+**Build Daily from `docs/build-sheet-daily.md`.** A fresh session, high
+effort. The builder reads that sheet and the files it names, not this
+desk and not the handoff.
 
 ## Later, not now
 
-The 24-hour clock. The automated test load. The phone build. Retiring the
-old readers.
+The other cadence pages. Options. The 24-hour clock. The automated test
+load. The phone build. Retiring the old readers. Moving Memory onto the
+engine as a whole.
 
 ## Do not reopen
 
-The one Input page — and note it is not being *replaced* by anything. The
-translator, depth, and the eight o'clock banner. The engine is in, 413
-tests, and is not this desk.
+The one Input page. The storage question. What Done does on each page.
+The visitor line `from Weekly`. Missing days as skip.

@@ -20,8 +20,10 @@ and #30-new all had no entry at all.
 starts here. It does not start from the engine. Think for him. Do not ask
 him what the session is for, and do not make him re-teach the pages.
 
-**Nothing of the pages is built.** The next piece of work is the build
-sheet for them, and the pages are not built straight from this file.
+**Nothing of the pages is built.** The phase spec is `docs/spec-pages.md`.
+The first job sheet is `docs/build-sheet-daily.md` and is not yet built.
+The next session builds Daily from that sheet. The pages are not built
+from this file.
 
 ### The pages, settled by Patrick at #30-new
 
@@ -35,7 +37,19 @@ sheet for them, and the pages are not built straight from this file.
 - **One Time** — a date, no repeat, carrying To-Do's Reminders before
   chips. Any and all of those chips can be on at once.
 - **Extended** — no date.
-- **Options** — its own page.
+- **Options** — a list in the style of the iPhone’s notification-apps
+  list, for the odd cases and what to do about them (Patrick, #32-new).
+  Missing days follow the engine record: the last day that exists, with
+  an extra tap for then or next day, not skip. Also every nth day in a
+  period, and move the day to before or after a holiday. That calendar
+  thinking is from RFC 5545 and JSCalendar RFC 8984, without the file
+  format, settled in `Reminder Engine/docs/reminder-engine.md`.
+
+**On a view page, each item has Done and Snooze, and a tap on the tile opens the edit page — except Daily, which has no buttons (Patrick, #32-new).**
+
+**Daily has no buttons, resident or visitor. Swipe to delete when an item is done or not needed. A tap still opens the edit page; a visitor returns to Daily (Patrick, #32-new).**
+
+**An item lives on one page; Daily may also show another page's item (Patrick, #32-new).**
 
 **To-Do stops being a page.** Its tasks split by how they actually repeat:
 a dated task that does not repeat goes to One Time, a dateless one to
@@ -133,9 +147,10 @@ They are kept here because they still decide things.
 
 ## What is open in front of it
 
-**The storage question, and it is the first thing the build sheet needs.**
-It was raised at #30-new and the conversation turned to naming the pages
-before it was answered, so it is open rather than settled. The app today
+**The storage question, and it was the first thing the build sheet needed.
+It is answered at the foot of this block.** It was raised at #30-new and
+the conversation turned to naming the pages before it was answered, so it
+stood open until #32-new. The app today
 keeps five separate saved lists, one per old page, and the engine reads
 each through a table entry that knows which page it came from. The nine
 new pages cut that same content by how often a thing repeats instead. What
@@ -143,8 +158,44 @@ was put and not answered was a split: **the recipe** — name, date, time,
 repeat, lead times — written once on the add, and **occurrence state** —
 ticked, skipped, postponed — written by the viewing page. Each old page
 mixes those two in its own saved shape, which is why Reminders before has
-a home on To-Do and nowhere else. Until this is answered, almost nothing
-else in the sheet can be.
+a home on To-Do and nowhere else.
+
+**What #32-new found when it read the five screens and the banner
+handler.** These are facts about the old screens as they stand today, not
+the new pages:
+
+- **The recipe is written in exactly one place per page — the New/Edit
+  form.** Name, date, time, day of the week, repeat interval and the
+  Reminders-before chips are set there and nowhere else, on all five
+  screens.
+- **The occurrence state is written by the row and by the banner, never by
+  that form.** The row's Log, Done and ✓ buttons, its Snooze, Postpone and
+  Delay buttons, the reorder arrows and swipe-to-delete; then eight
+  branches of the banner handler in `app/_layout.tsx` — done, skip, three
+  snoozes, +1 Day and three delays — each writing straight into storage;
+  and Siri's "mark done", which writes `my_routine` and `my_history`
+  itself. So the split the storage question describes is already real in
+  the code.
+- **`_layout.tsx` hardcodes which saved list each notification belongs
+  to**, in those same eight places — `my_routine`, `pets_feeds`,
+  `week_routine`, `lookahead_items`, `orders_items`. This is the thing the
+  storage answer most decides: nine pages cut by cadence mean either nine
+  of those branches everywhere, or one store and none.
+- **"Done" means four different things today.** My Day and Pets set
+  `completed` and let the daily reset clear it; My Week sets `completed`
+  plus `doneAt` and waits for the weekly reset; Look Ahead rolls the date
+  forward and marks nothing; To-Do deletes the task and writes a log entry.
+
+The old screens' tap-and-Edit shape is in `docs/build-history.md` under
+#32-new, not here. The new pages live in `docs/spec-pages.md`.
+
+**Settled by Patrick at #32-new: one saved list of items instead of
+nine**, each item carrying how often it repeats, so a page becomes a
+filter on that list rather than a store of its own. This answers the
+storage question that had been open since #30-new. The two reasons are
+that Daily has to show a Monthly item falling today and with separate
+stores would have to read all of them to do it, and that one store removes
+the eight hardcoded keys above.
 
 **The build sheets are the pattern for this work** — each self-contained,
 carrying the answers themselves rather than pointing at other documents,
@@ -188,8 +239,9 @@ Week, Look Ahead and To-Do record no misses at all. The work is extending
 the telling to those three, not building it — both halves of recovery on
 opening are already built and tested.
 
-**Skip, a named zone, and the extra repeat shapes have no screen yet.**
-The engine holds them; nothing writes them.
+**Skip, a named zone, and the extra repeat shapes have no screen yet on
+the old pages.** The engine holds them; nothing writes them. **Options is
+now that list** (Patrick, #32-new), in the pages block above.
 
 **`docs/build-sheet.md` has not been brought level with the reorder**
 (#24-new). It is the standing description of what the three shape files
