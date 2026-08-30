@@ -4,7 +4,7 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-08-29, at the close of #32-new.
+Last written: 2026-08-29, at the close of #33-new.
 
 ## Read this first
 
@@ -18,30 +18,25 @@ Last written: 2026-08-29, at the close of #32-new.
 
 ## What is in
 
-**No code was touched at #32-new.** The phase spec is `docs/spec-pages.md`.
-The first job sheet is `docs/build-sheet-daily.md`. Storage is one list,
-page as a filter. Daily has no buttons; the other view pages have Done
-and Snooze.
-
-## What is decided
-
-A phase spec for the pages, a job sheet for one job. Missing days follow
-the engine and RFC 8984, not skip. Tile rules live in the spec, not as
-the thing a builder re-opens.
+**Daily is built.** Home's Daily tile opens it. The one list
+`reminder_items` is live. Daily has Snooze, Done that undoes, hold-and-slide
+reorder, tap-to-edit, and My Log. The My Day page is gone. The second job
+sheet is `docs/build-sheet-pages.md`, refreshed at this close with what
+Daily actually is.
 
 ## What is next
 
-**Build Daily from `docs/build-sheet-daily.md`.** A fresh session, high
-effort. The builder reads that sheet and the files it names, not this
-desk and not the handoff.
+**Build Weekly through Options from `docs/build-sheet-pages.md`.** A
+fresh session. That sheet copies the answers. Do not rebuild Daily from
+the first sheet; it is out of date on the buttons, the log, and My Day.
 
 ## Later, not now
 
-The other cadence pages. Options. The 24-hour clock. The automated test
-load. The phone build. Retiring the old readers. Moving Memory onto the
-engine as a whole.
+The 24-hour clock. The automated test load. The phone build. Retiring
+the old readers. Moving Memory onto the engine as a whole.
 
 ## Do not reopen
 
-The one Input page. The storage question. What Done does on each page.
-The visitor line `from Weekly`. Missing days as skip.
+The one Input page. The storage question. Missing days as skip. Daily
+with no buttons. Overlay arrows on Daily. The My Day page. Morning of /
+Day Before chips on Daily's One Time for today.

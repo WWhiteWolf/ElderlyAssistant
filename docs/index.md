@@ -57,7 +57,11 @@ file is added, retired or renamed, its line changes at the same refresh.
   at #32-new. Live for this phase. Job sheets for page work copy the
   answers they need from it.
 - **`build-sheet-daily.md`** — #32-new. First job of the pages phase:
-  Daily, and the one list it needs. **Not yet built.**
+  Daily, and the one list it needs. **Built at #33-new.**
+- **`build-sheet-pages.md`** — #33-new. Second job: Weekly, Monthly,
+  Quarterly, Yearly, One Time, Extended, Options, and the + Add
+  popup. **Not yet built.** Refreshed at the close of #33-new with
+  what Daily actually is. Do not rebuild Daily from the first sheet.
 - **`build-sheet.md`** — written as a sheet at #22-new, and now the
   standing description of what `inputshape.ts`, `stillwanted.ts` and
   `armdepth.ts` hold. It has not been brought level with the #24-new

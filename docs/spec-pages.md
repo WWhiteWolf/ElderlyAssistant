@@ -23,7 +23,8 @@ odds and ends wait. The 24-hour clock waits until after the building.
   dateless item has no day, so it does not.
 - **Weekly** — My Week.
 - **Monthly**, **Quarterly**, **Yearly** — Look Ahead's repeats, split by
-  how often. Look Ahead is not a once-only list.
+  how often. Look Ahead is not a once-only list. A six-month item lives
+  on Quarterly, still every six months.
 - **One Time** — a date, no repeat, carrying To-Do's Reminders before
   chips. Any and all of those chips can be on at once.
 - **Extended** — no date.
@@ -50,16 +51,14 @@ when that item falls today.
 
 ## How an item is viewed and changed
 
-**On Weekly, Monthly, Quarterly, Yearly, One Time and Extended**, each
-item has Done and Snooze. A tap on the tile opens the edit page.
-
-**Daily has no buttons**, on its own items or on visitors. Swipe to
-delete when an item is done or not needed. A tap still opens the edit
-page. A visitor returns to Daily when that edit is finished.
+**On Weekly, Monthly, Quarterly, Yearly, One Time, Extended and Daily**,
+each item has Done and Snooze. A tap on the tile opens the edit page.
+Done on Daily undoes when tapped again.
 
 **A visitor already shows its name.** Next to the name it says where it
 is from, written as `from Weekly`, `from Monthly`, and so on. "Tag" was
-only a way of saying that, not a separate control.
+only a way of saying that, not a separate control. A visitor returns to
+Daily when that edit is finished.
 
 The edit is a page, not a modal.
 
@@ -81,7 +80,9 @@ return to the page you started from. If you are already on Monthly, the
 popup opens with Monthly already chosen.
 
 **It opens from the "+ Add" button the pages already have.** No new
-control is added. It works the same way from any page.
+control is added. It works the same way from Weekly, Monthly,
+Quarterly, Yearly, One Time and Extended. Daily keeps its own narrower
+add. Options has no + Add.
 
 **Daily's own add is narrower.** It is only about this day, and offers
 two kinds: an every-day item, or a One Time for today with Reminders
@@ -111,3 +112,9 @@ the file format. The settled engine write-up is
 `Reminder Engine/docs/reminder-engine.md`. Skip of a cycle is a different
 thing from a missing day, and JSCalendar's own `skip` property is about
 dates that do not exist, not about skipping an occurrence.
+
+**When you open Options, you see** holidays, time zone, the float button,
+Skip, an extra tap on a shifted day, calendar shading, a notes row, a
+second Thursday, and a Wednesday after the 6th. Reminders-before is not
+a row; it already lives on One Time. Each row opens that case. Options
+has no + Add.

@@ -11,7 +11,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, type Href } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl, { formatDateMMDDYY } from '../components/DateTimeControl';
 import Bridge from '../components/Bridge';
@@ -155,7 +155,7 @@ export default function InputScreen() {
             await AsyncStorage.setItem('my_routine', JSON.stringify(updated));
             AppGroup.setMyDayItems(updated.map((i) => ({ id: i.id, label: i.label })));
             warnIfFull(await runScheduler());
-            router.replace('/myday');
+            router.replace('/daily' as Href);
             return;
         }
 
@@ -374,7 +374,7 @@ export default function InputScreen() {
                                                 dailyList === 'myday' && styles.recurBtnTextActive,
                                             ]}
                                         >
-                                            My Day
+                                            Daily
                                         </Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity

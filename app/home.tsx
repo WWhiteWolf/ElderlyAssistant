@@ -26,8 +26,7 @@ const modules = [
   { id: 'lookahead', label: 'Look Ahead', icon: '🔭' },
   { id: 'myweek', label: 'My Week', icon: '🗓️' },
   { id: 'shopping', label: 'Shopping List', icon: '🛒' },
-  { id: 'mollie', label: 'My Pets Day', icon: '🐾' },
-  { id: 'myday', label: 'My Day', icon: '☀️' },
+  { id: 'daily', label: 'Daily', icon: '☀️' },
 ];
 
 export default function HomeScreen() {
@@ -53,9 +52,8 @@ export default function HomeScreen() {
         if (id === 'input') router.push('/input' as Href);
         if (id === 'shopping') router.push('/shopping');
         if (id === 'timer') router.push('/timer');
-        if (id === 'myday') router.push('/myday');
+        if (id === 'daily') router.push('/daily' as Href);
         if (id === 'myweek') router.push('/myweek');
-        if (id === 'mollie') router.push('/mollie');
         if (id === 'lookahead') router.push('/lookahead');
         if (id === 'todo') router.push('/todo');
         if (id === 'planner') router.push('/planner');

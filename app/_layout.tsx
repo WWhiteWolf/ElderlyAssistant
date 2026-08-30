@@ -69,8 +69,8 @@ export default function RootLayout() {
         await AsyncStorage.setItem('my_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
 
         AppGroup.clearPendingNote();
-        // Land on My Day so the checked tile is visible (same as a banner tap).
-        router.push('/myday');
+        // Land on Daily so the checked tile is visible (same as a banner tap).
+        router.push('/daily');
       } finally {
         applyingNote.current = false;
       }
@@ -589,7 +589,7 @@ export default function RootLayout() {
     if (source === 'todo') {
       router.push({ pathname: '/todo', params });
     } else if (source === 'myday' || source === 'mydaysnooze') {
-      router.push({ pathname: '/myday', params });
+      router.push({ pathname: '/daily', params });
     } else if (source === 'myweek' || source === 'myweekpostpone') {
       router.push({ pathname: '/myweek', params });
     } else if (source === 'pets' || source === 'petssnooze') {
@@ -627,6 +627,8 @@ export default function RootLayout() {
       <Stack.Screen name="memorytest" options={{ headerShown: false }} />
       <Stack.Screen name="reminders" options={{ headerShown: false }} />
       <Stack.Screen name="input" options={{ headerShown: false }} />
+      <Stack.Screen name="daily" options={{ headerShown: false }} />
+      <Stack.Screen name="item-edit" options={{ headerShown: false }} />
     </Stack>
     </ThemeProvider>
   );

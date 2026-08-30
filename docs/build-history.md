@@ -2733,6 +2733,40 @@ job; Daily dual-writes the old keys so reminders still arm.
 The phone.
 
 
+## #33-new (2026-08-29): Daily built, My Day gone, and the next job sheet brought level
+
+**Daily is in the app.** Home's Daily tile opens it. The one list
+`reminder_items` is live, with dual-write so the engine still arms.
+Pets came in as every-day items. The first sheet's "Daily has no
+buttons" was reversed while Patrick was looking at Daily.
+
+**How Daily works, settled while looking at it.** Snooze, Done, and
+Done that undoes. Tap the name to edit. Hold the name and slide to
+reorder — no overlay arrows, and no arrows on the row. The list is
+not rewritten while the finger is down; rewriting mid-slide dropped
+the hold after one slot. My Log is My Day's log, the same saved
+list, written when Done is tapped.
+
+**One Time for today,** from Daily's own add: Reminders before are
+only 30 min., 1 hour, 2 hours, and Time of. Time of is the item's
+own time. Save returns to To-Do until One Time is a page, because
+that was the page with the Log. Cancel and Home on that add still
+go to Daily. After save, dismiss the stack then replace, so the
+page underneath does not flash.
+
+**The My Day page is gone.** `app/myday.tsx` only hops to Daily.
+Banners tagged `myday` and Siri mark-done open Daily. If Home stops
+opening an old page and the banner still opens it, Patrick sees the
+new page then quickly the old one.
+
+**The next job sheet** is `docs/build-sheet-pages.md`. It was
+refreshed at this close so the next session copies Daily as it is,
+not the first sheet. Weekly through Options are not built.
+
+**What this session did not do.** Weekly through Options. The
+24-hour clock. Testing. The phone.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

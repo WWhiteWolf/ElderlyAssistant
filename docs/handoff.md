@@ -20,10 +20,11 @@ and #30-new all had no entry at all.
 starts here. It does not start from the engine. Think for him. Do not ask
 him what the session is for, and do not make him re-teach the pages.
 
-**Nothing of the pages is built.** The phase spec is `docs/spec-pages.md`.
-The first job sheet is `docs/build-sheet-daily.md` and is not yet built.
-The next session builds Daily from that sheet. The pages are not built
-from this file.
+**Daily is built** from `docs/build-sheet-daily.md` (#33-new). Home's
+Daily tile opens it. The one list `reminder_items` is live, with
+dual-write so the engine still arms. **Nothing of Weekly through
+Options is built.** The next session builds those from
+`docs/build-sheet-pages.md`. The pages are not built from this file.
 
 ### The pages, settled by Patrick at #30-new
 
@@ -33,7 +34,8 @@ from this file.
   item has no day, so it does not.
 - **Weekly** — My Week.
 - **Monthly**, **Quarterly**, **Yearly** — Look Ahead's repeats, split by
-  how often. Look Ahead is not a once-only list.
+  how often. Look Ahead is not a once-only list. **A six-month item
+  lives on Quarterly** (Patrick, #33-new), still every six months.
 - **One Time** — a date, no repeat, carrying To-Do's Reminders before
   chips. Any and all of those chips can be on at once.
 - **Extended** — no date.
@@ -44,10 +46,13 @@ from this file.
   period, and move the day to before or after a holiday. That calendar
   thinking is from RFC 5545 and JSCalendar RFC 8984, without the file
   format, settled in `Reminder Engine/docs/reminder-engine.md`.
+  **When you open it you see** holidays, time zone, the float button,
+  Skip, an extra tap on a shifted day, calendar shading, a notes row,
+  a second Thursday, and a Wednesday after the 6th (Patrick, #33-new,
+  from the rest of the Input sheet at #30-new). Reminders-before is
+  not a row; it already lives on One Time. Each row opens that case.
 
-**On a view page, each item has Done and Snooze, and a tap on the tile opens the edit page — except Daily, which has no buttons (Patrick, #32-new).**
-
-**Daily has no buttons, resident or visitor. Swipe to delete when an item is done or not needed. A tap still opens the edit page; a visitor returns to Daily (Patrick, #32-new).**
+**On a view page, each item has Done and Snooze, and a tap on the tile opens the edit page.** Daily is the same: Snooze, Done, and Done that undoes (Patrick, #33-new, looking at Daily). Swipe still deletes. A tap on the name opens the edit page. Hold the name and slide to reorder (Patrick, #33-new). **Daily now carries My Day's log** — the same `my_history` list, written when Done is tapped, titled My Log. **The My Day page is gone** (Patrick, #33-new). `/myday` hops to Daily. The engine still names those reminders `myday`, so banners and dual-write keep working.
 
 **An item lives on one page; Daily may also show another page's item (Patrick, #32-new).**
 
@@ -57,9 +62,19 @@ Extended.
 
 **Daily's own add is narrower than the others'.** It is only about this
 day, and offers two kinds — an every-day item, or a One Time for today
-with Reminders before. Pets is just another every-day item on it. The
+with Reminders before. **On One Time for today those chips are only**
+30 min., 1 hour, 2 hours, and Time of — Time of is the item's own time
+(Patrick, #33-new). Pets is just another every-day item on it. The
 other cadence pages keep their own adds, because on those the page is the
 whole meaning of Repeat.
+
+Save on an every-day item returns to Daily. **Save on One Time for
+today returns to To-Do** (the One Time page until that page is built),
+which is the page that has the Log (Patrick, #33-new). Cancel and the
+header Home still go to Daily, where the add started. A My Day banner
+or a Siri mark-done now opens Daily, not the old My Day page, so a
+save is not followed by that page covering what you just landed on
+(Patrick, #33-new).
 
 **+ Add opens a short popup that only asks where the new item belongs**
 (Patrick's own). The fields stay on that kind's own small add, and when
@@ -68,8 +83,11 @@ already on Monthly, the popup opens with Monthly already chosen, so the
 extra step is a confirm rather than a quiz.
 
 **It opens from the "+ Add" button the pages already have** (Patrick,
-#31-new). No new control is added anywhere to reach it, and it works the
-same way from any page.
+#31-new). No new control is added anywhere to reach it. It works the
+same way from Weekly, Monthly, Quarterly, Yearly, One Time and
+Extended. Daily keeps its own narrower add. **Options has no + Add**
+(Patrick, #33-new: "from any page" was too wide — Options is the
+odd-cases list, not a page that holds items).
 
 **The Reminders-before chips already exist** on To-Do's Add box, in the
 chip look the app already uses: 30 min., 1 hour, 2 hours, Morning of, Day
