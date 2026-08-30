@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { SchedulableTriggerInputTypes } from 'expo-notifications';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useRouter, type Href } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import { ThemeProvider } from '../constants/Themes';
@@ -587,15 +587,15 @@ export default function RootLayout() {
     const params = highlight ? { highlight } : undefined;
 
     if (source === 'todo') {
-      router.push({ pathname: '/todo', params });
+      router.push({ pathname: '/onetime', params } as Href);
     } else if (source === 'myday' || source === 'mydaysnooze') {
       router.push({ pathname: '/daily', params });
     } else if (source === 'myweek' || source === 'myweekpostpone') {
-      router.push({ pathname: '/myweek', params });
+      router.push({ pathname: '/weekly', params } as Href);
     } else if (source === 'pets' || source === 'petssnooze') {
       router.push({ pathname: '/mollie', params });
     } else if (source === 'lookahead' || source === 'lookaheaddelay') {
-      router.push({ pathname: '/lookahead', params });
+      router.push({ pathname: '/monthly', params } as Href);
     } else if (source === 'orders' || source === 'orderssnooze') {
       router.push({ pathname: '/orders', params });
     } else if (source === 'memorytest') {
@@ -629,6 +629,13 @@ export default function RootLayout() {
       <Stack.Screen name="input" options={{ headerShown: false }} />
       <Stack.Screen name="daily" options={{ headerShown: false }} />
       <Stack.Screen name="item-edit" options={{ headerShown: false }} />
+      <Stack.Screen name="weekly" options={{ headerShown: false }} />
+      <Stack.Screen name="monthly" options={{ headerShown: false }} />
+      <Stack.Screen name="quarterly" options={{ headerShown: false }} />
+      <Stack.Screen name="yearly" options={{ headerShown: false }} />
+      <Stack.Screen name="onetime" options={{ headerShown: false }} />
+      <Stack.Screen name="extended" options={{ headerShown: false }} />
+      <Stack.Screen name="options" options={{ headerShown: false }} />
     </Stack>
     </ThemeProvider>
   );

@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-08-29 (#33-new)
+Last updated: 2026-08-30 (#34-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -25,19 +25,23 @@ WHAT'S NEXT
    every six months. Options is the leftover Input list: holidays,
    time zone, the float button, Skip, an extra tap on a shifted
    day, calendar shading, a notes row, a second Thursday, and a
-   Wednesday after the 6th (#33-new). Daily is built (#33-new). The
-   rest of the pages are the next session, from
-   docs/build-sheet-pages.md. Testing waits until the building is
-   done.
-2. THE 24-HOUR CLOCK. You keep leaving the time on the wrong AM or
+   Wednesday after the 6th (#33-new). Daily through Options and the
+   + Add popup are built (#34-new). Project Planner, Orders, and
+   Watch List are off Home, same as Input (#34-new). Patrick
+   arranged the remaining tiles himself. Testing waits until you
+   have looked at the pages.
+2. TAKE THE OLD SCREENS OUT. The ones Home no longer opens. The
+   engine still reads the old lists, so those readers stay until
+   that is swapped (#34-new).
+3. THE 24-HOUR CLOCK. You keep leaving the time on the wrong AM or
    PM, so the AM/PM spinner comes off and the hour reads 00 to 23.
    Waits until after the building. The looking is done: the setter
    is one file, the tiles are six copies of one small piece, and
    the Scheduled Reminders screen has its own. Nothing has to be
    worked out again.
-3. LOOK AHEAD: change the tile format, and change or drop the
+4. LOOK AHEAD: change the tile format, and change or drop the
    Snooze (#3-new).
-4. TIMER: add a Stop (Pause) / Continue (Go) button to the tile,
+5. TIMER: add a Stop (Pause) / Continue (Go) button to the tile,
    and add a log (#3-new).
 
 
@@ -146,12 +150,15 @@ WHAT IS DONE, NEWEST FIRST
 One line each. The full story of any of them is in
 docs/build-history.md.
 
-1. #33-new — Daily built. Snooze, Done, hold-and-slide reorder, My
+1. #34-new — Weekly through Options and the + Add popup built.
+   Project Planner, Orders and Watch List off Home. Next is taking
+   the old screens out.
+2. #33-new — Daily built. Snooze, Done, hold-and-slide reorder, My
    Log. The My Day page is gone. The sheet for Weekly through
    Options was brought up to date with what Daily actually is.
-2. #32-new — the pages phase spec, and Daily's first job sheet.
+3. #32-new — the pages phase spec, and Daily's first job sheet.
    Nothing was built.
-3. #31-new — the record itself put right. The hand-off file went
+4. #31-new — the record itself put right. The hand-off file went
    from 906 lines to under 300 and now holds only live work and
    open questions. Five whole sessions had never been written into
    the build history at all, which is why you kept having to
@@ -159,43 +166,43 @@ docs/build-history.md.
    on a decision goes into the record at the moment you make it.
    The copy you read is a Word file again, and there is a checker
    that reports when anything has drifted.
-4. #30-new — the reminder pages named and shaped, and the one Input
+5. #30-new — the reminder pages named and shaped, and the one Input
    page plan dropped. Nothing was built.
-5. #28-new — the engine gained repeat groups, skip, and time zones
+6. #28-new — the engine gained repeat groups, skip, and time zones
    that float with the phone. 413 tests pass. Not on the phone.
-6. #27-new — all five reminder screens went onto the one machine,
+7. #27-new — all five reminder screens went onto the one machine,
    and five screen fixes landed that you checked on the simulator:
    the Scheduled Reminders page's header and its count, the clock
    setter's twelve-hour fault, the Vault's Back button, and a To-Do
    task that may now be saved with no date and no time.
-7. #26-new — the per-screen translators became one translator and a
+8. #26-new — the per-screen translators became one translator and a
    table, and My Week and Look Ahead joined it.
-8. #24-new and #25-new — the first two translators, My Day and
+9. #24-new and #25-new — the first two translators, My Day and
    Pets, and the reordering of the questions that let the stubborn
    snooze survive.
-9. #23-new — the common shape and the two decision blocks built and
-   tested, with nothing in the app calling them yet.
-10. #22-new — the field names settled, and setting reminders two
+10. #23-new — the common shape and the two decision blocks built and
+    tested, with nothing in the app calling them yet.
+11. #22-new — the field names settled, and setting reminders two
     deep reopened by you and closed at one.
-11. #21-new — the common shape settled on paper, all five screens
+12. #21-new — the common shape settled on paper, all five screens
     inside it.
-12. #20-new — My Week's Delay written down like the others, and the
+13. #20-new — My Week's Delay written down like the others, and the
     engine's last unread part read.
-13. #19-new — your epiphany: one shape instead of six, the reminder
+14. #19-new — your epiphany: one shape instead of six, the reminder
     pages as the heart of the app and the scheduler as its engine.
-14. #18-new — the outsider's report checked. The answer was mend
+15. #18-new — the outsider's report checked. The answer was mend
     rather than rebuild, and six things it flagged turned out to be
     deliberate.
-15. #15-new to #17-new — the failure pop-up and the missed-firing
+16. #15-new to #17-new — the failure pop-up and the missed-firing
     note built, then Pets and My Day moved off repeating alarms so
     a thing ticked off early stops calling out.
-16. #13-new and #14-new — tapping a reminder lands on its own item
+17. #13-new and #14-new — tapping a reminder lands on its own item
     with the row outlined, confirmed by you on the phone.
-17. #12-new — the Scheduled Reminders screen, showing every
+18. #12-new — the Scheduled Reminders screen, showing every
     reminder the phone is holding and how full it is.
-18. #6-new to #12-new — the scheduler built in eight steps, so one
+19. #6-new to #12-new — the scheduler built in eight steps, so one
     module owns every reminder and no screen arms its own.
-19. #4-new — the first notification fixes. Real, and kept, but not
+20. #4-new — the first notification fixes. Real, and kept, but not
     the whole story.
 
 

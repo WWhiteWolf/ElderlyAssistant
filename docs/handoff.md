@@ -20,11 +20,14 @@ and #30-new all had no entry at all.
 starts here. It does not start from the engine. Think for him. Do not ask
 him what the session is for, and do not make him re-teach the pages.
 
-**Daily is built** from `docs/build-sheet-daily.md` (#33-new). Home's
-Daily tile opens it. The one list `reminder_items` is live, with
-dual-write so the engine still arms. **Nothing of Weekly through
-Options is built.** The next session builds those from
-`docs/build-sheet-pages.md`. The pages are not built from this file.
+**Daily through Options are built.** The one list `reminder_items` is
+live, with dual-write so the engine still arms. **#33-new is
+committed** (Patrick, #34-new). Home no longer has Input, To-Do, Look
+Ahead, My Week, Project Planner, Orders, or Watch List. Patrick
+arranged the remaining tiles himself. **Next session takes the old
+screens out** — the ones Home no longer opens. The engine still reads
+the old lists through dual-write, so those readers stay until that is
+swapped. Testing and the odds and ends wait.
 
 ### The pages, settled by Patrick at #30-new
 
@@ -69,9 +72,8 @@ other cadence pages keep their own adds, because on those the page is the
 whole meaning of Repeat.
 
 Save on an every-day item returns to Daily. **Save on One Time for
-today returns to To-Do** (the One Time page until that page is built),
-which is the page that has the Log (Patrick, #33-new). Cancel and the
-header Home still go to Daily, where the add started. A My Day banner
+today returns to One Time** (#34-new). Cancel and the header Home still
+go to Daily, where the add started. A My Day banner
 or a Siri mark-done now opens Daily, not the old My Day page, so a
 save is not followed by that page covering what you just landed on
 (Patrick, #33-new).
@@ -108,8 +110,8 @@ points at the wrong thing.
 part: one form has to ask every kind of question and then guess which list
 you meant, so it grows to hold the whole app, while each page only ever
 needs its own small part. Patrick's own picture was of the user facing the
-huge input page. The page built at #29-new is still in the app and Home's
-first tile still opens it. **It is a try, not the destination.**
+huge input page. The page built at #29-new is still in the app. Home
+no longer opens it. **It is a try, not the destination.**
 
 **Testing waits until the building is done** (Patrick, #30-new). The
 automated test load is not next. The phone build still waits. Work stays

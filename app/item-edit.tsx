@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -16,38 +15,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl from '../components/DateTimeControl';
 import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
-import * as AppGroup from '../modules/app-group';
-import { runScheduler } from '../scheduler/scheduler';
-import { warnIfFull } from '../scheduler/warn';
-
-// One lead time on a One Time item, copied from To-Do's Reminder shape so
-// dual-write can put it back on todo_tasks without translating.
-export interface LeadReminder {
-    id: string;
-    amount: number;
-    unit: 'minutes' | 'hours' | 'days';
-    kind?: 'offset' | 'clock';
-    daysBefore?: number;
-    timeOfDay?: 'morning' | 'midday' | 'evening';
-}
-
-// One row on the saved list `reminder_items`. This job only writes daily
-// and oneTime; later pages add other kinds to the same list.
-export interface ReminderItem {
-    id: string;
-    kind: 'daily' | 'oneTime';
-    label: string;
-    hour?: number;
-    minute?: number;
-    year?: number;
-    month?: number;
-    day?: number;
-    reminders?: LeadReminder[];
-    completed?: boolean;
-    snoozedUntil?: number;
-}
-
-const STORAGE_KEY = 'reminder_items';
+import {
+    DAY_NAMES,
+    hourMinuteOf,
+    loadReminderItems,
+    saveReminderItems,
+    type LeadReminder,
+    type ReminderItem,
+    type ReminderKind,
+} from '../modules/reminder-items';
 
 type ReminderPreset = {
     label: string;
@@ -58,127 +34,60 @@ type ReminderPreset = {
     timeOfDay?: 'morning' | 'midday' | 'evening';
 };
 
-const REMINDER_PRESETS: ReminderPreset[] = [
+const DAILY_ONE_TIME_PRESETS: ReminderPreset[] = [
     { label: '30 min.', kind: 'offset', amount: 30, unit: 'minutes' },
     { label: '1 hour', kind: 'offset', amount: 1, unit: 'hours' },
     { label: '2 hours', kind: 'offset', amount: 2, unit: 'hours' },
-    // Time of: zero minutes before, so it fires at the item's own time.
     { label: 'Time of', kind: 'offset', amount: 0, unit: 'minutes' },
 ];
 
-function hourMinuteOf(saved: { hour?: number | null; minute?: number | null }): { hour?: number; minute?: number } {
-    if (typeof saved.hour === 'number' && typeof saved.minute === 'number') {
-        return { hour: saved.hour, minute: saved.minute };
+const ONE_TIME_PRESETS: ReminderPreset[] = [
+    { label: '30 min.', kind: 'offset', amount: 30, unit: 'minutes' },
+    { label: '1 hour', kind: 'offset', amount: 1, unit: 'hours' },
+    { label: '2 hours', kind: 'offset', amount: 2, unit: 'hours' },
+    { label: 'Morning of', kind: 'clock', daysBefore: 0, timeOfDay: 'morning' },
+    { label: 'Day Before', kind: 'clock', daysBefore: 1, timeOfDay: 'midday' },
+    { label: 'Night Before', kind: 'clock', daysBefore: 1, timeOfDay: 'evening' },
+    { label: '2 Days Before', kind: 'clock', daysBefore: 2, timeOfDay: 'midday' },
+    { label: 'Week', kind: 'clock', daysBefore: 7, timeOfDay: 'evening' },
+    { label: 'Month', kind: 'clock', daysBefore: 30, timeOfDay: 'evening' },
+];
+
+const KINDS: ReminderKind[] = ['daily', 'weekly', 'monthly', 'quarterly', 'yearly', 'oneTime', 'extended'];
+
+function asKind(value: string | undefined): ReminderKind {
+    return KINDS.includes(value as ReminderKind) ? (value as ReminderKind) : 'daily';
+}
+
+function pathFor(returnTo: string | undefined): Href {
+    switch (returnTo) {
+        case 'weekly': return '/weekly' as Href;
+        case 'monthly': return '/monthly' as Href;
+        case 'quarterly': return '/quarterly' as Href;
+        case 'yearly': return '/yearly' as Href;
+        case 'onetime': return '/onetime' as Href;
+        case 'extended': return '/extended' as Href;
+        default: return '/daily' as Href;
     }
-    return {};
-}
-
-// Fold My Day and Pets into the one list the first time Daily opens and
-// finds reminder_items missing or empty. The old keys stay; dual-write
-// keeps them current after this.
-async function migrateIntoReminderItems(): Promise<ReminderItem[]> {
-    const routineRaw = await AsyncStorage.getItem('my_routine');
-    const petsRaw = await AsyncStorage.getItem('pets_feeds');
-    const routine: { id: string; label: string; hour?: number | null; minute?: number | null; completed?: boolean; snoozedUntil?: number }[] =
-        routineRaw ? JSON.parse(routineRaw) : [];
-    const pets: { id: string; label: string; hour?: number | null; minute?: number | null; completed?: boolean; snoozedUntil?: number }[] =
-        petsRaw ? JSON.parse(petsRaw) : [];
-    const items: ReminderItem[] = [...routine, ...pets].map((one) => ({
-        id: one.id,
-        kind: 'daily' as const,
-        label: one.label,
-        ...hourMinuteOf(one),
-        ...(one.completed ? { completed: true } : {}),
-        ...(typeof one.snoozedUntil === 'number' ? { snoozedUntil: one.snoozedUntil } : {}),
-    }));
-    await saveReminderItems(items);
-    return items;
-}
-
-export async function loadReminderItems(): Promise<ReminderItem[]> {
-    const raw = await AsyncStorage.getItem(STORAGE_KEY);
-    if (raw) {
-        const parsed = JSON.parse(raw) as ReminderItem[];
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-    return migrateIntoReminderItems();
-}
-
-// Write the one list, then the old keys the engine still reads, then run
-// the scheduler. Pets are written empty so a migrated feed is not armed
-// twice — once as daily here and once from pets_feeds.
-export async function saveReminderItems(items: ReminderItem[]): Promise<void> {
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-
-    const daily = items.filter((one) => one.kind === 'daily');
-    const myRoutine = daily.map((one) => ({
-        id: one.id,
-        label: one.label,
-        hour: typeof one.hour === 'number' ? one.hour : null,
-        minute: typeof one.minute === 'number' ? one.minute : null,
-        completed: !!one.completed,
-        ...(typeof one.snoozedUntil === 'number' ? { snoozedUntil: one.snoozedUntil } : {}),
-    }));
-    await AsyncStorage.setItem('my_routine', JSON.stringify(myRoutine));
-    await AsyncStorage.setItem('pets_feeds', JSON.stringify([]));
-    AppGroup.setMyDayItems(daily.map((one) => ({ id: one.id, label: one.label })));
-
-    const oneTime = items.filter((one) => one.kind === 'oneTime');
-    const oneTimeIds = new Set(oneTime.map((one) => one.id));
-    const todoRaw = await AsyncStorage.getItem('todo_tasks');
-    const existingTodo: Record<string, unknown>[] = todoRaw ? JSON.parse(todoRaw) : [];
-    const kept = existingTodo.filter((task) => typeof task.id === 'string' && !oneTimeIds.has(task.id));
-    const createdDate = new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit', year: '2-digit' });
-    const merged = [
-        ...kept,
-        ...oneTime.map((one) => ({
-            id: one.id,
-            title: one.label,
-            taskType: 'scheduled',
-            year: one.year,
-            month: one.month,
-            day: one.day,
-            ...(typeof one.hour === 'number' && typeof one.minute === 'number'
-                ? { hour: one.hour, minute: one.minute }
-                : {}),
-            reminders: one.reminders ?? [],
-            completed: !!one.completed,
-            createdDate,
-            notes: '',
-        })),
-    ];
-    await AsyncStorage.setItem('todo_tasks', JSON.stringify(merged));
-
-    warnIfFull(await runScheduler());
 }
 
 export default function ItemEditScreen() {
     const router = useRouter();
     const theme = useTheme();
     const styles = makeStyles(theme);
-    const { id, kind } = useLocalSearchParams<{
+    const { id, kind, returnTo } = useLocalSearchParams<{
         id?: string;
         kind?: string;
         returnTo?: string;
     }>();
     const editingId = typeof id === 'string' && id ? id : null;
+    const page = typeof returnTo === 'string' ? returnTo : 'daily';
 
     const [loaded, setLoaded] = useState(false);
-    const [editKind, setEditKind] = useState<'daily' | 'oneTime'>(
-        kind === 'oneTime' ? 'oneTime' : 'daily',
-    );
-    const goToDaily = () => {
-        router.replace('/daily' as Href);
-    };
-    const afterSave = () => {
-        router.dismissAll();
-        if (editKind === 'oneTime') {
-            router.replace('/todo' as Href);
-        } else {
-            router.replace('/daily' as Href);
-        }
-    };
+    const [editKind, setEditKind] = useState<ReminderKind>(asKind(kind));
+    const [intervalMonths, setIntervalMonths] = useState(3);
     const [tempName, setTempName] = useState('');
+    const [pendingDay, setPendingDay] = useState(() => new Date().getDay());
     const [pendingTime, setPendingTime] = useState<Date | null>(null);
     const [pendingTimeValid, setPendingTimeValid] = useState(true);
     const [pendingDate, setPendingDate] = useState<Date>(() => new Date(new Date().setHours(12, 0, 0, 0)));
@@ -186,6 +95,21 @@ export default function ItemEditScreen() {
     const [timeSet, setTimeSet] = useState(false);
     const [dateTimeValid, setDateTimeValid] = useState(true);
     const [reminders, setReminders] = useState<LeadReminder[]>([]);
+    const [existing, setExisting] = useState<ReminderItem | null>(null);
+
+    const goBack = () => {
+        router.dismissAll();
+        router.replace(pathFor(page));
+    };
+
+    const afterSave = () => {
+        router.dismissAll();
+        if (!editingId && editKind === 'oneTime' && page === 'daily') {
+            router.replace('/onetime' as Href);
+        } else {
+            router.replace(pathFor(page));
+        }
+    };
 
     useEffect(() => {
         const setup = async () => {
@@ -193,38 +117,74 @@ export default function ItemEditScreen() {
             if (editingId) {
                 const found = list.find((one) => one.id === editingId);
                 if (found) {
+                    setExisting(found);
                     setEditKind(found.kind);
                     setTempName(found.label);
+                    if (typeof found.intervalMonths === 'number') setIntervalMonths(found.intervalMonths);
+                    if (typeof found.day === 'number' && found.kind === 'weekly') setPendingDay(found.day);
                     if (typeof found.hour === 'number' && typeof found.minute === 'number') {
-                        setPendingTime(new Date(new Date().setHours(found.hour, found.minute, 0, 0)));
+                        const t = new Date(new Date().setHours(found.hour, found.minute, 0, 0));
+                        setPendingTime(t);
                         setTimeSet(true);
+                        if (found.kind !== 'weekly' && found.kind !== 'daily' && found.kind !== 'extended') {
+                            setPendingDate(new Date(
+                                typeof found.year === 'number' ? found.year : t.getFullYear(),
+                                typeof found.month === 'number' ? found.month : t.getMonth(),
+                                typeof found.day === 'number' ? found.day : t.getDate(),
+                                found.hour,
+                                found.minute,
+                                0,
+                                0,
+                            ));
+                        }
+                    } else if (
+                        found.kind === 'monthly' || found.kind === 'quarterly' || found.kind === 'yearly' || found.kind === 'oneTime'
+                    ) {
+                        if (typeof found.year === 'number' && typeof found.month === 'number' && typeof found.day === 'number') {
+                            setPendingDate(new Date(found.year, found.month, found.day, 12, 0, 0, 0));
+                            setDateSet(true);
+                        } else {
+                            setDateSet(false);
+                        }
                     }
-                    if (found.kind === 'oneTime' && typeof found.year === 'number' && typeof found.month === 'number' && typeof found.day === 'number') {
-                        setPendingDate(new Date(
-                            found.year,
-                            found.month,
-                            found.day,
-                            typeof found.hour === 'number' ? found.hour : 12,
-                            typeof found.minute === 'number' ? found.minute : 0,
-                            0,
-                            0,
-                        ));
-                        setDateSet(true);
+                    if (found.kind === 'oneTime') {
+                        setReminders(found.reminders ?? []);
                     }
-                    setReminders(found.reminders ?? []);
+                    if (found.kind === 'extended' || found.kind === 'daily' || found.kind === 'weekly') {
+                        setTimeSet(typeof found.hour === 'number');
+                    }
                 }
-            } else if (kind === 'oneTime') {
-                const today = new Date();
-                today.setHours(12, 0, 0, 0);
-                setPendingDate(today);
-                setDateSet(true);
-                setTimeSet(false);
-                setEditKind('oneTime');
+            } else {
+                const nextKind = asKind(kind);
+                setEditKind(nextKind);
+                if (nextKind === 'oneTime' && page === 'daily') {
+                    const today = new Date();
+                    today.setHours(12, 0, 0, 0);
+                    setPendingDate(today);
+                    setDateSet(true);
+                    setTimeSet(false);
+                } else if (nextKind === 'monthly' || nextKind === 'quarterly' || nextKind === 'yearly') {
+                    const d = new Date();
+                    d.setHours(12, 0, 0, 0);
+                    setPendingDate(d);
+                    setDateSet(true);
+                    setTimeSet(true);
+                } else if (nextKind === 'extended') {
+                    setTimeSet(false);
+                    setPendingTime(null);
+                } else if (nextKind === 'weekly') {
+                    setPendingTime(new Date(new Date().setHours(12, 0, 0, 0)));
+                    setPendingDay(new Date().getDay());
+                } else if (nextKind === 'daily') {
+                    setPendingTime(null);
+                }
             }
             setLoaded(true);
         };
         setup();
-    }, [editingId, kind]);
+    }, [editingId, kind, page]);
+
+    const presets = (page === 'daily' && editKind === 'oneTime') ? DAILY_ONE_TIME_PRESETS : ONE_TIME_PRESETS;
 
     const isPresetSelected = (p: ReminderPreset): boolean => {
         if (p.kind === 'clock') {
@@ -263,33 +223,81 @@ export default function ItemEditScreen() {
     const finishSave = async () => {
         const name = tempName.trim();
         const list = await loadReminderItems();
-        let next: ReminderItem;
+        const base: ReminderItem = existing ?? {
+            id: editingId ?? Date.now().toString(),
+            kind: editKind,
+            label: name,
+        };
+        let next: ReminderItem = { ...base, kind: editKind, label: name };
+
         if (editKind === 'daily') {
             next = {
-                id: editingId ?? Date.now().toString(),
-                kind: 'daily',
-                label: name,
+                ...next,
                 ...hourMinuteOf({
                     hour: pendingTime ? pendingTime.getHours() : null,
                     minute: pendingTime ? pendingTime.getMinutes() : null,
                 }),
             };
-        } else {
+            delete next.year;
+            delete next.month;
+            delete next.day;
+            delete next.reminders;
+            delete next.intervalMonths;
+        } else if (editKind === 'weekly') {
+            const t = pendingTime ?? new Date(new Date().setHours(12, 0, 0, 0));
+            next = {
+                ...next,
+                day: pendingDay,
+                hour: t.getHours(),
+                minute: t.getMinutes(),
+            };
+            delete next.year;
+            delete next.month;
+            delete next.reminders;
+            delete next.intervalMonths;
+        } else if (editKind === 'monthly' || editKind === 'quarterly' || editKind === 'yearly') {
+            next = {
+                ...next,
+                year: pendingDate.getFullYear(),
+                month: pendingDate.getMonth(),
+                day: pendingDate.getDate(),
+                hour: pendingDate.getHours(),
+                minute: pendingDate.getMinutes(),
+                ...(editKind === 'quarterly' ? { intervalMonths } : {}),
+            };
+            delete next.reminders;
+        } else if (editKind === 'oneTime') {
             const when = dateSet ? pendingDate : new Date();
             next = {
-                id: editingId ?? Date.now().toString(),
-                kind: 'oneTime',
-                label: name,
-                year: when.getFullYear(),
-                month: when.getMonth(),
-                day: when.getDate(),
+                ...next,
+                ...(dateSet ? { year: when.getFullYear(), month: when.getMonth(), day: when.getDate() } : {}),
                 ...hourMinuteOf({
                     hour: timeSet ? pendingDate.getHours() : null,
                     minute: timeSet ? pendingDate.getMinutes() : null,
                 }),
                 reminders,
             };
+            if (!dateSet) {
+                delete next.year;
+                delete next.month;
+                delete next.day;
+            }
+            delete next.intervalMonths;
+        } else {
+            next = {
+                ...next,
+                ...hourMinuteOf({
+                    hour: timeSet && pendingTime ? pendingTime.getHours() : null,
+                    minute: timeSet && pendingTime ? pendingTime.getMinutes() : null,
+                }),
+            };
+            delete next.year;
+            delete next.month;
+            delete next.day;
+            delete next.reminders;
+            delete next.intervalMonths;
         }
+
         const updated = editingId
             ? list.map((one) => (one.id === editingId ? next : one))
             : [...list, next];
@@ -302,11 +310,13 @@ export default function ItemEditScreen() {
             Alert.alert('Missing Name', 'Please enter a name.');
             return;
         }
-        if (editKind === 'daily' && !pendingTimeValid) {
+        const timeKinds: ReminderKind[] = ['daily', 'weekly', 'extended'];
+        if (timeKinds.includes(editKind) && !pendingTimeValid) {
             Alert.alert('Check Date & Time', 'The typed date or time is not a real one. Fix the box outlined in red, then save.');
             return;
         }
-        if (editKind === 'oneTime' && !dateTimeValid) {
+        const dateKinds: ReminderKind[] = ['monthly', 'quarterly', 'yearly', 'oneTime'];
+        if (dateKinds.includes(editKind) && !dateTimeValid) {
             Alert.alert('Check Date & Time', 'The typed date or time is not a real one. Fix the box outlined in red, then save.');
             return;
         }
@@ -328,11 +338,16 @@ export default function ItemEditScreen() {
         );
     }
 
+    const namePlaceholder =
+        editKind === 'daily' ? 'e.g. Breakfast, Morning Medication'
+        : editKind === 'weekly' ? 'e.g. Trash, Laundry'
+        : 'What needs to be done?';
+
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
             <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
-                    <TouchableOpacity onPress={goToDaily} style={styles.headerBtn}>
+                    <TouchableOpacity onPress={goBack} style={styles.headerBtn}>
                         <Text style={styles.headerBtnText}>Home</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>{editingId ? 'Edit' : 'New'}</Text>
@@ -342,7 +357,7 @@ export default function ItemEditScreen() {
             <Bridge />
             <ScrollView contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">
                 <View style={styles.modalBtns}>
-                    <TouchableOpacity style={styles.cancelBtn} onPress={goToDaily}>
+                    <TouchableOpacity style={styles.cancelBtn} onPress={goBack}>
                         <Text style={styles.cancelBtnText}>Cancel</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.confirmBtn} onPress={save}>
@@ -355,23 +370,61 @@ export default function ItemEditScreen() {
                     style={styles.input}
                     value={tempName}
                     onChangeText={setTempName}
-                    placeholder={editKind === 'daily' ? 'e.g. Breakfast, Morning Medication' : 'What needs to be done?'}
+                    placeholder={namePlaceholder}
                     placeholderTextColor={theme.mutedText}
                     autoFocus={!editingId}
                 />
 
-                {editKind === 'daily' ? (
+                {editKind === 'weekly' && (
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
+                        {DAY_NAMES.map((d, i) => (
+                            <TouchableOpacity
+                                key={d}
+                                style={[styles.recurBtn, pendingDay === i && styles.recurBtnActive]}
+                                onPress={() => setPendingDay(i)}
+                            >
+                                <Text style={[styles.recurBtnText, pendingDay === i && styles.recurBtnTextActive]}>{d}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                )}
+
+                {(editKind === 'daily' || editKind === 'weekly') && (
                     <DateTimeControl
                         mode="time"
                         value={pendingTime || new Date(new Date().setHours(12, 0, 0, 0))}
                         onChange={setPendingTime}
                         timeLabel="Time"
                         onValidityChange={setPendingTimeValid}
-                        optionalTime
-                        timeSet={pendingTime !== null}
+                        optionalTime={editKind === 'daily'}
+                        timeSet={editKind === 'weekly' ? true : pendingTime !== null}
                         onClearTime={() => setPendingTime(null)}
                     />
-                ) : (
+                )}
+
+                {editKind === 'extended' && (
+                    <DateTimeControl
+                        mode="time"
+                        value={pendingTime || new Date(new Date().setHours(12, 0, 0, 0))}
+                        onChange={(d) => { setPendingTime(d); setTimeSet(true); }}
+                        timeLabel="Time"
+                        onValidityChange={setPendingTimeValid}
+                        optionalTime
+                        timeSet={timeSet}
+                        onClearTime={() => { setPendingTime(null); setTimeSet(false); }}
+                    />
+                )}
+
+                {(editKind === 'monthly' || editKind === 'quarterly' || editKind === 'yearly') && (
+                    <DateTimeControl
+                        value={pendingDate}
+                        onChange={setPendingDate}
+                        dateLabel="First Due Date"
+                        onValidityChange={setDateTimeValid}
+                    />
+                )}
+
+                {editKind === 'oneTime' && (
                     <>
                         <DateTimeControl
                             value={pendingDate}
@@ -390,7 +443,7 @@ export default function ItemEditScreen() {
                         />
                         <Text style={styles.inputLabel}>Reminders before</Text>
                         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
-                            {REMINDER_PRESETS.map((p) => (
+                            {presets.map((p) => (
                                 <TouchableOpacity
                                     key={p.label}
                                     style={[styles.recurBtn, isPresetSelected(p) && styles.recurBtnActive]}

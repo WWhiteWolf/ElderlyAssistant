@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -7,7 +6,6 @@ import {
     ScrollView,
     StyleSheet,
     Text,
-    TextInput,
     TouchableOpacity,
     View,
 } from 'react-native';
@@ -15,38 +13,27 @@ import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-g
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Bridge from '../components/Bridge';
+import AddWherePopup from './AddWherePopup';
+import Bridge from './Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 import {
     advanceDatedItem,
-    dragVisibleTo,
-    FROM_PAGE,
-    format12Hour,
+    dragKindTo,
+    formatItemWhen,
     loadReminderItems,
     saveReminderItems,
     snoozeLineOf,
-    sortDailyVisible,
     type ReminderItem,
+    type ReminderKind,
 } from '../modules/reminder-items';
 
-interface HistoryEntry {
-    id: string;
-    date: string;
-    sched: string;
-    actual: string;
-    what?: string;
-    note?: string;
-}
+type PageStyles = ReturnType<typeof makeStyles>;
 
-type DailyStyles = ReturnType<typeof makeStyles>;
-
-function DailyItemRow({
+function CadenceItemRow({
     item,
     highlighted,
     dragging,
     styles,
-    rowLabel,
-    snoozeLine,
     onTap,
     onDragStart,
     onDragMove,
@@ -58,9 +45,7 @@ function DailyItemRow({
     item: ReminderItem;
     highlighted: boolean;
     dragging: boolean;
-    styles: DailyStyles;
-    rowLabel: string;
-    snoozeLine: string | null;
+    styles: PageStyles;
     onTap: () => void;
     onDragStart: (id: string, y: number) => void;
     onDragMove: (y: number) => void;
@@ -115,6 +100,9 @@ function DailyItemRow({
         elevation: lifted.value ? 8 : 0,
     }));
 
+    const when = formatItemWhen(item);
+    const snoozeLine = snoozeLineOf(item);
+
     return (
         <Animated.View style={liftedStyle}>
             <Swipeable
@@ -127,7 +115,10 @@ function DailyItemRow({
                 <View style={[styles.row, dragging && styles.rowSelected, highlighted && styles.rowHighlighted]}>
                     <GestureDetector gesture={gesture}>
                         <View style={styles.labelArea}>
-                            <Text style={styles.itemLabel}>{rowLabel}</Text>
+                            <Text style={styles.itemLabel}>{item.label}</Text>
+                            {when !== '' && (
+                                <Text style={styles.itemSub}>{when}</Text>
+                            )}
                             {snoozeLine != null && (
                                 <Text style={styles.snoozedNote}>{snoozeLine}</Text>
                             )}
@@ -150,23 +141,27 @@ function DailyItemRow({
     );
 }
 
-export default function DailyScreen() {
+export default function CadenceListPage({
+    title,
+    kind,
+    returnTo,
+}: {
+    title: string;
+    kind: ReminderKind;
+    returnTo: string;
+}) {
     const router = useRouter();
     const theme = useTheme();
     const styles = makeStyles(theme);
     const [items, setItems] = useState<ReminderItem[]>([]);
-    const [history, setHistory] = useState<HistoryEntry[]>([]);
-    const [showAddPopup, setShowAddPopup] = useState(false);
+    const [showAdd, setShowAdd] = useState(false);
     const [highlightId, setHighlightId] = useState<string | null>(null);
     const [draggingId, setDraggingId] = useState<string | null>(null);
     const [snoozeItemId, setSnoozeItemId] = useState<string | null>(null);
-    const [editEntry, setEditEntry] = useState<HistoryEntry | null>(null);
-    const [editWhat, setEditWhat] = useState('');
-    const [editNote, setEditNote] = useState('');
 
     const itemsRef = useRef(items);
     itemsRef.current = items;
-    const visible = sortDailyVisible(items);
+    const visible = items.filter((one) => one.kind === kind);
     const visibleRef = useRef(visible);
     visibleRef.current = visible;
     const rowHeights = useRef<Record<string, number>>({});
@@ -184,66 +179,36 @@ export default function DailyScreen() {
         if (typeof highlight === 'string' && highlight) setHighlightId(highlight);
     }, [highlight]);
 
-    const refreshFromStorage = async () => {
-        const list = await loadReminderItems();
-        setItems(list);
-        const savedHist = await AsyncStorage.getItem('my_history');
-        if (savedHist) setHistory(JSON.parse(savedHist));
-    };
-
     useFocusEffect(
         useCallback(() => {
-            void refreshFromStorage();
+            void loadReminderItems().then(setItems);
         }, []),
     );
-
-    const openEdit = (item: ReminderItem) => {
-        router.push({ pathname: '/item-edit', params: { id: item.id, returnTo: 'daily' } } as Href);
-    };
-
-    const openNew = (kind: 'daily' | 'oneTime') => {
-        setShowAddPopup(false);
-        router.push({ pathname: '/item-edit', params: { kind, returnTo: 'daily' } } as Href);
-    };
 
     const writeItems = (updated: ReminderItem[]) => {
         setItems(updated);
         void saveReminderItems(updated);
     };
 
-    const writeHistory = (updated: HistoryEntry[]) => {
-        setHistory(updated);
-        void AsyncStorage.setItem('my_history', JSON.stringify(updated));
-    };
-
     const markDone = (id: string) => {
         const item = items.find((one) => one.id === id);
         if (!item) return;
-        const now = new Date().toLocaleTimeString([], {
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: false,
-        });
-        const newEntry: HistoryEntry = {
-            id: Date.now().toString(),
-            date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
-            sched: item.label,
-            actual: now,
-            what: '',
-            note: '',
-        };
-        writeHistory([newEntry, ...history].slice(0, 50));
+        if (kind === 'weekly') {
+            writeItems(items.map((one) => {
+                if (one.id !== id) return one;
+                const { snoozedUntil, ...rest } = one;
+                return { ...rest, completed: true, doneAt: Date.now() };
+            }));
+            return;
+        }
+        if (kind === 'monthly' || kind === 'quarterly' || kind === 'yearly') {
+            writeItems(items.map((one) => (one.id === id ? advanceDatedItem(one) : one)));
+            return;
+        }
         writeItems(items.map((one) => {
             if (one.id !== id) return one;
-            if (one.kind === 'monthly' || one.kind === 'quarterly' || one.kind === 'yearly') {
-                return advanceDatedItem(one);
-            }
             const { snoozedUntil, ...rest } = one;
-            return {
-                ...rest,
-                completed: true,
-                ...(one.kind === 'weekly' ? { doneAt: Date.now() } : {}),
-            };
+            return { ...rest, completed: true };
         }));
     };
 
@@ -293,7 +258,7 @@ export default function DailyScreen() {
     const moveDrag = useCallback((y: number) => {
         const meta = dragMeta.current;
         if (!meta) return;
-        const vis = sortDailyVisible(meta.snapshot);
+        const vis = meta.snapshot.filter((one) => one.kind === kind);
         if (vis.length === 0) return;
         const avg =
             vis.reduce((sum, one) => sum + (rowHeights.current[one.id] ?? 40), 0) / vis.length;
@@ -301,13 +266,13 @@ export default function DailyScreen() {
             0,
             Math.min(vis.length - 1, meta.startIndex + Math.round((y - meta.startY) / avg)),
         );
-    }, []);
+    }, [kind]);
 
     const endDrag = useCallback(() => {
         const meta = dragMeta.current;
         if (!meta && !draggingIdRef.current) return;
         if (meta) {
-            const next = dragVisibleTo(meta.snapshot, meta.id, dragToIndex.current);
+            const next = dragKindTo(meta.snapshot, kind, meta.id, dragToIndex.current);
             itemsRef.current = next;
             setItems(next);
             void saveReminderItems(next);
@@ -315,54 +280,18 @@ export default function DailyScreen() {
         dragMeta.current = null;
         draggingIdRef.current = null;
         setDraggingId(null);
-    }, []);
+    }, [kind]);
 
     const deleteEntry = (id: string) => {
-        Alert.alert('Delete', 'Remove this entry from your routine?', [
+        Alert.alert('Delete', 'Remove this entry?', [
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Delete',
                 style: 'destructive',
-                onPress: () => {
-                    const updated = items.filter((one) => one.id !== id);
-                    writeItems(updated);
-                },
+                onPress: () => writeItems(items.filter((one) => one.id !== id)),
             },
         ]);
     };
-
-    const deleteHistoryEntry = (id: string) => {
-        writeHistory(history.filter((one) => one.id !== id));
-    };
-
-    const clearAllHistory = () => {
-        Alert.alert(
-            'Clear All',
-            'Delete all log entries? This cannot be undone.',
-            [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                    text: 'Clear All',
-                    style: 'destructive',
-                    onPress: () => writeHistory([]),
-                },
-            ],
-        );
-    };
-
-    const rowLabel = (item: ReminderItem) => {
-        const time =
-            typeof item.hour === 'number' && typeof item.minute === 'number'
-                ? `${format12Hour(item.hour, item.minute)} `
-                : '';
-        const from =
-            item.kind !== 'daily' && item.kind !== 'extended'
-                ? ` ${FROM_PAGE[item.kind]}`
-                : '';
-        return `${time}${item.label}${from}`;
-    };
-
-    const snoozeLine = (item: ReminderItem) => snoozeLineOf(item);
 
     return (
         <GestureHandlerRootView style={styles.container}>
@@ -377,8 +306,8 @@ export default function DailyScreen() {
                     >
                         <Text style={styles.headerBtnText}>Home</Text>
                     </TouchableOpacity>
-                    <Text style={styles.title}>Daily</Text>
-                    <TouchableOpacity onPress={() => setShowAddPopup(true)} style={styles.headerBtn}>
+                    <Text style={styles.title}>{title}</Text>
+                    <TouchableOpacity onPress={() => setShowAdd(true)} style={styles.headerBtn}>
                         <Text style={styles.headerBtnText}>+ Add</Text>
                     </TouchableOpacity>
                 </View>
@@ -402,118 +331,42 @@ export default function DailyScreen() {
                                 rowHeights.current[item.id] = e.nativeEvent.layout.height;
                             }}
                         >
-                            <DailyItemRow
+                            <CadenceItemRow
                                 item={item}
                                 highlighted={highlightId === item.id}
                                 dragging={draggingId === item.id}
                                 styles={styles}
-                                rowLabel={rowLabel(item)}
-                                snoozeLine={snoozeLine(item)}
                                 onTap={() => {
                                     if (highlightId === item.id) {
                                         setHighlightId(null);
                                         return;
                                     }
-                                    openEdit(item);
+                                    router.push({ pathname: '/item-edit', params: { id: item.id, returnTo } } as Href);
                                 }}
                                 onDragStart={beginDrag}
                                 onDragMove={moveDrag}
                                 onDragEnd={endDrag}
                                 onSnooze={() => setSnoozeItemId(item.id)}
-                                onDone={() => item.completed ? undoDone(item.id) : markDone(item.id)}
+                                onDone={() => {
+                                    if ((kind === 'weekly' || kind === 'oneTime' || kind === 'extended') && item.completed) {
+                                        undoDone(item.id);
+                                        return;
+                                    }
+                                    markDone(item.id);
+                                }}
                                 onDelete={() => deleteEntry(item.id)}
                             />
                         </View>
                     ))}
                 </View>
-
-                <View style={styles.historySection}>
-                    <View style={styles.historyHeader}>
-                        <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>My Log</Text>
-                        {history.length > 0 && (
-                            <TouchableOpacity style={styles.clearAllBtn} onPress={clearAllHistory}>
-                                <Text style={styles.clearAllBtnText}>Clear All</Text>
-                            </TouchableOpacity>
-                        )}
-                    </View>
-                    <ScrollView style={styles.historyScroll} nestedScrollEnabled>
-                        {history.map((l) => (
-                            <Swipeable
-                                key={l.id}
-                                renderRightActions={() => (
-                                    <TouchableOpacity style={styles.swipeDelete} onPress={() => deleteHistoryEntry(l.id)}>
-                                        <Text style={styles.swipeDeleteText}>Delete</Text>
-                                    </TouchableOpacity>
-                                )}
-                            >
-                                <TouchableOpacity
-                                    style={styles.historyItem}
-                                    onPress={() => {
-                                        setEditEntry(l);
-                                        setEditWhat(l.what || '');
-                                        setEditNote(l.note || '');
-                                    }}
-                                >
-                                    <Text style={styles.historyText}>
-                                        {l.date} | {l.actual} | {l.sched}{l.what ? ` | ${l.what}` : ''}
-                                    </Text>
-                                </TouchableOpacity>
-                            </Swipeable>
-                        ))}
-                    </ScrollView>
-                </View>
             </ScrollView>
 
-            {editEntry && (
-                <View style={styles.logModal}>
-                    <Text style={styles.modalTitle}>Edit Log Entry</Text>
-                    <Text style={styles.inputLabel}>Notes (optional)</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={editWhat}
-                        onChangeText={setEditWhat}
-                        placeholder="Add a note about this entry..."
-                        placeholderTextColor={theme.mutedText}
-                    />
-                    <View style={styles.modalBtns}>
-                        <TouchableOpacity style={styles.cancelBtn} onPress={() => setEditEntry(null)}>
-                            <Text style={styles.cancelBtnText}>Cancel</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.confirmBtn}
-                            onPress={() => {
-                                writeHistory(history.map((one) =>
-                                    one.id === editEntry.id ? { ...one, what: editWhat, note: editNote } : one
-                                ));
-                                setEditEntry(null);
-                            }}
-                        >
-                            <Text style={styles.confirmBtnText}>Save</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            )}
-
-            {showAddPopup && (
-                <Modal transparent animationType="fade" visible={showAddPopup}>
-                    <View style={styles.modalOverlay}>
-                        <View style={styles.pickerModal}>
-                            <Text style={styles.modalTitle}>New</Text>
-                            <TouchableOpacity style={styles.choiceBtn} onPress={() => openNew('daily')}>
-                                <Text style={styles.choiceBtnText}>Every day</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.choiceBtn} onPress={() => openNew('oneTime')}>
-                                <Text style={styles.choiceBtnText}>One Time for today</Text>
-                            </TouchableOpacity>
-                            <View style={styles.modalBtns}>
-                                <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowAddPopup(false)}>
-                                    <Text style={styles.cancelBtnText}>Cancel</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                </Modal>
-            )}
+            <AddWherePopup
+                visible={showAdd}
+                currentKind={kind}
+                returnTo={returnTo}
+                onClose={() => setShowAdd(false)}
+            />
             {snoozeItemId && (
                 <Modal transparent animationType="fade" visible={!!snoozeItemId}>
                     <View style={styles.modalOverlay}>
@@ -600,6 +453,7 @@ const makeStyles = (t: Theme) =>
         hintText: { fontSize: 11, color: t.mutedText, marginTop: 2, marginBottom: 8 },
         labelArea: { flex: 1, marginRight: 6 },
         itemLabel: { fontSize: 16, color: t.bodyText, fontWeight: '500' },
+        itemSub: { fontSize: 13, color: t.mutedText, marginTop: 1 },
         rowSelected: {
             backgroundColor: t.rowSelected,
             borderRadius: 8,
@@ -666,14 +520,6 @@ const makeStyles = (t: Theme) =>
             width: '100%',
         },
         modalTitle: { fontSize: 18, fontWeight: '600', color: t.cardTitle, marginBottom: 10 },
-        choiceBtn: {
-            backgroundColor: t.buttonPrimary,
-            paddingVertical: 14,
-            borderRadius: 8,
-            alignItems: 'center',
-            marginBottom: 8,
-        },
-        choiceBtnText: { color: t.buttonPrimaryText, fontWeight: '600', fontSize: 16 },
         modalBtns: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 },
         cancelBtn: {
             backgroundColor: t.buttonNeutral,
@@ -683,81 +529,6 @@ const makeStyles = (t: Theme) =>
             borderRadius: 8,
             flex: 1,
             alignItems: 'center',
-            marginRight: 8,
         },
         cancelBtnText: { color: t.buttonNeutralText, fontWeight: '600' },
-        confirmBtn: {
-            backgroundColor: t.buttonPrimary,
-            padding: 12,
-            borderRadius: 8,
-            flex: 1,
-            alignItems: 'center',
-        },
-        confirmBtnText: { color: t.buttonPrimaryText, fontWeight: '600' },
-        sectionTitle: {
-            fontSize: 18,
-            fontWeight: '600',
-            color: t.cardTitle,
-            marginBottom: 10,
-        },
-        historySection: { marginHorizontal: 12, marginBottom: 12 },
-        historyScroll: {
-            height: 385,
-            backgroundColor: t.card,
-            borderRadius: 8,
-            padding: 8,
-            borderWidth: 0.5,
-            borderColor: t.cardBorder,
-        },
-        historyHeader: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 10,
-        },
-        historyItem: {
-            borderBottomWidth: 0.5,
-            borderBottomColor: t.progressTrack,
-            paddingVertical: 6,
-        },
-        historyText: { fontSize: 13, color: t.bodyText, lineHeight: 18 },
-        clearAllBtn: {
-            paddingVertical: 4,
-            paddingHorizontal: 10,
-            borderRadius: 6,
-            borderWidth: 0.5,
-            borderColor: t.mutedText,
-        },
-        clearAllBtnText: {
-            color: t.mutedText,
-            fontSize: 13,
-            fontWeight: '600',
-        },
-        logModal: {
-            position: 'absolute',
-            top: 100,
-            left: 20,
-            right: 20,
-            backgroundColor: t.card,
-            borderRadius: 12,
-            padding: 16,
-            borderWidth: 0.5,
-            borderColor: t.cardBorder,
-            elevation: 10,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.15,
-            shadowRadius: 4,
-            zIndex: 999,
-        },
-        input: {
-            borderWidth: 0.5,
-            borderColor: t.cardBorder,
-            borderRadius: 8,
-            padding: 10,
-            fontSize: 16,
-            backgroundColor: t.pageBackground,
-            marginBottom: 10,
-            color: t.bodyText,
-        },
     });

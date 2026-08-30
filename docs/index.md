@@ -60,8 +60,7 @@ file is added, retired or renamed, its line changes at the same refresh.
   Daily, and the one list it needs. **Built at #33-new.**
 - **`build-sheet-pages.md`** — #33-new. Second job: Weekly, Monthly,
   Quarterly, Yearly, One Time, Extended, Options, and the + Add
-  popup. **Not yet built.** Refreshed at the close of #33-new with
-  what Daily actually is. Do not rebuild Daily from the first sheet.
+  popup. **Built at #34-new.** Do not rebuild Daily from the first sheet.
 - **`build-sheet.md`** — written as a sheet at #22-new, and now the
   standing description of what `inputshape.ts`, `stillwanted.ts` and
   `armdepth.ts` hold. It has not been brought level with the #24-new

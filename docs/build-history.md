@@ -2767,6 +2767,35 @@ not the first sheet. Weekly through Options are not built.
 24-hour clock. Testing. The phone.
 
 
+## #34-new (2026-08-30): Weekly through Options built, Home rearranged, old screens next
+
+**Weekly, Monthly, Quarterly, Yearly, One Time, Extended, Options, and
+the + Add popup are in the app**, from `docs/build-sheet-pages.md`.
+Home opens them. The one list `reminder_items` now also holds weekly,
+monthly, quarterly, yearly and extended items, folded in from the old
+lists by id, with dual-write so the engine still arms. Daily shows
+today's visitors with `from Weekly` and so on next to the name. Save
+on One Time for today returns to One Time, not To-Do.
+
+**The six cadence pages share one list.** Header, Snooze, Done,
+hold-and-slide, swipe, and highlight live in
+`components/CadenceListPage.tsx`, copied from Daily. The save of the
+one list moved to `modules/reminder-items.ts`. Options is the odd-cases
+list; each row opens that case. Nothing is written into the engine from
+there.
+
+**Home.** Input, To-Do, Look Ahead and My Week came off with the
+sheet. Patrick then took Project Planner, Orders and Watch List off as
+well, same treatment: tiles gone, routes still registered. He then
+arranged the remaining tiles himself. Banners for My Week land on
+Weekly, To-Do on One Time, Look Ahead on Monthly. My Day banners still
+open Daily.
+
+**What this session did not do.** Taking the old screens out — that is
+the next session, and the engine's old readers stay until dual-write is
+swapped. The 24-hour clock. Testing. The phone.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

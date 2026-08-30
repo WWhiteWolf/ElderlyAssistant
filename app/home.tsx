@@ -15,18 +15,19 @@ import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 
 const modules = [
-  { id: 'input', label: 'Input', icon: '📝' },
-  { id: 'planner', label: 'Project Planner', icon: '📋' },
+  { id: 'options', label: 'Options', icon: '⚙️' },
   { id: 'memorytest', label: 'Memory Test', icon: '🧠' },
-  { id: 'orders', label: 'Orders', icon: '📦' },
-  { id: 'watchlist', label: 'Watch List', icon: '🎬' },
+  { id: 'shopping', label: 'Shopping List', icon: '🛒' },
   { id: 'vault', label: 'Vault', icon: '🔒' },
   { id: 'timer', label: 'Timer Alerts', icon: '⏰' },
-  { id: 'todo', label: 'To-Do', icon: '✅' },
-  { id: 'lookahead', label: 'Look Ahead', icon: '🔭' },
-  { id: 'myweek', label: 'My Week', icon: '🗓️' },
-  { id: 'shopping', label: 'Shopping List', icon: '🛒' },
+  { id: 'onetime', label: 'One Time', icon: '✅' },
+  { id: 'extended', label: 'Extended', icon: '✅' },
+  { id: 'yearly', label: 'Yearly', icon: '🔭' },
+  { id: 'quarterly', label: 'Quarterly', icon: '🔭' },
+  { id: 'monthly', label: 'Monthly', icon: '🔭' },
+  { id: 'weekly', label: 'Weekly', icon: '🗓️' },
   { id: 'daily', label: 'Daily', icon: '☀️' },
+  
 ];
 
 export default function HomeScreen() {
@@ -47,19 +48,17 @@ export default function HomeScreen() {
     );
 
     const handleTile = (id: string) => {
-        // Expo's generated route list has not picked up app/input.tsx yet.
-        // The page is that file; this cast is only so the checker accepts the push.
-        if (id === 'input') router.push('/input' as Href);
         if (id === 'shopping') router.push('/shopping');
         if (id === 'timer') router.push('/timer');
         if (id === 'daily') router.push('/daily' as Href);
-        if (id === 'myweek') router.push('/myweek');
-        if (id === 'lookahead') router.push('/lookahead');
-        if (id === 'todo') router.push('/todo');
-        if (id === 'planner') router.push('/planner');
-        if (id === 'watchlist') router.push('/watchlist');
+        if (id === 'weekly') router.push('/weekly' as Href);
+        if (id === 'monthly') router.push('/monthly' as Href);
+        if (id === 'quarterly') router.push('/quarterly' as Href);
+        if (id === 'yearly') router.push('/yearly' as Href);
+        if (id === 'onetime') router.push('/onetime' as Href);
+        if (id === 'extended') router.push('/extended' as Href);
+        if (id === 'options') router.push('/options' as Href);
         if (id === 'vault') router.push('/vault');
-        if (id === 'orders') router.push('/orders');
         if (id === 'memorytest') router.push('/memorytest');
     };
 
