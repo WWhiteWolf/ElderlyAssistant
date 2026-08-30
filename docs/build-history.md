@@ -2884,6 +2884,81 @@ weeks.
 engine. Extended’s Options set. The automated test load.
 
 
+## #38-new (2026-08-30): engine and Options review, automated-load design, clean-cutover correction
+
+**No code was touched.** Patrick had put the latest build on his phone
+and made this a thinking session while he lived with it. The work was
+reading the reminder engine and the newly connected Options all the way
+through, then preserving what the later worker needs rather than making
+Patrick reconstruct it.
+
+**The engine has not drifted into per-page branches.** The trace went
+from the translator and `ShapedItem`, through still-wanted, arm depth,
+calendar arithmetic, the join and reconcile, to the scheduler housing.
+The variety is still set at the boundary as named codes and independent
+bits, and the core still follows one small execution road. The dense
+part is calendar arithmetic, not a hidden rule tree.
+
+**The automated phone load was designed and recorded.**
+`docs/automated-test-load.md` is the live record and was added to
+`docs/index.md`. One temporary removable load will save many small,
+independent ordinary items through the real save road, run the real
+scheduler, compare the actual phone queue with an independent manifest,
+bring a smaller set of banners close together for one sitting, and then
+restore Patrick's real items. It waits until the remaining reminder
+features are connected.
+
+**Six hardening points were found before that load.** Skip must return a
+machine-readable reason rather than making prose control behaviour; an
+unreadable source must leave its held reminders alone; a run requested
+during a run must cause one fresh pass; reconcile must compare banner
+contents and buttons as well as key and time; a replacement must be
+secured before the old reminder is removed; and every page, banner and
+Siri action must use the one canonical store and one write road. Each
+point has its required Mac test in the automated-load record.
+
+**The Options controls are ahead of their engine connection.** They
+write fields onto `reminder_items`, while dual-write omits those fields
+and the live scheduler still reads the old reminder-page lists. The
+record now tells the worker how each case belongs: holiday movement as
+a code in the shared calendar block; the existing phone-float bit and
+zone pair in the common shape; calendar shading as a view of the same
+engine range calculation; ordinal weekday and weekday-after-day as
+repeat facts; and Then or Next Day as a response to one shifted banner,
+not a permanent `shiftedChoice` on the item. The repeat recipe remains
+unchanged when an occurrence moves, so a 31st returns after a short
+month.
+
+**Several choices were deliberately left as choices rather than
+guessed.** Patrick still needs to settle what the Float switch means
+when off, whether one monthly item may carry more than one date pattern,
+the order of a holiday move with a missing-day move, Extended's Option
+set, and whether Done inside + OPT may save a new item before the form's
+main Save and survive Cancel.
+
+**The clean-cutover instruction was restored.** Patrick said that when
+he ordered the old pages removed, he also said there was nothing old to
+save and that he is the only user. The implementation removed the
+screens but kept dual-write and live old-store dependencies. The record
+now calls that an incomplete implementation, not compatibility work:
+`reminder_items` is translated once into `ShapedItem`; the scheduler
+reads it; pages, banners and Siri write it through one function; and no
+live reminder road reads or writes an old page store. Completion cannot
+be reported until Mac tests prove the full road with those stores
+absent.
+
+**The records were kept current as the decisions were made.** The full
+implementation and test guidance is in `docs/automated-test-load.md`;
+`docs/handoff.md` and `docs/pending.txt` point to it and state the clean
+cutover plainly. The document checker reports the handoff under its
+400-line limit. `pending.docx` was not regenerated because Patrick did
+not ask for the Word copy.
+
+**What this session did not do.** No engine or Option implementation,
+Mac engine run, simulator run or phone proof. Patrick's phone trial
+continues.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

@@ -16,15 +16,20 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
-**The live work is the reminder pages.** A session that opens this file
-starts here. It does not start from the engine. Think for him. Do not ask
-him what the session is for, and do not make him re-teach the pages.
+**The live work is finishing the reminder pages' one-store engine
+connection.** A session starts from the clean cutover and open Option
+decisions below. It does not redesign the engine or make Patrick
+re-teach the pages.
 
-**Daily through Options are built.** The one list `reminder_items` is
-live, with dual-write so the engine still arms. **#36-new is committed**
-(Patrick, #37-new). The old screens are out. Backup copies the new list.
-Logs are on Daily through Extended. **He is loading this build on the
-phone** to live with it for a few weeks (Patrick, #37-new).
+**Daily through Options are built.** The old screens are out and the new
+pages write `reminder_items`, but Patrick's requested clean cutover was
+not completed: saving still recreates the old lists, and live scheduler,
+banner and Siri roads still depend on them. Patrick is the only user and
+had explicitly said there was no old data to preserve. This is an
+implementation gap, not a compatibility requirement. **#36-new is
+committed** (Patrick, #37-new). Backup copies the new list. Logs are on
+Daily through Extended. **He is loading this build on the phone** to
+live with it for a few weeks (Patrick, #37-new).
 
 **Options connecting is in** (#37-new). + OPT writes the cases that apply
 onto the item. New and Edit show only the options that are set, by name.
@@ -41,6 +46,19 @@ does not do holidays yet, and dual-write does not pass these fields. The
 31st keeping through a short month is an automated-load case. That load
 waits until the remaining features are in. The AM/PM removal is
 **mitigated** by the 24-hour digit spinner (Patrick, #36-new).
+
+**The #38-new implementation record is in
+`docs/automated-test-load.md`.** It says plainly that this is the clean
+cutover Patrick already ordered, not a migration: do not extend
+dual-write, retain an old-store fallback, or preserve data he said was
+unneeded. `reminder_items` is translated once into `ShapedItem`; pages,
+banners and Siri write it through one function; and the scheduler reads
+it. Completion requires Mac tests proving that the full road works with
+the old reminder-page stores absent and that no live action reads or
+writes them. The same record carries the Option mappings, keeps the
+repeat recipe apart from occurrence state, and names the decisions a
+worker must not guess: Float off, monthly-pattern combinations, calendar
+order, Extended's set, and + OPT's save-and-Cancel behaviour.
 
 ### The pages, settled by Patrick at #30-new
 
@@ -129,8 +147,12 @@ needs its own small part. Patrick's own picture was of the user facing the
 huge input page. The page built at #29-new came out at #35-new.
 
 **He is loading this build on the phone** (Patrick, #37-new). The
-automated test load waits until the remaining features are in, then
-should cover as many of them as it can.
+automated test load waits until the remaining features are in. Its
+settled shape is `docs/automated-test-load.md`: one temporary,
+removable load puts separate cases through the real save, engine and
+phone-queue path, so as many completed features as possible can be
+proved in one sitting. A later session builds from that file rather
+than redesigning the load.
 
 ### What is actually in the app
 
@@ -298,10 +320,15 @@ task, so the phone can top the queue up on days the app is not opened.
 None of its pieces are installed. It can only ever sit on top of arming
 ahead, because the days it fails are the days the arming is for.
 
-**Still open from the shape work**: how the arrow from the store to the
-block is actually made so a write cannot fail to turn the loop, and
-whether any screen is ever brought round to save in the common shape
-rather than being translated at the boundary for good.
+**Six hardening points come before the automated load** (#38-new), with
+their reasons and required tests in `docs/automated-test-load.md`: give
+Skip a machine-readable answer instead of reading its explanation;
+preserve held reminders when a saved source cannot be read; queue one
+fresh run when a change arrives during a run; compare banner contents as
+well as key and time; create a replacement before removing the old
+reminder; and finish with `reminder_items` as the one truth written by
+pages, banners and Siri. These strengthen the present engine rather than
+redesigning it.
 
 **Still unread**: `app/memorytest.tsx`; and the test files other than My
 Day's, Pets' and My Week's. The old Look Ahead and To-Do screens went
@@ -331,9 +358,10 @@ answers a different half than the failure record does: it asks why the
 phone stayed quiet, where the record asks whether the app armed anything
 at all. Agreed to come after the reminders themselves are solid.
 
-**The rest of the fix list** is in `docs/reminder-rebuild.md` and
-unstarted: holding a dropped run instead of discarding it, and saying the
-banner instruction once in the housing instead of on eight pages.
+**One separate fix-list item** remains in `docs/reminder-rebuild.md`:
+saying the banner instruction once in the housing instead of on eight
+pages. The dropped-run item is now part of the six hardening points
+above.
 
 **Still to come, and untouched:** the two "What's Next" items left in
 `pending.txt` — Look Ahead's tile format and its Snooze changed or
