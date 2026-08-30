@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
     Alert,
     KeyboardAvoidingView,
@@ -25,7 +25,15 @@ import {
     type ReminderItem,
     type ReminderKind,
 } from '../modules/reminder-items';
-import { optionCasesForKind } from '../modules/option-cases';
+import {
+    optionCasesForKind,
+    emptyOptionSettings,
+    appliedOptionRows,
+    optionsFromItem,
+    applyConnectedOptions,
+    keepOptionsForKind,
+    type OptionSettings,
+} from '../modules/option-cases';
 
 type ReminderPreset = {
     label: string;
@@ -57,8 +65,16 @@ const ONE_TIME_PRESETS: ReminderPreset[] = [
 
 const KINDS: ReminderKind[] = ['daily', 'weekly', 'monthly', 'quarterly', 'yearly', 'oneTime', 'extended'];
 
-function asKind(value: string | undefined): ReminderKind {
-    return KINDS.includes(value as ReminderKind) ? (value as ReminderKind) : 'daily';
+function asParam(value: string | string[] | undefined): string | undefined {
+    if (Array.isArray(value)) return value[0];
+    return value;
+}
+
+function kindFrom(kind?: string, returnTo?: string): ReminderKind {
+    if (kind && KINDS.includes(kind as ReminderKind)) return kind as ReminderKind;
+    if (returnTo === 'onetime') return 'oneTime';
+    if (returnTo && KINDS.includes(returnTo as ReminderKind)) return returnTo as ReminderKind;
+    return 'daily';
 }
 
 function pathFor(returnTo: string | undefined): Href {
@@ -78,15 +94,16 @@ export default function ItemEditScreen() {
     const theme = useTheme();
     const styles = makeStyles(theme);
     const { id, kind, returnTo } = useLocalSearchParams<{
-        id?: string;
-        kind?: string;
-        returnTo?: string;
+        id?: string | string[];
+        kind?: string | string[];
+        returnTo?: string | string[];
     }>();
-    const editingId = typeof id === 'string' && id ? id : null;
-    const page = typeof returnTo === 'string' ? returnTo : 'daily';
+    const editingId = asParam(id) || null;
+    const page = asParam(returnTo) || 'daily';
+    const startKind = kindFrom(asParam(kind), page);
 
     const [loaded, setLoaded] = useState(false);
-    const [editKind, setEditKind] = useState<ReminderKind>(asKind(kind));
+    const [editKind, setEditKind] = useState<ReminderKind>(startKind);
     const [intervalMonths, setIntervalMonths] = useState(3);
     const [tempName, setTempName] = useState('');
     const [pendingDay, setPendingDay] = useState(() => new Date().getDay());
@@ -98,8 +115,20 @@ export default function ItemEditScreen() {
     const [dateTimeValid, setDateTimeValid] = useState(true);
     const [reminders, setReminders] = useState<LeadReminder[]>([]);
     const [existing, setExisting] = useState<ReminderItem | null>(null);
+    const writtenIdRef = useRef<string | null>(editingId);
+    if (editingId) writtenIdRef.current = editingId;
     const [showOptions, setShowOptions] = useState(false);
-    const weeklyOptions = optionCasesForKind(editKind);
+    const [optionsStartId, setOptionsStartId] = useState<string | null>(null);
+    const [optionSettings, setOptionSettings] = useState<OptionSettings>(emptyOptionSettings);
+    const [note, setNote] = useState('');
+    const optionSettingsRef = useRef(optionSettings);
+    optionSettingsRef.current = optionSettings;
+    const noteRef = useRef(note);
+    noteRef.current = note;
+    const kindOptions = optionCasesForKind(editKind);
+    const applied = appliedOptionRows(optionSettings).filter((one) =>
+        kindOptions.some((c) => c.id === one.id),
+    );
 
     const goBack = () => {
         if (router.canDismiss()) router.dismissAll();
@@ -116,8 +145,10 @@ export default function ItemEditScreen() {
     };
 
     useEffect(() => {
+        let cancelled = false;
         const setup = async () => {
             const list = await loadReminderItems();
+            if (cancelled) return;
             if (editingId) {
                 const found = list.find((one) => one.id === editingId);
                 if (found) {
@@ -157,10 +188,14 @@ export default function ItemEditScreen() {
                     if (found.kind === 'extended' || found.kind === 'daily' || found.kind === 'weekly') {
                         setTimeSet(typeof found.hour === 'number');
                     }
+                    setOptionSettings(optionsFromItem(found));
+                    setNote(found.notes ?? '');
                 }
             } else {
-                const nextKind = asKind(kind);
+                const nextKind = kindFrom(asParam(kind), page);
                 setEditKind(nextKind);
+                setOptionSettings(emptyOptionSettings());
+                setNote('');
                 if (nextKind === 'oneTime' && page === 'daily') {
                     const today = new Date();
                     today.setHours(12, 0, 0, 0);
@@ -186,6 +221,7 @@ export default function ItemEditScreen() {
             setLoaded(true);
         };
         setup();
+        return () => { cancelled = true; };
     }, [editingId, kind, page]);
 
     const presets = (page === 'daily' && editKind === 'oneTime') ? DAILY_ONE_TIME_PRESETS : ONE_TIME_PRESETS;
@@ -224,15 +260,17 @@ export default function ItemEditScreen() {
         }]);
     };
 
-    const finishSave = async () => {
+    const persist = async (leave: boolean) => {
         const name = tempName.trim();
         const list = await loadReminderItems();
+        const id = editingId ?? writtenIdRef.current ?? Date.now().toString();
+        writtenIdRef.current = id;
         const base: ReminderItem = existing ?? {
-            id: editingId ?? Date.now().toString(),
+            id,
             kind: editKind,
             label: name,
         };
-        let next: ReminderItem = { ...base, kind: editKind, label: name };
+        let next: ReminderItem = { ...base, id, kind: editKind, label: name };
 
         if (editKind === 'daily') {
             next = {
@@ -302,11 +340,25 @@ export default function ItemEditScreen() {
             delete next.intervalMonths;
         }
 
-        const updated = editingId
-            ? list.map((one) => (one.id === editingId ? next : one))
+        if (optionCasesForKind(editKind).length > 0) {
+            next = keepOptionsForKind(
+                applyConnectedOptions(next, optionSettingsRef.current),
+                editKind,
+            );
+        } else if (editKind === 'daily') {
+            next = applyConnectedOptions(next, emptyOptionSettings());
+        }
+
+        const trimmedNote = noteRef.current.trim();
+        if (trimmedNote) next.notes = trimmedNote;
+        else delete next.notes;
+
+        const updated = list.some((one) => one.id === id)
+            ? list.map((one) => (one.id === id ? next : one))
             : [...list, next];
         await saveReminderItems(updated);
-        afterSave();
+        setExisting(next);
+        if (leave) afterSave();
     };
 
     const save = () => {
@@ -327,11 +379,11 @@ export default function ItemEditScreen() {
         if (editKind === 'oneTime' && reminders.length === 0) {
             Alert.alert('No Reminder Set', "Are you sure you don't want to set a Reminder?", [
                 { text: 'Go Back', style: 'cancel' },
-                { text: 'Save Anyway', onPress: () => { void finishSave(); } },
+                { text: 'Save Anyway', onPress: () => { void persist(true); } },
             ]);
             return;
         }
-        void finishSave();
+        void persist(true);
     };
 
     if (!loaded) {
@@ -355,8 +407,14 @@ export default function ItemEditScreen() {
                         <Text style={styles.headerBtnText}>Back</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>{editingId ? 'Edit' : 'New'}</Text>
-                    {weeklyOptions.length > 0 ? (
-                        <TouchableOpacity onPress={() => setShowOptions(true)} style={styles.headerBtn}>
+                    {kindOptions.length > 0 || editKind === 'daily' ? (
+                        <TouchableOpacity
+                            onPress={() => {
+                                setOptionsStartId(null);
+                                setShowOptions(true);
+                            }}
+                            style={styles.headerBtn}
+                        >
                             <Text style={styles.headerBtnText} numberOfLines={1} adjustsFontSizeToFit>+ OPT</Text>
                         </TouchableOpacity>
                     ) : (
@@ -465,14 +523,52 @@ export default function ItemEditScreen() {
                         </View>
                     </>
                 )}
+
+                <Text style={styles.inputLabel}>Note:</Text>
+                <TextInput
+                    style={styles.input}
+                    value={note}
+                    onChangeText={setNote}
+                    placeholder="A word or two besides the name"
+                    placeholderTextColor={theme.mutedText}
+                    multiline
+                />
+
+                {kindOptions.length > 0 && applied.length > 0 && (
+                    <>
+                        <Text style={styles.inputLabel}>Options</Text>
+                        <View style={styles.optionCard}>
+                            {applied.map((one, i) => (
+                                <TouchableOpacity
+                                    key={one.id}
+                                    style={[styles.optionRow, i > 0 && styles.optionRowBorder]}
+                                    onPress={() => {
+                                        setOptionsStartId(one.id);
+                                        setShowOptions(true);
+                                    }}
+                                >
+                                    <Text style={styles.optionName}>{one.name}</Text>
+                                    {one.value ? (
+                                        <Text style={styles.optionValue} numberOfLines={1}>{one.value}</Text>
+                                    ) : null}
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </>
+                )}
             </ScrollView>
             <ScreenOptionsSheet
                 visible={showOptions}
-                cases={weeklyOptions}
+                cases={kindOptions}
+                settings={optionSettings}
+                onChange={setOptionSettings}
+                shadeWeekday={editKind === 'weekly' ? pendingDay : pendingDate.getDay()}
+                startId={optionsStartId}
+                warning={editKind === 'daily' ? 'None of these apply to Daily for now.' : undefined}
                 onClose={() => setShowOptions(false)}
                 onDone={() => {
                     setShowOptions(false);
-                    save();
+                    if (tempName.trim()) void persist(false);
                 }}
             />
         </KeyboardAvoidingView>
@@ -553,4 +649,24 @@ const makeStyles = (t: Theme) =>
             alignItems: 'center',
         },
         confirmBtnText: { color: t.buttonPrimaryText, fontWeight: '600' },
+        optionCard: {
+            backgroundColor: t.card,
+            borderRadius: 12,
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+            marginBottom: 8,
+        },
+        optionRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingVertical: 6,
+            paddingHorizontal: 12,
+            gap: 8,
+        },
+        optionRowBorder: {
+            borderTopWidth: 0.5,
+            borderTopColor: t.cardBorder,
+        },
+        optionName: { fontSize: 15, color: t.cardTitle },
+        optionValue: { flex: 1, fontSize: 15, color: t.mutedText, textAlign: 'right' },
     });

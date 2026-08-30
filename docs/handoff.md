@@ -21,31 +21,26 @@ starts here. It does not start from the engine. Think for him. Do not ask
 him what the session is for, and do not make him re-teach the pages.
 
 **Daily through Options are built.** The one list `reminder_items` is
-live, with dual-write so the engine still arms. **#34-new is
-committed** (Patrick, #35-new): it built the six new screens. Home no
-longer has Input, To-Do, Look Ahead, My Week, Project Planner, Orders,
-or Watch List. Patrick arranges the Home badges himself. **The old
-screens are out** (#35-new), including the `/myday` hop. No leftover hops
-and no old-page banners. The taps that already open Daily, Weekly, One
-Time, and Monthly stay, because those are the live reminders. The engine
-still reads the old lists through dual-write, so those readers stay
-until that is swapped. **Backup copies `reminder_items`**, not the old
-lists: he deleted the old backup files, so restore does not need to
-read them (Patrick, #35-new). After a restore, the engine lists are
-written from that one list so reminders still arm. **Logs are on the
-new pages** (#36-new). Daily has My Day's log (`my_history`). Weekly has
-My Week's (`week_history`). Monthly, Quarterly, and Yearly share Look
-Ahead's (`lookahead_history`). One Time and Extended each have their
-own (`onetime_history`, `extended_history`), in that log's style. All
-six are titled Log, copied from Daily: Done writes a line, tap for a
-note, swipe to delete, Clear All. Undo Done does not remove the line.
-Those lists travel in the backup. **Options connecting started**
-(#36-new). Daily gets none. Weekly is first. The doors are in: + OPT,
-+ Screen, Where does it belong? only from Options, + Add straight to
-that page's own New. **Next is saving those four onto a Weekly item:**
-holidays, time zone, calendar shading, and a notes row. They still only
-show the explanation. The AM/PM removal is **mitigated** by the 24-hour
-digit spinner (Patrick, #36-new) and is not a separate job.
+live, with dual-write so the engine still arms. **#36-new is committed**
+(Patrick, #37-new). The old screens are out. Backup copies the new list.
+Logs are on Daily through Extended. **He is loading this build on the
+phone** to live with it for a few weeks (Patrick, #37-new).
+
+**Options connecting is in** (#37-new). + OPT writes the cases that apply
+onto the item. New and Edit show only the options that are set, by name.
+Done in + OPT writes without leaving the form. **Note is a field on New
+and Edit**, not an Options case. Daily can still open Options, with the
+warning that none apply for now. **Skip is off Options**: it belongs on
+the banner and the page. **Weekly’s set** is holidays, time zone, and
+calendar shading. **Monthly, Quarterly, and Yearly** add Float around
+short month, an extra tap on a shifted day, a second Thursday, and a
+Wednesday after the 6th. **One Time** has the same three as Weekly.
+**Extended’s set is not gone through.** **Float uses the last day that
+exists.** Holidays use the US federal list, before or after. The engine
+does not do holidays yet, and dual-write does not pass these fields. The
+31st keeping through a short month is an automated-load case. That load
+waits until the remaining features are in. The AM/PM removal is
+**mitigated** by the 24-hour digit spinner (Patrick, #36-new).
 
 ### The pages, settled by Patrick at #30-new
 
@@ -67,10 +62,13 @@ digit spinner (Patrick, #36-new) and is not a separate job.
   period, and move the day to before or after a holiday. That calendar
   thinking is from RFC 5545 and JSCalendar RFC 8984, without the file
   format, settled in `Reminder Engine/docs/reminder-engine.md`.
-  **When you open it you see** holidays, time zone, the float button,
-  Skip, an extra tap on a shifted day, calendar shading, a notes row,
-  a second Thursday, and a Wednesday after the 6th (Patrick, #33-new,
-  from the rest of the Input sheet at #30-new). Reminders-before is
+  **When you open it you see** holidays, time zone, Float around short
+  month, an extra tap on a shifted day, calendar shading,
+  a second Thursday, and a Wednesday after the 6th. **Skip is not a
+  row** (Patrick, #37-new): it belongs on the banner and the page.
+  **Note is not a row** (Patrick, #37-new): it is a field on New and Edit.
+  **Float is only a missing date** (Patrick, #37-new), not a holiday —
+  Holidays is the before-or-after. Reminders-before is
   not a row; it already lives on One Time. Each row opens that case.
 
 **On a view page, each item has Done and Snooze, and a tap on the tile opens the edit page.** Daily is the same: Snooze, Done, and Done that undoes (Patrick, #33-new, looking at Daily). Swipe still deletes. A tap on the name opens the edit page. Hold the name and slide to reorder (Patrick, #33-new). **Daily now carries My Day's log** — the same `my_history` list, written when Done is tapped, titled Log (Patrick, #36-new: none of the pages say My). **The My Day page is gone** (Patrick, #33-new). The `/myday` hop is not kept (Patrick, #35-new). The engine still names those reminders `myday`, so banners and dual-write keep working.
@@ -130,9 +128,9 @@ you meant, so it grows to hold the whole app, while each page only ever
 needs its own small part. Patrick's own picture was of the user facing the
 huge input page. The page built at #29-new came out at #35-new.
 
-**Testing waits until the building is done** (Patrick, #30-new). The
-automated test load is not next. The phone build still waits. Work stays
-on the simulator. The odds and ends wait too.
+**He is loading this build on the phone** (Patrick, #37-new). The
+automated test load waits until the remaining features are in, then
+should cover as many of them as it can.
 
 ### What is actually in the app
 
@@ -145,11 +143,10 @@ old readers are still in the project but the live run no longer calls
 them, except the Memory Test's, which skips the common shape. The Timer
 sits outside the module.
 
-**The engine is on the phone from an earlier load.** My Day and To-Do have
-each sent a notice. Everything built since — the repeat group, skip, zone
-handling, depth of one, the live swap — **has not been proved on the
-phone.** Nothing should reach the phone until the reminder work is whole
-(Patrick, #15-new).
+**The engine on the phone has been from an earlier load.** My Day and To-Do have
+each sent a notice. Everything built since — the pages, Options connecting,
+the repeat group, skip, zone handling, depth of one, the live swap — **has
+not been proved on the phone until this load** (Patrick, #37-new).
 
 **The tests run on the Mac in about a second**, headless under Node, with
 no build and no simulator. **413 of 413 pass:**

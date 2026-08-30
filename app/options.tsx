@@ -4,8 +4,9 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Bridge from '../components/Bridge';
 import AddWherePopup from '../components/AddWherePopup';
+import OptionCaseBody from '../components/OptionCaseBody';
 import { Theme, useTheme } from '../constants/Themes';
-import { OPTION_CASES } from '../modules/option-cases';
+import { emptyOptionSettings, OPTION_CASES, type OptionSettings } from '../modules/option-cases';
 
 export default function OptionsScreen() {
     const router = useRouter();
@@ -13,6 +14,7 @@ export default function OptionsScreen() {
     const styles = makeStyles(theme);
     const [openId, setOpenId] = useState<string | null>(null);
     const [showWhere, setShowWhere] = useState(false);
+    const [settings, setSettings] = useState<OptionSettings>(emptyOptionSettings);
     const openCase = OPTION_CASES.find((one) => one.id === openId) ?? null;
 
     return (
@@ -46,12 +48,13 @@ export default function OptionsScreen() {
             </SafeAreaView>
             <Bridge />
             {openCase ? (
-                <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
-                    <View style={styles.settingCard}>
-                        <View style={styles.caseBody}>
-                            <Text style={styles.caseBodyText}>{openCase.body}</Text>
-                        </View>
-                    </View>
+                <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+                    <OptionCaseBody
+                        openCase={openCase}
+                        settings={settings}
+                        onChange={setSettings}
+                        shadeWeekday={new Date().getDay()}
+                    />
                 </ScrollView>
             ) : (
                 <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
@@ -147,6 +150,4 @@ const makeStyles = (t: Theme) =>
         tileIcon: { fontSize: 16 },
         settingLabel: { flex: 1, fontSize: 16, color: t.cardTitle, fontWeight: '500' },
         settingArrow: { fontSize: 22, color: t.settingArrow },
-        caseBody: { padding: 16 },
-        caseBodyText: { fontSize: 16, color: t.bodyText, lineHeight: 22 },
     });

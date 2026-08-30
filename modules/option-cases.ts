@@ -1,9 +1,43 @@
+import { DAY_NAMES, type ReminderItem } from './reminder-items';
+
 export type OptionCase = {
     id: string;
     icon: string;
     name: string;
     body: string;
 };
+
+export type HolidayMove = 'before' | 'after';
+export type ShiftedChoice = 'then' | 'next';
+
+// The values the Options case pages hold. Weekly's + OPT writes the
+// cases that apply onto the item. Daily can still open Options and sees
+// a warning. Notes is a field on New and Edit, not an Options case.
+export type OptionSettings = {
+    holidayMove?: HolidayMove;
+    floatsWithPhone: boolean;
+    dueTimeZoneText?: string;
+    shadeCalendar: boolean;
+    floatDay: boolean;
+    shiftedChoice?: ShiftedChoice;
+    weekdayOrdinal?: number;
+    ordinalWeekday?: number;
+    afterWeekday?: number;
+    afterDayCount: number;
+};
+
+export function phoneTimeZone(): string {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
+
+export function emptyOptionSettings(): OptionSettings {
+    return {
+        floatsWithPhone: true,
+        shadeCalendar: false,
+        floatDay: false,
+        afterDayCount: 6,
+    };
+}
 
 export const OPTION_CASES: OptionCase[] = [
     {
@@ -21,14 +55,8 @@ export const OPTION_CASES: OptionCase[] = [
     {
         id: 'float',
         icon: '🔘',
-        name: 'The float button',
-        body: 'A control on the item for floating the day around a holiday or a missing date, instead of typing a new date.',
-    },
-    {
-        id: 'skip',
-        icon: '⏭',
-        name: 'Skip',
-        body: 'Skip of a cycle is a different thing from a missing day. This is skipping one occurrence, not a date that does not exist.',
+        name: 'Float around short month',
+        body: 'A control on the item for floating the day around a missing date, instead of typing a new date.',
     },
     {
         id: 'shifted',
@@ -41,12 +69,6 @@ export const OPTION_CASES: OptionCase[] = [
         icon: '📅',
         name: 'Calendar shading',
         body: 'Shade the calendar so a shifted or holiday-moved day is visible on the page.',
-    },
-    {
-        id: 'notes',
-        icon: '📝',
-        name: 'A notes row',
-        body: 'A notes line on the item, for the odd cases that need a word or two besides the name and the day.',
     },
     {
         id: 'secondThursday',
@@ -62,11 +84,161 @@ export const OPTION_CASES: OptionCase[] = [
     },
 ];
 
-const WEEKLY_IDS = ['holidays', 'timezone', 'shading', 'notes'];
+const CONNECTED_IDS = ['holidays', 'timezone', 'shading'];
+const MONTHLY_IDS = [
+    ...CONNECTED_IDS,
+    'float',
+    'shifted',
+    'secondThursday',
+    'wednesdayAfter',
+];
 
 export function optionCasesForKind(kind: string): OptionCase[] {
-    if (kind !== 'weekly') return [];
-    return WEEKLY_IDS.map((id) => OPTION_CASES.find((one) => one.id === id)).filter(
+    if (kind === 'daily') return [];
+    const ids = kind === 'monthly' || kind === 'quarterly' || kind === 'yearly' ? MONTHLY_IDS : CONNECTED_IDS;
+    return ids.map((id) => OPTION_CASES.find((one) => one.id === id)).filter(
         (one): one is OptionCase => one != null,
     );
+}
+
+export type AppliedOption = {
+    id: string;
+    icon: string;
+    name: string;
+    value: string;
+};
+
+export function appliedOptionRows(settings: OptionSettings): AppliedOption[] {
+    const rows: AppliedOption[] = [];
+    const named = (id: string) => OPTION_CASES.find((one) => one.id === id);
+    if (settings.holidayMove) {
+        const one = named('holidays');
+        if (one) {
+            rows.push({
+                id: one.id,
+                icon: one.icon,
+                name: one.name,
+                value: settings.holidayMove === 'before' ? 'Day before' : 'Day after',
+            });
+        }
+    }
+    if (!settings.floatsWithPhone) {
+        const one = named('timezone');
+        if (one) rows.push({ id: one.id, icon: one.icon, name: one.name, value: 'Switch off' });
+    }
+    if (settings.shadeCalendar) {
+        const one = named('shading');
+        if (one) rows.push({ id: one.id, icon: one.icon, name: one.name, value: '' });
+    }
+    if (settings.floatDay) {
+        const one = named('float');
+        if (one) rows.push({ id: one.id, icon: one.icon, name: one.name, value: '' });
+    }
+    if (settings.shiftedChoice) {
+        const one = named('shifted');
+        if (one) {
+            rows.push({
+                id: one.id,
+                icon: one.icon,
+                name: one.name,
+                value: settings.shiftedChoice === 'then' ? 'Then' : 'Next day',
+            });
+        }
+    }
+    if (settings.weekdayOrdinal != null && settings.ordinalWeekday != null) {
+        const one = named('secondThursday');
+        if (one) {
+            const ordinal =
+                settings.weekdayOrdinal === -1 ? 'Last'
+                : settings.weekdayOrdinal === 1 ? '1st'
+                : settings.weekdayOrdinal === 2 ? '2nd'
+                : settings.weekdayOrdinal === 3 ? '3rd'
+                : settings.weekdayOrdinal === 4 ? '4th'
+                : String(settings.weekdayOrdinal);
+            rows.push({
+                id: one.id,
+                icon: one.icon,
+                name: one.name,
+                value: `${ordinal} ${DAY_NAMES[settings.ordinalWeekday]}`,
+            });
+        }
+    }
+    if (settings.afterWeekday != null) {
+        const one = named('wednesdayAfter');
+        if (one) {
+            rows.push({
+                id: one.id,
+                icon: one.icon,
+                name: one.name,
+                value: `${DAY_NAMES[settings.afterWeekday]} after ${settings.afterDayCount}`,
+            });
+        }
+    }
+    return rows;
+}
+
+export function optionsFromItem(item: ReminderItem): OptionSettings {
+    return {
+        ...emptyOptionSettings(),
+        holidayMove: item.holidayMove,
+        floatsWithPhone: item.floatsWithPhone !== false,
+        dueTimeZoneText: item.dueTimeZoneText,
+        shadeCalendar: !!item.shadeCalendar,
+        floatDay: !!item.floatDay,
+        shiftedChoice: item.shiftedChoice,
+        weekdayOrdinal: item.weekdayOrdinal,
+        ordinalWeekday: item.ordinalWeekday,
+        afterWeekday: item.afterWeekday,
+        afterDayCount: typeof item.afterDayCount === 'number' ? item.afterDayCount : 6,
+    };
+}
+
+export function applyConnectedOptions(item: ReminderItem, settings: OptionSettings): ReminderItem {
+    const out = { ...item };
+    if (settings.holidayMove) out.holidayMove = settings.holidayMove;
+    else delete out.holidayMove;
+    if (!settings.floatsWithPhone) {
+        out.floatsWithPhone = false;
+        out.dueTimeZoneText = settings.dueTimeZoneText;
+    } else {
+        delete out.floatsWithPhone;
+        delete out.dueTimeZoneText;
+    }
+    if (settings.shadeCalendar) out.shadeCalendar = true;
+    else delete out.shadeCalendar;
+    if (settings.floatDay) out.floatDay = true;
+    else delete out.floatDay;
+    if (settings.shiftedChoice) out.shiftedChoice = settings.shiftedChoice;
+    else delete out.shiftedChoice;
+    if (settings.weekdayOrdinal != null && settings.ordinalWeekday != null) {
+        out.weekdayOrdinal = settings.weekdayOrdinal;
+        out.ordinalWeekday = settings.ordinalWeekday;
+    } else {
+        delete out.weekdayOrdinal;
+        delete out.ordinalWeekday;
+    }
+    if (settings.afterWeekday != null) {
+        out.afterWeekday = settings.afterWeekday;
+        out.afterDayCount = settings.afterDayCount;
+    } else {
+        delete out.afterWeekday;
+        delete out.afterDayCount;
+    }
+    return out;
+}
+
+export function keepOptionsForKind(item: ReminderItem, kind: string): ReminderItem {
+    const ids = new Set(optionCasesForKind(kind).map((c) => c.id));
+    const out = { ...item };
+    if (!ids.has('float')) delete out.floatDay;
+    if (!ids.has('shifted')) delete out.shiftedChoice;
+    if (!ids.has('secondThursday')) {
+        delete out.weekdayOrdinal;
+        delete out.ordinalWeekday;
+    }
+    if (!ids.has('wednesdayAfter')) {
+        delete out.afterWeekday;
+        delete out.afterDayCount;
+    }
+    return out;
 }

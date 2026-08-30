@@ -4,7 +4,7 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-08-30, at the close of #34-new.
+Last written: 2026-08-30, at the close of #37-new.
 
 ## Read this first
 
@@ -18,25 +18,21 @@ Last written: 2026-08-30, at the close of #34-new.
 
 ## What is in
 
-**Daily through Options are built**, and the + Add popup. The one list
-`reminder_items` is live, with dual-write so the engine still arms. Home
-no longer has Input, To-Do, Look Ahead, My Week, Project Planner, Orders,
-or Watch List. Patrick arranged the remaining tiles himself.
+**Daily through Options are built.** Options connecting is in: + OPT
+writes the cases that apply, Note is on New and Edit, Skip is off
+Options. **He is loading this build on the phone** to live with it for
+a few weeks.
 
 ## What is next
 
-**Take the old screens out** — the ones Home no longer opens. The engine
-still reads the old lists through dual-write, so those readers stay
-until that is swapped.
-
-## Later, not now
-
-The 24-hour clock. The automated test load. The phone build. Retiring
-the old readers. Moving Memory onto the engine as a whole.
+**After live use.** Wiring holidays and Float into the engine. Extended’s
+Options set. Then the automated test load, covering as many features as
+it can.
 
 ## Do not reopen
 
 The one Input page. The storage question. Missing days as skip. Daily
 with no buttons. Overlay arrows on Daily. The My Day page. Morning of /
 Day Before chips on Daily's One Time for today. Project Planner, Orders,
-and Watch List on Home.
+and Watch List on Home. Float as next day — it uses last day that exists.
+Note as an Options case.

@@ -198,7 +198,7 @@ export default function DailyScreen() {
     );
 
     const openEdit = (item: ReminderItem) => {
-        router.push({ pathname: '/item-edit', params: { id: item.id, returnTo: 'daily' } } as Href);
+        router.push({ pathname: '/item-edit', params: { id: item.id, kind: item.kind, returnTo: 'daily' } } as Href);
     };
 
     const openNew = (kind: 'daily' | 'oneTime') => {

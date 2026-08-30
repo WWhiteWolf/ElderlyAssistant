@@ -2851,6 +2851,39 @@ or notes onto the item.
 the later pages. Testing. The phone.
 
 
+## #37-new (2026-08-30): Options settings on New and Edit, Note on the form, phone load
+
+**Options connecting landed.** The case pages hold real controls, shared
+by the Options page and + OPT. Done in + OPT writes onto the item
+without leaving the form. New and Edit show only the options that are
+set, by name: Holidays as Day before or Day after, time zone as Switch
+off, calendar shading as the name only. That list is still there on
+Edit.
+
+**Note is a field on New and Edit**, on every kind including Daily, not
+an Options case.
+
+**Skip is off Options.** It belongs on the banner and the page.
+
+**Which cases apply.** Daily can open Options and sees that none apply
+for now. Weekly: holidays, time zone, calendar shading. Monthly,
+Quarterly, and Yearly add Float around short month, an extra tap on a
+shifted day, a second Thursday, and a Wednesday after the 6th. One
+Time has the same three as Weekly. Extended’s set was not gone through.
+
+**Float uses the last day that exists.** A 31st in September fires on
+the 30th. Holidays will use the US federal list, before or after. The
+engine does not do holidays yet, and dual-write does not pass the
+fields. The 31st keeping through a short month is an automated-load
+case. That load waits until the remaining features are in.
+
+**He is loading this build on the phone** to live with it for a few
+weeks.
+
+**What this session did not do.** Wiring holidays and Float into the
+engine. Extended’s Options set. The automated test load.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

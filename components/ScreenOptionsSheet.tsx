@@ -2,17 +2,28 @@ import { useEffect, useState } from 'react';
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Bridge from './Bridge';
+import OptionCaseBody from './OptionCaseBody';
 import { Theme, useTheme } from '../constants/Themes';
-import type { OptionCase } from '../modules/option-cases';
+import type { OptionCase, OptionSettings } from '../modules/option-cases';
 
 export default function ScreenOptionsSheet({
     visible,
     cases,
+    settings,
+    onChange,
+    shadeWeekday,
+    startId,
+    warning,
     onClose,
     onDone,
 }: {
     visible: boolean;
     cases: OptionCase[];
+    settings: OptionSettings;
+    onChange: (next: OptionSettings) => void;
+    shadeWeekday: number;
+    startId?: string | null;
+    warning?: string;
     onClose: () => void;
     onDone: () => void;
 }) {
@@ -23,7 +34,8 @@ export default function ScreenOptionsSheet({
 
     useEffect(() => {
         if (!visible) setOpenId(null);
-    }, [visible]);
+        else setOpenId(startId ?? null);
+    }, [visible, startId]);
 
     return (
         <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
@@ -48,30 +60,38 @@ export default function ScreenOptionsSheet({
                     </SafeAreaView>
                     <Bridge />
                     {openCase ? (
-                        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
-                            <View style={styles.settingCard}>
-                                <View style={styles.caseBody}>
-                                    <Text style={styles.caseBodyText}>{openCase.body}</Text>
-                                </View>
-                            </View>
+                        <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+                            <OptionCaseBody
+                                openCase={openCase}
+                                settings={settings}
+                                onChange={onChange}
+                                shadeWeekday={shadeWeekday}
+                            />
                         </ScrollView>
                     ) : (
                         <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
-                            <View style={styles.settingCard}>
-                                {cases.map((one, i) => (
-                                    <TouchableOpacity
-                                        key={one.id}
-                                        style={[styles.settingRow, i > 0 && styles.settingRowBorder]}
-                                        onPress={() => setOpenId(one.id)}
-                                    >
-                                        <View style={styles.iconCircle}>
-                                            <Text style={styles.tileIcon}>{one.icon}</Text>
-                                        </View>
-                                        <Text style={styles.settingLabel}>{one.name}</Text>
-                                        <Text style={styles.settingArrow}>›</Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
+                            {warning ? (
+                                <View style={styles.settingCard}>
+                                    <Text style={styles.warningText}>{warning}</Text>
+                                </View>
+                            ) : null}
+                            {cases.length > 0 ? (
+                                <View style={styles.settingCard}>
+                                    {cases.map((one, i) => (
+                                        <TouchableOpacity
+                                            key={one.id}
+                                            style={[styles.settingRow, i > 0 && styles.settingRowBorder]}
+                                            onPress={() => setOpenId(one.id)}
+                                        >
+                                            <View style={styles.iconCircle}>
+                                                <Text style={styles.tileIcon}>{one.icon}</Text>
+                                            </View>
+                                            <Text style={styles.settingLabel}>{one.name}</Text>
+                                            <Text style={styles.settingArrow}>›</Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                            ) : null}
                         </ScrollView>
                     )}
                 </View>
@@ -140,6 +160,5 @@ const makeStyles = (t: Theme) =>
         tileIcon: { fontSize: 16 },
         settingLabel: { flex: 1, fontSize: 16, color: t.cardTitle, fontWeight: '500' },
         settingArrow: { fontSize: 22, color: t.settingArrow },
-        caseBody: { padding: 16 },
-        caseBodyText: { fontSize: 16, color: t.bodyText, lineHeight: 22 },
+        warningText: { fontSize: 16, color: t.bodyText, lineHeight: 22, padding: 16 },
     });

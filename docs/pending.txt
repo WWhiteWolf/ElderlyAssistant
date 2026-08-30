@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-08-30 (#36-new)
+Last updated: 2026-08-30 (#37-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -16,28 +16,19 @@ to know why something was done the way it was.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. THE REMINDER PAGES. Your own map from #30-new: Daily (My Day and
-   Pets together, and the day view of whatever else is due today),
-   Weekly, Monthly, Quarterly, Yearly (Look Ahead's repeats, split
-   by how often), One Time (a date, no repeat, with To-Do's
-   Reminders before), Extended (no date), and Options on its own
-   page. A six-month Look Ahead item lives on Quarterly, still
-   every six months. Options is the leftover Input list: holidays,
-   time zone, the float button, Skip, an extra tap on a shifted
-   day, calendar shading, a notes row, a second Thursday, and a
-   Wednesday after the 6th (#33-new). Daily through Options and the
-   + Add popup are built (#34-new). Project Planner, Orders, and
-   Watch List are off Home, same as Input (#34-new). Patrick
-   arranged the remaining tiles himself. The old screens are out
-   (#35-new). Backup copies the new list, not the old ones (#35-new).
-   Testing waits until you have looked at the pages. Logs are on
-   Daily through Extended (#36-new). The four-digit time spinner is
-   built (#36-new). Options connecting started (#36-new): Daily gets
-   none; Weekly is first. The doors are in. Next is saving holidays,
-   time zone, calendar shading, and notes onto a Weekly item. They
-   still only show the explanation. + Screen on Options opens Where
-   does it belong? + Add on a cadence page goes straight to that
-   page's own New.
+1. THE REMINDER PAGES. Daily through Options are built. Options
+   connecting is in (#37-new): + OPT writes the cases that apply,
+   Note is on New and Edit, Skip is off Options. Weekly has holidays,
+   time zone, and calendar shading. Monthly, Quarterly, and Yearly
+   add Float, extra tap, a second Thursday, and a Wednesday after the
+   6th. One Time has the same three as Weekly. Extended’s set is not
+   gone through. Float uses the last day that exists. Holidays use
+   the US federal list, before or after. The engine does not do
+   holidays yet, and dual-write does not pass these fields. The 31st
+   keeping through a short month is an automated-load case. That
+   load waits until the remaining features are in. He is loading
+   this build on the phone (#37-new). Look Ahead's tile and Snooze,
+   and the Timer's pause and log, are still later jobs.
 2. LOOK AHEAD: change the tile format, and change or drop the
    Snooze (#3-new).
 3. TIMER: add a Stop (Pause) / Continue (Go) button to the tile,
@@ -52,12 +43,10 @@ Things waiting on something — mostly on the phone.
    remind you tomorrow. That is the thing that used to go quiet and
    it is the one test that matters most. No day has turned over
    yet.
-2. EVERYTHING BUILT SINCE THE LAST PHONE LOAD IS UNPROVED. The
-   engine on your phone is from an earlier build. One reminder per
-   item instead of two, a ticked weekly chore staying quiet, the
-   eight o'clock To-Do banner gone, skip and time zones — none of
-   it has been on the phone. Nothing goes on until the reminder
-   work is whole, which was your own call.
+2. EVERYTHING BUILT SINCE THE LAST PHONE LOAD IS UNPROVED. He is
+   loading this build now (#37-new) to live with it for a few weeks.
+   Holidays and Float do not yet change when a reminder fires. The
+   engine on the phone until this load was from an earlier build.
 3. LOOK AHEAD'S BANNER DELAY. Delaying from the banner did not show
    the "▶ Delayed" line on the tile. The cause was found and the
    fix went in at #4-new — the page now re-reads every visit — but
@@ -148,14 +137,17 @@ WHAT IS DONE, NEWEST FIRST
 One line each. The full story of any of them is in
 docs/build-history.md.
 
-1. #36-new — logs on Weekly, Monthly, Quarterly, Yearly, One Time,
+1. #37-new — Options connecting: + OPT writes the cases that apply,
+   Note is on New and Edit, Skip is off Options. Per-kind sets are
+   in. Engine does not read the fields yet. He is loading the phone.
+2. #36-new — logs on Weekly, Monthly, Quarterly, Yearly, One Time,
    and Extended. Weekly uses My Week's list; Monthly, Quarterly,
    and Yearly share Look Ahead's; One Time and Extended each have
    their own. They travel in the backup. The log title is Log, not
    My Log. Home no longer warns when the stack is already empty.
    The 24-hour box opens a four-digit spinner. AM/PM removal is
    mitigated by that spinner and is not a separate job.
-2. #35-new — old screens out, including the `/myday` hop. Backup
+3. #35-new — old screens out, including the `/myday` hop. Backup
    copies the new list, not the old ones. Logs on the other new
    pages are next.
 3. #34-new — Weekly through Options and the + Add popup built.

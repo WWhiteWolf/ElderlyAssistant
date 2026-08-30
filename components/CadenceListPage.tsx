@@ -411,7 +411,7 @@ export default function CadenceListPage({
                                         setHighlightId(null);
                                         return;
                                     }
-                                    router.push({ pathname: '/item-edit', params: { id: item.id, returnTo } } as Href);
+                                    router.push({ pathname: '/item-edit', params: { id: item.id, kind, returnTo } } as Href);
                                 }}
                                 onDragStart={beginDrag}
                                 onDragMove={moveDrag}

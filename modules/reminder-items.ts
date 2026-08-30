@@ -39,6 +39,21 @@ export interface ReminderItem {
     completed?: boolean;
     doneAt?: number;
     snoozedUntil?: number;
+    // Options written from + OPT (#37-new). Dual-write and the engine do
+    // not read these yet. Left off means the default: no holiday move,
+    // float with the phone, no shading. Notes is a field on New and Edit,
+    // not an Options case.
+    holidayMove?: 'before' | 'after';
+    floatsWithPhone?: boolean;
+    dueTimeZoneText?: string;
+    shadeCalendar?: boolean;
+    notes?: string;
+    floatDay?: boolean;
+    shiftedChoice?: 'then' | 'next';
+    weekdayOrdinal?: number;
+    ordinalWeekday?: number;
+    afterWeekday?: number;
+    afterDayCount?: number;
 }
 
 const STORAGE_KEY = 'reminder_items';
