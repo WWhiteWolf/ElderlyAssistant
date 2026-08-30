@@ -54,11 +54,12 @@ file is added, retired or renamed, its line changes at the same refresh.
   decision blocks, the codes and bits, the field names, depth, recovery
   on opening, and the translator at the boundary.
 - **`automated-test-load.md`** — the settled design for the temporary
-  automated reminder load, gathered at #38-new. It waits until the
-  remaining reminder features are connected, then puts ordinary test
-  items through the real save, engine and phone-queue path so the
-  features can be proved in one sitting. A later session builds from
-  it; it does not redesign it.
+  automated reminder load, gathered at #38-new. The one-store cutover
+  landed at #39-new. The load still waits until the remaining reminder
+  features are connected, then puts ordinary test items through the
+  real save, engine and phone-queue path so the features can be
+  proved in one sitting. A later session builds from it; it does not
+  redesign it.
 - **`spec-pages.md`** — the phase spec for the reminder pages, written
   at #32-new. Live for this phase. Job sheets for page work copy the
   answers they need from it.
@@ -76,7 +77,7 @@ file is added, retired or renamed, its line changes at the same refresh.
 
 - **`build-history.md`** — the session-by-session record. Its headings
   carry the session number, the date and a one-line summary, so **the
-  list of headings is its own index.** 3,303 lines; never read whole.
+  list of headings is its own index.** 3,330 lines; never read whole.
 - **`reminder-rebuild.md`** — the record of #15-new through #18-new.
   **Not the live design.** Opened when a reminder fault needs tracing to
   what was found and cured. Its one live part is "What is already right,
@@ -107,8 +108,8 @@ They are kept as the record of what was built and why.
 - **`build-sheet-optional-date.md`** — Super-4-new / #27-new. A To-Do
   task with no date and no time.
 - **`build-sheet-input-page.md`** — #29-new. The one Input page.
-  **The plan it belongs to was dropped at #30-new**; the page is still in
-  the app as a try.
+  **The plan it belongs to was dropped at #30-new.** The page came out
+  at #35-new.
 
 ## The quiet files
 

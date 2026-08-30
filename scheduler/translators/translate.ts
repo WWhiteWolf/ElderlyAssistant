@@ -20,8 +20,8 @@
 // of strings could not be checked, and readability and the compiler's checking
 // are what this app trades for.
 //
-// Nothing in the app calls this yet. The old readers stay exactly where they
-// are and keep working; each is retired only when its replacement is proved.
+// The live run calls `translateReminderItems`. The old per-screen wrappers
+// stay for tests of those rule sets. The old reader files are not called.
 //
 // It reads nothing, writes nothing, and knows nothing about the phone — so
 // Node can check it in a fraction of a second. `now` is handed in rather than
@@ -34,6 +34,7 @@ import type {
     ShapedItem,
     SourceScreenCode,
 } from '../inputshape.ts';
+import type { ReminderItem } from '../../modules/reminder-types.ts';
 import type { MyDayItem } from '../readers/myday.ts';
 import type { PetsItem } from '../readers/pets.ts';
 import type { Chore } from '../readers/myweek.ts';
@@ -572,4 +573,206 @@ export function translateLookAhead(items: LookAheadItem[], now: number): ShapedI
 /** Turn every saved To-Do task into a shaped item. */
 export function translateToDo(tasks: Task[], now: number): ShapedItem[] {
     return translateWith(todoRules, tasks, now);
+}
+
+// ---------------------------------------------------------------------------
+// Four: the one list, by kind
+// ---------------------------------------------------------------------------
+
+function leadTimesFromReminders(item: ReminderItem): LeadTime[] {
+    if (!item.reminders || item.reminders.length === 0) {
+        return [];
+    }
+    return item.reminders.map((reminder) => {
+        if (reminder.kind === 'clock') {
+            const named = reminder.timeOfDay === 'evening' ? 'evening'
+                : reminder.timeOfDay === 'midday' ? 'midday'
+                    : 'morning';
+            return {
+                leadFormCode: 'clock' as const,
+                leadDaysBefore: reminder.daysBefore ?? 0,
+                leadNamedTimeCode: named,
+                leadPartText: reminder.id,
+            };
+        }
+        return {
+            leadFormCode: 'offset' as const,
+            leadAmount: reminder.amount,
+            leadUnitCode: reminder.unit,
+            leadPartText: reminder.id,
+        };
+    });
+}
+
+const dailyCadenceRules: ScreenRules<ReminderItem> = {
+    sourceScreenCode: 'myday',
+    repeatUnitCode: 'day',
+    repeatIntervalCount: 1,
+    canBeDoneBit: true,
+    canBePushedBackBit: true,
+    doneEndsItemBit: false,
+    standsForGroupBit: false,
+    bannerTitleTextOf: () => 'Daily Routine',
+    bannerButtonsCode: 'routineactions',
+    idOf: (item) => item.id,
+    nameOf: (item) => item.label,
+    isDoneOf: (item) => !!item.completed,
+    pushedBackStampOf: (item) => item.snoozedUntil,
+    dueOf: (item) =>
+        typeof item.hour === 'number' && typeof item.minute === 'number'
+            ? { hasDueTimeBit: true, dueHour: item.hour, dueMinute: item.minute }
+            : { hasDueTimeBit: false },
+    leadTimesOf: () => atTheMomentItself,
+    bannerBodyTextOf: (item) => `Time for ${item.label}!`,
+};
+
+const weeklyCadenceRules: ScreenRules<ReminderItem> = {
+    sourceScreenCode: 'myweek',
+    repeatUnitCode: 'week',
+    repeatIntervalCount: 1,
+    canBeDoneBit: true,
+    canBePushedBackBit: true,
+    doneEndsItemBit: false,
+    standsForGroupBit: false,
+    bannerTitleTextOf: () => 'Weekly Chore',
+    bannerButtonsCode: 'routineactions',
+    idOf: (item) => item.id,
+    nameOf: (item) => item.label,
+    isDoneOf: (item) => !!item.completed,
+    pushedBackStampOf: (item) => item.snoozedUntil,
+    weekdayNumberOf: (item) =>
+        typeof item.day === 'number' ? item.day : undefined,
+    dueOf: (item) =>
+        typeof item.day === 'number'
+            && typeof item.hour === 'number'
+            && typeof item.minute === 'number'
+            ? {
+                hasDueTimeBit: true,
+                dueHour: item.hour,
+                dueMinute: item.minute,
+            }
+            : { hasDueTimeBit: false },
+    leadTimesOf: () => atTheMomentItself,
+    bannerBodyTextOf: (item) => `Time for ${item.label}!`,
+};
+
+const datedCadenceRules: ScreenRules<ReminderItem> = {
+    sourceScreenCode: 'lookahead',
+    canBeDoneBit: false,
+    canBePushedBackBit: true,
+    doneEndsItemBit: false,
+    standsForGroupBit: false,
+    bannerTitleTextOf: () => '🔭 Look Ahead',
+    bannerButtonsCode: 'lookaheadactions',
+    idOf: (item) => item.id,
+    nameOf: (item) => item.label,
+    isDoneOf: () => false,
+    pushedBackStampOf: (item) => item.snoozedUntil,
+    dueOf: (item) =>
+        typeof item.year === 'number'
+            && typeof item.month === 'number'
+            && typeof item.day === 'number'
+            ? {
+                hasDueTimeBit: true,
+                dueMoment: new Date(
+                    item.year,
+                    item.month,
+                    item.day,
+                    item.hour ?? 0,
+                    item.minute ?? 0,
+                    0,
+                    0,
+                ).getTime(),
+            }
+            : { hasDueTimeBit: false },
+    leadTimesOf: () => atTheMomentItself,
+    bannerBodyTextOf: (item) => `Time for ${item.label}!`,
+};
+
+const oneTimeCadenceRules: ScreenRules<ReminderItem> = {
+    sourceScreenCode: 'todo',
+    canBeDoneBit: true,
+    canBePushedBackBit: false,
+    doneEndsItemBit: true,
+    standsForGroupBit: false,
+    bannerButtonsCode: 'todook',
+    idOf: (item) => item.id,
+    nameOf: (item) => item.label,
+    isDoneOf: (item) => !!item.completed,
+    pushedBackStampOf: () => undefined,
+    dueOf: (item) => {
+        if (typeof item.year === 'number'
+            && typeof item.month === 'number'
+            && typeof item.day === 'number') {
+            return {
+                hasDueTimeBit: true,
+                dueMoment: new Date(
+                    item.year,
+                    item.month,
+                    item.day,
+                    item.hour ?? 12,
+                    item.minute ?? 0,
+                    0,
+                    0,
+                ).getTime(),
+            };
+        }
+        return { hasDueTimeBit: false };
+    },
+    leadTimesOf: (item) => leadTimesFromReminders(item),
+    bannerTitleTextOf: (item) => `📋 Reminder: ${item.label}`,
+    bannerBodyTextOf: (item) => {
+        if (typeof item.year !== 'number'
+            || typeof item.month !== 'number'
+            || typeof item.day !== 'number') {
+            return '';
+        }
+        return dueSentence(
+            item.year,
+            item.month,
+            item.day,
+            item.hour ?? 12,
+            item.minute ?? 0,
+        );
+    },
+};
+
+const extendedCadenceRules: ScreenRules<ReminderItem> = {
+    sourceScreenCode: 'todo',
+    canBeDoneBit: true,
+    canBePushedBackBit: false,
+    doneEndsItemBit: true,
+    standsForGroupBit: false,
+    bannerButtonsCode: 'todook',
+    idOf: (item) => item.id,
+    nameOf: (item) => item.label,
+    isDoneOf: (item) => !!item.completed,
+    pushedBackStampOf: () => undefined,
+    dueOf: () => ({ hasDueTimeBit: false }),
+    leadTimesOf: () => [],
+    bannerTitleTextOf: (item) => `📋 Reminder: ${item.label}`,
+    bannerBodyTextOf: () => '',
+};
+
+function rulesForKind(kind: ReminderItem['kind']): ScreenRules<ReminderItem> | null {
+    if (kind === 'daily') return dailyCadenceRules;
+    if (kind === 'weekly') return weeklyCadenceRules;
+    if (kind === 'monthly' || kind === 'quarterly' || kind === 'yearly') {
+        return datedCadenceRules;
+    }
+    if (kind === 'oneTime') return oneTimeCadenceRules;
+    if (kind === 'extended') return extendedCadenceRules;
+    return null;
+}
+
+/** Turn the one saved list into shaped items, in the order given. */
+export function translateReminderItems(items: ReminderItem[], now: number): ShapedItem[] {
+    void now;
+    const shaped: ShapedItem[] = [];
+    for (const one of items) {
+        const rules = rulesForKind(one.kind);
+        if (!rules) continue;
+        shaped.push(translateOne(rules, one));
+    }
+    return shaped;
 }

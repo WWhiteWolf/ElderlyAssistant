@@ -5,6 +5,11 @@ import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import { ThemeProvider } from '../constants/Themes';
 import * as AppGroup from '../modules/app-group';
+import {
+    advanceDatedItem,
+    loadReminderItems,
+    saveReminderItems,
+} from '../modules/reminder-items';
 import { showHealthNotice } from '../scheduler/notice';
 import { runScheduler } from '../scheduler/scheduler';
 
@@ -25,19 +30,19 @@ export default function RootLayout() {
       if (applyingNote.current) return;
       applyingNote.current = true;
       try {
-        const routineRaw = await AsyncStorage.getItem('my_routine');
-        const routine = routineRaw ? (JSON.parse(routineRaw) as { id: string; label: string; completed: boolean }[]) : [];
+        const items = await loadReminderItems();
+        const daily = items.filter((one) => one.kind === 'daily');
         // Keep Siri's view of the list current.
-        AppGroup.setMyDayItems(routine.map((i) => ({ id: i.id, label: i.label })));
+        AppGroup.setMyDayItems(daily.map((i) => ({ id: i.id, label: i.label })));
 
         const note = AppGroup.getPendingNote();
         if (!note || note.action !== 'markDone') return;
 
         // Find the item: prefer the id Siri handed back, else match the label.
-        let item = note.itemId ? routine.find((i) => i.id === note.itemId) : undefined;
+        let item = note.itemId ? items.find((i) => i.id === note.itemId) : undefined;
         if (!item && note.label) {
           const spoken = note.label.trim().toLowerCase();
-          item = routine.find((i) => i.label.trim().toLowerCase() === spoken);
+          item = daily.find((i) => i.label.trim().toLowerCase() === spoken);
         }
         if (!item) {
           AppGroup.clearPendingNote();
@@ -45,11 +50,11 @@ export default function RootLayout() {
         }
         const target = item;
 
-        // Mark complete in my_routine.
-        const updatedRoutine = routine.map((i) =>
-          i.id === target.id ? { ...i, completed: true } : i
-        );
-        await AsyncStorage.setItem('my_routine', JSON.stringify(updatedRoutine));
+        const { snoozedUntil: _cleared, ...rest } = target;
+        void _cleared;
+        await saveReminderItems(items.map((i) =>
+          i.id === target.id ? { ...rest, completed: true } : i
+        ));
 
         // Durable history entry, dated from when Siri ran (firedAt) — same shape,
         // 50-cap, and fire-time dating as the banner-Done path, so an after-
@@ -207,21 +212,15 @@ export default function RootLayout() {
         const source = data?.source as string | undefined;
         const isDay = source === 'myday' || source === 'mydaysnooze';
         const isWeek = source === 'myweek' || source === 'myweekpostpone';
-        const storageKey = isDay ? 'my_routine' : isWeek ? 'week_routine' : null;
-        if (!storageKey) return;
-        const stampField = isWeek ? 'postponedTo' : 'snoozedUntil';
+        if (!isDay && !isWeek) return;
 
-        const raw = await AsyncStorage.getItem(storageKey);
-        if (raw) {
-          const items = JSON.parse(raw) as { id: string;[key: string]: unknown }[];
-          const updated = items.map((it) => {
-            if (it.id !== itemId) return it;
-            const { [stampField]: _cleared, ...rest } = it;
-            return rest;
-          });
-          await AsyncStorage.setItem(storageKey, JSON.stringify(updated));
-        }
-        await runScheduler();
+        const items = await loadReminderItems();
+        await saveReminderItems(items.map((it) => {
+          if (it.id !== itemId) return it;
+          const { snoozedUntil: _cleared, ...rest } = it;
+          void _cleared;
+          return rest;
+        }));
       })();
       return;
     }
@@ -254,16 +253,11 @@ export default function RootLayout() {
         const itemId = data?.itemId as string | undefined;
         if (!itemId) return;
         (async () => {
-          const storageKey = isWeek ? 'week_routine' : 'my_routine';
-          const stampField = isWeek ? 'postponedTo' : 'snoozedUntil';
-          const raw = await AsyncStorage.getItem(storageKey);
-          const items = raw ? (JSON.parse(raw) as any[]) : [];
+          const items = await loadReminderItems();
           const target = Date.now() + minutes * 60 * 1000;
-          const updated = items.map((i) =>
-            i.id === itemId ? { ...i, [stampField]: target } : i
-          );
-          await AsyncStorage.setItem(storageKey, JSON.stringify(updated));
-          await runScheduler();
+          await saveReminderItems(items.map((i) =>
+            i.id === itemId ? { ...i, snoozedUntil: target } : i
+          ));
         })();
       }
       return;
@@ -281,20 +275,16 @@ export default function RootLayout() {
       const itemId = data?.itemId as string | undefined;
       if (!itemId) return;
       const target = new Date();
-      let delayedLabel = '1 day';
-      if (action === 'delayday') { target.setDate(target.getDate() + 1); delayedLabel = '1 day'; }
-      else if (action === 'delayweek') { target.setDate(target.getDate() + 7); delayedLabel = '1 week'; }
-      else { target.setMonth(target.getMonth() + 1); delayedLabel = '1 month'; }
+      if (action === 'delayday') target.setDate(target.getDate() + 1);
+      else if (action === 'delayweek') target.setDate(target.getDate() + 7);
+      else target.setMonth(target.getMonth() + 1);
       (async () => {
-        // Stamp the item. The page reads the same stamp to show "▶ Delayed
-        // <amount>" under its name.
-        const raw = await AsyncStorage.getItem('lookahead_items');
-        const its = raw ? (JSON.parse(raw) as any[]) : [];
-        const updated = its.map((i) =>
-          i.id === itemId ? { ...i, delayedUntil: target.getTime(), delayedLabel } : i
-        );
-        await AsyncStorage.setItem('lookahead_items', JSON.stringify(updated));
-        await runScheduler();
+        // Stamp the item. The page reads the same stamp to show the snooze line
+        // under its name.
+        const items = await loadReminderItems();
+        await saveReminderItems(items.map((i) =>
+          i.id === itemId ? { ...i, snoozedUntil: target.getTime() } : i
+        ));
       })();
       return;
     }
@@ -313,19 +303,15 @@ export default function RootLayout() {
       const itemId = data?.itemId as string | undefined;
       if (!itemId) return;
       (async () => {
-        const raw = await AsyncStorage.getItem('week_routine');
-        const chores = raw ? (JSON.parse(raw) as any[]) : [];
-        const chore = chores.find((c) => c.id === itemId);
+        const items = await loadReminderItems();
+        const chore = items.find((c) => c.id === itemId);
         if (!chore) return;
         const target = new Date();
         target.setDate(target.getDate() + 1);
-        target.setHours(chore.hour, chore.minute, 0, 0);
-        // The tile reads the same stamp to show "moved to <day>" next open.
-        const updated = chores.map((c) =>
-          c.id === itemId ? { ...c, postponedTo: target.getTime() } : c
-        );
-        await AsyncStorage.setItem('week_routine', JSON.stringify(updated));
-        await runScheduler();
+        target.setHours(typeof chore.hour === 'number' ? chore.hour : 12, typeof chore.minute === 'number' ? chore.minute : 0, 0, 0);
+        await saveReminderItems(items.map((c) =>
+          c.id === itemId ? { ...c, snoozedUntil: target.getTime() } : c
+        ));
       })();
       return;
     }
@@ -350,18 +336,14 @@ export default function RootLayout() {
       // the ✓ when the chore's day comes around again.)
       if (source === 'myweek' || source === 'myweekpostpone') {
         (async () => {
-          const raw = await AsyncStorage.getItem('week_routine');
-          const chores = raw ? (JSON.parse(raw) as any[]) : [];
+          const items = await loadReminderItems();
           const fired = new Date(response.notification.date * 1000);
-          // A Done always means the cycle now (plan step 7). The past-cycle
-          // guard that used to stand here went with My Day's and Pets' past-day
-          // guard, for the same reason: the module sweeps yesterday's banners
-          // away as it runs, so a banner still there to be tapped is one from
-          // today, and a chore's banner from today belongs to this cycle.
-          const updated = chores.map((c) =>
-            c.id === itemId ? { ...c, completed: true, doneAt: Date.now(), postponedTo: undefined } : c
-          );
-          await AsyncStorage.setItem('week_routine', JSON.stringify(updated));
+          await saveReminderItems(items.map((c) => {
+            if (c.id !== itemId) return c;
+            const { snoozedUntil: _cleared, ...rest } = c;
+            void _cleared;
+            return { ...rest, completed: true, doneAt: Date.now() };
+          }));
           const label = (data?.label as string) || 'Chore';
           const histRaw = await AsyncStorage.getItem('week_history');
           const hist = histRaw ? (JSON.parse(histRaw) as any[]) : [];
@@ -374,12 +356,6 @@ export default function RootLayout() {
             note: '',
           };
           await AsyncStorage.setItem('week_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
-          // The Done cleared the postpone above, so asking the module to run
-          // takes that reminder off the phone. Nothing has to be hunted down by
-          // hand any more (#20-new): a banner's Delay now writes the very same
-          // stamp the page's Postpone button writes, so there is no My Week
-          // reminder left that the module cannot see.
-          await runScheduler();
         })();
         return;
       }
@@ -389,11 +365,9 @@ export default function RootLayout() {
       // delayed reminders, and arm the next one. The item stays on the list.
       if (source === 'lookahead' || source === 'lookaheaddelay') {
         (async () => {
-          const raw = await AsyncStorage.getItem('lookahead_items');
-          const its = raw ? (JSON.parse(raw) as any[]) : [];
-          const item = its.find((i) => i.id === itemId);
+          const items = await loadReminderItems();
+          const item = items.find((i) => i.id === itemId);
           if (!item) return;
-          // Durable, fire-time-dated history entry (same shape/cap as the on-screen Log).
           const fired = new Date(response.notification.date * 1000);
           const histRaw = await AsyncStorage.getItem('lookahead_history');
           const hist = histRaw ? (JSON.parse(histRaw) as any[]) : [];
@@ -406,63 +380,26 @@ export default function RootLayout() {
             note: '',
           };
           await AsyncStorage.setItem('lookahead_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
-          // Advance to the next occurrence that lands in the future (mirrors the
-          // page's advanceItem): add the interval's months, clamping to the anchor day.
-          const months = item.interval === 'monthly' ? 1 : item.interval === '3month' ? 3 : item.interval === '6month' ? 6 : 12;
-          const dim = (y: number, m: number) => new Date(y, m + 1, 0).getDate();
-          let d = new Date(item.year, item.month, item.day, item.hour, item.minute, 0, 0);
-          const now = new Date();
-          do {
-            const tmi = d.getMonth() + months;
-            const y = d.getFullYear() + Math.floor(tmi / 12);
-            const m = ((tmi % 12) + 12) % 12;
-            d = new Date(y, m, Math.min(item.day, dim(y, m)), item.hour, item.minute, 0, 0);
-          } while (d <= now);
-          const advanced = { ...item, year: d.getFullYear(), month: d.getMonth(), day: d.getDate(), delayedUntil: undefined, delayedLabel: undefined };
-          await AsyncStorage.setItem('lookahead_items', JSON.stringify(its.map((i) => (i.id === itemId ? advanced : i))));
-          // The new date is written down and the delay stamp is gone, so asking
-          // the module to run takes the old reminder and the delayed one off the
-          // phone and arms the next date. Nothing is cancelled or armed here.
-          await runScheduler();
+          await saveReminderItems(items.map((i) => (i.id === itemId ? advanceDatedItem(item) : i)));
         })();
         return;
       }
 
       if (source === 'pets' || source === 'petssnooze') return;
       if (source !== 'myday' && source !== 'mydaysnooze') return;
-      const storageKey = 'my_routine';
-      const historyKey = 'my_history';
       (async () => {
-        // A Done always means today (plan step 7). The past-day guard that used
-        // to stand here is gone with the rest of the midnight holdover: the
-        // module sweeps yesterday's banners away as it runs, so a banner still
-        // there to be tapped is one from today.
         if (itemId) {
-          const raw = await AsyncStorage.getItem(storageKey);
-          if (raw) {
-            const items = JSON.parse(raw) as { id: string; completed: boolean; snoozedUntil?: number }[];
-            // #10-new: the same write drops any snooze on the item. It is done,
-            // so nothing should nag about it again today, and taking the stamp
-            // off is all that takes — the module reads the item afresh and
-            // takes the reminder back off the phone.
-            const updated = items.map((it) => {
-              if (it.id !== itemId) return it;
-              const { snoozedUntil, ...rest } = it;
-              return { ...rest, completed: true };
-            });
-            await AsyncStorage.setItem(storageKey, JSON.stringify(updated));
-          }
+          const items = await loadReminderItems();
+          await saveReminderItems(items.map((it) => {
+            if (it.id !== itemId) return it;
+            const { snoozedUntil, ...rest } = it;
+            void snoozedUntil;
+            return { ...rest, completed: true };
+          }));
         }
-        // Write a dated history entry so the item leaves a durable record. The
-        // daily reset clears the `completed` flag overnight, so without this an
-        // item marked from the banner would vanish. Date + time come from when the
-        // reminder FIRED (notification.date), not when Done was tapped — so an
-        // item marked just after midnight is filed under the day the reminder
-        // was issued, not the next day. iOS reports notification.date in SECONDS
-        // (timeIntervalSince1970), so multiply by 1000 to build a JS Date.
         const label = (data?.label as string) || 'Reminder';
         const fired = new Date(response.notification.date * 1000);
-        const histRaw = await AsyncStorage.getItem(historyKey);
+        const histRaw = await AsyncStorage.getItem('my_history');
         const hist = histRaw ? (JSON.parse(histRaw) as any[]) : [];
         const newEntry = {
           id: Date.now().toString(),
@@ -472,16 +409,7 @@ export default function RootLayout() {
           what: '',
           note: '',
         };
-        await AsyncStorage.setItem(historyKey, JSON.stringify([newEntry, ...hist].slice(0, 50)));
-        // We do NOT cancel the fired notification's id — the base reminder is a
-        // DAILY repeat that must fire again tomorrow; iOS auto-clears the shown
-        // banner on an action tap. (Same rule My Week's Done follows above.)
-        //
-        // #10-new: the snooze needs no hunting through the phone's queue any
-        // more. It came off with the checkmark above, so asking the module to
-        // run takes the snooze reminder off the phone and leaves the daily
-        // repeat where it is.
-        await runScheduler();
+        await AsyncStorage.setItem('my_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
       })();
       return;
     }

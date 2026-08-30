@@ -16,49 +16,40 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
-**The live work is finishing the reminder pages' one-store engine
-connection.** A session starts from the clean cutover and open Option
-decisions below. It does not redesign the engine or make Patrick
-re-teach the pages.
+**The live work is connecting Options to the engine, and the five
+hardening points that still sit in front of the automated load.** The
+one-store cutover is in. A session does not redesign the engine or make
+Patrick re-teach the pages.
 
-**Daily through Options are built.** The old screens are out and the new
-pages write `reminder_items`, but Patrick's requested clean cutover was
-not completed: saving still recreates the old lists, and live scheduler,
-banner and Siri roads still depend on them. Patrick is the only user and
-had explicitly said there was no old data to preserve. This is an
-implementation gap, not a compatibility requirement. **#36-new is
-committed** (Patrick, #37-new). Backup copies the new list. Logs are on
-Daily through Extended. **He is loading this build on the phone** to
-live with it for a few weeks (Patrick, #37-new).
+**Daily through Options are built.** The old screens are out. Pages,
+banners and Siri write `reminder_items` through one save, and the
+scheduler reads that list. Dual-write is gone. The old reader files
+stay until phone proof and are not called. **#36-new is committed**
+(Patrick, #37-new). Backup copies the new list. Logs are on Daily
+through Extended. **He is living with the #37-new build on the phone.**
+The cutover itself has not been loaded there yet.
 
-**Options connecting is in** (#37-new). + OPT writes the cases that apply
-onto the item. New and Edit show only the options that are set, by name.
-Done in + OPT writes without leaving the form. **Note is a field on New
-and Edit**, not an Options case. Daily can still open Options, with the
-warning that none apply for now. **Skip is off Options**: it belongs on
-the banner and the page. **Weekly’s set** is holidays, time zone, and
-calendar shading. **Monthly, Quarterly, and Yearly** add Float around
-short month, an extra tap on a shifted day, a second Thursday, and a
-Wednesday after the 6th. **One Time** has the same three as Weekly.
-**Extended’s set is not gone through.** **Float uses the last day that
-exists.** Holidays use the US federal list, before or after. The engine
-does not do holidays yet, and dual-write does not pass these fields. The
-31st keeping through a short month is an automated-load case. That load
-waits until the remaining features are in. The AM/PM removal is
+**Options connecting is in** (#37-new). The cases write onto the item.
+The engine still does not read those fields. **Skip is off Options**.
+**Note is a field on New and Edit.** **Weekly’s set** is holidays, time
+zone, and calendar shading. **Monthly, Quarterly, and Yearly** add
+Float around short month, an extra tap on a shifted day, a second
+Thursday, and a Wednesday after the 6th. **One Time** has the same three
+as Weekly. **Extended’s set is not gone through.** **Float uses the last
+day that exists.** Holidays use the US federal list, before or after.
+The 31st keeping through a short month is an automated-load case. That
+load waits until the remaining features are in. The AM/PM removal is
 **mitigated** by the 24-hour digit spinner (Patrick, #36-new).
 
 **The #38-new implementation record is in
-`docs/automated-test-load.md`.** It says plainly that this is the clean
-cutover Patrick already ordered, not a migration: do not extend
-dual-write, retain an old-store fallback, or preserve data he said was
-unneeded. `reminder_items` is translated once into `ShapedItem`; pages,
-banners and Siri write it through one function; and the scheduler reads
-it. Completion requires Mac tests proving that the full road works with
-the old reminder-page stores absent and that no live action reads or
-writes them. The same record carries the Option mappings, keeps the
-repeat recipe apart from occurrence state, and names the decisions a
-worker must not guess: Float off, monthly-pattern combinations, calendar
-order, Extended's set, and + OPT's save-and-Cancel behaviour.
+`docs/automated-test-load.md`.** Options still join the engine from that
+file. The open decisions a worker must not guess remain: Float off,
+monthly-pattern combinations, calendar order, Extended's set, and
++ OPT's save-and-Cancel behaviour. Monthly, Quarterly, and Yearly Done
+still advances the saved date.
+
+**#39-new.** The live cutover is in. The Settings morning, midday and
+evening times stay; the new code uses them. Nothing live points at To-Do.
 
 ### The pages, settled by Patrick at #30-new
 
@@ -89,7 +80,7 @@ order, Extended's set, and + OPT's save-and-Cancel behaviour.
   Holidays is the before-or-after. Reminders-before is
   not a row; it already lives on One Time. Each row opens that case.
 
-**On a view page, each item has Done and Snooze, and a tap on the tile opens the edit page.** Daily is the same: Snooze, Done, and Done that undoes (Patrick, #33-new, looking at Daily). Swipe still deletes. A tap on the name opens the edit page. Hold the name and slide to reorder (Patrick, #33-new). **Daily now carries My Day's log** — the same `my_history` list, written when Done is tapped, titled Log (Patrick, #36-new: none of the pages say My). **The My Day page is gone** (Patrick, #33-new). The `/myday` hop is not kept (Patrick, #35-new). The engine still names those reminders `myday`, so banners and dual-write keep working.
+**On a view page, each item has Done and Snooze, and a tap on the tile opens the edit page.** Daily is the same: Snooze, Done, and Done that undoes (Patrick, #33-new, looking at Daily). Swipe still deletes. A tap on the name opens the edit page. Hold the name and slide to reorder (Patrick, #33-new). **Daily now carries My Day's log** — the same `my_history` list, written when Done is tapped, titled Log (Patrick, #36-new: none of the pages say My). **The My Day page is gone** (Patrick, #33-new). The `/myday` hop is not kept (Patrick, #35-new). The engine still names those reminders `myday`, so banners still open Daily.
 
 **An item lives on one page; Daily may also show another page's item (Patrick, #32-new).**
 
@@ -156,22 +147,22 @@ than redesigning the load.
 
 ### What is actually in the app
 
-**The engine is finished and all five reminder screens go through it.**
-`gatherWanted` sends My Day, Pets, My Week, Look Ahead and To-Do through
-one translator and its table, then `scheduler/remindersfor.ts`, which
-writes the reminders the phone should hold. Depth is one for every kind,
-with recovery on opening carrying what a second copy used to carry. The
-old readers are still in the project but the live run no longer calls
-them, except the Memory Test's, which skips the common shape. The Timer
-sits outside the module.
+**The engine is finished and the one list goes through it.**
+`gatherWanted` reads `reminder_items`, translates each kind into the
+common shape, then `scheduler/remindersfor.ts`, which writes the
+reminders the phone should hold. Depth is one for every kind, with
+recovery on opening carrying what a second copy used to carry. The old
+readers are still in the project and the live run does not call them.
+The Memory Test's reader still skips the common shape. The Timer sits
+outside the module.
 
 **The engine on the phone has been from an earlier load.** My Day and To-Do have
 each sent a notice. Everything built since — the pages, Options connecting,
-the repeat group, skip, zone handling, depth of one, the live swap — **has
-not been proved on the phone until this load** (Patrick, #37-new).
+the repeat group, skip, zone handling, depth of one, the live swap, the
+one-store cutover — **has not been proved on the phone** (Patrick, #37-new).
 
 **The tests run on the Mac in about a second**, headless under Node, with
-no build and no simulator. **413 of 413 pass:**
+no build and no simulator. **420 of 420 pass:**
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -285,25 +276,19 @@ done at #30-new and does not need doing again:
 - **The logs are already 24-hour everywhere.** It is the tiles that are
   not.
 
-**Retiring each old reader** once its replacement is proved. That is
-Patrick's own order from #19-new and it waits on the phone proof.
+**My Week's old reader still ignores the tick.** That file is not
+called. The live weekly road reads the tick. The old test named *A chore
+already ticked still gets its weekly reminder* goes when the reader
+files come out.
 
-**My Week's cure rides on the swap, not on the translator.** Its reader
-still ignores the tick, and the header comment of
-`scheduler/readers/myweek.ts` and the test named *A chore already ticked
-still gets its weekly reminder* both assert the opposite of what is
-wanted. Both go out when the screen is swapped over. The translator
-already tells the truth about the tick.
+**Miss-telling covers Daily items only.** The rollover records misses
+for every-day items on `reminder_items` and no others, so Weekly,
+Monthly, Quarterly, Yearly and One Time record no misses at all. The
+work is extending the telling to those kinds, not building it — both
+halves of recovery on opening are already built and tested.
 
-**Miss-telling covers My Day and Pets only.** The rollover loop in
-`runDailyReset` names `my_routine` and `pets_feeds` and no others, so My
-Week, Look Ahead and To-Do record no misses at all. The work is extending
-the telling to those three, not building it — both halves of recovery on
-opening are already built and tested.
-
-**Skip, a named zone, and the extra repeat shapes have no screen yet on
-the old pages.** The engine holds them; nothing writes them. **Options is
-now that list** (Patrick, #32-new), in the pages block above.
+**Skip, a named zone, and the extra repeat shapes are on Options.** The
+engine holds them; it does not yet read the fields the pages write.
 
 **`docs/build-sheet.md` has not been brought level with the reorder**
 (#24-new). It is the standing description of what the three shape files
@@ -320,15 +305,13 @@ task, so the phone can top the queue up on days the app is not opened.
 None of its pieces are installed. It can only ever sit on top of arming
 ahead, because the days it fails are the days the arming is for.
 
-**Six hardening points come before the automated load** (#38-new), with
-their reasons and required tests in `docs/automated-test-load.md`: give
-Skip a machine-readable answer instead of reading its explanation;
+**Five hardening points remain before the automated load** (#38-new),
+with their reasons and required tests in `docs/automated-test-load.md`:
+give Skip a machine-readable answer instead of reading its explanation;
 preserve held reminders when a saved source cannot be read; queue one
 fresh run when a change arrives during a run; compare banner contents as
-well as key and time; create a replacement before removing the old
-reminder; and finish with `reminder_items` as the one truth written by
-pages, banners and Siri. These strengthen the present engine rather than
-redesigning it.
+well as key and time; and create a replacement before removing the old
+reminder. The sixth point, the one-store cutover, landed at #39-new.
 
 **Still unread**: `app/memorytest.tsx`; and the test files other than My
 Day's, Pets' and My Week's. The old Look Ahead and To-Do screens went
@@ -382,8 +365,8 @@ second test cannot be started. Deleting the day's entry brings the Start
 button back, at the cost of that day's real score.
 
 **A background task and a daily tick are opposites and must never be
-merged.** A To-Do background task says a thing is *not yet done* and must
-survive the rollover, so `todo_tasks` must never be added to
+merged.** An Extended item says a thing is *not yet done* and must
+survive the rollover, so those items must never be handed to
 `runDailyReset`. The coffee-and-water kind says a thing *was done*, is
 meaningless the morning after, and is cleared by the rollover on purpose.
 The full reasoning is in `docs/reminder-shape.md`.

@@ -4,7 +4,7 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-08-30, at the close of #37-new.
+Last written: 2026-08-30, at the close of #39-new.
 
 ## Read this first
 
@@ -18,21 +18,24 @@ Last written: 2026-08-30, at the close of #37-new.
 
 ## What is in
 
-**Daily through Options are built.** Options connecting is in: + OPT
-writes the cases that apply, Note is on New and Edit, Skip is off
-Options. **He is loading this build on the phone** to live with it for
-a few weeks.
+**The live one-store cutover is in.** Pages, banners and Siri write
+`reminder_items`. The scheduler reads it. Dual-write is gone. Old
+reader files stay until phone proof and are not called. **420 of 420**
+Mac tests pass. He is living with the #37-new build on the phone; this
+cutover is not on it yet.
 
 ## What is next
 
-**After live use.** Wiring holidays and Float into the engine. Extended’s
-Options set. Then the automated test load, covering as many features as
-it can.
+**Options into the engine**, after the open decisions (Float off, monthly
+patterns, holiday and missing-day order, Extended's set, + OPT
+Cancel). Then the five remaining hardening points. Phone later. The
+automated load waits until the remaining features are in.
 
 ## Do not reopen
 
-The one Input page. The storage question. Missing days as skip. Daily
-with no buttons. Overlay arrows on Daily. The My Day page. Morning of /
-Day Before chips on Daily's One Time for today. Project Planner, Orders,
-and Watch List on Home. Float as next day — it uses last day that exists.
-Note as an Options case.
+The one Input page. The storage question. Dual-write. Migrating old
+page data. Missing days as skip. Daily with no buttons. Overlay arrows
+on Daily. The My Day page. Morning of / Day Before chips on Daily's
+One Time for today. Project Planner, Orders, and Watch List on Home.
+Float as next day — it uses last day that exists. Note as an Options
+case.

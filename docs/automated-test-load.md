@@ -99,38 +99,39 @@ not have to compare a long list by eye.
 ## How the Options join the engine
 
 The #38-new Options trace followed every control through
-`reminder_items`, dual-write, the translator, the common shape and the
+`reminder_items`, the translator, the common shape and the
 phone queue. This is the implementation record for connecting them.
-The present Options controls save fields on `reminder_items`, but none
-of those fields reaches the live engine because the scheduler still
-reads the old lists and dual-write drops them.
+The present Options controls save fields on `reminder_items`. None of
+those fields reaches the live engine yet: the one-store cutover landed
+at #39-new, and the translator does not yet map the Option fields.
 
 ### One boundary
 
 This is a clean cutover, not a migration or compatibility project.
 Patrick is the only user and explicitly told the page worker that
 nothing from the removed pages needed preserving. Removing the old
-pages meant removing their live storage road too. The worker removed
-the screens but left dual-write, old-list reads, and old-list writes
-from banners and Siri. That is an incomplete implementation of
-Patrick's instruction, not a reason to preserve the old road.
+pages meant removing their live storage road too. The first worker
+removed the screens but left dual-write, old-list reads, and old-list
+writes from banners and Siri. #39-new removed that leftover road.
 
 The connection is `ReminderItem` translated once into `ShapedItem`.
 Pages, banners and Siri all write the same `reminder_items` list, and
 the scheduler reads that list. Do not enlarge dual-write to carry
 Options, retain it as a fallback, or add a migration for data Patrick
-said did not need saving. The old reminder-page keys must no longer be
-part of any live read or write path. Inert old reader source files are
-a separate retirement question; they must not be called.
+said did not need saving. The old reminder-page keys are not part of
+any live read or write path. Inert old reader source files stay until
+phone proof; they must not be called. Nothing live points at To-Do.
 
 Each page kind may supply its recipe through one explicit table entry,
 but no page name is tested in the calendar blocks. The translator sets
 the codes, bits and accompanying values. Everything after it reads the
 same common fields.
 
-The cutover is not complete merely because the old screens are gone or
-because a new page saved successfully. Its Mac proof must show all of
-these:
+The cutover landed at #39-new. Mac tests for the one-list translator
+are in the ordinary suite. The live save, banners and Siri no longer
+read or write an old reminder-page key. Phone proof waits.
+
+The checks that had to be true were:
 
 - saving through every new page changes `reminder_items` and creates no
   compatibility copy in an old reminder-page store;
@@ -143,7 +144,7 @@ these:
   rerun.
 
 Only after those checks pass may the work be reported as one-store
-cutover complete.
+cutover complete. #39-new reports that for the live road.
 
 ### Keep the recipe separate from the occurrence
 
@@ -314,20 +315,14 @@ purpose.
 
 ### Six: every returning road writes the one truth
 
-Pages, banners and Siri all change the canonical `reminder_items` store
-through one write function. This completes the clean cutover Patrick
-already ordered; it is not optional compatibility cleanup for later.
-That function also guarantees that the scheduler runs, or that a
-pending rerun is recorded. Dual-write and every live read or direct
-write of an old reminder-page store leave together.
+This point landed at #39-new. Pages, banners and Siri change the
+canonical `reminder_items` store through one write function. That
+function also runs the scheduler. Dual-write and every live read or
+direct write of an old reminder-page store are gone.
 
-The tests prove that the same action from a page, a banner and Siri
-changes the same saved item and produces the same wanted queue with the
-old reminder-page stores absent.
-
-These six checks join the ordinary Mac suite. The temporary simulator
-and phone load then proves that the same protections hold across real
-storage, Expo and iOS.
+The one-list translator tests join the ordinary Mac suite. The
+temporary simulator and phone load still has to prove the same
+protections hold across real storage, Expo and iOS.
 
 ## What remains for the later build sheet
 

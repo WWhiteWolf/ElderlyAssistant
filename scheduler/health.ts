@@ -123,6 +123,8 @@ export function screenName(listKey: string): string {
     if (listKey === 'week_routine') return 'My Week';
     if (listKey === 'lookahead_items') return 'Look Ahead';
     if (listKey === 'todo_tasks') return 'To-Do';
+    if (listKey === 'reminder_items') return 'reminders';
+    if (listKey === 'weekly') return 'Weekly';
     if (listKey === 'memtest_session') return 'Memory Test';
     return listKey;
 }
@@ -179,7 +181,7 @@ export function faultSentence(fault: RunFault): string {
         // My Week rolls over on each chore's own day rather than at midnight,
         // so the daily wording — "the day", "yesterday" — would say something
         // untrue of it.
-        if (fault.listKey === 'week_routine') {
+        if (fault.listKey === 'week_routine' || fault.listKey === 'weekly') {
             return `The week did not roll over for ${screenName(fault.listKey)}, so a `
                 + 'chore that is due again may still be showing its checkmark.';
         }

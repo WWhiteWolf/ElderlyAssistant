@@ -132,9 +132,8 @@ mark Done, because the appointment has not happened yet. Acknowledging
 the notice is all that is wanted.
 
 **Background tasks are absent from the daily reset, and the absence is
-correct** (Patrick, Super-2-new). `runDailyReset` names `my_routine` and
-`pets_feeds` and not `todo_tasks`, and that is deliberate rather than an
-oversight.
+correct** (Patrick, Super-2-new). After #39-new that loop rolls only
+every-day items on `reminder_items`. Extended items must never join it.
 
 A To-Do background task is a **long-range reminder that something is not
 done yet**. It has no appointment, so nothing says when — but it stands

@@ -28,6 +28,7 @@ import { runTranslatorPetsTests } from './translatorpets.test.ts';
 import { runTranslatorMyWeekTests } from './translatormyweek.test.ts';
 import { runTranslatorLookAheadTests } from './translatorlookahead.test.ts';
 import { runTranslatorToDoTests } from './translatortodo.test.ts';
+import { runTranslatorCadenceTests } from './translatorcadence.test.ts';
 import { runLeadMomentsTests } from './leadmoments.test.ts';
 import { runRemindersForTests } from './remindersfor.test.ts';
 
@@ -84,6 +85,9 @@ runTranslatorLookAheadTests();
 
 console.log('\nTo-Do translator');
 runTranslatorToDoTests();
+
+console.log('\nOne-list translator');
+runTranslatorCadenceTests();
 
 console.log('\nLead moments');
 runLeadMomentsTests();

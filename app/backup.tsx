@@ -27,6 +27,7 @@ const BACKUP_VERSION = 2;
 // vault_items (handled separately, encrypted).
 const READABLE_KEYS = [
     'reminder_items',
+    'reminder_last_date',
     'my_history',
     'week_history',
     'lookahead_history',
@@ -242,8 +243,7 @@ export default function BackupScreen() {
             if (toRemove.length) await AsyncStorage.multiRemove(toRemove);
             await AsyncStorage.multiRemove(RETIRED_KEYS);
 
-            // Write the engine's old lists from the restored one list, so
-            // reminders still arm.
+            // Write the one list from the restored copy, so reminders still arm.
             await saveReminderItems(await loadReminderItems());
 
             Alert.alert('Restore complete', 'Your backup has been restored.', [

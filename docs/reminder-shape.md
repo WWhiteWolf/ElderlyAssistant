@@ -439,11 +439,12 @@ banner working correctly, not nagging.
 
 - **A background task persists until it is done.** Its `completed` is the
   real and lasting answer to "is this finished", not a mark about today.
-- **It must never be added to `runDailyReset`.** That loop names
-  `my_routine` and `pets_feeds` and deliberately not `todo_tasks`, and
-  `resetForNewDay` clears `completed` on everything it is handed. Sweeping
-  To-Do with it would un-finish every background task every morning and
-  resurrect work already done. **The absence is correct. Do not "fix" it.**
+- **It must never be added to `runDailyReset`.** That loop used to name
+  `my_routine` and `pets_feeds` and deliberately not `todo_tasks`. After
+  #39-new it rolls only every-day items on `reminder_items`. Extended
+  items must never join that loop. `resetForNewDay` clears `completed`
+  on everything it is handed. Sweeping a background task with it would
+  un-finish work already done. **The absence is correct. Do not "fix" it.**
 
 ### The other thing, which only looks the same
 

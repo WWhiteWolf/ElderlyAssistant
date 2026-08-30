@@ -2959,6 +2959,34 @@ Mac engine run, simulator run or phone proof. Patrick's phone trial
 continues.
 
 
+## #39-new (2026-08-30): the live one-store cutover
+
+**The live reminder road now uses one list.** Pages, banners and Siri
+write `reminder_items` through one save. The scheduler reads that list
+and translates each kind into the common shape. Dual-write is gone.
+Load no longer folds in the old page lists. Day and week rollover run
+on the same list. Backup restore still removes the retired keys and no
+longer recreates them.
+
+**Patrick's rulings, written as they were made.** The old stores come
+out of the live road, not left in it. The old reader source files stay
+until phone proof and must not be called. The Settings morning, midday
+and evening times stay and the new code uses them; they moved off the
+To-Do reader, and nothing live points at that file.
+
+**Siri mark-done** now writes the one list, clears a snooze, and runs
+the scheduler, then still opens Daily.
+
+**What this session did not do.** Options still do not reach the
+engine. Monthly, Quarterly and Yearly Done still advances the saved
+date. The five remaining hardening points were not built. No phone
+load of this cutover. `pending.docx` was not regenerated.
+
+**420 of 420 Mac tests pass**, including seven for the one-list
+translator. The records were brought current in the same session,
+after the code.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

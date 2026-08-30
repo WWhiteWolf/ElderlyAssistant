@@ -16,23 +16,19 @@ import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { reconcile } from './reconcile.ts';
 import type { Plan, QueueEntry } from './reconcile.ts';
 import { isNewDay, resetForNewDay } from './dailyreset.ts';
-import type { ResettableItem } from './dailyreset.ts';
 import { resetForNewCycle } from './weeklyreset.ts';
 import type { ResettableChore } from './weeklyreset.ts';
 import { HEALTH_KEY, MISSES_KEY, addRun, faultSignature, mergeMisses, missesForRollover } from './health.ts';
 import type { Miss, MissableItem, RunFault, RunRecord } from './health.ts';
 import type { WantedReminder, WantedTrigger } from './types.ts';
 
-import { translateMyDay, translatePets, translateMyWeek, translateLookAhead, translateToDo } from './translators/translate.ts';
+import { translateReminderItems } from './translators/translate.ts';
 import { remindersFor } from './remindersfor.ts';
-import type { MyDayItem } from './readers/myday.ts';
-import type { PetsItem } from './readers/pets.ts';
-import type { Chore } from './readers/myweek.ts';
-import type { LookAheadItem } from './readers/lookahead.ts';
-import { DEFAULT_CLOCK_TIMES } from './readers/todo.ts';
-import type { ClockTimes, Task, TimeOfDay } from './readers/todo.ts';
+import { DEFAULT_CLOCK_TIMES } from './clocktimes.ts';
+import type { ClockTimes, TimeOfDay } from './leadmoments.ts';
 import { readMemoryTest } from './readers/memorytest.ts';
 import type { MemoryTestSession } from './readers/memorytest.ts';
+import type { ReminderItem } from '../modules/reminder-types.ts';
 
 /**
  * The screens the scheduler answers for.
@@ -79,7 +75,7 @@ export const OWNED_SOURCES = [
 ];
 
 /**
- * Roll the day over for the two daily screens, if it has not been rolled yet.
+ * Roll the day over for every-day items, if it has not been rolled yet.
  *
  * This used to happen only when My Day or Pets was opened, which meant the day
  * never turned over for a screen that was not visited. It now runs wherever the
@@ -87,98 +83,103 @@ export const OWNED_SOURCES = [
  * so the checkmarks clear whether or not those screens are looked at.
  *
  * It is safe to call at any time: on a day that has already been rolled over it
- * reads two dates and does nothing else. That is what lets the screens call it
+ * reads the date and does nothing else. That is what lets the screens call it
  * before they read, so neither of them can ever draw yesterday's checkmarks
  * while waiting for the module's own run.
  *
- * The counts go back to zero with the checkmarks — the cups of coffee and
- * glasses of water on My Day, and the treats on Pets — because each of those
- * counts a day.
- *
- * It answers with whatever went wrong, which is nothing on an ordinary day. One
- * screen failing still must not stop the other, and must not stop the reminders
- * being worked out below — but it is now written down instead of vanishing.
+ * It answers with whatever went wrong, which is nothing on an ordinary day.
  */
 export async function runDailyReset(): Promise<RunFault[]> {
     const today = new Date().toLocaleDateString();
     const faults: RunFault[] = [];
 
-    const screens = [
-        { dateKey: 'my_last_date', listKey: 'my_routine', counters: ['my_coffee', 'my_water'] },
-        { dateKey: 'pets_last_date', listKey: 'pets_feeds', counters: ['pets_treats'] },
-    ];
+    try {
+        const savedDate = await AsyncStorage.getItem('reminder_last_date');
+        if (!isNewDay(savedDate, today)) return [];
 
-    for (const screen of screens) {
-        try {
-            const savedDate = await AsyncStorage.getItem(screen.dateKey);
-            if (!isNewDay(savedDate, today)) continue;
+        const saved = await readList<ReminderItem>('reminder_items');
+        if (saved.failed) return [{ kind: 'reset', listKey: 'reminder_items' }];
 
-            const saved = await readList<ResettableItem>(screen.listKey);
-            // A list we cannot read is a fault of the rolling-over here, and the
-            // quiet kind. The loud one is raised below, where the same unreadable
-            // list means that screen's reminders are worked out as none.
-            if (saved.failed) faults.push({ kind: 'reset', listKey: screen.listKey });
+        const daily = saved.items.filter((one) => one.kind === 'daily');
+        await recordMisses(
+            daily.map((one) => ({
+                id: one.id,
+                label: one.label,
+                hour: typeof one.hour === 'number' ? one.hour : null,
+                minute: typeof one.minute === 'number' ? one.minute : null,
+                completed: !!one.completed,
+            })),
+            'reminder_items',
+            savedDate,
+        );
 
-            // What was left undone has to be written down before the reset wipes
-            // it, because this is the last moment it can be seen at all.
-            await recordMisses(saved.items as unknown as MissableItem[], screen.listKey, savedDate);
-
-            if (saved.items.length > 0) {
-                await AsyncStorage.setItem(screen.listKey, JSON.stringify(resetForNewDay(saved.items)));
-            }
-            for (const counter of screen.counters) {
-                await AsyncStorage.setItem(counter, '0');
-            }
-            await AsyncStorage.setItem(screen.dateKey, today);
-        } catch {
-            faults.push({ kind: 'reset', listKey: screen.listKey });
+        if (saved.items.length > 0) {
+            const resetDaily = resetForNewDay(daily);
+            const byId = new Map(resetDaily.map((one) => [one.id, one]));
+            const next = saved.items.map((one) => byId.get(one.id) ?? one);
+            await AsyncStorage.setItem('reminder_items', JSON.stringify(next));
         }
+        await AsyncStorage.setItem('reminder_last_date', today);
+    } catch {
+        faults.push({ kind: 'reset', listKey: 'reminder_items' });
     }
 
     return faults;
 }
 
 /**
- * Roll My Week's chores on, for any whose cycle has come round again.
+ * Roll weekly items on, for any whose cycle has come round again.
  *
- * This is the daily reset's sibling rather than a part of it, because My Week
- * has no single boundary to turn on: each chore rolls over on its own day of
- * the week, so every chore is judged separately against its own last
+ * This is the daily reset's sibling rather than a part of it, because a weekly
+ * item has no single boundary to turn on: each rolls over on its own day of
+ * the week, so every item is judged separately against its own last
  * occurrence. That is why there is no saved date here and no guard like
- * `isNewDay` — the chores themselves carry when they were done.
- *
- * Like the daily reset it runs wherever the module runs, so a chore's
- * checkmark now clears whether or not My Week is ever opened. That is what
- * makes the tick worth reading at all: until this existed, a tick could only
- * be cleared by visiting the page.
+ * `isNewDay` — the items themselves carry when they were done.
  *
  * It is safe to call at any time. When nothing has come round it reads the
- * list and writes nothing, which is what lets the page call it before it
- * draws, so My Week cannot show a stale checkmark while waiting for the
- * module's own run.
+ * list and writes nothing.
  *
  * It answers with whatever went wrong, which is nothing on an ordinary run.
  */
 export async function runWeeklyReset(): Promise<RunFault[]> {
     try {
-        const saved = await readList<ResettableChore>('week_routine');
-        // A list we cannot read is a fault of the rolling-over here, and the
-        // quiet kind. The loud one is raised below, where the same unreadable
-        // list means My Week's reminders are worked out as none.
-        if (saved.failed) return [{ kind: 'reset', listKey: 'week_routine' }];
-        if (saved.items.length === 0) return [];
+        const saved = await readList<ReminderItem>('reminder_items');
+        if (saved.failed) return [{ kind: 'reset', listKey: 'weekly' }];
+        const weekly = saved.items.filter((one) => one.kind === 'weekly');
+        if (weekly.length === 0) return [];
 
-        const rolled = resetForNewCycle(saved.items, Date.now());
-        // A chore with nothing to clear is handed back as the very same object,
-        // so this says plainly whether the list changed at all. Nothing is
-        // written on a run that found nothing spent.
-        const changed = rolled.some((chore, index) => chore !== saved.items[index]);
+        const asChores: ResettableChore[] = weekly.map((one) => ({
+            id: one.id,
+            day: one.day ?? 0,
+            hour: typeof one.hour === 'number' ? one.hour : 12,
+            minute: typeof one.minute === 'number' ? one.minute : 0,
+            completed: !!one.completed,
+            ...(typeof one.doneAt === 'number' ? { doneAt: one.doneAt } : {}),
+            ...(typeof one.snoozedUntil === 'number' ? { postponedTo: one.snoozedUntil } : {}),
+        }));
+        const rolled = resetForNewCycle(asChores, Date.now());
+        const changed = rolled.some((chore, index) => chore !== asChores[index]);
         if (changed) {
-            await AsyncStorage.setItem('week_routine', JSON.stringify(rolled));
+            const byId = new Map(rolled.map((one) => [one.id, one]));
+            const next = saved.items.map((one) => {
+                if (one.kind !== 'weekly') return one;
+                const chore = byId.get(one.id);
+                if (!chore) return one;
+                const { snoozedUntil: _dropSnooze, doneAt: _dropDone, ...rest } = one;
+                void _dropSnooze;
+                void _dropDone;
+                return {
+                    ...rest,
+                    completed: chore.completed,
+                    ...(chore.doneAt != null ? { doneAt: chore.doneAt } : {}),
+                    ...(chore.postponedTo != null ? { snoozedUntil: chore.postponedTo } : {}),
+                };
+            });
+            await AsyncStorage.setItem('reminder_items', JSON.stringify(next));
         }
         return [];
     } catch {
-        return [{ kind: 'reset', listKey: 'week_routine' }];
+        return [{ kind: 'reset', listKey: 'weekly' }];
     }
 }
 
@@ -302,37 +303,24 @@ async function readClockTimes(): Promise<ClockTimes> {
 }
 
 /**
- * Every reminder the saved lists call for.
+ * Every reminder the saved list calls for.
  *
- * The storage reading all happens here, once, and the parsed lists are handed
- * down to the readers — which is what keeps a reader plain enough to test.
+ * The storage reading all happens here, once, and the parsed list is handed
+ * to the translator — which is what keeps the translator plain enough to test.
  *
- * It answers with the reminders and with any list it could not read. A list
- * that fails here is the loud fault: that screen's reminders come out as none.
+ * It answers with the reminders and with a fault if the list could not be
+ * read. A list that fails here is the loud fault: reminders come out as none.
  */
 export async function gatherWanted(
     now: number,
 ): Promise<{ wanted: WantedReminder[]; faults: RunFault[] }> {
-    const [routine, feeds, chores, lookahead, tasks, times] = await Promise.all([
-        readList<MyDayItem>('my_routine'),
-        readList<PetsItem>('pets_feeds'),
-        readList<Chore>('week_routine'),
-        readList<LookAheadItem>('lookahead_items'),
-        readList<Task>('todo_tasks'),
+    const [saved, times] = await Promise.all([
+        readList<ReminderItem>('reminder_items'),
         readClockTimes(),
     ]);
 
     const faults: RunFault[] = [];
-    const lists: [{ failed: boolean }, string][] = [
-        [routine, 'my_routine'],
-        [feeds, 'pets_feeds'],
-        [chores, 'week_routine'],
-        [lookahead, 'lookahead_items'],
-        [tasks, 'todo_tasks'],
-    ];
-    for (const [list, listKey] of lists) {
-        if (list.failed) faults.push({ kind: 'list', listKey });
-    }
+    if (saved.failed) faults.push({ kind: 'list', listKey: 'reminder_items' });
 
     // The memory test saves one session rather than a list.
     let session: MemoryTestSession | null = null;
@@ -346,11 +334,7 @@ export async function gatherWanted(
 
     return {
         wanted: [
-            ...remindersFor(translateMyDay(routine.items, now), now, times),
-            ...remindersFor(translatePets(feeds.items, now), now, times),
-            ...remindersFor(translateMyWeek(chores.items, now), now, times),
-            ...remindersFor(translateLookAhead(lookahead.items, now), now, times),
-            ...remindersFor(translateToDo(tasks.items, now), now, times),
+            ...remindersFor(translateReminderItems(saved.items, now), now, times),
             ...readMemoryTest(session, now),
         ],
         faults,
