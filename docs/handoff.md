@@ -32,12 +32,20 @@ still reads the old lists through dual-write, so those readers stay
 until that is swapped. **Backup copies `reminder_items`**, not the old
 lists: he deleted the old backup files, so restore does not need to
 read them (Patrick, #35-new). After a restore, the engine lists are
-written from that one list so reminders still arm. **Next is logs on
-the new pages.** Daily already has My Day's log. Weekly uses My Week's.
-Monthly, Quarterly, and Yearly share Look Ahead's log, the same as it
-would have shown on Look Ahead. One Time and Extended share that log's
-style, not the list: each has only its own (Patrick, #35-new). Testing
-and the odds and ends wait.
+written from that one list so reminders still arm. **Logs are on the
+new pages** (#36-new). Daily has My Day's log (`my_history`). Weekly has
+My Week's (`week_history`). Monthly, Quarterly, and Yearly share Look
+Ahead's (`lookahead_history`). One Time and Extended each have their
+own (`onetime_history`, `extended_history`), in that log's style. All
+six are titled Log, copied from Daily: Done writes a line, tap for a
+note, swipe to delete, Clear All. Undo Done does not remove the line.
+Those lists travel in the backup. **Options connecting started**
+(#36-new). Daily gets none. Weekly is first. The doors are in: + OPT,
++ Screen, Where does it belong? only from Options, + Add straight to
+that page's own New. **Next is saving those four onto a Weekly item:**
+holidays, time zone, calendar shading, and a notes row. They still only
+show the explanation. The AM/PM removal is **mitigated** by the 24-hour
+digit spinner (Patrick, #36-new) and is not a separate job.
 
 ### The pages, settled by Patrick at #30-new
 
@@ -65,7 +73,7 @@ and the odds and ends wait.
   from the rest of the Input sheet at #30-new). Reminders-before is
   not a row; it already lives on One Time. Each row opens that case.
 
-**On a view page, each item has Done and Snooze, and a tap on the tile opens the edit page.** Daily is the same: Snooze, Done, and Done that undoes (Patrick, #33-new, looking at Daily). Swipe still deletes. A tap on the name opens the edit page. Hold the name and slide to reorder (Patrick, #33-new). **Daily now carries My Day's log** — the same `my_history` list, written when Done is tapped, titled My Log. **The My Day page is gone** (Patrick, #33-new). The `/myday` hop is not kept (Patrick, #35-new). The engine still names those reminders `myday`, so banners and dual-write keep working.
+**On a view page, each item has Done and Snooze, and a tap on the tile opens the edit page.** Daily is the same: Snooze, Done, and Done that undoes (Patrick, #33-new, looking at Daily). Swipe still deletes. A tap on the name opens the edit page. Hold the name and slide to reorder (Patrick, #33-new). **Daily now carries My Day's log** — the same `my_history` list, written when Done is tapped, titled Log (Patrick, #36-new: none of the pages say My). **The My Day page is gone** (Patrick, #33-new). The `/myday` hop is not kept (Patrick, #35-new). The engine still names those reminders `myday`, so banners and dual-write keep working.
 
 **An item lives on one page; Daily may also show another page's item (Patrick, #32-new).**
 
@@ -231,6 +239,12 @@ carrying the answers themselves rather than pointing at other documents,
 which is what lets a worker session build without asking a design
 question. **A sheet's read list should name what the pattern it points at
 actually imports** (#25-new).
+
+**The 24-hour digit spinner is built** (#36-new). Tapping the 24-hour
+type-in box opens four arrows, one for each digit, in the same style as
+the 12-hour hour and minute. **The AM/PM removal is mitigated by that
+spinner** (Patrick, #36-new) and is not a separate job. The 12-hour row
+with AM/PM stays.
 
 **The app goes to the 24-hour clock, after the building** (Patrick,
 #30-new). He keeps leaving the time on the wrong AM or PM. The read was

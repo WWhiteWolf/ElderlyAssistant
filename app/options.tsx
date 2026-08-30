@@ -3,71 +3,17 @@ import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Bridge from '../components/Bridge';
+import AddWherePopup from '../components/AddWherePopup';
 import { Theme, useTheme } from '../constants/Themes';
-
-const CASES: { id: string; icon: string; name: string; body: string }[] = [
-    {
-        id: 'holidays',
-        icon: '🎉',
-        name: 'Holidays',
-        body: 'Move a reminder to the day before or after a holiday. The engine already knows this calendar thinking; this page is where that case lives.',
-    },
-    {
-        id: 'timezone',
-        icon: '🌐',
-        name: 'Time zone',
-        body: 'A named zone for when the reminder should fire, rather than only the phone’s current zone.',
-    },
-    {
-        id: 'float',
-        icon: '🔘',
-        name: 'The float button',
-        body: 'A control on the item for floating the day around a holiday or a missing date, instead of typing a new date.',
-    },
-    {
-        id: 'skip',
-        icon: '⏭',
-        name: 'Skip',
-        body: 'Skip of a cycle is a different thing from a missing day. This is skipping one occurrence, not a date that does not exist.',
-    },
-    {
-        id: 'shifted',
-        icon: '👆',
-        name: 'An extra tap on a shifted day',
-        body: 'When a day does not exist in that month, the last day that exists is used. An extra tap then chooses that day or the next day, not skip.',
-    },
-    {
-        id: 'shading',
-        icon: '📅',
-        name: 'Calendar shading',
-        body: 'Shade the calendar so a shifted or holiday-moved day is visible on the page.',
-    },
-    {
-        id: 'notes',
-        icon: '📝',
-        name: 'A notes row',
-        body: 'A notes line on the item, for the odd cases that need a word or two besides the name and the day.',
-    },
-    {
-        id: 'secondThursday',
-        icon: '📆',
-        name: 'A second Thursday',
-        body: 'Every nth weekday in a period — for example the second Thursday of the month.',
-    },
-    {
-        id: 'wednesdayAfter',
-        icon: '📅',
-        name: 'A Wednesday after the 6th',
-        body: 'A weekday after a numbered day in the period — for example Wednesday after the 6th.',
-    },
-];
+import { OPTION_CASES } from '../modules/option-cases';
 
 export default function OptionsScreen() {
     const router = useRouter();
     const theme = useTheme();
     const styles = makeStyles(theme);
     const [openId, setOpenId] = useState<string | null>(null);
-    const openCase = CASES.find((one) => one.id === openId) ?? null;
+    const [showWhere, setShowWhere] = useState(false);
+    const openCase = OPTION_CASES.find((one) => one.id === openId) ?? null;
 
     return (
         <View style={styles.container}>
@@ -80,7 +26,7 @@ export default function OptionsScreen() {
                     ) : (
                         <TouchableOpacity
                             onPress={() => {
-                                router.dismissAll();
+                                if (router.canDismiss()) router.dismissAll();
                                 router.replace('/home');
                             }}
                             style={styles.headerBtn}
@@ -89,7 +35,13 @@ export default function OptionsScreen() {
                         </TouchableOpacity>
                     )}
                     <Text style={styles.title}>{openCase ? openCase.name : 'Options'}</Text>
-                    <View style={styles.headerBtn} />
+                    {openCase ? (
+                        <View style={styles.headerBtn} />
+                    ) : (
+                        <TouchableOpacity onPress={() => setShowWhere(true)} style={styles.headerBtn}>
+                            <Text style={styles.screenBtnText}>+{'\n'}Screen{'\n'} </Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             </SafeAreaView>
             <Bridge />
@@ -104,7 +56,7 @@ export default function OptionsScreen() {
             ) : (
                 <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
                     <View style={styles.settingCard}>
-                        {CASES.map((one, i) => (
+                        {OPTION_CASES.map((one, i) => (
                             <TouchableOpacity
                                 key={one.id}
                                 style={[styles.settingRow, i > 0 && styles.settingRowBorder]}
@@ -120,6 +72,10 @@ export default function OptionsScreen() {
                     </View>
                 </ScrollView>
             )}
+            <AddWherePopup
+                visible={showWhere}
+                onClose={() => setShowWhere(false)}
+            />
         </View>
     );
 }
@@ -153,6 +109,13 @@ const makeStyles = (t: Theme) =>
             justifyContent: 'center',
         },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
+        screenBtnText: {
+            color: t.headerButton,
+            fontSize: 11,
+            fontWeight: '600',
+            textAlign: 'center',
+            lineHeight: 13,
+        },
         scroll: { flex: 1 },
         settingCard: {
             backgroundColor: t.card,

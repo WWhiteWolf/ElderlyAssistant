@@ -184,7 +184,7 @@ export default function SettingsScreen() {
                 tall, so all screens now match Home and Look Ahead. */}
             <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
-                    <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
+                    <TouchableOpacity onPress={() => { if (router.canDismiss()) router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
                         <Text style={styles.headerBtnText}>Home</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>Settings</Text>

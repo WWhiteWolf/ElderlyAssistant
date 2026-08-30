@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -6,6 +7,7 @@ import {
     ScrollView,
     StyleSheet,
     Text,
+    TextInput,
     TouchableOpacity,
     View,
 } from 'react-native';
@@ -13,7 +15,6 @@ import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-g
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import AddWherePopup from './AddWherePopup';
 import Bridge from './Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 import {
@@ -27,7 +28,24 @@ import {
     type ReminderKind,
 } from '../modules/reminder-items';
 
+interface HistoryEntry {
+    id: string;
+    date: string;
+    sched: string;
+    actual: string;
+    what?: string;
+    note?: string;
+}
+
 type PageStyles = ReturnType<typeof makeStyles>;
+
+function historyKeyFor(kind: ReminderKind): string | null {
+    if (kind === 'weekly') return 'week_history';
+    if (kind === 'monthly' || kind === 'quarterly' || kind === 'yearly') return 'lookahead_history';
+    if (kind === 'oneTime') return 'onetime_history';
+    if (kind === 'extended') return 'extended_history';
+    return null;
+}
 
 function CadenceItemRow({
     item,
@@ -154,10 +172,14 @@ export default function CadenceListPage({
     const theme = useTheme();
     const styles = makeStyles(theme);
     const [items, setItems] = useState<ReminderItem[]>([]);
-    const [showAdd, setShowAdd] = useState(false);
+    const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [highlightId, setHighlightId] = useState<string | null>(null);
     const [draggingId, setDraggingId] = useState<string | null>(null);
     const [snoozeItemId, setSnoozeItemId] = useState<string | null>(null);
+    const [editEntry, setEditEntry] = useState<HistoryEntry | null>(null);
+    const [editWhat, setEditWhat] = useState('');
+    const [editNote, setEditNote] = useState('');
+    const historyKey = historyKeyFor(kind);
 
     const itemsRef = useRef(items);
     itemsRef.current = items;
@@ -181,8 +203,13 @@ export default function CadenceListPage({
 
     useFocusEffect(
         useCallback(() => {
-            void loadReminderItems().then(setItems);
-        }, []),
+            void (async () => {
+                setItems(await loadReminderItems());
+                if (!historyKey) return;
+                const saved = await AsyncStorage.getItem(historyKey);
+                setHistory(saved ? JSON.parse(saved) : []);
+            })();
+        }, [historyKey]),
     );
 
     const writeItems = (updated: ReminderItem[]) => {
@@ -190,9 +217,28 @@ export default function CadenceListPage({
         void saveReminderItems(updated);
     };
 
+    const writeHistory = (updated: HistoryEntry[]) => {
+        setHistory(updated);
+        if (historyKey) void AsyncStorage.setItem(historyKey, JSON.stringify(updated));
+    };
+
     const markDone = (id: string) => {
         const item = items.find((one) => one.id === id);
         if (!item) return;
+        const now = new Date().toLocaleTimeString([], {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: false,
+        });
+        const newEntry: HistoryEntry = {
+            id: Date.now().toString(),
+            date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
+            sched: item.label,
+            actual: now,
+            what: '',
+            note: '',
+        };
+        writeHistory([newEntry, ...history].slice(0, 50));
         if (kind === 'weekly') {
             writeItems(items.map((one) => {
                 if (one.id !== id) return one;
@@ -293,13 +339,32 @@ export default function CadenceListPage({
         ]);
     };
 
+    const deleteHistoryEntry = (id: string) => {
+        writeHistory(history.filter((one) => one.id !== id));
+    };
+
+    const clearAllHistory = () => {
+        Alert.alert(
+            'Clear All',
+            'Delete all log entries? This cannot be undone.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Clear All',
+                    style: 'destructive',
+                    onPress: () => writeHistory([]),
+                },
+            ],
+        );
+    };
+
     return (
         <GestureHandlerRootView style={styles.container}>
             <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
                     <TouchableOpacity
                         onPress={() => {
-                            router.dismissAll();
+                            if (router.canDismiss()) router.dismissAll();
                             router.replace('/home');
                         }}
                         style={styles.headerBtn}
@@ -307,7 +372,12 @@ export default function CadenceListPage({
                         <Text style={styles.headerBtnText}>Home</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>{title}</Text>
-                    <TouchableOpacity onPress={() => setShowAdd(true)} style={styles.headerBtn}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            router.push({ pathname: '/item-edit', params: { kind, returnTo } } as Href);
+                        }}
+                        style={styles.headerBtn}
+                    >
                         <Text style={styles.headerBtnText}>+ Add</Text>
                     </TouchableOpacity>
                 </View>
@@ -359,14 +429,74 @@ export default function CadenceListPage({
                         </View>
                     ))}
                 </View>
+
+                <View style={styles.historySection}>
+                    <View style={styles.historyHeader}>
+                        <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>Log</Text>
+                        {history.length > 0 && (
+                            <TouchableOpacity style={styles.clearAllBtn} onPress={clearAllHistory}>
+                                <Text style={styles.clearAllBtnText}>Clear All</Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
+                    <ScrollView style={styles.historyScroll} nestedScrollEnabled>
+                        {history.map((l) => (
+                            <Swipeable
+                                key={l.id}
+                                renderRightActions={() => (
+                                    <TouchableOpacity style={styles.swipeDelete} onPress={() => deleteHistoryEntry(l.id)}>
+                                        <Text style={styles.swipeDeleteText}>Delete</Text>
+                                    </TouchableOpacity>
+                                )}
+                            >
+                                <TouchableOpacity
+                                    style={styles.historyItem}
+                                    onPress={() => {
+                                        setEditEntry(l);
+                                        setEditWhat(l.what || '');
+                                        setEditNote(l.note || '');
+                                    }}
+                                >
+                                    <Text style={styles.historyText}>
+                                        {l.date} | {l.actual} | {l.sched}{l.what ? ` | ${l.what}` : ''}
+                                    </Text>
+                                </TouchableOpacity>
+                            </Swipeable>
+                        ))}
+                    </ScrollView>
+                </View>
             </ScrollView>
 
-            <AddWherePopup
-                visible={showAdd}
-                currentKind={kind}
-                returnTo={returnTo}
-                onClose={() => setShowAdd(false)}
-            />
+            {editEntry && (
+                <View style={styles.logModal}>
+                    <Text style={styles.modalTitle}>Edit Log Entry</Text>
+                    <Text style={styles.inputLabel}>Notes (optional)</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={editWhat}
+                        onChangeText={setEditWhat}
+                        placeholder="Add a note about this entry..."
+                        placeholderTextColor={theme.mutedText}
+                    />
+                    <View style={styles.modalBtns}>
+                        <TouchableOpacity style={styles.cancelBtn} onPress={() => setEditEntry(null)}>
+                            <Text style={styles.cancelBtnText}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.confirmBtn}
+                            onPress={() => {
+                                writeHistory(history.map((one) =>
+                                    one.id === editEntry.id ? { ...one, what: editWhat, note: editNote } : one
+                                ));
+                                setEditEntry(null);
+                            }}
+                        >
+                            <Text style={styles.confirmBtnText}>Save</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
+
             {snoozeItemId && (
                 <Modal transparent animationType="fade" visible={!!snoozeItemId}>
                     <View style={styles.modalOverlay}>
@@ -529,6 +659,81 @@ const makeStyles = (t: Theme) =>
             borderRadius: 8,
             flex: 1,
             alignItems: 'center',
+            marginRight: 8,
         },
         cancelBtnText: { color: t.buttonNeutralText, fontWeight: '600' },
+        confirmBtn: {
+            backgroundColor: t.buttonPrimary,
+            padding: 12,
+            borderRadius: 8,
+            flex: 1,
+            alignItems: 'center',
+        },
+        confirmBtnText: { color: t.buttonPrimaryText, fontWeight: '600' },
+        sectionTitle: {
+            fontSize: 18,
+            fontWeight: '600',
+            color: t.cardTitle,
+            marginBottom: 10,
+        },
+        historySection: { marginHorizontal: 12, marginBottom: 12 },
+        historyScroll: {
+            height: 385,
+            backgroundColor: t.card,
+            borderRadius: 8,
+            padding: 8,
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+        },
+        historyHeader: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 10,
+        },
+        historyItem: {
+            borderBottomWidth: 0.5,
+            borderBottomColor: t.progressTrack,
+            paddingVertical: 6,
+        },
+        historyText: { fontSize: 13, color: t.bodyText, lineHeight: 18 },
+        clearAllBtn: {
+            paddingVertical: 4,
+            paddingHorizontal: 10,
+            borderRadius: 6,
+            borderWidth: 0.5,
+            borderColor: t.mutedText,
+        },
+        clearAllBtnText: {
+            color: t.mutedText,
+            fontSize: 13,
+            fontWeight: '600',
+        },
+        logModal: {
+            position: 'absolute',
+            top: 100,
+            left: 20,
+            right: 20,
+            backgroundColor: t.card,
+            borderRadius: 12,
+            padding: 16,
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+            elevation: 10,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.15,
+            shadowRadius: 4,
+            zIndex: 999,
+        },
+        input: {
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+            borderRadius: 8,
+            padding: 10,
+            fontSize: 16,
+            backgroundColor: t.pageBackground,
+            marginBottom: 10,
+            color: t.bodyText,
+        },
     });

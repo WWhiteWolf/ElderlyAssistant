@@ -20,8 +20,8 @@ export default function AddWherePopup({
     onClose,
 }: {
     visible: boolean;
-    currentKind: ReminderKind;
-    returnTo: string;
+    currentKind?: ReminderKind;
+    returnTo?: string;
     onClose: () => void;
 }) {
     const router = useRouter();
@@ -30,7 +30,8 @@ export default function AddWherePopup({
 
     const choose = (kind: ReminderKind) => {
         onClose();
-        router.push({ pathname: '/item-edit', params: { kind, returnTo } } as Href);
+        const dest = returnTo ?? (kind === 'oneTime' ? 'onetime' : kind);
+        router.push({ pathname: '/item-edit', params: { kind, returnTo: dest } } as Href);
     };
 
     return (

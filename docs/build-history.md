@@ -2821,6 +2821,36 @@ list: each has only its own. That is the next session.
 The phone.
 
 
+## #36-new (2026-08-30): logs on the new pages, 24-hour spinner, Options doors
+
+**Logs are on the new pages.** Daily already had My Day's. Weekly uses My
+Week's. Monthly, Quarterly, and Yearly share Look Ahead's. One Time and
+Extended each have their own, in that log's style. All are titled Log,
+not My Log. Done writes a line. Those lists travel in the backup.
+
+**Home no longer warns** when it tries to clear an empty stack after a
+reload or after Add and Edit.
+
+**The 24-hour box opens a four-digit spinner**, one arrow per digit,
+hour 00 to 23. The AM/PM removal is mitigated by that spinner and is not
+a separate job.
+
+**Options connecting started.** Daily gets none. Weekly is first. + OPT
+on Weekly's New and Edit opens holidays, time zone, calendar shading,
+and a notes row. New and Edit say Back, not Home. Done in that sheet
+saves and returns to the page the item sits on. Options has + Screen
+(plus, then Screen, then a blank line). It opens Where does it belong?
+That list does not open from the reminder pages: + Add goes straight to
+that page's own New. You do not set another page from a different page.
+
+**Next is saving those four onto a Weekly item.** The doors are in. The
+explanations still do not write holidays, time zone, calendar shading,
+or notes onto the item.
+
+**What this session did not do.** Wiring those four settings. + OPT on
+the later pages. Testing. The phone.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

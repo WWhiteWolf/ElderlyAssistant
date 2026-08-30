@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Theme, useTheme } from '../constants/Themes';
 
 // Shared date/time control (#58). One control for every page's date and
@@ -127,6 +127,7 @@ export default function DateTimeControl({
     const [timeText, setTimeText] = useState(timeAsleep ? '' : formatTime24(value));
     const [dateBad, setDateBad] = useState(false);
     const [timeBad, setTimeBad] = useState(false);
+    const [showTimeSpinner, setShowTimeSpinner] = useState(false);
 
     // While a box is being typed in, spinner-driven rewrites of that box
     // are held off so we never fight the user's keystrokes.
@@ -200,6 +201,43 @@ export default function DateTimeControl({
     const toggleAmPm = () => spin('time', d => {
         d.setHours((d.getHours() + 12) % 24);
     });
+
+    const applyTime = (hour: number, minute: number) => {
+        const next = new Date(value);
+        next.setHours(hour, minute, 0, 0);
+        onChange(next, 'time');
+    };
+
+    const hourNow = value.getHours();
+    const minuteNow = value.getMinutes();
+    const hTens = Math.floor(hourNow / 10);
+    const hOnes = hourNow % 10;
+    const mTens = Math.floor(minuteNow / 10);
+    const mOnes = minuteNow % 10;
+
+    const spinHTens = (dir: 1 | -1) => {
+        const nextTens = (hTens + dir + 3) % 3;
+        const nextOnes = nextTens === 2 && hOnes > 3 ? 3 : hOnes;
+        applyTime(nextTens * 10 + nextOnes, minuteNow);
+    };
+
+    const spinHOnes = (dir: 1 | -1) => {
+        const max = hTens === 2 ? 3 : 9;
+        applyTime(hTens * 10 + ((hOnes + dir + max + 1) % (max + 1)), minuteNow);
+    };
+
+    const spinMTens = (dir: 1 | -1) => {
+        applyTime(hourNow, ((mTens + dir + 6) % 6) * 10 + mOnes);
+    };
+
+    const spinMOnes = (dir: 1 | -1) => {
+        applyTime(hourNow, mTens * 10 + ((mOnes + dir + 10) % 10));
+    };
+
+    const openTimeSpinner = () => {
+        if (timeAsleep) onChange(new Date(value), 'time');
+        setShowTimeSpinner(true);
+    };
 
     // ---- typed input ----
 
@@ -276,7 +314,7 @@ export default function DateTimeControl({
             <TouchableOpacity style={styles.adjBtn} onPress={down} hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}>
                 <Text style={styles.adjText}>▼</Text>
             </TouchableOpacity>
-            <Text style={styles.caption}>{caption}</Text>
+            {caption !== '' && <Text style={styles.caption}>{caption}</Text>}
         </View>
     );
 
@@ -326,21 +364,65 @@ export default function DateTimeControl({
                         <Stepper display={h < 12 ? 'AM' : 'PM'} caption="AM/PM"
                             up={toggleAmPm} down={toggleAmPm} displayStyle={styles.ampmDisplay} />
                     </View>
-                    <TextInput
+                    <TouchableOpacity
                         style={[styles.typeBox, timeBad && styles.typeBoxBad]}
-                        value={timeText}
-                        onChangeText={onTimeTyped}
-                        onFocus={() => { timeFocused.current = true; }}
-                        onBlur={onTimeBlur}
-                        placeholder="HH:MM"
-                        placeholderTextColor={theme.mutedText}
-                        keyboardType="numbers-and-punctuation"
-                    />
+                        onPress={openTimeSpinner}
+                    >
+                        <Text style={[styles.typeBoxText, timeText === '' && styles.typeBoxPlaceholder]}>
+                            {timeText === '' ? 'HH:MM' : timeText}
+                        </Text>
+                    </TouchableOpacity>
                     <Text style={styles.hint}>
                         {timeAsleep
-                            ? 'No time set — tap the arrows or type a time to set one'
-                            : 'Type the time (24-hour clock)'}
+                            ? 'No time set — tap the arrows or the box to set one'
+                            : 'Tap the box to set the time (24-hour clock)'}
                     </Text>
+                    {showTimeSpinner && (
+                        <Modal transparent animationType="fade" visible={showTimeSpinner}>
+                            <View style={styles.modalOverlay}>
+                                <View style={styles.pickerModal}>
+                                    <Text style={styles.modalTitle}>{timeLabel}</Text>
+                                    <View style={styles.digitRow}>
+                                        <Stepper
+                                            display={String(hTens)}
+                                            caption=""
+                                            up={() => spinHTens(1)}
+                                            down={() => spinHTens(-1)}
+                                            displayStyle={styles.timeDisplay}
+                                        />
+                                        <Stepper
+                                            display={String(hOnes)}
+                                            caption=""
+                                            up={() => spinHOnes(1)}
+                                            down={() => spinHOnes(-1)}
+                                            displayStyle={styles.timeDisplay}
+                                        />
+                                        <Text style={styles.timeDisplay}>:</Text>
+                                        <Stepper
+                                            display={String(mTens)}
+                                            caption=""
+                                            up={() => spinMTens(1)}
+                                            down={() => spinMTens(-1)}
+                                            displayStyle={styles.timeDisplay}
+                                        />
+                                        <Stepper
+                                            display={String(mOnes)}
+                                            caption=""
+                                            up={() => spinMOnes(1)}
+                                            down={() => spinMOnes(-1)}
+                                            displayStyle={styles.timeDisplay}
+                                        />
+                                    </View>
+                                    <TouchableOpacity
+                                        style={styles.doneBtn}
+                                        onPress={() => setShowTimeSpinner(false)}
+                                    >
+                                        <Text style={styles.doneBtnText}>Done</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </Modal>
+                    )}
                 </>
             )}
         </View>
@@ -381,6 +463,39 @@ const makeStyles = (t: Theme) => StyleSheet.create({
         color: t.bodyText,
         marginBottom: 2,
     },
+    typeBoxText: { fontSize: 16, color: t.bodyText },
+    typeBoxPlaceholder: { color: t.mutedText },
     typeBoxBad: { borderColor: t.buttonDelete, borderWidth: 1.5 },
     hint: { fontSize: 11, color: t.mutedText, marginBottom: 8 },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    pickerModal: {
+        backgroundColor: t.card,
+        borderRadius: 12,
+        padding: 16,
+        borderWidth: 0.5,
+        borderColor: t.cardBorder,
+        width: '100%',
+    },
+    modalTitle: { fontSize: 18, fontWeight: '600', color: t.cardTitle, marginBottom: 10 },
+    digitRow: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 10,
+        marginVertical: 8,
+    },
+    doneBtn: {
+        backgroundColor: t.buttonPrimary,
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginTop: 8,
+    },
+    doneBtnText: { color: t.buttonPrimaryText, fontWeight: '600' },
 });

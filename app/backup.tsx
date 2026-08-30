@@ -28,6 +28,10 @@ const BACKUP_VERSION = 2;
 const READABLE_KEYS = [
     'reminder_items',
     'my_history',
+    'week_history',
+    'lookahead_history',
+    'onetime_history',
+    'extended_history',
     'shopping_items',
     'memtest_session', 'memtest_history',
     'vault_categories',
@@ -37,14 +41,16 @@ const READABLE_KEYS = [
 ];
 
 // Old page lists. Taken off the backup at #35-new. A restore still
-// removes them so they cannot linger on the phone.
+// removes them so they cannot linger on the phone. week_history and
+// lookahead_history came back onto the backup at #36-new with the
+// new-page logs.
 const RETIRED_KEYS = [
     'my_routine', 'my_last_date', 'my_coffee', 'my_water',
-    'week_routine', 'week_history',
+    'week_routine',
     'pets_feeds', 'pets_history', 'pets_last_date', 'pets_treats',
     'todo_tasks', 'todo_log',
     'planner_projects', 'planner_log',
-    'lookahead_items', 'lookahead_history',
+    'lookahead_items',
     'watchlist_movies', 'watchlist_shows',
     'orders_items', 'orders_history',
 ];

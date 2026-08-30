@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-08-30 (#35-new)
+Last updated: 2026-08-30 (#36-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -30,22 +30,17 @@ WHAT'S NEXT
    Watch List are off Home, same as Input (#34-new). Patrick
    arranged the remaining tiles himself. The old screens are out
    (#35-new). Backup copies the new list, not the old ones (#35-new).
-   Testing waits until you have looked at the pages.
-2. LOGS ON THE NEW PAGES. Daily has My Day's log. Weekly, Monthly,
-   Quarterly, Yearly, One Time, and Extended need the same logs the
-   old pages used (#35-new). Monthly, Quarterly, and Yearly share
-   Look Ahead's log, as it would have shown on Look Ahead. One Time
-   and Extended share that log's style, not the list: each has only
-   its own.
-3. THE 24-HOUR CLOCK. You keep leaving the time on the wrong AM or
-   PM, so the AM/PM spinner comes off and the hour reads 00 to 23.
-   Waits until after the building. The looking is done: the setter
-   is one file, the old-page copies went out with those pages, and
-   Settings plus the Scheduled Reminders screen still have theirs.
-   Nothing has to be worked out again.
-4. LOOK AHEAD: change the tile format, and change or drop the
+   Testing waits until you have looked at the pages. Logs are on
+   Daily through Extended (#36-new). The four-digit time spinner is
+   built (#36-new). Options connecting started (#36-new): Daily gets
+   none; Weekly is first. The doors are in. Next is saving holidays,
+   time zone, calendar shading, and notes onto a Weekly item. They
+   still only show the explanation. + Screen on Options opens Where
+   does it belong? + Add on a cadence page goes straight to that
+   page's own New.
+2. LOOK AHEAD: change the tile format, and change or drop the
    Snooze (#3-new).
-5. TIMER: add a Stop (Pause) / Continue (Go) button to the tile,
+3. TIMER: add a Stop (Pause) / Continue (Go) button to the tile,
    and add a log (#3-new).
 
 
@@ -106,10 +101,9 @@ built. None of these is a job to do.
    page goes away and nothing replaces it — and the + Add popup in
    particular is not its replacement. This is your own reminder
    pages being reshaped by how often a thing comes round.
-2. + ADD OPENS FROM THE BUTTON THE PAGES ALREADY HAVE. It asks only
-   where the new item belongs; you fill in that page's own small
-   form, then you come back to where you were, with the page you
-   were on already chosen. No new control is added anywhere.
+2. + ADD ON A PAGE GOES TO THAT PAGE'S OWN NEW. Where does it
+   belong? is only on Options, from + Screen. You do not set
+   another page from a different page (#36-new).
 3. ONE TIME CARRIES TO-DO'S REMINDERS BEFORE CHIPS — 30 min., 1
    hour, 2 hours, Morning of, Day Before, Night Before, 2 Days
    Before, Week, Month — and any and all of them can be on at once.
@@ -119,7 +113,7 @@ built. None of these is a job to do.
    Time of (the item's own time). Save on that kind comes back on
    To-Do, which has the Log, not Daily. A My Day banner now opens
    Daily, not the old My Day page. Daily now shows My Day's log
-   (My Log, the same saved list). The My Day page is gone; an old
+   (Log, the same saved list). The My Day page is gone; an old
    My Day link opens Daily. The other pages keep their
    own adds, because on those the page is the whole meaning of Repeat.
 5. ONE REMINDER PER ITEM, NOT TWO, and the app puts itself right
@@ -154,10 +148,17 @@ WHAT IS DONE, NEWEST FIRST
 One line each. The full story of any of them is in
 docs/build-history.md.
 
-1. #35-new — old screens out, including the `/myday` hop. Backup
+1. #36-new — logs on Weekly, Monthly, Quarterly, Yearly, One Time,
+   and Extended. Weekly uses My Week's list; Monthly, Quarterly,
+   and Yearly share Look Ahead's; One Time and Extended each have
+   their own. They travel in the backup. The log title is Log, not
+   My Log. Home no longer warns when the stack is already empty.
+   The 24-hour box opens a four-digit spinner. AM/PM removal is
+   mitigated by that spinner and is not a separate job.
+2. #35-new — old screens out, including the `/myday` hop. Backup
    copies the new list, not the old ones. Logs on the other new
    pages are next.
-2. #34-new — Weekly through Options and the + Add popup built.
+3. #34-new — Weekly through Options and the + Add popup built.
    Project Planner, Orders and Watch List off Home. Next is taking
    the old screens out.
 2. #33-new — Daily built. Snooze, Done, hold-and-slide reorder, My

@@ -370,7 +370,7 @@ export default function DailyScreen() {
                 <View style={styles.header}>
                     <TouchableOpacity
                         onPress={() => {
-                            router.dismissAll();
+                            if (router.canDismiss()) router.dismissAll();
                             router.replace('/home');
                         }}
                         style={styles.headerBtn}
@@ -429,7 +429,7 @@ export default function DailyScreen() {
 
                 <View style={styles.historySection}>
                     <View style={styles.historyHeader}>
-                        <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>My Log</Text>
+                        <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>Log</Text>
                         {history.length > 0 && (
                             <TouchableOpacity style={styles.clearAllBtn} onPress={clearAllHistory}>
                                 <Text style={styles.clearAllBtnText}>Clear All</Text>

@@ -14,6 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl from '../components/DateTimeControl';
 import Bridge from '../components/Bridge';
+import ScreenOptionsSheet from '../components/ScreenOptionsSheet';
 import { Theme, useTheme } from '../constants/Themes';
 import {
     DAY_NAMES,
@@ -24,6 +25,7 @@ import {
     type ReminderItem,
     type ReminderKind,
 } from '../modules/reminder-items';
+import { optionCasesForKind } from '../modules/option-cases';
 
 type ReminderPreset = {
     label: string;
@@ -96,14 +98,16 @@ export default function ItemEditScreen() {
     const [dateTimeValid, setDateTimeValid] = useState(true);
     const [reminders, setReminders] = useState<LeadReminder[]>([]);
     const [existing, setExisting] = useState<ReminderItem | null>(null);
+    const [showOptions, setShowOptions] = useState(false);
+    const weeklyOptions = optionCasesForKind(editKind);
 
     const goBack = () => {
-        router.dismissAll();
+        if (router.canDismiss()) router.dismissAll();
         router.replace(pathFor(page));
     };
 
     const afterSave = () => {
-        router.dismissAll();
+        if (router.canDismiss()) router.dismissAll();
         if (!editingId && editKind === 'oneTime' && page === 'daily') {
             router.replace('/onetime' as Href);
         } else {
@@ -348,10 +352,16 @@ export default function ItemEditScreen() {
             <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={goBack} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>Home</Text>
+                        <Text style={styles.headerBtnText}>Back</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>{editingId ? 'Edit' : 'New'}</Text>
-                    <View style={styles.headerBtn} />
+                    {weeklyOptions.length > 0 ? (
+                        <TouchableOpacity onPress={() => setShowOptions(true)} style={styles.headerBtn}>
+                            <Text style={styles.headerBtnText} numberOfLines={1} adjustsFontSizeToFit>+ OPT</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <View style={styles.headerBtn} />
+                    )}
                 </View>
             </SafeAreaView>
             <Bridge />
@@ -456,6 +466,15 @@ export default function ItemEditScreen() {
                     </>
                 )}
             </ScrollView>
+            <ScreenOptionsSheet
+                visible={showOptions}
+                cases={weeklyOptions}
+                onClose={() => setShowOptions(false)}
+                onDone={() => {
+                    setShowOptions(false);
+                    save();
+                }}
+            />
         </KeyboardAvoidingView>
     );
 }

@@ -244,7 +244,7 @@ export default function TimerScreen() {
         <View style={styles.container}>
             <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
                 <View style={styles.header}>
-                    <TouchableOpacity onPress={() => { router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
+                    <TouchableOpacity onPress={() => { if (router.canDismiss()) router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
                         <Text style={styles.headerBtnText}>Home</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>Timer Alerts</Text>
