@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-08-30 (#34-new)
+Last updated: 2026-08-30 (#35-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -28,17 +28,21 @@ WHAT'S NEXT
    Wednesday after the 6th (#33-new). Daily through Options and the
    + Add popup are built (#34-new). Project Planner, Orders, and
    Watch List are off Home, same as Input (#34-new). Patrick
-   arranged the remaining tiles himself. Testing waits until you
-   have looked at the pages.
-2. TAKE THE OLD SCREENS OUT. The ones Home no longer opens. The
-   engine still reads the old lists, so those readers stay until
-   that is swapped (#34-new).
+   arranged the remaining tiles himself. The old screens are out
+   (#35-new). Backup copies the new list, not the old ones (#35-new).
+   Testing waits until you have looked at the pages.
+2. LOGS ON THE NEW PAGES. Daily has My Day's log. Weekly, Monthly,
+   Quarterly, Yearly, One Time, and Extended need the same logs the
+   old pages used (#35-new). Monthly, Quarterly, and Yearly share
+   Look Ahead's log, as it would have shown on Look Ahead. One Time
+   and Extended share that log's style, not the list: each has only
+   its own.
 3. THE 24-HOUR CLOCK. You keep leaving the time on the wrong AM or
    PM, so the AM/PM spinner comes off and the hour reads 00 to 23.
    Waits until after the building. The looking is done: the setter
-   is one file, the tiles are six copies of one small piece, and
-   the Scheduled Reminders screen has its own. Nothing has to be
-   worked out again.
+   is one file, the old-page copies went out with those pages, and
+   Settings plus the Scheduled Reminders screen still have theirs.
+   Nothing has to be worked out again.
 4. LOOK AHEAD: change the tile format, and change or drop the
    Snooze (#3-new).
 5. TIMER: add a Stop (Pause) / Continue (Go) button to the tile,
@@ -150,7 +154,10 @@ WHAT IS DONE, NEWEST FIRST
 One line each. The full story of any of them is in
 docs/build-history.md.
 
-1. #34-new — Weekly through Options and the + Add popup built.
+1. #35-new — old screens out, including the `/myday` hop. Backup
+   copies the new list, not the old ones. Logs on the other new
+   pages are next.
+2. #34-new — Weekly through Options and the + Add popup built.
    Project Planner, Orders and Watch List off Home. Next is taking
    the old screens out.
 2. #33-new — Daily built. Snooze, Done, hold-and-slide reorder, My

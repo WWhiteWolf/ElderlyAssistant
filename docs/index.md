@@ -70,7 +70,7 @@ file is added, retired or renamed, its line changes at the same refresh.
 
 - **`build-history.md`** — the session-by-session record. Its headings
   carry the session number, the date and a one-line summary, so **the
-  list of headings is its own index.** 3,030 lines; never read whole.
+  list of headings is its own index.** 3,164 lines; never read whole.
 - **`reminder-rebuild.md`** — the record of #15-new through #18-new.
   **Not the live design.** Opened when a reminder fault needs tracing to
   what was found and cured. Its one live part is "What is already right,

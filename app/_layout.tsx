@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { Stack, useRouter, type Href } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
@@ -98,12 +97,6 @@ export default function RootLayout() {
         { identifier: 'snooze30', buttonTitle: 'Snooze 30 min' },
         { identifier: 'snooze60', buttonTitle: 'Snooze 60 min' },
       ]);
-      await Notifications.setNotificationCategoryAsync('petssnooze', [
-        { identifier: 'done', buttonTitle: 'Done' },
-        { identifier: 'snooze15', buttonTitle: 'Snooze 15 min' },
-        { identifier: 'snooze30', buttonTitle: 'Snooze 30 min' },
-        { identifier: 'snooze60', buttonTitle: 'Snooze 60 min' },
-      ]);
       // To-Do banners carry ONE button (Patrick, #56 — softens #40's
       // buttonless call after living with it): press-and-hold shows just OK,
       // which closes the banner without opening the app (the 'ok' action is
@@ -142,16 +135,6 @@ export default function RootLayout() {
         { identifier: 'done', buttonTitle: 'Done' },
         { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
         { identifier: 'skip', buttonTitle: 'Skip', options: { opensAppToForeground: false } },
-        { identifier: 'snooze15', buttonTitle: 'Delay 15 min' },
-        { identifier: 'snooze30', buttonTitle: 'Delay 30 min' },
-        { identifier: 'snooze60', buttonTitle: 'Delay 60 min' },
-      ]);
-      // Orders banners (#63): the routineactions set with Done→HERE and no
-      // Skip (orders don't recur — Patrick's #62 spec). HERE first, the
-      // #62 watch rule. HERE logs the arrival and removes the entry.
-      await Notifications.setNotificationCategoryAsync('orderactions', [
-        { identifier: 'here', buttonTitle: 'HERE' },
-        { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
         { identifier: 'snooze15', buttonTitle: 'Delay 15 min' },
         { identifier: 'snooze30', buttonTitle: 'Delay 30 min' },
         { identifier: 'snooze60', buttonTitle: 'Delay 60 min' },
@@ -223,9 +206,8 @@ export default function RootLayout() {
         // other source for this to answer for.
         const source = data?.source as string | undefined;
         const isDay = source === 'myday' || source === 'mydaysnooze';
-        const isPets = source === 'pets' || source === 'petssnooze';
         const isWeek = source === 'myweek' || source === 'myweekpostpone';
-        const storageKey = isDay ? 'my_routine' : isPets ? 'pets_feeds' : isWeek ? 'week_routine' : null;
+        const storageKey = isDay ? 'my_routine' : isWeek ? 'week_routine' : null;
         if (!storageKey) return;
         const stampField = isWeek ? 'postponedTo' : 'snoozedUntil';
 
@@ -248,14 +230,11 @@ export default function RootLayout() {
     // every other reminder (To-Do, Timer, other My Day items) untouched.
     if (action === 'snooze15' || action === 'snooze30' || action === 'snooze60') {
       const minutes = action === 'snooze15' ? 15 : action === 'snooze30' ? 30 : 60;
-      const label = (data?.label as string) || 'your reminder';
       const source = data?.source as string | undefined;
       const isDay = source === 'myday' || source === 'mydaysnooze';
-      const isPets = source === 'pets' || source === 'petssnooze';
       const isWeek = source === 'myweek' || source === 'myweekpostpone';
-      const isOrders = source === 'orders' || source === 'orderssnooze';
 
-      // #10-new, and My Week joins them at #20-new: the three routine screens
+      // #10-new, and My Week joins them at #20-new: the routine screens
       // write the delay down on the item instead of arming it here.
       //
       // Nothing is scheduled. The stamp on the item IS the delay: the module
@@ -271,11 +250,11 @@ export default function RootLayout() {
       // at different distances — one moment in the future for this occurrence
       // only — so they share the one stamp instead of each having its own, and a
       // chore can never be carrying two delays at once.
-      if (isDay || isPets || isWeek) {
+      if (isDay || isWeek) {
         const itemId = data?.itemId as string | undefined;
         if (!itemId) return;
         (async () => {
-          const storageKey = isPets ? 'pets_feeds' : isWeek ? 'week_routine' : 'my_routine';
+          const storageKey = isWeek ? 'week_routine' : 'my_routine';
           const stampField = isWeek ? 'postponedTo' : 'snoozedUntil';
           const raw = await AsyncStorage.getItem(storageKey);
           const items = raw ? (JSON.parse(raw) as any[]) : [];
@@ -286,33 +265,7 @@ export default function RootLayout() {
           await AsyncStorage.setItem(storageKey, JSON.stringify(updated));
           await runScheduler();
         })();
-        return;
       }
-
-      // Orders only. It is the one source left that still arms its own delay,
-      // having no reader to write a stamp for it.
-      if (!isOrders) return;
-      Notifications.scheduleNotificationAsync({
-        content: {
-          title: '📦 Orders',
-          body: `Delivery reminder: ${label}`,
-          // Tag with the snooze source rather than 'orders', so the page's own
-          // reschedule-on-load, which only cancels its base source, won't wipe
-          // this one.
-          data: { source: 'orderssnooze', itemId: data?.itemId, label },
-          // Keep whatever button set the fired popup had, so a delayed popup
-          // re-appears with the same buttons.
-          categoryIdentifier:
-            response.notification.request.content.categoryIdentifier || 'orderactions',
-          // Same sound rule as the on-page Snooze buttons — a banner-tapped
-          // snooze was silently rescheduled without this (audit item #1).
-          sound: 'default',
-        },
-        trigger: {
-          type: SchedulableTriggerInputTypes.TIME_INTERVAL,
-          seconds: minutes * 60,
-        } as Notifications.TimeIntervalTriggerInput,
-      });
       return;
     }
 
@@ -373,44 +326,6 @@ export default function RootLayout() {
         );
         await AsyncStorage.setItem('week_routine', JSON.stringify(updated));
         await runScheduler();
-      })();
-      return;
-    }
-
-    // Orders "HERE" (#63): the package arrived. Log the arrival (dated from
-    // when HERE was TAPPED — that's when it's in hand, unlike the routine
-    // pages' fire-time dating), remove the entry from the list, and cancel
-    // everything still pending for it (base reminders + snoozes) so a
-    // window-close can never nag about a logged package. Banner equivalent
-    // of the page's HERE button — same log shape, same 50-cap.
-    if (action === 'here') {
-      const itemId = data?.itemId as string | undefined;
-      if (!itemId) return;
-      (async () => {
-        const raw = await AsyncStorage.getItem('orders_items');
-        const orderItems = raw ? (JSON.parse(raw) as any[]) : [];
-        const item = orderItems.find((i) => i.id === itemId);
-        if (!item) return;
-        const now = new Date();
-        const histRaw = await AsyncStorage.getItem('orders_history');
-        const hist = histRaw ? (JSON.parse(histRaw) as any[]) : [];
-        const entry = {
-          id: Date.now().toString(),
-          date: now.toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
-          actual: now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false }),
-          sched: item.name,
-          what: item.store !== '' ? item.store : undefined,
-          note: '',
-        };
-        await AsyncStorage.setItem('orders_history', JSON.stringify([entry, ...hist].slice(0, 50)));
-        await AsyncStorage.setItem('orders_items', JSON.stringify(orderItems.filter((i) => i.id !== itemId)));
-        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-        for (const n of scheduled) {
-          const src = n.content.data?.source as string | undefined;
-          if ((src === 'orders' || src === 'orderssnooze') && n.content.data?.itemId === itemId) {
-            await Notifications.cancelScheduledNotificationAsync(n.identifier);
-          }
-        }
       })();
       return;
     }
@@ -513,9 +428,10 @@ export default function RootLayout() {
         return;
       }
 
-      const isPets = source === 'pets' || source === 'petssnooze';
-      const storageKey = isPets ? 'pets_feeds' : 'my_routine';
-      const historyKey = isPets ? 'pets_history' : 'my_history';
+      if (source === 'pets' || source === 'petssnooze') return;
+      if (source !== 'myday' && source !== 'mydaysnooze') return;
+      const storageKey = 'my_routine';
+      const historyKey = 'my_history';
       (async () => {
         // A Done always means today (plan step 7). The past-day guard that used
         // to stand here is gone with the rest of the midnight holdover: the
@@ -539,9 +455,7 @@ export default function RootLayout() {
         }
         // Write a dated history entry so the item leaves a durable record. The
         // daily reset clears the `completed` flag overnight, so without this an
-        // item marked from the banner would vanish. Applies to both My Day
-        // (my_history) and Pets Day (pets_history) — same HistoryEntry shape and
-        // 50-entry cap their on-screen Log uses. Date + time come from when the
+        // item marked from the banner would vanish. Date + time come from when the
         // reminder FIRED (notification.date), not when Done was tapped — so an
         // item marked just after midnight is filed under the day the reminder
         // was issued, not the next day. iOS reports notification.date in SECONDS
@@ -592,12 +506,8 @@ export default function RootLayout() {
       router.push({ pathname: '/daily', params });
     } else if (source === 'myweek' || source === 'myweekpostpone') {
       router.push({ pathname: '/weekly', params } as Href);
-    } else if (source === 'pets' || source === 'petssnooze') {
-      router.push({ pathname: '/mollie', params });
     } else if (source === 'lookahead' || source === 'lookaheaddelay') {
       router.push({ pathname: '/monthly', params } as Href);
-    } else if (source === 'orders' || source === 'orderssnooze') {
-      router.push({ pathname: '/orders', params });
     } else if (source === 'memorytest') {
       // The 5-minute recall banner — land straight on the recall screen. There
       // is only ever one reminder from that page, so it needs no highlight
@@ -613,20 +523,11 @@ export default function RootLayout() {
       <Stack.Screen name="home" options={{ headerShown: false }} />
       <Stack.Screen name="shopping" options={{ headerShown: false }} />
       <Stack.Screen name="timer" options={{ headerShown: false }} />
-      <Stack.Screen name="myday" options={{ headerShown: false }} />
-      <Stack.Screen name="myweek" options={{ headerShown: false }} />
-      <Stack.Screen name="mollie" options={{ headerShown: false }} />
-      <Stack.Screen name="lookahead" options={{ headerShown: false }} />
-      <Stack.Screen name="todo" options={{ headerShown: false }} />
-      <Stack.Screen name="planner" options={{ headerShown: false }} />
-      <Stack.Screen name="watchlist" options={{ headerShown: false }} />
-      <Stack.Screen name="orders" options={{ headerShown: false }} />
       <Stack.Screen name="settings" options={{ headerShown: false }} />
       <Stack.Screen name="vault" options={{ headerShown: false }} />
       <Stack.Screen name="backup" options={{ headerShown: false }} />
       <Stack.Screen name="memorytest" options={{ headerShown: false }} />
       <Stack.Screen name="reminders" options={{ headerShown: false }} />
-      <Stack.Screen name="input" options={{ headerShown: false }} />
       <Stack.Screen name="daily" options={{ headerShown: false }} />
       <Stack.Screen name="item-edit" options={{ headerShown: false }} />
       <Stack.Screen name="weekly" options={{ headerShown: false }} />

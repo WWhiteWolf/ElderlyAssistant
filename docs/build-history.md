@@ -2796,6 +2796,31 @@ the next session, and the engine's old readers stay until dual-write is
 swapped. The 24-hour clock. Testing. The phone.
 
 
+## #35-new (2026-08-30): old screens out, backup on the new list, logs next
+
+**The old screens came out.** Input, To-Do, Look Ahead, My Week, Project
+Planner, Orders, Watch List, Pets, and the `/myday` hop are gone. Home
+was not touched. Pets and Orders banners are not kept, buttons
+included, so a leftover Pets Done cannot write the Daily list. The taps
+that already open Daily, Weekly, One Time, and Monthly stay, because
+those are the live reminders. The engine still reads the old lists
+through dual-write, so those readers stay.
+
+**Backup copies the new list.** He had deleted the old backup files, so
+restore does not read them. Daily's My Log still travels. After a
+restore, the engine lists are written from `reminder_items` so
+reminders still arm. Old backup files are refused.
+
+**Logs, settled and not built.** Daily already has My Day's log. Weekly,
+Monthly, Quarterly, Yearly, One Time, and Extended need theirs, the same
+logs the old pages used. Monthly, Quarterly, and Yearly share Look
+Ahead's log. One Time and Extended share that log's style, not the
+list: each has only its own. That is the next session.
+
+**What this session did not do.** The logs. The 24-hour clock. Testing.
+The phone.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

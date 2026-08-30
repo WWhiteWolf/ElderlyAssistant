@@ -16,29 +16,37 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
+import { loadReminderItems, saveReminderItems } from '../modules/reminder-items';
 
 // Format the backup file. Bump VERSION only if the shape changes,
 // so a future Import can tell how to read an older file.
-const BACKUP_VERSION = 1;
+const BACKUP_VERSION = 2;
 
 // Everything that travels in the backup in plain (readable) form.
 // Deliberately EXCLUDES user_pin and pin_set (the retired PIN), and
 // vault_items (handled separately, encrypted).
 const READABLE_KEYS = [
-    'my_routine', 'my_history', 'my_last_date', 'my_coffee', 'my_water',
-    'week_routine', 'week_history',
-    'pets_feeds', 'pets_history', 'pets_last_date', 'pets_treats',
-    'todo_tasks', 'todo_log', // todo_categories dropped (#42): categories removed from To-Do
+    'reminder_items',
+    'my_history',
     'shopping_items',
-    'planner_projects', 'planner_log',
-    'lookahead_items', 'lookahead_history',   // missing since #36 built the page (#57 fix)
-    'watchlist_movies', 'watchlist_shows',    // missing since #41 brought Watch List in (#57 fix)
-    'orders_items', 'orders_history',         // Orders page (#63), added the session it was built
-    'memtest_session', 'memtest_history',     // Memory Test page, added the session it was built
-    'vault_categories',                       // user-defined Vault categories (#67) — names only; the items stay in the encrypted vault_items
+    'memtest_session', 'memtest_history',
+    'vault_categories',
     'user_name', 'biometric_enabled', 'vault_pin_enabled',
     'reminder_morning_time', 'reminder_midday_time', 'reminder_evening_time',
-    'app_theme', 'popup_style',               // #48's theme + popup choices (#57 fix)
+    'app_theme', 'popup_style',
+];
+
+// Old page lists. Taken off the backup at #35-new. A restore still
+// removes them so they cannot linger on the phone.
+const RETIRED_KEYS = [
+    'my_routine', 'my_last_date', 'my_coffee', 'my_water',
+    'week_routine', 'week_history',
+    'pets_feeds', 'pets_history', 'pets_last_date', 'pets_treats',
+    'todo_tasks', 'todo_log',
+    'planner_projects', 'planner_log',
+    'lookahead_items', 'lookahead_history',
+    'watchlist_movies', 'watchlist_shows',
+    'orders_items', 'orders_history',
 ];
 
 const VAULT_KEY = 'vault_items';
@@ -56,9 +64,6 @@ export default function BackupScreen() {
         try {
             const backup = {
                 app: 'A Place To Remember',
-                // #65 rename: new backups carry the new marker; restore
-                // accepts this AND the old 'elyfont-backup' (old files
-                // must stay restorable).
                 type: 'remember-backup',
                 version: BACKUP_VERSION,
                 exportedAt: new Date().toISOString(),
@@ -229,6 +234,11 @@ export default function BackupScreen() {
 
             if (toSet.length) await AsyncStorage.multiSet(toSet);
             if (toRemove.length) await AsyncStorage.multiRemove(toRemove);
+            await AsyncStorage.multiRemove(RETIRED_KEYS);
+
+            // Write the engine's old lists from the restored one list, so
+            // reminders still arm.
+            await saveReminderItems(await loadReminderItems());
 
             Alert.alert('Restore complete', 'Your backup has been restored.', [
                 { text: 'OK', onPress: () => router.replace('/home') },
@@ -321,20 +331,17 @@ export default function BackupScreen() {
                 return;
             }
 
-            // #65 rename: accept the new marker AND the old one — every
-            // backup ever exported must stay restorable.
-            const validTypes = ['remember-backup', 'elyfont-backup'];
-            if (!parsed || !validTypes.includes(parsed.type) || !parsed.data) {
+            if (!parsed || parsed.type !== 'remember-backup' || !parsed.data) {
                 Alert.alert(
                     'Not a backup from this app',
                     'That file is not a backup made by A Place To Remember. Nothing was changed.',
                 );
                 return;
             }
-            if (typeof parsed.version === 'number' && parsed.version > BACKUP_VERSION) {
+            if (parsed.version !== BACKUP_VERSION) {
                 Alert.alert(
-                    'Newer backup',
-                    'This backup was made by a newer version of the app. Please update the app before importing it. Nothing was changed.',
+                    'Not a current backup',
+                    'That file is from an older backup. Nothing was changed.',
                 );
                 return;
             }

@@ -21,13 +21,23 @@ starts here. It does not start from the engine. Think for him. Do not ask
 him what the session is for, and do not make him re-teach the pages.
 
 **Daily through Options are built.** The one list `reminder_items` is
-live, with dual-write so the engine still arms. **#33-new is
-committed** (Patrick, #34-new). Home no longer has Input, To-Do, Look
-Ahead, My Week, Project Planner, Orders, or Watch List. Patrick
-arranged the remaining tiles himself. **Next session takes the old
-screens out** — the ones Home no longer opens. The engine still reads
-the old lists through dual-write, so those readers stay until that is
-swapped. Testing and the odds and ends wait.
+live, with dual-write so the engine still arms. **#34-new is
+committed** (Patrick, #35-new): it built the six new screens. Home no
+longer has Input, To-Do, Look Ahead, My Week, Project Planner, Orders,
+or Watch List. Patrick arranges the Home badges himself. **The old
+screens are out** (#35-new), including the `/myday` hop. No leftover hops
+and no old-page banners. The taps that already open Daily, Weekly, One
+Time, and Monthly stay, because those are the live reminders. The engine
+still reads the old lists through dual-write, so those readers stay
+until that is swapped. **Backup copies `reminder_items`**, not the old
+lists: he deleted the old backup files, so restore does not need to
+read them (Patrick, #35-new). After a restore, the engine lists are
+written from that one list so reminders still arm. **Next is logs on
+the new pages.** Daily already has My Day's log. Weekly uses My Week's.
+Monthly, Quarterly, and Yearly share Look Ahead's log, the same as it
+would have shown on Look Ahead. One Time and Extended share that log's
+style, not the list: each has only its own (Patrick, #35-new). Testing
+and the odds and ends wait.
 
 ### The pages, settled by Patrick at #30-new
 
@@ -55,7 +65,7 @@ swapped. Testing and the odds and ends wait.
   from the rest of the Input sheet at #30-new). Reminders-before is
   not a row; it already lives on One Time. Each row opens that case.
 
-**On a view page, each item has Done and Snooze, and a tap on the tile opens the edit page.** Daily is the same: Snooze, Done, and Done that undoes (Patrick, #33-new, looking at Daily). Swipe still deletes. A tap on the name opens the edit page. Hold the name and slide to reorder (Patrick, #33-new). **Daily now carries My Day's log** — the same `my_history` list, written when Done is tapped, titled My Log. **The My Day page is gone** (Patrick, #33-new). `/myday` hops to Daily. The engine still names those reminders `myday`, so banners and dual-write keep working.
+**On a view page, each item has Done and Snooze, and a tap on the tile opens the edit page.** Daily is the same: Snooze, Done, and Done that undoes (Patrick, #33-new, looking at Daily). Swipe still deletes. A tap on the name opens the edit page. Hold the name and slide to reorder (Patrick, #33-new). **Daily now carries My Day's log** — the same `my_history` list, written when Done is tapped, titled My Log. **The My Day page is gone** (Patrick, #33-new). The `/myday` hop is not kept (Patrick, #35-new). The engine still names those reminders `myday`, so banners and dual-write keep working.
 
 **An item lives on one page; Daily may also show another page's item (Patrick, #32-new).**
 
@@ -110,8 +120,7 @@ points at the wrong thing.
 part: one form has to ask every kind of question and then guess which list
 you meant, so it grows to hold the whole app, while each page only ever
 needs its own small part. Patrick's own picture was of the user facing the
-huge input page. The page built at #29-new is still in the app. Home
-no longer opens it. **It is a try, not the destination.**
+huge input page. The page built at #29-new came out at #35-new.
 
 **Testing waits until the building is done** (Patrick, #30-new). The
 automated test load is not next. The phone build still waits. Work stays
@@ -234,10 +243,10 @@ done at #30-new and does not need doing again:
   stepping onto the 24-hour clock, and the type-in box below has always
   been 24-hour, hint and all. So the box and the spinners disagree today,
   which may be part of what trips him.
-- **The display is one small function copied six times** — `myday.tsx`,
-  `mollie.tsx`, `myweek.tsx`, `lookahead.tsx`, `settings.tsx` and
-  `orders.tsx` — plus `formatClock` in `scheduler/queueview.ts`, which
-  writes the Scheduled Reminders screen's sentences.
+- **The display copies on the old pages went out with them** (#35-new).
+  What remains is `settings.tsx`, plus `formatClock` in
+  `scheduler/queueview.ts`, which writes the Scheduled Reminders screen's
+  sentences.
 - **Eleven assertions** in `scheduler/tests/queueview.test.ts` hold
   strings like `8:05 AM` and `Every day at 8:00 AM`.
 - **The logs are already 24-hour everywhere.** It is the tiles that are
@@ -283,9 +292,9 @@ block is actually made so a write cannot fail to turn the loop, and
 whether any screen is ever brought round to save in the common shape
 rather than being translated at the boundary for good.
 
-**Still unread**: `app/lookahead.tsx`, `app/memorytest.tsx`; and the test
-files other than My Day's, Pets' and My Week's. `app/todo.tsx` has had its
-save path read at #21-new and nothing else of it.
+**Still unread**: `app/memorytest.tsx`; and the test files other than My
+Day's, Pets' and My Week's. The old Look Ahead and To-Do screens went
+out unread at #35-new.
 
 **"+1 Day" is dead on every My Week banner** (found #11-new). Both the
 base weekly and the postpone carry the shared routine buttons, so
@@ -332,9 +341,6 @@ re-setting.
 and "Come back tomorrow" once an entry with today's date is logged, so a
 second test cannot be started. Deleting the day's entry brings the Start
 button back, at the cost of that day's real score.
-
-**Kept on purpose:** Orders' `cancelForItem`. Orders has no reader because
-the page is being taken out, and `app/orders.tsx` arms nothing at all now.
 
 **A background task and a daily tick are opposites and must never be
 merged.** A To-Do background task says a thing is *not yet done* and must
