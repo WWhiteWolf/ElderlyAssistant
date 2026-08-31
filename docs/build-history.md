@@ -3012,6 +3012,64 @@ build. The engine was not redesigned.
 
 **433 of 433 Mac tests pass.**
 
+## #41-new (2026-08-30): five Options answers, holidays, monthly patterns, and extra tap
+
+**The five Options questions were asked and answered**, then the
+pieces that those answers unlocked were built one at a time.
+
+**Float off.** The Float around short month switch comes out. Last
+existing day is always the engine's rule. Do not connect `floatDay`.
+
+**Monthly patterns.** Both are not needed. The last of the three stays
+and clears the other two: a dated day, a second Thursday, and a
+Wednesday after the 6th. A half-entered second Thursday is not a
+valid recipe. If both weekday patterns are already on an old item,
+neither is used as a combination.
+
+**Calendar order.** A missing day and a holiday move cannot both
+apply. There is no order between them.
+
+**Extended.** A list of items to be done sometime in the future, with
+no deadline, no due date, and no set time. It gets no banners. New
+and Edit have only the name, an optional note, and Done. It can be
+edited like the others. The current shape needs to change to meet
+this.
+
+**Cancel.** If it cancels, it closes and makes no change, including
+after + OPT has saved.
+
+**Holidays reach the engine.** The translator carries `before` or
+`after` as one code. One calendar block applies the nationwide US
+federal list, including the observed Friday or Monday when a
+fixed-date holiday falls on a weekend. Inauguration Day is not on
+the list. If the occurrence already moved for a missing day, the
+holiday move is skipped.
+
+**A second Thursday and a Wednesday after the 6th reach the engine.**
+A complete second-Thursday pair becomes the weekday list with an
+ordinal. Wednesday after becomes the weekday list plus the numbered
+floor. Last entered on the form clears the other two. Monthly,
+Quarterly and Yearly now repeat from the recipe. Done on those pages
+no longer advances the saved date.
+
+**Then or Next Day is on the shifted banner.** The saved choice is
+not a recipe and does not go into the common shape. Then keeps the
+last day that exists. Next Day pushes this occurrence one day. The
+series does not move.
+
+An incomplete zone currently floats with the phone; leave that
+unless Patrick says otherwise.
+
+**What this session did not do.** Calendar shading still paints every
+matching weekday; the page does not yet ask the engine to expand a
+visible month. The Float row is still on the page. Extended New and
+Edit have not been cut down. Cancel after + OPT has not been made to
+close with no change. The chat ran out of room while calendar
+shading was being read, so that build never started. No phone load
+of this build. The engine was not redesigned.
+
+**447 of 447 Mac tests pass.**
+
 
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 

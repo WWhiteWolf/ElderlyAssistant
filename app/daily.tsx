@@ -18,7 +18,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Bridge from '../components/Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 import {
-    advanceDatedItem,
     dragVisibleTo,
     FROM_PAGE,
     format12Hour,
@@ -236,7 +235,9 @@ export default function DailyScreen() {
         writeItems(items.map((one) => {
             if (one.id !== id) return one;
             if (one.kind === 'monthly' || one.kind === 'quarterly' || one.kind === 'yearly') {
-                return advanceDatedItem(one);
+                const { snoozedUntil, ...rest } = one;
+                void snoozedUntil;
+                return rest;
             }
             const { snoozedUntil, ...rest } = one;
             return {

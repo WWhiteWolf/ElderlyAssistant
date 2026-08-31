@@ -35,8 +35,9 @@ export interface ReminderItem {
     completed?: boolean;
     doneAt?: number;
     snoozedUntil?: number;
-    // Options written from + OPT (#37-new). Time zone is read by the
-    // translator. The other fields wait on open questions.
+    // Options written from + OPT (#37-new). Time zone, holidays, a second
+    // Thursday and a Wednesday after the 6th are read by the translator.
+    // Float and extra tap are not mapped yet.
     holidayMove?: 'before' | 'after';
     floatsWithPhone?: boolean;
     dueTimeZoneText?: string;

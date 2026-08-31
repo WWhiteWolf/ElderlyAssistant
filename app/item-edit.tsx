@@ -32,6 +32,11 @@ import {
     optionsFromItem,
     applyConnectedOptions,
     keepOptionsForKind,
+    applyLastPatternToItem,
+    lastEnteredMonthlyPattern,
+    monthlyPatternOf,
+    withLastMonthlyPattern,
+    type MonthlyPattern,
     type OptionSettings,
 } from '../modules/option-cases';
 
@@ -120,9 +125,12 @@ export default function ItemEditScreen() {
     const [showOptions, setShowOptions] = useState(false);
     const [optionsStartId, setOptionsStartId] = useState<string | null>(null);
     const [optionSettings, setOptionSettings] = useState<OptionSettings>(emptyOptionSettings);
+    const [monthlyPattern, setMonthlyPattern] = useState<MonthlyPattern>('date');
     const [note, setNote] = useState('');
     const optionSettingsRef = useRef(optionSettings);
     optionSettingsRef.current = optionSettings;
+    const monthlyPatternRef = useRef(monthlyPattern);
+    monthlyPatternRef.current = monthlyPattern;
     const noteRef = useRef(note);
     noteRef.current = note;
     const kindOptions = optionCasesForKind(editKind);
@@ -189,12 +197,14 @@ export default function ItemEditScreen() {
                         setTimeSet(typeof found.hour === 'number');
                     }
                     setOptionSettings(optionsFromItem(found));
+                    setMonthlyPattern(monthlyPatternOf(found));
                     setNote(found.notes ?? '');
                 }
             } else {
                 const nextKind = kindFrom(asParam(kind), page);
                 setEditKind(nextKind);
                 setOptionSettings(emptyOptionSettings());
+                setMonthlyPattern('date');
                 setNote('');
                 if (nextKind === 'oneTime' && page === 'daily') {
                     const today = new Date();
@@ -298,15 +308,18 @@ export default function ItemEditScreen() {
             delete next.reminders;
             delete next.intervalMonths;
         } else if (editKind === 'monthly' || editKind === 'quarterly' || editKind === 'yearly') {
+            const last = monthlyPatternRef.current;
             next = {
                 ...next,
-                year: pendingDate.getFullYear(),
-                month: pendingDate.getMonth(),
-                day: pendingDate.getDate(),
                 hour: pendingDate.getHours(),
                 minute: pendingDate.getMinutes(),
                 ...(editKind === 'quarterly' ? { intervalMonths } : {}),
             };
+            if (last === 'date') {
+                next.year = pendingDate.getFullYear();
+                next.month = pendingDate.getMonth();
+                next.day = pendingDate.getDate();
+            }
             delete next.reminders;
         } else if (editKind === 'oneTime') {
             const when = dateSet ? pendingDate : new Date();
@@ -345,6 +358,9 @@ export default function ItemEditScreen() {
                 applyConnectedOptions(next, optionSettingsRef.current),
                 editKind,
             );
+            if (editKind === 'monthly' || editKind === 'quarterly' || editKind === 'yearly') {
+                next = applyLastPatternToItem(next, monthlyPatternRef.current);
+            }
         } else if (editKind === 'daily') {
             next = applyConnectedOptions(next, emptyOptionSettings());
         }
@@ -486,7 +502,17 @@ export default function ItemEditScreen() {
                 {(editKind === 'monthly' || editKind === 'quarterly' || editKind === 'yearly') && (
                     <DateTimeControl
                         value={pendingDate}
-                        onChange={setPendingDate}
+                        onChange={(d) => {
+                            const dateMoved =
+                                d.getFullYear() !== pendingDate.getFullYear()
+                                || d.getMonth() !== pendingDate.getMonth()
+                                || d.getDate() !== pendingDate.getDate();
+                            setPendingDate(d);
+                            if (dateMoved) {
+                                setMonthlyPattern('date');
+                                setOptionSettings(withLastMonthlyPattern(optionSettings, 'date'));
+                            }
+                        }}
                         dateLabel="First Due Date"
                         onValidityChange={setDateTimeValid}
                     />
@@ -561,7 +587,15 @@ export default function ItemEditScreen() {
                 visible={showOptions}
                 cases={kindOptions}
                 settings={optionSettings}
-                onChange={setOptionSettings}
+                onChange={(next) => {
+                    if (editKind !== 'monthly' && editKind !== 'quarterly' && editKind !== 'yearly') {
+                        setOptionSettings(next);
+                        return;
+                    }
+                    const last = lastEnteredMonthlyPattern(optionSettings, next, monthlyPattern);
+                    setMonthlyPattern(last);
+                    setOptionSettings(withLastMonthlyPattern(next, last));
+                }}
                 shadeWeekday={editKind === 'weekly' ? pendingDay : pendingDate.getDay()}
                 startId={optionsStartId}
                 warning={editKind === 'daily' ? 'None of these apply to Daily for now.' : undefined}

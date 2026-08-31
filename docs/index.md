@@ -56,7 +56,8 @@ file is added, retired or renamed, its line changes at the same refresh.
 - **`automated-test-load.md`** — the settled design for the temporary
   automated reminder load, gathered at #38-new. The one-store cutover
   landed at #39-new. The five hardening points and time zone into the
-  engine landed at #40-new. The load still waits until the remaining
+  engine landed at #40-new. Holidays, monthly patterns, and extra tap
+  reached the engine at #41-new. The load still waits until the remaining
   reminder features are connected, then puts ordinary test items through
   the real save, engine and phone-queue path so the features can be
   proved in one sitting. A later session builds from it; it does not
@@ -78,7 +79,7 @@ file is added, retired or renamed, its line changes at the same refresh.
 
 - **`build-history.md`** — the session-by-session record. Its headings
   carry the session number, the date and a one-line summary, so **the
-  list of headings is its own index.** 3,356 lines; never read whole.
+  list of headings is its own index.** Never read whole.
 - **`reminder-rebuild.md`** — the record of #15-new through #18-new.
   **Not the live design.** Opened when a reminder fault needs tracing to
   what was found and cured. Its one live part is "What is already right,

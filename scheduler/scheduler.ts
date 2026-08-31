@@ -439,6 +439,7 @@ export async function applyPlan(
                             source: reminder.source,
                             itemId: reminder.itemId,
                             label: reminder.label,
+                            ...(reminder.shiftedForMissingDayBit ? { shiftedForMissingDayBit: true } : {}),
                         },
                         ...(reminder.categoryIdentifier ? { categoryIdentifier: reminder.categoryIdentifier } : {}),
                         sound: 'default',

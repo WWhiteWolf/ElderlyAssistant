@@ -2,6 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as AppGroup from './app-group';
 import { runScheduler } from '../scheduler/scheduler';
 import { warnIfFull } from '../scheduler/warn';
+import { translateReminderItems } from '../scheduler/translators/translate';
+import { baseMoment } from '../scheduler/leadmoments';
 import type { ReminderItem, ReminderKind } from './reminder-types';
 
 export type { LeadReminder, ReminderItem, ReminderKind } from './reminder-types';
@@ -87,7 +89,19 @@ export function shownOnDaily(item: ReminderItem) {
     if (item.kind === 'daily') return true;
     if (item.kind === 'weekly') return item.day === new Date().getDay();
     if (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly' || item.kind === 'oneTime') {
-        return isTodayDate(item);
+        if (isTodayDate(item)) return true;
+        if (item.kind === 'oneTime') return false;
+        const shaped = translateReminderItems([item], Date.now())[0];
+        if (!shaped) return false;
+        const start = new Date();
+        start.setHours(0, 0, 0, 0);
+        const base = baseMoment(shaped, start.getTime() - 1);
+        if (base === null) return false;
+        const when = new Date(base.moment);
+        const now = new Date();
+        return when.getFullYear() === now.getFullYear()
+            && when.getMonth() === now.getMonth()
+            && when.getDate() === now.getDate();
     }
     return false;
 }
@@ -169,6 +183,29 @@ export function formatItemWhen(item: ReminderItem): string {
             : '';
     if (item.kind === 'weekly' && typeof item.day === 'number') {
         return time ? `${DAY_NAMES[item.day]} ${time}` : DAY_NAMES[item.day];
+    }
+    if (
+        (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly')
+        && typeof item.weekdayOrdinal === 'number'
+        && typeof item.ordinalWeekday === 'number'
+    ) {
+        const ordinal =
+            item.weekdayOrdinal === -1 ? 'Last'
+            : item.weekdayOrdinal === 1 ? '1st'
+            : item.weekdayOrdinal === 2 ? '2nd'
+            : item.weekdayOrdinal === 3 ? '3rd'
+            : item.weekdayOrdinal === 4 ? '4th'
+            : String(item.weekdayOrdinal);
+        const day = DAY_NAMES[item.ordinalWeekday] ?? '';
+        return time ? `${ordinal} ${day} · ${time}` : `${ordinal} ${day}`;
+    }
+    if (
+        (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly')
+        && typeof item.afterWeekday === 'number'
+    ) {
+        const day = DAY_NAMES[item.afterWeekday] ?? '';
+        const after = typeof item.afterDayCount === 'number' ? item.afterDayCount : 6;
+        return time ? `${day} after ${after} · ${time}` : `${day} after ${after}`;
     }
     if (
         (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly' || item.kind === 'oneTime')

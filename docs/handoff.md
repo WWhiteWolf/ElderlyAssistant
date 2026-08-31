@@ -25,30 +25,48 @@ pages.
 banners and Siri write `reminder_items` through one save, and the
 scheduler reads that list. Dual-write is gone. The old reader files
 stay until phone proof and are not called. **#36-new is committed**
-(Patrick, #37-new). Backup copies the new list. Logs are on Daily
-through Extended. **He is living with the #37-new build on the phone.**
-The cutover itself has not been loaded there yet.
+(Patrick, #37-new). **#40-new is committed** (Patrick, #41-new). Backup
+copies the new list. Logs are on Daily through Extended. **He is living
+with the #37-new build on the phone.** The cutover itself has not been
+loaded there yet.
 
 **Options connecting is in** (#37-new). The cases write onto the item.
-**The engine now reads a named time zone** (#40-new). It still does not
-read holidays, Float, the extra tap, a second Thursday, or a Wednesday
-after the 6th. **Skip is off Options**.
-**Note is a field on New and Edit.** **Weekly’s set** is holidays, time
-zone, and calendar shading. **Monthly, Quarterly, and Yearly** add
-Float around short month, an extra tap on a shifted day, a second
-Thursday, and a Wednesday after the 6th. **One Time** has the same three
-as Weekly. **Extended’s set is not gone through.** **Float uses the last
-day that exists.** Holidays use the US federal list, before or after.
-The 31st keeping through a short month is an automated-load case. That
-load waits until the remaining features are in. The AM/PM removal is
-**mitigated** by the 24-hour digit spinner (Patrick, #36-new).
+**The engine now reads a named time zone** (#40-new), **holidays**
+(#41-new), **a second Thursday and a Wednesday after the 6th**
+(#41-new), **and Then or Next Day on a shifted banner** (#41-new). An
+incomplete zone currently floats with the phone; leave that unless
+Patrick says otherwise (#41-new). **Skip is off Options**. **Note is a
+field on New and Edit.** **Weekly’s set** is holidays, time zone, and
+calendar shading. **Monthly, Quarterly, and Yearly** add an extra tap
+on a shifted day, a second Thursday, and a Wednesday after the 6th.
+**One Time** has the same three as Weekly.
+
+**The five Options answers** (Patrick, #41-new). Float off: the switch
+comes out; last existing day is always the engine’s rule; do not
+connect `floatDay`. Monthly patterns: both are not needed; the last of
+the three stays and clears the other two. A missing day and a holiday
+move cannot both apply. Extended is a list of items to be done
+sometime in the future, with no deadline, no due date, and no set
+time; it gets no banners; New and Edit have only the name, an optional
+note, and Done; the current shape needs to change. Cancel closes and
+makes no change, including after + OPT.
+
+**Still to connect** (#41-new): calendar shading from the engine; take
+the Float row out; change Extended New and Edit; Cancel after + OPT
+closes with no change. Holidays use the US federal list, before or
+after. The 31st keeping through a short month is an automated-load
+case. That load waits until the remaining features are in. The AM/PM
+removal is **mitigated** by the 24-hour digit spinner (Patrick,
+#36-new).
 
 **The #38-new implementation record is in
 `docs/automated-test-load.md`.** Options still join the engine from that
-file. The open decisions a worker must not guess remain: Float off,
-monthly-pattern combinations, calendar order, Extended's set, and
-+ OPT's save-and-Cancel behaviour. Monthly, Quarterly, and Yearly Done
-still advances the saved date.
+file. A second Thursday and a Wednesday after the 6th reach the
+engine: a half-entered pair is not a valid recipe; if both weekday
+patterns are already on an old item, neither is used as a combination.
+Monthly, Quarterly, and Yearly Done no longer advances the saved date.
+Then keeps the last day that exists; Next Day pushes this occurrence
+one day; the saved choice is not a recipe.
 
 **#39-new.** The live cutover is in. The Settings morning, midday and
 evening times stay; the new code uses them. Nothing live points at To-Do.
@@ -65,7 +83,11 @@ evening times stay; the new code uses them. Nothing live points at To-Do.
   lives on Quarterly** (Patrick, #33-new), still every six months.
 - **One Time** — a date, no repeat, carrying To-Do's Reminders before
   chips. Any and all of those chips can be on at once.
-- **Extended** — no date.
+- **Extended** — a list of items to be done sometime in the future,
+  with no deadline, no due date, and no set time. It gets no banners.
+  New and Edit have only the name, an optional note, and Done. It can
+  be edited like the others. The current shape needs to change to meet
+  this (Patrick, #41-new).
 - **Options** — a list in the style of the iPhone’s notification-apps
   list, for the odd cases and what to do about them (Patrick, #32-new).
   Missing days follow the engine record: the last day that exists, with
@@ -73,9 +95,11 @@ evening times stay; the new code uses them. Nothing live points at To-Do.
   period, and move the day to before or after a holiday. That calendar
   thinking is from RFC 5545 and JSCalendar RFC 8984, without the file
   format, settled in `Reminder Engine/docs/reminder-engine.md`.
-  **When you open it you see** holidays, time zone, Float around short
-  month, an extra tap on a shifted day, calendar shading,
-  a second Thursday, and a Wednesday after the 6th. **Skip is not a
+  **When you open it you see** holidays, time zone, an extra tap on a
+  shifted day, calendar shading, a second Thursday, and a Wednesday
+  after the 6th. **Float around short month still shows as a row and
+  comes out** (Patrick, #41-new): last existing day is always the
+  engine’s rule. **Skip is not a
   row** (Patrick, #37-new): it belongs on the banner and the page.
   **Note is not a row** (Patrick, #37-new): it is a field on New and Edit.
   **Float is only a missing date** (Patrick, #37-new), not a holiday —
@@ -162,10 +186,11 @@ outside the module.
 each sent a notice. Everything built since — the pages, Options connecting,
 the repeat group, skip, zone handling, depth of one, the live swap, the
 one-store cutover, the five hardening points, a named time zone into the
-engine — **has not been proved on the phone** (Patrick, #37-new).
+engine, holidays into the engine, a second Thursday and a Wednesday
+after the 6th, Then or Next Day on a shifted banner — **has not been proved on the phone** (Patrick, #37-new).
 
 **The tests run on the Mac in about a second**, headless under Node, with
-no build and no simulator. **433 of 433 pass:**
+no build and no simulator. **447 of 447 pass:**
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -197,55 +222,9 @@ They are kept here because they still decide things.
 
 ## What is open in front of it
 
-**The storage question, and it was the first thing the build sheet needed.
-It is answered at the foot of this block.** It was raised at #30-new and
-the conversation turned to naming the pages before it was answered, so it
-stood open until #32-new. The app today
-keeps five separate saved lists, one per old page, and the engine reads
-each through a table entry that knows which page it came from. The nine
-new pages cut that same content by how often a thing repeats instead. What
-was put and not answered was a split: **the recipe** — name, date, time,
-repeat, lead times — written once on the add, and **occurrence state** —
-ticked, skipped, postponed — written by the viewing page. Each old page
-mixes those two in its own saved shape, which is why Reminders before has
-a home on To-Do and nowhere else.
-
-**What #32-new found when it read the five screens and the banner
-handler.** These are facts about the old screens as they stand today, not
-the new pages:
-
-- **The recipe is written in exactly one place per page — the New/Edit
-  form.** Name, date, time, day of the week, repeat interval and the
-  Reminders-before chips are set there and nowhere else, on all five
-  screens.
-- **The occurrence state is written by the row and by the banner, never by
-  that form.** The row's Log, Done and ✓ buttons, its Snooze, Postpone and
-  Delay buttons, the reorder arrows and swipe-to-delete; then eight
-  branches of the banner handler in `app/_layout.tsx` — done, skip, three
-  snoozes, +1 Day and three delays — each writing straight into storage;
-  and Siri's "mark done", which writes `my_routine` and `my_history`
-  itself. So the split the storage question describes is already real in
-  the code.
-- **`_layout.tsx` hardcodes which saved list each notification belongs
-  to**, in those same eight places — `my_routine`, `pets_feeds`,
-  `week_routine`, `lookahead_items`, `orders_items`. This is the thing the
-  storage answer most decides: nine pages cut by cadence mean either nine
-  of those branches everywhere, or one store and none.
-- **"Done" means four different things today.** My Day and Pets set
-  `completed` and let the daily reset clear it; My Week sets `completed`
-  plus `doneAt` and waits for the weekly reset; Look Ahead rolls the date
-  forward and marks nothing; To-Do deletes the task and writes a log entry.
-
-The old screens' tap-and-Edit shape is in `docs/build-history.md` under
-#32-new, not here. The new pages live in `docs/spec-pages.md`.
-
-**Settled by Patrick at #32-new: one saved list of items instead of
-nine**, each item carrying how often it repeats, so a page becomes a
-filter on that list rather than a store of its own. This answers the
-storage question that had been open since #30-new. The two reasons are
-that Daily has to show a Monthly item falling today and with separate
-stores would have to read all of them to do it, and that one store removes
-the eight hardcoded keys above.
+**One saved list of items instead of nine** (Patrick, #32-new). A page
+is a filter on that list. The old-screen findings that led to it are
+in `docs/build-history.md` under #32-new.
 
 **The build sheets are the pattern for this work** — each self-contained,
 carrying the answers themselves rather than pointing at other documents,
@@ -290,10 +269,10 @@ Monthly, Quarterly, Yearly and One Time record no misses at all. The
 work is extending the telling to those kinds, not building it — both
 halves of recovery on opening are already built and tested.
 
-**A named zone is read from the saved item.** Holidays, Float, the extra
-tap, a second Thursday, and a Wednesday after the 6th are on Options.
-The engine holds those shapes; it does not yet read the fields the
-pages write.
+**A named zone, holidays, a second Thursday and a Wednesday after the
+6th are read from the saved item.** Then or Next Day is an action on a
+shifted banner, not a field on the item. **`floatDay` is not connected**
+(Patrick, #41-new).
 
 **`docs/build-sheet.md` has not been brought level with the reorder**
 (#24-new). It is the standing description of what the three shape files

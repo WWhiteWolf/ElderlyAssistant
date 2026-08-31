@@ -6,7 +6,6 @@ import { AppState } from 'react-native';
 import { ThemeProvider } from '../constants/Themes';
 import * as AppGroup from '../modules/app-group';
 import {
-    advanceDatedItem,
     loadReminderItems,
     saveReminderItems,
 } from '../modules/reminder-items';
@@ -126,6 +125,12 @@ export default function RootLayout() {
         { identifier: 'delayday', buttonTitle: 'Delay 1 Day' },
         { identifier: 'delayweek', buttonTitle: 'Delay 1 Week' },
         { identifier: 'delaymonth', buttonTitle: 'Delay 1 Month' },
+      ]);
+      // A missing day: the last day that exists was used. Then keeps that
+      // day; Next Day is a one-day push-back for this occurrence only.
+      await Notifications.setNotificationCategoryAsync('shifteddayactions', [
+        { identifier: 'then', buttonTitle: 'Then' },
+        { identifier: 'nextday', buttonTitle: 'Next Day' },
       ]);
       // Shared ROUTINE popup (Step 4 routine half, #39): ONE button set for
       // My Day / My Week / Pets, replacing their three separate categories.
@@ -289,6 +294,35 @@ export default function RootLayout() {
       return;
     }
 
+    // Then: this is the day. The last existing day stands. The series does not
+    // move. iOS clears the banner; nothing is written.
+    if (action === 'then') {
+      return;
+    }
+
+    // Next Day: one-day push-back for this occurrence only. The recipe stays.
+    if (action === 'nextday') {
+      const itemId = data?.itemId as string | undefined;
+      if (!itemId) return;
+      (async () => {
+        const items = await loadReminderItems();
+        const item = items.find((i) => i.id === itemId);
+        if (!item) return;
+        const target = new Date();
+        target.setDate(target.getDate() + 1);
+        target.setHours(
+          typeof item.hour === 'number' ? item.hour : 12,
+          typeof item.minute === 'number' ? item.minute : 0,
+          0,
+          0,
+        );
+        await saveReminderItems(items.map((i) =>
+          i.id === itemId ? { ...i, snoozedUntil: target.getTime() } : i
+        ));
+      })();
+      return;
+    }
+
     // My Week "+1 Day" action: push this chore's reminder to tomorrow at its
     // own time, without opening the app.
     //
@@ -360,9 +394,8 @@ export default function RootLayout() {
         return;
       }
 
-      // Look Ahead "Done": log the completion (dated from when the reminder fired),
-      // roll the item forward to its next future date, cancel this item's base +
-      // delayed reminders, and arm the next one. The item stays on the list.
+      // Look Ahead "Done": log the completion (dated from when the reminder fired).
+      // The repeat recipe is left unchanged; the engine finds the next occurrence.
       if (source === 'lookahead' || source === 'lookaheaddelay') {
         (async () => {
           const items = await loadReminderItems();
@@ -380,7 +413,12 @@ export default function RootLayout() {
             note: '',
           };
           await AsyncStorage.setItem('lookahead_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
-          await saveReminderItems(items.map((i) => (i.id === itemId ? advanceDatedItem(item) : i)));
+          await saveReminderItems(items.map((i) => {
+            if (i.id !== itemId) return i;
+            const { snoozedUntil, ...rest } = item;
+            void snoozedUntil;
+            return rest;
+          }));
         })();
         return;
       }

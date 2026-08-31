@@ -484,6 +484,7 @@ export function runRemindersForTests(): void {
             'January has a 31st',
         );
         assertSame(wanted[0].shiftedForMissingDayBit, undefined, 'that day exists, so the bit is left off');
+        assert(wanted[0].categoryIdentifier !== 'shifteddayactions', 'an unshifted day does not get the extra tap');
     });
 
     test('The 31st of every month from 1 February arms 28 February, shifted', () => {
@@ -503,6 +504,7 @@ export function runRemindersForTests(): void {
             'February 2026 has no 31st, so the last day that exists is used',
         );
         assertSame(wanted[0].shiftedForMissingDayBit, true, 'the rest of the engine must see that the day moved');
+        assertSame(wanted[0].categoryIdentifier, 'shifteddayactions', 'the extra tap is Then or Next Day on that banner');
     });
 
     test('A weekly Tuesday chore, skipped this Tuesday, from Monday arms the following Tuesday', () => {

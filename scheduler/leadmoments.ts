@@ -92,10 +92,37 @@ export function baseMoment(item: ShapedItem, now: number): BaseMoment | null {
     if (found === null) {
         return null;
     }
-    if (item.repeatUntilMoment !== undefined && found.moment > item.repeatUntilMoment) {
+    const moved = applyHolidayMove(found, item, calendar);
+    if (item.repeatUntilMoment !== undefined && moved.moment > item.repeatUntilMoment) {
         return null;
     }
-    return found;
+    return moved;
+}
+
+/**
+ * One calendar block: if this occurrence falls on a US federal holiday,
+ * move it one day before or after. A missing-day shift is left as it is.
+ */
+function applyHolidayMove(
+    found: BaseMoment,
+    item: ShapedItem,
+    calendar: CivilCalendar,
+): BaseMoment {
+    if (item.holidayMoveCode === undefined) {
+        return found;
+    }
+    if (found.shiftedForMissingDayBit) {
+        return found;
+    }
+    const parts = calendar.partsOf(found.moment);
+    if (!isUsFederalHoliday(parts.year, parts.month, parts.day)) {
+        return found;
+    }
+    const step = item.holidayMoveCode === 'before' ? -1 : 1;
+    return {
+        moment: addCalendarDays(calendar, found.moment, step),
+        shiftedForMissingDayBit: false,
+    };
 }
 
 /** How many units between occurrences, 1 when the count is left off. */
@@ -289,6 +316,82 @@ function lastDayOfMonth(year: number, month: number): number {
 
 function weekdayOfCivilDate(year: number, month: number, day: number): number {
     return new Date(Date.UTC(year, month, day)).getUTCDay();
+}
+
+/**
+ * The nationwide US federal holidays, including the Friday or Monday
+ * observed when a fixed-date holiday falls on a weekend.
+ *
+ * The list is New Year's Day, Martin Luther King Jr. Day, Washington's
+ * Birthday, Memorial Day, Juneteenth, Independence Day, Labor Day,
+ * Columbus Day, Veterans Day, Thanksgiving, and Christmas. Inauguration
+ * Day is not on it: that one is only for the DC area.
+ */
+function isUsFederalHoliday(year: number, month: number, day: number): boolean {
+    if (isActualUsFederalHoliday(year, month, day)) {
+        return true;
+    }
+    const weekday = weekdayOfCivilDate(year, month, day);
+    if (weekday === 5) {
+        const next = addUtcDays(year, month, day, 1);
+        return isFixedDateUsFederalHoliday(next.year, next.month, next.day);
+    }
+    if (weekday === 1) {
+        const prev = addUtcDays(year, month, day, -1);
+        return isFixedDateUsFederalHoliday(prev.year, prev.month, prev.day);
+    }
+    return false;
+}
+
+function isActualUsFederalHoliday(year: number, month: number, day: number): boolean {
+    if (isFixedDateUsFederalHoliday(year, month, day)) {
+        return true;
+    }
+    if (month === 0 && day === nthWeekdayOfMonth(year, 0, 1, 3)) return true;
+    if (month === 1 && day === nthWeekdayOfMonth(year, 1, 1, 3)) return true;
+    if (month === 4 && day === nthWeekdayOfMonth(year, 4, 1, -1)) return true;
+    if (month === 8 && day === nthWeekdayOfMonth(year, 8, 1, 1)) return true;
+    if (month === 9 && day === nthWeekdayOfMonth(year, 9, 1, 2)) return true;
+    if (month === 10 && day === nthWeekdayOfMonth(year, 10, 4, 4)) return true;
+    return false;
+}
+
+function isFixedDateUsFederalHoliday(year: number, month: number, day: number): boolean {
+    void year;
+    if (month === 0 && day === 1) return true;
+    if (month === 5 && day === 19) return true;
+    if (month === 6 && day === 4) return true;
+    if (month === 10 && day === 11) return true;
+    if (month === 11 && day === 25) return true;
+    return false;
+}
+
+function nthWeekdayOfMonth(year: number, month: number, weekday: number, n: number): number {
+    const last = lastDayOfMonth(year, month);
+    const dates: number[] = [];
+    for (let day = 1; day <= last; day++) {
+        if (weekdayOfCivilDate(year, month, day) === weekday) {
+            dates.push(day);
+        }
+    }
+    if (dates.length === 0) {
+        return 0;
+    }
+    if (n === -1) {
+        return dates[dates.length - 1];
+    }
+    return dates[n - 1] ?? 0;
+}
+
+function addUtcDays(
+    year: number,
+    month: number,
+    day: number,
+    count: number,
+): { year: number; month: number; day: number } {
+    const noon = new Date(Date.UTC(year, month, day, 12, 0, 0));
+    noon.setUTCDate(noon.getUTCDate() + count);
+    return { year: noon.getUTCFullYear(), month: noon.getUTCMonth(), day: noon.getUTCDate() };
 }
 
 function addMonths(year: number, month: number, count: number): { year: number; month: number } {

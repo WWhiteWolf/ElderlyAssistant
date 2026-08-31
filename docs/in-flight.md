@@ -4,7 +4,7 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-08-30, at the close of #40-new.
+Last written: 2026-08-30, at the close of #41-new.
 
 ## Read this first
 
@@ -18,17 +18,20 @@ Last written: 2026-08-30, at the close of #40-new.
 
 ## What is in
 
-**The five hardening points are in**, and **the engine reads a named
-time zone.** 433 of 433 Mac tests pass. He is living with the #37-new
-build on the phone; the cutover, the hardening, and time zone are not
+**The five Options answers are settled.** Holidays, a second Thursday
+and a Wednesday after the 6th, and Then or Next Day on a shifted
+banner reach the engine. Monthly, Quarterly and Yearly Done no longer
+advances the saved date. 447 of 447 Mac tests pass. He is living with
+the #37-new build on the phone; none of this session's engine work is
 on it yet.
 
 ## What is next
 
-**The rest of Options into the engine**, after the open decisions
-(Float off, monthly patterns, holiday and missing-day order,
-Extended's set, + OPT Cancel). Phone later. The automated load waits
-until the remaining features are in.
+**The rest of Options into the engine**, four pieces: calendar shading
+from the engine, take the Float row out, change Extended New and Edit
+to name, optional note and Done, and Cancel closes with no change
+including after + OPT. Phone later. The automated load waits until
+the remaining features are in.
 
 ## Do not reopen
 
@@ -38,4 +41,6 @@ on Daily. The My Day page. Morning of / Day Before chips on Daily's
 One Time for today. Project Planner, Orders, and Watch List on Home.
 Float as next day — it uses last day that exists. Note as an Options
 case. Redesigning the engine. The old-store test. The five hardening
-points.
+points. The five Options questions. Connecting a named zone.
+Connecting holidays. Connecting the monthly patterns. Putting Then or
+Next Day on the item.

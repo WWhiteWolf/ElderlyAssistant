@@ -35,6 +35,10 @@ import type {
     SourceScreenCode,
 } from '../inputshape.ts';
 import type { ReminderItem } from '../../modules/reminder-types.ts';
+import {
+    secondThursdayComplete,
+    wednesdayAfterComplete,
+} from '../../modules/option-cases.ts';
 import type { MyDayItem } from '../readers/myday.ts';
 import type { PetsItem } from '../readers/pets.ts';
 import type { Chore } from '../readers/myweek.ts';
@@ -668,23 +672,32 @@ const datedCadenceRules: ScreenRules<ReminderItem> = {
     nameOf: (item) => item.label,
     isDoneOf: () => false,
     pushedBackStampOf: (item) => item.snoozedUntil,
-    dueOf: (item) =>
-        typeof item.year === 'number'
+    dueOf: (item) => {
+        const hour = typeof item.hour === 'number' ? item.hour : undefined;
+        const minute = typeof item.minute === 'number' ? item.minute : undefined;
+        if (typeof item.year === 'number'
             && typeof item.month === 'number'
-            && typeof item.day === 'number'
-            ? {
+            && typeof item.day === 'number') {
+            return {
                 hasDueTimeBit: true,
                 dueMoment: new Date(
                     item.year,
                     item.month,
                     item.day,
-                    item.hour ?? 0,
-                    item.minute ?? 0,
+                    hour ?? 0,
+                    minute ?? 0,
                     0,
                     0,
                 ).getTime(),
-            }
-            : { hasDueTimeBit: false },
+                dueHour: hour ?? 0,
+                dueMinute: minute ?? 0,
+            };
+        }
+        if (hour !== undefined && minute !== undefined) {
+            return { hasDueTimeBit: true, dueHour: hour, dueMinute: minute };
+        }
+        return { hasDueTimeBit: false };
+    },
     leadTimesOf: () => atTheMomentItself,
     bannerBodyTextOf: (item) => `Time for ${item.label}!`,
 };
@@ -782,17 +795,64 @@ export function translateReminderItems(items: ReminderItem[], now: number): Shap
  *
  * A named zone is written only as a complete pair. An incomplete pair is
  * rejected: the item keeps floating with the phone rather than silently
- * producing no reminder. Holiday, Float, shifted-day preference, Second
- * Thursday and Wednesday after the 6th wait on open questions and are not
- * mapped here.
+ * producing no reminder. Holidays are one code, absent when unused. A
+ * complete second Thursday or Wednesday after the 6th becomes the engine's
+ * weekday entry; a half-entered pair is left off. Float and shifted-day
+ * preference are not mapped here.
  */
 function withSavedOptions(saved: ReminderItem, shaped: ShapedItem): ShapedItem {
+    let out = shaped;
     if (saved.floatsWithPhone === false && saved.dueTimeZoneText) {
-        return {
-            ...shaped,
+        out = {
+            ...out,
             floatsWithPhoneBit: false,
             dueTimeZoneText: saved.dueTimeZoneText,
         };
     }
-    return shaped;
+    if (saved.holidayMove === 'before' || saved.holidayMove === 'after') {
+        out = { ...out, holidayMoveCode: saved.holidayMove };
+    }
+    if (saved.kind === 'monthly' || saved.kind === 'quarterly' || saved.kind === 'yearly') {
+        out = withMonthlyRepeat(saved, out);
+    }
+    return out;
+}
+
+function withMonthlyRepeat(saved: ReminderItem, shaped: ShapedItem): ShapedItem {
+    const thursday = secondThursdayComplete(saved);
+    const wednesday = wednesdayAfterComplete(saved);
+    const interval =
+        saved.kind === 'monthly' ? 1
+        : saved.kind === 'yearly' ? 1
+        : (typeof saved.intervalMonths === 'number' ? saved.intervalMonths : 3);
+    if (thursday && wednesday) {
+        if (saved.kind === 'yearly') {
+            return { ...shaped, repeatUnitCode: 'year', repeatIntervalCount: 1 };
+        }
+        return { ...shaped, repeatUnitCode: 'month', repeatIntervalCount: interval };
+    }
+    if (thursday && saved.ordinalWeekday != null && saved.weekdayOrdinal != null) {
+        return {
+            ...shaped,
+            repeatUnitCode: 'month',
+            repeatIntervalCount: saved.kind === 'yearly' ? 12 : interval,
+            repeatWeekdayList: [{
+                weekdayNumber: saved.ordinalWeekday,
+                weekdayOrdinalCount: saved.weekdayOrdinal,
+            }],
+        };
+    }
+    if (wednesday && saved.afterWeekday != null) {
+        return {
+            ...shaped,
+            repeatUnitCode: 'month',
+            repeatIntervalCount: saved.kind === 'yearly' ? 12 : interval,
+            repeatWeekdayList: [{ weekdayNumber: saved.afterWeekday }],
+            repeatAfterDayCount: typeof saved.afterDayCount === 'number' ? saved.afterDayCount : 6,
+        };
+    }
+    if (saved.kind === 'yearly') {
+        return { ...shaped, repeatUnitCode: 'year', repeatIntervalCount: 1 };
+    }
+    return { ...shaped, repeatUnitCode: 'month', repeatIntervalCount: interval };
 }

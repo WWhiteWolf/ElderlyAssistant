@@ -18,7 +18,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Bridge from './Bridge';
 import { Theme, useTheme } from '../constants/Themes';
 import {
-    advanceDatedItem,
     dragKindTo,
     formatItemWhen,
     loadReminderItems,
@@ -248,7 +247,11 @@ export default function CadenceListPage({
             return;
         }
         if (kind === 'monthly' || kind === 'quarterly' || kind === 'yearly') {
-            writeItems(items.map((one) => (one.id === id ? advanceDatedItem(one) : one)));
+            writeItems(items.map((one) => {
+                if (one.id !== id) return one;
+                const { snoozedUntil, ...rest } = one;
+                return rest;
+            }));
             return;
         }
         writeItems(items.map((one) => {

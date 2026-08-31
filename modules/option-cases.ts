@@ -1,4 +1,6 @@
-import { DAY_NAMES, type ReminderItem } from './reminder-items';
+import type { ReminderItem } from './reminder-types';
+
+const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export type OptionCase = {
     id: string;
@@ -223,6 +225,94 @@ export function applyConnectedOptions(item: ReminderItem, settings: OptionSettin
     } else {
         delete out.afterWeekday;
         delete out.afterDayCount;
+    }
+    return out;
+}
+
+export type MonthlyPattern = 'date' | 'secondThursday' | 'wednesdayAfter';
+
+export function secondThursdayComplete(s: {
+    weekdayOrdinal?: number;
+    ordinalWeekday?: number;
+}): boolean {
+    return s.weekdayOrdinal != null && s.ordinalWeekday != null;
+}
+
+export function wednesdayAfterComplete(s: { afterWeekday?: number }): boolean {
+    return s.afterWeekday != null;
+}
+
+export function monthlyPatternOf(item: {
+    weekdayOrdinal?: number;
+    ordinalWeekday?: number;
+    afterWeekday?: number;
+}): MonthlyPattern {
+    if (secondThursdayComplete(item)) return 'secondThursday';
+    if (wednesdayAfterComplete(item)) return 'wednesdayAfter';
+    return 'date';
+}
+
+/** The last of the three stays; the other two are cleared. */
+export function withLastMonthlyPattern(
+    settings: OptionSettings,
+    last: MonthlyPattern,
+): OptionSettings {
+    if (last === 'secondThursday') {
+        return { ...settings, afterWeekday: undefined, afterDayCount: 6 };
+    }
+    if (last === 'wednesdayAfter') {
+        return { ...settings, weekdayOrdinal: undefined, ordinalWeekday: undefined };
+    }
+    return {
+        ...settings,
+        weekdayOrdinal: undefined,
+        ordinalWeekday: undefined,
+        afterWeekday: undefined,
+        afterDayCount: 6,
+    };
+}
+
+export function lastEnteredMonthlyPattern(
+    prev: OptionSettings,
+    next: OptionSettings,
+    was: MonthlyPattern,
+): MonthlyPattern {
+    if (!secondThursdayComplete(next) && !wednesdayAfterComplete(next)) {
+        return 'date';
+    }
+    const thursdayChanged =
+        next.weekdayOrdinal !== prev.weekdayOrdinal
+        || next.ordinalWeekday !== prev.ordinalWeekday;
+    const wednesdayChanged =
+        next.afterWeekday !== prev.afterWeekday
+        || next.afterDayCount !== prev.afterDayCount;
+    if (secondThursdayComplete(next) && thursdayChanged) {
+        return 'secondThursday';
+    }
+    if (wednesdayAfterComplete(next) && wednesdayChanged) {
+        return 'wednesdayAfter';
+    }
+    return was;
+}
+
+export function applyLastPatternToItem(item: ReminderItem, last: MonthlyPattern): ReminderItem {
+    const out = { ...item };
+    if (last === 'date') {
+        delete out.weekdayOrdinal;
+        delete out.ordinalWeekday;
+        delete out.afterWeekday;
+        delete out.afterDayCount;
+        return out;
+    }
+    delete out.year;
+    delete out.month;
+    delete out.day;
+    if (last === 'secondThursday') {
+        delete out.afterWeekday;
+        delete out.afterDayCount;
+    } else {
+        delete out.weekdayOrdinal;
+        delete out.ordinalWeekday;
     }
     return out;
 }

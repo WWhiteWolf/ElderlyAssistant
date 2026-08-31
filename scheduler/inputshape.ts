@@ -80,6 +80,7 @@ export type BannerButtonsCode =
     | 'todook'
     | 'myweekactions'
     | 'lookaheadactions'
+    | 'shifteddayactions'
     | 'routineactions'
     | 'orderactions';
 
@@ -212,6 +213,14 @@ export interface ShapedItem {
      * false: the engine will not guess a zone.
      */
     dueTimeZoneText?: string;
+    /**
+     * Move the occurrence to the day before or after a US federal holiday.
+     *
+     * Left off when unused. The translator writes `before` or `after` from
+     * the saved Options field. A missing day and a holiday move cannot both
+     * apply, so a shifted occurrence is left as it is.
+     */
+    holidayMoveCode?: 'before' | 'after';
 
     // ---- capability bits: what this kind of item is allowed to do ----
 

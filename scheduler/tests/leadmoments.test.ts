@@ -419,4 +419,81 @@ export function runLeadMomentsTests(): void {
             'eight o\'clock in that zone, not eight o\'clock on the machine',
         );
     });
+
+    // ---- holidays: before or after a US federal holiday ----
+
+    test('A Saturday weekly on Independence Day 2026 moves to the Friday before', () => {
+        // 4 July 2026 is a Saturday. The next Saturday from Friday the 3rd
+        // at nine is the 4th at ten. Day before is Friday the 3rd at ten.
+        assertSame(
+            momentsOf({
+                sourceScreenCode: 'myweek',
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 6 }],
+                dueHour: 10,
+                dueMinute: 0,
+                holidayMoveCode: 'before',
+            }, at(2026, 6, 3, 9, 0)),
+            [at(2026, 6, 3, 10, 0)],
+            'the occurrence was the holiday, so it fires the day before',
+        );
+    });
+
+    test('A Saturday weekly on Independence Day 2026 moves to the Sunday after', () => {
+        assertSame(
+            momentsOf({
+                sourceScreenCode: 'myweek',
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 6 }],
+                dueHour: 10,
+                dueMinute: 0,
+                holidayMoveCode: 'after',
+            }, at(2026, 6, 3, 9, 0)),
+            [at(2026, 6, 5, 10, 0)],
+            'the occurrence was the holiday, so it fires the day after',
+        );
+    });
+
+    test('A Saturday weekly on Independence Day 2026 stays put when holidays are unused', () => {
+        assertSame(
+            momentsOf({
+                sourceScreenCode: 'myweek',
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 6 }],
+                dueHour: 10,
+                dueMinute: 0,
+            }, at(2026, 6, 3, 9, 0)),
+            [at(2026, 6, 4, 10, 0)],
+            'no holiday code means the Saturday itself',
+        );
+    });
+
+    test('A Friday weekly on the observed Independence Day 2026 moves to Saturday', () => {
+        // 4 July 2026 is Saturday, so Friday the 3rd is the observed day.
+        assertSame(
+            momentsOf({
+                sourceScreenCode: 'myweek',
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 5 }],
+                dueHour: 10,
+                dueMinute: 0,
+                holidayMoveCode: 'after',
+            }, at(2026, 6, 2, 9, 0)),
+            [at(2026, 6, 4, 10, 0)],
+            'the federal list includes the Friday or Monday when a fixed-date holiday falls on a weekend',
+        );
+    });
+
+    test('A One Time on Thanksgiving 2026 moves to the Wednesday before', () => {
+        assertSame(
+            momentsOf({
+                sourceScreenCode: 'todo',
+                dueMoment: at(2026, 10, 26, 9, 0),
+                holidayMoveCode: 'before',
+                leadTimeList: [NOTHING_BEFORE],
+            }, at(2026, 10, 1, 9, 0)),
+            [at(2026, 10, 25, 9, 0)],
+            'Thanksgiving is the fourth Thursday of November',
+        );
+    });
 }

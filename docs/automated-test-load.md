@@ -102,10 +102,14 @@ The #38-new Options trace followed every control through
 `reminder_items`, the translator, the common shape and the
 phone queue. This is the implementation record for connecting them.
 The present Options controls save fields on `reminder_items`. Time zone
-reaches the live engine (#40-new). The other Option fields do not: the
-translator maps a named zone as a complete pair, and leaves holidays,
-Float, the extra tap, a second Thursday, and a Wednesday after the 6th
-unmapped until the open decisions are settled.
+reaches the live engine (#40-new). Holidays reach it (#41-new): the
+translator carries `before` or `after` as one code, and one calendar
+block applies the US federal list. A second Thursday and a Wednesday
+after the 6th reach it (#41-new): a complete pair becomes the engine's
+weekday entry, and the last of those two or a dated day stays and
+clears the other two. The extra tap is Then or Next Day on a shifted
+banner (#41-new); the saved Then/Next choice is not a recipe. Float is
+not mapped yet.
 
 ### One boundary
 
@@ -155,10 +159,9 @@ had to move. A monthly 31st remains a 31st after February. Done, Skip,
 Snooze and a shifted-day response record what happened to that
 occurrence; they do not overwrite the recipe's anchor date.
 
-The present page road advances and saves a new date when a Monthly,
-Quarterly or Yearly item is marked Done. That road must leave when the
-canonical repeat road takes over, or a shifted 31st can permanently
-become a 30th or 28th.
+Monthly, Quarterly or Yearly Done no longer advances and saves a new
+date (#41-new). The engine finds the next occurrence from the unchanged
+recipe.
 
 ### What each Option becomes
 
@@ -168,8 +171,8 @@ become a 30th or 28th.
   the moved date.
 - **Time zone** — the engine's existing `floatsWithPhoneBit` and
   `dueTimeZoneText` are the right facts. True needs no zone. False must
-  have the captured zone; the translator rejects or reports an
-  incomplete pair rather than silently making no reminder.
+  have the captured zone. An incomplete pair currently floats with the
+  phone; leave that unless Patrick says otherwise (#41-new).
 - **Calendar shading** — `shadeCalendar` remains a page-display bit,
   not a scheduling instruction. The page asks the same plain engine
   calendar calculation to expand a visible range. The current sample,
@@ -184,55 +187,46 @@ become a 30th or 28th.
 - **A shifted missing day** — `then` or `next day` is not a permanent
   item preference. The engine marks only that wanted reminder with
   `shiftedForMissingDayBit`. The housing carries the bit into the phone
-  request and offers the response on that occurrence. Next day writes
-  a one-day push-back for that occurrence; the series does not move.
+  request and offers Then or Next Day on that occurrence (#41-new). Next
+day writes a one-day push-back for that occurrence; Then keeps the last
+existing day. The series does not move. The saved `shiftedChoice` field
+does not go into `ShapedItem`.
+- **Float around short month** — the switch comes out. Last existing
+  day is always the engine’s rule. Do not connect `floatDay`
+  (Patrick, #41-new).
 - **Skip** stays off Options. It writes a cycle stamp and the engine
   finds the next occurrence. **Note** remains ordinary item text.
   **Reminders before** remain the engine's existing lead forms.
 
 The Options-to-kind table must name every kind explicitly. It must not
-give an unknown kind the Weekly set by default. Extended has no date,
-and its Option set remains undecided.
+give an unknown kind the Weekly set by default. **Extended** is a list
+of items to be done sometime in the future, with no deadline, no due
+date, and no set time. It gets no banners. New and Edit have only the
+name, an optional note, and Done. It can be edited like the others.
+The current shape needs to change to meet this (Patrick, #41-new).
 
 ### Combinations and work order
 
 The date recipe, Second Thursday and Wednesday after the 6th can
-currently all remain on one item. Before connection, Patrick must
-settle whether one item may intentionally produce more than one of
-those patterns. If only one pattern is allowed, they are one
-`monthlyPatternCode` with its accompanying values, and choosing one
-clears the others. A worker must not invent precedence.
+currently all remain on one item. Patrick, #41-new: both are not
+needed; the last of the three stays and clears the other two.
 
-Within the calendar calculation, the analysis recommends this order:
-choose the item's time-zone calendar, produce the occurrence from the
-unchanged repeat recipe, resolve a missing day, apply the holiday move,
-turn the final civil date and time into a moment, and calculate lead
-reminders from that final due moment. The holiday-and-missing-day order
-has not yet been made a Patrick ruling and must be settled before that
-block is built.
+A missing day and a holiday move cannot both apply (Patrick, #41-new).
+There is no order between them.
 
-### Two controls that must not be wired as they stand
-
-The settled engine record says a nonexistent monthly date always uses
-the last day that exists and deliberately has no invalid-day code.
-Therefore the saved `floatDay` switch currently has no separate job.
-Patrick must say what off means, or the switch must leave, before a
-worker connects it.
+### A control that must not be wired as it stands
 
 The saved `shiftedChoice` currently makes then or next day a permanent
-recipe choice. That conflicts with the settled engine record above,
-where it is an action on the one shifted banner. The permanent field
-does not go into `ShapedItem`.
+recipe choice. That field does not go into `ShapedItem`. Then or Next
+Day is offered on the shifted banner (#41-new).
 
 ### The + OPT save edge
 
 Today Done inside + OPT calls the whole save road when a name has been
 entered. On a new item that also runs the scheduler before the form's
-main Save, and a later Cancel does not remove the item. Before the
-canonical road is finished, Patrick must settle whether + OPT edits a
-draft until Save or whether immediate saving includes an explicit
-undo-on-Cancel. The current accidental middle state is not carried
-forward.
+main Save, and a later Cancel does not remove the item. **Cancel closes
+and makes no change** (Patrick, #41-new), including after + OPT. The
+current accidental middle state is not carried forward.
 
 The Mac suite first proves each `ReminderItem` reaches the expected
 common codes and bits, each incomplete or conflicting recipe is
