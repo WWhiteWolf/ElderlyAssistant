@@ -1,6 +1,6 @@
 // Tests for the piece that turns a lead time into a moment on the clock.
 
-import { momentsFor } from '../leadmoments.ts';
+import { momentsFor, shadedDaysInMonth } from '../leadmoments.ts';
 import type { ClockTimes } from '../leadmoments.ts';
 import type { LeadTime, ShapedItem } from '../inputshape.ts';
 import { assertSame, test } from './runner.ts';
@@ -328,6 +328,24 @@ export function runLeadMomentsTests(): void {
         );
     });
 
+    test('Wednesday after the 6th, once that Wednesday has gone, is next month\'s first after the 6th', () => {
+        assertSame(
+            momentsFor(
+                item({
+                    repeatUnitCode: 'month',
+                    repeatWeekdayList: [{ weekdayNumber: 3 }],
+                    repeatAfterDayCount: 6,
+                    dueHour: 8,
+                    dueMinute: 0,
+                }),
+                at(2026, 5, 11, 9, 0),
+                CLOCK,
+            ),
+            [at(2026, 6, 8, 8, 0)],
+            'the 17th and 24th of June are later Wednesdays, not the first after the 6th',
+        );
+    });
+
     test('The 31st of every month at noon, from 15 January 2026, is 31 January', () => {
         assertSame(
             momentsFor(
@@ -494,6 +512,90 @@ export function runLeadMomentsTests(): void {
             }, at(2026, 10, 1, 9, 0)),
             [at(2026, 10, 25, 9, 0)],
             'Thanksgiving is the fourth Thursday of November',
+        );
+    });
+
+    // ---- calendar shading: the same calculation, expanded across a month ----
+
+    test('A weekly Wednesday in June 2026 shades every Wednesday', () => {
+        assertSame(
+            shadedDaysInMonth(item({
+                sourceScreenCode: 'myweek',
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 3 }],
+                dueHour: 18,
+                dueMinute: 0,
+            }), 2026, 5),
+            [3, 10, 17, 24],
+            'June 2026\'s Wednesdays, from the engine, not from matching today\'s weekday',
+        );
+    });
+
+    test('A monthly 15th in June 2026 shades the 15th only', () => {
+        assertSame(
+            shadedDaysInMonth(item({
+                repeatUnitCode: 'month',
+                dueHour: 12,
+                dueMinute: 0,
+                dueMoment: at(2026, 5, 15, 12, 0),
+            }), 2026, 5),
+            [15],
+            'the 15th is a Monday that month, and the other Mondays stay clear',
+        );
+    });
+
+    test('A monthly 31st in February 2026 shades the last day that exists', () => {
+        assertSame(
+            shadedDaysInMonth(item({
+                repeatUnitCode: 'month',
+                dueHour: 12,
+                dueMinute: 0,
+                dueMoment: at(2026, 0, 31, 12, 0),
+            }), 2026, 1),
+            [28],
+            'February 2026 has no 31st, so the 28th is the visible day',
+        );
+    });
+
+    test('The second Thursday in June 2026 shades the 11th', () => {
+        assertSame(
+            shadedDaysInMonth(item({
+                repeatUnitCode: 'month',
+                repeatWeekdayList: [{ weekdayNumber: 4, weekdayOrdinalCount: 2 }],
+                dueHour: 8,
+                dueMinute: 0,
+            }), 2026, 5),
+            [11],
+            'the same Thursday the next-occurrence calculation already named',
+        );
+    });
+
+    test('Wednesday after the 6th in June 2026 shades the first Wednesday after the 6th only', () => {
+        assertSame(
+            shadedDaysInMonth(item({
+                repeatUnitCode: 'month',
+                repeatWeekdayList: [{ weekdayNumber: 3 }],
+                repeatAfterDayCount: 6,
+                dueHour: 8,
+                dueMinute: 0,
+            }), 2026, 5),
+            [10],
+            'the 17th and 24th stay clear; only the first occurrence after the 6th shows',
+        );
+    });
+
+    test('A Saturday weekly in July 2026 with holidays before shades the 3rd instead of the 4th', () => {
+        assertSame(
+            shadedDaysInMonth(item({
+                sourceScreenCode: 'myweek',
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 6 }],
+                dueHour: 10,
+                dueMinute: 0,
+                holidayMoveCode: 'before',
+            }), 2026, 6),
+            [3, 11, 18, 25],
+            'Independence Day is Saturday the 4th, so the visible day is Friday the 3rd',
         );
     });
 }

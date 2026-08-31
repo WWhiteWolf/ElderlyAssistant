@@ -4,7 +4,7 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-08-30, at the close of #41-new.
+Last written: 2026-08-30, at the close of #42-new.
 
 ## Read this first
 
@@ -18,20 +18,19 @@ Last written: 2026-08-30, at the close of #41-new.
 
 ## What is in
 
-**The five Options answers are settled.** Holidays, a second Thursday
-and a Wednesday after the 6th, and Then or Next Day on a shifted
-banner reach the engine. Monthly, Quarterly and Yearly Done no longer
-advances the saved date. 447 of 447 Mac tests pass. He is living with
-the #37-new build on the phone; none of this session's engine work is
-on it yet.
+**The rest of Options into the engine is in.** Calendar shading, the
+Float row out, Extended New and Edit, Cancel with no change, and
+Daily's every-day and One Time for today as time zone only. A weekday
+after a numbered day is the first occurrence after that day only. The
+Timer is parked as a different effort. The load rules are in
+`docs/automated-test-load.md`. 459 of 459 Mac tests pass. He is living
+with the #37-new build on the phone; none of this session's work is on
+it yet.
 
 ## What is next
 
-**The rest of Options into the engine**, four pieces: calendar shading
-from the engine, take the Float row out, change Extended New and Edit
-to name, optional note and Done, and Cancel closes with no change
-including after + OPT. Phone later. The automated load waits until
-the remaining features are in.
+**A new session writes the automated-load build sheet** from that
+file. Do not redesign it. Simulator first.
 
 ## Do not reopen
 
@@ -43,4 +42,8 @@ Float as next day — it uses last day that exists. Note as an Options
 case. Redesigning the engine. The old-store test. The five hardening
 points. The five Options questions. Connecting a named zone.
 Connecting holidays. Connecting the monthly patterns. Putting Then or
-Next Day on the item.
+Next Day on the item. Calendar shading as weekday matching. The Float
+row. Extended with a time or + OPT. + OPT Done saving the item.
+Daily's warning that no Options apply. Look Ahead the page. The Timer
+on this stretch. Redesigning the automated load or adding a fifth test
+piece besides the scenario file, loader, checker and cleanup.

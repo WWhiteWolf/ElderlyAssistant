@@ -21,6 +21,7 @@ import {
     hourMinuteOf,
     loadReminderItems,
     saveReminderItems,
+    shadedDaysForItem,
     type LeadReminder,
     type ReminderItem,
     type ReminderKind,
@@ -94,6 +95,115 @@ function pathFor(returnTo: string | undefined): Href {
     }
 }
 
+function assembleFormItem(parts: {
+    existing: ReminderItem | null;
+    id: string;
+    name: string;
+    editKind: ReminderKind;
+    pendingDay: number;
+    pendingTime: Date | null;
+    pendingDate: Date;
+    dateSet: boolean;
+    timeSet: boolean;
+    reminders: LeadReminder[];
+    intervalMonths: number;
+    optionSettings: OptionSettings;
+    monthlyPattern: MonthlyPattern;
+    note: string;
+}): ReminderItem {
+    const base: ReminderItem = parts.existing ?? {
+        id: parts.id,
+        kind: parts.editKind,
+        label: parts.name,
+    };
+    let next: ReminderItem = { ...base, id: parts.id, kind: parts.editKind, label: parts.name };
+
+    if (parts.editKind === 'daily') {
+        next = {
+            ...next,
+            ...hourMinuteOf({
+                hour: parts.pendingTime ? parts.pendingTime.getHours() : null,
+                minute: parts.pendingTime ? parts.pendingTime.getMinutes() : null,
+            }),
+        };
+        delete next.year;
+        delete next.month;
+        delete next.day;
+        delete next.reminders;
+        delete next.intervalMonths;
+    } else if (parts.editKind === 'weekly') {
+        const t = parts.pendingTime ?? new Date(new Date().setHours(12, 0, 0, 0));
+        next = {
+            ...next,
+            day: parts.pendingDay,
+            hour: t.getHours(),
+            minute: t.getMinutes(),
+        };
+        delete next.year;
+        delete next.month;
+        delete next.reminders;
+        delete next.intervalMonths;
+    } else if (parts.editKind === 'monthly' || parts.editKind === 'quarterly' || parts.editKind === 'yearly') {
+        next = {
+            ...next,
+            hour: parts.pendingDate.getHours(),
+            minute: parts.pendingDate.getMinutes(),
+            ...(parts.editKind === 'quarterly' ? { intervalMonths: parts.intervalMonths } : {}),
+        };
+        if (parts.monthlyPattern === 'date') {
+            next.year = parts.pendingDate.getFullYear();
+            next.month = parts.pendingDate.getMonth();
+            next.day = parts.pendingDate.getDate();
+        }
+        delete next.reminders;
+    } else if (parts.editKind === 'oneTime') {
+        const when = parts.dateSet ? parts.pendingDate : new Date();
+        next = {
+            ...next,
+            ...(parts.dateSet ? { year: when.getFullYear(), month: when.getMonth(), day: when.getDate() } : {}),
+            ...hourMinuteOf({
+                hour: parts.timeSet ? parts.pendingDate.getHours() : null,
+                minute: parts.timeSet ? parts.pendingDate.getMinutes() : null,
+            }),
+            reminders: parts.reminders,
+        };
+        if (!parts.dateSet) {
+            delete next.year;
+            delete next.month;
+            delete next.day;
+        }
+        delete next.intervalMonths;
+    } else {
+        delete next.year;
+        delete next.month;
+        delete next.day;
+        delete next.hour;
+        delete next.minute;
+        delete next.reminders;
+        delete next.intervalMonths;
+    }
+
+    if (optionCasesForKind(parts.editKind).length > 0) {
+        next = keepOptionsForKind(
+            applyConnectedOptions(next, parts.optionSettings),
+            parts.editKind,
+        );
+        if (parts.editKind === 'monthly' || parts.editKind === 'quarterly' || parts.editKind === 'yearly') {
+            next = applyLastPatternToItem(next, parts.monthlyPattern);
+        }
+    } else {
+        next = keepOptionsForKind(
+            applyConnectedOptions(next, emptyOptionSettings()),
+            parts.editKind,
+        );
+    }
+
+    const trimmedNote = parts.note.trim();
+    if (trimmedNote) next.notes = trimmedNote;
+    else delete next.notes;
+    return next;
+}
+
 export default function ItemEditScreen() {
     const router = useRouter();
     const theme = useTheme();
@@ -133,7 +243,7 @@ export default function ItemEditScreen() {
     monthlyPatternRef.current = monthlyPattern;
     const noteRef = useRef(note);
     noteRef.current = note;
-    const kindOptions = optionCasesForKind(editKind);
+    const kindOptions = optionCasesForKind(editKind, page === 'daily');
     const applied = appliedOptionRows(optionSettings).filter((one) =>
         kindOptions.some((c) => c.id === one.id),
     );
@@ -275,99 +385,22 @@ export default function ItemEditScreen() {
         const list = await loadReminderItems();
         const id = editingId ?? writtenIdRef.current ?? Date.now().toString();
         writtenIdRef.current = id;
-        const base: ReminderItem = existing ?? {
+        const next = assembleFormItem({
+            existing,
             id,
-            kind: editKind,
-            label: name,
-        };
-        let next: ReminderItem = { ...base, id, kind: editKind, label: name };
-
-        if (editKind === 'daily') {
-            next = {
-                ...next,
-                ...hourMinuteOf({
-                    hour: pendingTime ? pendingTime.getHours() : null,
-                    minute: pendingTime ? pendingTime.getMinutes() : null,
-                }),
-            };
-            delete next.year;
-            delete next.month;
-            delete next.day;
-            delete next.reminders;
-            delete next.intervalMonths;
-        } else if (editKind === 'weekly') {
-            const t = pendingTime ?? new Date(new Date().setHours(12, 0, 0, 0));
-            next = {
-                ...next,
-                day: pendingDay,
-                hour: t.getHours(),
-                minute: t.getMinutes(),
-            };
-            delete next.year;
-            delete next.month;
-            delete next.reminders;
-            delete next.intervalMonths;
-        } else if (editKind === 'monthly' || editKind === 'quarterly' || editKind === 'yearly') {
-            const last = monthlyPatternRef.current;
-            next = {
-                ...next,
-                hour: pendingDate.getHours(),
-                minute: pendingDate.getMinutes(),
-                ...(editKind === 'quarterly' ? { intervalMonths } : {}),
-            };
-            if (last === 'date') {
-                next.year = pendingDate.getFullYear();
-                next.month = pendingDate.getMonth();
-                next.day = pendingDate.getDate();
-            }
-            delete next.reminders;
-        } else if (editKind === 'oneTime') {
-            const when = dateSet ? pendingDate : new Date();
-            next = {
-                ...next,
-                ...(dateSet ? { year: when.getFullYear(), month: when.getMonth(), day: when.getDate() } : {}),
-                ...hourMinuteOf({
-                    hour: timeSet ? pendingDate.getHours() : null,
-                    minute: timeSet ? pendingDate.getMinutes() : null,
-                }),
-                reminders,
-            };
-            if (!dateSet) {
-                delete next.year;
-                delete next.month;
-                delete next.day;
-            }
-            delete next.intervalMonths;
-        } else {
-            next = {
-                ...next,
-                ...hourMinuteOf({
-                    hour: timeSet && pendingTime ? pendingTime.getHours() : null,
-                    minute: timeSet && pendingTime ? pendingTime.getMinutes() : null,
-                }),
-            };
-            delete next.year;
-            delete next.month;
-            delete next.day;
-            delete next.reminders;
-            delete next.intervalMonths;
-        }
-
-        if (optionCasesForKind(editKind).length > 0) {
-            next = keepOptionsForKind(
-                applyConnectedOptions(next, optionSettingsRef.current),
-                editKind,
-            );
-            if (editKind === 'monthly' || editKind === 'quarterly' || editKind === 'yearly') {
-                next = applyLastPatternToItem(next, monthlyPatternRef.current);
-            }
-        } else if (editKind === 'daily') {
-            next = applyConnectedOptions(next, emptyOptionSettings());
-        }
-
-        const trimmedNote = noteRef.current.trim();
-        if (trimmedNote) next.notes = trimmedNote;
-        else delete next.notes;
+            name,
+            editKind,
+            pendingDay,
+            pendingTime,
+            pendingDate,
+            dateSet,
+            timeSet,
+            reminders,
+            intervalMonths,
+            optionSettings: optionSettingsRef.current,
+            monthlyPattern: monthlyPatternRef.current,
+            note: noteRef.current,
+        });
 
         const updated = list.some((one) => one.id === id)
             ? list.map((one) => (one.id === id ? next : one))
@@ -382,7 +415,7 @@ export default function ItemEditScreen() {
             Alert.alert('Missing Name', 'Please enter a name.');
             return;
         }
-        const timeKinds: ReminderKind[] = ['daily', 'weekly', 'extended'];
+        const timeKinds: ReminderKind[] = ['daily', 'weekly'];
         if (timeKinds.includes(editKind) && !pendingTimeValid) {
             Alert.alert('Check Date & Time', 'The typed date or time is not a real one. Fix the box outlined in red, then save.');
             return;
@@ -415,6 +448,26 @@ export default function ItemEditScreen() {
         : editKind === 'weekly' ? 'e.g. Trash, Laundry'
         : 'What needs to be done?';
 
+    const shadeWhen = new Date();
+    const shadedDays = optionSettings.shadeCalendar
+        ? shadedDaysForItem(assembleFormItem({
+            existing,
+            id: existing?.id ?? 'preview',
+            name: tempName.trim() || 'preview',
+            editKind,
+            pendingDay,
+            pendingTime,
+            pendingDate,
+            dateSet,
+            timeSet,
+            reminders,
+            intervalMonths,
+            optionSettings,
+            monthlyPattern,
+            note,
+        }), shadeWhen.getFullYear(), shadeWhen.getMonth())
+        : [];
+
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
             <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
@@ -423,7 +476,7 @@ export default function ItemEditScreen() {
                         <Text style={styles.headerBtnText}>Back</Text>
                     </TouchableOpacity>
                     <Text style={styles.title}>{editingId ? 'Edit' : 'New'}</Text>
-                    {kindOptions.length > 0 || editKind === 'daily' ? (
+                    {kindOptions.length > 0 ? (
                         <TouchableOpacity
                             onPress={() => {
                                 setOptionsStartId(null);
@@ -445,7 +498,7 @@ export default function ItemEditScreen() {
                         <Text style={styles.cancelBtnText}>Cancel</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.confirmBtn} onPress={save}>
-                        <Text style={styles.confirmBtnText}>Save</Text>
+                        <Text style={styles.confirmBtnText}>{editKind === 'extended' ? 'Done' : 'Save'}</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -483,19 +536,6 @@ export default function ItemEditScreen() {
                         optionalTime={editKind === 'daily'}
                         timeSet={editKind === 'weekly' ? true : pendingTime !== null}
                         onClearTime={() => setPendingTime(null)}
-                    />
-                )}
-
-                {editKind === 'extended' && (
-                    <DateTimeControl
-                        mode="time"
-                        value={pendingTime || new Date(new Date().setHours(12, 0, 0, 0))}
-                        onChange={(d) => { setPendingTime(d); setTimeSet(true); }}
-                        timeLabel="Time"
-                        onValidityChange={setPendingTimeValid}
-                        optionalTime
-                        timeSet={timeSet}
-                        onClearTime={() => { setPendingTime(null); setTimeSet(false); }}
                     />
                 )}
 
@@ -596,14 +636,10 @@ export default function ItemEditScreen() {
                     setMonthlyPattern(last);
                     setOptionSettings(withLastMonthlyPattern(next, last));
                 }}
-                shadeWeekday={editKind === 'weekly' ? pendingDay : pendingDate.getDay()}
+                shadedDays={shadedDays}
                 startId={optionsStartId}
-                warning={editKind === 'daily' ? 'None of these apply to Daily for now.' : undefined}
                 onClose={() => setShowOptions(false)}
-                onDone={() => {
-                    setShowOptions(false);
-                    if (tempName.trim()) void persist(false);
-                }}
+                onDone={() => setShowOptions(false)}
             />
         </KeyboardAvoidingView>
     );

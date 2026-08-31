@@ -6,7 +6,8 @@ import Bridge from '../components/Bridge';
 import AddWherePopup from '../components/AddWherePopup';
 import OptionCaseBody from '../components/OptionCaseBody';
 import { Theme, useTheme } from '../constants/Themes';
-import { emptyOptionSettings, OPTION_CASES, type OptionSettings } from '../modules/option-cases';
+import { emptyOptionSettings, OPTION_CASES, applyConnectedOptions, type OptionSettings } from '../modules/option-cases';
+import { shadedDaysForItem } from '../modules/reminder-items';
 
 export default function OptionsScreen() {
     const router = useRouter();
@@ -16,6 +17,21 @@ export default function OptionsScreen() {
     const [showWhere, setShowWhere] = useState(false);
     const [settings, setSettings] = useState<OptionSettings>(emptyOptionSettings);
     const openCase = OPTION_CASES.find((one) => one.id === openId) ?? null;
+    const shadeWhen = new Date();
+    const shadePreview = applyConnectedOptions(
+        {
+            id: 'preview',
+            kind: 'weekly',
+            label: 'preview',
+            day: shadeWhen.getDay(),
+            hour: 12,
+            minute: 0,
+        },
+        settings,
+    );
+    const shadedDays = settings.shadeCalendar
+        ? shadedDaysForItem(shadePreview, shadeWhen.getFullYear(), shadeWhen.getMonth())
+        : [];
 
     return (
         <View style={styles.container}>
@@ -53,7 +69,7 @@ export default function OptionsScreen() {
                         openCase={openCase}
                         settings={settings}
                         onChange={setSettings}
-                        shadeWeekday={new Date().getDay()}
+                        shadedDays={shadedDays}
                     />
                 </ScrollView>
             ) : (

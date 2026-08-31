@@ -10,6 +10,7 @@ import {
     lastEnteredMonthlyPattern,
     withLastMonthlyPattern,
     emptyOptionSettings,
+    optionCasesForKind,
 } from '../../modules/option-cases.ts';
 import { assert, assertSame, test } from './runner.ts';
 
@@ -290,6 +291,46 @@ export function runTranslatorCadenceTests(): void {
             (shaped as { shiftedChoice?: string }).shiftedChoice,
             undefined,
             'then or next day is an action on the shifted banner, not a recipe',
+        );
+    });
+
+    test('Extended has no Options cases', () => {
+        assertSame(
+            optionCasesForKind('extended').map((one) => one.id),
+            [],
+            'Extended is the name, an optional note, and Done',
+        );
+    });
+
+    test('An unknown kind does not get the Weekly Options set', () => {
+        assertSame(
+            optionCasesForKind('nope').map((one) => one.id),
+            [],
+            'every kind is named; nothing unknown inherits Weekly',
+        );
+    });
+
+    test('Daily has only time zone', () => {
+        assertSame(
+            optionCasesForKind('daily').map((one) => one.id),
+            ['timezone'],
+            'Daily New and Edit get only time zone',
+        );
+    });
+
+    test('One Time for today from Daily has only time zone', () => {
+        assertSame(
+            optionCasesForKind('oneTime', true).map((one) => one.id),
+            ['timezone'],
+            'Daily\'s One Time for today is time zone only',
+        );
+    });
+
+    test('One Time from its own page keeps holidays, time zone and shading', () => {
+        assertSame(
+            optionCasesForKind('oneTime').map((one) => one.id),
+            ['holidays', 'timezone', 'shading'],
+            'One Time on its own page keeps Weekly\'s three',
         );
     });
 }

@@ -57,11 +57,11 @@ file is added, retired or renamed, its line changes at the same refresh.
   automated reminder load, gathered at #38-new. The one-store cutover
   landed at #39-new. The five hardening points and time zone into the
   engine landed at #40-new. Holidays, monthly patterns, and extra tap
-  reached the engine at #41-new. The load still waits until the remaining
-  reminder features are connected, then puts ordinary test items through
-  the real save, engine and phone-queue path so the features can be
-  proved in one sitting. A later session builds from it; it does not
-  redesign it.
+  reached the engine at #41-new. Calendar shading, the Float row out,
+  Extended New and Edit, Cancel with no change, and Daily time zone
+  only landed at #42-new. The remaining connections of this stretch
+  are in. The load rules were restated at #42-new. A new session
+  writes the build sheet from this file; it does not redesign it.
 - **`spec-pages.md`** — the phase spec for the reminder pages, written
   at #32-new. Live for this phase. Job sheets for page work copy the
   answers they need from it.

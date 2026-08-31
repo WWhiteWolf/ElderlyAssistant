@@ -37,7 +37,8 @@ export interface ReminderItem {
     snoozedUntil?: number;
     // Options written from + OPT (#37-new). Time zone, holidays, a second
     // Thursday and a Wednesday after the 6th are read by the translator.
-    // Float and extra tap are not mapped yet.
+    // Extra tap is Then or Next Day on a shifted banner, not a field.
+    // Float is not a row; last existing day is always the engine's rule.
     holidayMove?: 'before' | 'after';
     floatsWithPhone?: boolean;
     dueTimeZoneText?: string;

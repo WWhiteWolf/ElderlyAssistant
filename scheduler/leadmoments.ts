@@ -100,6 +100,31 @@ export function baseMoment(item: ShapedItem, now: number): BaseMoment | null {
 }
 
 /**
+ * The days in this month that this item actually falls on.
+ *
+ * The page asks this so shading is a view of the same calculation that
+ * finds the next occurrence, including a last-existing day and a holiday
+ * move. It is not a scheduling instruction, and it does not guess from
+ * the weekday alone.
+ */
+export function shadedDaysInMonth(item: ShapedItem, year: number, month: number): number[] {
+    const last = new Date(year, month + 1, 0).getDate();
+    const days: number[] = [];
+    for (let day = 1; day <= last; day++) {
+        const before = new Date(year, month, day, 0, 0, 0, 0).getTime() - 1;
+        const found = baseMoment(item, before);
+        if (found === null) {
+            continue;
+        }
+        const when = new Date(found.moment);
+        if (when.getFullYear() === year && when.getMonth() === month && when.getDate() === day) {
+            days.push(day);
+        }
+    }
+    return days;
+}
+
+/**
  * One calendar block: if this occurrence falls on a US federal holiday,
  * move it one day before or after. A missing-day shift is left as it is.
  */
@@ -251,10 +276,15 @@ function nextMonthlyByWeekday(
     for (let n = 0; n < 48; n++) {
         const candidates: BaseMoment[] = [];
         for (const weekday of list) {
-            for (const day of daysMatching(year, month, weekday)) {
-                if (item.repeatAfterDayCount !== undefined && day <= item.repeatAfterDayCount) {
-                    continue;
+            let days = daysMatching(year, month, weekday);
+            if (item.repeatAfterDayCount !== undefined) {
+                // Only the first weekday after the numbered day is the occurrence.
+                days = days.filter((day) => day > item.repeatAfterDayCount);
+                if (days.length > 0) {
+                    days = [days[0]];
                 }
+            }
+            for (const day of days) {
                 candidates.push({
                     moment: calendar.at(year, month, day, item.dueHour, item.dueMinute),
                     shiftedForMissingDayBit: false,

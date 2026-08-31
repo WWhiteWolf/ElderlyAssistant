@@ -21,12 +21,12 @@ export default function OptionCaseBody({
     openCase,
     settings,
     onChange,
-    shadeWeekday,
+    shadedDays,
 }: {
     openCase: OptionCase;
     settings: OptionSettings;
     onChange: (next: OptionSettings) => void;
-    shadeWeekday: number;
+    shadedDays: number[];
 }) {
     const theme = useTheme();
     const styles = makeStyles(theme);
@@ -70,17 +70,6 @@ export default function OptionCaseBody({
                         )}
                     </>
                 )}
-                {openCase.id === 'float' && (
-                    <View style={styles.switchRow}>
-                        <Text style={styles.settingLabel}>Float around short month</Text>
-                        <Switch
-                            value={settings.floatDay}
-                            onValueChange={(floatDay) => set({ floatDay })}
-                            trackColor={{ false: theme.switchTrackOff, true: theme.switchTrackOn }}
-                            thumbColor={theme.switchThumb}
-                        />
-                    </View>
-                )}
                 {openCase.id === 'shifted' && (
                     <ChipRow
                         styles={styles}
@@ -103,7 +92,7 @@ export default function OptionCaseBody({
                                 thumbColor={theme.switchThumb}
                             />
                         </View>
-                        <ShadeMonth weekday={shadeWeekday} on={settings.shadeCalendar} styles={styles} />
+                        <ShadeMonth days={shadedDays} on={settings.shadeCalendar} styles={styles} />
                     </>
                 )}
                 {openCase.id === 'secondThursday' && (
@@ -183,11 +172,11 @@ function ChipRow<T extends string>({
 }
 
 function ShadeMonth({
-    weekday,
+    days,
     on,
     styles,
 }: {
-    weekday: number;
+    days: number[];
     on: boolean;
     styles: ReturnType<typeof makeStyles>;
 }) {
@@ -195,10 +184,10 @@ function ShadeMonth({
     const year = now.getFullYear();
     const month = now.getMonth();
     const startPad = new Date(year, month, 1).getDay();
-    const days = new Date(year, month + 1, 0).getDate();
+    const lastDay = new Date(year, month + 1, 0).getDate();
     const cells: (number | null)[] = [
         ...Array.from({ length: startPad }, () => null),
-        ...Array.from({ length: days }, (_, i) => i + 1),
+        ...Array.from({ length: lastDay }, (_, i) => i + 1),
     ];
     while (cells.length % 7 !== 0) cells.push(null);
     const rows: (number | null)[][] = [];
@@ -215,7 +204,7 @@ function ShadeMonth({
             {rows.map((row, r) => (
                 <View key={r} style={styles.calRow}>
                     {row.map((day, c) => {
-                        const shaded = on && day != null && new Date(year, month, day).getDay() === weekday;
+                        const shaded = on && day != null && days.includes(day);
                         return (
                             <View key={c} style={[styles.calCell, shaded && styles.calCellOn]}>
                                 <Text style={[styles.calDay, shaded && styles.calDayOn]}>{day ?? ''}</Text>

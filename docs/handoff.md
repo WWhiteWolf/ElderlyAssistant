@@ -16,7 +16,8 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
-**The live work is the rest of Options into the engine.** The five
+**The live work is the automated load.** The rest of Options into the
+engine is in. The five
 hardening points landed at #40-new. The one-store cutover is in. A
 session does not redesign the engine or make Patrick re-teach the
 pages.
@@ -25,7 +26,8 @@ pages.
 banners and Siri write `reminder_items` through one save, and the
 scheduler reads that list. Dual-write is gone. The old reader files
 stay until phone proof and are not called. **#36-new is committed**
-(Patrick, #37-new). **#40-new is committed** (Patrick, #41-new). Backup
+(Patrick, #37-new). **#40-new is committed** (Patrick, #41-new).
+**#41-new is committed** (Patrick, #42-new). Backup
 copies the new list. Logs are on Daily through Extended. **He is living
 with the #37-new build on the phone.** The cutover itself has not been
 loaded there yet.
@@ -33,40 +35,45 @@ loaded there yet.
 **Options connecting is in** (#37-new). The cases write onto the item.
 **The engine now reads a named time zone** (#40-new), **holidays**
 (#41-new), **a second Thursday and a Wednesday after the 6th**
-(#41-new), **and Then or Next Day on a shifted banner** (#41-new). An
+(#41-new), **Then or Next Day on a shifted banner** (#41-new), **and
+calendar shading from that same calendar calculation** (#42-new). An
 incomplete zone currently floats with the phone; leave that unless
 Patrick says otherwise (#41-new). **Skip is off Options**. **Note is a
 field on New and Edit.** **Weekly’s set** is holidays, time zone, and
-calendar shading. **Monthly, Quarterly, and Yearly** add an extra tap
+calendar shading. **Daily’s every-day item and One Time for today**
+get only time zone (#42-new). **Monthly, Quarterly, and Yearly** add an extra tap
 on a shifted day, a second Thursday, and a Wednesday after the 6th.
 **One Time** has the same three as Weekly.
 
 **The five Options answers** (Patrick, #41-new). Float off: the switch
 comes out; last existing day is always the engine’s rule; do not
-connect `floatDay`. Monthly patterns: both are not needed; the last of
+connect `floatDay`. **The Float row is out** (#42-new). Monthly patterns: both are not needed; the last of
 the three stays and clears the other two. A missing day and a holiday
 move cannot both apply. Extended is a list of items to be done
 sometime in the future, with no deadline, no due date, and no set
 time; it gets no banners; New and Edit have only the name, an optional
-note, and Done; the current shape needs to change. Cancel closes and
-makes no change, including after + OPT.
+note, and Done. **That shape is in** (#42-new). **Cancel closes and
+makes no change, including after + OPT** (#42-new).
 
-**Still to connect** (#41-new): calendar shading from the engine; take
-the Float row out; change Extended New and Edit; Cancel after + OPT
-closes with no change. Holidays use the US federal list, before or
-after. The 31st keeping through a short month is an automated-load
-case. That load waits until the remaining features are in. The AM/PM
-removal is **mitigated** by the 24-hour digit spinner (Patrick,
-#36-new).
+**Still to connect:** the remaining reminder features for this stretch
+are in. **The automated load is next** (Patrick, #42-new). Holidays use the US federal
+list, before or after. The 31st keeping through a short month is an
+automated-load case. The AM/PM removal is **mitigated** by the
+24-hour digit spinner (Patrick, #36-new).
 
 **The #38-new implementation record is in
-`docs/automated-test-load.md`.** Options still join the engine from that
-file. A second Thursday and a Wednesday after the 6th reach the
+`docs/automated-test-load.md`.** Patrick restated the load rules at
+#42-new: the phone load proves what the Mac tests cannot; four pieces
+only (scenario file, loader, checker, cleanup), removed together after
+the phone run; ceiling test kept apart at fifty-six. Options still join
+the engine from that file. A second Thursday and a Wednesday after the 6th reach the
 engine: a half-entered pair is not a valid recipe; if both weekday
 patterns are already on an old item, neither is used as a combination.
 Monthly, Quarterly, and Yearly Done no longer advances the saved date.
 Then keeps the last day that exists; Next Day pushes this occurrence
-one day; the saved choice is not a recipe.
+one day; the saved choice is not a recipe. **A weekday after a numbered
+day is the first occurrence after that day only** (Patrick, #42-new),
+not every later matching weekday in the month.
 
 **#39-new.** The live cutover is in. The Settings morning, midday and
 evening times stay; the new code uses them. Nothing live points at To-Do.
@@ -86,8 +93,7 @@ evening times stay; the new code uses them. Nothing live points at To-Do.
 - **Extended** — a list of items to be done sometime in the future,
   with no deadline, no due date, and no set time. It gets no banners.
   New and Edit have only the name, an optional note, and Done. It can
-  be edited like the others. The current shape needs to change to meet
-  this (Patrick, #41-new).
+  be edited like the others. **That shape is in** (#42-new).
 - **Options** — a list in the style of the iPhone’s notification-apps
   list, for the odd cases and what to do about them (Patrick, #32-new).
   Missing days follow the engine record: the last day that exists, with
@@ -97,9 +103,8 @@ evening times stay; the new code uses them. Nothing live points at To-Do.
   format, settled in `Reminder Engine/docs/reminder-engine.md`.
   **When you open it you see** holidays, time zone, an extra tap on a
   shifted day, calendar shading, a second Thursday, and a Wednesday
-  after the 6th. **Float around short month still shows as a row and
-  comes out** (Patrick, #41-new): last existing day is always the
-  engine’s rule. **Skip is not a
+  after the 6th. **Float around short month is not a row** (Patrick,
+  #42-new): last existing day is always the engine’s rule. **Skip is not a
   row** (Patrick, #37-new): it belongs on the banner and the page.
   **Note is not a row** (Patrick, #37-new): it is a field on New and Edit.
   **Float is only a missing date** (Patrick, #37-new), not a holiday —
@@ -118,7 +123,8 @@ Extended.
 day, and offers two kinds — an every-day item, or a One Time for today
 with Reminders before. **On One Time for today those chips are only**
 30 min., 1 hour, 2 hours, and Time of — Time of is the item's own time
-(Patrick, #33-new). Pets is just another every-day item on it. The
+(Patrick, #33-new). **+ OPT on those two Daily adds is only time zone**
+(#42-new). Pets is just another every-day item on it. The
 other cadence pages keep their own adds, because on those the page is the
 whole meaning of Repeat.
 
@@ -190,7 +196,7 @@ engine, holidays into the engine, a second Thursday and a Wednesday
 after the 6th, Then or Next Day on a shifted banner — **has not been proved on the phone** (Patrick, #37-new).
 
 **The tests run on the Mac in about a second**, headless under Node, with
-no build and no simulator. **447 of 447 pass:**
+no build and no simulator. **459 of 459 pass:**
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -300,7 +306,8 @@ branch in the housing cannot fire. Postponing still works from the page.
 Nothing is proposed about it.
 
 **Timer is not working right** (Patrick, #5-new), said in passing and not
-examined. It is deliberately outside the module. Two things noticed since
+examined. It is deliberately outside the module, and the whole Timer
+effort is parked as a different piece of work (Patrick, #42-new). Two things noticed since
 and not chased: its alerts carry only a timer id, no name and no record of
 when they fire; and the loud alarm meant to follow five minutes after the
 base alert is created only when two conditions are both true, one of them
@@ -322,9 +329,11 @@ saying the banner instruction once in the housing instead of on eight
 pages. The dropped-run item landed with the hardening points at
 #40-new.
 
-**Still to come, and untouched:** the two "What's Next" items left in
-`pending.txt` — Look Ahead's tile format and its Snooze changed or
-dropped, and the Timer tile's Stop (Pause) / Continue (Go) button and log.
+**Still to come, and untouched:** the automated load. A new session
+writes its build sheet. The old Look Ahead tile
+and Snooze item is not live work; that page is gone. **The Timer is a
+different effort** (Patrick, #42-new), parked in `pending.txt`, not
+this reminder stretch.
 **The Look Ahead banner-delay bug** sits in `pending.txt` under "Needs a
 phone test"; it was never separately confirmed, and the trial that would
 have confirmed it is the one that failed.

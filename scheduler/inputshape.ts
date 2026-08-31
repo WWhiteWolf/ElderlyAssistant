@@ -159,10 +159,10 @@ export interface ShapedItem {
      */
     repeatWeekdayList?: RepeatWeekday[];
     /**
-     * A floor on the day of the month, used with a weekday list.
+     * A numbered day of the month, used with a weekday list.
      *
-     * 6 means the date must be the 7th through the 13th. Left off means no
-     * floor.
+     * 6 means the first matching weekday after the 6th, and only that
+     * occurrence (Patrick, #42-new). Left off means no numbered day.
      */
     repeatAfterDayCount?: number;
     /**

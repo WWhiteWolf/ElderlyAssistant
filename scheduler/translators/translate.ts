@@ -797,8 +797,9 @@ export function translateReminderItems(items: ReminderItem[], now: number): Shap
  * rejected: the item keeps floating with the phone rather than silently
  * producing no reminder. Holidays are one code, absent when unused. A
  * complete second Thursday or Wednesday after the 6th becomes the engine's
- * weekday entry; a half-entered pair is left off. Float and shifted-day
- * preference are not mapped here.
+ * weekday entry; a half-entered pair is left off. A numbered-day
+ * weekday keeps only the first occurrence after that day. Shifted-day
+ * preference is not mapped here.
  */
 function withSavedOptions(saved: ReminderItem, shaped: ShapedItem): ShapedItem {
     let out = shaped;

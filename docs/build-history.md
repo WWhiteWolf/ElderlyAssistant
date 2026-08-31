@@ -3071,6 +3071,52 @@ of this build. The engine was not redesigned.
 **447 of 447 Mac tests pass.**
 
 
+## #42-new (2026-08-30): the rest of Options into the engine
+
+**The four remaining Options pieces landed**, then Daily's own adds
+were given only time zone.
+
+**Calendar shading asks the engine.** The page expands a visible month
+from the same calendar calculation that finds the next occurrence. A
+last existing day and a holiday move show on the month. The old
+weekday sample is gone.
+
+**A weekday after a numbered day is the first occurrence after that
+day only.** Later matching weekdays in the same month stay clear. Once
+that day has gone, the next reminder is the next month's first after
+the numbered day.
+
+**The Float row is out.** Last existing day stays the engine's rule.
+`floatDay` is not connected.
+
+**Extended New and Edit** have only the name, an optional note, and
+Done. Time and + OPT are gone.
+
+**Cancel closes with no change**, including after + OPT. Done inside
++ OPT keeps the Options values on the form and does not save the item.
+
+**Daily's every-day item and One Time for today get only time zone.**
+The old warning that none of the Options applied is gone. One Time on
+its own page still has holidays, time zone, and shading.
+
+**The Timer is a different effort**, parked, not this reminder stretch.
+
+**Look Ahead the page is gone.** The old tile-and-Snooze line is not
+live work.
+
+**The automated load is next.** He restated the load rules into
+`docs/automated-test-load.md`: the phone load proves what the Mac tests
+cannot; four pieces only, removed together after the phone run; ceiling
+kept apart at fifty-six. The build sheet waits for a new session.
+
+**What this session did not do.** No phone load of this build. The load
+itself was not built. The engine was not redesigned. `pending.docx` was
+not regenerated.
+
+**459 of 459 Mac tests pass.** He saw the Options work on the simulator
+and said it was all there.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

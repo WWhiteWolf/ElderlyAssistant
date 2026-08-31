@@ -3,7 +3,7 @@ import * as AppGroup from './app-group';
 import { runScheduler } from '../scheduler/scheduler';
 import { warnIfFull } from '../scheduler/warn';
 import { translateReminderItems } from '../scheduler/translators/translate';
-import { baseMoment } from '../scheduler/leadmoments';
+import { baseMoment, shadedDaysInMonth } from '../scheduler/leadmoments';
 import type { ReminderItem, ReminderKind } from './reminder-types';
 
 export type { LeadReminder, ReminderItem, ReminderKind } from './reminder-types';
@@ -104,6 +104,13 @@ export function shownOnDaily(item: ReminderItem) {
             && when.getDate() === now.getDate();
     }
     return false;
+}
+
+/** The days this item falls on in the month, from the engine's own calendar. */
+export function shadedDaysForItem(item: ReminderItem, year: number, month: number): number[] {
+    const shaped = translateReminderItems([item], Date.now())[0];
+    if (!shaped) return [];
+    return shadedDaysInMonth(shaped, year, month);
 }
 
 const DAILY_KIND_RANK: Record<ReminderKind, number> = {
