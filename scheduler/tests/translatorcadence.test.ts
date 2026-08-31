@@ -103,4 +103,35 @@ export function runTranslatorCadenceTests(): void {
         const shaped = shapeOf(item({ kind: 'daily', hour: 8, minute: 0, completed: true }));
         assert(shaped.isDoneBit, 'the tick comes across so still-wanted can judge it');
     });
+
+    test('A named time zone reaches the common shape as a complete pair', () => {
+        const shaped = shapeOf(item({
+            kind: 'weekly',
+            day: 2,
+            hour: 18,
+            minute: 0,
+            floatsWithPhone: false,
+            dueTimeZoneText: 'America/New_York',
+        }));
+        assertSame(
+            [shaped.floatsWithPhoneBit, shaped.dueTimeZoneText],
+            [false, 'America/New_York'],
+            'the engine already knows how to fire in that zone',
+        );
+    });
+
+    test('An incomplete named zone is rejected rather than silently making no reminder', () => {
+        const shaped = shapeOf(item({
+            kind: 'weekly',
+            day: 2,
+            hour: 18,
+            minute: 0,
+            floatsWithPhone: false,
+        }));
+        assertSame(
+            [shaped.floatsWithPhoneBit, shaped.dueTimeZoneText],
+            [true, undefined],
+            'the pair is incomplete, so the item keeps floating with the phone',
+        );
+    });
 }

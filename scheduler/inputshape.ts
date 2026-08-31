@@ -201,9 +201,8 @@ export interface ShapedItem {
     /**
      * The due clock time floats with the phone's local zone.
      *
-     * The translator sets this true on every row. A later button in the app
-     * will write it false and name a zone. Left true, ordinary local Date
-     * arithmetic is used, as it was in step 1.
+     * True when the item has no named zone. False when Options named one, and
+     * then `dueTimeZoneText` is required: the engine will not guess a zone.
      */
     floatsWithPhoneBit: boolean;
     /**

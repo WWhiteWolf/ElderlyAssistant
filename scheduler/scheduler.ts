@@ -13,7 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { SchedulableTriggerInputTypes } from 'expo-notifications';
 
-import { reconcile } from './reconcile.ts';
+import { reconcile, unreadSourcesFor } from './reconcile.ts';
 import type { Plan, QueueEntry } from './reconcile.ts';
 import { isNewDay, resetForNewDay } from './dailyreset.ts';
 import { resetForNewCycle } from './weeklyreset.ts';
@@ -29,6 +29,8 @@ import type { ClockTimes, TimeOfDay } from './leadmoments.ts';
 import { readMemoryTest } from './readers/memorytest.ts';
 import type { MemoryTestSession } from './readers/memorytest.ts';
 import type { ReminderItem } from '../modules/reminder-types.ts';
+import { applyOpsFor } from './apply.ts';
+import { beginRun, consumePending, endRun } from './rungate.ts';
 
 /**
  * The screens the scheduler answers for.
@@ -267,9 +269,9 @@ export async function sweepStaleBanners(): Promise<RunFault[]> {
  *
  * A key that has never been written is not a fault — that is simply a screen
  * with nothing on it yet. A key holding something that cannot be read is, and
- * it is the worst kind: the list is treated as empty, so that screen's
- * reminders are worked out as none and the ones already on the phone are then
- * taken off as leftovers. Reminders would disappear and nothing would be said.
+ * it is the worst kind: the list is unknown, not empty. Held reminders from
+ * that source stay on the phone, the fault is reported, and the next run
+ * tries again.
  */
 async function readList<T>(key: string): Promise<{ items: T[]; failed: boolean }> {
     try {
@@ -309,35 +311,46 @@ async function readClockTimes(): Promise<ClockTimes> {
  * to the translator — which is what keeps the translator plain enough to test.
  *
  * It answers with the reminders and with a fault if the list could not be
- * read. A list that fails here is the loud fault: reminders come out as none.
+ * read. A list that fails here is unknown, not empty: its held reminders
+ * stay on the phone.
  */
 export async function gatherWanted(
     now: number,
-): Promise<{ wanted: WantedReminder[]; faults: RunFault[] }> {
+): Promise<{ wanted: WantedReminder[]; faults: RunFault[]; unreadSources: string[] }> {
     const [saved, times] = await Promise.all([
         readList<ReminderItem>('reminder_items'),
         readClockTimes(),
     ]);
 
     const faults: RunFault[] = [];
-    if (saved.failed) faults.push({ kind: 'list', listKey: 'reminder_items' });
+    const failedKeys: string[] = [];
+    if (saved.failed) {
+        faults.push({ kind: 'list', listKey: 'reminder_items' });
+        failedKeys.push('reminder_items');
+    }
 
     // The memory test saves one session rather than a list.
     let session: MemoryTestSession | null = null;
+    let memtestFailed = false;
     try {
         const raw = await AsyncStorage.getItem('memtest_session');
         if (raw) session = JSON.parse(raw) as MemoryTestSession;
     } catch {
         session = null;
+        memtestFailed = true;
         faults.push({ kind: 'list', listKey: 'memtest_session' });
+        failedKeys.push('memtest_session');
     }
 
+    const fromList = saved.failed
+        ? []
+        : remindersFor(translateReminderItems(saved.items, now), now, times);
+    const fromMemtest = memtestFailed ? [] : readMemoryTest(session, now);
+
     return {
-        wanted: [
-            ...remindersFor(translateReminderItems(saved.items, now), now, times),
-            ...readMemoryTest(session, now),
-        ],
+        wanted: [...fromList, ...fromMemtest],
         faults,
+        unreadSources: unreadSourcesFor(failedKeys),
     };
 }
 
@@ -360,9 +373,6 @@ export async function readQueue(): Promise<QueueEntry[]> {
             source: typeof data.source === 'string' ? data.source : undefined,
             trigger: (data.fires as WantedTrigger | undefined) ?? null,
 
-            // The reconcile has no use for any of this. It is carried so the
-            // Scheduled Reminders screen can say what a reminder is and what it
-            // will show, without asking the phone a second time (#12-new).
             label: typeof data.label === 'string' ? data.label : undefined,
             itemId: typeof data.itemId === 'string' ? data.itemId : undefined,
             title: request.content.title ?? undefined,
@@ -396,7 +406,10 @@ function triggerInput(trigger: WantedTrigger): Notifications.NotificationTrigger
 }
 
 /**
- * Cancel what the plan says to cancel, then create what it says to create.
+ * Cancel what the plan says to cancel, and create what it says to create.
+ *
+ * A replacement is created first. The old request is cancelled only after
+ * that succeeds. If creation fails, the old reminder remains.
  *
  * It answers with what it managed. One reminder failing must still not stop the
  * rest — but a reminder that could not be created simply does not exist, and
@@ -409,41 +422,50 @@ export async function applyPlan(
     let created = 0;
     let failedToCreate = 0;
 
-    for (const identifier of plan.cancel) {
-        try {
-            await Notifications.cancelScheduledNotificationAsync(identifier);
-            cancelled++;
-        } catch {
-            // A reminder that has already fired or gone is nothing to worry
-            // about; the next run will see the truth either way.
-        }
-    }
-
-    for (const reminder of plan.create) {
-        try {
-            await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: reminder.title,
-                    body: reminder.body,
-                    // `key` and `fires` are the scheduler's own; the rest is
-                    // what the screens have always carried, so a tapped banner
-                    // still routes and still knows its item.
-                    data: {
-                        key: reminder.key,
-                        fires: reminder.trigger,
-                        source: reminder.source,
-                        itemId: reminder.itemId,
-                        label: reminder.label,
+    for (const op of applyOpsFor(plan)) {
+        if (op.kind === 'create') {
+            try {
+                const reminder = op.reminder;
+                await Notifications.scheduleNotificationAsync({
+                    content: {
+                        title: reminder.title,
+                        body: reminder.body,
+                        // `key` and `fires` are the scheduler's own; the rest is
+                        // what the screens have always carried, so a tapped banner
+                        // still routes and still knows its item.
+                        data: {
+                            key: reminder.key,
+                            fires: reminder.trigger,
+                            source: reminder.source,
+                            itemId: reminder.itemId,
+                            label: reminder.label,
+                        },
+                        ...(reminder.categoryIdentifier ? { categoryIdentifier: reminder.categoryIdentifier } : {}),
+                        sound: 'default',
                     },
-                    ...(reminder.categoryIdentifier ? { categoryIdentifier: reminder.categoryIdentifier } : {}),
-                    sound: 'default',
-                },
-                trigger: triggerInput(reminder.trigger),
-            });
-            created++;
-        } catch {
-            // One reminder failing must not stop the rest.
-            failedToCreate++;
+                    trigger: triggerInput(reminder.trigger),
+                });
+                created++;
+                if (op.thenCancel !== undefined) {
+                    try {
+                        await Notifications.cancelScheduledNotificationAsync(op.thenCancel);
+                        cancelled++;
+                    } catch {
+                        // A reminder that has already fired or gone is nothing to
+                        // worry about; the next run will see the truth either way.
+                    }
+                }
+            } catch {
+                failedToCreate++;
+            }
+        } else {
+            try {
+                await Notifications.cancelScheduledNotificationAsync(op.identifier);
+                cancelled++;
+            } catch {
+                // A reminder that has already fired or gone is nothing to worry
+                // about; the next run will see the truth either way.
+            }
         }
     }
 
@@ -479,9 +501,9 @@ async function recordRun(record: RunRecord): Promise<void> {
 }
 
 // Two runs at once — one from the launch and one from the app coming to the
-// front — would each read the queue before the other had changed it. So a run
-// already under way is simply let finish.
-let running = false;
+// front — would each read the queue before the other had changed it. A request
+// during a run is queued, and when the current run finishes the scheduler
+// runs once more against the latest saved truth.
 
 /**
  * Bring the phone's reminders into line with what is saved.
@@ -494,12 +516,23 @@ let running = false;
  * null when it did nothing at all.
  *
  * Every run also writes down how it went, so a failure is no longer invisible.
- * A run that was skipped writes nothing: it is the module protecting itself
- * rather than a failure, and the run already going will write for both.
+ * A run that was skipped because another is already going writes nothing: the
+ * queued rerun will write for both.
  */
 export async function runScheduler(): Promise<Plan | null> {
-    if (running) return null;
-    running = true;
+    if (!beginRun()) return null;
+    try {
+        let last: Plan | null = null;
+        do {
+            last = await runOnce();
+        } while (consumePending());
+        return last;
+    } finally {
+        endRun();
+    }
+}
+
+async function runOnce(): Promise<Plan | null> {
     try {
         const permission = await Notifications.getPermissionsAsync();
         if (!permission.granted) {
@@ -527,7 +560,7 @@ export async function runScheduler(): Promise<Plan | null> {
         faults.push(...gathered.faults);
 
         const queue = await readQueue();
-        const plan = reconcile(gathered.wanted, queue, OWNED_SOURCES, now);
+        const plan = reconcile(gathered.wanted, queue, OWNED_SOURCES, now, gathered.unreadSources);
         const applied = await applyPlan(plan);
         if (applied.failedToCreate > 0) {
             faults.push({ kind: 'create', count: applied.failedToCreate });
@@ -550,7 +583,5 @@ export async function runScheduler(): Promise<Plan | null> {
             kept: 0,
         });
         return null;
-    } finally {
-        running = false;
     }
 }

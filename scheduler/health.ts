@@ -40,9 +40,8 @@ export type RunFault =
     | { kind: 'permission' }
     // Some reminders could not be put onto the phone. They do not exist.
     | { kind: 'create'; count: number }
-    // A saved list could not be read, so it was treated as empty — which means
-    // that screen's reminders were worked out as none, and the ones already on
-    // the phone were then taken off as leftovers.
+    // A saved list could not be read. Held reminders from that source are
+    // left on the phone, the fault is reported, and the next run tries again.
     | { kind: 'list'; listKey: string }
     // The run stopped part-way on something unexpected.
     | { kind: 'stopped' }
@@ -170,8 +169,9 @@ export function faultSentence(fault: RunFault): string {
                 + 'there and will not arrive.';
     }
     if (fault.kind === 'list') {
-        return `The app could not read your ${screenName(fault.listKey)} list, so none `
-            + 'of its reminders were set.';
+        return `The app could not read your ${screenName(fault.listKey)} list, so the `
+            + 'reminders already on the phone were left as they are. It will try again '
+            + 'next time.';
     }
     if (fault.kind === 'stopped') {
         return 'The app could not finish setting up your reminders. Some of them may '

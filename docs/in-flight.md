@@ -4,7 +4,7 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-08-30, at the close of #39-new.
+Last written: 2026-08-30, at the close of #40-new.
 
 ## Read this first
 
@@ -18,18 +18,17 @@ Last written: 2026-08-30, at the close of #39-new.
 
 ## What is in
 
-**The live one-store cutover is in.** Pages, banners and Siri write
-`reminder_items`. The scheduler reads it. Dual-write is gone. Old
-reader files stay until phone proof and are not called. **420 of 420**
-Mac tests pass. He is living with the #37-new build on the phone; this
-cutover is not on it yet.
+**The five hardening points are in**, and **the engine reads a named
+time zone.** 433 of 433 Mac tests pass. He is living with the #37-new
+build on the phone; the cutover, the hardening, and time zone are not
+on it yet.
 
 ## What is next
 
-**Options into the engine**, after the open decisions (Float off, monthly
-patterns, holiday and missing-day order, Extended's set, + OPT
-Cancel). Then the five remaining hardening points. Phone later. The
-automated load waits until the remaining features are in.
+**The rest of Options into the engine**, after the open decisions
+(Float off, monthly patterns, holiday and missing-day order,
+Extended's set, + OPT Cancel). Phone later. The automated load waits
+until the remaining features are in.
 
 ## Do not reopen
 
@@ -38,4 +37,5 @@ page data. Missing days as skip. Daily with no buttons. Overlay arrows
 on Daily. The My Day page. Morning of / Day Before chips on Daily's
 One Time for today. Project Planner, Orders, and Watch List on Home.
 Float as next day — it uses last day that exists. Note as an Options
-case.
+case. Redesigning the engine. The old-store test. The five hardening
+points.

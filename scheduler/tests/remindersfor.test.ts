@@ -6,6 +6,7 @@
 
 import { translateMyDay, translatePets, translateMyWeek, translateLookAhead, translateToDo } from '../translators/translate.ts';
 import { remindersFor } from '../remindersfor.ts';
+import { isStillWanted } from '../stillwanted.ts';
 import type { ClockTimes } from '../leadmoments.ts';
 import type { ShapedItem } from '../inputshape.ts';
 import type { MyDayItem } from '../readers/myday.ts';
@@ -594,6 +595,44 @@ export function runRemindersForTests(): void {
             wanted.filter((r) => r.source === 'myweek').length,
             0,
             'done keeps the weekly path that arms nothing further',
+        );
+    });
+
+    test('Changing Skip’s explanation cannot change what Skip does', () => {
+        // remindersFor reads skippedThisCycleBit. The skip tests above still
+        // arm the next Tuesday if becauseText is rewritten; this one holds the
+        // same fact by asking the bit on a skip that already proved the date.
+        const tuesday = new Date(2026, 5, 2, 18, 0, 0, 0).getTime();
+        const monday = new Date(2026, 5, 1, 9, 0, 0, 0).getTime();
+        const wanted = remindersFor(
+            [shaped({
+                sourceScreenCode: 'myweek',
+                itemIdText: 'c1',
+                itemNameText: 'Take the bins out',
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 2 }],
+                dueHour: 18,
+                dueMinute: 0,
+                skippedCycleStamp: tuesday,
+            })],
+            monday,
+            CLOCK,
+        );
+        const said = isStillWanted(shaped({
+            sourceScreenCode: 'myweek',
+            itemIdText: 'c1',
+            itemNameText: 'Take the bins out',
+            repeatUnitCode: 'week',
+            repeatWeekdayList: [{ weekdayNumber: 2 }],
+            dueHour: 18,
+            dueMinute: 0,
+            skippedCycleStamp: tuesday,
+        }), monday);
+        assert(said.skippedThisCycleBit, 'the bit is what the join reads');
+        assertSame(
+            readable((wanted.filter((r) => r.source === 'myweek')[0].trigger as { at: number }).at),
+            '2026-6-9 18:00',
+            'the next event is armed from the bit, not from the sentence',
         );
     });
 }

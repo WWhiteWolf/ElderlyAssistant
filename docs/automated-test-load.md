@@ -101,9 +101,11 @@ not have to compare a long list by eye.
 The #38-new Options trace followed every control through
 `reminder_items`, the translator, the common shape and the
 phone queue. This is the implementation record for connecting them.
-The present Options controls save fields on `reminder_items`. None of
-those fields reaches the live engine yet: the one-store cutover landed
-at #39-new, and the translator does not yet map the Option fields.
+The present Options controls save fields on `reminder_items`. Time zone
+reaches the live engine (#40-new). The other Option fields do not: the
+translator maps a named zone as a complete pair, and leaves holidays,
+Float, the extra tap, a second Thursday, and a Wednesday after the 6th
+unmapped until the open decisions are settled.
 
 ### One boundary
 
@@ -257,61 +259,42 @@ queue would make every other result harder to read.
 The second reading at #38-new found six places to strengthen before
 the automated load is the final proof. They do not change the engine's
 shape. Each closes a way the right design could still fail at an edge.
+Points one through five landed at #40-new. Point six landed at #39-new.
 
 ### One: a decision never travels as prose
 
-`remindersfor.ts` currently recognizes a skipped cycle by comparing the
-exact sentence in `becauseText`. `StillWantedAnswer` must carry an
-explicit reason code or bit for that decision. `becauseText` remains an
-explanation for a person and never controls behaviour.
-
-The test proves that changing the explanation cannot change what Skip
-does.
+This point landed at #40-new. `StillWantedAnswer` carries
+`skippedThisCycleBit`. `becauseText` remains an explanation for a
+person and never controls behaviour. Changing the explanation cannot
+change what Skip does.
 
 ### Two: an unread source is unknown, not empty
 
-Today a saved list that cannot be read becomes an empty list. The
-reconcile can then cancel good reminders from that source. A read
-failure must leave that source's existing phone requests untouched,
-report the fault, and try again on the next run. It must not claim that
-no items exist.
-
-The test hands the scheduler an unreadable source with a good reminder
-already queued and proves that reminder is kept.
+This point landed at #40-new. A read failure leaves that source's
+existing phone requests untouched, reports the fault, and tries again
+on the next run. It does not claim that no items exist.
 
 ### Three: a run requested during a run is not discarded
 
-Today `runScheduler` returns when another run is in progress. A save or
-banner action made after the first run read storage can therefore be
-left unapplied. A request during a run sets a pending flag. When the
-current run finishes, the scheduler runs once more against the latest
-saved truth.
-
-The test makes a second change during a run and proves the final queue
-contains that change. Many requests may collapse into one final rerun.
+This point landed at #40-new. A request during a run sets a pending
+flag. When the current run finishes, the scheduler runs once more
+against the latest saved truth. Many requests collapse into one final
+rerun.
 
 ### Four: keeping a reminder includes its contents
 
-The reconcile currently keeps a request when its key and firing time
-match. It must also compare the source, item, visible name, heading,
-sentence and button set. A renamed item or changed button set at the
-same time must replace the stale banner.
-
-The test changes only the visible words and then only the buttons,
-proving both changes reach the queued request.
+This point landed at #40-new. The reconcile compares the source, item,
+visible name, heading, sentence and button set as well as key and
+firing time. A renamed item or changed button set at the same time
+replaces the stale banner.
 
 ### Five: secure a replacement before removing the old one
 
-For a changed reminder, the current apply step cancels the old request
-before creating the replacement. Where the queue has room, the new
-request is created first and the old one is cancelled only after that
-succeeds. If creation fails, the old reminder remains and the fault is
-reported. A request that is simply no longer wanted is still cancelled
-normally.
-
-The test makes replacement creation fail and proves the old reminder
-is not lost. The scheduler's reserved room is kept available for this
-purpose.
+This point landed at #40-new. For a changed reminder, the new request
+is created first and the old one is cancelled only after that succeeds.
+If creation fails, the old reminder remains and the fault is reported.
+A request that is simply no longer wanted is still cancelled normally.
+The scheduler's reserved room is kept available for this purpose.
 
 ### Six: every returning road writes the one truth
 

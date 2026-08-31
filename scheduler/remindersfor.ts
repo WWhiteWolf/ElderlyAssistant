@@ -44,7 +44,7 @@ export function remindersFor(
             wanted.push(pushBackReminder(item, answer.pushedBackToMoment));
         }
 
-        const skippedThisCycle = answer.becauseText === 'this cycle was skipped, the next event stands';
+        const skippedThisCycle = answer.skippedThisCycleBit;
 
         // A weekly item that is done arms nothing further. Skip must not take
         // that path: it arms the next event on this run.

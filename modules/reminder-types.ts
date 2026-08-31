@@ -35,9 +35,8 @@ export interface ReminderItem {
     completed?: boolean;
     doneAt?: number;
     snoozedUntil?: number;
-    // Options written from + OPT (#37-new). The engine does not read these
-    // yet. Left off means the default: no holiday move, float with the phone,
-    // no shading. Notes is a field on New and Edit, not an Options case.
+    // Options written from + OPT (#37-new). Time zone is read by the
+    // translator. The other fields wait on open questions.
     holidayMove?: 'before' | 'after';
     floatsWithPhone?: boolean;
     dueTimeZoneText?: string;

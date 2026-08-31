@@ -125,9 +125,22 @@ export function runStillWantedTests(): void {
             skippedCycleStamp: at(2026, 5, 1, 18, 0),
         }), NOW);
         assertSame(
-            [said.wantsRemindersBit, said.dropsThisOccurrenceBit, said.pushedBackToMoment, said.becauseText],
-            [true, true, null, 'this cycle was skipped, the next event stands'],
+            [said.wantsRemindersBit, said.dropsThisOccurrenceBit, said.pushedBackToMoment, said.skippedThisCycleBit, said.becauseText],
+            [true, true, null, true, 'this cycle was skipped, the next event stands'],
             'skip is this cycle, then the next event is armed; it is not done',
+        );
+    });
+
+    test('Skip is named by its bit, not by the explanation', () => {
+        const skipped = isStillWanted(item({
+            skippedCycleStamp: at(2026, 5, 1, 18, 0),
+        }), NOW);
+        const done = isStillWanted(item({ isDoneBit: true }), NOW);
+        assert(skipped.skippedThisCycleBit, 'later blocks read this bit');
+        assert(!done.skippedThisCycleBit, 'done also drops this occurrence, and is not skip');
+        assert(
+            done.dropsThisOccurrenceBit && skipped.dropsThisOccurrenceBit,
+            'the drop bit is shared, so it cannot tell skip from done',
         );
     });
 

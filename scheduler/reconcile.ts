@@ -23,10 +23,10 @@ export interface QueueEntry {
     // When it fires. Null when it could not be read.
     trigger: WantedTrigger | null;
 
-    // Everything below is for the Scheduled Reminders screen to show and the
-    // reconcile never looks at any of it (#12-new). It is carried here rather
-    // than read a second time so the phone's queue is only ever asked once.
-    //
+    // Everything below used to be only for the Scheduled Reminders screen.
+    // The reconcile now compares name, heading, sentence and buttons as well
+    // as key and time, so a renamed item replaces the stale banner.
+
     // The item's own name, and which item on its page.
     label?: string;
     itemId?: string;
@@ -39,10 +39,13 @@ export interface QueueEntry {
 
 /** What the reconcile decided. */
 export interface Plan {
-    // Phone names to cancel.
+    // Phone names to cancel. These are gone, not being replaced.
     cancel: string[];
-    // Reminders to create.
+    // Reminders to create. These are new, not replacements.
     create: WantedReminder[];
+    // A held reminder whose contents or time changed. Create the new one
+    // first; cancel the old identifier only after that succeeds.
+    replace: { identifier: string; reminder: WantedReminder }[];
     // How many were already right and were left untouched.
     keep: number;
     // Wanted reminders that did not fit under the ceiling. The furthest away.
@@ -57,8 +60,39 @@ export interface Plan {
 export const CEILING = 64;
 
 // Room left free for the reminders the scheduler does not own — a running
-// Timer sets three of its own, and a few spare on top of that.
+// Timer sets three of its own, and a few spare on top of that. The spare is
+// also what lets a replacement be created before the old one is cancelled.
 export const ROOM_FOR_OTHERS = 8;
+
+/**
+ * Sources that come from the one saved reminder list.
+ *
+ * When that list cannot be read, held reminders from these sources stay
+ * on the phone. They are unknown, not empty.
+ */
+export const REMINDER_ITEM_SOURCES = [
+    'myday',
+    'mydaysnooze',
+    'pets',
+    'petssnooze',
+    'myweek',
+    'myweekpostpone',
+    'lookahead',
+    'lookaheaddelay',
+    'todo',
+];
+
+/** Sources whose held reminders must be left untouched after a failed read. */
+export function unreadSourcesFor(failedListKeys: string[]): string[] {
+    const unread: string[] = [];
+    if (failedListKeys.includes('reminder_items')) {
+        unread.push(...REMINDER_ITEM_SOURCES);
+    }
+    if (failedListKeys.includes('memtest_session')) {
+        unread.push('memorytest');
+    }
+    return unread;
+}
 
 /**
  * When a reminder will next fire, counting from `now`.
@@ -101,6 +135,7 @@ export function reconcile(
     queue: QueueEntry[],
     ownedSources: string[],
     now: number,
+    unreadSources: string[] = [],
 ): Plan {
     const owned = queue.filter((entry) => entry.source != null && ownedSources.includes(entry.source));
     const others = queue.length - owned.length;
@@ -115,7 +150,13 @@ export function reconcile(
     // turns up twice keeps the first and the rest are cancelled below.
     const held = new Map<string, QueueEntry>();
     const spare: QueueEntry[] = [];
+    let preserved = 0;
     for (const entry of owned) {
+        if (entry.source != null && unreadSources.includes(entry.source)) {
+            // Unknown, not empty: leave this source's requests where they are.
+            preserved++;
+            continue;
+        }
         if (!entry.key) {
             // One of ours by screen, but with no name — left over from the old
             // way of scheduling. It goes.
@@ -128,11 +169,17 @@ export function reconcile(
     }
 
     const create: WantedReminder[] = [];
+    const replace: { identifier: string; reminder: WantedReminder }[] = [];
     const kept = new Set<string>();
+    const accounted = new Set<string>();
     for (const reminder of fits) {
         const already = held.get(reminder.key);
-        if (already && already.trigger && sameTrigger(already.trigger, reminder.trigger)) {
+        if (already && sameHeld(already, reminder)) {
             kept.add(reminder.key);
+            accounted.add(reminder.key);
+        } else if (already) {
+            replace.push({ identifier: already.identifier, reminder });
+            accounted.add(reminder.key);
         } else {
             create.push(reminder);
         }
@@ -140,8 +187,29 @@ export function reconcile(
 
     const cancel: string[] = spare.map((entry) => entry.identifier);
     for (const [key, entry] of held) {
-        if (!kept.has(key)) cancel.push(entry.identifier);
+        if (!accounted.has(key)) cancel.push(entry.identifier);
     }
 
-    return { cancel, create, keep: kept.size, trimmed, others };
+    return {
+        cancel,
+        create,
+        replace,
+        keep: kept.size + preserved,
+        trimmed,
+        others,
+    };
+}
+
+/** True when the held request is already the wanted reminder, contents included. */
+function sameHeld(already: QueueEntry, reminder: WantedReminder): boolean {
+    if (!already.trigger || !sameTrigger(already.trigger, reminder.trigger)) return false;
+    if (already.source !== reminder.source) return false;
+    if (already.itemId !== reminder.itemId) return false;
+    if (already.label !== reminder.label) return false;
+    if (already.title !== reminder.title) return false;
+    if (already.body !== reminder.body) return false;
+    if ((already.categoryIdentifier ?? undefined) !== (reminder.categoryIdentifier ?? undefined)) {
+        return false;
+    }
+    return true;
 }

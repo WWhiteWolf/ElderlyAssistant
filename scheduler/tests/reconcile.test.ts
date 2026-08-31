@@ -3,7 +3,7 @@
 // Each one hands it a wanted list and a pretended queue, and checks what it
 // decided.
 
-import { CEILING, ROOM_FOR_OTHERS, nextFireTime, reconcile } from '../reconcile.ts';
+import { CEILING, ROOM_FOR_OTHERS, nextFireTime, reconcile, unreadSourcesFor } from '../reconcile.ts';
 import type { QueueEntry } from '../reconcile.ts';
 import type { WantedReminder, WantedTrigger } from '../types.ts';
 import { assert, assertSame, test } from './runner.ts';
@@ -27,7 +27,17 @@ function want(key: string, trigger: WantedTrigger, source = 'myday'): WantedRemi
 }
 
 function held(identifier: string, key: string, trigger: WantedTrigger | null, source = 'myday'): QueueEntry {
-    return { identifier, key, source, trigger };
+    return {
+        identifier,
+        key,
+        source,
+        trigger,
+        itemId: key,
+        label: key,
+        title: 'Daily Routine',
+        body: `Time for ${key}!`,
+        categoryIdentifier: 'routineactions',
+    };
 }
 
 export function runReconcileTests(): void {
@@ -52,8 +62,10 @@ export function runReconcileTests(): void {
             OWNED,
             NOW,
         );
-        assertSame(plan.cancel, ['n1'], 'the old one should go');
-        assertSame(plan.create.map((r) => r.key), ['myday:a:base'], 'the new one should be created');
+        assertSame(plan.replace.map((one) => one.identifier), ['n1'], 'the old one is the replacement’s identifier');
+        assertSame(plan.replace.map((one) => one.reminder.key), ['myday:a:base'], 'the new one is created first');
+        assertSame(plan.cancel, [], 'it is not cancelled as a leftover');
+        assertSame(plan.create, [], 'it is not a fresh create');
     });
 
     test('A reminder the lists no longer call for is cancelled', () => {
@@ -186,12 +198,65 @@ export function runReconcileTests(): void {
             OWNED,
             NOW,
         );
-        assertSame(plan.cancel, ['n1'], 'if we cannot tell, we do not guess');
-        assertSame(plan.create.length, 1, 'it is made afresh');
+        assertSame(plan.replace.map((one) => one.identifier), ['n1'], 'if we cannot tell, we do not guess');
+        assertSame(plan.replace.length, 1, 'it is made afresh after the new one exists');
+        assertSame(plan.cancel, [], 'the old identifier waits on the create');
     });
 
     test('An empty phone and an empty list means nothing to do', () => {
         const plan = reconcile([], [], OWNED, NOW);
         assert(plan.cancel.length === 0 && plan.create.length === 0, 'expected nothing at all');
+    });
+
+    test('An unreadable source keeps a good reminder already queued', () => {
+        const trigger: WantedTrigger = { kind: 'daily', hour: 8, minute: 0 };
+        const plan = reconcile(
+            [],
+            [held('n1', 'myday:a:base', trigger)],
+            OWNED,
+            NOW,
+            ['myday'],
+        );
+        assertSame(plan.cancel, [], 'unknown is not empty, so the reminder stays');
+        assertSame(plan.create, [], 'nothing is invented for the unread source');
+        assertSame(plan.replace, [], 'it is not replaced either');
+        assertSame(plan.keep, 1, 'the held reminder is left untouched');
+    });
+
+    test('A failed reminder list names the reminder sources as unread', () => {
+        const unread = unreadSourcesFor(['reminder_items']);
+        assert(unread.includes('myday'), 'Daily’s held reminders must be kept');
+        assert(unread.includes('todo'), 'One Time’s held reminders must be kept');
+        assert(!unread.includes('memorytest'), 'Memory Test is a different saved thing');
+    });
+
+    test('Changing only the visible words replaces the held reminder', () => {
+        const trigger: WantedTrigger = { kind: 'daily', hour: 8, minute: 0 };
+        const renamed = want('myday:a:base', trigger);
+        renamed.label = 'Take the tablets';
+        renamed.body = 'Time for Take the tablets!';
+        const plan = reconcile(
+            [renamed],
+            [held('n1', 'myday:a:base', trigger)],
+            OWNED,
+            NOW,
+        );
+        assertSame(plan.replace.map((one) => one.identifier), ['n1'], 'the stale banner goes after the new one exists');
+        assertSame(plan.keep, 0, 'same key and time is not enough when the words moved');
+        assertSame(plan.create, [], 'it is a replacement, not a second reminder');
+    });
+
+    test('Changing only the buttons replaces the held reminder', () => {
+        const trigger: WantedTrigger = { kind: 'daily', hour: 8, minute: 0 };
+        const rebuttoned = want('myday:a:base', trigger);
+        rebuttoned.categoryIdentifier = 'mydaysnooze';
+        const plan = reconcile(
+            [rebuttoned],
+            [held('n1', 'myday:a:base', trigger)],
+            OWNED,
+            NOW,
+        );
+        assertSame(plan.replace.map((one) => one.reminder.categoryIdentifier), ['mydaysnooze'], 'the new button set reaches the queue');
+        assertSame(plan.keep, 0, 'same key and time is not enough when the buttons moved');
     });
 }

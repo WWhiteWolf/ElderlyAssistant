@@ -2987,6 +2987,32 @@ translator. The records were brought current in the same session,
 after the code.
 
 
+## #40-new (2026-08-30): five hardening points, and time zone into the engine
+
+**The five remaining hardening points are in.** They do not change the
+engine's shape. Skip is a bit on the still-wanted answer; the
+explanation is only words. An unreadable list leaves that source's
+held reminders on the phone and says so. A save during a run queues
+one rerun when the current run finishes. Reconcile compares name,
+heading, sentence and buttons, not only key and time. A replacement
+is created first; if that create fails, the old reminder stays.
+
+**Time zone is the Options field the engine now reads.** A named zone
+reaches the common shape as a complete pair. An incomplete pair is
+rejected: the item keeps floating with the phone rather than silently
+producing no reminder.
+
+**What this session did not do.** Holidays, Float, the extra tap, a
+second Thursday, and a Wednesday after the 6th still do not reach the
+engine. Monthly, Quarterly and Yearly Done still advances the saved
+date. The open decisions a worker must not guess remain: Float off,
+monthly-pattern combinations, calendar order, Extended's set, and
++ OPT's save-and-Cancel. No old-store test. No phone load of this
+build. The engine was not redesigned.
+
+**433 of 433 Mac tests pass.**
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

@@ -173,8 +173,8 @@ function translateOne<TSaved>(rules: ScreenRules<TSaved>, saved: TSaved): Shaped
             ? { repeatIntervalCount: rules.repeatIntervalCount }
             : {}),
         ...(repeatWeekdayList !== undefined ? { repeatWeekdayList } : {}),
-        // Default is float with the phone. No saved field yet, so every row
-        // is true and the zone is left off.
+        // Default is float with the phone. The one-list translator overwrites
+        // this from the saved Options fields when a named zone is present.
         floatsWithPhoneBit: true,
 
         // ---- capability bits: what this kind of item is allowed to do ----
@@ -772,7 +772,27 @@ export function translateReminderItems(items: ReminderItem[], now: number): Shap
     for (const one of items) {
         const rules = rulesForKind(one.kind);
         if (!rules) continue;
-        shaped.push(translateOne(rules, one));
+        shaped.push(withSavedOptions(one, translateOne(rules, one)));
+    }
+    return shaped;
+}
+
+/**
+ * Carry the Options fields the engine already knows how to read.
+ *
+ * A named zone is written only as a complete pair. An incomplete pair is
+ * rejected: the item keeps floating with the phone rather than silently
+ * producing no reminder. Holiday, Float, shifted-day preference, Second
+ * Thursday and Wednesday after the 6th wait on open questions and are not
+ * mapped here.
+ */
+function withSavedOptions(saved: ReminderItem, shaped: ShapedItem): ShapedItem {
+    if (saved.floatsWithPhone === false && saved.dueTimeZoneText) {
+        return {
+            ...shaped,
+            floatsWithPhoneBit: false,
+            dueTimeZoneText: saved.dueTimeZoneText,
+        };
     }
     return shaped;
 }

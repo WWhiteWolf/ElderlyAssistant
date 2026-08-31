@@ -16,10 +16,10 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
-**The live work is connecting Options to the engine, and the five
-hardening points that still sit in front of the automated load.** The
-one-store cutover is in. A session does not redesign the engine or make
-Patrick re-teach the pages.
+**The live work is the rest of Options into the engine.** The five
+hardening points landed at #40-new. The one-store cutover is in. A
+session does not redesign the engine or make Patrick re-teach the
+pages.
 
 **Daily through Options are built.** The old screens are out. Pages,
 banners and Siri write `reminder_items` through one save, and the
@@ -30,7 +30,9 @@ through Extended. **He is living with the #37-new build on the phone.**
 The cutover itself has not been loaded there yet.
 
 **Options connecting is in** (#37-new). The cases write onto the item.
-The engine still does not read those fields. **Skip is off Options**.
+**The engine now reads a named time zone** (#40-new). It still does not
+read holidays, Float, the extra tap, a second Thursday, or a Wednesday
+after the 6th. **Skip is off Options**.
 **Note is a field on New and Edit.** **Weekly’s set** is holidays, time
 zone, and calendar shading. **Monthly, Quarterly, and Yearly** add
 Float around short month, an extra tap on a shifted day, a second
@@ -159,10 +161,11 @@ outside the module.
 **The engine on the phone has been from an earlier load.** My Day and To-Do have
 each sent a notice. Everything built since — the pages, Options connecting,
 the repeat group, skip, zone handling, depth of one, the live swap, the
-one-store cutover — **has not been proved on the phone** (Patrick, #37-new).
+one-store cutover, the five hardening points, a named time zone into the
+engine — **has not been proved on the phone** (Patrick, #37-new).
 
 **The tests run on the Mac in about a second**, headless under Node, with
-no build and no simulator. **420 of 420 pass:**
+no build and no simulator. **433 of 433 pass:**
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -287,8 +290,10 @@ Monthly, Quarterly, Yearly and One Time record no misses at all. The
 work is extending the telling to those kinds, not building it — both
 halves of recovery on opening are already built and tested.
 
-**Skip, a named zone, and the extra repeat shapes are on Options.** The
-engine holds them; it does not yet read the fields the pages write.
+**A named zone is read from the saved item.** Holidays, Float, the extra
+tap, a second Thursday, and a Wednesday after the 6th are on Options.
+The engine holds those shapes; it does not yet read the fields the
+pages write.
 
 **`docs/build-sheet.md` has not been brought level with the reorder**
 (#24-new). It is the standing description of what the three shape files
@@ -304,14 +309,6 @@ installed notification package.
 task, so the phone can top the queue up on days the app is not opened.
 None of its pieces are installed. It can only ever sit on top of arming
 ahead, because the days it fails are the days the arming is for.
-
-**Five hardening points remain before the automated load** (#38-new),
-with their reasons and required tests in `docs/automated-test-load.md`:
-give Skip a machine-readable answer instead of reading its explanation;
-preserve held reminders when a saved source cannot be read; queue one
-fresh run when a change arrives during a run; compare banner contents as
-well as key and time; and create a replacement before removing the old
-reminder. The sixth point, the one-store cutover, landed at #39-new.
 
 **Still unread**: `app/memorytest.tsx`; and the test files other than My
 Day's, Pets' and My Week's. The old Look Ahead and To-Do screens went
@@ -343,8 +340,8 @@ at all. Agreed to come after the reminders themselves are solid.
 
 **One separate fix-list item** remains in `docs/reminder-rebuild.md`:
 saying the banner instruction once in the housing instead of on eight
-pages. The dropped-run item is now part of the six hardening points
-above.
+pages. The dropped-run item landed with the hardening points at
+#40-new.
 
 **Still to come, and untouched:** the two "What's Next" items left in
 `pending.txt` — Look Ahead's tile format and its Snooze changed or

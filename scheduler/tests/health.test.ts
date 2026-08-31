@@ -87,6 +87,7 @@ export function runHealthTests(): void {
         const said = faultSentence({ kind: 'list', listKey: 'week_routine' });
         assert(said.includes('My Week'), said);
         assert(!said.includes('week_routine'), said);
+        assert(said.includes('left as they are'), 'it must not claim the reminders were taken off');
     });
 
     test('Permission being off says where to put it right', () => {

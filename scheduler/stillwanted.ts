@@ -39,6 +39,11 @@ export interface StillWantedAnswer {
      * still stands.
      */
     pushedBackToMoment: number | null;
+    /**
+     * True when this cycle was skipped and the next event should be armed.
+     * Later blocks read this bit. `becauseText` is only an explanation.
+     */
+    skippedThisCycleBit: boolean;
     /** Why, in plain words, so a fault or a test reads for itself. */
     becauseText: string;
 }
@@ -74,7 +79,7 @@ export function isStillWanted(item: ShapedItem, now: number): StillWantedAnswer 
     if (item.skippedCycleStamp !== undefined
         && item.repeatUnitCode !== undefined
         && skipStillHolds(now, item.skippedCycleStamp)) {
-        return answer(true, true, null, 'this cycle was skipped, the next event stands');
+        return answer(true, true, null, 'this cycle was skipped, the next event stands', true);
     }
 
     // 3. Pushed back. The stamp adds a reminder at that moment; the base
@@ -119,8 +124,15 @@ function answer(
     dropsThisOccurrenceBit: boolean,
     pushedBackToMoment: number | null,
     becauseText: string,
+    skippedThisCycleBit = false,
 ): StillWantedAnswer {
-    return { wantsRemindersBit, dropsThisOccurrenceBit, pushedBackToMoment, becauseText };
+    return {
+        wantsRemindersBit,
+        dropsThisOccurrenceBit,
+        pushedBackToMoment,
+        skippedThisCycleBit,
+        becauseText,
+    };
 }
 
 /**

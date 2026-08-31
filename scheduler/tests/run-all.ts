@@ -31,6 +31,8 @@ import { runTranslatorToDoTests } from './translatortodo.test.ts';
 import { runTranslatorCadenceTests } from './translatorcadence.test.ts';
 import { runLeadMomentsTests } from './leadmoments.test.ts';
 import { runRemindersForTests } from './remindersfor.test.ts';
+import { runApplyTests } from './apply.test.ts';
+import { runRunGateTests } from './rungate.test.ts';
 
 console.log('\nMy Day reader');
 runMyDayTests();
@@ -94,5 +96,11 @@ runLeadMomentsTests();
 
 console.log('\nReminders for a shaped item');
 runRemindersForTests();
+
+console.log('\nApply order');
+runApplyTests();
+
+console.log('\nRun gate');
+runRunGateTests();
 
 report();
