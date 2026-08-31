@@ -3,6 +3,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter, type Href } from 'expo
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     Alert,
+    AppState,
     Modal,
     ScrollView,
     StyleSheet,
@@ -200,15 +201,21 @@ export default function CadenceListPage({
         if (typeof highlight === 'string' && highlight) setHighlightId(highlight);
     }, [highlight]);
 
+    const refreshFromStorage = useCallback(async () => {
+        setItems(await loadReminderItems());
+        if (!historyKey) return;
+        const saved = await AsyncStorage.getItem(historyKey);
+        setHistory(saved ? JSON.parse(saved) : []);
+    }, [historyKey]);
+
     useFocusEffect(
         useCallback(() => {
-            void (async () => {
-                setItems(await loadReminderItems());
-                if (!historyKey) return;
-                const saved = await AsyncStorage.getItem(historyKey);
-                setHistory(saved ? JSON.parse(saved) : []);
-            })();
-        }, [historyKey]),
+            void refreshFromStorage();
+            const sub = AppState.addEventListener('change', (state) => {
+                if (state === 'active') void refreshFromStorage();
+            });
+            return () => sub.remove();
+        }, [refreshFromStorage]),
     );
 
     const writeItems = (updated: ReminderItem[]) => {

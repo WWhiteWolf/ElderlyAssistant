@@ -1,8 +1,9 @@
 # Automated reminder test load
 
 This is the live design for the temporary automated load that will prove
-the reminder work. A new session writes the build sheet from this file.
-It does not redesign the load or ask Patrick to reconstruct it.
+the reminder work. The job sheet is
+`docs/build-sheet-automated-load.md`, written at #43-new. It does not
+redesign the load or ask Patrick to reconstruct it.
 
 The first recoverable decision is from #29-new. Patrick wanted the
 equivalent of Mystery's one-sitting test: real reminder times brought
@@ -15,9 +16,9 @@ features as it can, including a 31st passing through a short month.
 ## When it is built
 
 The remaining reminder features and their connections to the engine
-landed at #42-new. A new session writes the build sheet from this
-file. The load does not stand in for deciding or finishing those
-features.
+landed at #42-new. The job sheet is
+`docs/build-sheet-automated-load.md`. The load does not stand in for
+deciding or finishing those features.
 
 It is tried on the simulator first, so a setup fault does not spend the
 phone build. One later phone build proves the real iPhone path.
@@ -334,16 +335,7 @@ protections hold across real storage, Expo and iOS.
 
 ## What remains for the later build sheet
 
-These are implementation details, not design questions:
-
-- the exact temporary screen or first-run gate that starts the load;
-- the minute spacing used on that day's run;
-- the complete case names and expected values after all features are
-  present;
-- and how the temporary pass-and-failure report is laid out.
-
-Those choices must preserve the design above: one scenario file, one
-loader, one checker, one cleanup function, ordinary inputs, the real
-engine and queue, independent cases, expected answers written down
-rather than calculated by the engine under test, safe restoration, and
-one sitting.
+Those details are now in `docs/build-sheet-automated-load.md`: a Home
+tile and Test load screen, two-minute spacing on the live banners, the
+case names and how expected values are written, and a Pass / Fail /
+Look report on that screen.

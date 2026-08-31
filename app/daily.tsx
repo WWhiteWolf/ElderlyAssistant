@@ -3,6 +3,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter, type Href } from 'expo
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     Alert,
+    AppState,
     Modal,
     ScrollView,
     StyleSheet,
@@ -183,17 +184,21 @@ export default function DailyScreen() {
         if (typeof highlight === 'string' && highlight) setHighlightId(highlight);
     }, [highlight]);
 
-    const refreshFromStorage = async () => {
+    const refreshFromStorage = useCallback(async () => {
         const list = await loadReminderItems();
         setItems(list);
         const savedHist = await AsyncStorage.getItem('my_history');
         if (savedHist) setHistory(JSON.parse(savedHist));
-    };
+    }, []);
 
     useFocusEffect(
         useCallback(() => {
             void refreshFromStorage();
-        }, []),
+            const sub = AppState.addEventListener('change', (state) => {
+                if (state === 'active') void refreshFromStorage();
+            });
+            return () => sub.remove();
+        }, [refreshFromStorage]),
     );
 
     const openEdit = (item: ReminderItem) => {

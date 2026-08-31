@@ -4,46 +4,39 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-08-30, at the close of #42-new.
+Last written: 2026-08-31, at the close of #43-new.
 
 ## Read this first
 
-- **This is Memory.** Open `docs/handoff.md`. That file is the lock box
-  for today. Do not start from the engine, and do not make Patrick
-  re-teach the pages.
-- **Run `python3 docs/check-docs.py`.** Three conditions, one command. A
-  failing one goes in front of Patrick; it is not an instruction to act.
-- **Ask whether the last session's commit went in** before anything else.
-- **Think for him.** Put the next piece in front of him.
+- **This session builds the automated load.** Open
+  `docs/build-sheet-automated-load.md` and build. Read only the files
+  on that sheet's read list. Do not ask Patrick anything about the
+  design. Choose the plainest option that matches the existing code
+  if something small is missing, and put it in the build report.
+- **Ask only whether #43-new was committed.** Then build. Simulator
+  first.
+- Patrick's walk is `docs/test-load-sitting.md`. Do not change the
+  sitting. Do not reopen the design.
 
 ## What is in
 
-**The rest of Options into the engine is in.** Calendar shading, the
-Float row out, Extended New and Edit, Cancel with no change, and
-Daily's every-day and One Time for today as time zone only. A weekday
-after a numbered day is the first occurrence after that day only. The
-Timer is parked as a different effort. The load rules are in
-`docs/automated-test-load.md`. 459 of 459 Mac tests pass. He is living
-with the #37-new build on the phone; none of this session's work is on
-it yet.
+**The job sheet and the sitting list are written.** Daily now rolls
+the list before it reads, and the list pages read again when the app
+comes to the front. That rollover fix is not on the phone. He is
+still living with the #37-new build there. 459 of 459 Mac tests
+were passing before this session's code change.
 
 ## What is next
 
-**A new session writes the automated-load build sheet** from that
-file. Do not redesign it. Simulator first.
+**Build from the sheet.** Home tile Test load, four files plus the
+screen, Check report, five live banners, cleanup, ceiling apart.
+Do not add a fifth test piece. Do not import the engine to compute
+expected answers.
 
 ## Do not reopen
 
-The one Input page. The storage question. Dual-write. Migrating old
-page data. Missing days as skip. Daily with no buttons. Overlay arrows
-on Daily. The My Day page. Morning of / Day Before chips on Daily's
-One Time for today. Project Planner, Orders, and Watch List on Home.
-Float as next day — it uses last day that exists. Note as an Options
-case. Redesigning the engine. The old-store test. The five hardening
-points. The five Options questions. Connecting a named zone.
-Connecting holidays. Connecting the monthly patterns. Putting Then or
-Next Day on the item. Calendar shading as weekday matching. The Float
-row. Extended with a time or + OPT. + OPT Done saving the item.
-Daily's warning that no Options apply. Look Ahead the page. The Timer
-on this stretch. Redesigning the automated load or adding a fifth test
-piece besides the scenario file, loader, checker and cleanup.
+The one Input page. Dual-write. Migrating old page data. Redesigning
+the engine. Redesigning the automated load. The five Options
+questions. The Timer on this stretch. Float as a row. Note as an
+Options case. Then or Next Day as a saved recipe. A missing day and
+a holiday on the same item. Asking Patrick to reconstruct the load.

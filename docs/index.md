@@ -62,6 +62,8 @@ file is added, retired or renamed, its line changes at the same refresh.
   only landed at #42-new. The remaining connections of this stretch
   are in. The load rules were restated at #42-new. A new session
   writes the build sheet from this file; it does not redesign it.
+  **The job sheet is `docs/build-sheet-automated-load.md`, written at
+  #43-new.** It has not been built.
 - **`spec-pages.md`** — the phase spec for the reminder pages, written
   at #32-new. Live for this phase. Job sheets for page work copy the
   answers they need from it.
@@ -70,6 +72,11 @@ file is added, retired or renamed, its line changes at the same refresh.
 - **`build-sheet-pages.md`** — #33-new. Second job: Weekly, Monthly,
   Quarterly, Yearly, One Time, Extended, Options, and the + Add
   popup. **Built at #34-new.** Do not rebuild Daily from the first sheet.
+- **`build-sheet-automated-load.md`** — #43-new. The job sheet for the
+  temporary automated reminder load. Not built. Proves what the Mac
+  tests cannot: what Patrick sees on the simulator and the phone.
+- **`test-load-sitting.md`** — #43-new. Patrick's follow-along for that
+  load, in sitting order. Not built. The worker sheet is not this file.
 - **`build-sheet.md`** — written as a sheet at #22-new, and now the
   standing description of what `inputshape.ts`, `stillwanted.ts` and
   `armdepth.ts` hold. It has not been brought level with the #24-new

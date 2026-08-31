@@ -85,9 +85,8 @@ export const OWNED_SOURCES = [
  * so the checkmarks clear whether or not those screens are looked at.
  *
  * It is safe to call at any time: on a day that has already been rolled over it
- * reads the date and does nothing else. That is what lets the screens call it
- * before they read, so neither of them can ever draw yesterday's checkmarks
- * while waiting for the module's own run.
+ * reads the date and does nothing else. The list load calls it before it reads,
+ * so a page never draws yesterday's checkmarks from a stale load.
  *
  * It answers with whatever went wrong, which is nothing on an ordinary day.
  */

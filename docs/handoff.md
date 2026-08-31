@@ -16,11 +16,11 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
-**The live work is the automated load.** The rest of Options into the
-engine is in. The five
-hardening points landed at #40-new. The one-store cutover is in. A
-session does not redesign the engine or make Patrick re-teach the
-pages.
+**The live work is building the automated load** from
+`docs/build-sheet-automated-load.md`. Patrick's walk is
+`docs/test-load-sitting.md`. A session does not redesign the engine,
+the load, or the sitting, and does not ask him design questions. Simulator
+first.
 
 **Daily through Options are built.** The old screens are out. Pages,
 banners and Siri write `reminder_items` through one save, and the
@@ -30,7 +30,12 @@ stay until phone proof and are not called. **#36-new is committed**
 **#41-new is committed** (Patrick, #42-new). Backup
 copies the new list. Logs are on Daily through Extended. **He is living
 with the #37-new build on the phone.** The cutover itself has not been
-loaded there yet.
+loaded there yet. **On that build Daily keeps yesterday's Done marks**
+because the reset still cleared the old My Day and Pets lists. **In the
+later source the list is reset, but a page already on screen did not
+read again.** #43-new: loading the list now rolls the day and the week
+first, and Daily plus the other cadence pages read again when the app
+comes to the front. That is not on the phone yet.
 
 **Options connecting is in** (#37-new). The cases write onto the item.
 **The engine now reads a named time zone** (#40-new), **holidays**
@@ -329,8 +334,10 @@ saying the banner instruction once in the housing instead of on eight
 pages. The dropped-run item landed with the hardening points at
 #40-new.
 
-**Still to come, and untouched:** the automated load. A new session
-writes its build sheet. The old Look Ahead tile
+**Still to come:** build the automated load from that job sheet. #43-new
+wrote the sheet, the sitting list, and the Daily new-day screen fix.
+The load itself is not built. That screen fix is not on the phone.
+The old Look Ahead tile
 and Snooze item is not live work; that page is gone. **The Timer is a
 different effort** (Patrick, #42-new), parked in `pending.txt`, not
 this reminder stretch.

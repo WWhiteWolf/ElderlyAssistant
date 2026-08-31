@@ -3117,6 +3117,30 @@ not regenerated.
 and said it was all there.
 
 
+## #43-new (2026-08-31): automated-load sheet, sitting list, Daily new-day screen
+
+**The automated-load job sheet is written.**
+`docs/build-sheet-automated-load.md`. It proves what the Mac tests
+cannot: what Patrick sees. Four pieces, a Home tile, two-minute live
+banners, ceiling kept apart at fifty-six. Expected answers are written
+down, not calculated by the engine under test.
+
+**His follow-along is `docs/test-load-sitting.md`**, in sitting order.
+
+**Daily was keeping yesterday's Done marks** on the #37-new phone
+build because that build's reset still cleared the old My Day and Pets
+lists. In the later source the list was already reset, but a page
+already on screen did not read again. Loading the list now rolls the
+day and the week first. Daily and the other cadence pages read again
+when the app comes to the front. That is not on the phone yet.
+
+**What this session did not do.** The load itself was not built. No
+phone load of this source. The engine was not redesigned.
+
+**The next session reads that job sheet and builds.** Simulator first.
+No design questions.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

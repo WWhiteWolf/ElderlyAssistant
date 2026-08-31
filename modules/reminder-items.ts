@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as AppGroup from './app-group';
-import { runScheduler } from '../scheduler/scheduler';
+import { runDailyReset, runScheduler, runWeeklyReset } from '../scheduler/scheduler';
 import { warnIfFull } from '../scheduler/warn';
 import { translateReminderItems } from '../scheduler/translators/translate';
 import { baseMoment, shadedDaysInMonth } from '../scheduler/leadmoments';
@@ -62,7 +62,11 @@ export function advanceDatedItem(item: ReminderItem): ReminderItem {
     return { ...rest, year: d.getFullYear(), month: d.getMonth(), day: d.getDate() };
 }
 
+// Roll the day and the week first, then read. A page that draws this list
+// otherwise keeps yesterday's checkmarks until it happens to load again.
 export async function loadReminderItems(): Promise<ReminderItem[]> {
+    await runDailyReset();
+    await runWeeklyReset();
     const raw = await AsyncStorage.getItem(STORAGE_KEY);
     const parsed: ReminderItem[] = raw ? JSON.parse(raw) : [];
     return Array.isArray(parsed) ? parsed : [];
