@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-08-31 (#44-new)
+Last updated: 2026-08-31 (#45-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -16,88 +16,31 @@ to know why something was done the way it was.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. THE AUTOMATED LOAD. Built at #44-new. Simulator sitting done,
-   all six parts, including ceiling at fifty-six. Same walk on the
-   phone is not done. Four pieces, a Home tile. The design is not
-   reopened. The two engine Fails from that sitting are What's Next
-   2 and 3.
-2. EVERY DAILY ITEM ARMS FOR THE NEXT DAY. Including after Done.
-   Depth stays one: today's notice is gone, tomorrow's is the
-   armed date. The sitting's C3 Fail is that the engine does not
-   do this yet. Next session is #45-new, Memory's chain, not the
-   Reminder Engine stream (Patrick, #44-new).
-3. A NAMED ZONE DOES NOT MOVE THE FIRE. Sitting Q13: a One Time at
-   00:30 in Los Angeles queued at 00:30 on the phone’s clock, not
-   3:30, which is 00:30 in that zone on this phone. Same session as
-   What's Next 2 (#45-new).
-4. THE TWO TYPE-CHECK COMPLAINTS. The type checker reports two old
-   nits this sitting did not create and did not touch. In the
-   lead-moments file, a numbered day already confirmed present is still
-   treated as maybe missing inside a small inner function. In the
-   scheduler file, the day-roll wants completed to be always true or
-   false, while a saved item may omit it. Neither is a Mac-suite
-   failure. A small later job to clear them, without changing
-   reminder behaviour.
-5. THE REMINDER PAGES. Daily through Options are built. The one-store
-   cutover is in (#39-new). Options connecting is in (#37-new). A named
-   time zone, holidays, a second Thursday, a Wednesday after the 6th,
-   and Then or Next Day on a shifted banner reach the engine
-   (#40-new, #41-new). Calendar shading now uses that same
-   calculation (#42-new). Monthly, Quarterly and Yearly Done no longer
-   advances the saved date. He is living with the #37-new build on the
-   phone. The four Options pieces are in (#42-new): calendar shading
-   from the engine, the Float row out, Extended New and Edit as name,
-   optional note and Done, and Cancel closing with no change including
-   after + OPT. Daily’s every-day item and One Time for today get only
-   time zone. Do not connect floatDay. Last existing day is always
-   the engine’s rule. Both monthly patterns are not needed; the last
-   of the three stays and clears the other two. A weekday after a
-   numbered day is the first occurrence after that day only. A
-   half-entered second Thursday is not a valid recipe. A missing day and a holiday move
-   cannot both apply. The 31st keeping through a short month is an
-   automated-load case.
+Nothing under this heading right now.
 
 
 PENDING
 ------------------------------------------------------------------
 Things waiting on something — mostly on the phone.
 
-1. THE MORNING AFTER. Something you check off today has to still
-   remind you tomorrow. On the #37-new phone build Daily still shows
-   yesterday's ticks. #43-new: the later source rolls the list
-   before it reads, and Daily reads again when the app comes to the
-   front. That is not on the phone yet.
-2. EVERYTHING BUILT SINCE THE LAST PHONE LOAD IS UNPROVED. He is
-   loading this build now (#37-new) to live with it for a few weeks.
-   Time zone, holidays, a second Thursday, a Wednesday after the 6th,
-   Then or Next Day on a shifted banner, and calendar shading now
+1. EVERYTHING BUILT SINCE THE LAST PHONE LOAD. He loaded this build
+   at #45-new. The sitting Check was 23 passed, 0 failed. He is living
+   with it. Time zone, holidays, a second Thursday, a Wednesday after
+   the 6th, Then or Next Day on a shifted banner, and calendar shading
    reach the engine. The Float row is out. Extended New and Edit are
    name, optional note and Done. Cancel closes with no change,
    including after + OPT. Daily’s every-day item and One Time for
    today get only time zone. The extra tap saved on the item is not a
-   recipe. The engine on the phone until this load was from an earlier
-   build.
-3. LOOK AHEAD'S BANNER DELAY. Delaying from the banner did not show
-   the "▶ Delayed" line on the tile. The cause was found and the
-   fix went in at #4-new — the page now re-reads every visit — but
-   the phone has never confirmed it.
-4. MY WEEK'S DELAY. It now writes the delay onto the chore itself,
-   the same note the page's Postpone button writes, so the app
-   knows about it. Skip really skips a postponed chore now. Built
-   at #20-new and never on a phone.
-5. "+1 DAY" IS DEAD on every My Week banner (#11-new). Every My
-   Week reminder now carries the shared routine buttons, so that
-   button never appears. Postponing still works from the page.
-   Nothing is proposed; written down in case you miss the button.
-6. A FAILED DAILY CLEAR-OUT IS NEVER SPOKEN. The warning is written
+   recipe.
+2. A FAILED DAILY CLEAR-OUT IS NEVER SPOKEN. The warning is written
    down but filtered out before it reaches the pop-up, because it
    was classed as harmless. It is not harmless — a failed clear-out
    can cancel a reminder for something you never did. Your call at
    #18-new was to leave it as it is.
-7. RETIRING THE OLD READERS. The live run does not call them. They
+3. RETIRING THE OLD READERS. The live run does not call them. They
    stay in the project until each replacement is proved on the phone.
    That order is yours, from #19-new, restated at #39-new.
-8. THE MISSED-FIRING NOTICE COVERS DAILY ITEMS ONLY. Weekly, Monthly,
+4. THE MISSED-FIRING NOTICE COVERS DAILY ITEMS ONLY. Weekly, Monthly,
     Quarterly, Yearly and One Time record no misses at all. Extending
     it is real work still to do.
 
@@ -114,17 +57,14 @@ built. None of these is a job to do.
 2. + ADD ON A PAGE GOES TO THAT PAGE'S OWN NEW. Where does it
    belong? is only on Options, from + Screen. You do not set
    another page from a different page (#36-new).
-3. ONE TIME CARRIES TO-DO'S REMINDERS BEFORE CHIPS — 30 min., 1
+3. ONE TIME CARRIES THE REMINDERS BEFORE CHIPS — 30 min., 1
    hour, 2 hours, Morning of, Day Before, Night Before, 2 Days
    Before, Week, Month — and any and all of them can be on at once.
 4. DAILY'S OWN ADD IS ONLY ABOUT TODAY. Two kinds: an every-day
    item, or a One Time for today. On One Time for today the
    Reminders before chips are only 30 min., 1 hour, 2 hours, and
    Time of (the item's own time). Save on that kind comes back on
-   One Time, which has the Log, not Daily. A My Day banner now opens
-   Daily, not the old My Day page. Daily now shows My Day's log
-   (Log, the same saved list). The My Day page is gone; an old
-   My Day link opens Daily. The other pages keep their
+   One Time, which has the Log, not Daily. The other pages keep their
    own adds, because on those the page is the whole meaning of Repeat.
 5. ONE REMINDER PER ITEM, NOT TWO, and the app puts itself right
    when you open it: it tells you what you missed, then sets the
@@ -136,10 +76,10 @@ built. None of these is a job to do.
 7. ROCK SOLID IS FOR WHEN YOU USE IT. An app that is not being
    opened is not being used, and what the old second copy protected
    was one day and no more.
-8. A BACKGROUND TASK AND A DAILY TICK ARE OPPOSITES. A To-Do
-   background task says a thing is not yet done and must survive
-   the night. The coffee-and-water sort says a thing was done today
-   and is meaningless the morning after. They must never be merged.
+8. AN EXTENDED ITEM AND A DAILY TICK ARE OPPOSITES. An Extended
+   item says a thing is not yet done and must survive the night.
+   The coffee-and-water sort says a thing was done today and is
+   meaningless the morning after. They must never be merged.
 9. THE MEMORY TEST ALLOWS ONE SESSION A DAY. Once the day's score
    is logged the Start button is replaced by that score and "Come
    back tomorrow", so it can only be tried on a fresh day.
@@ -159,61 +99,70 @@ WHAT IS DONE, NEWEST FIRST
 One line each. The full story of any of them is in
 docs/build-history.md.
 
-1. #44-new — the automated load built, and the simulator sitting
+1. #45-new — the two engine Fails from the sitting: Daily after Done
+   arms tomorrow, and a named zone moves a One Time's fire. 23 passed,
+   0 failed on the sim and on the phone. 460 tests. Reminder Engine
+   files not touched. The morning after, the automated load, the two
+   type-check nits, and the reminder pages stretch, marked done
+   (Patrick). A banner while Memory is on screen was silent; the app
+   now asks to show it, same as Timer. He will verify that in the code
+   without the test load. The four pieces, the screen, and the Home
+   tile came out of the app after that run.
+2. #44-new — the automated load built, and the simulator sitting
    finished. Two engine Fails (Daily after Done, named zone) go to
    #45-new. Reminder Engine files not touched. 459 tests. Two old
    type-check nits left for later.
-2. #43-new — the automated-load job sheet and the sitting list.
+3. #43-new — the automated-load job sheet and the sitting list.
    Daily now rolls the list before it reads, and the list pages read
    again when the app comes to the front. The load itself is not
    built. Not on the phone.
-3. #42-new — the rest of Options into the engine. Calendar shading
+4. #42-new — the rest of Options into the engine. Calendar shading
    from the engine, the Float row out, Extended New and Edit as name,
    optional note and Done, Cancel with no change after + OPT, and
    Daily's every-day and One Time for today as time zone only. A
    weekday after a numbered day is the first occurrence after that
    day only. The Timer is parked as a different effort. 459 tests.
    Not on the phone.
-4. #41-new — five Options answers, holidays, monthly patterns, and
+5. #41-new — five Options answers, holidays, monthly patterns, and
    extra tap. Holidays, a second Thursday and a Wednesday after the
    6th, and Then or Next Day on a shifted banner reach the engine.
    Monthly, Quarterly and Yearly Done no longer advances the saved
    date.
-5. #40-new — five hardening points, and time zone into the engine.
+6. #40-new — five hardening points, and time zone into the engine.
    Skip is a bit, not an explanation. An unreadable list leaves held
    reminders on the phone. A save during a run queues one rerun.
    Banner words and buttons are compared. A replacement is created
    before the old one is removed. A named time zone is read. The
    other Options fields still wait.
-6. #39-new — the live one-store cutover. Pages, banners and Siri write
+7. #39-new — the live one-store cutover. Pages, banners and Siri write
    one list. The scheduler reads it. Dual-write is gone. Siri now
    tells the module. Old reader files stay until the phone proof.
-7. #38-new — the engine and Options path read end to end. The core
+8. #38-new — the engine and Options path read end to end. The core
    remains one fixed road. The automated load, six hardening points,
    Option mappings, and the clean one-store cutover with proof against
    absent old stores are recorded. No code changed.
-8. #37-new — Options connecting: + OPT writes the cases that apply,
+9. #37-new — Options connecting: + OPT writes the cases that apply,
    Note is on New and Edit, Skip is off Options. Per-kind sets are
    in. Engine does not read the fields yet. He is loading the phone.
-9. #36-new — logs on Weekly, Monthly, Quarterly, Yearly, One Time,
+10. #36-new — logs on Weekly, Monthly, Quarterly, Yearly, One Time,
    and Extended. Weekly uses My Week's list; Monthly, Quarterly,
    and Yearly share Look Ahead's; One Time and Extended each have
    their own. They travel in the backup. The log title is Log, not
    My Log. Home no longer warns when the stack is already empty.
    The 24-hour box opens a four-digit spinner. AM/PM removal is
    mitigated by that spinner and is not a separate job.
-10. #35-new — old screens out, including the `/myday` hop. Backup
+11. #35-new — old screens out, including the `/myday` hop. Backup
    copies the new list, not the old ones. Logs on the other new
    pages are next.
-11. #34-new — Weekly through Options and the + Add popup built.
+12. #34-new — Weekly through Options and the + Add popup built.
    Project Planner, Orders and Watch List off Home. Next is taking
    the old screens out.
-12. #33-new — Daily built. Snooze, Done, hold-and-slide reorder, My
+13. #33-new — Daily built. Snooze, Done, hold-and-slide reorder, My
    Log. The My Day page is gone. The sheet for Weekly through
    Options was brought up to date with what Daily actually is.
-13. #32-new — the pages phase spec, and Daily's first job sheet.
+14. #32-new — the pages phase spec, and Daily's first job sheet.
    Nothing was built.
-14. #31-new — the record itself put right. The hand-off file went
+15. #31-new — the record itself put right. The hand-off file went
    from 906 lines to under 300 and now holds only live work and
    open questions. Five whole sessions had never been written into
    the build history at all, which is why you kept having to
@@ -221,43 +170,43 @@ docs/build-history.md.
    on a decision goes into the record at the moment you make it.
    The copy you read is a Word file again, and there is a checker
    that reports when anything has drifted.
-15. #30-new — the reminder pages named and shaped, and the one Input
+16. #30-new — the reminder pages named and shaped, and the one Input
    page plan dropped. Nothing was built.
-16. #28-new — the engine gained repeat groups, skip, and time zones
+17. #28-new — the engine gained repeat groups, skip, and time zones
    that float with the phone. 413 tests pass. Not on the phone.
-17. #27-new — all five reminder screens went onto the one machine,
+18. #27-new — all five reminder screens went onto the one machine,
    and five screen fixes landed that you checked on the simulator:
    the Scheduled Reminders page's header and its count, the clock
    setter's twelve-hour fault, the Vault's Back button, and a To-Do
    task that may now be saved with no date and no time.
-18. #26-new — the per-screen translators became one translator and a
+19. #26-new — the per-screen translators became one translator and a
    table, and My Week and Look Ahead joined it.
-19. #24-new and #25-new — the first two translators, My Day and
+20. #24-new and #25-new — the first two translators, My Day and
    Pets, and the reordering of the questions that let the stubborn
    snooze survive.
-20. #23-new — the common shape and the two decision blocks built and
+21. #23-new — the common shape and the two decision blocks built and
     tested, with nothing in the app calling them yet.
-21. #22-new — the field names settled, and setting reminders two
+22. #22-new — the field names settled, and setting reminders two
     deep reopened by you and closed at one.
-22. #21-new — the common shape settled on paper, all five screens
+23. #21-new — the common shape settled on paper, all five screens
     inside it.
-23. #20-new — My Week's Delay written down like the others, and the
+24. #20-new — My Week's Delay written down like the others, and the
     engine's last unread part read.
-24. #19-new — your epiphany: one shape instead of six, the reminder
+25. #19-new — your epiphany: one shape instead of six, the reminder
     pages as the heart of the app and the scheduler as its engine.
-25. #18-new — the outsider's report checked. The answer was mend
+26. #18-new — the outsider's report checked. The answer was mend
     rather than rebuild, and six things it flagged turned out to be
     deliberate.
-26. #15-new to #17-new — the failure pop-up and the missed-firing
+27. #15-new to #17-new — the failure pop-up and the missed-firing
     note built, then Pets and My Day moved off repeating alarms so
     a thing ticked off early stops calling out.
-27. #13-new and #14-new — tapping a reminder lands on its own item
+28. #13-new and #14-new — tapping a reminder lands on its own item
     with the row outlined, confirmed by you on the phone.
-28. #12-new — the Scheduled Reminders screen, showing every
+29. #12-new — the Scheduled Reminders screen, showing every
     reminder the phone is holding and how full it is.
-29. #6-new to #12-new — the scheduler built in eight steps, so one
+30. #6-new to #12-new — the scheduler built in eight steps, so one
     module owns every reminder and no screen arms its own.
-30. #4-new — the first notification fixes. Real, and kept, but not
+31. #4-new — the first notification fixes. Real, and kept, but not
     the whole story.
 
 

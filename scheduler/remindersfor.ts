@@ -69,10 +69,15 @@ export function remindersFor(
         }
 
         // Skip asks for the cycle after the skipped one, so the clock handed
-        // to momentsFor is the skipped stamp rather than now.
-        const from = skippedThisCycle && item.skippedCycleStamp !== undefined
-            ? item.skippedCycleStamp
-            : now;
+        // to momentsFor is the skipped stamp rather than now. Daily Done asks
+        // for tomorrow: today's notice is gone, and tomorrow is the one armed
+        // date. Depth stays one.
+        let from = now;
+        if (skippedThisCycle && item.skippedCycleStamp !== undefined) {
+            from = item.skippedCycleStamp;
+        } else if (answer.dropsThisOccurrenceBit && item.repeatUnitCode === 'day') {
+            from = startOfNextLocalDay(now);
+        }
         let moments = momentsFor(item, from, clockTimes);
         if (answer.dropsThisOccurrenceBit && !skippedThisCycle) {
             const today = new Date(now);
@@ -87,6 +92,12 @@ export function remindersFor(
         }
     }
     return wanted;
+}
+
+/** The first instant of the local calendar day after `now`. */
+function startOfNextLocalDay(now: number): number {
+    const day = new Date(now);
+    return new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1, 0, 0, 0, 0).getTime();
 }
 
 /** The source word the housing already routes for a push-back on this screen. */

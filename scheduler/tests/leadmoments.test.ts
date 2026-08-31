@@ -438,6 +438,31 @@ export function runLeadMomentsTests(): void {
         );
     });
 
+    test('A One Time at half past midnight in America/Los_Angeles fires in that zone, not on the machine', () => {
+        // 15 June 2026 at 00:30 in America/Los_Angeles is PDT (UTC-7),
+        // which is 15 June 07:30 UTC. The translator packs the civil
+        // numbers as a local Date; the engine must read them in the
+        // named zone. Expected is UTC so the test does not depend on
+        // where it is run.
+        const before = Date.UTC(2026, 5, 14, 12, 0, 0);
+        const halfPastInZone = Date.UTC(2026, 5, 15, 7, 30, 0);
+        assertSame(
+            momentsFor(
+                item({
+                    sourceScreenCode: 'todo',
+                    floatsWithPhoneBit: false,
+                    dueTimeZoneText: 'America/Los_Angeles',
+                    dueMoment: at(2026, 5, 15, 0, 30),
+                    leadTimeList: [NOTHING_BEFORE],
+                }),
+                before,
+                CLOCK,
+            ),
+            [halfPastInZone],
+            '00:30 in that zone, not 00:30 on the machine',
+        );
+    });
+
     // ---- holidays: before or after a US federal holiday ----
 
     test('A Saturday weekly on Independence Day 2026 moves to the Friday before', () => {

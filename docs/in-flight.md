@@ -4,37 +4,35 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-08-31, at the close of #44-new.
+Last written: 2026-08-31, at the close of #45-new.
 
 ## Read this first
 
-- **This session is #45-new.** Two engine Fails from the #44-new
-  sitting, in Memory's scheduler. Do not open the Reminder Engine
-  folder. Do not redesign the engine, the load, or the sitting.
-- Ask only whether #44-new was committed. Then the two Fails.
-- The checker already expects the right answers. Do not change those
-  answers to match the engine.
+- **This session is #46-new.** He is living with the #45-new build on
+  the phone. Ask whether #45-new was committed.
+- Do not rebuild the test load. Do not open the Reminder Engine folder.
+- A banner while Memory is on screen now asks to show, at app start.
+  He will verify that in the code without the test load.
 
 ## What is in
 
-**The automated load is built, and the simulator sitting is done.**
-Two Fails remain. 459 of 459 Mac tests. Two old type-check nits are
-parked. The phone walk of the load is not done. He is still living
-with the #37-new build on the phone.
+**#45-new is done.** Two engine Fails cured (Daily after Done arms
+tomorrow; a named zone moves a One Time's fire). Phone Check 23
+passed, 0 failed. Test load out of the app. 460 of 460 Mac tests.
+What's Next is empty.
 
 ## What is next
 
-**C3.** Every Daily item arms for the next day, including after Done.
-Depth stays one: today's notice is gone, tomorrow's is the armed
-date.
-
-**Q13.** A named zone must move the fire. A One Time at 00:30 in
-Los Angeles is not 00:30 on the phone's clock.
+Patrick leads. Pending: living with this build, a failed daily
+clear-out left as it is, retiring the old readers after phone proof,
+and miss-telling for kinds other than Daily. The 24-hour clock after
+the building is still open.
 
 ## Do not reopen
 
 The one Input page. Dual-write. Migrating old page data. Redesigning
-the engine. Redesigning the automated load. The sitting list. The
-Reminder Engine files. The five Options questions. The Timer on this
-stretch. Float as a row. Note as an Options case. Then or Next Day as a
-saved recipe. A missing day and a holiday on the same item.
+the engine. Rebuilding the test load. The Reminder Engine files. The
+five Options questions. The Timer on this stretch. Float as a row.
+Note as an Options case. Then or Next Day as a saved recipe. A missing
+day and a holiday on the same item. Look Ahead's banner delay, My
+Week's delay, and +1 Day on those banners.

@@ -3163,6 +3163,34 @@ Mac suite 459 of 459. Two old type-check nits parked. Not a phone
 build. The load stays until the phone walk.
 
 
+## #45-new (2026-08-31): two engine Fails cured, phone sitting done, test load out
+
+**The two engine Fails from the sitting are cured.** After Daily Done,
+tomorrow's notice is the one armed date, depth still one. A One Time
+with a named zone uses that zone's wall clock. Both passed on the
+simulator and on the phone (23 passed, 0 failed). The checker was not
+changed. The Reminder Engine files were not touched. Mac suite 460 of
+460.
+
+**A banner while Memory is on screen was silent.** It fired when the
+phone was locked (on the watch), when the app was closed, and when the
+app was in the background. It did not fire on Home or on Daily. Memory
+now asks to show the banner the same way Timer already does, at app
+start. He will verify that in the code without the test load.
+
+**Patrick marked done:** the morning after, the automated load, the two
+type-check nits, and the reminder pages stretch. Look Ahead's banner
+delay, My Week's delay, and +1 Day on those banners are not live work:
+those pages are gone, and Weekly runs through the engine.
+
+**The test load came out of the app** after Clean up. Four files, the
+screen, and the Home tile. No side copy. The sitting list and the
+design stay as history.
+
+**He loaded this build on the phone.** The sitting Check passed. Old
+readers stay until each replacement is proved. The Timer stays parked.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

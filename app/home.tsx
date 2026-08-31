@@ -27,7 +27,6 @@ const modules = [
   { id: 'monthly', label: 'Monthly', icon: '🔭' },
   { id: 'weekly', label: 'Weekly', icon: '🗓️' },
   { id: 'daily', label: 'Daily', icon: '☀️' },
-  { id: 'testload', label: 'Test load', icon: '📥' },
 ];
 
 export default function HomeScreen() {
@@ -60,7 +59,6 @@ export default function HomeScreen() {
         if (id === 'options') router.push('/options' as Href);
         if (id === 'vault') router.push('/vault');
         if (id === 'memorytest') router.push('/memorytest');
-        if (id === 'testload') router.push('/testload' as Href);
     };
 
     return (

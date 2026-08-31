@@ -16,95 +16,47 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
-**The automated load is built** (#44-new). The simulator sitting is
-done. The same walk on the phone is not. Patrick's walk is
-`docs/test-load-sitting.md`. A session does not redesign the engine,
-the load, or the sitting.
+**#45-new is done.** The two engine Fails from the sitting are cured
+on the simulator and on the phone (23 passed, 0 failed). After Daily
+Done, tomorrow's notice is the one armed date, depth still one. A
+named zone moves a One Time's fire. The test load is out of the app.
+The story is in `build-history.md` under #45-new. The Reminder Engine
+has no code and was not opened.
 
-**#45-new is those two engine Fails** (Patrick, #44-new), in Memory's
-numbered chain, not the Reminder Engine stream. Those files were not
-updated: the shared design already says depth is one, a finished
-occurrence still owes the next, and a named zone is used when the
-time does not float. The Reminder Engine has no code.
+**He is living with this build on the phone.** Old reader files stay
+until each replacement is proved and are not called. **A banner while
+Memory is on screen** now asks to show, the same way Timer already
+does, at app start. He will verify that in the code without the test
+load.
 
-**Parked for later** (Patrick, #44-new): two old type-check nits the
-load sitting did not create and did not touch — `scheduler/leadmoments.ts`
-(a numbered day already confirmed present still treated as maybe
-missing inside a small inner function) and `scheduler/scheduler.ts`
-(the day-roll wants `completed` always true or false, while a saved
-item may omit it). Neither is a Mac-suite failure. Clear them in a
-small later job without changing reminder behaviour. What's Next 4.
-
-**Every Daily item arms for the next day** (Patrick, #44-new), including
-after Done. Depth stays one: today's notice is gone, tomorrow's is
-the armed date. The sitting's C3 is a true Fail until the engine does
-that. The checker keeps expecting tomorrow's notice. What's Next 2.
-
-**A named zone does not move the fire** (sitting Q13, #44-new). A One
-Time at 00:30 in America/Los_Angeles queued at 00:30 on the phone’s
-clock, not 3:30, which is 00:30 in that zone on this phone. What's Next 3.
-
-**Daily through Options are built.** The old screens are out. Pages,
-banners and Siri write `reminder_items` through one save, and the
-scheduler reads that list. Dual-write is gone. The old reader files
-stay until phone proof and are not called. **#36-new is committed**
-(Patrick, #37-new). **#40-new is committed** (Patrick, #41-new).
-**#41-new is committed** (Patrick, #42-new). Backup
-copies the new list. Logs are on Daily through Extended. **He is living
-with the #37-new build on the phone.** The cutover itself has not been
-loaded there yet. **On that build Daily keeps yesterday's Done marks**
-because the reset still cleared the old My Day and Pets lists. **In the
-later source the list is reset, but a page already on screen did not
-read again.** #43-new: loading the list now rolls the day and the week
+**Daily through Options are built.** Pages, banners and Siri write
+`reminder_items` through one save. Dual-write is gone. **The morning
+after is done** (#45-new): loading the list rolls the day and the week
 first, and Daily plus the other cadence pages read again when the app
-comes to the front. That is not on the phone yet.
+comes to the front. **Skip is off Options**. **Note is a field on New
+and Edit.** **The Float row is out.** Last existing day is always the
+engine’s rule; do not connect `floatDay`. An incomplete zone currently
+floats with the phone; leave that unless Patrick says otherwise
+(#41-new).
 
-**Options connecting is in** (#37-new). The cases write onto the item.
-**The engine now reads a named time zone** (#40-new), **holidays**
-(#41-new), **a second Thursday and a Wednesday after the 6th**
-(#41-new), **Then or Next Day on a shifted banner** (#41-new), **and
-calendar shading from that same calendar calculation** (#42-new). An
-incomplete zone currently floats with the phone; leave that unless
-Patrick says otherwise (#41-new). **Skip is off Options**. **Note is a
-field on New and Edit.** **Weekly’s set** is holidays, time zone, and
-calendar shading. **Daily’s every-day item and One Time for today**
-get only time zone (#42-new). **Monthly, Quarterly, and Yearly** add an extra tap
-on a shifted day, a second Thursday, and a Wednesday after the 6th.
-**One Time** has the same three as Weekly.
+**The engine reads** a named time zone, holidays, a second Thursday
+and a Wednesday after the 6th, Then or Next Day on a shifted banner,
+and calendar shading from that same calculation. Weekly’s Options set
+is holidays, time zone, and calendar shading. Daily’s every-day item
+and One Time for today get only time zone. Monthly, Quarterly, Yearly,
+and One Time add the extra tap, a second Thursday, and a Wednesday
+after the 6th. A weekday after a numbered day is the first occurrence
+after that day only. A half-entered second Thursday is not a valid
+recipe; both weekday patterns together are not a combination. Then or
+Next Day is an action on a shifted banner, not a recipe. A missing day
+and a holiday move cannot both apply. Monthly, Quarterly, and Yearly
+Done do not advance the saved date. Extended has no banners; New and
+Edit have only the name, an optional note, and Done. Cancel closes and
+makes no change, including after + OPT.
 
-**The five Options answers** (Patrick, #41-new). Float off: the switch
-comes out; last existing day is always the engine’s rule; do not
-connect `floatDay`. **The Float row is out** (#42-new). Monthly patterns: both are not needed; the last of
-the three stays and clears the other two. A missing day and a holiday
-move cannot both apply. Extended is a list of items to be done
-sometime in the future, with no deadline, no due date, and no set
-time; it gets no banners; New and Edit have only the name, an optional
-note, and Done. **That shape is in** (#42-new). **Cancel closes and
-makes no change, including after + OPT** (#42-new).
-
-**Still to connect:** the remaining reminder features for this stretch
-are in. **The automated load is built** (#44-new); the simulator sitting
-is done. Holidays use the US federal
-list, before or after. The 31st keeping through a short month is an
-automated-load case. The AM/PM removal is **mitigated** by the
-24-hour digit spinner (Patrick, #36-new).
-
-**The #38-new implementation record is in
-`docs/automated-test-load.md`.** Patrick restated the load rules at
-#42-new: the phone load proves what the Mac tests cannot; four pieces
-only (scenario file, loader, checker, cleanup), removed together after
-the phone run; ceiling test kept apart at fifty-six. Options still join
-the engine from that file. A second Thursday and a Wednesday after the 6th reach the
-engine: a half-entered pair is not a valid recipe; if both weekday
-patterns are already on an old item, neither is used as a combination.
-Monthly, Quarterly, and Yearly Done no longer advances the saved date.
-Then keeps the last day that exists; Next Day pushes this occurrence
-one day; the saved choice is not a recipe. **A weekday after a numbered
-day is the first occurrence after that day only** (Patrick, #42-new),
-not every later matching weekday in the month.
-
-**#39-new.** The live cutover is in. The Settings morning, midday and
-evening times stay; the new code uses them. Nothing live points at To-Do.
+**Mac suite 460 of 460.** One TypeScript error stands and is not a
+fault: Expo's generated router list predates Scheduled Reminders and
+rewrites itself on the next build.
 
 ### The pages, settled by Patrick at #30-new
 
@@ -197,38 +149,12 @@ you meant, so it grows to hold the whole app, while each page only ever
 needs its own small part. Patrick's own picture was of the user facing the
 huge input page. The page built at #29-new came out at #35-new.
 
-**He is loading this build on the phone** (Patrick, #37-new). The
-automated load is built (#44-new). The simulator sitting is done. The
-same walk on the phone is not. Four pieces, removed together after the
-phone run. The design is `docs/automated-test-load.md`.
-
-### What is actually in the app
-
-**The engine is finished and the one list goes through it.**
-`gatherWanted` reads `reminder_items`, translates each kind into the
-common shape, then `scheduler/remindersfor.ts`, which writes the
-reminders the phone should hold. Depth is one for every kind, with
-recovery on opening carrying what a second copy used to carry. The old
-readers are still in the project and the live run does not call them.
-The Memory Test's reader still skips the common shape. The Timer sits
-outside the module.
-
-**The engine on the phone has been from an earlier load.** My Day and To-Do have
-each sent a notice. Everything built since — the pages, Options connecting,
-the repeat group, skip, zone handling, depth of one, the live swap, the
-one-store cutover, the five hardening points, a named time zone into the
-engine, holidays into the engine, a second Thursday and a Wednesday
-after the 6th, Then or Next Day on a shifted banner — **has not been proved on the phone** (Patrick, #37-new).
-
-**The tests run on the Mac in about a second**, headless under Node, with
-no build and no simulator. **459 of 459 pass:**
+**The engine is finished and the one list goes through it.** Depth is
+one for every kind. The old readers are still in the project and the
+live run does not call them. The Memory Test's reader still skips the
+common shape. The Timer sits outside the module.
 
     node --experimental-strip-types scheduler/tests/run-all.ts
-
-**One TypeScript error stands and is not a fault.** Expo keeps its own
-generated list of the app's screens at `.expo/types/router.d.ts`,
-gitignored and untracked, and it predates the Scheduled Reminders page. It
-rewrites itself on the next build. Nothing else reports.
 
 ## Standing rulings
 
@@ -324,12 +250,6 @@ ahead, because the days it fails are the days the arming is for.
 Day's, Pets' and My Week's. The old Look Ahead and To-Do screens went
 out unread at #35-new.
 
-**"+1 Day" is dead on every My Week banner** (found #11-new). Both the
-base weekly and the postpone carry the shared routine buttons, so
-`myweekactions` is registered but never asked for and the `postpone1`
-branch in the housing cannot fire. Postponing still works from the page.
-Nothing is proposed about it.
-
 **Timer is not working right** (Patrick, #5-new), said in passing and not
 examined. It is deliberately outside the module, and the whole Timer
 effort is parked as a different piece of work (Patrick, #42-new). Two things noticed since
@@ -353,16 +273,6 @@ at all. Agreed to come after the reminders themselves are solid.
 saying the banner instruction once in the housing instead of on eight
 pages. The dropped-run item landed with the hardening points at
 #40-new.
-
-**Still to come:** the two engine Fails from the sitting, as #45-new.
-The same sitting on the phone. The Daily new-day screen fix from
-#43-new is not on the phone. The old Look Ahead tile
-and Snooze item is not live work; that page is gone. **The Timer is a
-different effort** (Patrick, #42-new), parked in `pending.txt`, not
-this reminder stretch.
-**The Look Ahead banner-delay bug** sits in `pending.txt` under "Needs a
-phone test"; it was never separately confirmed, and the trial that would
-have confirmed it is the one that failed.
 
 ## Facts worth carrying
 

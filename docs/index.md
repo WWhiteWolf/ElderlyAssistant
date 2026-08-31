@@ -54,17 +54,10 @@ file is added, retired or renamed, its line changes at the same refresh.
   decision blocks, the codes and bits, the field names, depth, recovery
   on opening, and the translator at the boundary.
 - **`automated-test-load.md`** — the settled design for the temporary
-  automated reminder load, gathered at #38-new. The one-store cutover
-  landed at #39-new. The five hardening points and time zone into the
-  engine landed at #40-new. Holidays, monthly patterns, and extra tap
-  reached the engine at #41-new. Calendar shading, the Float row out,
-  Extended New and Edit, Cancel with no change, and Daily time zone
-  only landed at #42-new. The remaining connections of this stretch
-  are in. The load rules were restated at #42-new. A new session
-  writes the build sheet from this file; it does not redesign it.
-  **The job sheet is `docs/build-sheet-automated-load.md`, written at
-  #43-new.** Built at #44-new. Simulator sitting done. Phone walk
-  still to do.
+  automated reminder load, gathered at #38-new. **History.** Built at
+  #44-new. Simulator sitting done. Phone Check 23 passed, 0 failed.
+  The four pieces, the screen, and the Home tile came out of the app
+  at #45-new. The job sheet is `docs/build-sheet-automated-load.md`.
 - **`spec-pages.md`** — the phase spec for the reminder pages, written
   at #32-new. Live for this phase. Job sheets for page work copy the
   answers they need from it.
@@ -74,12 +67,11 @@ file is added, retired or renamed, its line changes at the same refresh.
   Quarterly, Yearly, One Time, Extended, Options, and the + Add
   popup. **Built at #34-new.** Do not rebuild Daily from the first sheet.
 - **`build-sheet-automated-load.md`** — #43-new. The job sheet for the
-  temporary automated reminder load. **Built at #44-new.** Proves
-  what the Mac tests cannot: what Patrick sees on the simulator and
-  the phone.
+  temporary automated reminder load. **Built at #44-new. History.**
+  The load came out of the app at #45-new.
 - **`test-load-sitting.md`** — #43-new. Patrick's follow-along for that
-  load, in sitting order. Load built at #44-new. Simulator sitting
-  done. Phone walk still to do. The worker sheet is not this file.
+  load, in sitting order. **History.** Simulator sitting done. Phone
+  Check 23 passed, 0 failed. The load came out of the app at #45-new.
 - **`build-sheet.md`** — written as a sheet at #22-new, and now the
   standing description of what `inputshape.ts`, `stillwanted.ts` and
   `armdepth.ts` hold. It has not been brought level with the #24-new

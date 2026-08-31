@@ -160,7 +160,18 @@ function nextBase(item: ShapedItem, now: number, calendar: CivilCalendar): BaseM
         if (item.dueMoment === undefined) {
             return null;
         }
-        return { moment: item.dueMoment, shiftedForMissingDayBit: false };
+        // A one-off's dueMoment carries the civil date and clock the
+        // translator packed as a local Date. When the item floats, that
+        // instant is the fire. When a zone is named, those same numbers
+        // are that zone's wall clock, the way a daily item already works.
+        if (item.floatsWithPhoneBit) {
+            return { moment: item.dueMoment, shiftedForMissingDayBit: false };
+        }
+        const civil = localCalendar.partsOf(item.dueMoment);
+        return {
+            moment: calendar.at(civil.year, civil.month, civil.day, civil.hour, civil.minute),
+            shiftedForMissingDayBit: false,
+        };
     }
     switch (item.repeatUnitCode) {
         case 'day':

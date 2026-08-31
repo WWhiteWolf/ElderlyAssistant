@@ -1,8 +1,8 @@
 // Tests for the join that turns shaped items into wanted reminders.
 //
 // My Day and Pets go through the translator and then the join. They ask what
-// the phone would be told to hold. Depth is one. A second copy is not armed;
-// opening the app arms the next.
+// the phone would be told to hold. Depth is one. After Done, that one is
+// tomorrow.
 
 import { translateMyDay, translatePets, translateMyWeek, translateLookAhead, translateToDo } from '../translators/translate.ts';
 import { remindersFor } from '../remindersfor.ts';
@@ -97,12 +97,13 @@ export function runRemindersForTests(): void {
         );
     });
 
-    test('An item ticked off is not pre-armed for tomorrow', () => {
-        // Depth is one. Tomorrow is armed when the app opens and the tick has
-        // been cleared. That is recovery on opening, which is what the second
-        // copy used to do.
-        assertSame(occurrences(item({ completed: true })).length, 0,
-            'nothing stands while today is done; opening tomorrow arms tomorrow');
+    test('An item ticked off arms tomorrow, and only tomorrow', () => {
+        const armed = occurrences(item({ completed: true }));
+        assertSame(
+            armed.map((r) => readable((r.trigger as { at: number }).at)),
+            ['2026-8-26 8:00'],
+            'Done covers today; tomorrow still owes a notice',
+        );
     });
 
     test('An occurrence is named for the day it falls on', () => {
@@ -217,11 +218,12 @@ export function runRemindersForTests(): void {
         );
     });
 
-    test('A ticked Pets feed is not pre-armed for tomorrow', () => {
+    test('A ticked Pets feed arms tomorrow, and only tomorrow', () => {
+        const armed = petsWanted(feed({ completed: true })).filter((r) => r.source === 'pets');
         assertSame(
-            petsWanted(feed({ completed: true })).filter((r) => r.source === 'pets').length,
-            0,
-            'nothing stands while today is done',
+            armed.map((r) => readable((r.trigger as { at: number }).at)),
+            ['2026-8-26 8:00'],
+            'Done covers today; tomorrow still owes a notice',
         );
     });
 
