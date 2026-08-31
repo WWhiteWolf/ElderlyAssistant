@@ -2,7 +2,7 @@
 
 This is the live design for the temporary automated load that will prove
 the reminder work. The job sheet is
-`docs/build-sheet-automated-load.md`, written at #43-new. It does not
+`docs-ref/build-sheets/build-sheet-automated-load.md`, written at #43-new. It does not
 redesign the load or ask Patrick to reconstruct it.
 
 The first recoverable decision is from #29-new. Patrick wanted the
@@ -17,7 +17,7 @@ features as it can, including a 31st passing through a short month.
 
 The remaining reminder features and their connections to the engine
 landed at #42-new. The job sheet is
-`docs/build-sheet-automated-load.md`. The load does not stand in for
+`docs-ref/build-sheets/build-sheet-automated-load.md`. The load does not stand in for
 deciding or finishing those features.
 
 It is tried on the simulator first, so a setup fault does not spend the
@@ -335,7 +335,7 @@ protections hold across real storage, Expo and iOS.
 
 ## What remains for the later build sheet
 
-Those details are now in `docs/build-sheet-automated-load.md`: a Home
+Those details are now in `docs-ref/build-sheets/build-sheet-automated-load.md`: a Home
 tile and Test load screen, two-minute spacing on the live banners, the
 case names and how expected values are written, and a Pass / Fail /
 Look report on that screen.

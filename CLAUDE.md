@@ -20,14 +20,15 @@
    `docs/build-history.md` is opened only when something
    finished needs tracing.
 
-   `docs/index.md` says what every file in `docs` holds and
-   whether it is live or history. It is **not** part of the
-   opening read and adds nothing to it — it is there for the
-   moment a session needs to know whether a document about
-   some particular thing exists, instead of searching or
-   guessing (#30-new). A stale index is worse than none, so a
-   file added, retired or renamed changes its line at the same
-   refresh.
+   `docs/index.md` says what every file in `docs` and in
+   `docs-ref` holds, and whether it is live or history. `docs`
+   is the live desk. History, including the eleven build sheets,
+   lives in `docs-ref`. It is **not** part of the opening read
+   and adds nothing to it — it is there for the moment a session
+   needs to know whether a document about some particular thing
+   exists, instead of searching or guessing (#30-new). A stale
+   index is worse than none, so a file added, retired or renamed
+   changes its line at the same refresh.
 
    `docs/reminder-rebuild.md` is the record of #15-new through
    #18-new and is **not** the live design — `docs/reminder-shape.md`
@@ -45,8 +46,8 @@
    Claude can edit precisely; the Word copy is his. **A Word
    copy is what he wanted originally** — one existed at session
    0, was replaced by an rtf at #12-new, and is restored at
-   #31-new at his word. `docs/pending.rtf` and
-   `docs/make-pending-rtf.py` are history and are not kept
+   #31-new at his word. `docs-ref/pending.rtf` and
+   `docs-ref/make-pending-rtf.py` are history and are not kept
    current.
 
    **The Word copy is generated when Patrick asks for it, and

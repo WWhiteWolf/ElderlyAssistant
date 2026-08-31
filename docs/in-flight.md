@@ -4,29 +4,32 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-08-31, at the close of #45-new.
+Last written: 2026-08-31, at the close of an App-Docs session.
 
 ## Read this first
 
-- **This session is #46-new.** He is living with the #45-new build on
-  the phone. Ask whether #45-new was committed.
-- Do not rebuild the test load. Do not open the Reminder Engine folder.
-- A banner while Memory is on screen now asks to show, at app start.
-  He will verify that in the code without the test load.
+- **The next Memory session is still #46-new.** This chat was App-Docs,
+  not a Memory chain session.
+- Working documents live in `docs`. History lives in `docs-ref`. The
+  index says which file is the home.
+- He is living with the #45-new build on the phone. Ask whether that
+  was committed.
 
 ## What is in
 
-**#45-new is done.** Two engine Fails cured (Daily after Done arms
-tomorrow; a named zone moves a One Time's fire). Phone Check 23
-passed, 0 failed. Test load out of the app. 460 of 460 Mac tests.
-What's Next is empty.
+The Memory folders were split. Eleven build sheets and the retired
+pending rtf moved to `docs-ref`. The index was tightened to one line
+per file. The app was not built.
 
 ## What is next
 
-Patrick leads. Pending: living with this build, a failed daily
-clear-out left as it is, retiring the old readers after phone proof,
-and miss-telling for kinds other than Daily. The 24-hour clock after
-the building is still open.
+A fresh session for the road to releasing Memory: need, possibilities,
+and reception. The bottom line is still that the app exists for him.
+A little more on Social Security would be welcome. Not the reason.
+
+Patrick leads on the phone work: living with this build, a failed
+daily clear-out left as it is, retiring the old readers after phone
+proof, and miss-telling for kinds other than Daily.
 
 ## Do not reopen
 
@@ -35,4 +38,5 @@ the engine. Rebuilding the test load. The Reminder Engine files. The
 five Options questions. The Timer on this stretch. Float as a row.
 Note as an Options case. Then or Next Day as a saved recipe. A missing
 day and a holiday on the same item. Look Ahead's banner delay, My
-Week's delay, and +1 Day on those banners.
+Week's delay, and +1 Day on those banners. A mass change of the
+opening files.

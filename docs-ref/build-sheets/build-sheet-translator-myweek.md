@@ -16,7 +16,7 @@
 > replacement sheet: the weekday stays as the app saves it with Sunday as 0, and
 > the chore's tick goes into the shape though the old reader ignores it.
 >
-> **Build from `docs/build-sheet-translator-table.md` instead.**
+> **Build from `docs-ref/build-sheets/build-sheet-translator-table.md` instead.**
 
 **Read this file and build. Read only the files on the read list below. Do not
 ask Patrick anything about the design. Every decision here is already made and

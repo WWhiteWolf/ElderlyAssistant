@@ -6,7 +6,7 @@ made and is not to be reopened.**
 
 Written at #33-new, 2026-08-29. This is the second job of the pages
 phase. Daily, and the one list it needs, is the first job, from
-`docs/build-sheet-daily.md`. That job is built first. This sheet copies
+`docs-ref/build-sheets/build-sheet-daily.md`. That job is built first. This sheet copies
 the answers it needs rather than sending you there.
 
 If something genuinely is not here, choose the plainest option that
@@ -27,7 +27,7 @@ items. The Input tile comes off; the page stays registered so nothing
 else breaks.
 
 **This job assumes Daily is already built.** The first sheet is
-`docs/build-sheet-daily.md`. Do not rebuild Daily from that sheet. It
+`docs-ref/build-sheets/build-sheet-daily.md`. Do not rebuild Daily from that sheet. It
 is out of date on the buttons, the log, reorder, and My Day. Copy
 what is on Daily now, as this file states it below.
 

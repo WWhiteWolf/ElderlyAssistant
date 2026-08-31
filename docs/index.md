@@ -1,135 +1,71 @@
-# What is in this folder
+# Where the Memory documents live
 
-One line per file, and whether it is live or history. Written at #30-new
-so a session can find out whether a document about something exists
-without searching for it.
+One line per file, live or history, so a session can tell whether a
+document exists and which file is the home. Written at #30-new.
 
-**This file is not a reading order.** The reading order is rule 2 of this
-project's `CLAUDE.md`, and it wins. Nothing here is opened just because
-it is listed.
+**`docs` is the live desk.** History lives in `docs-ref`. The eleven
+build sheets are in `docs-ref/build-sheets`. If the index has no file
+for a thing, ask Patrick. Do not invent a home.
 
-**Keep it true or delete it.** A stale index is worse than none. When a
-file is added, retired or renamed, its line changes at the same refresh.
+**This file is not a reading order.** The opening read is `handoff.md`
+only, per rule 2 of this project's `CLAUDE.md`. Nothing here is opened
+just because it is listed.
 
-## Opened every session
+**Keep it true or delete it.** A stale index is worse than none.
 
-- **`handoff.md`** — the opening read, and the only one. Where the work
-  stands and what is open in front of it.
-- **`in-flight.md`** — half a page, replaced every session, never added
-  to. The desk: what is in, what is next, what not to reopen.
-- **`pending.txt`** — Patrick's plain-language list and the source the
-  Word copy is made from. **Brought up to date at every update** (#31-new),
-  since it is how he tracks the work. Four sections — What's Next,
-  Pending, Facts that apply to the ongoing work, and What is done newest
-  first — with the items numbered under each heading so either of them
-  can point at one. It holds no session history; that is
-  `build-history.md`.
-- **`pending.docx`** — the copy Patrick actually reads. **Generated from
-  the txt and never hand-edited.** Restored at #31-new; a Word copy is
-  what he wanted originally.
-- **`make-pending-docx.py`** — what generates it. It writes the docx,
-  reads it back, and compares against the txt line by line, so he cannot
-  be handed a stale file. Written by hand rather than with a library, so
-  there is nothing to install. `python3 docs/make-pending-docx.py`. **It
-  is run when Patrick asks for the Word copy, not on a schedule**
-  (#31-new).
-- **`check-docs.py`** — reports the three conditions the record has to
-  satisfy: the handoff's size, any session missing an entry in the build
-  history, and whether the Word copy differs from the txt. It changes
-  nothing. `python3 docs/check-docs.py`. Written at #31-new, and the rule
-  it serves is `CLAUDE.md` rule 4.
-## Retired, still on disk
+## The desk — in `docs`
 
-- **`pending.rtf`** and **`make-pending-rtf.py`** — the rich text copy
-  stood in for the Word one from #12-new to #31-new. Neither is kept
-  current; the rtf on disk is the last one generated and will not match
-  the txt. Kept rather than deleted because the last Word copy went
-  missing unnoticed, and deleting things is how that happens.
+- **`handoff.md`** — the opening read. Where the work stands and what is open.
+- **`in-flight.md`** — this session's desk. Replaced every time, never added to.
+- **`pending.txt`** — Patrick's list, and the source of the Word copy. Brought up to date at every update.
+- **`pending.docx`** — the copy Patrick reads. Generated from the txt, never hand-edited.
+- **`make-pending-docx.py`** — makes the Word copy. `python3 docs/make-pending-docx.py`
+- **`check-docs.py`** — checks the record. Changes nothing. `python3 docs/check-docs.py`
 
-## The live design
+## Live design — in `docs`
 
-- **`reminder-shape.md`** — the design of the reminder work, from
-  #19-new onward. **This is the live one** for the engine, and it wins
-  wherever another document disagrees on that. The five pieces, the two
-  decision blocks, the codes and bits, the field names, depth, recovery
-  on opening, and the translator at the boundary.
-- **`automated-test-load.md`** — the settled design for the temporary
-  automated reminder load, gathered at #38-new. **History.** Built at
-  #44-new. Simulator sitting done. Phone Check 23 passed, 0 failed.
-  The four pieces, the screen, and the Home tile came out of the app
-  at #45-new. The job sheet is `docs/build-sheet-automated-load.md`.
-- **`spec-pages.md`** — the phase spec for the reminder pages, written
-  at #32-new. Live for this phase. Job sheets for page work copy the
-  answers they need from it.
-- **`build-sheet-daily.md`** — #32-new. First job of the pages phase:
-  Daily, and the one list it needs. **Built at #33-new.**
-- **`build-sheet-pages.md`** — #33-new. Second job: Weekly, Monthly,
-  Quarterly, Yearly, One Time, Extended, Options, and the + Add
-  popup. **Built at #34-new.** Do not rebuild Daily from the first sheet.
-- **`build-sheet-automated-load.md`** — #43-new. The job sheet for the
-  temporary automated reminder load. **Built at #44-new. History.**
-  The load came out of the app at #45-new.
-- **`test-load-sitting.md`** — #43-new. Patrick's follow-along for that
-  load, in sitting order. **History.** Simulator sitting done. Phone
-  Check 23 passed, 0 failed. The load came out of the app at #45-new.
-- **`build-sheet.md`** — written as a sheet at #22-new, and now the
-  standing description of what `inputshape.ts`, `stillwanted.ts` and
-  `armdepth.ts` hold. It has not been brought level with the #24-new
-  reorder of the wanted-block's questions.
+- **`reminder-shape.md`** — the live engine design. Wins where others disagree.
+- **`spec-pages.md`** — the live spec for the reminder pages.
 
-## Opened only when something needs tracing
+## History still in `docs`
 
-- **`build-history.md`** — the session-by-session record. Its headings
-  carry the session number, the date and a one-line summary, so **the
-  list of headings is its own index.** Never read whole.
-- **`reminder-rebuild.md`** — the record of #15-new through #18-new.
-  **Not the live design.** Opened when a reminder fault needs tracing to
-  what was found and cured. Its one live part is "What is already right,
-  and is not to be 'fixed'", which any session may add to.
-- **`outside-review.md`** — a reading of the reminder code by Grok 4.6 in
-  Cursor at #17-new, done deliberately without this project's
-  assumptions. Marked item by item with what was later confirmed and what
-  was not.
-- **`ElderlyAssistant-notification-findings.md`** — a read-only review of
-  the repository at 19 August 2026: the causes of the notification
-  faults, with locations. No fixes in it.
+- **`automated-test-load.md`** — settled design of the temporary test load. Built, then removed from the app at #45-new.
+- **`test-load-sitting.md`** — Patrick's follow-along for that load. History.
 
-## Build sheets — history, not the road
+## Tracing — in `docs`
 
-Each was self-contained, carrying its answers rather than pointing
-elsewhere, so a worker could build without asking a design question.
-They are kept as the record of what was built and why.
+- **`build-history.md`** — the session record. Headings are its index. Never read whole.
+- **`reminder-rebuild.md`** — #15-new through #18-new. Not the live design. One live part: "What is already right."
+- **`outside-review.md`** — Grok's #17-new reading of the reminder code, marked later true or not.
+- **`ElderlyAssistant-notification-findings.md`** — a read-only review of the notification faults, 19 August 2026.
 
-- **`build-sheet-translator-myday.md`** — Super-1-new. Built at #24-new.
-- **`build-sheet-translator-pets.md`** — Super-1-new. Built at #25-new.
-- **`build-sheet-translator-table.md`** — Super-2-new. The one translator
-  and its table, which replaced the idea of five per-screen files.
-- **`build-sheet-translator-myweek.md`** — **WITHDRAWN at Super-2-new and
-  never sent to anyone.** It asked for a fifth per-screen translator,
-  which turned out not to be a thing. Kept as the evidence for why.
-- **`build-sheet-lead-moments.md`** — Super-3-new. Lead moments, and the
-  one line each translator gained.
-- **`build-sheet-optional-date.md`** — Super-4-new / #27-new. A To-Do
-  task with no date and no time.
-- **`build-sheet-input-page.md`** — #29-new. The one Input page.
-  **The plan it belongs to was dropped at #30-new.** The page came out
-  at #35-new.
-
-## The quiet files
-
-From before the transition. They belong to no reading order and stay
-quiet until needed.
+## Quiet — in `docs`
 
 - **`parked-items.md`** — the deferred backlog. Last touched at #66.
-- **`publishing.md`** — a pointer page: the publishing documents live in
-  `Projects/App-Docs`. Patrick's own EAS build-and-submit steps, in his
-  words, are at the end of it under "Build steps".
-- **`roadmap.md`** — the step-back milestones for the whole project.
-  Rewritten at #68.
+- **`publishing.md`** — pointer to App-Docs. Patrick's EAS steps are at the end.
+- **`roadmap.md`** — step-back milestones. Rewritten at #68.
+
+## Retired — in `docs-ref`
+
+- **`pending.rtf`** — old reading copy. Not kept current. Do not edit.
+- **`make-pending-rtf.py`** — made that rtf. Retired. Do not run.
+
+## Build sheets — in `docs-ref/build-sheets`
+
+History, not the road. Record of what was built and why.
+
+- **`build-sheet.md`** — standing description of the three shape files. Not level with the #24-new reorder.
+- **`build-sheet-daily.md`** — Daily, and the one list. Built at #33-new.
+- **`build-sheet-pages.md`** — Weekly through Options, and + Add. Built at #34-new.
+- **`build-sheet-automated-load.md`** — the test-load job sheet. Built at #44-new.
+- **`build-sheet-translator-myday.md`** — Super-1-new. Built at #24-new.
+- **`build-sheet-translator-pets.md`** — Super-1-new. Built at #25-new.
+- **`build-sheet-translator-table.md`** — Super-2-new. The one translator and its table.
+- **`build-sheet-translator-myweek.md`** — withdrawn at Super-2-new. Never sent. Evidence only.
+- **`build-sheet-lead-moments.md`** — Super-3-new. Lead moments.
+- **`build-sheet-optional-date.md`** — Super-4-new / #27-new. A To-Do with no date and no time.
+- **`build-sheet-input-page.md`** — #29-new. The one Input page. Plan dropped. Page came out at #35-new.
 
 ## Not here any more
 
-- **`reminder-shape.drawio`** — the drawing of the shape. It is **not in
-  this folder**; only draw.io's hidden backup of it is. The drawing lives
-  at `Projects/Reminder Engine/docs-ref/reminder-shape.drawio`, and
-  `handoff.md` now says so under "Facts worth carrying".
+- **`reminder-shape.drawio`** — at `Projects/Reminder Engine/docs-ref/reminder-shape.drawio`.

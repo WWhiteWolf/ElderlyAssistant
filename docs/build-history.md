@@ -3191,6 +3191,22 @@ design stay as history.
 readers stay until each replacement is proved. The Timer stays parked.
 
 
+## App-Docs (2026-08-31): Memory working documents and history split
+
+Not a Memory chain session. The next Memory session is still #46-new.
+
+Working documents stay in `docs`. History went to `docs-ref`. The
+eleven build sheets are in `docs-ref/build-sheets`. The retired
+`pending.rtf` and its script went with them. The index was tightened
+to one line per file. Live paths were updated. Old paths in this
+history file were left as they were.
+
+He calls them working documents. Live desk means the same thing.
+
+The road to releasing Memory waits for a fresh session. The bottom
+line is still that the app exists for him.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

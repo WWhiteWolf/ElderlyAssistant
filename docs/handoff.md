@@ -231,7 +231,7 @@ halves of recovery on opening are already built and tested.
 shifted banner, not a field on the item. **`floatDay` is not connected**
 (Patrick, #41-new).
 
-**`docs/build-sheet.md` has not been brought level with the reorder**
+**`docs-ref/build-sheets/build-sheet.md` has not been brought level with the reorder**
 (#24-new). It is the standing description of what the three shape files
 hold, and it describes `stillwanted.ts` asking no due time first. The code
 no longer does.
@@ -300,3 +300,9 @@ replaces; never rename anything to or from `index.html` there (see
 
 **The drawing of the shape is not in this folder.** It lives at
 `Projects/Reminder Engine/docs-ref/reminder-shape.drawio`.
+
+**Working documents live in `docs`.** History lives in `docs-ref`,
+including the eleven build sheets. `docs/index.md` says which file is
+the home. He calls them working documents; live desk means the same
+thing. This was written in an App-Docs session, 2026-08-31. The next
+Memory session is still #46-new.
