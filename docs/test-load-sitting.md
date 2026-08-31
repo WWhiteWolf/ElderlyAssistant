@@ -1,7 +1,8 @@
 # Test load — sitting list
 
 A follow-along for the simulator, then the same walk on the phone.
-The load is not built yet. When it is, this is the order.
+The load is built. The simulator sitting is done (#44-new). The
+same walk on the phone is still to do.
 
 Every test name on the screen starts with TEST. Your own reminders
 are copied first and come back at Clean up.

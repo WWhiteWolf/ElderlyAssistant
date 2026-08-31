@@ -4,39 +4,37 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-08-31, at the close of #43-new.
+Last written: 2026-08-31, at the close of #44-new.
 
 ## Read this first
 
-- **This session builds the automated load.** Open
-  `docs/build-sheet-automated-load.md` and build. Read only the files
-  on that sheet's read list. Do not ask Patrick anything about the
-  design. Choose the plainest option that matches the existing code
-  if something small is missing, and put it in the build report.
-- **Ask only whether #43-new was committed.** Then build. Simulator
-  first.
-- Patrick's walk is `docs/test-load-sitting.md`. Do not change the
-  sitting. Do not reopen the design.
+- **This session is #45-new.** Two engine Fails from the #44-new
+  sitting, in Memory's scheduler. Do not open the Reminder Engine
+  folder. Do not redesign the engine, the load, or the sitting.
+- Ask only whether #44-new was committed. Then the two Fails.
+- The checker already expects the right answers. Do not change those
+  answers to match the engine.
 
 ## What is in
 
-**The job sheet and the sitting list are written.** Daily now rolls
-the list before it reads, and the list pages read again when the app
-comes to the front. That rollover fix is not on the phone. He is
-still living with the #37-new build there. 459 of 459 Mac tests
-were passing before this session's code change.
+**The automated load is built, and the simulator sitting is done.**
+Two Fails remain. 459 of 459 Mac tests. Two old type-check nits are
+parked. The phone walk of the load is not done. He is still living
+with the #37-new build on the phone.
 
 ## What is next
 
-**Build from the sheet.** Home tile Test load, four files plus the
-screen, Check report, five live banners, cleanup, ceiling apart.
-Do not add a fifth test piece. Do not import the engine to compute
-expected answers.
+**C3.** Every Daily item arms for the next day, including after Done.
+Depth stays one: today's notice is gone, tomorrow's is the armed
+date.
+
+**Q13.** A named zone must move the fire. A One Time at 00:30 in
+Los Angeles is not 00:30 on the phone's clock.
 
 ## Do not reopen
 
 The one Input page. Dual-write. Migrating old page data. Redesigning
-the engine. Redesigning the automated load. The five Options
-questions. The Timer on this stretch. Float as a row. Note as an
-Options case. Then or Next Day as a saved recipe. A missing day and
-a holiday on the same item. Asking Patrick to reconstruct the load.
+the engine. Redesigning the automated load. The sitting list. The
+Reminder Engine files. The five Options questions. The Timer on this
+stretch. Float as a row. Note as an Options case. Then or Next Day as a
+saved recipe. A missing day and a holiday on the same item.

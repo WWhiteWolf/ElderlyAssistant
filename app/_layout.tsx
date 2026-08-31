@@ -494,6 +494,7 @@ export default function RootLayout() {
       <Stack.Screen name="backup" options={{ headerShown: false }} />
       <Stack.Screen name="memorytest" options={{ headerShown: false }} />
       <Stack.Screen name="reminders" options={{ headerShown: false }} />
+      <Stack.Screen name="testload" options={{ headerShown: false }} />
       <Stack.Screen name="daily" options={{ headerShown: false }} />
       <Stack.Screen name="item-edit" options={{ headerShown: false }} />
       <Stack.Screen name="weekly" options={{ headerShown: false }} />

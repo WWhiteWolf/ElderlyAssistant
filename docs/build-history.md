@@ -3141,6 +3141,28 @@ phone load of this source. The engine was not redesigned.
 No design questions.
 
 
+## #44-new (2026-08-31): automated load built, simulator sitting done
+
+**The automated load is built.** Test load is the last tile on Home.
+Four files under `scheduler/testload`, the screen, cleanup, and the
+ceiling kept apart at fifty-six. Expected answers are written in the
+scenario file, not calculated by the engine under test.
+
+**The simulator sitting is done**, all six parts. Two engine Fails
+remain: after Daily Done, tomorrow's notice is missing (C3); a One
+Time at 00:30 in Los Angeles queued at 00:30 on the phone's clock
+(Q13). Patrick's ruling: those two are #45-new in Memory, not the
+Reminder Engine stream. The Reminder Engine files were not updated.
+
+Four Looks were done. Five live banners were walked. A leftover
+banner at the Weekly Done minute was an already-delivered notice from
+an earlier Load, not a second armed test. Ceiling showed the
+full-queue warning. Cleanup restored his list.
+
+Mac suite 459 of 459. Two old type-check nits parked. Not a phone
+build. The load stays until the phone walk.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

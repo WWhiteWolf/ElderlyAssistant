@@ -16,11 +16,33 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
-**The live work is building the automated load** from
-`docs/build-sheet-automated-load.md`. Patrick's walk is
+**The automated load is built** (#44-new). The simulator sitting is
+done. The same walk on the phone is not. Patrick's walk is
 `docs/test-load-sitting.md`. A session does not redesign the engine,
-the load, or the sitting, and does not ask him design questions. Simulator
-first.
+the load, or the sitting.
+
+**#45-new is those two engine Fails** (Patrick, #44-new), in Memory's
+numbered chain, not the Reminder Engine stream. Those files were not
+updated: the shared design already says depth is one, a finished
+occurrence still owes the next, and a named zone is used when the
+time does not float. The Reminder Engine has no code.
+
+**Parked for later** (Patrick, #44-new): two old type-check nits the
+load sitting did not create and did not touch — `scheduler/leadmoments.ts`
+(a numbered day already confirmed present still treated as maybe
+missing inside a small inner function) and `scheduler/scheduler.ts`
+(the day-roll wants `completed` always true or false, while a saved
+item may omit it). Neither is a Mac-suite failure. Clear them in a
+small later job without changing reminder behaviour. What's Next 4.
+
+**Every Daily item arms for the next day** (Patrick, #44-new), including
+after Done. Depth stays one: today's notice is gone, tomorrow's is
+the armed date. The sitting's C3 is a true Fail until the engine does
+that. The checker keeps expecting tomorrow's notice. What's Next 2.
+
+**A named zone does not move the fire** (sitting Q13, #44-new). A One
+Time at 00:30 in America/Los_Angeles queued at 00:30 on the phone’s
+clock, not 3:30, which is 00:30 in that zone on this phone. What's Next 3.
 
 **Daily through Options are built.** The old screens are out. Pages,
 banners and Siri write `reminder_items` through one save, and the
@@ -61,7 +83,8 @@ note, and Done. **That shape is in** (#42-new). **Cancel closes and
 makes no change, including after + OPT** (#42-new).
 
 **Still to connect:** the remaining reminder features for this stretch
-are in. **The automated load is next** (Patrick, #42-new). Holidays use the US federal
+are in. **The automated load is built** (#44-new); the simulator sitting
+is done. Holidays use the US federal
 list, before or after. The 31st keeping through a short month is an
 automated-load case. The AM/PM removal is **mitigated** by the
 24-hour digit spinner (Patrick, #36-new).
@@ -175,12 +198,9 @@ needs its own small part. Patrick's own picture was of the user facing the
 huge input page. The page built at #29-new came out at #35-new.
 
 **He is loading this build on the phone** (Patrick, #37-new). The
-automated test load waits until the remaining features are in. Its
-settled shape is `docs/automated-test-load.md`: one temporary,
-removable load puts separate cases through the real save, engine and
-phone-queue path, so as many completed features as possible can be
-proved in one sitting. A later session builds from that file rather
-than redesigning the load.
+automated load is built (#44-new). The simulator sitting is done. The
+same walk on the phone is not. Four pieces, removed together after the
+phone run. The design is `docs/automated-test-load.md`.
 
 ### What is actually in the app
 
@@ -334,10 +354,9 @@ saying the banner instruction once in the housing instead of on eight
 pages. The dropped-run item landed with the hardening points at
 #40-new.
 
-**Still to come:** build the automated load from that job sheet. #43-new
-wrote the sheet, the sitting list, and the Daily new-day screen fix.
-The load itself is not built. That screen fix is not on the phone.
-The old Look Ahead tile
+**Still to come:** the two engine Fails from the sitting, as #45-new.
+The same sitting on the phone. The Daily new-day screen fix from
+#43-new is not on the phone. The old Look Ahead tile
 and Snooze item is not live work; that page is gone. **The Timer is a
 different effort** (Patrick, #42-new), parked in `pending.txt`, not
 this reminder stretch.
