@@ -4,6 +4,7 @@ import { Stack, useRouter, type Href } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import { ThemeProvider } from '../constants/Themes';
+import { CoverRoot } from '../components/Cover';
 import * as AppGroup from '../modules/app-group';
 import {
     loadReminderItems,
@@ -494,7 +495,8 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider>
-    <Stack screenOptions={{ orientation: 'portrait_up' }}>
+    <CoverRoot>
+    <Stack screenOptions={{ orientation: 'all' }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="home" options={{ headerShown: false }} />
       <Stack.Screen name="shopping" options={{ headerShown: false }} />
@@ -504,7 +506,7 @@ export default function RootLayout() {
       <Stack.Screen name="backup" options={{ headerShown: false }} />
       <Stack.Screen name="memorytest" options={{ headerShown: false }} />
       <Stack.Screen name="reminders" options={{ headerShown: false }} />
-      <Stack.Screen name="calendar" options={{ headerShown: false, orientation: 'all' }} />
+      <Stack.Screen name="calendar" options={{ headerShown: false }} />
       <Stack.Screen name="daily" options={{ headerShown: false }} />
       <Stack.Screen name="item-edit" options={{ headerShown: false }} />
       <Stack.Screen name="weekly" options={{ headerShown: false }} />
@@ -515,6 +517,7 @@ export default function RootLayout() {
       <Stack.Screen name="extended" options={{ headerShown: false }} />
       <Stack.Screen name="options" options={{ headerShown: false }} />
     </Stack>
+    </CoverRoot>
     </ThemeProvider>
   );
 }

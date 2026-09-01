@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     Alert,
     AppState,
-    Modal,
     ScrollView,
     StyleSheet,
     Text,
@@ -15,8 +14,8 @@ import {
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Bridge from './Bridge';
+import { PageFrame } from './PageFrame';
+import { Cover } from './Cover';
 import { Theme, useTheme } from '../constants/Themes';
 import {
     dragKindTo,
@@ -370,31 +369,31 @@ export default function CadenceListPage({
 
     return (
         <GestureHandlerRootView style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
-                <View style={styles.header}>
-                    <TouchableOpacity
-                        onPress={() => {
-                            if (router.canDismiss()) router.dismissAll();
-                            router.replace('/home');
-                        }}
-                        style={styles.headerBtn}
-                    >
-                        <Text style={styles.headerBtnText}>Home</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.title}>{title}</Text>
-                    <TouchableOpacity
-                        onPress={() => {
-                            router.push({ pathname: '/item-edit', params: { kind, returnTo } } as Href);
-                        }}
-                        style={styles.headerBtn}
-                    >
-                        <Text style={styles.headerBtnText}>+ Add</Text>
-                    </TouchableOpacity>
-                </View>
-            </SafeAreaView>
-
-            <Bridge />
-
+            <PageFrame
+                headerColor={theme.header}
+                header={
+                    <View style={styles.header}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                if (router.canDismiss()) router.dismissAll();
+                                router.replace('/home');
+                            }}
+                            style={styles.headerBtn}
+                        >
+                            <Text style={styles.headerBtnText}>Home</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.title}>{title}</Text>
+                        <TouchableOpacity
+                            onPress={() => {
+                                router.push({ pathname: '/item-edit', params: { kind, returnTo } } as Href);
+                            }}
+                            style={styles.headerBtn}
+                        >
+                            <Text style={styles.headerBtnText}>+ Add</Text>
+                        </TouchableOpacity>
+                    </View>
+                }
+            >
             <ScrollView
                 style={styles.scroll}
                 contentContainerStyle={{ paddingBottom: 40 }}
@@ -476,6 +475,7 @@ export default function CadenceListPage({
                     </ScrollView>
                 </View>
             </ScrollView>
+            </PageFrame>
 
             {editEntry && (
                 <View style={styles.logModal}>
@@ -508,7 +508,7 @@ export default function CadenceListPage({
             )}
 
             {snoozeItemId && (
-                <Modal transparent animationType="fade" visible={!!snoozeItemId}>
+                <Cover visible={!!snoozeItemId}>
                     <View style={styles.modalOverlay}>
                         <View style={styles.pickerModal}>
                             <Text style={styles.modalTitle}>Snooze Reminder</Text>
@@ -533,7 +533,7 @@ export default function CadenceListPage({
                             </View>
                         </View>
                     </View>
-                </Modal>
+                </Cover>
             )}
         </GestureHandlerRootView>
     );

@@ -11,8 +11,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Bridge from '../components/Bridge';
+import { PageFrame } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 
 Notifications.setNotificationHandler({
@@ -242,17 +241,18 @@ export default function TimerScreen() {
 
     return (
         <View style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => { if (router.canDismiss()) router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>Home</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.title}>Timer Alerts</Text>
-                    <View style={styles.settingsBtn} />
-                </View>
-            </SafeAreaView>
-
-            <Bridge />
+            <PageFrame
+                headerColor={theme.header}
+                header={
+                    <View style={styles.header}>
+                        <TouchableOpacity onPress={() => { if (router.canDismiss()) router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
+                            <Text style={styles.headerBtnText}>Home</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.title}>Timer Alerts</Text>
+                        <View style={styles.settingsBtn} />
+                    </View>
+                }
+            >
 
             <ScrollView contentContainerStyle={styles.content}>
 
@@ -372,6 +372,7 @@ export default function TimerScreen() {
                 )}
 
             </ScrollView>
+            </PageFrame>
         </View>
     );
 }

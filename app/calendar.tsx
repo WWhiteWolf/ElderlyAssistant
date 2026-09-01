@@ -5,11 +5,10 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
-    useWindowDimensions,
     View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Theme, useTheme } from '../constants/Themes';
+import { PageFrame } from '../components/PageFrame';
 import {
     DAY_NAMES,
     loadReminderItems,
@@ -68,8 +67,6 @@ export default function CalendarScreen() {
     const router = useRouter();
     const theme = useTheme();
     const styles = makeStyles(theme);
-    const { width, height } = useWindowDimensions();
-    const landscape = width > height;
     const params = useLocalSearchParams<{
         viewYear?: string | string[];
         viewMonth?: string | string[];
@@ -156,7 +153,7 @@ export default function CalendarScreen() {
         : '';
 
     const header = (
-        <View style={landscape ? styles.headerLandscape : styles.header}>
+        <View style={styles.header}>
             {selectedDay ? (
                 <TouchableOpacity onPress={closeDayList} style={styles.headerBtn}>
                     <Text style={styles.headerBtnText}>Back</Text>
@@ -167,15 +164,15 @@ export default function CalendarScreen() {
                 </TouchableOpacity>
             )}
             {selectedDay ? (
-                <Text style={[styles.title, landscape && styles.titleLandscape]} numberOfLines={2} adjustsFontSizeToFit>
+                <Text style={styles.title} numberOfLines={2} adjustsFontSizeToFit>
                     {dayTitle}
                 </Text>
             ) : (
-                <View style={landscape ? styles.monthNavLandscape : styles.monthNav}>
+                <View style={styles.monthNav}>
                     <TouchableOpacity onPress={() => shiftMonth(-1)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                         <Text style={styles.arrow}>‹</Text>
                     </TouchableOpacity>
-                    <Text style={[styles.title, landscape && styles.titleLandscape]} numberOfLines={2} adjustsFontSizeToFit>
+                    <Text style={styles.title} numberOfLines={2} adjustsFontSizeToFit>
                         {monthTitle}
                     </Text>
                     <TouchableOpacity onPress={() => shiftMonth(1)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
@@ -183,7 +180,7 @@ export default function CalendarScreen() {
                     </TouchableOpacity>
                 </View>
             )}
-            {!landscape ? <View style={styles.headerBtn} /> : null}
+            <View style={styles.headerBtn} />
         </View>
     );
 
@@ -252,24 +249,12 @@ export default function CalendarScreen() {
 
     const body = selectedDay ? dayList : monthGrid;
 
-    // Landscape puts the header on the right, which is the top of the phone.
-    if (landscape) {
-        return (
-            <View style={[styles.container, styles.containerLandscape]}>
-                {body}
-                <SafeAreaView style={styles.headerBandLandscape} edges={['right']}>
-                    {header}
-                </SafeAreaView>
-            </View>
-        );
-    }
-
+    // The month fills the screen under the header, so this page has no Bridge.
     return (
         <View style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
-                {header}
-            </SafeAreaView>
-            {body}
+            <PageFrame headerColor={theme.header} header={header} bridge={false}>
+                {body}
+            </PageFrame>
         </View>
     );
 }
@@ -277,23 +262,12 @@ export default function CalendarScreen() {
 const makeStyles = (t: Theme) =>
     StyleSheet.create({
         container: { flex: 1, backgroundColor: t.pageBackground },
-        containerLandscape: { flexDirection: 'row' },
-        headerBandLandscape: { backgroundColor: t.header, alignSelf: 'stretch' },
         header: {
             paddingTop: 20,
             paddingHorizontal: 20,
             flexDirection: 'row',
             alignItems: 'center',
             paddingBottom: 8,
-        },
-        headerLandscape: {
-            paddingHorizontal: 8,
-            paddingVertical: 12,
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            gap: 12,
-            width: 96,
-            flex: 1,
         },
         headerBtn: {
             width: 54,
@@ -312,11 +286,6 @@ const makeStyles = (t: Theme) =>
             justifyContent: 'center',
             gap: 8,
         },
-        monthNavLandscape: {
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-        },
         title: {
             fontSize: 24,
             fontWeight: '500',
@@ -325,11 +294,6 @@ const makeStyles = (t: Theme) =>
             fontFamily: 'Georgia',
             flex: 1,
             textAlign: 'center',
-        },
-        titleLandscape: {
-            flex: 0,
-            fontSize: 16,
-            width: 80,
         },
         arrow: {
             fontSize: 28,

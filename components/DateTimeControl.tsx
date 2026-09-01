@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Cover } from './Cover';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Theme, useTheme } from '../constants/Themes';
 
 // Shared date/time control (#58). One control for every page's date and
@@ -378,7 +379,7 @@ export default function DateTimeControl({
                             : 'Tap the box to set the time (24-hour clock)'}
                     </Text>
                     {showTimeSpinner && (
-                        <Modal transparent animationType="fade" visible={showTimeSpinner}>
+                        <Cover visible={showTimeSpinner}>
                             <View style={styles.modalOverlay}>
                                 <View style={styles.pickerModal}>
                                     <Text style={styles.modalTitle}>{timeLabel}</Text>
@@ -421,7 +422,7 @@ export default function DateTimeControl({
                                     </TouchableOpacity>
                                 </View>
                             </View>
-                        </Modal>
+                        </Cover>
                     )}
                 </>
             )}

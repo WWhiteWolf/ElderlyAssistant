@@ -1,11 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Cover } from '../components/Cover';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
     Alert,
     KeyboardAvoidingView,
-    Modal,
     Platform,
     ScrollView,
     StyleSheet,
@@ -15,9 +15,8 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl from '../components/DateTimeControl';
-import Bridge from '../components/Bridge';
+import { PageFrame } from '../components/PageFrame';
 import { Theme, useTheme, useThemeControls } from '../constants/Themes';
 
 export default function SettingsScreen() {
@@ -179,20 +178,18 @@ export default function SettingsScreen() {
 
     return (
         <View style={styles.container}>
-            {/* #3-new: edges={['top']} on every screen's header wrapper — the
-                round header buttons made the old #62 taller-header look too
-                tall, so all screens now match Home and Look Ahead. */}
-            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => { if (router.canDismiss()) router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>Home</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.title}>Settings</Text>
-                    <View style={styles.backBtn} />
-                </View>
-            </SafeAreaView>
-
-            <Bridge />
+            <PageFrame
+                headerColor={theme.header}
+                header={
+                    <View style={styles.header}>
+                        <TouchableOpacity onPress={() => { if (router.canDismiss()) router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
+                            <Text style={styles.headerBtnText}>Home</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.title}>Settings</Text>
+                        <View style={styles.backBtn} />
+                    </View>
+                }
+            >
 
                 <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 12 }}>
 
@@ -329,8 +326,9 @@ export default function SettingsScreen() {
                     <Text style={styles.versionText}>A Place To Remember v1.0</Text>
 
                 </ScrollView>
+            </PageFrame>
 
-                <Modal transparent={true} animationType="fade" visible={showTimeModal}>
+                <Cover visible={showTimeModal}>
                     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
                         <View style={styles.modalOverlay}>
                             <View style={styles.pickerModal}>
@@ -359,7 +357,7 @@ export default function SettingsScreen() {
                             </View>
                         </View>
                     </KeyboardAvoidingView>
-                </Modal>
+                </Cover>
         </View>
     );
 }

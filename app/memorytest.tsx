@@ -15,8 +15,7 @@ import {
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Bridge from '../components/Bridge';
+import { PageFrame } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 import { runScheduler } from '../scheduler/scheduler';
 import { warnIfFull } from '../scheduler/warn';
@@ -526,20 +525,20 @@ export default function MemoryTestScreen() {
 
     return (
         <GestureHandlerRootView style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => { if (router.canDismiss()) router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>Home</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.title}>Memory Test</Text>
-                    {/* spacer keeps the title centered — matches the ← Home pill */}
-                    <View style={[styles.headerBtn, { opacity: 0 }]}>
-                        <Text style={styles.headerBtnText}>Home</Text>
+            <PageFrame
+                headerColor={theme.header}
+                header={
+                    <View style={styles.header}>
+                        <TouchableOpacity onPress={() => { if (router.canDismiss()) router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
+                            <Text style={styles.headerBtnText}>Home</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.title}>Memory Test</Text>
+                        <View style={[styles.headerBtn, { opacity: 0 }]}>
+                            <Text style={styles.headerBtnText}>Home</Text>
+                        </View>
                     </View>
-                </View>
-            </SafeAreaView>
-
-            <Bridge />
+                }
+            >
 
             <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
                 <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
@@ -581,6 +580,7 @@ export default function MemoryTestScreen() {
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
+            </PageFrame>
         </GestureHandlerRootView>
     );
 }

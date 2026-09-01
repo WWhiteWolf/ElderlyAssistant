@@ -13,8 +13,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Bridge from '../components/Bridge';
+import { PageFrame } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 import { loadReminderItems, saveReminderItems } from '../modules/reminder-items';
 
@@ -370,17 +369,18 @@ export default function BackupScreen() {
 
     return (
         <View style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>Back</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.title}>Backup & Restore</Text>
-                    <View style={styles.headerSpacer} />
-                </View>
-            </SafeAreaView>
-
-            <Bridge />
+            <PageFrame
+                headerColor={theme.header}
+                header={
+                    <View style={styles.header}>
+                        <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
+                            <Text style={styles.headerBtnText}>Back</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.title}>Backup & Restore</Text>
+                        <View style={styles.headerSpacer} />
+                    </View>
+                }
+            >
 
             <ScrollView contentContainerStyle={styles.body}>
                 <Text style={styles.intro}>
@@ -406,6 +406,7 @@ export default function BackupScreen() {
                     that part of the file.
                 </Text>
             </ScrollView>
+            </PageFrame>
         </View>
     );
 }

@@ -12,8 +12,7 @@ import {
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Bridge from '../components/Bridge';
+import { PageFrame } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 
 interface Item {
@@ -92,17 +91,18 @@ export default function ShoppingScreen() {
 
     return (
         <GestureHandlerRootView style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => { if (router.canDismiss()) router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>Home</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.title}>Shopping List</Text>
-                    <View style={styles.settingsBtn} />
-                </View>
-            </SafeAreaView>
-
-            <Bridge />
+            <PageFrame
+                headerColor={theme.header}
+                header={
+                    <View style={styles.header}>
+                        <TouchableOpacity onPress={() => { if (router.canDismiss()) router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
+                            <Text style={styles.headerBtnText}>Home</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.title}>Shopping List</Text>
+                        <View style={styles.settingsBtn} />
+                    </View>
+                }
+            >
 
             <View style={styles.tabRow}>
                 <TouchableOpacity
@@ -197,6 +197,7 @@ export default function ShoppingScreen() {
                     </TouchableOpacity>
                 </View>
             )}
+            </PageFrame>
         </GestureHandlerRootView>
     );
 }

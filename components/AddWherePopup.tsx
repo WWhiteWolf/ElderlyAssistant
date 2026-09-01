@@ -1,5 +1,6 @@
 import { useRouter, type Href } from 'expo-router';
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Cover } from './Cover';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Theme, useTheme } from '../constants/Themes';
 import type { ReminderKind } from '../modules/reminder-items';
 
@@ -35,7 +36,7 @@ export default function AddWherePopup({
     };
 
     return (
-        <Modal transparent animationType="fade" visible={visible}>
+        <Cover visible={visible}>
             <View style={styles.modalOverlay}>
                 <View style={styles.pickerModal}>
                     <Text style={styles.modalTitle}>Where does it belong?</Text>
@@ -57,7 +58,7 @@ export default function AddWherePopup({
                     </View>
                 </View>
             </View>
-        </Modal>
+        </Cover>
     );
 }
 

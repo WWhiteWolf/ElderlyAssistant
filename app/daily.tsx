@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Cover } from '../components/Cover';
 import { useFocusEffect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     Alert,
     AppState,
-    Modal,
     ScrollView,
     StyleSheet,
     Text,
@@ -15,8 +15,7 @@ import {
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Bridge from '../components/Bridge';
+import { PageFrame } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 import {
     dragVisibleTo,
@@ -372,26 +371,26 @@ export default function DailyScreen() {
 
     return (
         <GestureHandlerRootView style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
-                <View style={styles.header}>
-                    <TouchableOpacity
-                        onPress={() => {
-                            if (router.canDismiss()) router.dismissAll();
-                            router.replace('/home');
-                        }}
-                        style={styles.headerBtn}
-                    >
-                        <Text style={styles.headerBtnText}>Home</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.title}>Daily</Text>
-                    <TouchableOpacity onPress={() => setShowAddPopup(true)} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>+ Add</Text>
-                    </TouchableOpacity>
-                </View>
-            </SafeAreaView>
-
-            <Bridge />
-
+            <PageFrame
+                headerColor={theme.header}
+                header={
+                    <View style={styles.header}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                if (router.canDismiss()) router.dismissAll();
+                                router.replace('/home');
+                            }}
+                            style={styles.headerBtn}
+                        >
+                            <Text style={styles.headerBtnText}>Home</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.title}>Daily</Text>
+                        <TouchableOpacity onPress={() => setShowAddPopup(true)} style={styles.headerBtn}>
+                            <Text style={styles.headerBtnText}>+ Add</Text>
+                        </TouchableOpacity>
+                    </View>
+                }
+            >
             <ScrollView
                 style={styles.scroll}
                 contentContainerStyle={{ paddingBottom: 40 }}
@@ -469,6 +468,7 @@ export default function DailyScreen() {
                     </ScrollView>
                 </View>
             </ScrollView>
+            </PageFrame>
 
             {editEntry && (
                 <View style={styles.logModal}>
@@ -501,7 +501,7 @@ export default function DailyScreen() {
             )}
 
             {showAddPopup && (
-                <Modal transparent animationType="fade" visible={showAddPopup}>
+                <Cover visible={showAddPopup}>
                     <View style={styles.modalOverlay}>
                         <View style={styles.pickerModal}>
                             <Text style={styles.modalTitle}>New</Text>
@@ -518,10 +518,10 @@ export default function DailyScreen() {
                             </View>
                         </View>
                     </View>
-                </Modal>
+                </Cover>
             )}
             {snoozeItemId && (
-                <Modal transparent animationType="fade" visible={!!snoozeItemId}>
+                <Cover visible={!!snoozeItemId}>
                     <View style={styles.modalOverlay}>
                         <View style={styles.pickerModal}>
                             <Text style={styles.modalTitle}>Snooze Reminder</Text>
@@ -546,7 +546,7 @@ export default function DailyScreen() {
                             </View>
                         </View>
                     </View>
-                </Modal>
+                </Cover>
             )}
         </GestureHandlerRootView>
     );

@@ -4,25 +4,26 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-01, at the close of #49-new.
+Last written: 2026-09-01, at the close of #50-new.
 
 ## Read this first
 
-- **The next Memory session is #50-new.**
-- He is living with the #45-new build on the phone. The calendar page is
-  not on that load.
-- They need landscape now. The calendar is allowed to turn. Other pages
-  still stay upright. A fresh simulator build is needed before a turn
-  will take.
+- **The next Memory session is #51-new.**
+- He is living with the #45-new build on the phone. Calendar and
+  landscape are not on that load.
+- Landscape is in (#50-new): optional view, 0 and 90 only, all pages
+  including the ones that open from a page. The calendar month grid
+  was not rebuilt.
 
 ## What is in
 
-The calendar page, from the #48-new sheet. Options Calendar shading row
-out. He wants to see what the other pages do in landscape as well.
+The calendar page (#49-new) and landscape on the other pages (#50-new).
+He looked. Not bad as an optional view. Goal accomplished.
 
 ## What is next
 
-Look at the other pages in landscape. Patrick leads.
+The header buttons should rotate in-place on the header. Landscape
+is otherwise in. Patrick leads.
 
 ## Do not reopen
 
@@ -34,4 +35,5 @@ day and a holiday on the same item. Look Ahead's banner delay, My
 Week's delay, and +1 Day on those banners. A mass change of the
 opening files. Putting the one shared list on the selling page. Timer
 or Memory Test on the selling page. Horizontal scroll in a day’s box.
-Migrating `shadeCalendar` off items.
+Migrating `shadeCalendar` off items. Rebuilding the calendar month
+grid. Reopening landscape as a look — it is in.

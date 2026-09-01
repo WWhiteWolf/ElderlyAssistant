@@ -3286,6 +3286,35 @@ built again for the phone to accept the turn. He wants to see what
 the other pages do in landscape as well. That look is not done yet.
 
 
+## #50-new (2026-09-01): the other pages in landscape
+
+**The goal was to look at the other pages in landscape.** The calendar
+page was already built and was not rebuilt. He looked. **Not bad as an
+optional view**: it does not force the user to keep rotating the phone.
+
+**Only 0 and 90.** The face of the phone has things that will not move,
+so 180 and 270 block part of the view. The same limits on the calendar.
+
+**The header stays at the top of the normal portrait view** for that
+turn — on the right in landscape, which is the island. Everything in
+the header keeps its original place and shape: the portrait row, the
+round buttons, the title in the middle. Not restacked down the side.
+The Bridge lines stay with the headers. One-character vertical titles
+are out. The whole header, Bridge included, sits at that top as it is.
+
+**Pages that open from other places** — Daily’s +Add, Options from an
+item, Morning / Midday / Evening, snooze, and the other covers — now
+turn with the page. A separate window had been keeping them upright.
+
+**The simulator still held the old sitting items**, and they were
+firing. The test load is not back in the app and was not rebuilt. He
+deleted the Memory app from the simulator. That store is clear. The
+phone was not touched.
+
+**He said the goal was accomplished.** All the pages, including the
+ones that open from a page.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

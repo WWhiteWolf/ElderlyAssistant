@@ -16,17 +16,18 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
+**#50-new put the other pages in landscape.** He looked. Not bad as an
+optional view. All the pages turn, including the ones that open from
+a page. Only 0 and 90. The calendar month grid was not rebuilt.
+**He said the goal was accomplished.** The phone was not touched; he
+is still living with the #45-new load.
+
 **#49-new built the calendar page.** Home has a Calendar tile next to
 Daily. A month fills the screen except the header. A tap on a day
 opens that day’s names. A tap on a name opens the item. The Options
 Calendar shading row is out; the saved field stays. Names in a day
 box scroll vertically only. The suite is 460 of 460.
-
-**They need landscape now** (Patrick, #49-new). The app had been
-locked to portrait from the beginning. The calendar is allowed to
-turn; the other pages still stay upright. The simulator app has to
-be built again for the phone to accept the turn. He wants to see
-what the other pages do in landscape as well.
+**Committed** (Patrick, #50-new).
 
 **#47-new is done.** The selling description is a good start and was
 left. `docs/Memory features.docx` is the inventory, not the sell. The
@@ -198,15 +199,25 @@ They are kept here because they still decide things.
   the wrong shape.** Build it into the machinery instead, so nothing has
   to remember. This is why the returning arrows land on a decision block,
   and why recovery on opening is not a step bolted to the front of a run.
-- **They need landscape now** (#49-new). The original lock was portrait.
-  The calendar is allowed to turn. The other pages still stay upright
-  until he has looked at them in landscape.
+- **Landscape is an optional view** (Patrick, #50-new). It does not
+  force rotating the phone. **Only 0 and 90**; 180 and 270 are out
+  because the island and the home indicator stay put and cover the
+  view. The same limits on the calendar. **The header stays at the
+  top of the normal portrait view** — on the right in landscape,
+  which is the island — **as the portrait header itself**: original
+  place and shape, the round buttons, the title in the middle, not
+  restacked down the side. Titles stay the same way up as in
+  portrait because the whole header is rotated as a unit. One-
+  character vertical titles are out. **The Bridge lines stay with
+  the headers.** Pages that open from other places turn with the
+  page, in the same window. The calendar month grid was not rebuilt.
+  **The header buttons should rotate in-place on the header**
+  (Patrick, #50-new). Not built yet. Next sitting.
 
 ## What is open in front of it
 
-**The calendar page is in.** Landscape on the calendar waits for a
-fresh simulator build. Other pages are still held upright; he wants
-to see them in landscape too.
+**The header buttons should rotate in-place on the header**
+(Patrick, #50-new). Landscape is otherwise in. Next sitting.
 
 **The build sheets are the pattern for this work** — each self-contained,
 carrying the answers themselves rather than pointing at other documents,
@@ -330,4 +341,4 @@ replaces; never rename anything to or from `index.html` there (see
 including the eleven build sheets. `docs/index.md` says which file is
 the home. He calls them working documents; live desk means the same
 thing. This was written in an App-Docs session, 2026-08-31. This
-session is #49-new.
+session is #50-new.

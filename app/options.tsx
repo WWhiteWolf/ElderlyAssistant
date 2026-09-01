@@ -1,10 +1,9 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Bridge from '../components/Bridge';
 import AddWherePopup from '../components/AddWherePopup';
 import OptionCaseBody from '../components/OptionCaseBody';
+import { PageFrame } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 import { emptyOptionSettings, OPTION_CASES, type OptionSettings } from '../modules/option-cases';
 
@@ -19,34 +18,36 @@ export default function OptionsScreen() {
 
     return (
         <View style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
-                <View style={styles.header}>
-                    {openCase ? (
-                        <TouchableOpacity onPress={() => setOpenId(null)} style={styles.headerBtn}>
-                            <Text style={styles.headerBtnText}>Back</Text>
-                        </TouchableOpacity>
-                    ) : (
-                        <TouchableOpacity
-                            onPress={() => {
-                                if (router.canDismiss()) router.dismissAll();
-                                router.replace('/home');
-                            }}
-                            style={styles.headerBtn}
-                        >
-                            <Text style={styles.headerBtnText}>Home</Text>
-                        </TouchableOpacity>
-                    )}
-                    <Text style={styles.title}>{openCase ? openCase.name : 'Options'}</Text>
-                    {openCase ? (
-                        <View style={styles.headerBtn} />
-                    ) : (
-                        <TouchableOpacity onPress={() => setShowWhere(true)} style={styles.headerBtn}>
-                            <Text style={styles.screenBtnText}>+{'\n'}Screen{'\n'} </Text>
-                        </TouchableOpacity>
-                    )}
-                </View>
-            </SafeAreaView>
-            <Bridge />
+            <PageFrame
+                headerColor={theme.header}
+                header={
+                    <View style={styles.header}>
+                        {openCase ? (
+                            <TouchableOpacity onPress={() => setOpenId(null)} style={styles.headerBtn}>
+                                <Text style={styles.headerBtnText}>Back</Text>
+                            </TouchableOpacity>
+                        ) : (
+                            <TouchableOpacity
+                                onPress={() => {
+                                    if (router.canDismiss()) router.dismissAll();
+                                    router.replace('/home');
+                                }}
+                                style={styles.headerBtn}
+                            >
+                                <Text style={styles.headerBtnText}>Home</Text>
+                            </TouchableOpacity>
+                        )}
+                        <Text style={styles.title}>{openCase ? openCase.name : 'Options'}</Text>
+                        {openCase ? (
+                            <View style={styles.headerBtn} />
+                        ) : (
+                            <TouchableOpacity onPress={() => setShowWhere(true)} style={styles.headerBtn}>
+                                <Text style={styles.screenBtnText}>+{'\n'}Screen{'\n'} </Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
+                }
+            >
             {openCase ? (
                 <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
                     <OptionCaseBody
@@ -74,6 +75,7 @@ export default function OptionsScreen() {
                     </View>
                 </ScrollView>
             )}
+            </PageFrame>
             <AddWherePopup
                 visible={showWhere}
                 onClose={() => setShowWhere(false)}

@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Cover } from '../components/Cover';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
     Alert,
-    Modal,
     ScrollView,
     StyleSheet,
     Text,
@@ -14,8 +14,7 @@ import {
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Bridge from '../components/Bridge';
+import { PageFrame } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 
 interface VaultItem {
@@ -262,43 +261,42 @@ export default function VaultScreen() {
 
     return (
         <GestureHandlerRootView style={styles.container}>
-            {/* #62: no edges prop (default all edges), matching the seven taller-header
-                pages — Patrick standardized on the taller header look. */}
-            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
-                <View style={styles.header}>
-                    {/* One page, two states, so the left button says where it
-                        actually goes. Inside a category it steps back to the
-                        category list, which is what the "All Categories" row
-                        under the header used to do; on the list itself it leaves
-                        the Vault. Going home pops the page rather than replacing
-                        it — the Vault is only ever entered from Home, so it is
-                        the same destination either way, but popping is what the
-                        rest of the app does. */}
-                    {selectedCategory ? (
-                        <TouchableOpacity onPress={() => setSelectedCategory(null)} style={styles.headerBtn}>
-                            <Text style={styles.headerBtnText}>Back</Text>
-                        </TouchableOpacity>
-                    ) : (
-                        <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
-                            <Text style={styles.headerBtnText}>Home</Text>
-                        </TouchableOpacity>
-                    )}
-                    <Text style={styles.title}>
-                        {selectedCategory ? getCategoryData(selectedCategory)?.name : 'Vault 🔒'}
-                    </Text>
-                    {selectedCategory ? (
-                        <TouchableOpacity onPress={() => { resetForm(); setShowAddItem(true); }} style={styles.headerBtn}>
-                            <Text style={styles.headerBtnText}>+ Add</Text>
-                        </TouchableOpacity>
-                    ) : (
-                        <TouchableOpacity onPress={() => { setNewCategoryName(''); setShowAddCategory(true); }} style={styles.headerBtn}>
-                            <Text style={styles.headerBtnText}>+ Add</Text>
-                        </TouchableOpacity>
-                    )}
-                </View>
-            </SafeAreaView>
-
-            <Bridge />
+            <PageFrame
+                headerColor={theme.header}
+                header={
+                    <View style={styles.header}>
+                        {/* One page, two states, so the left button says where it
+                            actually goes. Inside a category it steps back to the
+                            category list, which is what the "All Categories" row
+                            under the header used to do; on the list itself it leaves
+                            the Vault. Going home pops the page rather than replacing
+                            it — the Vault is only ever entered from Home, so it is
+                            the same destination either way, but popping is what the
+                            rest of the app does. */}
+                        {selectedCategory ? (
+                            <TouchableOpacity onPress={() => setSelectedCategory(null)} style={styles.headerBtn}>
+                                <Text style={styles.headerBtnText}>Back</Text>
+                            </TouchableOpacity>
+                        ) : (
+                            <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
+                                <Text style={styles.headerBtnText}>Home</Text>
+                            </TouchableOpacity>
+                        )}
+                        <Text style={styles.title}>
+                            {selectedCategory ? getCategoryData(selectedCategory)?.name : 'Vault 🔒'}
+                        </Text>
+                        {selectedCategory ? (
+                            <TouchableOpacity onPress={() => { resetForm(); setShowAddItem(true); }} style={styles.headerBtn}>
+                                <Text style={styles.headerBtnText}>+ Add</Text>
+                            </TouchableOpacity>
+                        ) : (
+                            <TouchableOpacity onPress={() => { setNewCategoryName(''); setShowAddCategory(true); }} style={styles.headerBtn}>
+                                <Text style={styles.headerBtnText}>+ Add</Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
+                }
+            >
 
             {!selectedCategory ? (
                 <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
@@ -368,9 +366,10 @@ export default function VaultScreen() {
                     ))}
                 </ScrollView>
             )}
+            </PageFrame>
 
             {showAddItem && (
-                <Modal transparent animationType="slide" visible={showAddItem}>
+                <Cover visible={showAddItem}>
                     <View style={styles.modalOverlay}>
                         <View style={styles.modalBox}>
                             <ScrollView showsVerticalScrollIndicator={false}>
@@ -396,11 +395,11 @@ export default function VaultScreen() {
                             </ScrollView>
                         </View>
                     </View>
-                </Modal>
+                </Cover>
             )}
 
             {showAddCategory && (
-                <Modal transparent animationType="slide" visible={showAddCategory}>
+                <Cover visible={showAddCategory}>
                     <View style={styles.modalOverlay}>
                         <View style={styles.modalBox}>
                             <Text style={styles.modalTitle}>{editCategory ? 'Rename Category' : 'New Category'}</Text>
@@ -418,7 +417,7 @@ export default function VaultScreen() {
                             <TextInput style={styles.input} value={newCategoryName} onChangeText={setNewCategoryName} placeholder="Enter category name..." placeholderTextColor={theme.mutedText} autoFocus={true} />
                         </View>
                     </View>
-                </Modal>
+                </Cover>
             )}
         </GestureHandlerRootView>
     );

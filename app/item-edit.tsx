@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl from '../components/DateTimeControl';
-import Bridge from '../components/Bridge';
+import { PageFrame } from '../components/PageFrame';
 import ScreenOptionsSheet from '../components/ScreenOptionsSheet';
 import { Theme, useTheme } from '../constants/Themes';
 import {
@@ -479,28 +479,30 @@ export default function ItemEditScreen() {
 
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={goBack} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>Back</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.title}>{editingId ? 'Edit' : 'New'}</Text>
-                    {kindOptions.length > 0 ? (
-                        <TouchableOpacity
-                            onPress={() => {
-                                setOptionsStartId(null);
-                                setShowOptions(true);
-                            }}
-                            style={styles.headerBtn}
-                        >
-                            <Text style={styles.headerBtnText} numberOfLines={1} adjustsFontSizeToFit>+ OPT</Text>
+            <PageFrame
+                headerColor={theme.header}
+                header={
+                    <View style={styles.header}>
+                        <TouchableOpacity onPress={goBack} style={styles.headerBtn}>
+                            <Text style={styles.headerBtnText}>Back</Text>
                         </TouchableOpacity>
-                    ) : (
-                        <View style={styles.headerBtn} />
-                    )}
-                </View>
-            </SafeAreaView>
-            <Bridge />
+                        <Text style={styles.title}>{editingId ? 'Edit' : 'New'}</Text>
+                        {kindOptions.length > 0 ? (
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setOptionsStartId(null);
+                                    setShowOptions(true);
+                                }}
+                                style={styles.headerBtn}
+                            >
+                                <Text style={styles.headerBtnText} numberOfLines={1} adjustsFontSizeToFit>+ OPT</Text>
+                            </TouchableOpacity>
+                        ) : (
+                            <View style={styles.headerBtn} />
+                        )}
+                    </View>
+                }
+            >
             <ScrollView contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">
                 <View style={styles.modalBtns}>
                     <TouchableOpacity style={styles.cancelBtn} onPress={goBack}>
@@ -632,6 +634,7 @@ export default function ItemEditScreen() {
                     </>
                 )}
             </ScrollView>
+            </PageFrame>
             <ScreenOptionsSheet
                 visible={showOptions}
                 cases={kindOptions}

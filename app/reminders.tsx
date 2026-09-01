@@ -14,15 +14,14 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
     AppState,
-    Modal,
     ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Bridge from '../components/Bridge';
+import { Cover } from '../components/Cover';
+import { PageFrame } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 import { CEILING } from '../scheduler/reconcile';
 import {
@@ -98,17 +97,18 @@ export default function RemindersScreen() {
 
     return (
         <View style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
-                        <Text style={styles.headerBtnText}>Back</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.title}>Scheduled Reminders</Text>
-                    <View style={styles.headerSpacer} />
-                </View>
-            </SafeAreaView>
-
-            <Bridge />
+            <PageFrame
+                headerColor={theme.header}
+                header={
+                    <View style={styles.header}>
+                        <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
+                            <Text style={styles.headerBtnText}>Back</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.title}>Scheduled Reminders</Text>
+                        <View style={styles.headerSpacer} />
+                    </View>
+                }
+            >
 
             <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 16 }}>
                 {/* The count sits directly under the header because the number is
@@ -171,8 +171,9 @@ export default function RemindersScreen() {
                     </View>
                 )}
             </ScrollView>
+            </PageFrame>
 
-            <Modal transparent={true} animationType="fade" visible={chosen !== null}>
+            <Cover visible={chosen !== null}>
                 <View style={styles.modalOverlay}>
                     <View style={styles.detailModal}>
                         <ScrollView>
@@ -223,7 +224,7 @@ export default function RemindersScreen() {
                         </TouchableOpacity>
                     </View>
                 </View>
-            </Modal>
+            </Cover>
         </View>
     );
 }

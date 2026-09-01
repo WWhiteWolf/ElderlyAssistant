@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import Bridge from './Bridge';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Cover } from './Cover';
 import OptionCaseBody from './OptionCaseBody';
+import { PageFrame } from './PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 import type { OptionCase, OptionSettings } from '../modules/option-cases';
 
@@ -36,27 +36,28 @@ export default function ScreenOptionsSheet({
     }, [visible, startId]);
 
     return (
-        <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-            <SafeAreaProvider>
+        <Cover visible={visible}>
                 <View style={styles.container}>
-                    <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
-                        <View style={styles.header}>
-                            {openCase ? (
-                                <TouchableOpacity onPress={() => setOpenId(null)} style={styles.headerBtn}>
-                                    <Text style={styles.headerBtnText}>Back</Text>
+                    <PageFrame
+                        headerColor={theme.header}
+                        header={
+                            <View style={styles.header}>
+                                {openCase ? (
+                                    <TouchableOpacity onPress={() => setOpenId(null)} style={styles.headerBtn}>
+                                        <Text style={styles.headerBtnText}>Back</Text>
+                                    </TouchableOpacity>
+                                ) : (
+                                    <TouchableOpacity onPress={onClose} style={styles.headerBtn}>
+                                        <Text style={styles.headerBtnText}>Back</Text>
+                                    </TouchableOpacity>
+                                )}
+                                <Text style={styles.title}>{openCase ? openCase.name : 'Options'}</Text>
+                                <TouchableOpacity onPress={onDone} style={styles.headerBtn}>
+                                    <Text style={styles.headerBtnText}>Done</Text>
                                 </TouchableOpacity>
-                            ) : (
-                                <TouchableOpacity onPress={onClose} style={styles.headerBtn}>
-                                    <Text style={styles.headerBtnText}>Back</Text>
-                                </TouchableOpacity>
-                            )}
-                            <Text style={styles.title}>{openCase ? openCase.name : 'Options'}</Text>
-                            <TouchableOpacity onPress={onDone} style={styles.headerBtn}>
-                                <Text style={styles.headerBtnText}>Done</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </SafeAreaView>
-                    <Bridge />
+                            </View>
+                        }
+                    >
                     {openCase ? (
                         <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
                             <OptionCaseBody
@@ -91,9 +92,9 @@ export default function ScreenOptionsSheet({
                             ) : null}
                         </ScrollView>
                     )}
+                    </PageFrame>
                 </View>
-            </SafeAreaProvider>
-        </Modal>
+        </Cover>
     );
 }
 
