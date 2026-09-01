@@ -326,11 +326,11 @@ export function runTranslatorCadenceTests(): void {
         );
     });
 
-    test('One Time from its own page keeps holidays, time zone and shading', () => {
+    test('One Time from its own page keeps holidays and time zone', () => {
         assertSame(
             optionCasesForKind('oneTime').map((one) => one.id),
-            ['holidays', 'timezone', 'shading'],
-            'One Time on its own page keeps Weekly\'s three',
+            ['holidays', 'timezone'],
+            'One Time on its own page keeps Weekly\'s holidays and time zone',
         );
     });
 }

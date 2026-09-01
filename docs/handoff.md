@@ -16,6 +16,18 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
+**#49-new built the calendar page.** Home has a Calendar tile next to
+Daily. A month fills the screen except the header. A tap on a day
+opens that day’s names. A tap on a name opens the item. The Options
+Calendar shading row is out; the saved field stays. Names in a day
+box scroll vertically only. The suite is 460 of 460.
+
+**They need landscape now** (Patrick, #49-new). The app had been
+locked to portrait from the beginning. The calendar is allowed to
+turn; the other pages still stay upright. The simulator app has to
+be built again for the phone to accept the turn. He wants to see
+what the other pages do in landscape as well.
+
 **#47-new is done.** The selling description is a good start and was
 left. `docs/Memory features.docx` is the inventory, not the sell. The
 writing is true, easy to follow, warm, and interesting — the app on
@@ -186,8 +198,15 @@ They are kept here because they still decide things.
   the wrong shape.** Build it into the machinery instead, so nothing has
   to remember. This is why the returning arrows land on a decision block,
   and why recovery on opening is not a step bolted to the front of a run.
+- **They need landscape now** (#49-new). The original lock was portrait.
+  The calendar is allowed to turn. The other pages still stay upright
+  until he has looked at them in landscape.
 
 ## What is open in front of it
+
+**The calendar page is in.** Landscape on the calendar waits for a
+fresh simulator build. Other pages are still held upright; he wants
+to see them in landscape too.
 
 **The build sheets are the pattern for this work** — each self-contained,
 carrying the answers themselves rather than pointing at other documents,
@@ -310,5 +329,5 @@ replaces; never rename anything to or from `index.html` there (see
 **Working documents live in `docs`.** History lives in `docs-ref`,
 including the eleven build sheets. `docs/index.md` says which file is
 the home. He calls them working documents; live desk means the same
-thing. This was written in an App-Docs session, 2026-08-31. The next
-Memory session is #48-new.
+thing. This was written in an App-Docs session, 2026-08-31. This
+session is #49-new.

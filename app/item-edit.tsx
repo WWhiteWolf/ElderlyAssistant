@@ -21,7 +21,6 @@ import {
     hourMinuteOf,
     loadReminderItems,
     saveReminderItems,
-    shadedDaysForItem,
     type LeadReminder,
     type ReminderItem,
     type ReminderKind,
@@ -83,7 +82,25 @@ function kindFrom(kind?: string, returnTo?: string): ReminderKind {
     return 'daily';
 }
 
-function pathFor(returnTo: string | undefined): Href {
+function pathFor(
+    returnTo: string | undefined,
+    calendar?: {
+        viewYear?: string;
+        viewMonth?: string;
+        dayYear?: string;
+        dayMonth?: string;
+        dayDate?: string;
+    },
+): Href {
+    if (returnTo === 'calendar') {
+        const params: Record<string, string> = {};
+        if (calendar?.viewYear != null && calendar.viewYear !== '') params.viewYear = calendar.viewYear;
+        if (calendar?.viewMonth != null && calendar.viewMonth !== '') params.viewMonth = calendar.viewMonth;
+        if (calendar?.dayYear != null && calendar.dayYear !== '') params.dayYear = calendar.dayYear;
+        if (calendar?.dayMonth != null && calendar.dayMonth !== '') params.dayMonth = calendar.dayMonth;
+        if (calendar?.dayDate != null && calendar.dayDate !== '') params.dayDate = calendar.dayDate;
+        return { pathname: '/calendar', params } as unknown as Href;
+    }
     switch (returnTo) {
         case 'weekly': return '/weekly' as Href;
         case 'monthly': return '/monthly' as Href;
@@ -208,14 +225,26 @@ export default function ItemEditScreen() {
     const router = useRouter();
     const theme = useTheme();
     const styles = makeStyles(theme);
-    const { id, kind, returnTo } = useLocalSearchParams<{
+    const { id, kind, returnTo, viewYear, viewMonth, dayYear, dayMonth, dayDate } = useLocalSearchParams<{
         id?: string | string[];
         kind?: string | string[];
         returnTo?: string | string[];
+        viewYear?: string | string[];
+        viewMonth?: string | string[];
+        dayYear?: string | string[];
+        dayMonth?: string | string[];
+        dayDate?: string | string[];
     }>();
     const editingId = asParam(id) || null;
     const page = asParam(returnTo) || 'daily';
     const startKind = kindFrom(asParam(kind), page);
+    const calendarReturn = page === 'calendar' ? {
+        viewYear: asParam(viewYear),
+        viewMonth: asParam(viewMonth),
+        dayYear: asParam(dayYear),
+        dayMonth: asParam(dayMonth),
+        dayDate: asParam(dayDate),
+    } : undefined;
 
     const [loaded, setLoaded] = useState(false);
     const [editKind, setEditKind] = useState<ReminderKind>(startKind);
@@ -250,7 +279,7 @@ export default function ItemEditScreen() {
 
     const goBack = () => {
         if (router.canDismiss()) router.dismissAll();
-        router.replace(pathFor(page));
+        router.replace(pathFor(page, calendarReturn));
     };
 
     const afterSave = () => {
@@ -258,7 +287,7 @@ export default function ItemEditScreen() {
         if (!editingId && editKind === 'oneTime' && page === 'daily') {
             router.replace('/onetime' as Href);
         } else {
-            router.replace(pathFor(page));
+            router.replace(pathFor(page, calendarReturn));
         }
     };
 
@@ -448,26 +477,6 @@ export default function ItemEditScreen() {
         : editKind === 'weekly' ? 'e.g. Trash, Laundry'
         : 'What needs to be done?';
 
-    const shadeWhen = new Date();
-    const shadedDays = optionSettings.shadeCalendar
-        ? shadedDaysForItem(assembleFormItem({
-            existing,
-            id: existing?.id ?? 'preview',
-            name: tempName.trim() || 'preview',
-            editKind,
-            pendingDay,
-            pendingTime,
-            pendingDate,
-            dateSet,
-            timeSet,
-            reminders,
-            intervalMonths,
-            optionSettings,
-            monthlyPattern,
-            note,
-        }), shadeWhen.getFullYear(), shadeWhen.getMonth())
-        : [];
-
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
             <SafeAreaView style={{ backgroundColor: theme.header }} edges={['top']}>
@@ -636,7 +645,6 @@ export default function ItemEditScreen() {
                     setMonthlyPattern(last);
                     setOptionSettings(withLastMonthlyPattern(next, last));
                 }}
-                shadedDays={shadedDays}
                 startId={optionsStartId}
                 onClose={() => setShowOptions(false)}
                 onDone={() => setShowOptions(false)}

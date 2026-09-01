@@ -26,6 +26,7 @@ const modules = [
   { id: 'quarterly', label: 'Quarterly', icon: '🔭' },
   { id: 'monthly', label: 'Monthly', icon: '🔭' },
   { id: 'weekly', label: 'Weekly', icon: '🗓️' },
+  { id: 'calendar', label: 'Calendar', icon: '📅' },
   { id: 'daily', label: 'Daily', icon: '☀️' },
 ];
 
@@ -49,6 +50,7 @@ export default function HomeScreen() {
     const handleTile = (id: string) => {
         if (id === 'shopping') router.push('/shopping');
         if (id === 'timer') router.push('/timer');
+        if (id === 'calendar') router.push('/calendar' as Href);
         if (id === 'daily') router.push('/daily' as Href);
         if (id === 'weekly') router.push('/weekly' as Href);
         if (id === 'monthly') router.push('/monthly' as Href);

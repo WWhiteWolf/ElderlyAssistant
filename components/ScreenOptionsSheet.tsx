@@ -11,7 +11,6 @@ export default function ScreenOptionsSheet({
     cases,
     settings,
     onChange,
-    shadedDays,
     startId,
     warning,
     onClose,
@@ -21,7 +20,6 @@ export default function ScreenOptionsSheet({
     cases: OptionCase[];
     settings: OptionSettings;
     onChange: (next: OptionSettings) => void;
-    shadedDays: number[];
     startId?: string | null;
     warning?: string;
     onClose: () => void;
@@ -65,7 +63,6 @@ export default function ScreenOptionsSheet({
                                 openCase={openCase}
                                 settings={settings}
                                 onChange={onChange}
-                                shadedDays={shadedDays}
                             />
                         </ScrollView>
                     ) : (

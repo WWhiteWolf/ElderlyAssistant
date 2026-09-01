@@ -1,6 +1,6 @@
-import { Switch, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Theme, useTheme } from '../constants/Themes';
-import { DAY_NAMES, MONTH_NAMES } from '../modules/reminder-items';
+import { DAY_NAMES } from '../modules/reminder-items';
 import {
     phoneTimeZone,
     type HolidayMove,
@@ -21,12 +21,10 @@ export default function OptionCaseBody({
     openCase,
     settings,
     onChange,
-    shadedDays,
 }: {
     openCase: OptionCase;
     settings: OptionSettings;
     onChange: (next: OptionSettings) => void;
-    shadedDays: number[];
 }) {
     const theme = useTheme();
     const styles = makeStyles(theme);
@@ -80,20 +78,6 @@ export default function OptionCaseBody({
                         value={settings.shiftedChoice}
                         onChange={(shiftedChoice) => set({ shiftedChoice })}
                     />
-                )}
-                {openCase.id === 'shading' && (
-                    <>
-                        <View style={styles.switchRow}>
-                            <Text style={styles.settingLabel}>Shade the calendar</Text>
-                            <Switch
-                                value={settings.shadeCalendar}
-                                onValueChange={(shadeCalendar) => set({ shadeCalendar })}
-                                trackColor={{ false: theme.switchTrackOff, true: theme.switchTrackOn }}
-                                thumbColor={theme.switchThumb}
-                            />
-                        </View>
-                        <ShadeMonth days={shadedDays} on={settings.shadeCalendar} styles={styles} />
-                    </>
                 )}
                 {openCase.id === 'secondThursday' && (
                     <>
@@ -171,52 +155,6 @@ function ChipRow<T extends string>({
     );
 }
 
-function ShadeMonth({
-    days,
-    on,
-    styles,
-}: {
-    days: number[];
-    on: boolean;
-    styles: ReturnType<typeof makeStyles>;
-}) {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const startPad = new Date(year, month, 1).getDay();
-    const lastDay = new Date(year, month + 1, 0).getDate();
-    const cells: (number | null)[] = [
-        ...Array.from({ length: startPad }, () => null),
-        ...Array.from({ length: lastDay }, (_, i) => i + 1),
-    ];
-    while (cells.length % 7 !== 0) cells.push(null);
-    const rows: (number | null)[][] = [];
-    for (let i = 0; i < cells.length; i += 7) rows.push(cells.slice(i, i + 7));
-
-    return (
-        <View style={styles.cal}>
-            <Text style={styles.calTitle}>{MONTH_NAMES[month]} {year}</Text>
-            <View style={styles.calRow}>
-                {DAY_NAMES.map((d) => (
-                    <Text key={d} style={styles.calDow}>{d.slice(0, 1)}</Text>
-                ))}
-            </View>
-            {rows.map((row, r) => (
-                <View key={r} style={styles.calRow}>
-                    {row.map((day, c) => {
-                        const shaded = on && day != null && days.includes(day);
-                        return (
-                            <View key={c} style={[styles.calCell, shaded && styles.calCellOn]}>
-                                <Text style={[styles.calDay, shaded && styles.calDayOn]}>{day ?? ''}</Text>
-                            </View>
-                        );
-                    })}
-                </View>
-            ))}
-        </View>
-    );
-}
-
 const makeStyles = (t: Theme) =>
     StyleSheet.create({
         settingCard: {
@@ -230,7 +168,6 @@ const makeStyles = (t: Theme) =>
         caseBody: { padding: 16, gap: 12 },
         hint: { fontSize: 16, color: t.bodyText, lineHeight: 22 },
         settingLabel: { flex: 1, fontSize: 16, color: t.cardTitle, fontWeight: '500' },
-        switchRow: { flexDirection: 'row', alignItems: 'center' },
         zoneName: { fontSize: 14, color: t.mutedText },
         chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
         chip: {
@@ -256,18 +193,4 @@ const makeStyles = (t: Theme) =>
         },
         stepBtnText: { fontSize: 18, color: t.headerButton, fontWeight: '600' },
         stepValue: { fontSize: 18, color: t.cardTitle, fontWeight: '600', minWidth: 24, textAlign: 'center' },
-        cal: { gap: 4 },
-        calTitle: { fontSize: 16, color: t.cardTitle, fontWeight: '500', marginBottom: 4 },
-        calRow: { flexDirection: 'row' },
-        calDow: { flex: 1, textAlign: 'center', fontSize: 12, color: t.mutedText, paddingVertical: 4 },
-        calCell: {
-            flex: 1,
-            aspectRatio: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 8,
-        },
-        calCellOn: { backgroundColor: t.buttonPrimary },
-        calDay: { fontSize: 14, color: t.bodyText },
-        calDayOn: { color: t.buttonPrimaryText, fontWeight: '600' },
     });

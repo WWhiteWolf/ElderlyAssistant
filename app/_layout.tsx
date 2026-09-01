@@ -494,7 +494,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider>
-    <Stack>
+    <Stack screenOptions={{ orientation: 'portrait_up' }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="home" options={{ headerShown: false }} />
       <Stack.Screen name="shopping" options={{ headerShown: false }} />
@@ -504,6 +504,7 @@ export default function RootLayout() {
       <Stack.Screen name="backup" options={{ headerShown: false }} />
       <Stack.Screen name="memorytest" options={{ headerShown: false }} />
       <Stack.Screen name="reminders" options={{ headerShown: false }} />
+      <Stack.Screen name="calendar" options={{ headerShown: false, orientation: 'all' }} />
       <Stack.Screen name="daily" options={{ headerShown: false }} />
       <Stack.Screen name="item-edit" options={{ headerShown: false }} />
       <Stack.Screen name="weekly" options={{ headerShown: false }} />

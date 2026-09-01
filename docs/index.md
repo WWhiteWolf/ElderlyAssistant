@@ -51,6 +51,10 @@ just because it is listed.
 - **`pending.rtf`** — old reading copy. Not kept current. Do not edit.
 - **`make-pending-rtf.py`** — made that rtf. Retired. Do not run.
 
+## Reference — in `docs-ref`
+
+- **`chalendar.md`** — the RFC note and the calendar page picture, and the ref for `build-sheet-chalendar.md`.
+
 ## Build sheets — in `docs-ref/build-sheets`
 
 History, not the road. Record of what was built and why.
@@ -66,6 +70,7 @@ History, not the road. Record of what was built and why.
 - **`build-sheet-lead-moments.md`** — Super-3-new. Lead moments.
 - **`build-sheet-optional-date.md`** — Super-4-new / #27-new. A To-Do with no date and no time.
 - **`build-sheet-input-page.md`** — #29-new. The one Input page. Plan dropped. Page came out at #35-new.
+- **`build-sheet-chalendar.md`** — #48-new. The calendar page. Built at #49-new.
 
 ## Not here any more
 

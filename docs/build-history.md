@@ -3242,6 +3242,50 @@ note is in App-Docs `Publishing-Strategy.docx`.
 No code. He will commit.
 
 
+## #48-new (2026-09-01): calendar build sheet written
+
+The picture and the RFC note are in `docs-ref/chalendar.md`. The sheet
+is `docs-ref/build-sheets/build-sheet-chalendar.md`. This session did
+not touch code. #49-new was named to build from that sheet.
+
+The calendar option can come out. The calendar fills the screen except
+the header, which stays at the top of the phone (the right side in
+landscape). Each day’s box shows the date and a tight one-line list of
+item names, scrollable vertically, and horizontally if practical. Done
+and Snooze are not on the calendar or on that day’s view; they are
+marked on the item after a tap opens it. Arrows change the month. The
+current month is shown when the calendar is opened.
+
+
+## #49-new (2026-09-01): calendar page built
+
+**Built from the sheet.** A Calendar tile sits next to Daily on Home,
+📅, and opens `/calendar`. The month fills the screen except the
+header. A tap on a day opens that day’s names. A tap on a name opens
+the item. Header Back on the item returns to that day’s list on the
+month you came from. The Options **Calendar shading** row is out. The
+saved field `shadeCalendar` stays on items and is not migrated off.
+The calendar shows every dated item’s days whether or not that field
+was on. No every-day Daily items. No Extended items. No + Add on the
+calendar. No Done or Snooze on the month or on that day’s list.
+
+**Names in a day box** scroll vertically only, one line each. A second
+scroll across the name fought the list in that small box.
+
+**The suite is 460 of 460.** One check still named shading as Weekly’s
+third case. That assertion is now holidays and time zone. TypeScript
+still reports two older scheduler errors that this session did not
+touch. The generated router list does not know `/calendar` yet.
+
+**Portrait on the simulator was all right.** Rotating did not shift
+the lettering, because the app was locked to portrait. That lock was
+the original decision. They need landscape now. The calendar is
+allowed to turn; the other pages still stay upright. The iPhone list
+of allowed turns now includes landscape. The simulator app has to be
+built again for the phone to accept the turn. He wants to see what
+the other pages do in landscape as well. That look is not done yet.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

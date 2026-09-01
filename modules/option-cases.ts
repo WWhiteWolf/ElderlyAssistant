@@ -60,12 +60,6 @@ export const OPTION_CASES: OptionCase[] = [
         body: 'When a day does not exist in that month, the last day that exists is used. An extra tap then chooses that day or the next day, not skip.',
     },
     {
-        id: 'shading',
-        icon: '📅',
-        name: 'Calendar shading',
-        body: 'Shade the calendar so a shifted or holiday-moved day is visible on the page.',
-    },
-    {
         id: 'secondThursday',
         icon: '📆',
         name: 'A second Thursday',
@@ -79,7 +73,7 @@ export const OPTION_CASES: OptionCase[] = [
     },
 ];
 
-const CONNECTED_IDS = ['holidays', 'timezone', 'shading'];
+const CONNECTED_IDS = ['holidays', 'timezone'];
 const TIMEZONE_IDS = ['timezone'];
 const MONTHLY_IDS = [
     ...CONNECTED_IDS,
@@ -127,10 +121,6 @@ export function appliedOptionRows(settings: OptionSettings): AppliedOption[] {
     if (!settings.floatsWithPhone) {
         const one = named('timezone');
         if (one) rows.push({ id: one.id, icon: one.icon, name: one.name, value: 'Switch off' });
-    }
-    if (settings.shadeCalendar) {
-        const one = named('shading');
-        if (one) rows.push({ id: one.id, icon: one.icon, name: one.name, value: '' });
     }
     if (settings.shiftedChoice) {
         const one = named('shifted');
@@ -316,7 +306,7 @@ export function keepOptionsForKind(item: ReminderItem, kind: string): ReminderIt
     const out = { ...item };
     delete out.floatDay;
     if (!ids.has('holidays')) delete out.holidayMove;
-    if (!ids.has('shading')) delete out.shadeCalendar;
+    // The calendar page replaced the shading row, but the saved field stays.
     if (!ids.has('shifted')) delete out.shiftedChoice;
     if (!ids.has('secondThursday')) {
         delete out.weekdayOrdinal;

@@ -4,25 +4,25 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-08-31, at the close of #47-new.
+Last written: 2026-09-01, at the close of #49-new.
 
 ## Read this first
 
-- **The next Memory session is #48-new.**
-- He is living with the #45-new build on the phone.
-- The selling description is a good start and was left. Substance is
-  `docs/Memory features.docx`. Comparables note is in App-Docs
-  `Publishing-Strategy.docx`.
+- **The next Memory session is #50-new.**
+- He is living with the #45-new build on the phone. The calendar page is
+  not on that load.
+- They need landscape now. The calendar is allowed to turn. Other pages
+  still stay upright. A fresh simulator build is needed before a turn
+  will take.
 
 ## What is in
 
-The store description was drafted from the features file and left. The
-shelf is repeating reminders and personal tasks, not elderly apps. No
-code.
+The calendar page, from the #48-new sheet. Options Calendar shading row
+out. He wants to see what the other pages do in landscape as well.
 
 ## What is next
 
-The road to releasing Memory. Patrick leads.
+Look at the other pages in landscape. Patrick leads.
 
 ## Do not reopen
 
@@ -33,4 +33,5 @@ Note as an Options case. Then or Next Day as a saved recipe. A missing
 day and a holiday on the same item. Look Ahead's banner delay, My
 Week's delay, and +1 Day on those banners. A mass change of the
 opening files. Putting the one shared list on the selling page. Timer
-or Memory Test on the selling page.
+or Memory Test on the selling page. Horizontal scroll in a day’s box.
+Migrating `shadeCalendar` off items.
