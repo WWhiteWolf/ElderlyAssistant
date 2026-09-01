@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl from '../components/DateTimeControl';
-import { PageFrame } from '../components/PageFrame';
+import { HeaderButton, PageFrame } from '../components/PageFrame';
 import ScreenOptionsSheet from '../components/ScreenOptionsSheet';
 import { Theme, useTheme } from '../constants/Themes';
 import {
@@ -483,22 +483,21 @@ export default function ItemEditScreen() {
                 headerColor={theme.header}
                 header={
                     <View style={styles.header}>
-                        <TouchableOpacity onPress={goBack} style={styles.headerBtn}>
+                        <HeaderButton onPress={goBack}>
                             <Text style={styles.headerBtnText}>Back</Text>
-                        </TouchableOpacity>
+                        </HeaderButton>
                         <Text style={styles.title}>{editingId ? 'Edit' : 'New'}</Text>
                         {kindOptions.length > 0 ? (
-                            <TouchableOpacity
+                            <HeaderButton
                                 onPress={() => {
                                     setOptionsStartId(null);
                                     setShowOptions(true);
                                 }}
-                                style={styles.headerBtn}
                             >
                                 <Text style={styles.headerBtnText} numberOfLines={1} adjustsFontSizeToFit>+ OPT</Text>
-                            </TouchableOpacity>
+                            </HeaderButton>
                         ) : (
-                            <View style={styles.headerBtn} />
+                            <HeaderButton />
                         )}
                     </View>
                 }
@@ -674,15 +673,6 @@ const makeStyles = (t: Theme) =>
             fontFamily: 'Georgia',
             flex: 1,
             textAlign: 'center',
-        },
-        headerBtn: {
-            width: 54,
-            height: 54,
-            borderRadius: 27,
-            borderWidth: 1,
-            borderColor: t.headerButton,
-            alignItems: 'center',
-            justifyContent: 'center',
         },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
         form: { padding: 16, paddingBottom: 40 },

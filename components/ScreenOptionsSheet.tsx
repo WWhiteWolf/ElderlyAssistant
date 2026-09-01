@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Cover } from './Cover';
 import OptionCaseBody from './OptionCaseBody';
-import { PageFrame } from './PageFrame';
+import { HeaderButton, PageFrame } from './PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 import type { OptionCase, OptionSettings } from '../modules/option-cases';
 
@@ -43,18 +43,18 @@ export default function ScreenOptionsSheet({
                         header={
                             <View style={styles.header}>
                                 {openCase ? (
-                                    <TouchableOpacity onPress={() => setOpenId(null)} style={styles.headerBtn}>
+                                    <HeaderButton onPress={() => setOpenId(null)}>
                                         <Text style={styles.headerBtnText}>Back</Text>
-                                    </TouchableOpacity>
+                                    </HeaderButton>
                                 ) : (
-                                    <TouchableOpacity onPress={onClose} style={styles.headerBtn}>
+                                    <HeaderButton onPress={onClose}>
                                         <Text style={styles.headerBtnText}>Back</Text>
-                                    </TouchableOpacity>
+                                    </HeaderButton>
                                 )}
                                 <Text style={styles.title}>{openCase ? openCase.name : 'Options'}</Text>
-                                <TouchableOpacity onPress={onDone} style={styles.headerBtn}>
+                                <HeaderButton onPress={onDone}>
                                     <Text style={styles.headerBtnText}>Done</Text>
-                                </TouchableOpacity>
+                                </HeaderButton>
                             </View>
                         }
                     >
@@ -116,15 +116,6 @@ const makeStyles = (t: Theme) =>
             fontFamily: 'Georgia',
             flex: 1,
             textAlign: 'center',
-        },
-        headerBtn: {
-            width: 54,
-            height: 54,
-            borderRadius: 27,
-            borderWidth: 1,
-            borderColor: t.headerButton,
-            alignItems: 'center',
-            justifyContent: 'center',
         },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
         scroll: { flex: 1 },

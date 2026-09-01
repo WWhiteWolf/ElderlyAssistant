@@ -3315,6 +3315,40 @@ phone was not touched.
 ones that open from a page.
 
 
+## #51-new (2026-09-01): display features, and Memory asks at start
+
+**The goal was to change some display features on various pages**,
+one at a time.
+
+**Landscape chrome.** The round header buttons turn in place so the
+words sit the right way up; the title still turns with the header.
+The Home badge face does the same. He verified both. Home's badges
+in landscape sit four across and three down, Memory Test last and
+allowed off screen. He said that is good.
+
+**Memory did not ask to show banners at start**, even though the
+handoff said it would. Only Timer and Memory Test asked. After he
+deleted, reloaded, and imported, it still did not ask. The ask is
+now at start, then the scheduler runs. He said that worked.
+
+**Monthly, Quarterly, and Yearly banners** named Look Ahead. They
+now name their own page.
+
+**Three from his external list.** An item with no reminder set no
+longer has Snooze. The row button says Done? until a tap, then the
+green tick; he said that is much clearer. Date deactivating for
+options below was already fixed.
+
+**Pending 2 and 4 were checked.** Neither is done. A failed Daily
+clear-out still does not speak. Misses are still recorded for Daily
+items only.
+
+**Memory Test is temporary and coming out. Timer is isolated
+deliberately.** Neither is a reason to keep the old reminder readers.
+
+The suite stayed 460 of 460. The phone was not touched.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

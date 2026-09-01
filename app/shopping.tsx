@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { PageFrame } from '../components/PageFrame';
+import { HeaderButton, PageFrame } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 
 interface Item {
@@ -95,9 +95,9 @@ export default function ShoppingScreen() {
                 headerColor={theme.header}
                 header={
                     <View style={styles.header}>
-                        <TouchableOpacity onPress={() => { if (router.canDismiss()) router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
+                        <HeaderButton onPress={() => { if (router.canDismiss()) router.dismissAll(); router.replace('/home'); }}>
                             <Text style={styles.headerBtnText}>Home</Text>
-                        </TouchableOpacity>
+                        </HeaderButton>
                         <Text style={styles.title}>Shopping List</Text>
                         <View style={styles.settingsBtn} />
                     </View>
@@ -341,15 +341,6 @@ const makeStyles = (t: Theme) =>
             color: t.buttonPrimaryText,
             fontSize: 22,
             fontWeight: '600',
-        },
-        headerBtn: {
-            width: 54,
-            height: 54,
-            borderRadius: 27,
-            borderWidth: 1,
-            borderColor: t.headerButton,
-            alignItems: 'center',
-            justifyContent: 'center',
         },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
     });

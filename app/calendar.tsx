@@ -8,7 +8,7 @@ import {
     View,
 } from 'react-native';
 import { Theme, useTheme } from '../constants/Themes';
-import { PageFrame } from '../components/PageFrame';
+import { HeaderButton, PageFrame } from '../components/PageFrame';
 import {
     DAY_NAMES,
     loadReminderItems,
@@ -155,13 +155,13 @@ export default function CalendarScreen() {
     const header = (
         <View style={styles.header}>
             {selectedDay ? (
-                <TouchableOpacity onPress={closeDayList} style={styles.headerBtn}>
+                <HeaderButton onPress={closeDayList}>
                     <Text style={styles.headerBtnText}>Back</Text>
-                </TouchableOpacity>
+                </HeaderButton>
             ) : (
-                <TouchableOpacity onPress={goHome} style={styles.headerBtn}>
+                <HeaderButton onPress={goHome}>
                     <Text style={styles.headerBtnText}>Home</Text>
-                </TouchableOpacity>
+                </HeaderButton>
             )}
             {selectedDay ? (
                 <Text style={styles.title} numberOfLines={2} adjustsFontSizeToFit>
@@ -180,7 +180,7 @@ export default function CalendarScreen() {
                     </TouchableOpacity>
                 </View>
             )}
-            <View style={styles.headerBtn} />
+            <HeaderButton />
         </View>
     );
 
@@ -268,15 +268,6 @@ const makeStyles = (t: Theme) =>
             flexDirection: 'row',
             alignItems: 'center',
             paddingBottom: 8,
-        },
-        headerBtn: {
-            width: 54,
-            height: 54,
-            borderRadius: 27,
-            borderWidth: 1,
-            borderColor: t.headerButton,
-            alignItems: 'center',
-            justifyContent: 'center',
         },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
         monthNav: {

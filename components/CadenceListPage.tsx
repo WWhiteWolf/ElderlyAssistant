@@ -14,12 +14,13 @@ import {
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { PageFrame } from './PageFrame';
+import { HeaderButton, PageFrame } from './PageFrame';
 import { Cover } from './Cover';
 import { Theme, useTheme } from '../constants/Themes';
 import {
     dragKindTo,
     formatItemWhen,
+    hasReminderSet,
     loadReminderItems,
     saveReminderItems,
     snoozeLineOf,
@@ -141,15 +142,17 @@ function CadenceItemRow({
                             )}
                         </View>
                     </GestureDetector>
+                    {hasReminderSet(item) ? (
                     <TouchableOpacity style={styles.snoozeRowBtn} onPress={onSnooze}>
                         <Text style={styles.snoozeRowBtnText}>Snooze</Text>
                     </TouchableOpacity>
+                    ) : null}
                     <TouchableOpacity
                         style={[styles.doneBtn, item.completed && styles.doneBtnOn]}
                         onPress={onDone}
                     >
                         <Text style={[styles.doneBtnText, item.completed && styles.doneBtnTextOn]}>
-                            {item.completed ? '✓' : 'Done'}
+                            {item.completed ? '✓' : 'Done?'}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -373,24 +376,22 @@ export default function CadenceListPage({
                 headerColor={theme.header}
                 header={
                     <View style={styles.header}>
-                        <TouchableOpacity
+                        <HeaderButton
                             onPress={() => {
                                 if (router.canDismiss()) router.dismissAll();
                                 router.replace('/home');
                             }}
-                            style={styles.headerBtn}
                         >
                             <Text style={styles.headerBtnText}>Home</Text>
-                        </TouchableOpacity>
+                        </HeaderButton>
                         <Text style={styles.title}>{title}</Text>
-                        <TouchableOpacity
+                        <HeaderButton
                             onPress={() => {
                                 router.push({ pathname: '/item-edit', params: { kind, returnTo } } as Href);
                             }}
-                            style={styles.headerBtn}
                         >
                             <Text style={styles.headerBtnText}>+ Add</Text>
-                        </TouchableOpacity>
+                        </HeaderButton>
                     </View>
                 }
             >
@@ -557,15 +558,6 @@ const makeStyles = (t: Theme) =>
             fontFamily: 'Georgia',
             flex: 1,
             textAlign: 'center',
-        },
-        headerBtn: {
-            width: 54,
-            height: 54,
-            borderRadius: 27,
-            borderWidth: 1,
-            borderColor: t.headerButton,
-            alignItems: 'center',
-            justifyContent: 'center',
         },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
         scroll: { flex: 1 },

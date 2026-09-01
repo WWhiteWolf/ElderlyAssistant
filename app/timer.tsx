@@ -11,7 +11,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { PageFrame } from '../components/PageFrame';
+import { HeaderButton, PageFrame } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 
 Notifications.setNotificationHandler({
@@ -245,9 +245,9 @@ export default function TimerScreen() {
                 headerColor={theme.header}
                 header={
                     <View style={styles.header}>
-                        <TouchableOpacity onPress={() => { if (router.canDismiss()) router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
+                        <HeaderButton onPress={() => { if (router.canDismiss()) router.dismissAll(); router.replace('/home'); }}>
                             <Text style={styles.headerBtnText}>Home</Text>
-                        </TouchableOpacity>
+                        </HeaderButton>
                         <Text style={styles.title}>Timer Alerts</Text>
                         <View style={styles.settingsBtn} />
                     </View>
@@ -515,14 +515,5 @@ const makeStyles = (t: Theme) =>
             borderRadius: 8,
         },
         cancelBtnText: { color: t.buttonDeleteText, fontWeight: '600' },
-        headerBtn: {
-            width: 54,
-            height: 54,
-            borderRadius: 27,
-            borderWidth: 1,
-            borderColor: t.headerButton,
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
     });

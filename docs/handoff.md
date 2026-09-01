@@ -19,8 +19,23 @@ and #30-new all had no entry at all.
 **#50-new put the other pages in landscape.** He looked. Not bad as an
 optional view. All the pages turn, including the ones that open from
 a page. Only 0 and 90. The calendar month grid was not rebuilt.
-**He said the goal was accomplished.** The phone was not touched; he
-is still living with the #45-new load.
+**He said the goal was accomplished.** **Committed** (Patrick, #51-new).
+The phone was not touched; he is still living with the #45-new load.
+
+**#51-new is display features on various pages, one at a time.**
+The first is the header buttons rotating in place on the header
+(Patrick, #50-new). **Built** this sitting. He verified on the
+simulator. The words sit the right way up for landscape, still in
+the same spots. The title stays as it is. **The badge face on Home
+rotates straight** (Patrick, #51-new). Built this sitting. He said
+that is good. **Home's badges in landscape are four across and three
+down**, Memory Test at the bottom; off screen does not matter for
+that one (Patrick, #51-new). Built this sitting. He said that is
+good. **Memory asks at start**, then the scheduler runs; he said
+that worked. **Monthly, Quarterly, and Yearly banners name their
+own page**, not Look Ahead. **No snooze** on an item with no reminder
+set. The row button says **Done?** until a tap, then the green tick.
+Date deactivating for options below was already fixed.
 
 **#49-new built the calendar page.** Home has a Calendar tile next to
 Daily. A month fills the screen except the header. A tap on a day
@@ -48,9 +63,8 @@ has no code and was not opened.
 
 **He is living with this build on the phone.** Old reader files stay
 until each replacement is proved and are not called. **A banner while
-Memory is on screen** now asks to show, the same way Timer already
-does, at app start. He will verify that in the code without the test
-load.
+Memory is on screen** asks to show, the same way Timer already
+does, at app start (#51-new, missing until then).
 
 **Daily through Options are built.** Pages, banners and Siri write
 `reminder_items` through one save. Dual-write is gone. **The morning
@@ -174,8 +188,9 @@ huge input page. The page built at #29-new came out at #35-new.
 
 **The engine is finished and the one list goes through it.** Depth is
 one for every kind. The old readers are still in the project and the
-live run does not call them. The Memory Test's reader still skips the
-common shape. The Timer sits outside the module.
+live run does not call them. **Memory Test is temporary and coming
+out** (Patrick, #51-new). **Timer is isolated deliberately** (Patrick,
+#51-new). Neither is a reason to keep the old reminder readers.
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -211,13 +226,17 @@ They are kept here because they still decide things.
   character vertical titles are out. **The Bridge lines stay with
   the headers.** Pages that open from other places turn with the
   page, in the same window. The calendar month grid was not rebuilt.
-  **The header buttons should rotate in-place on the header**
-  (Patrick, #50-new). Not built yet. Next sitting.
+  **The header buttons rotate in-place on the header**
+  (Patrick, #50-new). The words on the buttons sit the right way
+  up for landscape, still in the same spots. The title stays as
+  it is. Built at #51-new.
 
 ## What is open in front of it
 
-**The header buttons should rotate in-place on the header**
-(Patrick, #50-new). Landscape is otherwise in. Next sitting.
+**The next Memory session is #52-new.** Patrick leads. Pending 2
+and 4 are not done. **Memory Test is temporary and coming out.
+Timer is isolated deliberately.** Neither is a reason to keep the
+old reminder readers (Patrick, #51-new).
 
 **The build sheets are the pattern for this work** — each self-contained,
 carrying the answers themselves rather than pointing at other documents,
@@ -341,4 +360,4 @@ replaces; never rename anything to or from `index.html` there (see
 including the eleven build sheets. `docs/index.md` says which file is
 the home. He calls them working documents; live desk means the same
 thing. This was written in an App-Docs session, 2026-08-31. This
-session is #50-new.
+session is #51-new.

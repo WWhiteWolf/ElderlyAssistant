@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { Stack, useRouter, type Href } from 'expo-router';
 import { useEffect, useRef } from 'react';
-import { AppState } from 'react-native';
+import { AppState, Alert } from 'react-native';
 import { ThemeProvider } from '../constants/Themes';
 import { CoverRoot } from '../components/Cover';
 import * as AppGroup from '../modules/app-group';
@@ -178,12 +178,28 @@ export default function RootLayout() {
   // being hung on a page, because on a cold launch the first page draws long
   // before the run is done — and it is shown from here so it finds Patrick
   // wherever he is, not only on the home page.
+  //
+  // #51-new: ask to show banners while Memory is on screen, the same way
+  // Timer already does, then run the scheduler against that answer.
   useEffect(() => {
-    runScheduler().then(showHealthNotice);
+    let cancelled = false;
+    (async () => {
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (cancelled) return;
+      if (status !== 'granted') {
+        Alert.alert('Permission Needed', 'Please enable notifications in settings.');
+      }
+      await runScheduler();
+      if (cancelled) return;
+      if (status === 'granted') await showHealthNotice();
+    })();
     const sub = AppState.addEventListener('change', (state) => {
       if (state === 'active') runScheduler().then(showHealthNotice);
     });
-    return () => sub.remove();
+    return () => {
+      cancelled = true;
+      sub.remove();
+    };
   }, []);
 
   useEffect(() => {

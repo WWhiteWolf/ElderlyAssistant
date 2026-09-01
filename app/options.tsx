@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import AddWherePopup from '../components/AddWherePopup';
 import OptionCaseBody from '../components/OptionCaseBody';
-import { PageFrame } from '../components/PageFrame';
+import { HeaderButton, PageFrame } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 import { emptyOptionSettings, OPTION_CASES, type OptionSettings } from '../modules/option-cases';
 
@@ -23,27 +23,26 @@ export default function OptionsScreen() {
                 header={
                     <View style={styles.header}>
                         {openCase ? (
-                            <TouchableOpacity onPress={() => setOpenId(null)} style={styles.headerBtn}>
+                            <HeaderButton onPress={() => setOpenId(null)}>
                                 <Text style={styles.headerBtnText}>Back</Text>
-                            </TouchableOpacity>
+                            </HeaderButton>
                         ) : (
-                            <TouchableOpacity
+                            <HeaderButton
                                 onPress={() => {
                                     if (router.canDismiss()) router.dismissAll();
                                     router.replace('/home');
                                 }}
-                                style={styles.headerBtn}
                             >
                                 <Text style={styles.headerBtnText}>Home</Text>
-                            </TouchableOpacity>
+                            </HeaderButton>
                         )}
                         <Text style={styles.title}>{openCase ? openCase.name : 'Options'}</Text>
                         {openCase ? (
-                            <View style={styles.headerBtn} />
+                            <HeaderButton />
                         ) : (
-                            <TouchableOpacity onPress={() => setShowWhere(true)} style={styles.headerBtn}>
+                            <HeaderButton onPress={() => setShowWhere(true)}>
                                 <Text style={styles.screenBtnText}>+{'\n'}Screen{'\n'} </Text>
-                            </TouchableOpacity>
+                            </HeaderButton>
                         )}
                     </View>
                 }
@@ -102,15 +101,6 @@ const makeStyles = (t: Theme) =>
             fontFamily: 'Georgia',
             flex: 1,
             textAlign: 'center',
-        },
-        headerBtn: {
-            width: 54,
-            height: 54,
-            borderRadius: 27,
-            borderWidth: 1,
-            borderColor: t.headerButton,
-            alignItems: 'center',
-            justifyContent: 'center',
         },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
         screenBtnText: {

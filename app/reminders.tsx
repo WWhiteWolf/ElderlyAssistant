@@ -21,7 +21,7 @@ import {
     View,
 } from 'react-native';
 import { Cover } from '../components/Cover';
-import { PageFrame } from '../components/PageFrame';
+import { HeaderButton, PageFrame } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 import { CEILING } from '../scheduler/reconcile';
 import {
@@ -101,9 +101,9 @@ export default function RemindersScreen() {
                 headerColor={theme.header}
                 header={
                     <View style={styles.header}>
-                        <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
+                        <HeaderButton onPress={() => router.back()}>
                             <Text style={styles.headerBtnText}>Back</Text>
-                        </TouchableOpacity>
+                        </HeaderButton>
                         <Text style={styles.title}>Scheduled Reminders</Text>
                         <View style={styles.headerSpacer} />
                     </View>
@@ -249,15 +249,6 @@ const makeStyles = (t: Theme) =>
             fontFamily: 'Georgia',
             flex: 1,
             textAlign: 'center',
-        },
-        headerBtn: {
-            width: 54,
-            height: 54,
-            borderRadius: 27,
-            borderWidth: 1,
-            borderColor: t.headerButton,
-            alignItems: 'center',
-            justifyContent: 'center',
         },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
 

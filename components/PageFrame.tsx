@@ -1,11 +1,44 @@
 import { useState, type ReactNode } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTheme } from '../constants/Themes';
 import Bridge from './Bridge';
 
 export function useLandscape(): boolean {
     const { width, height } = useWindowDimensions();
     return width > height;
+}
+
+export function uprightInLandscape(landscape: boolean) {
+    return landscape ? { transform: [{ rotate: '-90deg' as const }] } : null;
+}
+
+/** Round header control. In landscape it turns in place so the words sit the right way up. */
+export function HeaderButton({
+    onPress,
+    children,
+    invisible = false,
+}: {
+    onPress?: () => void;
+    children?: ReactNode;
+    invisible?: boolean;
+}) {
+    const landscape = useLandscape();
+    const theme = useTheme();
+    const style = [
+        styles.headerBtn,
+        { borderColor: theme.headerButton },
+        uprightInLandscape(landscape),
+        invisible ? { opacity: 0 } : null,
+    ];
+    if (!onPress) {
+        return <View style={style}>{children}</View>;
+    }
+    return (
+        <TouchableOpacity onPress={onPress} style={style} activeOpacity={0.7}>
+            {children}
+        </TouchableOpacity>
+    );
 }
 
 export function PageFrame({
@@ -76,4 +109,12 @@ const styles = StyleSheet.create({
     frame: { flex: 1 },
     frameLandscape: { flex: 1, flexDirection: 'row' },
     body: { flex: 1 },
+    headerBtn: {
+        width: 54,
+        height: 54,
+        borderRadius: 27,
+        borderWidth: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 });

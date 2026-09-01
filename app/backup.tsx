@@ -13,7 +13,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { PageFrame } from '../components/PageFrame';
+import { HeaderButton, PageFrame } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 import { loadReminderItems, saveReminderItems } from '../modules/reminder-items';
 
@@ -373,9 +373,9 @@ export default function BackupScreen() {
                 headerColor={theme.header}
                 header={
                     <View style={styles.header}>
-                        <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
+                        <HeaderButton onPress={() => router.back()}>
                             <Text style={styles.headerBtnText}>Back</Text>
-                        </TouchableOpacity>
+                        </HeaderButton>
                         <Text style={styles.title}>Backup & Restore</Text>
                         <View style={styles.headerSpacer} />
                     </View>
@@ -475,15 +475,6 @@ const makeStyles = (t: Theme) =>
             textAlign: 'center',
             marginTop: 12,
             fontStyle: 'italic',
-        },
-        headerBtn: {
-            width: 54,
-            height: 54,
-            borderRadius: 27,
-            borderWidth: 1,
-            borderColor: t.headerButton,
-            alignItems: 'center',
-            justifyContent: 'center',
         },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
         headerSpacer: { width: 54 },

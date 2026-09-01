@@ -30,6 +30,15 @@ export function hourMinuteOf(saved: { hour?: number | null; minute?: number | nu
     return {};
 }
 
+/** True when this item has a reminder that can fire, so Snooze can mean something. */
+export function hasReminderSet(item: ReminderItem): boolean {
+    if (item.kind === 'oneTime') {
+        return (item.reminders?.length ?? 0) > 0;
+    }
+    const shaped = translateReminderItems([item], Date.now())[0];
+    return !!shaped?.hasDueTimeBit;
+}
+
 // Roll a dated repeat forward to its next occurrence that lands in the
 // future, copying Look Ahead's advanceItem, including clamping to the last
 // day of a shorter month.

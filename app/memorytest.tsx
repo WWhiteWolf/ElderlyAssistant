@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { PageFrame } from '../components/PageFrame';
+import { HeaderButton, PageFrame } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 import { runScheduler } from '../scheduler/scheduler';
 import { warnIfFull } from '../scheduler/warn';
@@ -529,13 +529,13 @@ export default function MemoryTestScreen() {
                 headerColor={theme.header}
                 header={
                     <View style={styles.header}>
-                        <TouchableOpacity onPress={() => { if (router.canDismiss()) router.dismissAll(); router.replace('/home'); }} style={styles.headerBtn}>
+                        <HeaderButton onPress={() => { if (router.canDismiss()) router.dismissAll(); router.replace('/home'); }}>
                             <Text style={styles.headerBtnText}>Home</Text>
-                        </TouchableOpacity>
+                        </HeaderButton>
                         <Text style={styles.title}>Memory Test</Text>
-                        <View style={[styles.headerBtn, { opacity: 0 }]}>
+                        <HeaderButton invisible>
                             <Text style={styles.headerBtnText}>Home</Text>
-                        </View>
+                        </HeaderButton>
                     </View>
                 }
             >
@@ -707,14 +707,5 @@ const makeStyles = (t: Theme) =>
             borderRadius: 10,
         },
         swipeDeleteText: { color: t.buttonDeleteText, fontWeight: '600', fontSize: 15 },
-        headerBtn: {
-            width: 54,
-            height: 54,
-            borderRadius: 27,
-            borderWidth: 1,
-            borderColor: t.headerButton,
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
     });

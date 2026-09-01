@@ -666,7 +666,10 @@ const datedCadenceRules: ScreenRules<ReminderItem> = {
     canBePushedBackBit: true,
     doneEndsItemBit: false,
     standsForGroupBit: false,
-    bannerTitleTextOf: () => '🔭 Look Ahead',
+    bannerTitleTextOf: (item) =>
+        item.kind === 'yearly' ? 'Yearly'
+        : item.kind === 'quarterly' ? 'Quarterly'
+        : 'Monthly',
     bannerButtonsCode: 'lookaheadactions',
     idOf: (item) => item.id,
     nameOf: (item) => item.label,

@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { PageFrame } from '../components/PageFrame';
+import { HeaderButton, PageFrame } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 
 interface VaultItem {
@@ -274,25 +274,25 @@ export default function VaultScreen() {
                             the same destination either way, but popping is what the
                             rest of the app does. */}
                         {selectedCategory ? (
-                            <TouchableOpacity onPress={() => setSelectedCategory(null)} style={styles.headerBtn}>
+                            <HeaderButton onPress={() => setSelectedCategory(null)}>
                                 <Text style={styles.headerBtnText}>Back</Text>
-                            </TouchableOpacity>
+                            </HeaderButton>
                         ) : (
-                            <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
+                            <HeaderButton onPress={() => router.back()}>
                                 <Text style={styles.headerBtnText}>Home</Text>
-                            </TouchableOpacity>
+                            </HeaderButton>
                         )}
                         <Text style={styles.title}>
                             {selectedCategory ? getCategoryData(selectedCategory)?.name : 'Vault 🔒'}
                         </Text>
                         {selectedCategory ? (
-                            <TouchableOpacity onPress={() => { resetForm(); setShowAddItem(true); }} style={styles.headerBtn}>
+                            <HeaderButton onPress={() => { resetForm(); setShowAddItem(true); }}>
                                 <Text style={styles.headerBtnText}>+ Add</Text>
-                            </TouchableOpacity>
+                            </HeaderButton>
                         ) : (
-                            <TouchableOpacity onPress={() => { setNewCategoryName(''); setShowAddCategory(true); }} style={styles.headerBtn}>
+                            <HeaderButton onPress={() => { setNewCategoryName(''); setShowAddCategory(true); }}>
                                 <Text style={styles.headerBtnText}>+ Add</Text>
-                            </TouchableOpacity>
+                            </HeaderButton>
                         )}
                     </View>
                 }
@@ -584,14 +584,5 @@ const makeStyles = (t: Theme) =>
             marginBottom: 10,
         },
         swipeDeleteText: { color: t.buttonDeleteText, fontWeight: '600', fontSize: 15 },
-        headerBtn: {
-            width: 54,
-            height: 54,
-            borderRadius: 27,
-            borderWidth: 1,
-            borderColor: t.headerButton,
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
         headerBtnText: { color: t.headerButton, fontSize: 16, fontWeight: '600' },
     });

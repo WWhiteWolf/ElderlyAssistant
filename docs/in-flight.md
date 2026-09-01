@@ -4,26 +4,27 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-01, at the close of #50-new.
+Last written: 2026-09-01, at the close of #51-new.
 
 ## Read this first
 
-- **The next Memory session is #51-new.**
-- He is living with the #45-new build on the phone. Calendar and
-  landscape are not on that load.
-- Landscape is in (#50-new): optional view, 0 and 90 only, all pages
-  including the ones that open from a page. The calendar month grid
-  was not rebuilt.
+- **The next Memory session is #52-new.**
+- He is living with the #45-new build on the phone. Calendar, landscape,
+  and the #51-new display work are not on that load.
+- Memory asks to show banners at start. He verified that on the simulator.
 
 ## What is in
 
-The calendar page (#49-new) and landscape on the other pages (#50-new).
-He looked. Not bad as an optional view. Goal accomplished.
+Landscape chrome: header buttons and the Home badge face sit the right
+way up; Home's badges in landscape are four across and three down.
+Monthly, Quarterly, and Yearly banners name their own page. No snooze
+without a reminder. The row button says Done? until a tap, then the
+green tick.
 
 ## What is next
 
-The header buttons should rotate in-place on the header. Landscape
-is otherwise in. Patrick leads.
+Patrick leads. Pending 2 and 4 are not done. Display features, if any,
+are not yet named.
 
 ## Do not reopen
 
@@ -36,4 +37,6 @@ Week's delay, and +1 Day on those banners. A mass change of the
 opening files. Putting the one shared list on the selling page. Timer
 or Memory Test on the selling page. Horizontal scroll in a day’s box.
 Migrating `shadeCalendar` off items. Rebuilding the calendar month
-grid. Reopening landscape as a look — it is in.
+grid. Reopening landscape as a look — it is in. Date deactivating for
+options below — already fixed. Treating Memory Test or Timer as a
+reason to keep the old reminder readers.

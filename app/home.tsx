@@ -10,7 +10,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { PageFrame } from '../components/PageFrame';
+import { PageFrame, uprightInLandscape, useLandscape } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 
 const modules = [
@@ -33,6 +33,15 @@ export default function HomeScreen() {
     const router = useRouter();
     const theme = useTheme();
     const styles = makeStyles(theme);
+    const landscape = useLandscape();
+    // Landscape puts Memory Test last so the other twelve fill four
+    // across and three down (Patrick, #51-new). Portrait keeps this order.
+    const shown = landscape
+        ? [
+            ...modules.filter((one) => one.id !== 'memorytest'),
+            ...modules.filter((one) => one.id === 'memorytest'),
+        ]
+        : modules;
 
     const [userName, setUserName] = useState('');
 
@@ -77,7 +86,7 @@ export default function HomeScreen() {
                             <View style={{ width: 70, alignItems: 'flex-start' }}>
                                 <Image
                                     source={require('../assets/images/icon-face.png')}
-                                    style={styles.headerIcon}
+                                    style={[styles.headerIcon, uprightInLandscape(landscape)]}
                                 />
                             </View>
                             <View style={{ flex: 1, alignItems: 'center' }}>
@@ -93,10 +102,10 @@ export default function HomeScreen() {
             >
             {/* #62 four-band bridge — now the shared component (#63 rollout). */}
             <ScrollView contentContainerStyle={styles.grid}>
-                {modules.map((mod) => (
+                {shown.map((mod) => (
                     <TouchableOpacity
                         key={mod.id}
-                        style={styles.tile}
+                        style={[styles.tile, landscape && styles.tileLandscape]}
                         onPress={() => handleTile(mod.id)}
                     >
                         <View style={styles.iconCircle}>
@@ -169,6 +178,11 @@ const makeStyles = (t: Theme) =>
             width: '47%',
             alignItems: 'center',
             paddingVertical: 12,
+        },
+        // Landscape: four across, three down. Memory Test is last and may
+        // sit off the screen (Patrick, #51-new).
+        tileLandscape: {
+            width: '22%',
         },
         // #62: tiles ~10% bigger (Patrick's phone call — sized for the real
         // screen, not the Simulator): circle 44→48, emoji 22→24; the label

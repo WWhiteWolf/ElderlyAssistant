@@ -58,9 +58,9 @@ export function runTranslatorCadenceTests(): void {
             minute: 0,
         }));
         assertSame(
-            [shaped.sourceScreenCode, shaped.repeatUnitCode, shaped.repeatIntervalCount, shaped.dueHour, shaped.bannerButtonsCode],
-            ['lookahead', 'month', 1, 9, 'lookaheadactions'],
-            'a dated monthly item repeats each month from that day',
+            [shaped.sourceScreenCode, shaped.repeatUnitCode, shaped.repeatIntervalCount, shaped.dueHour, shaped.bannerButtonsCode, shaped.bannerTitleText],
+            ['lookahead', 'month', 1, 9, 'lookaheadactions', 'Monthly'],
+            'a dated monthly item repeats each month from that day, and the banner names Monthly',
         );
         assert(shaped.hasDueTimeBit, 'a time is a due time');
     });
