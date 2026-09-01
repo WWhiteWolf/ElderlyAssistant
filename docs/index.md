@@ -42,7 +42,7 @@ just because it is listed.
 ## Quiet — in `docs`
 
 - **`parked-items.md`** — the deferred backlog. Last touched at #66.
-- **`publishing.md`** — pointer to App-Docs. Patrick's EAS steps are at the end.
+- **`publishing.md`** — pointer to App-Docs, and Memory's publishing picture from #46-new. Patrick's EAS steps are at the end.
 - **`roadmap.md`** — step-back milestones. Rewritten at #68.
 
 ## Retired — in `docs-ref`
