@@ -4,32 +4,25 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-08-31, at the close of an App-Docs session.
+Last written: 2026-08-31, at the close of #47-new.
 
 ## Read this first
 
-- **The next Memory session is still #46-new.** This chat was App-Docs,
-  not a Memory chain session.
-- Working documents live in `docs`. History lives in `docs-ref`. The
-  index says which file is the home.
-- He is living with the #45-new build on the phone. Ask whether that
-  was committed.
+- **The next Memory session is #48-new.**
+- He is living with the #45-new build on the phone.
+- The selling description is a good start and was left. Substance is
+  `docs/Memory features.docx`. Comparables note is in App-Docs
+  `Publishing-Strategy.docx`.
 
 ## What is in
 
-The Memory folders were split. Eleven build sheets and the retired
-pending rtf moved to `docs-ref`. The index was tightened to one line
-per file. The app was not built.
+The store description was drafted from the features file and left. The
+shelf is repeating reminders and personal tasks, not elderly apps. No
+code.
 
 ## What is next
 
-A fresh session for the road to releasing Memory: need, possibilities,
-and reception. The bottom line is still that the app exists for him.
-A little more on Social Security would be welcome. Not the reason.
-
-Patrick leads on the phone work: living with this build, a failed
-daily clear-out left as it is, retiring the old readers after phone
-proof, and miss-telling for kinds other than Daily.
+The road to releasing Memory. Patrick leads.
 
 ## Do not reopen
 
@@ -39,4 +32,5 @@ five Options questions. The Timer on this stretch. Float as a row.
 Note as an Options case. Then or Next Day as a saved recipe. A missing
 day and a holiday on the same item. Look Ahead's banner delay, My
 Week's delay, and +1 Day on those banners. A mass change of the
-opening files.
+opening files. Putting the one shared list on the selling page. Timer
+or Memory Test on the selling page.

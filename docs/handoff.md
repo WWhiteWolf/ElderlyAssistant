@@ -16,6 +16,16 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
+**#47-new is done.** The selling description is a good start and was
+left. `docs/Memory features.docx` is the inventory, not the sell. The
+writing is true, easy to follow, warm, and interesting — the app on
+the page, not a pitch. Timer and Memory Test stay off that page.
+Recurrence follows the guidance of RFC 5545 and RFC 8984, not
+everything those specs say. Comparables were looked up from the
+features file, not elderly apps; the note is in App-Docs
+`Publishing-Strategy.docx`. He opened Apple Reminders: this one does
+more, easier.
+
 **#45-new is done.** The two engine Fails from the sitting are cured
 on the simulator and on the phone (23 passed, 0 failed). After Daily
 Done, tomorrow's notice is the one armed date, depth still one. A
@@ -179,10 +189,6 @@ They are kept here because they still decide things.
 
 ## What is open in front of it
 
-**One saved list of items instead of nine** (Patrick, #32-new). A page
-is a filter on that list. The old-screen findings that led to it are
-in `docs/build-history.md` under #32-new.
-
 **The build sheets are the pattern for this work** — each self-contained,
 carrying the answers themselves rather than pointing at other documents,
 which is what lets a worker session build without asking a design
@@ -305,4 +311,4 @@ replaces; never rename anything to or from `index.html` there (see
 including the eleven build sheets. `docs/index.md` says which file is
 the home. He calls them working documents; live desk means the same
 thing. This was written in an App-Docs session, 2026-08-31. The next
-Memory session is still #46-new.
+Memory session is #48-new.

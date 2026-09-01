@@ -3207,6 +3207,41 @@ The road to releasing Memory waits for a fresh session. The bottom
 line is still that the app exists for him.
 
 
+## #46-new (2026-08-31): selling description begun; session dropped
+
+The publishing picture was written into `docs/publishing.md` and
+`App-Docs/Publishing-Strategy.docx`. The selling description was begun
+as its own work. TickTick was named as the comparable. A comparable-app
+look used tiny elderly apps, which was the wrong shelf.
+
+The session dropped. The features file, the description start, and the
+right-shelf research landed in #47-new.
+
+
+## #47-new (2026-08-31): selling description start, comparables from what the app is
+
+**The features file** `docs/Memory features.docx` is the inventory, not
+the sell. The writing: a product description that does not sell, and
+that is how it sells. True, easy to follow, warm, and interesting —
+the app on the page, not a pitch. Claude for the sentences. Timer and
+Memory Test stay off that page. The one shared list is inside baseball
+and stays off the page.
+
+**The description is a good start and was left.** Seven screens for
+events to keep. Recurrence follows the guidance of iCalendar RFC 5545
+and JSCalendar RFC 8984, not everything those specs say. Daily is the
+ordinary reminder and its opposite. Options for the odd helpful cases.
+
+**Comparables** used the features file, not elderly apps. The shelf is
+repeating reminders and personal tasks. Apple Reminders is the free
+default. TickTick, Todoist, Things, and Due exist because that default
+is not enough. He opened Reminders: this one does more, easier. The
+note is in App-Docs `Publishing-Strategy.docx`.
+
+**One saved list instead of nine** came off the open list: it is done.
+No code. He will commit.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

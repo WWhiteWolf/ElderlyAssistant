@@ -32,7 +32,7 @@ screenshots, privacy-policy text, and the like — belongs here in the
 app's own repo (per the strategy doc). As that material gets made, keep
 it under `docs/` and list it below so it's findable.
 
-**Picture at #46-new** (also in `Publishing-Strategy.docx`):
+**Picture at #46-new and #47-new** (also in `Publishing-Strategy.docx`):
 
 Mystery Clues Track Sheet is live on the App Store since 2026-08-06.
 The rehearsal is done. Memory is the mission. He is living with the
@@ -44,9 +44,13 @@ through easier. That was learned from Mystery.
 The selling description is its own work, over as many sessions as it
 takes: easy to read and follow, well worded, warm and interesting.
 Apple's product-page craft and Ogilvy's English, pointed at the best
-parts — not a spec sheet. Claude writes the sell. This file and the
-Publishing Strategy are the home; Memory's docs index had no file for
-it.
+parts — not a spec sheet. Claude writes the sell. The inventory is
+`docs/Memory features.docx`. At #47-new the description was a good
+start and was left. Comparables were looked up from that file, not
+tiny elderly apps: this sits with repeating reminders and personal
+tasks. Apple Reminders is the free default. TickTick, Todoist, Things,
+and Due exist because that default is not enough. He opened Reminders:
+this one does more, easier.
 
 Daily is the foundation the rest was built around. Daily is ordinary
 timed reminders (10:00, take your medication), and the standing list

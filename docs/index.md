@@ -21,6 +21,7 @@ just because it is listed.
 - **`pending.docx`** — the copy Patrick reads. Generated from the txt, never hand-edited.
 - **`make-pending-docx.py`** — makes the Word copy. `python3 docs/make-pending-docx.py`
 - **`check-docs.py`** — checks the record. Changes nothing. `python3 docs/check-docs.py`
+- **`Memory features.docx`** — the inventory of what the app is and does, not the sell. Home of the substance for the store description (#47-new).
 
 ## Live design — in `docs`
 
@@ -42,7 +43,7 @@ just because it is listed.
 ## Quiet — in `docs`
 
 - **`parked-items.md`** — the deferred backlog. Last touched at #66.
-- **`publishing.md`** — pointer to App-Docs, and Memory's publishing picture from #46-new. Patrick's EAS steps are at the end.
+- **`publishing.md`** — pointer to App-Docs, and Memory's publishing picture from #46-new and #47-new. Patrick's EAS steps are at the end.
 - **`roadmap.md`** — step-back milestones. Rewritten at #68.
 
 ## Retired — in `docs-ref`
