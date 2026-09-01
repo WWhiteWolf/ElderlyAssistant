@@ -10,7 +10,7 @@ export function useLandscape(): boolean {
 }
 
 export function uprightInLandscape(landscape: boolean) {
-    return landscape ? { transform: [{ rotate: '-90deg' as const }] } : null;
+    return landscape ? { transform: [{ rotate: '90deg' as const }] } : null;
 }
 
 /** Round header control. In landscape it turns in place so the words sit the right way up. */
@@ -84,8 +84,7 @@ export function PageFrame({
     const shortSide = height;
     return (
         <View style={styles.frameLandscape}>
-            <View style={styles.body}>{children}</View>
-            <SafeAreaView style={{ backgroundColor: headerColor }} edges={['right']}>
+            <SafeAreaView style={{ backgroundColor: headerColor }} edges={['left']}>
                 <View style={{ width: band, flex: 1, overflow: 'hidden' }}>
                     <View
                         style={{
@@ -93,7 +92,7 @@ export function PageFrame({
                             transform: [
                                 { translateX: (band - shortSide) / 2 },
                                 { translateY: (shortSide - band) / 2 },
-                                { rotate: '90deg' },
+                                { rotate: '-90deg' },
                             ],
                         }}
                     >
@@ -101,6 +100,7 @@ export function PageFrame({
                     </View>
                 </View>
             </SafeAreaView>
+            <View style={styles.body}>{children}</View>
         </View>
     );
 }

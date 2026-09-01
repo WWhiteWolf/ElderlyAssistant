@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-01 (#51-new)
+Last updated: 2026-09-01 (#52-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -37,8 +37,10 @@ Things waiting on something — mostly on the phone.
    on every page, including the ones that open from a page: optional
    view, 0 and 90 only, header as the portrait row with the Bridge.
    Header buttons turn in place so the words sit the right way up.
-   Calendar and landscape are not on the phone yet. The simulator
-   app was deleted so leftover sitting items are gone from that store.
+   #52-new locked the turn to 90° counter-clockwise, headers on
+   the left (the island for that turn). He looked; that works.
+   Calendar and landscape are not on the phone yet. The simulator app was deleted so leftover
+   sitting items are gone from that store.
 2. A FAILED DAILY CLEAR-OUT IS NEVER SPOKEN. The warning is written
    down but filtered out before it reaches the pop-up, because it
    was classed as harmless. It is not harmless — a failed clear-out
@@ -108,7 +110,8 @@ built. None of these is a job to do.
 15. THE CALENDAR PAGE SHOWS DATED ITEMS. No every-day Daily items,
     no Extended. No Done or Snooze on the month or the day’s list.
     Names in a day box are one line and scroll vertically.
-    Landscape is an optional view, 0 and 90 only, all pages.
+    Landscape is an optional view, 0 and 90° counter-clockwise
+    only, headers on the left, all pages.
 
 
 WHAT IS DONE, NEWEST FIRST

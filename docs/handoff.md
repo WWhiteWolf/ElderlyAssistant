@@ -36,6 +36,14 @@ that worked. **Monthly, Quarterly, and Yearly banners name their
 own page**, not Look Ahead. **No snooze** on an item with no reminder
 set. The row button says **Done?** until a tap, then the green tick.
 Date deactivating for options below was already fixed.
+**Committed** (Patrick, #52-new).
+
+**#52-new is landscape rotation.** Patrick corrected the turn
+this sitting: **90° counter-clockwise**, headers on the **left**.
+That is the island for that turn. `LandscapeRight` is the lock.
+The header band sits on the left; the header itself turns −90°.
+**He looked on the simulator. That works.** He is loading
+the phone and will report.
 
 **#49-new built the calendar page.** Home has a Calendar tile next to
 Daily. A month fills the screen except the header. A tap on a day
@@ -215,11 +223,13 @@ They are kept here because they still decide things.
   to remember. This is why the returning arrows land on a decision block,
   and why recovery on opening is not a step bolted to the front of a run.
 - **Landscape is an optional view** (Patrick, #50-new). It does not
-  force rotating the phone. **Only 0 and 90**; 180 and 270 are out
-  because the island and the home indicator stay put and cover the
-  view. The same limits on the calendar. **The header stays at the
-  top of the normal portrait view** — on the right in landscape,
-  which is the island — **as the portrait header itself**: original
+  force rotating the phone. **Only 0 and 90° counter-clockwise**
+  (`LandscapeRight`: island on the left). 180, 270, and the other
+  90 are out because the island and the home indicator stay put
+  and cover the view. The same limits on the calendar. **The
+  header stays at the top of the normal portrait view** — on the
+  **left** in landscape, which is the island for this turn
+  (Patrick, #52-new) — **as the portrait header itself**: original
   place and shape, the round buttons, the title in the middle, not
   restacked down the side. Titles stay the same way up as in
   portrait because the whole header is rotated as a unit. One-
@@ -233,10 +243,14 @@ They are kept here because they still decide things.
 
 ## What is open in front of it
 
-**The next Memory session is #52-new.** Patrick leads. Pending 2
-and 4 are not done. **Memory Test is temporary and coming out.
-Timer is isolated deliberately.** Neither is a reason to keep the
-old reminder readers (Patrick, #51-new).
+**This session is #52-new.** Landscape is 90° counter-clockwise,
+headers on the left. He looked on the simulator; that works.
+He is loading the phone and will report. Pending 2 and 4
+are not done.
+
+**Memory Test is temporary and coming out. Timer is isolated
+deliberately.** Neither is a reason to keep the old reminder
+readers (Patrick, #51-new).
 
 **The build sheets are the pattern for this work** — each self-contained,
 carrying the answers themselves rather than pointing at other documents,
@@ -360,4 +374,4 @@ replaces; never rename anything to or from `index.html` there (see
 including the eleven build sheets. `docs/index.md` says which file is
 the home. He calls them working documents; live desk means the same
 thing. This was written in an App-Docs session, 2026-08-31. This
-session is #51-new.
+session is #52-new.
