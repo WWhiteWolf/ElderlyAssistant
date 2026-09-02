@@ -26,24 +26,48 @@ import type { WantedTrigger } from './types.ts';
  *
  * The one-off sources are named as the page and the thing that made them, so a
  * snoozed item does not look like a second copy of the daily one.
+ *
+ * Monthly, Quarterly and Yearly share the lookahead source, so those rows take
+ * their page name from the banner heading already on the reminder. The names
+ * here for that source are the fallback when the heading is not one of the
+ * three.
  */
 export const PAGE_NAMES: Record<string, string> = {
-    myday: 'My Day',
-    mydaysnooze: 'My Day — snoozed',
+    myday: 'Daily',
+    mydaysnooze: 'Daily — snoozed',
     pets: 'Pets',
     petssnooze: 'Pets — snoozed',
-    myweek: 'My Week',
-    // A Delay tapped on a My Week banner is written down as a postpone and
+    myweek: 'Weekly',
+    // A Delay tapped on a Weekly banner is written down as a postpone and
     // shows under this same name (#20-new). There is no separate snoozed row
-    // for My Week, because there is no separate stamp behind one.
-    myweekpostpone: 'My Week — postponed',
+    // for Weekly, because there is no separate stamp behind one.
+    myweekpostpone: 'Weekly — postponed',
     lookahead: 'Look Ahead',
     lookaheaddelay: 'Look Ahead — delayed',
-    todo: 'To-Do',
+    todo: 'One Time',
     memorytest: 'Memory Test',
     orders: 'Orders',
     orderssnooze: 'Orders — snoozed',
 };
+
+const CADENCE_HEADINGS = new Set(['Monthly', 'Quarterly', 'Yearly']);
+
+/** The page name a queue row should show. */
+function pageNameOf(entry: QueueEntry): string | undefined {
+    if (!entry.source) return undefined;
+    const named = PAGE_NAMES[entry.source];
+    if (!named) return undefined;
+    if (
+        (entry.source === 'lookahead' || entry.source === 'lookaheaddelay')
+        && entry.title
+        && CADENCE_HEADINGS.has(entry.title)
+    ) {
+        return entry.source === 'lookaheaddelay'
+            ? `${entry.title} — delayed`
+            : entry.title;
+    }
+    return named;
+}
 
 /** One pending reminder, described for a person rather than for the app. */
 export interface PendingReminder {
@@ -107,7 +131,7 @@ export function lastDueTime(trigger: WantedTrigger, now: number): number | null 
  */
 export function toPending(entry: QueueEntry, now: number): PendingReminder | null {
     if (!entry.source) return null;
-    const page = PAGE_NAMES[entry.source];
+    const page = pageNameOf(entry);
     if (!page) return null;
 
     return {

@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Cover } from '../components/Cover';
+import { ReminderItemRow } from '../components/ReminderItemRow';
 import { useFocusEffect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Alert,
     AppState,
@@ -12,19 +13,16 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { HeaderButton, PageFrame } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 import {
     dragVisibleTo,
     FROM_PAGE,
     format12Hour,
-    hasReminderSet,
     loadReminderItems,
     saveReminderItems,
-    snoozeLineOf,
     sortDailyVisible,
     type ReminderItem,
 } from '../modules/reminder-items';
@@ -36,120 +34,6 @@ interface HistoryEntry {
     actual: string;
     what?: string;
     note?: string;
-}
-
-type DailyStyles = ReturnType<typeof makeStyles>;
-
-function DailyItemRow({
-    item,
-    highlighted,
-    dragging,
-    styles,
-    rowLabel,
-    snoozeLine,
-    onTap,
-    onDragStart,
-    onDragMove,
-    onDragEnd,
-    onSnooze,
-    onDone,
-    onDelete,
-}: {
-    item: ReminderItem;
-    highlighted: boolean;
-    dragging: boolean;
-    styles: DailyStyles;
-    rowLabel: string;
-    snoozeLine: string | null;
-    onTap: () => void;
-    onDragStart: (id: string, y: number) => void;
-    onDragMove: (y: number) => void;
-    onDragEnd: () => void;
-    onSnooze: () => void;
-    onDone: () => void;
-    onDelete: () => void;
-}) {
-    const onTapRef = useRef(onTap);
-    onTapRef.current = onTap;
-    const onDragStartRef = useRef(onDragStart);
-    onDragStartRef.current = onDragStart;
-    const onDragMoveRef = useRef(onDragMove);
-    onDragMoveRef.current = onDragMove;
-    const onDragEndRef = useRef(onDragEnd);
-    onDragEndRef.current = onDragEnd;
-
-    const tapJS = useCallback(() => { onTapRef.current(); }, []);
-    const startJS = useCallback((id: string, y: number) => { onDragStartRef.current(id, y); }, []);
-    const moveJS = useCallback((y: number) => { onDragMoveRef.current(y); }, []);
-    const endJS = useCallback(() => { onDragEndRef.current(); }, []);
-
-    const translateY = useSharedValue(0);
-    const lifted = useSharedValue(0);
-
-    const gesture = useMemo(() => {
-        const drag = Gesture.Pan()
-            .activateAfterLongPress(400)
-            .onStart((e) => {
-                lifted.value = 1;
-                translateY.value = 0;
-                runOnJS(startJS)(item.id, e.absoluteY);
-            })
-            .onUpdate((e) => {
-                translateY.value = e.translationY;
-                runOnJS(moveJS)(e.absoluteY);
-            })
-            .onFinalize(() => {
-                translateY.value = 0;
-                lifted.value = 0;
-                runOnJS(endJS)();
-            });
-        const tap = Gesture.Tap().onEnd(() => {
-            runOnJS(tapJS)();
-        });
-        return Gesture.Race(drag, tap);
-    }, [item.id, startJS, moveJS, endJS, tapJS, translateY, lifted]);
-
-    const liftedStyle = useAnimatedStyle(() => ({
-        transform: [{ translateY: translateY.value }],
-        zIndex: lifted.value ? 20 : 0,
-        elevation: lifted.value ? 8 : 0,
-    }));
-
-    return (
-        <Animated.View style={liftedStyle}>
-            <Swipeable
-                renderRightActions={() => (
-                    <TouchableOpacity style={styles.swipeDelete} onPress={onDelete}>
-                        <Text style={styles.swipeDeleteText}>Delete</Text>
-                    </TouchableOpacity>
-                )}
-            >
-                <View style={[styles.row, dragging && styles.rowSelected, highlighted && styles.rowHighlighted]}>
-                    <GestureDetector gesture={gesture}>
-                        <View style={styles.labelArea}>
-                            <Text style={styles.itemLabel}>{rowLabel}</Text>
-                            {snoozeLine != null && (
-                                <Text style={styles.snoozedNote}>{snoozeLine}</Text>
-                            )}
-                        </View>
-                    </GestureDetector>
-                    {hasReminderSet(item) ? (
-                    <TouchableOpacity style={styles.snoozeRowBtn} onPress={onSnooze}>
-                        <Text style={styles.snoozeRowBtnText}>Snooze</Text>
-                    </TouchableOpacity>
-                    ) : null}
-                    <TouchableOpacity
-                        style={[styles.doneBtn, item.completed && styles.doneBtnOn]}
-                        onPress={onDone}
-                    >
-                        <Text style={[styles.doneBtnText, item.completed && styles.doneBtnTextOn]}>
-                            {item.completed ? '✓' : 'Done?'}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </Swipeable>
-        </Animated.View>
-    );
 }
 
 export default function DailyScreen() {
@@ -370,8 +254,6 @@ export default function DailyScreen() {
         return `${time}${item.label}${from}`;
     };
 
-    const snoozeLine = (item: ReminderItem) => snoozeLineOf(item);
-
     return (
         <GestureHandlerRootView style={styles.container}>
             <PageFrame
@@ -409,13 +291,11 @@ export default function DailyScreen() {
                                 rowHeights.current[item.id] = e.nativeEvent.layout.height;
                             }}
                         >
-                            <DailyItemRow
+                            <ReminderItemRow
                                 item={item}
                                 highlighted={highlightId === item.id}
                                 dragging={draggingId === item.id}
-                                styles={styles}
-                                rowLabel={rowLabel(item)}
-                                snoozeLine={snoozeLine(item)}
+                                label={rowLabel(item)}
                                 onTap={() => {
                                     if (highlightId === item.id) {
                                         setHighlightId(null);
@@ -583,44 +463,7 @@ const makeStyles = (t: Theme) =>
             borderWidth: 0.5,
             borderColor: t.cardBorder,
         },
-        row: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 4,
-            borderWidth: 2,
-            borderColor: 'transparent',
-            paddingVertical: 2,
-        },
-        rowHighlighted: {
-            borderRadius: 8,
-            borderColor: t.rowReminderBorder,
-        },
         hintText: { fontSize: 11, color: t.mutedText, marginTop: 2, marginBottom: 8 },
-        labelArea: { flex: 1, marginRight: 6 },
-        itemLabel: { fontSize: 16, color: t.bodyText, fontWeight: '500' },
-        rowSelected: {
-            backgroundColor: t.rowSelected,
-            borderRadius: 8,
-        },
-        snoozedNote: { fontSize: 12, color: t.delay, fontWeight: '600', marginTop: 1 },
-        snoozeRowBtn: {
-            backgroundColor: t.delay,
-            paddingVertical: 5,
-            paddingHorizontal: 8,
-            borderRadius: 8,
-            marginRight: 6,
-        },
-        snoozeRowBtnText: { color: t.delayText, fontSize: 13, fontWeight: '600' },
-        doneBtn: {
-            backgroundColor: t.buttonPrimary,
-            paddingVertical: 5,
-            paddingHorizontal: 10,
-            borderRadius: 8,
-        },
-        doneBtnOn: { backgroundColor: t.buttonDone },
-        doneBtnText: { color: t.buttonPrimaryText, fontWeight: '600', fontSize: 13 },
-        doneBtnTextOn: { color: t.buttonDoneText },
         snoozeOptionRow: {
             flexDirection: 'row',
             justifyContent: 'space-between',

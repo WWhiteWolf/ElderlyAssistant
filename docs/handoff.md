@@ -16,6 +16,20 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
+**#53-new.** Scheduled Reminders rows name Daily, Weekly, Monthly,
+Quarterly, Yearly, and One Time. Monthly, Quarterly, and Yearly
+take the name from the banner heading, because they share one
+source. A leftover banner without one of those headings still
+says Look Ahead until it cycles off. Siri still says My Day
+Item. Unused old files still use the old names and are not on
+screen. **Daily and Weekly through Extended share one list row**
+(`components/ReminderItemRow.tsx`). Daily still composes its
+name; the cadence pages still pass the when-line. Mac suite
+466 of 466. He wants to see tomorrow what the miss notice
+tells him. Missed-firing work and the calendar fire times wait
+until after that. Siri and this sitting’s file changes stay off
+the phone until he has seen it.
+
 **#52-new locked landscape to 90° counter-clockwise**, headers on
 the left. He looked on the simulator and the phone; the rotation
 is good. **Committed** when he commits this sitting. Pending 9 is
@@ -67,7 +81,7 @@ Done do not advance the saved date. Extended has no banners; New and
 Edit have only the name, an optional note, and Done. Cancel closes and
 makes no change, including after + OPT.
 
-**Mac suite 460 of 460.** One TypeScript error stands and is not a
+**Mac suite 466 of 466.** One TypeScript error stands and is not a
 fault: Expo's generated router list predates Scheduled Reminders and
 rewrites itself on the next build.
 
@@ -214,44 +228,43 @@ They are kept here because they still decide things.
 
 ## What is open in front of it
 
-**The next session is #53-new.** Pending 4: extend the missed-firing
-notice to Weekly, Monthly, Quarterly, Yearly, and One Time. They
-show on Daily only on the day they fall. If that day goes by without
-Done they leave Daily, stay on their own page, and come back the
-next time that kind of day comes round. One Time stays on its page
-after that day, with no later occurrence. The opening pop-up does
-not tell you. The two halves of recovery on opening are already
-built; the work is extending the telling. Pending 2 is not done.
+**This session is #53-new.** Pending 8 and Pending 6 are done.
+Pending 4 and Pending 7 wait until after the sit tests, so
+remaining changes can be seen as they are done. Pending 4:
+extend the missed-firing notice to Weekly, Monthly, Quarterly,
+Yearly, and One Time. They show on Daily only on the day they
+fall. If that day goes by without Done they leave Daily, stay
+on their own page, and come back the next time that kind of
+day comes round. One Time stays on its page after that day,
+with no later occurrence. The opening pop-up does not tell
+you. The two halves of recovery on opening are already built;
+the work is extending the telling. Pending 2 is not done.
 
 **Pending 9:** all screens in any rotation. Today the lock is 90°
 counter-clockwise, headers on the left.
 
-**Pending 8:** Scheduled Reminders still says My Day, My Week, Look
-Ahead, To-Do. Rows should name Daily, Weekly, Monthly, Quarterly,
-Yearly, and One Time.
-
-**Pending 10:** One Time should be called One Time Appointment(s).
-No reminder at the set time: too late; you are there or you missed
-it. Not a bug.
+**Pending 10:** that page is called Appointments (Patrick,
+#53-new). Pending 10 had been One Time Appointment(s); that is
+too long. Extended is called Bucket List. No reminder at the
+set time: too late; you are there or you missed it. Not a bug.
 
 **The paperwork half** (Patrick, #52-new): a thorough design spec
 (Pending 11; the rename belongs there), a User Guide from that or
 after it, on his website, and a way in the app to find it (Pending
 12), a Feedback button similar to Mystery (Pending 13), a file for
 what testing has covered and will cover (Pending 14; during-build
-tests are thrown away). A helper for **where** to set a reminder
-(Pending 15), not how and not every option. Having a good idea
-leads to overreaching; the feedback he needs is the trim.
+tests are thrown away). Pending 15 helper, first question: "Does this item repeat?" Repeats → "Does this item occur every: Every day, Week, Month, Quarter or Year?" Every day → Daily, Week → Weekly, Month → Monthly, Quarter → Quarterly, Year → Yearly. Does not repeat → "Is that for today?" Yes → Daily’s One Time for today add. No → appointment or Bucket List, landing on that add. One question at a time, in one popup like + Add. A tap replaces the question. Cancel leaves you on Home or the calendar. Two or three taps to that kind’s add. Where? on Home and on the calendar header. Not on the pages. Calendar day’s list has no + Add. A calendar day does not ride into the add.
 
 **Sit:** load on the phone, real list exported. Seven fired
 Wednesday on both devices. Later items (9 and 10 September) with
 his own list. Thursday’s show and no-show is already known.
-Follow-along `docs/near-fire-set.md`. RFC write-up
-`docs/rfc-eval.md`.
+He wants to see tomorrow what the miss notice tells him
+(Patrick, #53-new). Follow-along `docs/near-fire-set.md`. RFC
+write-up `docs/rfc-eval.md`.
 
-**Pending 7:** calendar day tap should show 24-hour fire time.
-**Pending 6:** one drawing of the list row. **Pending 5:** date
-picker inactive for Wednesday after the 6th, noted only.
+**Pending 7:** calendar day tap should show 24-hour fire time,
+after the sit tests (Patrick, #53-new).
+**Pending 5:** date picker inactive for Wednesday after the 6th, noted only.
 
 **Memory Test is temporary and coming out. Timer is isolated
 deliberately.** Neither is a reason to keep the old reminder
@@ -377,4 +390,4 @@ replaces; never rename anything to or from `index.html` there (see
 including the eleven build sheets. `docs/index.md` says which file is
 the home. He calls them working documents; live desk means the same
 thing. This was written in an App-Docs session, 2026-08-31. This
-session is #52-new.
+session is #53-new.

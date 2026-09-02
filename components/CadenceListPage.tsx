@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Alert,
     AppState,
@@ -11,19 +11,17 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { HeaderButton, PageFrame } from './PageFrame';
 import { Cover } from './Cover';
+import { ReminderItemRow } from './ReminderItemRow';
 import { Theme, useTheme } from '../constants/Themes';
 import {
     dragKindTo,
     formatItemWhen,
-    hasReminderSet,
     loadReminderItems,
     saveReminderItems,
-    snoozeLineOf,
     type ReminderItem,
     type ReminderKind,
 } from '../modules/reminder-items';
@@ -37,128 +35,12 @@ interface HistoryEntry {
     note?: string;
 }
 
-type PageStyles = ReturnType<typeof makeStyles>;
-
 function historyKeyFor(kind: ReminderKind): string | null {
     if (kind === 'weekly') return 'week_history';
     if (kind === 'monthly' || kind === 'quarterly' || kind === 'yearly') return 'lookahead_history';
     if (kind === 'oneTime') return 'onetime_history';
     if (kind === 'extended') return 'extended_history';
     return null;
-}
-
-function CadenceItemRow({
-    item,
-    highlighted,
-    dragging,
-    styles,
-    onTap,
-    onDragStart,
-    onDragMove,
-    onDragEnd,
-    onSnooze,
-    onDone,
-    onDelete,
-}: {
-    item: ReminderItem;
-    highlighted: boolean;
-    dragging: boolean;
-    styles: PageStyles;
-    onTap: () => void;
-    onDragStart: (id: string, y: number) => void;
-    onDragMove: (y: number) => void;
-    onDragEnd: () => void;
-    onSnooze: () => void;
-    onDone: () => void;
-    onDelete: () => void;
-}) {
-    const onTapRef = useRef(onTap);
-    onTapRef.current = onTap;
-    const onDragStartRef = useRef(onDragStart);
-    onDragStartRef.current = onDragStart;
-    const onDragMoveRef = useRef(onDragMove);
-    onDragMoveRef.current = onDragMove;
-    const onDragEndRef = useRef(onDragEnd);
-    onDragEndRef.current = onDragEnd;
-
-    const tapJS = useCallback(() => { onTapRef.current(); }, []);
-    const startJS = useCallback((id: string, y: number) => { onDragStartRef.current(id, y); }, []);
-    const moveJS = useCallback((y: number) => { onDragMoveRef.current(y); }, []);
-    const endJS = useCallback(() => { onDragEndRef.current(); }, []);
-
-    const translateY = useSharedValue(0);
-    const lifted = useSharedValue(0);
-
-    const gesture = useMemo(() => {
-        const drag = Gesture.Pan()
-            .activateAfterLongPress(400)
-            .onStart((e) => {
-                lifted.value = 1;
-                translateY.value = 0;
-                runOnJS(startJS)(item.id, e.absoluteY);
-            })
-            .onUpdate((e) => {
-                translateY.value = e.translationY;
-                runOnJS(moveJS)(e.absoluteY);
-            })
-            .onFinalize(() => {
-                translateY.value = 0;
-                lifted.value = 0;
-                runOnJS(endJS)();
-            });
-        const tap = Gesture.Tap().onEnd(() => {
-            runOnJS(tapJS)();
-        });
-        return Gesture.Race(drag, tap);
-    }, [item.id, startJS, moveJS, endJS, tapJS, translateY, lifted]);
-
-    const liftedStyle = useAnimatedStyle(() => ({
-        transform: [{ translateY: translateY.value }],
-        zIndex: lifted.value ? 20 : 0,
-        elevation: lifted.value ? 8 : 0,
-    }));
-
-    const when = formatItemWhen(item);
-    const snoozeLine = snoozeLineOf(item);
-
-    return (
-        <Animated.View style={liftedStyle}>
-            <Swipeable
-                renderRightActions={() => (
-                    <TouchableOpacity style={styles.swipeDelete} onPress={onDelete}>
-                        <Text style={styles.swipeDeleteText}>Delete</Text>
-                    </TouchableOpacity>
-                )}
-            >
-                <View style={[styles.row, dragging && styles.rowSelected, highlighted && styles.rowHighlighted]}>
-                    <GestureDetector gesture={gesture}>
-                        <View style={styles.labelArea}>
-                            <Text style={styles.itemLabel}>{item.label}</Text>
-                            {when !== '' && (
-                                <Text style={styles.itemSub}>{when}</Text>
-                            )}
-                            {snoozeLine != null && (
-                                <Text style={styles.snoozedNote}>{snoozeLine}</Text>
-                            )}
-                        </View>
-                    </GestureDetector>
-                    {hasReminderSet(item) ? (
-                    <TouchableOpacity style={styles.snoozeRowBtn} onPress={onSnooze}>
-                        <Text style={styles.snoozeRowBtnText}>Snooze</Text>
-                    </TouchableOpacity>
-                    ) : null}
-                    <TouchableOpacity
-                        style={[styles.doneBtn, item.completed && styles.doneBtnOn]}
-                        onPress={onDone}
-                    >
-                        <Text style={[styles.doneBtnText, item.completed && styles.doneBtnTextOn]}>
-                            {item.completed ? '✓' : 'Done?'}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </Swipeable>
-        </Animated.View>
-    );
 }
 
 export default function CadenceListPage({
@@ -411,11 +293,12 @@ export default function CadenceListPage({
                                 rowHeights.current[item.id] = e.nativeEvent.layout.height;
                             }}
                         >
-                            <CadenceItemRow
+                            <ReminderItemRow
                                 item={item}
                                 highlighted={highlightId === item.id}
                                 dragging={draggingId === item.id}
-                                styles={styles}
+                                label={item.label}
+                                subtitle={formatItemWhen(item)}
                                 onTap={() => {
                                     if (highlightId === item.id) {
                                         setHighlightId(null);
@@ -569,45 +452,7 @@ const makeStyles = (t: Theme) =>
             borderWidth: 0.5,
             borderColor: t.cardBorder,
         },
-        row: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 4,
-            borderWidth: 2,
-            borderColor: 'transparent',
-            paddingVertical: 2,
-        },
-        rowHighlighted: {
-            borderRadius: 8,
-            borderColor: t.rowReminderBorder,
-        },
         hintText: { fontSize: 11, color: t.mutedText, marginTop: 2, marginBottom: 8 },
-        labelArea: { flex: 1, marginRight: 6 },
-        itemLabel: { fontSize: 16, color: t.bodyText, fontWeight: '500' },
-        itemSub: { fontSize: 13, color: t.mutedText, marginTop: 1 },
-        rowSelected: {
-            backgroundColor: t.rowSelected,
-            borderRadius: 8,
-        },
-        snoozedNote: { fontSize: 12, color: t.delay, fontWeight: '600', marginTop: 1 },
-        snoozeRowBtn: {
-            backgroundColor: t.delay,
-            paddingVertical: 5,
-            paddingHorizontal: 8,
-            borderRadius: 8,
-            marginRight: 6,
-        },
-        snoozeRowBtnText: { color: t.delayText, fontSize: 13, fontWeight: '600' },
-        doneBtn: {
-            backgroundColor: t.buttonPrimary,
-            paddingVertical: 5,
-            paddingHorizontal: 10,
-            borderRadius: 8,
-        },
-        doneBtnOn: { backgroundColor: t.buttonDone },
-        doneBtnText: { color: t.buttonPrimaryText, fontWeight: '600', fontSize: 13 },
-        doneBtnTextOn: { color: t.buttonDoneText },
         snoozeOptionRow: {
             flexDirection: 'row',
             justifyContent: 'space-between',

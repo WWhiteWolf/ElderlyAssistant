@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-02 (#52-new)
+Last updated: 2026-09-02 (#53-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -16,9 +16,10 @@ to know why something was done the way it was.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. PATRICK LEADS. The next session is #53-new. Pending 4: the
-   missed-firing notice for Weekly, Monthly, Quarterly, Yearly,
-   and One Time. Pending 2 is not done.
+1. PATRICK LEADS. This session is #53-new. Pending 8 and Pending 6
+   are done. He wants to see tomorrow what the miss notice tells
+   him. Pending 7, Pending 4, Siri, and this sitting’s file
+   changes wait until after that. Pending 2 is not done.
 
 
 PENDING
@@ -62,34 +63,33 @@ Things waiting on something — mostly on the phone.
 5. THE DATE PICKER IS MEANT TO TURN INACTIVE when a Wednesday
     after the 6th is in use (Patrick, #52-new). Noted only; not
     a job yet.
-6. ONE DRAWING OF THE LIST ROW, used by Daily and by Weekly
-    through Extended (Patrick, #52-new). Daily stays a view of
-    the day, with Done and Snooze on those items. Daily still has
-    its own add and its own Log. The row is shared so a later
-    change cannot land on one list and miss the other.
+6. ONE DRAWING OF THE LIST ROW (#53-new). Daily and Weekly
+    through Extended share `components/ReminderItemRow.tsx`. Daily
+    still has its own add and its own Log, and still shows time
+    and visiting page in the name. Done this sitting.
 7. A TAP ON A DAY IN THE CALENDAR brings up every item for that
     day. Those items should show the 24-hour time they are
     scheduled to fire (Patrick, #52-new). The list today shows
-    the name only.
-8. SCHEDULED REMINDERS STILL SAYS THE OLD PAGE NAMES: My Day,
-    My Week, Look Ahead, To-Do (Patrick, #52-new). Last sitting
-    the banners for Monthly, Quarterly, and Yearly were changed
-    to name their own page. This list did not get that change.
-    The rows should name Daily, Weekly, Monthly, Quarterly,
-    Yearly, and One Time.
+    the name only. Waits until after the sit tests, so remaining
+    changes can be seen as they are done (Patrick, #53-new).
+8. SCHEDULED REMINDERS NAMES THE NEW PAGES (#53-new). Daily,
+    Weekly, Monthly, Quarterly, Yearly, and One Time. Monthly,
+    Quarterly, and Yearly take the name from the banner heading.
+    Done this sitting. Siri still says My Day Item.
 9. ALL THE SCREENS SHOULD WORK IN ANY ROTATION (Patrick,
     #52-new). Today the turn is locked to 90° counter-clockwise,
     headers on the left. This sitting that lock is good. The
     note is to make every page work however the phone is held.
-10. ONE TIME SHOULD BE CALLED ONE TIME APPOINTMENT(S) (Patrick,
-    #52-new). There is no reminder at the set time: that is too
-    late; you are either there or you missed it. The chips before
-    are the reminders. Not a bug.
+10. THAT PAGE IS CALLED APPOINTMENTS (Patrick, #53-new). Pending
+    10 had been One Time Appointment(s); that is too long.
+    Extended is called Bucket List. There is no reminder at the
+    set time: that is too late; you are either there or you
+    missed it. The chips before are the reminders. Not a bug.
 11. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
     sitting treated One Time's missing notice at the set time as
     a bug. He had decided it that way. A spec would have said so.
-    Changing the name of One Time to One Time Appointment(s)
-    belongs in that spec.
+    Changing the name of One Time to Appointments belongs in
+    that spec, and Extended to Bucket List.
 12. A USER GUIDE, from that spec or merely after it (Patrick,
     #52-new). He needs to provide it on his website, and a way
     in the app to find it or get it.
@@ -104,7 +104,25 @@ Things waiting on something — mostly on the phone.
     stages. The worth is landing on the right page. How to set
     it is the page itself. Fine-tune options belong in the User
     Guide or on Options, not in the same helper. He said those
-    points were good.
+    points were good. First question (#53-new): "Does this item
+    repeat?" Repeats goes to "Does this item occur every: Every
+    day, Week, Month, Quarter or Year?" Every day lands on Daily
+    add, Week on Weekly, Month on Monthly, Quarter on Quarterly,
+    Year on Yearly. Does not repeat goes to "Is that for today?".
+    Yes lands on Daily’s One Time for today add. No goes to
+    "Is this an occurrence that has a specific time and date,
+    like an appointment? Or is it the rare item with no deadline
+    or due date, like a Bucket List desire?" Appointment side
+    lands on Appointments add. Bucket List side lands on Bucket
+    List add. Each question offers the choices below it,
+    two or five. One question at a time, in one popup like + Add.
+    A tap replaces the question with the next. Cancel leaves you
+    on Home or the calendar. Two or three taps to a landing, and that
+    landing is that kind’s add, not the list. Direct way
+    in: a Where? button on Home. Not
+    on the pages. Calendar’s unused header button is also Where?
+    and opens the helper. The calendar day’s list has no + Add.
+    A calendar day does not ride into the add.
 
 
 FACTS THAT APPLY TO THE ONGOING WORK

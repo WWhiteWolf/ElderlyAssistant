@@ -48,7 +48,7 @@ function pending(changes: Partial<PendingReminder> = {}): PendingReminder {
     return {
         identifier: 'phone-1',
         label: 'Morning pills',
-        page: 'My Day',
+        page: 'Daily',
         trigger: { kind: 'daily', hour: 8, minute: 0 },
         nextDue: moment(22, 8),
         lastDue: moment(21, 8),
@@ -115,8 +115,8 @@ export function runQueueViewTests(): void {
         const row = toPending(entry(), NOW);
         assertSame(
             { label: row?.label, page: row?.page, nextDue: row?.nextDue, lastDue: row?.lastDue },
-            { label: 'Morning pills', page: 'My Day', nextDue: moment(22, 8), lastDue: moment(21, 8) },
-            'expected a My Day row',
+            { label: 'Morning pills', page: 'Daily', nextDue: moment(22, 8), lastDue: moment(21, 8) },
+            'expected a Daily row',
         );
     });
 
@@ -142,7 +142,7 @@ export function runQueueViewTests(): void {
         const row = toPending(entry({ source: 'myweekpostpone', trigger: null }), NOW);
         assertSame(
             { page: row?.page, label: row?.label, nextDue: row?.nextDue, lastDue: row?.lastDue },
-            { page: 'My Week — postponed', label: 'Morning pills', nextDue: null, lastDue: null },
+            { page: 'Weekly — postponed', label: 'Morning pills', nextDue: null, lastDue: null },
             'expected a named row with no times',
         );
     });
@@ -153,6 +153,54 @@ export function runQueueViewTests(): void {
             { title: row?.title, body: row?.body, categoryIdentifier: row?.categoryIdentifier },
             { title: 'Daily Routine', body: 'Time for Morning pills!', categoryIdentifier: 'routineactions' },
             'expected the banner carried through',
+        );
+    });
+
+    test('A weekly reminder is named Weekly', () => {
+        assertSame(
+            toPending(entry({ source: 'myweek', title: 'Weekly Chore' }), NOW)?.page,
+            'Weekly',
+            'expected Weekly',
+        );
+    });
+
+    test('A One Time reminder is named One Time', () => {
+        assertSame(
+            toPending(entry({ source: 'todo', title: '📋 Reminder: Dentist' }), NOW)?.page,
+            'One Time',
+            'expected One Time',
+        );
+    });
+
+    test('A Monthly reminder takes its page name from the banner heading', () => {
+        assertSame(
+            toPending(entry({ source: 'lookahead', title: 'Monthly' }), NOW)?.page,
+            'Monthly',
+            'expected Monthly',
+        );
+    });
+
+    test('A Quarterly reminder takes its page name from the banner heading', () => {
+        assertSame(
+            toPending(entry({ source: 'lookahead', title: 'Quarterly' }), NOW)?.page,
+            'Quarterly',
+            'expected Quarterly',
+        );
+    });
+
+    test('A Yearly reminder takes its page name from the banner heading', () => {
+        assertSame(
+            toPending(entry({ source: 'lookahead', title: 'Yearly' }), NOW)?.page,
+            'Yearly',
+            'expected Yearly',
+        );
+    });
+
+    test('A delayed Monthly reminder keeps Monthly in the name', () => {
+        assertSame(
+            toPending(entry({ source: 'lookaheaddelay', title: 'Monthly' }), NOW)?.page,
+            'Monthly — delayed',
+            'expected Monthly delayed',
         );
     });
 
