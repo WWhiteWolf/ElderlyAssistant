@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-02 (#53-new)
+Last updated: 2026-09-02 (#54-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -16,7 +16,7 @@ to know why something was done the way it was.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. PATRICK LEADS. This session is #53-new. Pending 8 and Pending 6
+1. PATRICK LEADS. This session is #54-new. #53-new is committed. Pending 8 and Pending 6
    are done. He wants to see tomorrow what the miss notice tells
    him. Pending 7, Pending 4, Siri, and this sitting’s file
    changes wait until after that. Pending 2 is not done.
@@ -80,11 +80,19 @@ Things waiting on something — mostly on the phone.
     #52-new). Today the turn is locked to 90° counter-clockwise,
     headers on the left. This sitting that lock is good. The
     note is to make every page work however the phone is held.
-10. THAT PAGE IS CALLED APPOINTMENTS (Patrick, #53-new). Pending
-    10 had been One Time Appointment(s); that is too long.
-    Extended is called Bucket List. There is no reminder at the
-    set time: that is too late; you are either there or you
-    missed it. The chips before are the reminders. Not a bug.
+10. TWO PAGE NAMES (Patrick, #54-new). One Time becomes
+    Appointments. Extended becomes Bucket List — an accepted
+    concept, so that name, not Wish List. The first piece is
+    one list of the names the person sees, used from now on,
+    so a rename is one change. That list is written in
+    constants/page-names.ts. Scheduled Reminders rows read from
+    it: Appointments and Bucket List are both on that map.
+    Other screens still have their own copies. The code scrub
+    pays close attention to the page names. Remaining work waits
+    until the sit test has run its course. Saved words on the phone stay
+    as they are. There is no reminder at the set time: that
+    is too late; you are either there or you missed it. The
+    chips before are the reminders. Not a bug.
 11. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
     sitting treated One Time's missing notice at the set time as
     a bug. He had decided it that way. A spec would have said so.

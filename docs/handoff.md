@@ -16,7 +16,7 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
-**#53-new.** Scheduled Reminders rows name Daily, Weekly, Monthly,
+**#53-new is committed** (Patrick, #54-new). Scheduled Reminders rows name Daily, Weekly, Monthly,
 Quarterly, Yearly, and One Time. Monthly, Quarterly, and Yearly
 take the name from the banner heading, because they share one
 source. A leftover banner without one of those headings still
@@ -228,7 +228,7 @@ They are kept here because they still decide things.
 
 ## What is open in front of it
 
-**This session is #53-new.** Pending 8 and Pending 6 are done.
+**This session is #54-new.** Pending 8 and Pending 6 are done.
 Pending 4 and Pending 7 wait until after the sit tests, so
 remaining changes can be seen as they are done. Pending 4:
 extend the missed-firing notice to Weekly, Monthly, Quarterly,
@@ -243,10 +243,18 @@ the work is extending the telling. Pending 2 is not done.
 **Pending 9:** all screens in any rotation. Today the lock is 90°
 counter-clockwise, headers on the left.
 
-**Pending 10:** that page is called Appointments (Patrick,
-#53-new). Pending 10 had been One Time Appointment(s); that is
-too long. Extended is called Bucket List. No reminder at the
-set time: too late; you are there or you missed it. Not a bug.
+**Pending 10 is this sitting** (Patrick, #54-new): two page
+name changes. One Time becomes Appointments. Extended becomes
+Bucket List — an accepted concept, so that name, not Wish List.
+The first piece is one list of the names the person sees, used
+from now on, so a rename is one change. That list is written in
+`constants/page-names.ts`. Scheduled Reminders rows read from it:
+Appointments and Bucket List are both on that map. Other screens
+still have their own copies. The code scrub pays close attention
+to the page names. Remaining work waits until the sit test has
+run its course. Saved words on the phone stay as they
+are. No reminder at the set time: too late;
+you are there or you missed it. Not a bug.
 
 **The paperwork half** (Patrick, #52-new): a thorough design spec
 (Pending 11; the rename belongs there), a User Guide from that or
@@ -390,4 +398,4 @@ replaces; never rename anything to or from `index.html` there (see
 including the eleven build sheets. `docs/index.md` says which file is
 the home. He calls them working documents; live desk means the same
 thing. This was written in an App-Docs session, 2026-08-31. This
-session is #53-new.
+session is #54-new.

@@ -164,11 +164,19 @@ export function runQueueViewTests(): void {
         );
     });
 
-    test('A One Time reminder is named One Time', () => {
+    test('An Appointments reminder is named Appointments', () => {
         assertSame(
             toPending(entry({ source: 'todo', title: '📋 Reminder: Dentist' }), NOW)?.page,
-            'One Time',
-            'expected One Time',
+            'Appointments',
+            'expected Appointments',
+        );
+    });
+
+    test('A Bucket List reminder is named Bucket List', () => {
+        assertSame(
+            toPending(entry({ source: 'extended', title: '📋 Reminder: Paris' }), NOW)?.page,
+            'Bucket List',
+            'expected Bucket List',
         );
     });
 

@@ -12,6 +12,7 @@
 // Reminders screen reads, so that a reminder which has quietly gone can be
 // found on a quiet afternoon instead of on the morning it lets you down.
 
+import { PAGE_LABELS } from '../constants/page-names.ts';
 import { nextFireTime } from './reconcile.ts';
 import type { QueueEntry } from './reconcile.ts';
 import type { WantedTrigger } from './types.ts';
@@ -33,24 +34,29 @@ import type { WantedTrigger } from './types.ts';
  * three.
  */
 export const PAGE_NAMES: Record<string, string> = {
-    myday: 'Daily',
-    mydaysnooze: 'Daily — snoozed',
+    myday: PAGE_LABELS.daily,
+    mydaysnooze: `${PAGE_LABELS.daily} — snoozed`,
     pets: 'Pets',
     petssnooze: 'Pets — snoozed',
-    myweek: 'Weekly',
+    myweek: PAGE_LABELS.weekly,
     // A Delay tapped on a Weekly banner is written down as a postpone and
     // shows under this same name (#20-new). There is no separate snoozed row
     // for Weekly, because there is no separate stamp behind one.
-    myweekpostpone: 'Weekly — postponed',
+    myweekpostpone: `${PAGE_LABELS.weekly} — postponed`,
     lookahead: 'Look Ahead',
     lookaheaddelay: 'Look Ahead — delayed',
-    todo: 'One Time',
-    memorytest: 'Memory Test',
+    todo: PAGE_LABELS.oneTime,
+    extended: PAGE_LABELS.extended,
+    memorytest: PAGE_LABELS.memorytest,
     orders: 'Orders',
     orderssnooze: 'Orders — snoozed',
 };
 
-const CADENCE_HEADINGS = new Set(['Monthly', 'Quarterly', 'Yearly']);
+const CADENCE_HEADINGS = new Set<string>([
+    PAGE_LABELS.monthly,
+    PAGE_LABELS.quarterly,
+    PAGE_LABELS.yearly,
+]);
 
 /** The page name a queue row should show. */
 function pageNameOf(entry: QueueEntry): string | undefined {
