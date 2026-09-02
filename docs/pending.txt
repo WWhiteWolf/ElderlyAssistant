@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-01 (#52-new)
+Last updated: 2026-09-02 (#52-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -16,17 +16,19 @@ to know why something was done the way it was.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. PATRICK LEADS. Pending 2 and 4 are not done. Display features,
-   if any, are not yet named.
+1. PATRICK LEADS. The next session is #53-new. Pending 4: the
+   missed-firing notice for Weekly, Monthly, Quarterly, Yearly,
+   and One Time. Pending 2 is not done.
 
 
 PENDING
 ------------------------------------------------------------------
 Things waiting on something — mostly on the phone.
 
-1. EVERYTHING BUILT SINCE THE LAST PHONE LOAD. He loaded this build
-   at #45-new. The sitting Check was 23 passed, 0 failed. He is living
-   with it. Time zone, holidays, a second Thursday, a Wednesday after
+1. EVERYTHING BUILT SINCE THE LAST PHONE LOAD. He loaded landscape
+   this sitting (#52-new): 90° counter-clockwise, headers on the
+   left. The Sit load is on the phone; he exported his real list
+   first. Time zone, holidays, a second Thursday, a Wednesday after
    the 6th, Then or Next Day on a shifted banner, and calendar shading
    reach the engine. The Float row is out. Extended New and Edit are
    name, optional note and Done. Cancel closes with no change,
@@ -37,10 +39,7 @@ Things waiting on something — mostly on the phone.
    on every page, including the ones that open from a page: optional
    view, 0 and 90 only, header as the portrait row with the Bridge.
    Header buttons turn in place so the words sit the right way up.
-   #52-new locked the turn to 90° counter-clockwise, headers on
-   the left (the island for that turn). He looked; that works.
-   Calendar and landscape are not on the phone yet. The simulator app was deleted so leftover
-   sitting items are gone from that store.
+   Calendar and landscape are on the phone now.
 2. A FAILED DAILY CLEAR-OUT IS NEVER SPOKEN. The warning is written
    down but filtered out before it reaches the pop-up, because it
    was classed as harmless. It is not harmless — a failed clear-out
@@ -52,8 +51,60 @@ Things waiting on something — mostly on the phone.
    is temporary and coming out. Timer is isolated deliberately.
    Neither is a reason to keep these files (Patrick, #51-new).
 4. THE MISSED-FIRING NOTICE COVERS DAILY ITEMS ONLY. Weekly, Monthly,
-    Quarterly, Yearly and One Time record no misses at all. Extending
-    it is real work still to do.
+    Quarterly, Yearly and One Time record no misses at all. They still
+    show on Daily on the day they fall, stay on their own page if that
+    day goes by without Done, and come back on Daily the next time that
+    kind of day comes round. One Time is the odd one: after that day
+    it stays on One Time, leaves Daily, and has no later occurrence to
+    arm. The opening pop-up does not tell you that you missed them.
+    Extending the telling is the next session (Patrick, #52-new). The
+    two halves of recovery on opening are already built.
+5. THE DATE PICKER IS MEANT TO TURN INACTIVE when a Wednesday
+    after the 6th is in use (Patrick, #52-new). Noted only; not
+    a job yet.
+6. ONE DRAWING OF THE LIST ROW, used by Daily and by Weekly
+    through Extended (Patrick, #52-new). Daily stays a view of
+    the day, with Done and Snooze on those items. Daily still has
+    its own add and its own Log. The row is shared so a later
+    change cannot land on one list and miss the other.
+7. A TAP ON A DAY IN THE CALENDAR brings up every item for that
+    day. Those items should show the 24-hour time they are
+    scheduled to fire (Patrick, #52-new). The list today shows
+    the name only.
+8. SCHEDULED REMINDERS STILL SAYS THE OLD PAGE NAMES: My Day,
+    My Week, Look Ahead, To-Do (Patrick, #52-new). Last sitting
+    the banners for Monthly, Quarterly, and Yearly were changed
+    to name their own page. This list did not get that change.
+    The rows should name Daily, Weekly, Monthly, Quarterly,
+    Yearly, and One Time.
+9. ALL THE SCREENS SHOULD WORK IN ANY ROTATION (Patrick,
+    #52-new). Today the turn is locked to 90° counter-clockwise,
+    headers on the left. This sitting that lock is good. The
+    note is to make every page work however the phone is held.
+10. ONE TIME SHOULD BE CALLED ONE TIME APPOINTMENT(S) (Patrick,
+    #52-new). There is no reminder at the set time: that is too
+    late; you are either there or you missed it. The chips before
+    are the reminders. Not a bug.
+11. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
+    sitting treated One Time's missing notice at the set time as
+    a bug. He had decided it that way. A spec would have said so.
+    Changing the name of One Time to One Time Appointment(s)
+    belongs in that spec.
+12. A USER GUIDE, from that spec or merely after it (Patrick,
+    #52-new). He needs to provide it on his website, and a way
+    in the app to find it or get it.
+13. A FEEDBACK BUTTON IN THE APP, similar to Mystery (Patrick,
+    #52-new). That is how the app lets you find or get the
+    User Guide.
+14. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
+    WILL COVER (Patrick, #52-new). The during-build tests are
+    thrown away. The run is not kept.
+15. A HELPER TO GUIDE THE USER through where to set the
+    reminder (Patrick, #52-new). Pictured as decision-tree
+    stages. The worth is landing on the right page. How to set
+    it is the page itself. Fine-tune options belong in the User
+    Guide or on Options, not in the same helper. He said those
+    points were good.
 
 
 FACTS THAT APPLY TO THE ONGOING WORK
@@ -71,6 +122,9 @@ built. None of these is a job to do.
 3. ONE TIME CARRIES THE REMINDERS BEFORE CHIPS — 30 min., 1
    hour, 2 hours, Morning of, Day Before, Night Before, 2 Days
    Before, Week, Month — and any and all of them can be on at once.
+   There is no reminder at the set time: that is too late; you
+   are either there or you missed it (Patrick, #52-new). The page
+   should be called One Time Appointment(s).
 4. DAILY'S OWN ADD IS ONLY ABOUT TODAY. Two kinds: an every-day
    item, or a One Time for today. On One Time for today the
    Reminders before chips are only 30 min., 1 hour, 2 hours, and
@@ -112,6 +166,9 @@ built. None of these is a job to do.
     Names in a day box are one line and scroll vertically.
     Landscape is an optional view, 0 and 90° counter-clockwise
     only, headers on the left, all pages.
+16. HAVING A GOOD IDEA LEADS TO OVERREACHING (Patrick, #52-new).
+    The feedback he needs is the trim: what part is worth it,
+    and what is more than is there.
 
 
 WHAT IS DONE, NEWEST FIRST
@@ -119,36 +176,41 @@ WHAT IS DONE, NEWEST FIRST
 One line each. The full story of any of them is in
 docs/build-history.md.
 
-1. #51-new — display features: header buttons and the Home badge
+1. #52-new — landscape 90° counter-clockwise, headers on the left,
+   on the phone. Sit set: seven banners Wednesday on sim and phone.
+   No 9:20 by his decision. RFC eval written. Paperwork named:
+   spec, User Guide, website, Feedback, testing file, helper for
+   where. Next is Pending 4.
+2. #51-new — display features: header buttons and the Home badge
    face sit the right way up in landscape; Home's badges four across
    and three down; Memory asks at start; Monthly / Quarterly /
    Yearly banners name their own page; no snooze without a reminder;
    the row button says Done? until a tap. Pending 2 and 4 checked,
    not done. Phone not touched.
-2. #50-new — the other pages in landscape. Optional view, 0 and 90
+3. #50-new — the other pages in landscape. Optional view, 0 and 90
    only. Header stays the portrait row, Bridge with it, at the top
    of the phone. Covers turn with the page. Calendar month grid not
    rebuilt. Simulator still held leftover sitting items; he deleted
    the Memory app there. Goal accomplished. Phone not touched.
-3. #49-new — calendar page built from the sheet. Options Calendar
+4. #49-new — calendar page built from the sheet. Options Calendar
    shading row out; the saved field stays. Names in a day box scroll
    vertically only. 460 tests. They need landscape now. Calendar is
    allowed to turn; other pages still stay upright. Fresh simulator
    build needed for a turn to take.
-4. #48-new — calendar build sheet written. No code.
-5. #47-new — selling description a good start and left. Features
+5. #48-new — calendar build sheet written. No code.
+6. #47-new — selling description a good start and left. Features
    file is the inventory. Comparables from what the app is, not
    elderly apps: repeating reminders and personal tasks. Apple
    Reminders is the free default; TickTick, Todoist, Things, and
    Due exist because it is not enough. He opened Reminders: this
    one does more, easier. No code.
-6. #46-new — selling description begun, publishing picture written.
+7. #46-new — selling description begun, publishing picture written.
    The session dropped. The wrong-shelf comparables were corrected
    at #47-new.
-7. App-Docs, 2026-08-31 — working documents stay in docs; history
+8. App-Docs, 2026-08-31 — working documents stay in docs; history
    and the eleven build sheets moved to docs-ref. Index tightened to
    one line per file. Not a Memory chain session.
-8. #45-new — the two engine Fails from the sitting: Daily after Done
+9. #45-new — the two engine Fails from the sitting: Daily after Done
    arms tomorrow, and a named zone moves a One Time's fire. 23 passed,
    0 failed on the sim and on the phone. 460 tests. Reminder Engine
    files not touched. The morning after, the automated load, the two
@@ -157,11 +219,11 @@ docs/build-history.md.
    now asks to show it, same as Timer. He will verify that in the code
    without the test load. The four pieces, the screen, and the Home
    tile came out of the app after that run.
-9. #44-new — the automated load built, and the simulator sitting
+10. #44-new — the automated load built, and the simulator sitting
    finished. Two engine Fails (Daily after Done, named zone) go to
    #45-new. Reminder Engine files not touched. 459 tests. Two old
    type-check nits left for later.
-10. #43-new — the automated-load job sheet and the sitting list.
+11. #43-new — the automated-load job sheet and the sitting list.
    Daily now rolls the list before it reads, and the list pages read
    again when the app comes to the front. The load itself is not
    built. Not on the phone.

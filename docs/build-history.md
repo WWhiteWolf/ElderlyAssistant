@@ -3349,6 +3349,58 @@ deliberately.** Neither is a reason to keep the old reminder readers.
 The suite stayed 460 of 460. The phone was not touched.
 
 
+## #52-new (2026-09-02): landscape the right way, the Sit sitting, and the paperwork half
+
+**The opener was landscape.** He corrected the turn: **90°
+counter-clockwise**, headers on the **left**, the island for that
+turn. `LandscapeRight` is the lock. He looked on the simulator
+and loaded the phone; the rotation is good. All screens working
+in any rotation is Pending 9; this sitting the lock stays.
+
+**The rest of the sitting was not a build.** He evaluated the app
+against RFC 5545 and RFC 8984. The write-up is `docs/rfc-eval.md`.
+The claim still holds: the guidance of those specs, not the file
+format. Miss-telling is Daily only; that is Pending 4 and the
+next session.
+
+**Then a Sit set** so longer-term items fire in a day or two.
+`docs/near-fire-set.md` is the follow-along.
+`docs/Remember-Backup-Sit-near-fire.json` is the Restore file.
+He exported his real list first. The old test load was not
+brought back. Tuesday night, Scheduled Reminders showed the ten
+Sit rows with the right times and days, still under the old page
+names (My Day, My Week, Look Ahead, To-Do) and 12-hour times.
+Pending 8 is those names. Pending 7 is 24-hour time on a calendar
+day tap. Pending 6 is one drawing of the list row. Pending 5 is
+the date picker going inactive for Wednesday after the 6th,
+noted only.
+
+**Wednesday morning, 9:04:** all seven reminders fired, on the
+simulator and on the phone. Nothing at 9:20. That is not a bug.
+He decided it: One Time has no reminder at the set time, because
+that is too late; you are either there or you missed it. The
+chips before are the reminders. The page should be called One
+Time Appointment(s) (Pending 10). Thursday’s show and no-show is
+already known; it is not a look to find out. The two Later items
+(9 and 10 September) he will do with his own list on the phone.
+
+**The app is built and the work is only half done.** Now comes
+the paperwork: a thorough design spec (Pending 11), a User Guide
+from that or after it, on his website, and a way in the app to
+find it (Pending 12), a Feedback button similar to Mystery
+(Pending 13), and a file for what testing has covered and will
+cover (Pending 14). The during-build tests are thrown away; the
+run is not kept. Reminder Engine holds design, not tests.
+
+**A helper** to guide where to set a reminder, as decision-tree
+stages (Pending 15). The worth is landing on the right page.
+How to set it is the page itself. Fine-tune options belong in
+the User Guide or on Options. Having a good idea leads to
+overreaching; the feedback he needs is the trim (Facts 16).
+
+**He is feeling good about accomplishing his goal.**
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

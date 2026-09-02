@@ -16,58 +16,26 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
-**#50-new put the other pages in landscape.** He looked. Not bad as an
-optional view. All the pages turn, including the ones that open from
-a page. Only 0 and 90. The calendar month grid was not rebuilt.
-**He said the goal was accomplished.** **Committed** (Patrick, #51-new).
-The phone was not touched; he is still living with the #45-new load.
+**#52-new locked landscape to 90° counter-clockwise**, headers on
+the left. He looked on the simulator and the phone; the rotation
+is good. **Committed** when he commits this sitting. Pending 9 is
+any rotation later. The Sit load is on the phone; he exported his
+real list first. Seven banners fired Wednesday morning on both.
+No 9:20: One Time has no reminder at the set time, by his
+decision. He is feeling good about accomplishing his goal.
 
-**#51-new is display features on various pages, one at a time.**
-The first is the header buttons rotating in place on the header
-(Patrick, #50-new). **Built** this sitting. He verified on the
-simulator. The words sit the right way up for landscape, still in
-the same spots. The title stays as it is. **The badge face on Home
-rotates straight** (Patrick, #51-new). Built this sitting. He said
-that is good. **Home's badges in landscape are four across and three
-down**, Memory Test at the bottom; off screen does not matter for
-that one (Patrick, #51-new). Built this sitting. He said that is
-good. **Memory asks at start**, then the scheduler runs; he said
-that worked. **Monthly, Quarterly, and Yearly banners name their
-own page**, not Look Ahead. **No snooze** on an item with no reminder
-set. The row button says **Done?** until a tap, then the green tick.
-Date deactivating for options below was already fixed.
-**Committed** (Patrick, #52-new).
+**#51-new is committed** (Patrick, #52-new): landscape chrome,
+Memory asks at start, Monthly / Quarterly / Yearly banners name
+their own page, no snooze without a reminder, Done? then the tick.
 
-**#52-new is landscape rotation.** Patrick corrected the turn
-this sitting: **90° counter-clockwise**, headers on the **left**.
-That is the island for that turn. `LandscapeRight` is the lock.
-The header band sits on the left; the header itself turns −90°.
-**He looked on the simulator. That works.** He is loading
-the phone and will report.
+**#50-new is committed** (Patrick, #51-new): all pages in
+landscape, 0 and 90, covers included. Calendar month grid was not
+rebuilt.
 
-**#49-new built the calendar page.** Home has a Calendar tile next to
-Daily. A month fills the screen except the header. A tap on a day
-opens that day’s names. A tap on a name opens the item. The Options
-Calendar shading row is out; the saved field stays. Names in a day
-box scroll vertically only. The suite is 460 of 460.
-**Committed** (Patrick, #50-new).
+**#49-new built the calendar page.** **Committed** (Patrick,
+#50-new). Mac suite 460 of 460.
 
-**#47-new is done.** The selling description is a good start and was
-left. `docs/Memory features.docx` is the inventory, not the sell. The
-writing is true, easy to follow, warm, and interesting — the app on
-the page, not a pitch. Timer and Memory Test stay off that page.
-Recurrence follows the guidance of RFC 5545 and RFC 8984, not
-everything those specs say. Comparables were looked up from the
-features file, not elderly apps; the note is in App-Docs
-`Publishing-Strategy.docx`. He opened Apple Reminders: this one does
-more, easier.
-
-**#45-new is done.** The two engine Fails from the sitting are cured
-on the simulator and on the phone (23 passed, 0 failed). After Daily
-Done, tomorrow's notice is the one armed date, depth still one. A
-named zone moves a One Time's fire. The test load is out of the app.
-The story is in `build-history.md` under #45-new. The Reminder Engine
-has no code and was not opened.
+**#47-new and #45-new are done.** Stories in `build-history.md`.
 
 **He is living with this build on the phone.** Old reader files stay
 until each replacement is proved and are not called. **A banner while
@@ -114,7 +82,10 @@ rewrites itself on the next build.
   how often. Look Ahead is not a once-only list. **A six-month item
   lives on Quarterly** (Patrick, #33-new), still every six months.
 - **One Time** — a date, no repeat, carrying To-Do's Reminders before
-  chips. Any and all of those chips can be on at once.
+  chips. Any and all of those chips can be on at once. **There is no
+  reminder at the set time** (Patrick, #52-new): that is too late;
+  you are either there or you missed it. The page should be called
+  One Time Appointment(s) (Pending 10).
 - **Extended** — a list of items to be done sometime in the future,
   with no deadline, no due date, and no set time. It gets no banners.
   New and Edit have only the name, an optional note, and Done. It can
@@ -243,10 +214,44 @@ They are kept here because they still decide things.
 
 ## What is open in front of it
 
-**This session is #52-new.** Landscape is 90° counter-clockwise,
-headers on the left. He looked on the simulator; that works.
-He is loading the phone and will report. Pending 2 and 4
-are not done.
+**The next session is #53-new.** Pending 4: extend the missed-firing
+notice to Weekly, Monthly, Quarterly, Yearly, and One Time. They
+show on Daily only on the day they fall. If that day goes by without
+Done they leave Daily, stay on their own page, and come back the
+next time that kind of day comes round. One Time stays on its page
+after that day, with no later occurrence. The opening pop-up does
+not tell you. The two halves of recovery on opening are already
+built; the work is extending the telling. Pending 2 is not done.
+
+**Pending 9:** all screens in any rotation. Today the lock is 90°
+counter-clockwise, headers on the left.
+
+**Pending 8:** Scheduled Reminders still says My Day, My Week, Look
+Ahead, To-Do. Rows should name Daily, Weekly, Monthly, Quarterly,
+Yearly, and One Time.
+
+**Pending 10:** One Time should be called One Time Appointment(s).
+No reminder at the set time: too late; you are there or you missed
+it. Not a bug.
+
+**The paperwork half** (Patrick, #52-new): a thorough design spec
+(Pending 11; the rename belongs there), a User Guide from that or
+after it, on his website, and a way in the app to find it (Pending
+12), a Feedback button similar to Mystery (Pending 13), a file for
+what testing has covered and will cover (Pending 14; during-build
+tests are thrown away). A helper for **where** to set a reminder
+(Pending 15), not how and not every option. Having a good idea
+leads to overreaching; the feedback he needs is the trim.
+
+**Sit:** load on the phone, real list exported. Seven fired
+Wednesday on both devices. Later items (9 and 10 September) with
+his own list. Thursday’s show and no-show is already known.
+Follow-along `docs/near-fire-set.md`. RFC write-up
+`docs/rfc-eval.md`.
+
+**Pending 7:** calendar day tap should show 24-hour fire time.
+**Pending 6:** one drawing of the list row. **Pending 5:** date
+picker inactive for Wednesday after the 6th, noted only.
 
 **Memory Test is temporary and coming out. Timer is isolated
 deliberately.** Neither is a reason to keep the old reminder
@@ -289,11 +294,9 @@ called. The live weekly road reads the tick. The old test named *A chore
 already ticked still gets its weekly reminder* goes when the reader
 files come out.
 
-**Miss-telling covers Daily items only.** The rollover records misses
-for every-day items on `reminder_items` and no others, so Weekly,
-Monthly, Quarterly, Yearly and One Time record no misses at all. The
-work is extending the telling to those kinds, not building it — both
-halves of recovery on opening are already built and tested.
+**Miss-telling covers Daily items only.** Both halves of recovery
+on opening are already built and tested. **The next session
+extends the telling** (Pending 4).
 
 **A named zone, holidays, a second Thursday and a Wednesday after the
 6th are read from the saved item.** Then or Next Day is an action on a

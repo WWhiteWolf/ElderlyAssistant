@@ -4,39 +4,38 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-01, at the close of #51-new.
+Last written: 2026-09-02, at the close of #52-new.
 
 ## Read this first
 
-- **The next Memory session is #52-new.**
-- He is living with the #45-new build on the phone. Calendar, landscape,
-  and the #51-new display work are not on that load.
-- Memory asks to show banners at start. He verified that on the simulator.
+- **The next Memory session is #53-new.**
+- **The next code session is Pending 4:** miss-telling for Weekly,
+  Monthly, Quarterly, Yearly, and One Time.
+- The Sit load is on the phone. He exported his real list first.
+- Landscape is 90° counter-clockwise, headers on the left, on the
+  phone. That lock is good this sitting.
 
 ## What is in
 
-Landscape chrome: header buttons and the Home badge face sit the right
-way up; Home's badges in landscape are four across and three down.
-Monthly, Quarterly, and Yearly banners name their own page. No snooze
-without a reminder. The row button says Done? until a tap, then the
-green tick.
+Landscape the right way. RFC eval in `docs/rfc-eval.md`. Sit set
+fired seven banners Wednesday morning on the simulator and the
+phone. No 9:20: One Time has no reminder at the set time, by his
+decision. Paperwork named: spec, User Guide, website, Feedback
+button, testing file, helper for where only.
 
 ## What is next
 
-Patrick leads. Pending 2 and 4 are not done. Display features, if any,
-are not yet named.
+Patrick leads. Pending 4, then the paperwork half (Pending 10–15).
+Pending 2 is not done.
 
 ## Do not reopen
 
 The one Input page. Dual-write. Migrating old page data. Redesigning
-the engine. Rebuilding the test load. The Reminder Engine files. The
-five Options questions. The Timer on this stretch. Float as a row.
-Note as an Options case. Then or Next Day as a saved recipe. A missing
-day and a holiday on the same item. Look Ahead's banner delay, My
-Week's delay, and +1 Day on those banners. A mass change of the
-opening files. Putting the one shared list on the selling page. Timer
-or Memory Test on the selling page. Horizontal scroll in a day’s box.
-Migrating `shadeCalendar` off items. Rebuilding the calendar month
-grid. Reopening landscape as a look — it is in. Date deactivating for
-options below — already fixed. Treating Memory Test or Timer as a
-reason to keep the old reminder readers.
+the engine. Rebuilding the test load. The Reminder Engine files as
+code. Treating no banner at One Time’s set time as a bug. The
+helper walking the form or every Options row. Clock-places as a
+pretend today. Putting the one shared list on the selling page.
+Timer or Memory Test on the selling page. Horizontal scroll in a
+day’s box. Rebuilding the calendar month grid. Date deactivating
+for options below — already fixed. Treating Memory Test or Timer as
+a reason to keep the old reminder readers.
