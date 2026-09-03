@@ -16,12 +16,23 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
-**#58-new built the Where? helper** from
+**#59-new is closed** (Patrick said excellent, end of #59-new). Built
+Pending 4 and Pending 3, spinner consistency, and AM/PM check on Save.
+**Calendar day list:** saved `hour`/`minute` as 24-hour `HH:MM` before
+the name (`app/calendar.tsx`; sheet at
+`docs-ref/build-sheets/build-sheet-calendar-fire-time.md`). **Useless
+spinners go:** weekday patterns and One Time for today — time only;
+Daily every-day with no time — Set time button only (`app/item-edit.tsx`).
+**AM/PM on Save:** quiet popup when the time was set on the 12-hour row;
+**no popup** when set with the 24-hour box or digit spinner
+(`DateTimeControl.tsx` passes `timeVia`). Mac suite 489 of 489. Not on
+the phone yet. Patrick is committing. Full story in `build-history.md`.
+
+**#58-new is committed** (Patrick, #59-new). The Where? helper from
 `docs-ref/build-sheets/build-sheet-where-helper.md`. One transparent
 route (`app/where.tsx`), six files edited. `formContext: oneTimeForToday`
 is separate from `returnTo` in `item-edit`. Mac suite 489 of 489. Not
-on the phone yet. Not committed yet — Patrick will commit when he
-comes in.
+on the phone yet.
 
 **#57-new is committed** (Patrick, #58-new). The helper design and
 build sheet only; no code in that session.
@@ -233,24 +244,23 @@ They are kept here because they still decide things.
 
 ## What is open in front of it
 
-**Nothing from #56-new or #58-new is on the phone yet.**
+**Next session (Patrick, end of #59-new): rotation in three turns only —
+0°, 90°, and 270°.** **180° upside-down is out.** Headers stay with the
+**physical top of the phone** in every allowed turn. Not the old two-turn
+lock alone (#52-new was 0° and 90° only). Everything else waits until
+after that or on the phone.
 
-**Pending 7:** calendar day list should show 24-hour fire time. Sit
-tests are finished. **Not safe to compress** (#56-new): no build sheet,
-and "fire time" may need a one-line decision (saved time vs engine)
-before building. Its own short session.
+**Nothing from #56-new through #59-new is on the phone yet.**
 
-**Pending 9:** all screens in any rotation. Today the lock is 90°
-counter-clockwise, headers on the left.
+**Pending 3:** 0°, 90°, and 270°; 180° out; headers at the physical top.
+Next session.
 
 **The paperwork half** (Patrick, #52-new): a thorough design spec
-(Pending 11; the rename belongs there), a User Guide from that or
+(Pending 4; the rename belongs there), a User Guide from that or
 after it, on his website, and a way in the app to find it (Pending
-12), a Feedback button similar to Mystery (Pending 13), a file for
-what testing has covered and will cover (Pending 14; during-build
+5), a Feedback button similar to Mystery (Pending 6), a file for
+what testing has covered and will cover (Pending 7; during-build
 tests are thrown away).
-
-**Pending 5:** date picker inactive for Wednesday after the 6th, noted only.
 
 **Memory Test is temporary and coming out. Timer is isolated
 deliberately.** Neither is a reason to keep the old reminder
@@ -262,25 +272,24 @@ which is what lets a worker session build without asking a design
 question. **A sheet's read list should name what the pattern it points at
 actually imports** (#25-new).
 
-**The 24-hour digit spinner is built** (#36-new). Tapping the 24-hour
-type-in box opens four arrows, one for each digit, in the same style as
-the 12-hour hour and minute. **The AM/PM removal is mitigated by that
-spinner** (Patrick, #36-new) and is not a separate job. The 12-hour row
-with AM/PM stays.
+**The 12-hour spinners with AM/PM stay** (Patrick, #59-new). The setter
+does **not** go to 24-hour spinners. He keeps leaving the time on the
+wrong AM or PM.
 
-**The app goes to the 24-hour clock, after the building** (Patrick,
-#30-new). He keeps leaving the time on the wrong AM or PM. The read was
-done at #30-new and does not need doing again:
+**Instead, a quiet popup on Save** (Patrick, #59-new): when the item
+has a time set with the **12-hour row**, the first Save tap shows a
+reminder to check AM/PM. **No popup** when the time was last set with
+the 24-hour box or digit spinner. A second tap on the popup completes
+the save (two taps to save when the warning shows). Items with no time
+save on one tap. **Built** in `app/item-edit.tsx` and
+`components/DateTimeControl.tsx` (#59-new).
 
-- **The setter is one file**, `components/DateTimeControl.tsx`. The hour
-  stepper shows 1 to 12 and would show 00 to 23, and the third stepper —
-  AM/PM — comes off with `toggleAmPm` and the `ampmDisplay` style.
-- **The arithmetic needs nothing.** #27-new already moved the hour
-  stepping onto the 24-hour clock, and the type-in box below has always
-  been 24-hour, hint and all. So the box and the spinners disagree today,
-  which may be part of what trips him.
-- **The display copies on the old pages went out with them** (#35-new).
-  What remains is `settings.tsx`, plus `formatClock` in
+**The 24-hour digit spinner stays** (#36-new) — tap the type-in box.
+**Display tiles** (Scheduled Reminders sentences, `formatClock`, and
+the rest) are not part of this ruling; the #30-new read on what remains
+still applies if those are taken up later:
+
+- **What remains for display** is `settings.tsx`, plus `formatClock` in
   `scheduler/queueview.ts`, which writes the Scheduled Reminders screen's
   sentences.
 - **Eleven assertions** in `scheduler/tests/queueview.test.ts` hold
@@ -371,7 +380,7 @@ replaces; never rename anything to or from `index.html` there (see
 `Projects/Reminder Engine/docs-ref/reminder-shape.drawio`.
 
 **Working documents live in `docs`.** History lives in `docs-ref`,
-including the twelve build sheets. `docs/index.md` says which file is
+including the thirteen build sheets. `docs/index.md` says which file is
 the home. He calls them working documents; live desk means the same
-thing. This was written in an App-Docs session, 2026-08-31. This
-session is #58-new.
+thing. This was written in an App-Docs session, 2026-08-31. Session
+#59-new is closed; Patrick is committing.

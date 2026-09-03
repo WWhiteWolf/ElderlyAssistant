@@ -3565,6 +3565,67 @@ checker is run at the session close. Patrick is committing this
 session. Next is the worker build from the sheet.
 
 
+## #59-new (2026-09-03): calendar fire time, Pending 3, spinner consistency
+
+**The sitting opened on Pending 4 and Pending 3**, then tightened
+spinner behaviour across forms at Patrick's word.
+
+### Pending 4 — calendar day-list fire time
+
+**The goal was Pending 4** — a tap on a calendar day should show
+each item's 24-hour fire time, not the name alone. #56-new left it
+out as not safe to compress without a sheet and a settled meaning of
+fire time.
+
+**Decision.** Fire time is the saved `hour` and `minute` on the item,
+shown as `HH:MM` on the 24-hour clock before the label. Not a moment
+the engine computes for that calendar day. Items with no saved time
+stay name-only. Sort order unchanged.
+
+**What was built.** `app/calendar.tsx` only. `savedFireTime24` and
+`dayRowLabel` use `hourMinuteOf` from `modules/reminder-items.ts`.
+The month grid is unchanged — names only in day boxes, as at #49-new.
+
+**The worker sheet** is
+`docs-ref/build-sheets/build-sheet-calendar-fire-time.md`. Written
+and built in the same sitting.
+
+### Pending 3 — date picker off for weekday patterns
+
+On Monthly, Quarterly, and Yearly, when the saved repeat is second
+Thursday or Wednesday after the Nth (`monthlyPattern` not `'date'`),
+`DateTimeControl` shows time only — the date half is off. A fixed
+date keeps the full First Due Date picker.
+
+### Spinner consistency — useless spinners go (Patrick, #59-new)
+
+Patrick asked for consistency with Bucket List: if a spinner cannot
+change anything, it should be removed, not dulled.
+
+**One Time for today on Daily** — date is always today, so the date
+picker is off; save always writes today's date from `assembleFormItem`.
+
+**Daily every-day with no time** — no clock at all, like Bucket List;
+a **Set time** button adds one. Clearing the time removes the spinner
+again.
+
+All of the above is `app/item-edit.tsx`.
+
+**AM/PM check on Save** (Patrick, #59-new) — the 12-hour spinners stay;
+no move to 24-hour spinners. When the time was last set on the **12-hour
+row**, Save shows a quiet reminder to check AM/PM (two taps). **No
+popup** when the time was last set with the **24-hour box or digit
+spinner** — `DateTimeControl` reports `timeVia` and `item-edit` skips
+the warning. No time → one tap as before. `app/item-edit.tsx` and
+`components/DateTimeControl.tsx`.
+
+**Session close.** Patrick said excellent. **Next session:** rotation
+**0°, 90°, and 270°**; **180° out**; headers at the physical top of the
+phone (recorded in handoff and pending). Patrick is committing.
+
+**Checks.** Mac suite 489 of 489. Not on the phone yet.
+
+
 ## #58-new (2026-09-03): the Where? helper built
 
 **The goal was the worker build from**
@@ -3591,8 +3652,8 @@ four reminder chips, and time zone only on + OPT.
 
 **Checks.** Mac suite 489 of 489. `/where` uses the same `Href` cast
 as `/calendar` until the next Expo build refreshes the generated route
-list. Simulator checks are Patrick's. Not on the phone yet. Session
-closed; Patrick will commit when he comes in.
+list. Simulator checks are Patrick's. Not on the phone yet.
+**Committed** (Patrick, #59-new).
 
 
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)

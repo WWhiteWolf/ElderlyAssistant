@@ -12,11 +12,23 @@ import { Theme, useTheme } from '../constants/Themes';
 import { HeaderButton, PageFrame } from '../components/PageFrame';
 import {
     DAY_NAMES,
+    hourMinuteOf,
     loadReminderItems,
     MONTH_NAMES,
     shadedDaysForItem,
     type ReminderItem,
 } from '../modules/reminder-items';
+
+function savedFireTime24(item: ReminderItem): string | null {
+    const { hour, minute } = hourMinuteOf(item);
+    if (hour == null || minute == null) return null;
+    return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+}
+
+function dayRowLabel(item: ReminderItem): string {
+    const fire = savedFireTime24(item);
+    return fire ? `${fire} ${item.label}` : item.label;
+}
 
 function asNum(value: string | string[] | undefined): number | undefined {
     const raw = Array.isArray(value) ? value[0] : value;
@@ -248,7 +260,7 @@ export default function CalendarScreen() {
                     style={styles.dayRow}
                     onPress={() => selectedDay && openItem(item, selectedDay)}
                 >
-                    <Text style={styles.dayRowLabel}>{item.label}</Text>
+                    <Text style={styles.dayRowLabel}>{dayRowLabel(item)}</Text>
                 </TouchableOpacity>
             ))}
         </ScrollView>

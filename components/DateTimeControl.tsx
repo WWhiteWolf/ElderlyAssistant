@@ -77,7 +77,9 @@ interface Props {
     // #27-new: `half` says which side the person actually touched, so a page
     // with both halves optional can wake the date without also claiming a time
     // was set. Callers that do not care simply ignore the second argument.
-    onChange: (d: Date, half?: 'date' | 'time') => void;
+    // When half is 'time', an optional third argument says whether the person
+    // used the 12-hour row ('12h') or the 24-hour box or digit spinner ('24h').
+    onChange: (d: Date, half?: 'date' | 'time', timeVia?: '12h' | '24h') => void;
     mode?: 'datetime' | 'time' | 'date';
     dateLabel?: string;
     timeLabel?: string;
@@ -162,11 +164,15 @@ export default function DateTimeControl({
     // `half` says which side of the control is being spun, because only that
     // side's sleep matters. Asleep: the first tap only wakes that half at the
     // value already shown — the adjustment itself starts with the next tap.
-    const spin = (half: 'date' | 'time', change: (d: Date) => void) => {
+    const spin = (
+        half: 'date' | 'time',
+        change: (d: Date) => void,
+        timeVia?: '12h' | '24h',
+    ) => {
         const next = new Date(value);
         const halfAsleep = half === 'date' ? dateAsleep : timeAsleep;
         if (!halfAsleep) change(next);
-        onChange(next, half);
+        onChange(next, half, timeVia);
     };
 
     const adjustMonth = (delta: number) => spin('date', d => {
@@ -193,20 +199,20 @@ export default function DateTimeControl({
     // stepping back one without going negative.
     const adjustHour = (dir: 'up' | 'down') => spin('time', d => {
         d.setHours((d.getHours() + (dir === 'up' ? 1 : 23)) % 24);
-    });
+    }, '12h');
 
     const adjustMinute = (delta: number) => spin('time', d => {
         d.setMinutes((d.getMinutes() + delta + 60) % 60);
-    });
+    }, '12h');
 
     const toggleAmPm = () => spin('time', d => {
         d.setHours((d.getHours() + 12) % 24);
-    });
+    }, '12h');
 
     const applyTime = (hour: number, minute: number) => {
         const next = new Date(value);
         next.setHours(hour, minute, 0, 0);
-        onChange(next, 'time');
+        onChange(next, 'time', '24h');
     };
 
     const hourNow = value.getHours();
@@ -272,7 +278,7 @@ export default function DateTimeControl({
             setTimeBad(false);
             const next = new Date(value);
             next.setHours(p.hour, p.minute, 0, 0);
-            onChange(next, 'time');
+            onChange(next, 'time', '24h');
         }
     };
 

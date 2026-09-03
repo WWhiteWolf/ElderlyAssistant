@@ -83,6 +83,27 @@ function kindFrom(kind?: string, returnTo?: string): ReminderKind {
     return 'daily';
 }
 
+function formHasTimeSet(
+    editKind: ReminderKind,
+    pendingTime: Date | null,
+    timeSet: boolean,
+): boolean {
+    if (editKind === 'extended') return false;
+    if (editKind === 'daily') return pendingTime !== null;
+    if (editKind === 'weekly') return true;
+    if (editKind === 'oneTime') return timeSet;
+    if (editKind === 'monthly' || editKind === 'quarterly' || editKind === 'yearly') return true;
+    return false;
+}
+
+function applyTimeVia(
+    timeVia: '12h' | '24h' | undefined,
+    setTimeVia24h: (via24: boolean) => void,
+) {
+    if (timeVia === '24h') setTimeVia24h(true);
+    else if (timeVia === '12h') setTimeVia24h(false);
+}
+
 function pathFor(
     returnTo: string | undefined,
     calendar?: {
@@ -128,6 +149,7 @@ function assembleFormItem(parts: {
     optionSettings: OptionSettings;
     monthlyPattern: MonthlyPattern;
     note: string;
+    isOneTimeForToday: boolean;
 }): ReminderItem {
     const base: ReminderItem = parts.existing ?? {
         id: parts.id,
@@ -175,17 +197,30 @@ function assembleFormItem(parts: {
         }
         delete next.reminders;
     } else if (parts.editKind === 'oneTime') {
-        const when = parts.dateSet ? parts.pendingDate : new Date();
+        const now = new Date();
+        const when = parts.isOneTimeForToday
+            ? new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate(),
+                parts.pendingDate.getHours(),
+                parts.pendingDate.getMinutes(),
+                0,
+                0,
+            )
+            : (parts.dateSet ? parts.pendingDate : now);
         next = {
             ...next,
-            ...(parts.dateSet ? { year: when.getFullYear(), month: when.getMonth(), day: when.getDate() } : {}),
+            ...(parts.isOneTimeForToday || parts.dateSet
+                ? { year: when.getFullYear(), month: when.getMonth(), day: when.getDate() }
+                : {}),
             ...hourMinuteOf({
                 hour: parts.timeSet ? parts.pendingDate.getHours() : null,
                 minute: parts.timeSet ? parts.pendingDate.getMinutes() : null,
             }),
             reminders: parts.reminders,
         };
-        if (!parts.dateSet) {
+        if (!parts.isOneTimeForToday && !parts.dateSet) {
             delete next.year;
             delete next.month;
             delete next.day;
@@ -262,6 +297,7 @@ export default function ItemEditScreen() {
     const [pendingDate, setPendingDate] = useState<Date>(() => new Date(new Date().setHours(12, 0, 0, 0)));
     const [dateSet, setDateSet] = useState(true);
     const [timeSet, setTimeSet] = useState(false);
+    const [timeVia24h, setTimeVia24h] = useState(false);
     const [dateTimeValid, setDateTimeValid] = useState(true);
     const [reminders, setReminders] = useState<LeadReminder[]>([]);
     const [existing, setExisting] = useState<ReminderItem | null>(null);
@@ -443,6 +479,7 @@ export default function ItemEditScreen() {
             optionSettings: optionSettingsRef.current,
             monthlyPattern: monthlyPatternRef.current,
             note: noteRef.current,
+            isOneTimeForToday,
         });
 
         const updated = list.some((one) => one.id === id)
@@ -451,6 +488,21 @@ export default function ItemEditScreen() {
         await saveReminderItems(updated);
         setExisting(next);
         if (leave) afterSave();
+    };
+
+    const finishSave = () => {
+        if (formHasTimeSet(editKind, pendingTime, timeSet) && !timeVia24h) {
+            Alert.alert(
+                'Check AM or PM',
+                'Make sure the morning or evening setting is the one you mean.',
+                [
+                    { text: 'Go Back', style: 'cancel' },
+                    { text: 'Save', onPress: () => { void persist(true); } },
+                ],
+            );
+            return;
+        }
+        void persist(true);
     };
 
     const save = () => {
@@ -471,11 +523,11 @@ export default function ItemEditScreen() {
         if (editKind === 'oneTime' && reminders.length === 0) {
             Alert.alert('No Reminder Set', "Are you sure you don't want to set a Reminder?", [
                 { text: 'Go Back', style: 'cancel' },
-                { text: 'Save Anyway', onPress: () => { void persist(true); } },
+                { text: 'Save Anyway', onPress: () => { finishSave(); } },
             ]);
             return;
         }
-        void persist(true);
+        finishSave();
     };
 
     if (!loaded) {
@@ -550,34 +602,55 @@ export default function ItemEditScreen() {
                     </View>
                 )}
 
-                {(editKind === 'daily' || editKind === 'weekly') && (
+                {editKind === 'daily' && pendingTime === null && (
+                    <TouchableOpacity
+                        style={styles.recurBtn}
+                        onPress={() => {
+                            setPendingTime(new Date(new Date().setHours(12, 0, 0, 0)));
+                            setTimeVia24h(false);
+                        }}
+                    >
+                        <Text style={styles.recurBtnText}>Set time</Text>
+                    </TouchableOpacity>
+                )}
+
+                {(editKind === 'weekly' || (editKind === 'daily' && pendingTime !== null)) && (
                     <DateTimeControl
                         mode="time"
                         value={pendingTime || new Date(new Date().setHours(12, 0, 0, 0))}
-                        onChange={setPendingTime}
+                        onChange={(d, _half, timeVia) => {
+                            setPendingTime(d);
+                            applyTimeVia(timeVia, setTimeVia24h);
+                        }}
                         timeLabel="Time"
                         onValidityChange={setPendingTimeValid}
                         optionalTime={editKind === 'daily'}
-                        timeSet={editKind === 'weekly' ? true : pendingTime !== null}
-                        onClearTime={() => setPendingTime(null)}
+                        timeSet
+                        onClearTime={() => {
+                            setPendingTime(null);
+                            setTimeVia24h(false);
+                        }}
                     />
                 )}
 
                 {(editKind === 'monthly' || editKind === 'quarterly' || editKind === 'yearly') && (
                     <DateTimeControl
+                        mode={monthlyPattern === 'date' ? 'datetime' : 'time'}
                         value={pendingDate}
-                        onChange={(d) => {
+                        onChange={(d, half, timeVia) => {
                             const dateMoved =
                                 d.getFullYear() !== pendingDate.getFullYear()
                                 || d.getMonth() !== pendingDate.getMonth()
                                 || d.getDate() !== pendingDate.getDate();
                             setPendingDate(d);
+                            applyTimeVia(timeVia, setTimeVia24h);
                             if (dateMoved) {
                                 setMonthlyPattern('date');
                                 setOptionSettings(withLastMonthlyPattern(optionSettings, 'date'));
                             }
                         }}
                         dateLabel="First Due Date"
+                        timeLabel="Time"
                         onValidityChange={setDateTimeValid}
                     />
                 )}
@@ -585,19 +658,27 @@ export default function ItemEditScreen() {
                 {editKind === 'oneTime' && (
                     <>
                         <DateTimeControl
+                            mode={isOneTimeForToday ? 'time' : 'datetime'}
                             value={pendingDate}
-                            onChange={(d, half) => {
+                            onChange={(d, half, timeVia) => {
                                 setPendingDate(d);
+                                applyTimeVia(timeVia, setTimeVia24h);
                                 if (half === 'date') setDateSet(true);
                                 if (half === 'time') setTimeSet(true);
                             }}
                             onValidityChange={setDateTimeValid}
-                            optionalDate
-                            dateSet={dateSet}
-                            onClearDate={() => setDateSet(false)}
+                            timeLabel="Time"
+                            {...(isOneTimeForToday ? {} : {
+                                optionalDate: true,
+                                dateSet,
+                                onClearDate: () => setDateSet(false),
+                            })}
                             optionalTime
                             timeSet={timeSet}
-                            onClearTime={() => setTimeSet(false)}
+                            onClearTime={() => {
+                                setTimeSet(false);
+                                setTimeVia24h(false);
+                            }}
                         />
                         <Text style={styles.inputLabel}>Reminders before</Text>
                         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
