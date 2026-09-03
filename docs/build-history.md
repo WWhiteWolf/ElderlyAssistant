@@ -3505,11 +3505,64 @@ now includes `reset`; the sentence in `faultSentence` reaches the
 opening pop-up. Sweep stays quiet. Patrick asked to do it now rather
 than wait for the helper session.
 
-**Session close.** Patrick is committing and starting a fresh session
-for the helper. Calendar fire times (Pending 7 in handoff, Pending 4
-in pending.txt) were considered for the tail of this sitting and
-left out — not safe to compress without a build sheet and a settled
-meaning of fire time.
+**Committed** (Patrick, #57-new). Calendar fire times (Pending 7 in
+handoff, Pending 4 in pending.txt) were considered for the tail of
+this sitting and left out — not safe to compress without a build
+sheet and a settled meaning of fire time.
+
+
+## #57-new (2026-09-03): the Where? helper settled and its build sheet written
+
+**The goal was Pending What's Next 1.** The helper was settled from
+the user’s journey through the existing app, then written as a
+self-contained worker sheet. No app code was built.
+
+**Where it starts.** Home gains another badge after Daily, labelled
+Where? with a 🧭 compass. In landscape it sits at the bottom with
+Memory Test; the temporary extra row is fine because Patrick will
+rearrange and remove some badges later. Memory Test coming out was
+already settled. Timer Alerts coming out was said as probable, and
+whether Shopping List still belongs was left uncertain; neither is a
+decision and neither changes in this work. The calendar month’s unused
+right header button is also Where?. A calendar day list has neither
+Where? nor + Add, and no calendar day rides into the form.
+
+**What it asks.** First: “Does this item repeat?” Repeats leads to
+Every day, Week, Month, Quarter, or Year. Does not repeat asks whether
+it is for today. Yes opens Daily’s One Time for today form. No asks
+whether it is a dated occurrence such as an appointment or a rare item
+with no deadline such as a Bucket List desire. The eight landings are
+the five repeating forms, One Time for today, Appointments, and Bucket
+List. The helper lands on New, not on the list, and does not absorb
+the form’s own setting questions.
+
+**How leaving works.** Each layer closes naturally. Cancel or header
+Back from New returns to the helper question that opened it. Cancel
+from the helper returns to the Home or calendar screen beneath it. A
+successful Save closes both New and the helper and returns directly to
+that opening Home or calendar screen.
+
+**The important code finding.** `item-edit` currently uses
+`returnTo === 'daily'` both as navigation and as the signal for the
+special One Time for today form. Those are separate facts. The sheet
+gives the form an explicit One Time for today context and keeps return
+navigation separate. It also makes the helper a transparent Expo
+Router screen beneath New. That is a real three-layer journey, not a
+set of exceptions around the present route. A root-level `Cover`
+cannot be left open beneath New because it draws above the whole
+Stack.
+
+**The worker sheet** is
+`docs-ref/build-sheets/build-sheet-where-helper.md`. It names the
+seven files to build, the exact read-only patterns, all words and
+landings, the boundaries, and the Mac and simulator checks.
+`docs/index.md` now lists twelve build sheets. Composer is suitable
+for the worker session because the decisions and code read are
+finished.
+
+**Checks.** No code changed, so no code suite was run. The document
+checker is run at the session close. Patrick is committing this
+session. Next is the worker build from the sheet.
 
 
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
