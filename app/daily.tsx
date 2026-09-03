@@ -125,11 +125,6 @@ export default function DailyScreen() {
         writeHistory([newEntry, ...history].slice(0, 50));
         writeItems(items.map((one) => {
             if (one.id !== id) return one;
-            if (one.kind === 'monthly' || one.kind === 'quarterly' || one.kind === 'yearly') {
-                const { snoozedUntil, ...rest } = one;
-                void snoozedUntil;
-                return rest;
-            }
             const { snoozedUntil, ...rest } = one;
             return {
                 ...rest,

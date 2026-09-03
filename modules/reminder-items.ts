@@ -3,7 +3,8 @@ import * as AppGroup from './app-group';
 import { runDailyReset, runScheduler, runWeeklyReset } from '../scheduler/scheduler';
 import { warnIfFull } from '../scheduler/warn';
 import { translateReminderItems } from '../scheduler/translators/translate';
-import { baseMoment, shadedDaysInMonth } from '../scheduler/leadmoments';
+import { shadedDaysInMonth } from '../scheduler/leadmoments';
+import { isDateOf, shownOnDate } from '../scheduler/shown-on-date';
 import type { ReminderItem, ReminderKind } from './reminder-types';
 
 export type { LeadReminder, ReminderItem, ReminderKind } from './reminder-types';
@@ -91,32 +92,11 @@ export async function saveReminderItems(items: ReminderItem[]): Promise<void> {
 }
 
 export function isTodayDate(item: ReminderItem) {
-    if (typeof item.year !== 'number' || typeof item.month !== 'number' || typeof item.day !== 'number') {
-        return false;
-    }
-    const now = new Date();
-    return item.year === now.getFullYear() && item.month === now.getMonth() && item.day === now.getDate();
+    return isDateOf(item, new Date());
 }
 
 export function shownOnDaily(item: ReminderItem) {
-    if (item.kind === 'daily') return true;
-    if (item.kind === 'weekly') return item.day === new Date().getDay();
-    if (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly' || item.kind === 'oneTime') {
-        if (isTodayDate(item)) return true;
-        if (item.kind === 'oneTime') return false;
-        const shaped = translateReminderItems([item], Date.now())[0];
-        if (!shaped) return false;
-        const start = new Date();
-        start.setHours(0, 0, 0, 0);
-        const base = baseMoment(shaped, start.getTime() - 1);
-        if (base === null) return false;
-        const when = new Date(base.moment);
-        const now = new Date();
-        return when.getFullYear() === now.getFullYear()
-            && when.getMonth() === now.getMonth()
-            && when.getDate() === now.getDate();
-    }
-    return false;
+    return shownOnDate(item, new Date());
 }
 
 /** The days this item falls on in the month, from the engine's own calendar. */

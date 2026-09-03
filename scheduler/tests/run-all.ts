@@ -21,6 +21,7 @@ import { runDailyResetTests } from './dailyreset.test.ts';
 import { runWeeklyResetTests } from './weeklyreset.test.ts';
 import { runQueueViewTests } from './queueview.test.ts';
 import { runHealthTests } from './health.test.ts';
+import { runMissCandidateTests } from './miss-candidates.test.ts';
 import { runStillWantedTests } from './stillwanted.test.ts';
 import { runArmDepthTests } from './armdepth.test.ts';
 import { runTranslatorMyDayTests } from './translatormyday.test.ts';
@@ -66,6 +67,9 @@ runQueueViewTests();
 
 console.log('\nRun health');
 runHealthTests();
+
+console.log('\nMiss candidates');
+runMissCandidateTests();
 
 console.log('\nIs this still wanted?');
 runStillWantedTests();

@@ -3401,6 +3401,82 @@ overreaching; the feedback he needs is the trim (Facts 16).
 **He is feeling good about accomplishing his goal.**
 
 
+## #53-new (2026-09-02): Scheduled Reminders names, one list row, and the sit watch
+
+**#53-new is committed** (Patrick, #54-new). Scheduled Reminders
+rows name Daily, Weekly, Monthly, Quarterly, Yearly, and One
+Time. Monthly, Quarterly, and Yearly take the name from the
+banner heading, because they share one source. A leftover banner
+without one of those headings still says Look Ahead until it
+cycles off. Siri still says My Day Item. Unused old files still
+use the old names and are not on screen.
+
+**Daily and Weekly through Extended share one list row**
+(`components/ReminderItemRow.tsx`). Daily still composes its
+name; the cadence pages still pass the when-line. Mac suite
+466 of 466.
+
+**He wanted to see tomorrow what the miss notice tells him.**
+Missed-firing work and the calendar fire times wait until after
+that. Siri and this sitting’s file changes stay off the phone
+until he has seen it.
+
+
+## #54-new (2026-09-02): Appointments and Bucket List started, sit watch still running
+
+**#54-new is committed** (Patrick, #55-new). Pending 8 and
+Pending 6 are done. Pending 4 and Pending 7 wait until after the
+sit tests.
+
+**Pending 10 was started.** One Time becomes Appointments.
+Extended becomes Bucket List — an accepted concept, so that
+name, not Wish List. The first piece is one list of the names
+the person sees, used from now on, so a rename is one change.
+That list is written in `constants/page-names.ts`. Scheduled
+Reminders rows read from it: Appointments and Bucket List are
+both on that map. Other screens still have their own copies.
+The code scrub pays close attention to the page names. Remaining
+rename work waits until the sit test has run its course. Saved
+words on the phone stay as they are. No reminder at the set
+time: too late; you are there or you missed it. Not a bug.
+
+**Sit:** load on the phone, real list exported. Seven fired
+Wednesday on both devices. Later items (9 and 10 September) with
+his own list. Thursday’s show and no-show is already known. He
+wants to see tomorrow what the miss notice tells him. Follow-along
+`docs/near-fire-set.md`. RFC write-up `docs/rfc-eval.md`.
+
+
+## #55-new (2026-09-03): the miss notice for the other kinds (Pending 4)
+
+**The goal was What's Next 1 and Pending 4.** Sit tests finished.
+Phone and sim opened Thursday with one message: Sit Daily from
+yesterday is hangin!. At 8:00 AM two banners from today: Sit Daily
+and Sit first Thursday.
+
+**The reason the others did not show as missing** was that they
+were never written down. That was true of Weekly, Monthly,
+Quarterly, Yearly, and One Time alike, not only Weekly. The
+opening pop-up already speaks every miss that was stored. The
+work was the writing down.
+
+**The day-roll now writes a miss** for any of those that fell on
+an unprocessed day without Done. They still show on Daily only
+on the day they fall. Sit first Thursday is due Thursday, so
+Wednesday correctly stays quiet. A stretch away still sees a
+Monday weekly item when Friday is the first open, one miss per
+item, dated yesterday. Extended has no day and is not told.
+
+**Monthly, Quarterly, and Yearly Done now leave a tick** so the
+roll can still see it. The saved date is not advanced. The tick
+comes off when that kind of day comes round again. One Time keeps
+Done for good. Daily still clears with the day. Weekly's own
+reset is unchanged.
+
+Mac suite 487 of 487. He said the work is good. It is not on the
+phone yet.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

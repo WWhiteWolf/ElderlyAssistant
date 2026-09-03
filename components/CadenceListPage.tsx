@@ -137,14 +137,6 @@ export default function CadenceListPage({
             }));
             return;
         }
-        if (kind === 'monthly' || kind === 'quarterly' || kind === 'yearly') {
-            writeItems(items.map((one) => {
-                if (one.id !== id) return one;
-                const { snoozedUntil, ...rest } = one;
-                return rest;
-            }));
-            return;
-        }
         writeItems(items.map((one) => {
             if (one.id !== id) return one;
             const { snoozedUntil, ...rest } = one;
@@ -311,7 +303,7 @@ export default function CadenceListPage({
                                 onDragEnd={endDrag}
                                 onSnooze={() => setSnoozeItemId(item.id)}
                                 onDone={() => {
-                                    if ((kind === 'weekly' || kind === 'oneTime' || kind === 'extended') && item.completed) {
+                                    if ((kind === 'weekly' || kind === 'monthly' || kind === 'quarterly' || kind === 'yearly' || kind === 'oneTime' || kind === 'extended') && item.completed) {
                                         undoDone(item.id);
                                         return;
                                     }

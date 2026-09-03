@@ -444,7 +444,7 @@ export default function RootLayout() {
             if (i.id !== itemId) return i;
             const { snoozedUntil, ...rest } = item;
             void snoozedUntil;
-            return rest;
+            return { ...rest, completed: true };
           }));
         })();
         return;

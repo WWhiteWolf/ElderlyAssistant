@@ -19,7 +19,8 @@ import { isNewDay, resetForNewDay } from './dailyreset.ts';
 import { resetForNewCycle } from './weeklyreset.ts';
 import type { ResettableChore } from './weeklyreset.ts';
 import { HEALTH_KEY, MISSES_KEY, addRun, faultSignature, mergeMisses, missesForRollover } from './health.ts';
-import type { Miss, MissableItem, RunFault, RunRecord } from './health.ts';
+import type { Miss, RunFault, RunRecord } from './health.ts';
+import { clearStartingOccurrenceTicks, missablesDueOnDays, unprocessedDays } from './miss-candidates.ts';
 import type { WantedReminder, WantedTrigger } from './types.ts';
 
 import { translateReminderItems } from './translators/translate.ts';
@@ -77,12 +78,16 @@ export const OWNED_SOURCES = [
 ];
 
 /**
- * Roll the day over for every-day items, if it has not been rolled yet.
+ * Roll the day over, if it has not been rolled yet.
  *
  * This used to happen only when My Day or Pets was opened, which meant the day
  * never turned over for a screen that was not visited. It now runs wherever the
  * module runs — on launch, on every return to the front, and after any save —
  * so the checkmarks clear whether or not those screens are looked at.
+ *
+ * Misses for every kind that has a day are written first, from the ticks still
+ * sitting on those items. Daily's ticks then clear with the day. Monthly,
+ * Quarterly and Yearly ticks stay until that kind of day comes round again.
  *
  * It is safe to call at any time: on a day that has already been rolled over it
  * reads the date and does nothing else. The list load calls it before it reads,
@@ -91,7 +96,8 @@ export const OWNED_SOURCES = [
  * It answers with whatever went wrong, which is nothing on an ordinary day.
  */
 export async function runDailyReset(): Promise<RunFault[]> {
-    const today = new Date().toLocaleDateString();
+    const now = new Date();
+    const today = now.toLocaleDateString();
     const faults: RunFault[] = [];
 
     try {
@@ -101,23 +107,22 @@ export async function runDailyReset(): Promise<RunFault[]> {
         const saved = await readList<ReminderItem>('reminder_items');
         if (saved.failed) return [{ kind: 'reset', listKey: 'reminder_items' }];
 
-        const daily = saved.items.filter((one) => one.kind === 'daily');
-        await recordMisses(
-            daily.map((one) => ({
-                id: one.id,
-                label: one.label,
-                hour: typeof one.hour === 'number' ? one.hour : null,
-                minute: typeof one.minute === 'number' ? one.minute : null,
-                completed: !!one.completed,
-            })),
-            'reminder_items',
-            savedDate,
-        );
+        // Daily, Weekly, Monthly, Quarterly, Yearly and One Time: anything that
+        // fell on an unprocessed day is written as a miss before the ticks that
+        // say so are cleared. Extended has no day and is not in this set.
+        if (savedDate) {
+            const days = unprocessedDays(savedDate, now);
+            await recordMisses(missablesDueOnDays(saved.items, days), 'reminder_items', savedDate);
+        }
 
         if (saved.items.length > 0) {
+            const daily = saved.items.filter((one) => one.kind === 'daily');
             const resetDaily = resetForNewDay(daily);
             const byId = new Map(resetDaily.map((one) => [one.id, one]));
-            const next = saved.items.map((one) => byId.get(one.id) ?? one);
+            const next = clearStartingOccurrenceTicks(
+                saved.items.map((one) => byId.get(one.id) ?? one),
+                now,
+            );
             await AsyncStorage.setItem('reminder_items', JSON.stringify(next));
         }
         await AsyncStorage.setItem('reminder_last_date', today);
