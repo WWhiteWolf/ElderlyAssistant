@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { PAGE_LABELS } from '../constants/page-names';
 import { HeaderButton, PageFrame } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 import {
@@ -263,7 +264,7 @@ export default function DailyScreen() {
                         >
                             <Text style={styles.headerBtnText}>Home</Text>
                         </HeaderButton>
-                        <Text style={styles.title}>Daily</Text>
+                        <Text style={styles.title}>{PAGE_LABELS.daily}</Text>
                         <HeaderButton onPress={() => setShowAddPopup(true)}>
                             <Text style={styles.headerBtnText}>+ Add</Text>
                         </HeaderButton>

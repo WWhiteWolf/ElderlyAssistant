@@ -1,12 +1,15 @@
 // The names a person sees on each page.
 //
 // File names, saved kinds, and banner sources stay as they are.
-// Scheduled Reminders rows read from here for the live pages.
-// Other screens still have their own copies. Written at #54-new.
+// Live screens read from here so a rename is one change. Started at
+// #54-new; wired through headers, Home, + Add, and Daily's from-line
+// at #56-new.
 //
 // One Time is Appointments. Extended is Bucket List.
 // Look Ahead is only a leftover banner until it cycles off.
 // My Day, Pets, and To-Do are not live pages.
+
+import type { ReminderKind } from '../modules/reminder-types';
 
 export const PAGE_LABELS = {
     home: 'A Place To Remember',
@@ -27,3 +30,8 @@ export const PAGE_LABELS = {
     reminders: 'Scheduled Reminders',
     backup: 'Backup & Restore',
 } as const;
+
+/** The page title for a saved reminder kind. */
+export function pageLabelFor(kind: ReminderKind): string {
+    return PAGE_LABELS[kind];
+}

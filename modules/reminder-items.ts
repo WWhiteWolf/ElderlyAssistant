@@ -1,3 +1,4 @@
+import { PAGE_LABELS } from '../constants/page-names';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as AppGroup from './app-group';
 import { runDailyReset, runScheduler, runWeeklyReset } from '../scheduler/scheduler';
@@ -15,11 +16,11 @@ export const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 export const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export const FROM_PAGE: Record<Exclude<ReminderKind, 'daily' | 'extended'>, string> = {
-    weekly: 'from Weekly',
-    monthly: 'from Monthly',
-    quarterly: 'from Quarterly',
-    yearly: 'from Yearly',
-    oneTime: 'from One Time',
+    weekly: `from ${PAGE_LABELS.weekly}`,
+    monthly: `from ${PAGE_LABELS.monthly}`,
+    quarterly: `from ${PAGE_LABELS.quarterly}`,
+    yearly: `from ${PAGE_LABELS.yearly}`,
+    oneTime: `from ${PAGE_LABELS.oneTime}`,
 };
 
 const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();

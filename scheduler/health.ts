@@ -31,8 +31,9 @@ export const RUNS_KEPT = 10;
 /**
  * One thing that went wrong in a run.
  *
- * Four of the six speak to Patrick. The other two are written down and never
- * interrupt him, because neither one stops a reminder arriving.
+ * Five kinds speak to Patrick. Sweep stays quiet because it only leaves old
+ * banners on screen; reset speaks because a failed rollover can cancel a
+ * reminder for something never done (#56-new).
  */
 export type RunFault =
     // The phone is not letting the app show reminders at all. Nothing was
@@ -45,8 +46,8 @@ export type RunFault =
     | { kind: 'list'; listKey: string }
     // The run stopped part-way on something unexpected.
     | { kind: 'stopped' }
-    // The day did not roll over for one screen, so yesterday's checkmarks and
-    // counts are still showing. Quiet: no reminder is lost by it.
+    // The day did not roll over, so yesterday's checkmarks may still show
+    // and today's reminders may be wrong. Speaks (Patrick, #56-new).
     | { kind: 'reset'; listKey: string }
     // Yesterday's delivered banners could not be taken down. Quiet.
     | { kind: 'sweep' };
@@ -138,7 +139,8 @@ export function faultSpeaks(fault: RunFault): boolean {
     return fault.kind === 'permission'
         || fault.kind === 'create'
         || fault.kind === 'list'
-        || fault.kind === 'stopped';
+        || fault.kind === 'stopped'
+        || fault.kind === 'reset';
 }
 
 /**
@@ -262,7 +264,7 @@ export function mergeMisses(existing: Miss[], fresh: Miss[]): Miss[] {
 // Permission first, because it stops everything and it is the one Patrick can
 // put right himself in a few taps. Then the reminders that are missing, then
 // the run that did not finish.
-const SPEAKING_ORDER = ['permission', 'create', 'list', 'stopped'];
+const SPEAKING_ORDER = ['permission', 'create', 'list', 'reset', 'stopped'];
 
 /** Add a run to the record, keeping only the last several. */
 export function addRun(records: RunRecord[], record: RunRecord): RunRecord[] {

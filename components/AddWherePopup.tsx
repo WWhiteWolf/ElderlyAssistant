@@ -2,17 +2,23 @@ import { useRouter, type Href } from 'expo-router';
 import { Cover } from './Cover';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Theme, useTheme } from '../constants/Themes';
+import { pageLabelFor } from '../constants/page-names';
 import type { ReminderKind } from '../modules/reminder-items';
 
-export const WHERE_CHOICES: { kind: ReminderKind; label: string }[] = [
-    { kind: 'daily', label: 'Daily' },
-    { kind: 'weekly', label: 'Weekly' },
-    { kind: 'monthly', label: 'Monthly' },
-    { kind: 'quarterly', label: 'Quarterly' },
-    { kind: 'yearly', label: 'Yearly' },
-    { kind: 'oneTime', label: 'One Time' },
-    { kind: 'extended', label: 'Extended' },
+const WHERE_KINDS: ReminderKind[] = [
+    'daily',
+    'weekly',
+    'monthly',
+    'quarterly',
+    'yearly',
+    'oneTime',
+    'extended',
 ];
+
+export const WHERE_CHOICES = WHERE_KINDS.map((kind) => ({
+    kind,
+    label: pageLabelFor(kind),
+}));
 
 export default function AddWherePopup({
     visible,

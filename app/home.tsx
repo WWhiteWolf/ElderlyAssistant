@@ -11,22 +11,23 @@ import {
     View,
 } from 'react-native';
 import { PageFrame, uprightInLandscape, useLandscape } from '../components/PageFrame';
+import { PAGE_LABELS } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
 
 const modules = [
-  { id: 'options', label: 'Options', icon: '⚙️' },
-  { id: 'memorytest', label: 'Memory Test', icon: '🧠' },
-  { id: 'shopping', label: 'Shopping List', icon: '🛒' },
-  { id: 'vault', label: 'Vault', icon: '🔒' },
-  { id: 'timer', label: 'Timer Alerts', icon: '⏰' },
-  { id: 'onetime', label: 'One Time', icon: '✅' },
-  { id: 'extended', label: 'Extended', icon: '✅' },
-  { id: 'yearly', label: 'Yearly', icon: '🔭' },
-  { id: 'quarterly', label: 'Quarterly', icon: '🔭' },
-  { id: 'monthly', label: 'Monthly', icon: '🔭' },
-  { id: 'weekly', label: 'Weekly', icon: '🗓️' },
-  { id: 'calendar', label: 'Calendar', icon: '📅' },
-  { id: 'daily', label: 'Daily', icon: '☀️' },
+  { id: 'options', label: PAGE_LABELS.options, icon: '⚙️' },
+  { id: 'memorytest', label: PAGE_LABELS.memorytest, icon: '🧠' },
+  { id: 'shopping', label: PAGE_LABELS.shopping, icon: '🛒' },
+  { id: 'vault', label: PAGE_LABELS.vault, icon: '🔒' },
+  { id: 'timer', label: PAGE_LABELS.timer, icon: '⏰' },
+  { id: 'onetime', label: PAGE_LABELS.oneTime, icon: '✅' },
+  { id: 'extended', label: PAGE_LABELS.extended, icon: '✅' },
+  { id: 'yearly', label: PAGE_LABELS.yearly, icon: '🔭' },
+  { id: 'quarterly', label: PAGE_LABELS.quarterly, icon: '🔭' },
+  { id: 'monthly', label: PAGE_LABELS.monthly, icon: '🔭' },
+  { id: 'weekly', label: PAGE_LABELS.weekly, icon: '🗓️' },
+  { id: 'calendar', label: PAGE_LABELS.calendar, icon: '📅' },
+  { id: 'daily', label: PAGE_LABELS.daily, icon: '☀️' },
 ];
 
 export default function HomeScreen() {

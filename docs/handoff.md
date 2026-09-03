@@ -16,13 +16,21 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
-**#55-new built Pending 4** (Patrick said the work is good). The
-reason the others did not show as missing was that they were
-never written down — Weekly, Monthly, Quarterly, Yearly, and One
-Time alike. The day-roll now writes those misses. Monthly,
-Quarterly, and Yearly Done leave a tick so the roll can see it;
-the saved date is not advanced. Extended has no day. Mac suite
-487 of 487. Not on the phone yet. Story in `build-history.md`.
+**#56-new finished What's Next 1 and Pending 2** (Patrick said very good).
+One Time is **Appointments** and Extended is **Bucket List** on every live
+screen — headers, Home badges, + Add, Daily's from-line — all from
+`constants/page-names.ts` via `pageLabelFor`. Scheduled Reminders
+already read it (#54-new). **A failed daily clear-out now speaks** in
+the opening pop-up (`faultSpeaks` includes `reset`; #18-new's call to
+leave it reversed this sitting). Saved kinds, routes, and words on the
+phone stay as they are. Mac suite 489 of 489. Not on the phone yet.
+Story in `build-history.md`.
+
+**#55-new is committed** (Patrick, #56-new). Pending 4: the day-roll
+now writes misses for Weekly, Monthly, Quarterly, Yearly, and One
+Time as well as Daily. Monthly, Quarterly, and Yearly Done leave a
+tick; the saved date is not advanced. Extended has no day. Not on
+the phone yet.
 
 **#53-new is committed** (Patrick, #54-new). Scheduled Reminders rows name Daily, Weekly, Monthly,
 Quarterly, Yearly, and One Time. Monthly, Quarterly, and Yearly
@@ -35,26 +43,8 @@ screen. **Daily and Weekly through Extended share one list row**
 name; the cadence pages still pass the when-line. Mac suite
 466 of 466. Sit tests finished at #55-new.
 
-**#52-new locked landscape to 90° counter-clockwise**, headers on
-the left. He looked on the simulator and the phone; the rotation
-is good. **Committed** when he commits this sitting. Pending 9 is
-any rotation later. The Sit load is on the phone; he exported his
-real list first. Seven banners fired Wednesday morning on both.
-No 9:20: One Time has no reminder at the set time, by his
-decision. He is feeling good about accomplishing his goal.
-
-**#51-new is committed** (Patrick, #52-new): landscape chrome,
-Memory asks at start, Monthly / Quarterly / Yearly banners name
-their own page, no snooze without a reminder, Done? then the tick.
-
-**#50-new is committed** (Patrick, #51-new): all pages in
-landscape, 0 and 90, covers included. Calendar month grid was not
-rebuilt.
-
-**#49-new built the calendar page.** **Committed** (Patrick,
-#50-new). Mac suite 460 of 460.
-
-**#47-new and #45-new are done.** Stories in `build-history.md`.
+**#52-new through #45-new are committed.** Landscape lock, Sit load,
+calendar, engine cutover — stories in `build-history.md`.
 
 **He is living with this build on the phone.** Old reader files stay
 until each replacement is proved and are not called. **A banner while
@@ -86,7 +76,7 @@ Done do not advance the saved date. Extended has no banners; New and
 Edit have only the name, an optional note, and Done. Cancel closes and
 makes no change, including after + OPT.
 
-**Mac suite 466 of 466.** One TypeScript error stands and is not a
+**Mac suite 489 of 489.** One TypeScript error stands and is not a
 fault: Expo's generated router list predates Scheduled Reminders and
 rewrites itself on the next build.
 
@@ -100,12 +90,12 @@ rewrites itself on the next build.
 - **Monthly**, **Quarterly**, **Yearly** — Look Ahead's repeats, split by
   how often. Look Ahead is not a once-only list. **A six-month item
   lives on Quarterly** (Patrick, #33-new), still every six months.
-- **One Time** — a date, no repeat, carrying To-Do's Reminders before
+- **Appointments** (saved kind `oneTime`) — a date, no repeat, carrying To-Do's Reminders before
   chips. Any and all of those chips can be on at once. **There is no
   reminder at the set time** (Patrick, #52-new): that is too late;
-  you are either there or you missed it. The page should be called
-  One Time Appointment(s) (Pending 10).
-- **Extended** — a list of items to be done sometime in the future,
+  you are either there or you missed it. Renamed from One Time at
+  #56-new; saved words on the phone stay as they are.
+- **Bucket List** (saved kind `extended`) — items to be done sometime in the future,
   with no deadline, no due date, and no set time. It gets no banners.
   New and Edit have only the name, an optional note, and Done. It can
   be edited like the others. **That shape is in** (#42-new).
@@ -233,41 +223,34 @@ They are kept here because they still decide things.
 
 ## What is open in front of it
 
-**#54-new is committed** (Patrick, #55-new). **This session is #55-new.** Pending 8 and Pending 6 are done.
-**Sit tests are finished.** **Pending 4 is built** (Patrick said
-the work is good). Not on the phone yet. Pending 2 is not done.
+**#56-new is done.** Patrick is committing this sitting. What's Next 1
+and Pending 2 are built. #55-new miss notice is committed. Nothing
+from #56-new is on the phone yet.
+
+**Next session:** the helper (What's Next 1 in pending.txt) — its own
+session or more. Not squeezed in beside other work.
+
+**Pending 7:** calendar day list should show 24-hour fire time. Sit
+tests are finished. **Not safe to compress** (#56-new): no build sheet,
+and "fire time" may need a one-line decision (saved time vs engine)
+before building. Its own short session.
 
 **Pending 9:** all screens in any rotation. Today the lock is 90°
 counter-clockwise, headers on the left.
 
-**Pending 10 was started at #54-new** (Patrick): two page
-name changes. One Time becomes Appointments. Extended becomes
-Bucket List — an accepted concept, so that name, not Wish List.
-The first piece is one list of the names the person sees, used
-from now on, so a rename is one change. That list is written in
-`constants/page-names.ts`. Scheduled Reminders rows read from it:
-Appointments and Bucket List are both on that map. Other screens
-still have their own copies. The code scrub pays close attention
-to the page names. Remaining rename work is not this sitting. Saved words on the phone stay as they
-are. No reminder at the set time: too late;
-you are there or you missed it. Not a bug.
+**What's Next (helper),** when that session starts — first question
+(#53-new): "Does this item repeat?" Repeats → every day, week, month,
+quarter, or year. Does not repeat → for today? → appointment or Bucket
+List add. Where? on Home and on the calendar header. Not on the pages.
+Calendar day's list has no + Add.
 
 **The paperwork half** (Patrick, #52-new): a thorough design spec
 (Pending 11; the rename belongs there), a User Guide from that or
 after it, on his website, and a way in the app to find it (Pending
 12), a Feedback button similar to Mystery (Pending 13), a file for
 what testing has covered and will cover (Pending 14; during-build
-tests are thrown away). Pending 15 helper, first question: "Does this item repeat?" Repeats → "Does this item occur every: Every day, Week, Month, Quarter or Year?" Every day → Daily, Week → Weekly, Month → Monthly, Quarter → Quarterly, Year → Yearly. Does not repeat → "Is that for today?" Yes → Daily’s One Time for today add. No → appointment or Bucket List, landing on that add. One question at a time, in one popup like + Add. A tap replaces the question. Cancel leaves you on Home or the calendar. Two or three taps to that kind’s add. Where? on Home and on the calendar header. Not on the pages. Calendar day’s list has no + Add. A calendar day does not ride into the add.
+tests are thrown away).
 
-**Sit tests are finished** (Patrick, #55-new). Load on the phone, real list exported. Seven fired
-Wednesday on both devices. Thursday, phone and sim opened with one
-message: Sit Daily from yesterday is hangin!. At 8:00 AM two banners
-from today: Sit Daily and Sit first Thursday. Later items (9 and 10
-September) with his own list. Follow-along `docs/near-fire-set.md`. RFC
-write-up `docs/rfc-eval.md`.
-
-**Pending 7:** calendar day tap should show 24-hour fire time.
-No longer waiting on the sit tests; not this sitting.
 **Pending 5:** date picker inactive for Wednesday after the 6th, noted only.
 
 **Memory Test is temporary and coming out. Timer is isolated
@@ -311,10 +294,7 @@ called. The live weekly road reads the tick. The old test named *A chore
 already ticked still gets its weekly reminder* goes when the reader
 files come out.
 
-**Miss-telling is extended** (Pending 4, #55-new). Both halves of
-recovery on opening were already built. The day-roll now writes
-misses for Weekly, Monthly, Quarterly, Yearly, and One Time as
-well as Daily. Not on the phone yet.
+**Miss-telling extended to all cadences** (#55-new). Committed. Not on the phone yet.
 
 **A named zone, holidays, a second Thursday and a Wednesday after the
 6th are read from the saved item.** Then or Next Day is an action on a
@@ -395,4 +375,4 @@ replaces; never rename anything to or from `index.html` there (see
 including the eleven build sheets. `docs/index.md` says which file is
 the home. He calls them working documents; live desk means the same
 thing. This was written in an App-Docs session, 2026-08-31. This
-session is #55-new.
+session is #56-new.

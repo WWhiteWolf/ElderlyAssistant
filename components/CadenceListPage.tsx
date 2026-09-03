@@ -16,6 +16,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { HeaderButton, PageFrame } from './PageFrame';
 import { Cover } from './Cover';
 import { ReminderItemRow } from './ReminderItemRow';
+import { pageLabelFor } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
 import {
     dragKindTo,
@@ -44,11 +45,9 @@ function historyKeyFor(kind: ReminderKind): string | null {
 }
 
 export default function CadenceListPage({
-    title,
     kind,
     returnTo,
 }: {
-    title: string;
     kind: ReminderKind;
     returnTo: string;
 }) {
@@ -258,7 +257,7 @@ export default function CadenceListPage({
                         >
                             <Text style={styles.headerBtnText}>Home</Text>
                         </HeaderButton>
-                        <Text style={styles.title}>{title}</Text>
+                        <Text style={styles.title}>{pageLabelFor(kind)}</Text>
                         <HeaderButton
                             onPress={() => {
                                 router.push({ pathname: '/item-edit', params: { kind, returnTo } } as Href);

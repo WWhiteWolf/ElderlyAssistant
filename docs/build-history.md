@@ -3474,7 +3474,42 @@ Done for good. Daily still clears with the day. Weekly's own
 reset is unchanged.
 
 Mac suite 487 of 487. He said the work is good. It is not on the
-phone yet.
+phone yet. **Committed** (Patrick, #56-new).
+
+
+## #56-new (2026-09-03): Appointments and Bucket List on every live screen (What's Next 1)
+
+**The goal was What's Next 1.** One Time becomes Appointments.
+Extended becomes Bucket List — an accepted concept, so that name,
+not Wish List. #54-new wrote `constants/page-names.ts` and wired
+Scheduled Reminders. This sitting wired every other live screen.
+
+**Headers** — `CadenceListPage` reads `pageLabelFor(kind)`; the
+`title` prop is gone. **Home badges** and **+ Add** (`AddWherePopup`)
+read from the same list. **Daily** shows Appointments in the from-line
+via `FROM_PAGE`. All cadence pages and Daily use `PAGE_LABELS` for
+the name the person sees.
+
+Saved kinds, route names, and words already on the phone stay as
+they are. "One Time for today" on Daily's add is unchanged — that is
+the add kind, not the page name. No reminder at the set time: too
+late; you are there or you missed it. Not a bug.
+
+Mac suite 489 of 489. Patrick said very good. Not on the phone yet.
+
+**Pending 2 was built.** A `reset` fault — the day-roll failing — was
+written down at #18-new but classed quiet on the reasoning that no
+reminder was lost. That reasoning is false: yesterday's tick can
+stay in place and today's reminder may never arrive. `faultSpeaks`
+now includes `reset`; the sentence in `faultSentence` reaches the
+opening pop-up. Sweep stays quiet. Patrick asked to do it now rather
+than wait for the helper session.
+
+**Session close.** Patrick is committing and starting a fresh session
+for the helper. Calendar fire times (Pending 7 in handoff, Pending 4
+in pending.txt) were considered for the tail of this sitting and
+left out — not safe to compress without a build sheet and a settled
+meaning of fire time.
 
 
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)

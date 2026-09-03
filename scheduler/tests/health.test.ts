@@ -49,8 +49,8 @@ export function runHealthTests(): void {
         assert(faultSpeaks({ kind: 'stopped' }), 'expected it to speak');
     });
 
-    test('The day failing to roll over stays quiet', () => {
-        assert(!faultSpeaks({ kind: 'reset', listKey: 'my_routine' }), 'expected silence');
+    test('The day failing to roll over speaks', () => {
+        assert(faultSpeaks({ kind: 'reset', listKey: 'my_routine' }), 'expected it to speak');
     });
 
     test("Yesterday's banners staying up stays quiet", () => {
@@ -150,9 +150,20 @@ export function runHealthTests(): void {
         assert(noticeFor(null, null, TODAY) === null, 'expected silence');
     });
 
-    test('A run with only quiet faults says nothing', () => {
-        const notice = noticeFor(run([{ kind: 'sweep' }, { kind: 'reset', listKey: 'my_routine' }]), null, TODAY);
+    test('A run with only a sweep fault says nothing', () => {
+        const notice = noticeFor(run([{ kind: 'sweep' }]), null, TODAY);
         assert(notice === null, 'expected silence');
+    });
+
+    test('A failed day rollover raises the pop-up', () => {
+        const notice = noticeFor(run([{ kind: 'reset', listKey: 'reminder_items' }]), null, TODAY);
+        assert(notice !== null, 'expected a notice');
+        assert(notice!.lines[0].includes('did not roll over'), notice!.lines[0]);
+    });
+
+    test('A sweep fault is left out when a reset fault speaks', () => {
+        const notice = noticeFor(run([{ kind: 'sweep' }, { kind: 'reset', listKey: 'my_routine' }]), null, TODAY);
+        assert(notice!.lines.length === 1, `expected one line, got ${notice!.lines.length}`);
     });
 
     test('A loud fault carries the heading and the footer', () => {
