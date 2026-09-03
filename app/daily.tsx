@@ -74,7 +74,7 @@ export default function DailyScreen() {
     const refreshFromStorage = useCallback(async () => {
         const list = await loadReminderItems();
         setItems(list);
-        const savedHist = await AsyncStorage.getItem('my_history');
+        const savedHist = await AsyncStorage.getItem('daily_history');
         if (savedHist) setHistory(JSON.parse(savedHist));
     }, []);
 
@@ -119,7 +119,7 @@ export default function DailyScreen() {
 
     const writeHistory = (updated: HistoryEntry[]) => {
         setHistory(updated);
-        void AsyncStorage.setItem('my_history', JSON.stringify(updated));
+        void AsyncStorage.setItem('daily_history', JSON.stringify(updated));
     };
 
     const markDone = (id: string) => {

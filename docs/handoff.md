@@ -16,7 +16,12 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
-**#62-new is closed.** Current names now travel the live notification
+**#63-new is closed.** Every page log uses the current page name.
+The leftover Look Ahead log is out. Sit backup and near-fire-set
+are deleted. Siri and native names are next. Not on the phone.
+Full story in `build-history.md`.
+
+**#62-new is closed and committed** (Patrick, #63-new). Current names now travel the live notification
 road: Daily, Weekly, Monthly, Quarterly, Yearly, and Appointments each
 have their own source, and a Quarterly or Yearly banner tap opens its
 own page. Mac suite 298 of 298. Not on the phone. Full story in
@@ -138,7 +143,7 @@ outside this job and have not been examined.
   Holidays is the before-or-after. Reminders-before is
   not a row; it already lives on One Time. Each row opens that case.
 
-**On a view page, each item has Done and Snooze, and a tap on the tile opens the edit page.** Daily is the same: Snooze, Done, and Done that undoes (Patrick, #33-new, looking at Daily). Swipe still deletes. A tap on the name opens the edit page. Hold the name and slide to reorder (Patrick, #33-new). **Daily now carries My Day's log** — the same `my_history` list, written when Done is tapped, titled Log (Patrick, #36-new: none of the pages say My). **The My Day page is gone** (Patrick, #33-new). The `/myday` hop is not kept (Patrick, #35-new). Daily banners open Daily.
+**On a view page, each item has Done and Snooze, and a tap on the tile opens the edit page.** Daily is the same: Snooze, Done, and Done that undoes (Patrick, #33-new, looking at Daily). Swipe still deletes. A tap on the name opens the edit page. Hold the name and slide to reorder (Patrick, #33-new). **Daily carries its own log** — `daily_history`, written when Done is tapped, titled Log (Patrick, #36-new: none of the pages say My; key renamed at #63-new). **The My Day page is gone** (Patrick, #33-new). The `/myday` hop is not kept (Patrick, #35-new). Daily banners open Daily.
 
 **An item lives on one page; Daily may also show another page's item (Patrick, #32-new).**
 
@@ -214,6 +219,11 @@ They are kept here because they still decide things.
   storage, fault records, categories, sources and cleanup paths may come
   out. An old-named identifier still used by the current build is changed
   through its whole live path rather than kept for old state.
+- **Every page log uses the current page name** (Patrick, #63-new):
+  `daily_history`, `weekly_history`, `monthly_history`,
+  `quarterly_history`, `yearly_history`, `appointments_history`,
+  `bucket_list_history`. History docs keep old names for the past.
+  Code comments are changed only when they can cause problems.
 - **Reminders being rock solid is the top goal — but not the only one,
   and consistency is another high priority** (#16-new, corrected at
   #17-new). That correction reversed a recommendation made minutes
@@ -249,15 +259,10 @@ They are kept here because they still decide things.
 
 ## What is open in front of it
 
-**Next fresh session:** Monthly, Quarterly, and Yearly each get their
-own Done log. The leftover Look Ahead log (`lookahead_history`) comes
-out; it is not renamed. Patrick, #62-new: there is no Look Ahead, and
-there are no old loads to keep. The live path is `app/_layout.tsx`,
-`components/CadenceListPage.tsx`, and `app/backup.tsx`, which also still
-lists the old `lookahead_items` key. No compatibility layer. Other
-storage names, and Siri and native names, remain later pieces.
+**Next fresh session:** the Siri scrub — Siri and native names
+(Patrick, #63-new). No compatibility layer.
 
-**Nothing from #56-new through #62-new is on the phone yet.** Those are
+**Nothing from #56-new through #63-new is on the phone yet.** Those are
 later refinements; they do not reset the replacement pages' phone proof.
 
 **The paperwork half** (Patrick, #52-new): a thorough design spec
@@ -268,8 +273,7 @@ what testing has covered and will cover (Pending 5; during-build
 tests are thrown away).
 
 **Memory Test is temporary and coming out. Timer is isolated
-deliberately.** Neither belongs to giving those three pages their own
-logs.
+deliberately.** Neither belongs to the Siri scrub.
 
 **The build sheets are the pattern for this work** — each self-contained,
 carrying the answers themselves rather than pointing at other documents,

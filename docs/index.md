@@ -24,8 +24,6 @@ just because it is listed.
 - **`Memory features.docx`** — the inventory of what the app is and does, not the sell. Home of the substance for the store description (#47-new).
 - **`rfc-eval.md`** — #52-new evaluation of the app against RFC 5545 and RFC 8984. Live for this sitting.
 - **`clock-places.md`** — #52-new. Where the live app still asks the real clock. Written for a different idea than dating items near today.
-- **`near-fire-set.md`** — #52-new. A set that fires in a day or two, to watch longer-term items.
-- **`Remember-Backup-Sit-near-fire.json`** — the same set as a Restore file. Replaces everything. Export your own list first.
 
 ## Live design — in `docs`
 

@@ -3785,6 +3785,44 @@ waiting in the handoff.
 `pending.docx` was not regenerated.
 
 
+## #63-new (2026-09-03): every page log uses the current page name
+
+**The goal was the leftover Look Ahead log, then a continue of the
+stale-name scrub.** Monthly, Quarterly, and Yearly each got their
+own Done log. The leftover `lookahead_history` came out; it was not
+renamed. There is no compatibility layer.
+
+**Every page log now uses the current page name.** Daily writes
+`daily_history`, Weekly `weekly_history`, Monthly `monthly_history`,
+Quarterly `quarterly_history`, Yearly `yearly_history`, Appointments
+`appointments_history`, and Bucket List `bucket_list_history`. The
+on-screen path is `app/daily.tsx` and `components/CadenceListPage.tsx`.
+Banner Done and Siri mark-done in `app/_layout.tsx` write the same
+keys. Backup copies the seven current keys and strips the old ones
+on restore, including `lookahead_items` and `lookahead_history`.
+
+**The four older log names were taken in this same piece** after
+Patrick asked why wait. Siri and native names stay for the next
+session, which is the Siri scrub.
+
+**Leftover names in live code were a search, not a rewrite.** The
+old log keys are no longer read or written except on backup's
+retired list. Comments that could send someone to Look Ahead or My
+Day were updated; origin notes stayed. History docs keeping the old
+names for the past is expected.
+
+**Sit files came out.** `docs/Remember-Backup-Sit-near-fire.json` and
+`docs/near-fire-set.md` were deleted. Their lines left `docs/index.md`.
+`build-history.md` still names them.
+
+**Checks.** No suite was run. The four TypeScript errors in
+`leadmoments.ts` and `scheduler.ts` were left as they were. Not on
+the phone.
+
+**Session close.** `handoff.md`, `build-history.md`, and `pending.txt`
+were refreshed at Patrick's word. `pending.docx` was not regenerated.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

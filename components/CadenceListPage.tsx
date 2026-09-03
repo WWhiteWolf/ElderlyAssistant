@@ -37,10 +37,12 @@ interface HistoryEntry {
 }
 
 function historyKeyFor(kind: ReminderKind): string | null {
-    if (kind === 'weekly') return 'week_history';
-    if (kind === 'monthly' || kind === 'quarterly' || kind === 'yearly') return 'lookahead_history';
-    if (kind === 'oneTime') return 'onetime_history';
-    if (kind === 'extended') return 'extended_history';
+    if (kind === 'weekly') return 'weekly_history';
+    if (kind === 'monthly') return 'monthly_history';
+    if (kind === 'quarterly') return 'quarterly_history';
+    if (kind === 'yearly') return 'yearly_history';
+    if (kind === 'oneTime') return 'appointments_history';
+    if (kind === 'extended') return 'bucket_list_history';
     return null;
 }
 

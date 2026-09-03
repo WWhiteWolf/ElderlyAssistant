@@ -42,8 +42,7 @@ export function hasReminderSet(item: ReminderItem): boolean {
 }
 
 // Roll a dated repeat forward to its next occurrence that lands in the
-// future, copying Look Ahead's advanceItem, including clamping to the last
-// day of a shorter month.
+// future, including clamping to the last day of a shorter month.
 export function advanceDatedItem(item: ReminderItem): ReminderItem {
     const step =
         item.kind === 'yearly' ? 12

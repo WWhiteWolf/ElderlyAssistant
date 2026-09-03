@@ -37,7 +37,7 @@ export default function SettingsScreen() {
     const [editingWhich, setEditingWhich] = useState<'morning' | 'midday' | 'evening'>('morning');
     const [pendingTime, setPendingTime] = useState<Date | null>(null);
     // True while the shared control's typed time box holds a real time;
-    // Save is blocked with a warning while false (#61, Look Ahead's pattern).
+    // Save is blocked with a warning while false (#61).
     const [pendingTimeValid, setPendingTimeValid] = useState(true);
 
     useEffect(() => {

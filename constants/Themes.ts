@@ -85,13 +85,12 @@ export interface Theme {
     statusActiveText: string;     // text on a selected Active button
     statusOnHoldText: string;     // text on the On Hold badge / selected button (white in BOTH)
     progressTrack: string;        // progress-bar track (the unfilled part)
-    // look-ahead delay (added #51: lookahead conversion). The bright iOS
-    // orange is the "delay color" and stays identical in BOTH themes so a
+    // Delay colour. The bright iOS orange stays identical in BOTH themes so a
     // delayed item always jumps out; dark gets dark-brown text on it
     // (bright fill = dark text, same rule as the gold buttons).
     delay: string;                // Delay buttons + "▶ Delayed …" tile line
     delayText: string;            // text on a solid delay button
-    // my-day counters & time stepper (added #52: myday conversion).
+    // Coffee/Water counters and the time stepper.
     counterMinus: string;         // Coffee/Water "−" circle: #ffcc00 in BOTH themes (dark gets dark-brown text — bright fill rule)
     counterMinusText: string;
     timeStepper: string;          // New/Edit Entry time-spinner ▲▼ circles (light: solid blue; dark: outlined gold —

@@ -71,7 +71,7 @@ export default function RootLayout() {
         // 50-cap, and fire-time dating as the banner-Done path, so an after-
         // midnight "mark done" still files under the right day.
         const fired = note.firedAt ? new Date(note.firedAt) : new Date();
-        const histRaw = await AsyncStorage.getItem('my_history');
+        const histRaw = await AsyncStorage.getItem('daily_history');
         const hist = histRaw ? (JSON.parse(histRaw) as any[]) : [];
         const newEntry = {
           id: Date.now().toString(),
@@ -81,7 +81,7 @@ export default function RootLayout() {
           what: '',
           note: '',
         };
-        await AsyncStorage.setItem('my_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
+        await AsyncStorage.setItem('daily_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
 
         AppGroup.clearPendingNote();
         // Land on Daily so the checked tile is visible (same as a banner tap).
@@ -341,7 +341,7 @@ export default function RootLayout() {
             return { ...rest, completed: true, doneAt: Date.now() };
           }));
           const label = (data?.label as string) || 'Chore';
-          const histRaw = await AsyncStorage.getItem('week_history');
+          const histRaw = await AsyncStorage.getItem('weekly_history');
           const hist = histRaw ? (JSON.parse(histRaw) as any[]) : [];
           const newEntry = {
             id: Date.now().toString(),
@@ -351,7 +351,7 @@ export default function RootLayout() {
             what: '',
             note: '',
           };
-          await AsyncStorage.setItem('week_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
+          await AsyncStorage.setItem('weekly_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
         })();
         return;
       }
@@ -368,7 +368,11 @@ export default function RootLayout() {
           const item = items.find((i) => i.id === itemId);
           if (!item) return;
           const fired = new Date(response.notification.date * 1000);
-          const histRaw = await AsyncStorage.getItem('lookahead_history');
+          const historyKey =
+            source === 'monthly' || source === 'monthlydelay' ? 'monthly_history'
+            : source === 'quarterly' || source === 'quarterlydelay' ? 'quarterly_history'
+            : 'yearly_history';
+          const histRaw = await AsyncStorage.getItem(historyKey);
           const hist = histRaw ? (JSON.parse(histRaw) as any[]) : [];
           const newEntry = {
             id: Date.now().toString(),
@@ -378,7 +382,7 @@ export default function RootLayout() {
             what: '',
             note: '',
           };
-          await AsyncStorage.setItem('lookahead_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
+          await AsyncStorage.setItem(historyKey, JSON.stringify([newEntry, ...hist].slice(0, 50)));
           await saveReminderItems(items.map((i) => {
             if (i.id !== itemId) return i;
             const { snoozedUntil, ...rest } = item;
@@ -402,7 +406,7 @@ export default function RootLayout() {
         }
         const label = (data?.label as string) || 'Reminder';
         const fired = new Date(response.notification.date * 1000);
-        const histRaw = await AsyncStorage.getItem('my_history');
+        const histRaw = await AsyncStorage.getItem('daily_history');
         const hist = histRaw ? (JSON.parse(histRaw) as any[]) : [];
         const newEntry = {
           id: Date.now().toString(),
@@ -412,7 +416,7 @@ export default function RootLayout() {
           what: '',
           note: '',
         };
-        await AsyncStorage.setItem('my_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
+        await AsyncStorage.setItem('daily_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
       })();
       return;
     }

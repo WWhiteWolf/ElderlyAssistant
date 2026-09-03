@@ -159,7 +159,7 @@ export default function DateTimeControl({
         if (!timeFocused.current) { setTimeText(timeAsleep ? '' : formatTime24(value)); setTimeBad(false); }
     }, [value, dateAsleep, timeAsleep]);
 
-    // ---- spinner adjustments (same moves as Look Ahead's) ----
+    // ---- spinner adjustments ----
 
     // `half` says which side of the control is being spun, because only that
     // side's sleep matters. Asleep: the first tap only wakes that half at the
