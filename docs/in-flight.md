@@ -4,38 +4,35 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-02, at the close of #52-new.
+Last written: 2026-09-03, at the close of #62-new.
 
 ## Read this first
 
-- **The next Memory session is #53-new.**
-- **The next code session is Pending 4:** miss-telling for Weekly,
-  Monthly, Quarterly, Yearly, and One Time.
-- The Sit load is on the phone. He exported his real list first.
-- Landscape is 90° counter-clockwise, headers on the left, on the
-  phone. That lock is good this sitting.
+- **The next Memory session is #63-new.**
+- **The next code session:** Monthly, Quarterly, and Yearly each
+  get their own Done log. The leftover Look Ahead log comes out;
+  it is not renamed. Live path: `app/_layout.tsx`,
+  `components/CadenceListPage.tsx`, and `app/backup.tsx` (which also
+  still lists `lookahead_items`). No compatibility layer.
+- Nothing from #56-new through #62-new is on the phone.
 
 ## What is in
 
-Landscape the right way. RFC eval in `docs/rfc-eval.md`. Sit set
-fired seven banners Wednesday morning on the simulator and the
-phone. No 9:20: One Time has no reminder at the set time, by his
-decision. Paperwork named: spec, User Guide, website, Feedback
-button, testing file, helper for where only.
+Current notification names through the live road. Daily, Weekly,
+Monthly, Quarterly, Yearly, and Appointments each have their own
+source. Pets, Orders, and Look Ahead names are out of this job.
+Mac 298. Four TypeScript errors left as they were.
 
 ## What is next
 
-Patrick leads. Pending 4, then the paperwork half (Pending 10–15).
-Pending 2 is not done.
+Patrick leads. Own logs for Monthly, Quarterly, and Yearly, then
+the other storage names, Siri and native names, and a phone load.
+Paperwork is Pending 2–5.
 
 ## Do not reopen
 
-The one Input page. Dual-write. Migrating old page data. Redesigning
-the engine. Rebuilding the test load. The Reminder Engine files as
-code. Treating no banner at One Time’s set time as a bug. The
-helper walking the form or every Options row. Clock-places as a
-pretend today. Putting the one shared list on the selling page.
-Timer or Memory Test on the selling page. Horizontal scroll in a
-day’s box. Rebuilding the calendar month grid. Date deactivating
-for options below — already fixed. Treating Memory Test or Timer as
-a reason to keep the old reminder readers.
+The notification-name sheet. Pets or Orders as leftover sources.
+A compatibility layer for old loads. Regenerating `pending.docx`
+unless he asks. The four TypeScript errors in `leadmoments.ts` and
+`scheduler.ts`. Treating Memory Test or Timer as part of those
+logs. Renaming the leftover Look Ahead log and keeping it.

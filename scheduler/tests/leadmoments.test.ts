@@ -37,7 +37,7 @@ const NOTHING_BEFORE: LeadTime = {
  */
 function item(changes: Partial<ShapedItem> = {}): ShapedItem {
     return {
-        sourceScreenCode: 'lookahead',
+        sourceScreenCode: 'monthly',
         itemIdText: 'a1',
         itemNameText: 'Book the boiler',
         hasDueTimeBit: true,
@@ -71,7 +71,7 @@ export function runLeadMomentsTests(): void {
     test('A daily item whose time is later today comes back with today', () => {
         assertSame(
             momentsOf({
-                sourceScreenCode: 'myday',
+                sourceScreenCode: 'daily',
                 repeatUnitCode: 'day',
                 dueHour: 18,
                 dueMinute: 0,
@@ -84,7 +84,7 @@ export function runLeadMomentsTests(): void {
     test('A daily item whose time has gone by today comes back with tomorrow', () => {
         assertSame(
             momentsOf({
-                sourceScreenCode: 'myday',
+                sourceScreenCode: 'daily',
                 repeatUnitCode: 'day',
                 dueHour: 8,
                 dueMinute: 0,
@@ -98,7 +98,7 @@ export function runLeadMomentsTests(): void {
         // NOW is Monday. Wednesday is 3.
         assertSame(
             momentsOf({
-                sourceScreenCode: 'myweek',
+                sourceScreenCode: 'weekly',
                 repeatUnitCode: 'week',
                 repeatWeekdayList: [{ weekdayNumber: 3 }],
                 dueHour: 18,
@@ -113,7 +113,7 @@ export function runLeadMomentsTests(): void {
         // Monday is 1. Eighteen hundred has not come yet at nine in the morning.
         assertSame(
             momentsOf({
-                sourceScreenCode: 'myweek',
+                sourceScreenCode: 'weekly',
                 repeatUnitCode: 'week',
                 repeatWeekdayList: [{ weekdayNumber: 1 }],
                 dueHour: 18,
@@ -127,7 +127,7 @@ export function runLeadMomentsTests(): void {
     test('A weekly item on today whose time has gone by comes back seven days on', () => {
         assertSame(
             momentsOf({
-                sourceScreenCode: 'myweek',
+                sourceScreenCode: 'weekly',
                 repeatUnitCode: 'week',
                 repeatWeekdayList: [{ weekdayNumber: 1 }],
                 dueHour: 8,
@@ -204,7 +204,7 @@ export function runLeadMomentsTests(): void {
     test('An empty lead-time list gives nothing for a daily item', () => {
         assertSame(
             momentsOf({
-                sourceScreenCode: 'myday',
+                sourceScreenCode: 'daily',
                 repeatUnitCode: 'day',
                 dueHour: 18,
                 dueMinute: 0,
@@ -218,7 +218,7 @@ export function runLeadMomentsTests(): void {
     test('An empty lead-time list gives nothing for a weekly item', () => {
         assertSame(
             momentsOf({
-                sourceScreenCode: 'myweek',
+                sourceScreenCode: 'weekly',
                 repeatUnitCode: 'week',
                 repeatWeekdayList: [{ weekdayNumber: 3 }],
                 dueHour: 18,
@@ -259,7 +259,7 @@ export function runLeadMomentsTests(): void {
     test('A daily item with no hour gives nothing', () => {
         assertSame(
             momentsOf({
-                sourceScreenCode: 'myday',
+                sourceScreenCode: 'daily',
                 repeatUnitCode: 'day',
                 dueHour: undefined,
                 dueMinute: undefined,
@@ -289,7 +289,7 @@ export function runLeadMomentsTests(): void {
         // one extra week, so the armed moment is the Wednesday after that.
         assertSame(
             momentsOf({
-                sourceScreenCode: 'myweek',
+                sourceScreenCode: 'weekly',
                 repeatUnitCode: 'week',
                 repeatIntervalCount: 2,
                 repeatWeekdayList: [{ weekdayNumber: 3 }],
@@ -402,7 +402,7 @@ export function runLeadMomentsTests(): void {
     test('A daily eight o\'clock with the bit true still matches step 1', () => {
         assertSame(
             momentsOf({
-                sourceScreenCode: 'myday',
+                sourceScreenCode: 'daily',
                 repeatUnitCode: 'day',
                 floatsWithPhoneBit: true,
                 dueHour: 8,
@@ -438,7 +438,7 @@ export function runLeadMomentsTests(): void {
         );
     });
 
-    test('A One Time at half past midnight in America/Los_Angeles fires in that zone, not on the machine', () => {
+    test('An appointment at half past midnight in America/Los_Angeles fires in that zone, not on the machine', () => {
         // 15 June 2026 at 00:30 in America/Los_Angeles is PDT (UTC-7),
         // which is 15 June 07:30 UTC. The translator packs the civil
         // numbers as a local Date; the engine must read them in the
@@ -449,7 +449,7 @@ export function runLeadMomentsTests(): void {
         assertSame(
             momentsFor(
                 item({
-                    sourceScreenCode: 'todo',
+                    sourceScreenCode: 'onetime',
                     floatsWithPhoneBit: false,
                     dueTimeZoneText: 'America/Los_Angeles',
                     dueMoment: at(2026, 5, 15, 0, 30),
@@ -470,7 +470,7 @@ export function runLeadMomentsTests(): void {
         // at nine is the 4th at ten. Day before is Friday the 3rd at ten.
         assertSame(
             momentsOf({
-                sourceScreenCode: 'myweek',
+                sourceScreenCode: 'weekly',
                 repeatUnitCode: 'week',
                 repeatWeekdayList: [{ weekdayNumber: 6 }],
                 dueHour: 10,
@@ -485,7 +485,7 @@ export function runLeadMomentsTests(): void {
     test('A Saturday weekly on Independence Day 2026 moves to the Sunday after', () => {
         assertSame(
             momentsOf({
-                sourceScreenCode: 'myweek',
+                sourceScreenCode: 'weekly',
                 repeatUnitCode: 'week',
                 repeatWeekdayList: [{ weekdayNumber: 6 }],
                 dueHour: 10,
@@ -500,7 +500,7 @@ export function runLeadMomentsTests(): void {
     test('A Saturday weekly on Independence Day 2026 stays put when holidays are unused', () => {
         assertSame(
             momentsOf({
-                sourceScreenCode: 'myweek',
+                sourceScreenCode: 'weekly',
                 repeatUnitCode: 'week',
                 repeatWeekdayList: [{ weekdayNumber: 6 }],
                 dueHour: 10,
@@ -515,7 +515,7 @@ export function runLeadMomentsTests(): void {
         // 4 July 2026 is Saturday, so Friday the 3rd is the observed day.
         assertSame(
             momentsOf({
-                sourceScreenCode: 'myweek',
+                sourceScreenCode: 'weekly',
                 repeatUnitCode: 'week',
                 repeatWeekdayList: [{ weekdayNumber: 5 }],
                 dueHour: 10,
@@ -527,10 +527,10 @@ export function runLeadMomentsTests(): void {
         );
     });
 
-    test('A One Time on Thanksgiving 2026 moves to the Wednesday before', () => {
+    test('An appointment on Thanksgiving 2026 moves to the Wednesday before', () => {
         assertSame(
             momentsOf({
-                sourceScreenCode: 'todo',
+                sourceScreenCode: 'onetime',
                 dueMoment: at(2026, 10, 26, 9, 0),
                 holidayMoveCode: 'before',
                 leadTimeList: [NOTHING_BEFORE],
@@ -545,7 +545,7 @@ export function runLeadMomentsTests(): void {
     test('A weekly Wednesday in June 2026 shades every Wednesday', () => {
         assertSame(
             shadedDaysInMonth(item({
-                sourceScreenCode: 'myweek',
+                sourceScreenCode: 'weekly',
                 repeatUnitCode: 'week',
                 repeatWeekdayList: [{ weekdayNumber: 3 }],
                 dueHour: 18,
@@ -612,7 +612,7 @@ export function runLeadMomentsTests(): void {
     test('A Saturday weekly in July 2026 with holidays before shades the 3rd instead of the 4th', () => {
         assertSame(
             shadedDaysInMonth(item({
-                sourceScreenCode: 'myweek',
+                sourceScreenCode: 'weekly',
                 repeatUnitCode: 'week',
                 repeatWeekdayList: [{ weekdayNumber: 6 }],
                 dueHour: 10,

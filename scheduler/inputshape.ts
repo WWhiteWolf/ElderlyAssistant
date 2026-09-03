@@ -1,11 +1,10 @@
 // The one shape every screen's reminder is turned into before the engine sees
 // it.
 //
-// The app's five reminder screens each save their items their own way, and
-// that is left exactly as it is. What changes is that nothing downstream reads
-// those five shapes any more. One translator, driven by a table of rules per
-// screen, sets the fields below at the boundary, and from there on the engine
-// is written once against one shape.
+// Every current reminder page saves the same ReminderItem shape in one list.
+// One translator, driven by a table of rules per saved kind, sets the fields
+// below at the boundary, and from there on the engine is written once against
+// one shape.
 //
 // Two rules from Patrick govern every name here. The name says what the thing
 // does and carries its own kind in the name, so a bit reads as a bit and a code
@@ -19,13 +18,15 @@
 // This file touches no storage, no phone, no React Native and no Expo. It is
 // plain data, so Node can read it in a fraction of a second.
 
-/** Which of the five reminder screens an item came from. */
+/** The current source carried from a saved kind into notification data. */
 export type SourceScreenCode =
-    | 'myday'
-    | 'pets'
-    | 'myweek'
-    | 'lookahead'
-    | 'todo';
+    | 'daily'
+    | 'weekly'
+    | 'monthly'
+    | 'quarterly'
+    | 'yearly'
+    | 'onetime'
+    | 'extended';
 
 /**
  * The unit a repeating item counts in.
@@ -40,7 +41,7 @@ export type RepeatUnitCode = 'day' | 'week' | 'month' | 'year';
  * One weekday a repeating item comes due on.
  *
  * Sunday is 0 through Saturday is 6, the same counting as the machine's
- * ordinary day-of-week and as My Week's saved day. An ordinal of 2 is the
+ * ordinary day-of-week and as Weekly's saved day. An ordinal of 2 is the
  * second such weekday of the month, and -1 is the last. Left off means every
  * such weekday.
  */
@@ -75,14 +76,10 @@ export type LeadNamedTimeCode = 'morning' | 'midday' | 'evening';
  * and that has bitten this app before.
  */
 export type BannerButtonsCode =
-    | 'mydaysnooze'
-    | 'petssnooze'
-    | 'todook'
-    | 'myweekactions'
-    | 'lookaheadactions'
-    | 'shifteddayactions'
     | 'routineactions'
-    | 'orderactions';
+    | 'cadenceactions'
+    | 'appointmentsok'
+    | 'shifteddayactions';
 
 /**
  * One lead time — how far ahead of the due moment to speak.
@@ -97,8 +94,9 @@ export type LeadTime =
         leadAmount: number;
         leadUnitCode: LeadUnitCode;
         // Which of this item's reminders this is, when the saved list names
-        // them. Used as the third part of the key so two leads on one task
-        // never share a name. Look Ahead has one moment and leaves it off.
+        // them. Used as the third part of the key so two leads on one
+        // appointment never share a name. A dated cadence has one moment and
+        // leaves it off.
         leadPartText?: string;
     }
     | {
@@ -118,14 +116,13 @@ export type LeadTime =
  * HAPPENED to this occurrence and change constantly.
  *
  * Keeping them apart is what lets a kind answer a question differently as a
- * rule rather than as an exception. A To-Do appointment simply has its done
- * and push-back bits clear, so nothing anywhere has to special-case
- * appointments.
+ * rule rather than as an exception. An appointment simply has its push-back
+ * bit clear, so nothing anywhere has to special-case it.
  */
 export interface ShapedItem {
     // ---- what the item is ----
 
-    /** Which of the five screens it came from. */
+    /** The current source for this saved kind. */
     sourceScreenCode: SourceScreenCode;
     /** The item's own id on that screen. */
     itemIdText: string;
@@ -137,9 +134,8 @@ export interface ShapedItem {
     /**
      * The unit the item repeats in, left off when it is a one-off.
      *
-     * My Day and Pets write day, My Week writes week, and Look Ahead and To-Do
-     * leave the whole repeat group off. A later screen can write month or year
-     * without a new kind of trigger.
+     * Daily writes day, Weekly writes week, the dated cadences write month or
+     * year, and Appointments and Bucket List leave the whole repeat group off.
      */
     repeatUnitCode?: RepeatUnitCode;
     /**
@@ -153,7 +149,7 @@ export interface ShapedItem {
     /**
      * The weekdays the item comes due on, left off when it does not use them.
      *
-     * My Week writes the chore's own day here. A monthly rule that names a
+     * Weekly writes the item's own day here. A monthly rule that names a
      * weekday — the second Thursday, Wednesday after the sixth — writes that
      * weekday here too, with or without an ordinal.
      */
@@ -175,9 +171,8 @@ export interface ShapedItem {
     /**
      * The item actually has a time.
      *
-     * Every one of the five readers guards on this today, and the wanted-block
-     * asks it as its last question: an item with no time has nothing to arm,
-     * though a promise already made to it can still stand.
+     * The wanted-block asks this as its last question: an item with no time
+     * has nothing to arm, though a promise already made to it can still stand.
      */
     hasDueTimeBit: boolean;
     /**
@@ -239,8 +234,7 @@ export interface ShapedItem {
     /**
      * The reminder stands for a group rather than one item.
      *
-     * This is To-Do's eight o'clock background banner, which today is
-     * recognised only by its id happening to be the word `background`.
+     * This marks a reminder that stands for a group rather than one item.
      */
     standsForGroupBit: boolean;
 
@@ -284,15 +278,13 @@ export interface ShapedItem {
      * What the banner says, and which buttons it carries.
      *
      * These three ride inside the shaped item because the words are the
-     * translator's work, settled the same way the background banner's count
-     * was: each screen builds its own sentence, exactly as each reader does
-     * today. Carrying them here means the engine has everything one reminder
-     * needs in one thing, and never has to reach back to the screen it came
-     * from to find out what to say.
+     * translator's work. Each saved kind builds its own sentence. Carrying
+     * them here means the engine has everything one reminder needs in one
+     * thing, and never has to reach back to a page to find out what to say.
      *
      * They are optional so that a test or a caller concerned only with when an
-     * item comes due can write a shaped item without them. Every translator
-     * sets all three.
+     * item comes due can write a shaped item without them. The translator sets
+     * them for every kind that can produce a reminder.
      *
      * The placement is deliberately reversible. The output side has not been
      * designed yet, so if that work wants the words held somewhere else, it is

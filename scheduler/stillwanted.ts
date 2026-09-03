@@ -2,8 +2,7 @@
 //
 // Every returning arrow lands here. Done, pushed back and skipped all come back
 // from the far end of the app and change what a shaped item should produce, and
-// today each of the five readers answers that its own way. This is the one
-// place it is answered instead.
+// every kind is answered here once, against the common shape.
 //
 // It decides nothing about how many reminders to arm, nothing about what the
 // banner says, and nothing about fitting inside the phone's sixty-four places.
@@ -56,8 +55,8 @@ export interface StillWantedAnswer {
 export function isStillWanted(item: ShapedItem, now: number): StillWantedAnswer {
     // 1. Done, and how far the done reaches. The capability bit gates the
     //    state: an item that cannot be marked done is never treated as done,
-    //    whatever its state field happens to say. Look Ahead falls out here
-    //    without an exception, having no done field at all.
+    //    whatever its state field happens to say. A dated cadence falls out
+    //    here without an exception.
     //
     //    Nothing here knows about the day's rollover clearing the tick. That
     //    is the daily reset's job and it already works, so this block only
@@ -94,9 +93,9 @@ export function isStillWanted(item: ShapedItem, now: number): StillWantedAnswer 
         // reminder it promised, and this is why the push-back is asked before
         // the due-time question rather than after it. There is no base
         // occurrence left to arm, so this occurrence is dropped; the promised
-        // moment stands beside it all the same. My Day's snooze has always
-        // worked this way — its old reader armed the snooze before its own
-        // guard on the item having a time — and asking in this order is what
+        // moment stands beside it all the same. A Daily snooze has always
+        // worked this way: it is answered before the guard on the item having
+        // a time. Asking in this order is what
         // keeps that true for every screen at once, as a rule rather than as
         // an exception.
         if (!item.hasDueTimeBit) {
@@ -106,8 +105,8 @@ export function isStillWanted(item: ShapedItem, now: number): StillWantedAnswer 
         return answer(true, false, item.pushedBackToStamp, 'wanted, with a push-back standing');
     }
 
-    // 4. No due time, so there is nothing to arm. Every one of the five
-    //    readers guards on this today. It is asked last rather than first
+    // 4. No due time, so there is nothing to arm. Every current kind follows
+    //    this guard. It is asked last rather than first
     //    because it is the only answer that throws the whole item away, and
     //    the questions above can each have something to say about an item
     //    that has lost its time.

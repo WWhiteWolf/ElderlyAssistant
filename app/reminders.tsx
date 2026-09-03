@@ -318,9 +318,9 @@ const makeStyles = (t: Theme) =>
         },
         rowBorder: { borderTopWidth: 0.5, borderTopColor: t.cardBorder },
         rowLabel: { fontSize: 17, color: t.cardTitle, fontWeight: '500' },
-        // mutedText, not delayText — the "Snoozed till:" line on My Day and Pets
-        // used the colour meant for text on a solid button and came out white on
-        // white (#11-new). This is the colour for secondary text on a row.
+        // mutedText, not delayText — a snoozed row once used the colour meant
+        // for text on a solid button and came out white on white (#11-new).
+        // This is the colour for secondary text on a row.
         rowSub: { fontSize: 13, color: t.mutedText, marginTop: 3 },
         rowArrow: { fontSize: 22, color: t.settingArrow, paddingLeft: 8 },
 

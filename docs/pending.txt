@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-03 (#60-new, session close)
+Last updated: 2026-09-03 (#62-new, session close)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -16,10 +16,9 @@ to know why something was done the way it was.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-REMOVE OLD PAGES AND READERS, THEN SCRUB STALE CODE (Patrick, #60-new).
-The replacement pages have been proved on his phone for a few days, so
-the condition that kept the old readers in place has been met. Remove
-what the live app no longer calls, then check the code left behind.
+OWN LOGS FOR MONTHLY, QUARTERLY, AND YEARLY (Patrick, #62-new).
+Those three pages should have had their own Done logs. The leftover
+Look Ahead log comes out; it is not renamed. No compatibility layer.
 
 
 PENDING
@@ -37,28 +36,21 @@ Things waiting on something — mostly on the phone.
    and the calendar month (#58-new); all of #59-new — calendar day-list
    fire time, date picker off for weekday patterns and One Time for
    today, Daily every-day with no clock until Set time, AM/PM check on
-   Save (skipped when time set on 24-hour picker) — all of #59-new.
-   Those later refinements do not reset the replacement pages' phone
-   proof.
-2. RETIRING THE OLD READERS. The live run does not call them. They
-   stayed until each replacement was proved on the phone. Patrick says
-   the replacement pages have now been on his phone for a few days, so
-   that condition is met. Removing the old pages and readers, then
-   scrubbing stale code, is What's Next. Memory Test is temporary and
-   coming out. Timer is isolated deliberately. Neither is a reason to
-   keep these files (Patrick, #51-new).
-3. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
+   Save (skipped when time set on 24-hour picker); current notification
+   names through the live road (#62-new). Those later refinements do
+   not reset the replacement pages' phone proof.
+2. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
     sitting treated One Time's missing notice at the set time as
     a bug. He had decided it that way. A spec would have said so.
     Changing the name of One Time to Appointments belongs in
     that spec, and Extended to Bucket List.
-4. A USER GUIDE, from that spec or merely after it (Patrick,
+3. A USER GUIDE, from that spec or merely after it (Patrick,
     #52-new). He needs to provide it on his website, and a way
     in the app to find it or get it.
-5. A FEEDBACK BUTTON IN THE APP, similar to Mystery (Patrick,
+4. A FEEDBACK BUTTON IN THE APP, similar to Mystery (Patrick,
     #52-new). That is how the app lets you find or get the
     User Guide.
-6. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
+5. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
     WILL COVER (Patrick, #52-new). The during-build tests are
     thrown away. The run is not kept.
 
@@ -133,67 +125,74 @@ WHAT IS DONE, NEWEST FIRST
 One line each. The full story of any of them is in
 docs/build-history.md.
 
-1. #59-new — calendar day-list fire time (old Pending 4); useless
+1. #62-new — current notification names through the live road.
+   Daily, Weekly, Monthly, Quarterly, Yearly, and Appointments each
+   have their own source. A Quarterly or Yearly banner tap opens its
+   own page. Pets and Orders names out of the tests. Their own Done
+   logs are next. Mac 298. Not on the phone.
+2. #61-new — hidden old pages and dead reader road removed.
+   Notification-name sheet written. Mac 300. Committed (Patrick, #62-new).
+3. #59-new — calendar day-list fire time (old Pending 4); useless
    spinners removed; AM/PM popup on Save when time set on 12-hour row
    only (24-hour box or digit spinner skips it). Patrick said excellent.
    Mac 489. Not on the phone. Patrick is committing.
-2. #58-new — the Where? helper built from its sheet. 🧭 badge after
+4. #58-new — the Where? helper built from its sheet. 🧭 badge after
    Daily, calendar month button, transparent `app/where.tsx`, eight
    landings on existing New forms, `formContext: oneTimeForToday`
    split from `returnTo`. Mac 489. Not on the phone. Committed (Patrick, #59-new).
-3. #57-new — the Where? helper settled and its self-contained build
+5. #57-new — the Where? helper settled and its self-contained build
    sheet written. 🧭 badge after Daily, calendar button, and the
    Cancel and Save journey decided. No code.
-4. #56-new — Appointments and Bucket List on every live screen;
+6. #56-new — Appointments and Bucket List on every live screen;
    failed daily clear-out now spoken (Pending 2). Mac 489. He said
    very good. Committed (Patrick, #57-new). Not on the phone.
-5. #55-new — missed-firing notice for Weekly, Monthly, Quarterly,
+7. #55-new — missed-firing notice for Weekly, Monthly, Quarterly,
    Yearly, and One Time as well as Daily; day-roll writes the miss.
    Mac 487. He said the work is good. Committed (Patrick, #56-new).
    Not on the phone.
-6. #53-new (2026-09-02) — Scheduled Reminders names Daily, Weekly,
+8. #53-new (2026-09-02) — Scheduled Reminders names Daily, Weekly,
    Monthly, Quarterly, Yearly, and One Time; Monthly, Quarterly,
    and Yearly from the banner heading. Siri still says My Day Item.
-7. #53-new (2026-09-02) — one list row for Daily through Extended
+9. #53-new (2026-09-02) — one list row for Daily through Extended
    (`ReminderItemRow.tsx`). Daily still composes its name and Log.
-8. #54-new (2026-09-02) — Appointments and Bucket List: one list in
+10. #54-new (2026-09-02) — Appointments and Bucket List: one list in
    constants/page-names.ts; Scheduled Reminders reads it. Finished
    at #56-new. Committed.
-9. #52-new — landscape 90° counter-clockwise, headers on the left,
+11. #52-new — landscape 90° counter-clockwise, headers on the left,
    on the phone. Sit set: seven banners Wednesday on sim and phone.
    No 9:20 by his decision. RFC eval written. Paperwork named:
    spec, User Guide, website, Feedback, testing file, helper for
    where.
-10. #51-new — display features: header buttons and the Home badge
+12. #51-new — display features: header buttons and the Home badge
    face sit the right way up in landscape; Home's badges four across
    and three down; Memory asks at start; Monthly / Quarterly /
    Yearly banners name their own page; no snooze without a reminder;
    the row button says Done? until a tap. Pending 2 and 4 checked,
    not done. Phone not touched.
-11. #50-new — the other pages in landscape. Optional view, 0 and 90
+13. #50-new — the other pages in landscape. Optional view, 0 and 90
    only. Header stays the portrait row, Bridge with it, at the top
    of the phone. Covers turn with the page. Calendar month grid not
    rebuilt. Simulator still held leftover sitting items; he deleted
    the Memory app there.    Goal accomplished. Phone not touched.
-12. #49-new — calendar page built from the sheet. Options Calendar
+14. #49-new — calendar page built from the sheet. Options Calendar
    shading row out; the saved field stays. Names in a day box scroll
    vertically only. 460 tests. They need landscape now. Calendar is
    allowed to turn; other pages still stay upright. Fresh simulator
    build needed for a turn to take.
-13. #48-new — calendar build sheet written. No code.
-14. #47-new — selling description a good start and left. Features
+15. #48-new — calendar build sheet written. No code.
+16. #47-new — selling description a good start and left. Features
    file is the inventory. Comparables from what the app is, not
    elderly apps: repeating reminders and personal tasks. Apple
    Reminders is the free default; TickTick, Todoist, Things, and
    Due exist because it is not enough. He opened Reminders: this
    one does more, easier. No code.
-15. #46-new — selling description begun, publishing picture written.
+17. #46-new — selling description begun, publishing picture written.
    The session dropped. The wrong-shelf comparables were corrected
    at #47-new.
-16. App-Docs, 2026-08-31 — working documents stay in docs; history
+18. App-Docs, 2026-08-31 — working documents stay in docs; history
    and the eleven build sheets moved to docs-ref. Index tightened to
    one line per file. Not a Memory chain session.
-17. #45-new — the two engine Fails from the sitting: Daily after Done
+19. #45-new — the two engine Fails from the sitting: Daily after Done
    arms tomorrow, and a named zone moves a One Time's fire. 23 passed,
    0 failed on the sim and on the phone. 460 tests. Reminder Engine
    files not touched. The morning after, the automated load, the two
@@ -202,61 +201,61 @@ docs/build-history.md.
    now asks to show it, same as Timer. He will verify that in the code
    without the test load. The four pieces, the screen, and the Home
    tile came out of the app after that run.
-17. #44-new — the automated load built, and the simulator sitting
+19. #44-new — the automated load built, and the simulator sitting
    finished. Two engine Fails (Daily after Done, named zone) go to
    #45-new. Reminder Engine files not touched. 459 tests. Two old
    type-check nits left for later.
-18. #43-new — the automated-load job sheet and the sitting list.
+20. #43-new — the automated-load job sheet and the sitting list.
    Daily now rolls the list before it reads, and the list pages read
    again when the app comes to the front. The load itself is not
    built. Not on the phone.
-19. #42-new — the rest of Options into the engine. Calendar shading
+21. #42-new — the rest of Options into the engine. Calendar shading
    from the engine, the Float row out, Extended New and Edit as name,
    optional note and Done, Cancel with no change after + OPT, and
    Daily's every-day and One Time for today as time zone only. A
    weekday after a numbered day is the first occurrence after that
    day only. The Timer is parked as a different effort. 459 tests.
    Not on the phone.
-20. #41-new — five Options answers, holidays, monthly patterns, and
+22. #41-new — five Options answers, holidays, monthly patterns, and
    extra tap. Holidays, a second Thursday and a Wednesday after the
    6th, and Then or Next Day on a shifted banner reach the engine.
    Monthly, Quarterly and Yearly Done no longer advances the saved
    date.
-21. #40-new — five hardening points, and time zone into the engine.
+23. #40-new — five hardening points, and time zone into the engine.
    Skip is a bit, not an explanation. An unreadable list leaves held
    reminders on the phone. A save during a run queues one rerun.
    Banner words and buttons are compared. A replacement is created
    before the old one is removed. A named time zone is read. The
    other Options fields still wait.
-22. #39-new — the live one-store cutover. Pages, banners and Siri write
+24. #39-new — the live one-store cutover. Pages, banners and Siri write
    one list. The scheduler reads it. Dual-write is gone. Siri now
    tells the module. Old reader files stay until the phone proof.
-23. #38-new — the engine and Options path read end to end. The core
+25. #38-new — the engine and Options path read end to end. The core
    remains one fixed road. The automated load, six hardening points,
    Option mappings, and the clean one-store cutover with proof against
    absent old stores are recorded. No code changed.
-24. #37-new — Options connecting: + OPT writes the cases that apply,
+26. #37-new — Options connecting: + OPT writes the cases that apply,
    Note is on New and Edit, Skip is off Options. Per-kind sets are
    in. Engine does not read the fields yet. He is loading the phone.
-25. #36-new — logs on Weekly, Monthly, Quarterly, Yearly, One Time,
+27. #36-new — logs on Weekly, Monthly, Quarterly, Yearly, One Time,
    and Extended. Weekly uses My Week's list; Monthly, Quarterly,
    and Yearly share Look Ahead's; One Time and Extended each have
    their own. They travel in the backup. The log title is Log, not
    My Log. Home no longer warns when the stack is already empty.
    The 24-hour box opens a four-digit spinner. AM/PM removal is
    mitigated by that spinner and is not a separate job.
-26. #35-new — old screens out, including the `/myday` hop. Backup
+28. #35-new — old screens out, including the `/myday` hop. Backup
    copies the new list, not the old ones. Logs on the other new
    pages are next.
-27. #34-new — Weekly through Options and the + Add popup built.
+29. #34-new — Weekly through Options and the + Add popup built.
    Project Planner, Orders and Watch List off Home. Next is taking
    the old screens out.
-28. #33-new — Daily built. Snooze, Done, hold-and-slide reorder, My
+30. #33-new — Daily built. Snooze, Done, hold-and-slide reorder, My
    Log. The My Day page is gone. The sheet for Weekly through
    Options was brought up to date with what Daily actually is.
-29. #32-new — the pages phase spec, and Daily's first job sheet.
+31. #32-new — the pages phase spec, and Daily's first job sheet.
    Nothing was built.
-30. #31-new — the record itself put right. The hand-off file went
+32. #31-new — the record itself put right. The hand-off file went
    from 906 lines to under 300 and now holds only live work and
    open questions. Five whole sessions had never been written into
    the build history at all, which is why you kept having to
@@ -264,43 +263,43 @@ docs/build-history.md.
    on a decision goes into the record at the moment you make it.
    The copy you read is a Word file again, and there is a checker
    that reports when anything has drifted.
-31. #30-new — the reminder pages named and shaped, and the one Input
+33. #30-new — the reminder pages named and shaped, and the one Input
    page plan dropped. Nothing was built.
-32. #28-new — the engine gained repeat groups, skip, and time zones
+34. #28-new — the engine gained repeat groups, skip, and time zones
    that float with the phone. 413 tests pass. Not on the phone.
-33. #27-new — all five reminder screens went onto the one machine,
+35. #27-new — all five reminder screens went onto the one machine,
    and five screen fixes landed that you checked on the simulator:
    the Scheduled Reminders page's header and its count, the clock
    setter's twelve-hour fault, the Vault's Back button, and a To-Do
    task that may now be saved with no date and no time.
-34. #26-new — the per-screen translators became one translator and a
+36. #26-new — the per-screen translators became one translator and a
    table, and My Week and Look Ahead joined it.
-35. #24-new and #25-new — the first two translators, My Day and
+37. #24-new and #25-new — the first two translators, My Day and
    Pets, and the reordering of the questions that let the stubborn
    snooze survive.
-36. #23-new — the common shape and the two decision blocks built and
+38. #23-new — the common shape and the two decision blocks built and
     tested, with nothing in the app calling them yet.
-37. #22-new — the field names settled, and setting reminders two
+39. #22-new — the field names settled, and setting reminders two
     deep reopened by you and closed at one.
-38. #21-new — the common shape settled on paper, all five screens
+40. #21-new — the common shape settled on paper, all five screens
     inside it.
-39. #20-new — My Week's Delay written down like the others, and the
+41. #20-new — My Week's Delay written down like the others, and the
     engine's last unread part read.
-40. #19-new — your epiphany: one shape instead of six, the reminder
+42. #19-new — your epiphany: one shape instead of six, the reminder
     pages as the heart of the app and the scheduler as its engine.
-41. #18-new — the outsider's report checked. The answer was mend
+43. #18-new — the outsider's report checked. The answer was mend
     rather than rebuild, and six things it flagged turned out to be
     deliberate.
-42. #15-new to #17-new — the failure pop-up and the missed-firing
+44. #15-new to #17-new — the failure pop-up and the missed-firing
     note built, then Pets and My Day moved off repeating alarms so
     a thing ticked off early stops calling out.
-43. #13-new and #14-new — tapping a reminder lands on its own item
+45. #13-new and #14-new — tapping a reminder lands on its own item
     with the row outlined, confirmed by you on the phone.
-44. #12-new — the Scheduled Reminders screen, showing every
+46. #12-new — the Scheduled Reminders screen, showing every
     reminder the phone is holding and how full it is.
-45. #6-new to #12-new — the scheduler built in eight steps, so one
+47. #6-new to #12-new — the scheduler built in eight steps, so one
     module owns every reminder and no screen arms its own.
-46. #4-new — the first notification fixes. Real, and kept, but not
+48. #4-new — the first notification fixes. Real, and kept, but not
     the whole story.
 
 

@@ -10,7 +10,7 @@ const trigger: WantedTrigger = { kind: 'daily', hour: 8, minute: 0 };
 function reminder(key: string): WantedReminder {
     return {
         key,
-        source: 'myday',
+        source: 'daily',
         itemId: key,
         label: key,
         title: 'Daily Routine',
@@ -36,7 +36,7 @@ export function runApplyTests(): void {
     test('A replacement is created before the old identifier is cancelled', () => {
         const order: string[] = [];
         const plan = emptyPlan({
-            replace: [{ identifier: 'old1', reminder: reminder('myday:a:base') }],
+            replace: [{ identifier: 'old1', reminder: reminder('daily:a:base') }],
         });
         runApplyOps(applyOpsFor(plan), {
             create: (one) => {
@@ -49,7 +49,7 @@ export function runApplyTests(): void {
         });
         assertSame(
             order,
-            ['create:myday:a:base', 'cancel:old1'],
+            ['create:daily:a:base', 'cancel:old1'],
             'the new request exists before the old one is taken off',
         );
     });
@@ -57,7 +57,7 @@ export function runApplyTests(): void {
     test('A failed replacement create leaves the old reminder in place', () => {
         const cancelled: string[] = [];
         const plan = emptyPlan({
-            replace: [{ identifier: 'old1', reminder: reminder('myday:a:base') }],
+            replace: [{ identifier: 'old1', reminder: reminder('daily:a:base') }],
         });
         const said = runApplyOps(applyOpsFor(plan), {
             create: () => false,

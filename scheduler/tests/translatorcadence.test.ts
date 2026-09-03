@@ -29,12 +29,12 @@ function shapeOf(saved: ReminderItem) {
 }
 
 export function runTranslatorCadenceTests(): void {
-    test('A daily item is a My Day routine at its time', () => {
+    test('A daily item is a Daily routine at its time', () => {
         const shaped = shapeOf(item({ kind: 'daily', hour: 8, minute: 30 }));
         assertSame(
             [shaped.sourceScreenCode, shaped.repeatUnitCode, shaped.dueHour, shaped.dueMinute, shaped.bannerButtonsCode],
-            ['myday', 'day', 8, 30, 'routineactions'],
-            'a daily item keeps the My Day screen code so banners still open Daily',
+            ['daily', 'day', 8, 30, 'routineactions'],
+            'a daily item carries the Daily source so banners still open Daily',
         );
         assert(shaped.hasDueTimeBit, 'a time is a due time');
     });
@@ -43,8 +43,8 @@ export function runTranslatorCadenceTests(): void {
         const shaped = shapeOf(item({ kind: 'weekly', day: 2, hour: 18, minute: 15 }));
         assertSame(
             [shaped.sourceScreenCode, shaped.repeatUnitCode, shaped.repeatWeekdayList?.[0]?.weekdayNumber],
-            ['myweek', 'week', 2],
-            'a weekly item is a My Week chore on its day',
+            ['weekly', 'week', 2],
+            'a weekly item is a Weekly item on its day',
         );
     });
 
@@ -59,13 +59,13 @@ export function runTranslatorCadenceTests(): void {
         }));
         assertSame(
             [shaped.sourceScreenCode, shaped.repeatUnitCode, shaped.repeatIntervalCount, shaped.dueHour, shaped.bannerButtonsCode, shaped.bannerTitleText],
-            ['lookahead', 'month', 1, 9, 'lookaheadactions', 'Monthly'],
+            ['monthly', 'month', 1, 9, 'cadenceactions', 'Monthly'],
             'a dated monthly item repeats each month from that day, and the banner names Monthly',
         );
         assert(shaped.hasDueTimeBit, 'a time is a due time');
     });
 
-    test('A One Time item is a To-Do appointment with its leads', () => {
+    test('An appointment carries its leads', () => {
         const shaped = shapeOf(item({
             kind: 'oneTime',
             year: 2026,
@@ -77,8 +77,8 @@ export function runTranslatorCadenceTests(): void {
         }));
         assertSame(
             [shaped.sourceScreenCode, shaped.doneEndsItemBit, shaped.leadTimeList.length, shaped.bannerButtonsCode],
-            ['todo', true, 1, 'todook'],
-            'One Time keeps the To-Do appointment shape',
+            ['onetime', true, 1, 'appointmentsok'],
+            'an appointment keeps its one-off shape and current source',
         );
     });
 
@@ -86,8 +86,8 @@ export function runTranslatorCadenceTests(): void {
         const shaped = shapeOf(item({ kind: 'extended' }));
         assertSame(
             [shaped.sourceScreenCode, shaped.hasDueTimeBit, shaped.leadTimeList.length],
-            ['todo', false, 0],
-            'an Extended item is a dateless To-Do',
+            ['extended', false, 0],
+            'a Bucket List item has no due time',
         );
     });
 

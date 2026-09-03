@@ -34,54 +34,52 @@ import { applyOpsFor } from './apply.ts';
 import { beginRun, consumePending, endRun } from './rungate.ts';
 
 /**
- * The screens the scheduler answers for.
+ * The current notification sources the scheduler answers for.
  *
- * A reminder from anywhere else — the Timer's alerts, and the snoozes that
- * have not come under the module yet — is never cancelled and never
- * re-created. It is simply left where it is, and counted against the room the
- * phone has.
+ * A reminder from anywhere else — the Timer's alerts above all — is never
+ * cancelled and never re-created. It is simply left where it is and counted
+ * against the room the phone has.
  *
- * My Week's postpone, Look Ahead's delay and the My Day and Pets snoozes are
- * here as sources of their own, because that is how the app has always tagged
- * them and how a tapped banner still finds its way to the right page. All four
- * are written down on the item itself, so their readers can answer for them
- * like anything else.
+ * Daily and Weekly each have a base source and a snoozed source. Monthly,
+ * Quarterly and Yearly each have a base source and a delayed source. Every
+ * source names its current page directly, so the same word travels through
+ * translation, reconciliation, the phone and a banner return.
  *
- * My Week has no snooze source of its own, and that is the point rather than an
- * omission (#20-new). A Delay tapped on a chore's banner writes the same
- * `postponedTo` stamp the page's Postpone button writes, so it comes back
- * through `myweekpostpone` like any other postpone. There is no longer any
- * reminder in the app armed where the module cannot see it.
+ * Those pushed-back moments are written on the saved item itself. The
+ * scheduler can therefore answer for them like any other reminder and can
+ * move one without leaving a duplicate behind.
  *
- * To-Do has no need of a snooze (Patrick), so its banner carries a single OK
- * button and nothing else.
+ * Appointments carry one current source and only the OK action. They cannot
+ * be pushed back.
  *
- * Orders is here without a reader, and that is deliberate. The page is being
- * taken out of the app, so nothing wants any of its reminders back; naming its
- * two sources as owned makes the reconcile see every one of them as a leftover
- * with no name and cancel it. Since the page no longer arms anything, they go
- * for good the first time the module runs.
+ * Memory Test keeps its isolated source and remains owned by this scheduler.
+ * Its saved session and reader stay separate from the one reminder list.
+ *
+ * Bucket List produces no reminder, so it has no owned notification source.
+ *
+ * This set is also the boundary used by reconciliation: anything outside it
+ * is left untouched.
  */
 export const OWNED_SOURCES = [
-    'myday',
-    'mydaysnooze',
-    'pets',
-    'petssnooze',
-    'myweek',
-    'myweekpostpone',
-    'lookahead',
-    'lookaheaddelay',
-    'todo',
+    'daily',
+    'dailysnooze',
+    'weekly',
+    'weeklysnooze',
+    'monthly',
+    'monthlydelay',
+    'quarterly',
+    'quarterlydelay',
+    'yearly',
+    'yearlydelay',
+    'onetime',
     'memorytest',
-    'orders',
-    'orderssnooze',
 ];
 
 /**
  * Roll the day over, if it has not been rolled yet.
  *
- * This used to happen only when My Day or Pets was opened, which meant the day
- * never turned over for a screen that was not visited. It now runs wherever the
+ * This used to happen only when a daily page was opened, which meant the day
+ * never turned over for a page that was not visited. It now runs wherever the
  * module runs — on launch, on every return to the front, and after any save —
  * so the checkmarks clear whether or not those screens are looked at.
  *

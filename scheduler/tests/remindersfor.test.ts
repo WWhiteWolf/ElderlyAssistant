@@ -50,7 +50,7 @@ function wantedOf(saved: ReminderItem | ReminderItem[], now: number = NOW) {
 
 function dailyOccurrences(saved: ReminderItem, now: number = NOW) {
     return wantedOf(saved, now)
-        .filter((r) => r.source === 'myday')
+        .filter((r) => r.source === 'daily')
         .sort((a, b) => (a.trigger as { at: number }).at - (b.trigger as { at: number }).at);
 }
 
@@ -115,7 +115,7 @@ export function runRemindersForTests(): void {
     test('An occurrence is named for the day it falls on', () => {
         assertSame(
             dailyOccurrences(daily({ hour: 8, minute: 0 })).map((r) => r.key),
-            ['myday:a1:20260825'],
+            ['daily:a1:20260825'],
             'the name stays the same from one run to the next',
         );
     });
@@ -133,7 +133,7 @@ export function runRemindersForTests(): void {
                 title: 'Daily Routine',
                 body: 'Time for Breakfast!',
                 categoryIdentifier: 'routineactions',
-                source: 'myday',
+                source: 'daily',
             },
             'the one-list path must preserve the live banner',
         );
@@ -141,7 +141,7 @@ export function runRemindersForTests(): void {
 
     test('A snoozed item gets a reminder at the moment it was snoozed to', () => {
         const at = NOW + 30 * MINUTE;
-        const snooze = wantedOf(daily({ snoozedUntil: at })).find((r) => r.source === 'mydaysnooze');
+        const snooze = wantedOf(daily({ snoozedUntil: at })).find((r) => r.source === 'dailysnooze');
         assert(snooze != null, 'expected a snooze reminder');
         assertSame(snooze!.trigger, { kind: 'date', at }, 'the snooze must fire at its own moment');
     });
@@ -159,7 +159,7 @@ export function runRemindersForTests(): void {
     test('A snooze whose moment has gone is wanted no more', () => {
         const wanted = wantedOf(daily({ snoozedUntil: NOW - MINUTE }));
         assert(
-            wanted.every((r) => r.source !== 'mydaysnooze'),
+            wanted.every((r) => r.source !== 'dailysnooze'),
             'a snooze already past cannot be acted on and must not be armed',
         );
     });
@@ -172,13 +172,13 @@ export function runRemindersForTests(): void {
             snoozedUntil: at,
         }));
         assertSame(wanted.length, 1, 'expected the snooze and nothing else');
-        assertSame(wanted[0].source, 'mydaysnooze', 'expected the snooze');
-        assertSame(wanted[0].key, 'mydaysnooze:a1:base', 'one name, so snoozing twice moves it');
+        assertSame(wanted[0].source, 'dailysnooze', 'expected the snooze');
+        assertSame(wanted[0].key, 'dailysnooze:a1:base', 'one name, so snoozing twice moves it');
     });
 
     test('The snooze banner says what the item says', () => {
         const snooze = wantedOf(daily({ label: 'Pills', snoozedUntil: NOW + MINUTE }))
-            .find((r) => r.source === 'mydaysnooze')!;
+            .find((r) => r.source === 'dailysnooze')!;
         assertSame(
             {
                 key: snooze.key,
@@ -187,7 +187,7 @@ export function runRemindersForTests(): void {
                 categoryIdentifier: snooze.categoryIdentifier,
             },
             {
-                key: 'mydaysnooze:a1:base',
+                key: 'dailysnooze:a1:base',
                 title: 'Daily Routine',
                 body: 'Time for Pills!',
                 categoryIdentifier: 'routineactions',
@@ -218,20 +218,20 @@ export function runRemindersForTests(): void {
     test('A Weekly item is armed as one moment on its next day', () => {
         // NOW is Tuesday the 25th, at six in the morning. The item is Tuesday
         // at six in the evening, which has not come yet.
-        const base = weekWanted(weekly()).find((r) => r.source === 'myweek')!;
+        const base = weekWanted(weekly()).find((r) => r.source === 'weekly')!;
         assertSame(base.trigger.kind, 'date', 'a repeating alarm cannot skip a ticked week');
         assertSame(
             readable((base.trigger as { at: number }).at),
             '2026-8-25 18:00',
             'today, at the item\'s own time',
         );
-        assertSame(base.key, 'myweek:c1:20260825', 'named for the day it falls on');
+        assertSame(base.key, 'weekly:c1:20260825', 'named for the day it falls on');
     });
 
     test('A Weekly item whose day has gone by comes back next week', () => {
         const ninePm = new Date(2026, 7, 25, 21, 0, 0, 0).getTime();
         const base = weekWanted(weekly({ day: 2, hour: 18, minute: 0 }), ninePm)
-            .find((r) => r.source === 'myweek')!;
+            .find((r) => r.source === 'weekly')!;
         assertSame(
             readable((base.trigger as { at: number }).at),
             '2026-9-1 18:00',
@@ -242,7 +242,7 @@ export function runRemindersForTests(): void {
     test('A completed Weekly item is not armed for this week', () => {
         const wanted = weekWanted(weekly({ completed: true }));
         assert(
-            wanted.every((r) => r.source !== 'myweek'),
+            wanted.every((r) => r.source !== 'weekly'),
             'a tick must skip this week — that is the fault the repeat could not cure',
         );
     });
@@ -251,13 +251,13 @@ export function runRemindersForTests(): void {
         // Thursday is 4. Same-day filtering would have left Thursday standing.
         const wanted = weekWanted(weekly({ day: 4, completed: true }));
         assert(
-            wanted.every((r) => r.source !== 'myweek'),
+            wanted.every((r) => r.source !== 'weekly'),
             'this occurrence is this week, not merely today',
         );
     });
 
     test('A Weekly banner keeps the existing words and source', () => {
-        const base = weekWanted(weekly()).find((r) => r.source === 'myweek')!;
+        const base = weekWanted(weekly()).find((r) => r.source === 'weekly')!;
         assertSame(
             [base.title, base.body, base.categoryIdentifier],
             ['Weekly Chore', 'Time for Take the bins out!', 'routineactions'],
@@ -268,9 +268,9 @@ export function runRemindersForTests(): void {
     test('A postponed Weekly item keeps its home moment and adds the postpone', () => {
         const at = NOW + 60 * MINUTE;
         const wanted = weekWanted(weekly({ snoozedUntil: at }));
-        assert(wanted.some((r) => r.source === 'myweek'), 'a postpone must not take the home reminder away');
-        const moved = wanted.find((r) => r.source === 'myweekpostpone')!;
-        assertSame(moved.key, 'myweekpostpone:c1:base', 'one name, so postponing twice moves it');
+        assert(wanted.some((r) => r.source === 'weekly'), 'a postpone must not take the home reminder away');
+        const moved = wanted.find((r) => r.source === 'weeklysnooze')!;
+        assertSame(moved.key, 'weeklysnooze:c1:base', 'one name, so postponing twice moves it');
         assertSame(moved.trigger, { kind: 'date', at }, 'the postpone fires at its own moment');
     });
 
@@ -301,26 +301,26 @@ export function runRemindersForTests(): void {
     }
 
     test('A Monthly item arms the next monthly occurrence', () => {
-        const base = datedWanted('monthly').find((r) => r.source === 'lookahead')!;
-        assertSame(base.key, 'lookahead:d1:20260914', 'the existing source and dated key stay in use');
+        const base = datedWanted('monthly').find((r) => r.source === 'monthly')!;
+        assertSame(base.key, 'monthly:d1:20260914', 'the current source and dated key stay in use');
         assertSame(
             [base.trigger, base.title, base.body, base.categoryIdentifier],
             [
                 { kind: 'date', at: new Date(2026, 8, 14, 10, 45, 0, 0).getTime() },
                 'Monthly',
                 'Time for Renew the passport!',
-                'lookaheadactions',
+                'cadenceactions',
             ],
             'the one-list path reaches the next month with its live banner',
         );
     });
 
     test('A Quarterly item arms the next three-month occurrence', () => {
-        const base = datedWanted('quarterly').find((r) => r.source === 'lookahead')!;
+        const base = datedWanted('quarterly').find((r) => r.source === 'quarterly')!;
         assertSame(
             [base.key, base.trigger, base.title],
             [
-                'lookahead:d1:20261114',
+                'quarterly:d1:20261114',
                 { kind: 'date', at: new Date(2026, 10, 14, 10, 45, 0, 0).getTime() },
                 'Quarterly',
             ],
@@ -329,11 +329,11 @@ export function runRemindersForTests(): void {
     });
 
     test('A Yearly item arms the next yearly occurrence', () => {
-        const base = datedWanted('yearly').find((r) => r.source === 'lookahead')!;
+        const base = datedWanted('yearly').find((r) => r.source === 'yearly')!;
         assertSame(
             [base.key, base.trigger, base.title],
             [
-                'lookahead:d1:20270814',
+                'yearly:d1:20270814',
                 { kind: 'date', at: new Date(2027, 7, 14, 10, 45, 0, 0).getTime() },
                 'Yearly',
             ],
@@ -344,9 +344,9 @@ export function runRemindersForTests(): void {
     test('A delayed dated item keeps its cadence and adds the delay', () => {
         const at = NOW + 60 * MINUTE;
         const wanted = datedWanted('monthly', { snoozedUntil: at });
-        assert(wanted.some((r) => r.source === 'lookahead'), 'the cadence remains armed');
-        const delay = wanted.find((r) => r.source === 'lookaheaddelay')!;
-        assertSame(delay.key, 'lookaheaddelay:d1:base', 'one name, so delaying twice moves it');
+        assert(wanted.some((r) => r.source === 'monthly'), 'the cadence remains armed');
+        const delay = wanted.find((r) => r.source === 'monthlydelay')!;
+        assertSame(delay.key, 'monthlydelay:d1:base', 'one name, so delaying twice moves it');
         assertSame(delay.trigger, { kind: 'date', at }, 'the delay fires at its own moment');
     });
 
@@ -384,7 +384,7 @@ export function runRemindersForTests(): void {
     test('An appointment reminder fires that far before the due moment', () => {
         const wanted = appointmentWanted(appointment());
         assertSame(wanted.length, 1, 'one reminder on the appointment, one wanted');
-        assertSame(wanted[0].key, 'todo:t1:r1', 'the reminder\'s own id, so two leads never share a name');
+        assertSame(wanted[0].key, 'onetime:t1:r1', 'the reminder\'s own id, so two leads never share a name');
         assertSame(
             wanted[0].trigger,
             { kind: 'date', at: new Date(2026, 5, 10, 13, 30, 0, 0).getTime() },
@@ -399,7 +399,7 @@ export function runRemindersForTests(): void {
                 appointmentReminder({ id: 'r2', amount: 1, unit: 'days' }),
             ],
         }));
-        assertSame(wanted.map((r) => r.key), ['todo:t1:r1', 'todo:t1:r2'], 'depth does not trim lead times');
+        assertSame(wanted.map((r) => r.key), ['onetime:t1:r1', 'onetime:t1:r2'], 'depth does not trim lead times');
     });
 
     test('An appointment with no reminders set gets nothing', () => {
@@ -415,7 +415,7 @@ export function runRemindersForTests(): void {
         const wanted = appointmentWanted(appointment({ label: 'Dentist' }));
         assertSame(
             [wanted[0].source, wanted[0].title, wanted[0].body, wanted[0].categoryIdentifier],
-            ['todo', '📋 Reminder: Dentist', 'Due: 06/10/26 at 14:00', 'todook'],
+            ['onetime', '📋 Reminder: Dentist', 'Due: 06/10/26 at 14:00', 'appointmentsok'],
             'the one-list path must preserve the live banner',
         );
     });
@@ -424,7 +424,7 @@ export function runRemindersForTests(): void {
 
     function shaped(changes: Partial<ShapedItem> = {}): ShapedItem {
         return {
-            sourceScreenCode: 'myday',
+            sourceScreenCode: 'daily',
             itemIdText: 'm1',
             itemNameText: 'The 31st',
             hasDueTimeBit: true,
@@ -485,7 +485,7 @@ export function runRemindersForTests(): void {
         const monday = new Date(2026, 5, 1, 9, 0, 0, 0).getTime();
         const wanted = remindersFor(
             [shaped({
-                sourceScreenCode: 'myweek',
+                sourceScreenCode: 'weekly',
                 itemIdText: 'c1',
                 itemNameText: 'Take the bins out',
                 repeatUnitCode: 'week',
@@ -497,7 +497,7 @@ export function runRemindersForTests(): void {
             monday,
             CLOCK,
         );
-        const base = wanted.filter((r) => r.source === 'myweek');
+        const base = wanted.filter((r) => r.source === 'weekly');
         assertSame(base.length, 1, 'skip arms the next event; the item is not treated as done');
         assertSame(
             readable((base[0].trigger as { at: number }).at),
@@ -511,7 +511,7 @@ export function runRemindersForTests(): void {
         const wednesday = new Date(2026, 5, 3, 9, 0, 0, 0).getTime();
         const wanted = remindersFor(
             [shaped({
-                sourceScreenCode: 'myweek',
+                sourceScreenCode: 'weekly',
                 itemIdText: 'c1',
                 itemNameText: 'Take the bins out',
                 repeatUnitCode: 'week',
@@ -523,7 +523,7 @@ export function runRemindersForTests(): void {
             wednesday,
             CLOCK,
         );
-        const base = wanted.filter((r) => r.source === 'myweek');
+        const base = wanted.filter((r) => r.source === 'weekly');
         assertSame(
             readable((base[0].trigger as { at: number }).at),
             '2026-6-9 18:00',
@@ -536,7 +536,7 @@ export function runRemindersForTests(): void {
         const due = new Date(2026, 5, 10, 14, 0, 0, 0).getTime();
         const wanted = remindersFor(
             [shaped({
-                sourceScreenCode: 'lookahead',
+                sourceScreenCode: 'monthly',
                 itemIdText: 'l1',
                 dueMoment: due,
                 skippedCycleStamp: new Date(2026, 5, 1, 18, 0, 0, 0).getTime(),
@@ -546,7 +546,7 @@ export function runRemindersForTests(): void {
         );
         assertSame(wanted.length, 1, 'skip does not apply to a one-off');
         assertSame(wanted[0].trigger, { kind: 'date', at: due }, 'the one-off still stands');
-        assertSame(wanted[0].key, 'lookahead:l1:base', 'named as a one-off, not as a skipped cycle');
+        assertSame(wanted[0].key, 'monthly:l1:base', 'named as a one-off, not as a skipped cycle');
     });
 
     test('Done still wins over a skip stamp, so the next event is not armed', () => {
@@ -554,7 +554,7 @@ export function runRemindersForTests(): void {
         const monday = new Date(2026, 5, 1, 9, 0, 0, 0).getTime();
         const wanted = remindersFor(
             [shaped({
-                sourceScreenCode: 'myweek',
+                sourceScreenCode: 'weekly',
                 itemIdText: 'c1',
                 repeatUnitCode: 'week',
                 repeatWeekdayList: [{ weekdayNumber: 2 }],
@@ -567,7 +567,7 @@ export function runRemindersForTests(): void {
             CLOCK,
         );
         assertSame(
-            wanted.filter((r) => r.source === 'myweek').length,
+            wanted.filter((r) => r.source === 'weekly').length,
             0,
             'done keeps the weekly path that arms nothing further',
         );
@@ -581,7 +581,7 @@ export function runRemindersForTests(): void {
         const monday = new Date(2026, 5, 1, 9, 0, 0, 0).getTime();
         const wanted = remindersFor(
             [shaped({
-                sourceScreenCode: 'myweek',
+                sourceScreenCode: 'weekly',
                 itemIdText: 'c1',
                 itemNameText: 'Take the bins out',
                 repeatUnitCode: 'week',
@@ -594,7 +594,7 @@ export function runRemindersForTests(): void {
             CLOCK,
         );
         const said = isStillWanted(shaped({
-            sourceScreenCode: 'myweek',
+            sourceScreenCode: 'weekly',
             itemIdText: 'c1',
             itemNameText: 'Take the bins out',
             repeatUnitCode: 'week',
@@ -605,7 +605,7 @@ export function runRemindersForTests(): void {
         }), monday);
         assert(said.skippedThisCycleBit, 'the bit is what the join reads');
         assertSame(
-            readable((wanted.filter((r) => r.source === 'myweek')[0].trigger as { at: number }).at),
+            readable((wanted.filter((r) => r.source === 'weekly')[0].trigger as { at: number }).at),
             '2026-6-9 18:00',
             'the next event is armed from the bit, not from the sentence',
         );

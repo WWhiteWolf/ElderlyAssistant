@@ -11,9 +11,22 @@ import { assert, assertSame, test } from './runner.ts';
 // Monday the first of June 2026, at nine in the morning.
 const NOW = new Date(2026, 5, 1, 9, 0, 0, 0).getTime();
 
-const OWNED = ['myday', 'pets', 'myweek', 'lookahead', 'todo', 'memorytest', 'orders', 'orderssnooze'];
+const OWNED = [
+    'daily',
+    'dailysnooze',
+    'weekly',
+    'weeklysnooze',
+    'monthly',
+    'monthlydelay',
+    'quarterly',
+    'quarterlydelay',
+    'yearly',
+    'yearlydelay',
+    'onetime',
+    'memorytest',
+];
 
-function want(key: string, trigger: WantedTrigger, source = 'myday'): WantedReminder {
+function want(key: string, trigger: WantedTrigger, source = 'daily'): WantedReminder {
     return {
         key,
         source,
@@ -26,7 +39,7 @@ function want(key: string, trigger: WantedTrigger, source = 'myday'): WantedRemi
     };
 }
 
-function held(identifier: string, key: string, trigger: WantedTrigger | null, source = 'myday'): QueueEntry {
+function held(identifier: string, key: string, trigger: WantedTrigger | null, source = 'daily'): QueueEntry {
     return {
         identifier,
         key,
@@ -42,14 +55,14 @@ function held(identifier: string, key: string, trigger: WantedTrigger | null, so
 
 export function runReconcileTests(): void {
     test('A wanted reminder the phone does not hold is created', () => {
-        const plan = reconcile([want('myday:a:base', { kind: 'daily', hour: 8, minute: 0 })], [], OWNED, NOW);
-        assertSame(plan.create.map((r) => r.key), ['myday:a:base'], 'expected it to be created');
+        const plan = reconcile([want('daily:a:base', { kind: 'daily', hour: 8, minute: 0 })], [], OWNED, NOW);
+        assertSame(plan.create.map((r) => r.key), ['daily:a:base'], 'expected it to be created');
         assertSame(plan.cancel, [], 'nothing to cancel');
     });
 
     test('A reminder that is already exactly right is left alone', () => {
         const trigger: WantedTrigger = { kind: 'daily', hour: 8, minute: 0 };
-        const plan = reconcile([want('myday:a:base', trigger)], [held('n1', 'myday:a:base', trigger)], OWNED, NOW);
+        const plan = reconcile([want('daily:a:base', trigger)], [held('n1', 'daily:a:base', trigger)], OWNED, NOW);
         assertSame(plan.create, [], 'nothing to create');
         assertSame(plan.cancel, [], 'nothing to cancel');
         assertSame(plan.keep, 1, 'it should have been kept');
@@ -57,19 +70,19 @@ export function runReconcileTests(): void {
 
     test('A reminder whose time has changed is replaced', () => {
         const plan = reconcile(
-            [want('myday:a:base', { kind: 'daily', hour: 9, minute: 0 })],
-            [held('n1', 'myday:a:base', { kind: 'daily', hour: 8, minute: 0 })],
+            [want('daily:a:base', { kind: 'daily', hour: 9, minute: 0 })],
+            [held('n1', 'daily:a:base', { kind: 'daily', hour: 8, minute: 0 })],
             OWNED,
             NOW,
         );
         assertSame(plan.replace.map((one) => one.identifier), ['n1'], 'the old one is the replacement’s identifier');
-        assertSame(plan.replace.map((one) => one.reminder.key), ['myday:a:base'], 'the new one is created first');
+        assertSame(plan.replace.map((one) => one.reminder.key), ['daily:a:base'], 'the new one is created first');
         assertSame(plan.cancel, [], 'it is not cancelled as a leftover');
         assertSame(plan.create, [], 'it is not a fresh create');
     });
 
     test('A reminder the lists no longer call for is cancelled', () => {
-        const plan = reconcile([], [held('n1', 'myday:gone:base', { kind: 'daily', hour: 8, minute: 0 })], OWNED, NOW);
+        const plan = reconcile([], [held('n1', 'daily:gone:base', { kind: 'daily', hour: 8, minute: 0 })], OWNED, NOW);
         assertSame(plan.cancel, ['n1'], 'expected it to be cancelled');
     });
 
@@ -80,20 +93,8 @@ export function runReconcileTests(): void {
         assertSame(plan.others, 1, 'but it does take up room');
     });
 
-    test('An Orders reminder is swept off the phone', () => {
-        const queue: QueueEntry[] = [{ identifier: 'o1', source: 'orders', trigger: { kind: 'date', at: NOW + 60000 } }];
-        const plan = reconcile([], queue, OWNED, NOW);
-        assertSame(plan.cancel, ['o1'], 'Orders is owned with no reader, so everything of its goes');
-    });
-
-    test('An Orders snooze is swept off the phone too', () => {
-        const queue: QueueEntry[] = [{ identifier: 'o2', source: 'orderssnooze', trigger: { kind: 'date', at: NOW + 60000 } }];
-        const plan = reconcile([], queue, OWNED, NOW);
-        assertSame(plan.cancel, ['o2'], 'the page is going, so its snoozes go with it');
-    });
-
     test('One of ours with no name is a leftover and is cancelled', () => {
-        const queue: QueueEntry[] = [{ identifier: 'old1', source: 'myday', trigger: { kind: 'daily', hour: 8, minute: 0 } }];
+        const queue: QueueEntry[] = [{ identifier: 'old1', source: 'daily', trigger: { kind: 'daily', hour: 8, minute: 0 } }];
         const plan = reconcile([], queue, OWNED, NOW);
         assertSame(plan.cancel, ['old1'], 'a reminder from the old way of scheduling goes');
     });
@@ -101,8 +102,8 @@ export function runReconcileTests(): void {
     test('The same name held twice keeps one and cancels the rest', () => {
         const trigger: WantedTrigger = { kind: 'daily', hour: 8, minute: 0 };
         const plan = reconcile(
-            [want('myday:a:base', trigger)],
-            [held('n1', 'myday:a:base', trigger), held('n2', 'myday:a:base', trigger)],
+            [want('daily:a:base', trigger)],
+            [held('n1', 'daily:a:base', trigger), held('n2', 'daily:a:base', trigger)],
             OWNED,
             NOW,
         );
@@ -113,17 +114,17 @@ export function runReconcileTests(): void {
 
     test('Reading the same thing twice changes nothing the second time', () => {
         const trigger: WantedTrigger = { kind: 'daily', hour: 8, minute: 0 };
-        const wanted = [want('myday:a:base', trigger)];
+        const wanted = [want('daily:a:base', trigger)];
         const first = reconcile(wanted, [], OWNED, NOW);
         assertSame(first.create.length, 1, 'the first run creates it');
-        const second = reconcile(wanted, [held('n1', 'myday:a:base', trigger)], OWNED, NOW);
+        const second = reconcile(wanted, [held('n1', 'daily:a:base', trigger)], OWNED, NOW);
         assertSame(second.create.length, 0, 'the second run must create nothing');
         assertSame(second.cancel.length, 0, 'and cancel nothing');
     });
 
     test('Nothing is trimmed while the list is well under the ceiling', () => {
         const wanted = [];
-        for (let n = 0; n < 20; n++) wanted.push(want(`myday:${n}:base`, { kind: 'date', at: NOW + n * 60000 }));
+        for (let n = 0; n < 20; n++) wanted.push(want(`daily:${n}:base`, { kind: 'date', at: NOW + n * 60000 }));
         const plan = reconcile(wanted, [], OWNED, NOW);
         assertSame(plan.trimmed, [], 'twenty reminders is nowhere near the limit');
     });
@@ -132,13 +133,13 @@ export function runReconcileTests(): void {
         const allowance = CEILING - ROOM_FOR_OTHERS;
         const wanted = [];
         for (let n = 0; n < allowance + 3; n++) {
-            wanted.push(want(`myday:${n}:base`, { kind: 'date', at: NOW + (n + 1) * 60000 }));
+            wanted.push(want(`daily:${n}:base`, { kind: 'date', at: NOW + (n + 1) * 60000 }));
         }
         const plan = reconcile(wanted, [], OWNED, NOW);
         assertSame(plan.trimmed.length, 3, 'three should not fit');
         assertSame(
             plan.trimmed.map((r) => r.key),
-            [`myday:${allowance}:base`, `myday:${allowance + 1}:base`, `myday:${allowance + 2}:base`],
+            [`daily:${allowance}:base`, `daily:${allowance + 1}:base`, `daily:${allowance + 2}:base`],
             'the three furthest away are the ones to go',
         );
     });
@@ -151,7 +152,7 @@ export function runReconcileTests(): void {
         const allowance = CEILING - ROOM_FOR_OTHERS - 5;
         const wanted = [];
         for (let n = 0; n < allowance + 1; n++) {
-            wanted.push(want(`myday:${n}:base`, { kind: 'date', at: NOW + (n + 1) * 60000 }));
+            wanted.push(want(`daily:${n}:base`, { kind: 'date', at: NOW + (n + 1) * 60000 }));
         }
         const plan = reconcile(wanted, queue, OWNED, NOW);
         assertSame(plan.trimmed.length, 1, 'the Timer’s five push one out');
@@ -193,8 +194,8 @@ export function runReconcileTests(): void {
 
     test('A reminder the phone holds but cannot describe is replaced', () => {
         const plan = reconcile(
-            [want('myday:a:base', { kind: 'daily', hour: 8, minute: 0 })],
-            [held('n1', 'myday:a:base', null)],
+            [want('daily:a:base', { kind: 'daily', hour: 8, minute: 0 })],
+            [held('n1', 'daily:a:base', null)],
             OWNED,
             NOW,
         );
@@ -212,10 +213,10 @@ export function runReconcileTests(): void {
         const trigger: WantedTrigger = { kind: 'daily', hour: 8, minute: 0 };
         const plan = reconcile(
             [],
-            [held('n1', 'myday:a:base', trigger)],
+            [held('n1', 'daily:a:base', trigger)],
             OWNED,
             NOW,
-            ['myday'],
+            ['daily'],
         );
         assertSame(plan.cancel, [], 'unknown is not empty, so the reminder stays');
         assertSame(plan.create, [], 'nothing is invented for the unread source');
@@ -225,19 +226,19 @@ export function runReconcileTests(): void {
 
     test('A failed reminder list names the reminder sources as unread', () => {
         const unread = unreadSourcesFor(['reminder_items']);
-        assert(unread.includes('myday'), 'Daily’s held reminders must be kept');
-        assert(unread.includes('todo'), 'One Time’s held reminders must be kept');
+        assert(unread.includes('daily'), 'Daily’s held reminders must be kept');
+        assert(unread.includes('onetime'), 'Appointments’ held reminders must be kept');
         assert(!unread.includes('memorytest'), 'Memory Test is a different saved thing');
     });
 
     test('Changing only the visible words replaces the held reminder', () => {
         const trigger: WantedTrigger = { kind: 'daily', hour: 8, minute: 0 };
-        const renamed = want('myday:a:base', trigger);
+        const renamed = want('daily:a:base', trigger);
         renamed.label = 'Take the tablets';
         renamed.body = 'Time for Take the tablets!';
         const plan = reconcile(
             [renamed],
-            [held('n1', 'myday:a:base', trigger)],
+            [held('n1', 'daily:a:base', trigger)],
             OWNED,
             NOW,
         );
@@ -248,15 +249,15 @@ export function runReconcileTests(): void {
 
     test('Changing only the buttons replaces the held reminder', () => {
         const trigger: WantedTrigger = { kind: 'daily', hour: 8, minute: 0 };
-        const rebuttoned = want('myday:a:base', trigger);
-        rebuttoned.categoryIdentifier = 'mydaysnooze';
+        const rebuttoned = want('daily:a:base', trigger);
+        rebuttoned.categoryIdentifier = 'dailysnooze';
         const plan = reconcile(
             [rebuttoned],
-            [held('n1', 'myday:a:base', trigger)],
+            [held('n1', 'daily:a:base', trigger)],
             OWNED,
             NOW,
         );
-        assertSame(plan.replace.map((one) => one.reminder.categoryIdentifier), ['mydaysnooze'], 'the new button set reaches the queue');
+        assertSame(plan.replace.map((one) => one.reminder.categoryIdentifier), ['dailysnooze'], 'the new button set reaches the queue');
         assertSame(plan.keep, 0, 'same key and time is not enough when the buttons moved');
     });
 }

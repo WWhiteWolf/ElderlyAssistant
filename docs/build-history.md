@@ -3747,6 +3747,43 @@ lines. Patrick said `pending.txt` can wait, so neither it nor
 notification-name sheet at maximum effort; #61-new's commit status is
 for Patrick to report there.
 
+## #62-new (2026-09-03): current notification names through the live road
+
+**The goal was to scrub stale notification names from the app.** The
+job was the sheet written at #61-new,
+`docs-ref/build-sheets/build-sheet-notification-names.md`.
+
+**One current name now travels the live road.** Daily, Weekly,
+Monthly, Quarterly, Yearly, and Appointments each have their own
+source. A snooze or delay uses a current source tied to the same
+page. A Quarterly or Yearly banner tap opens its own page instead of
+Monthly. The live categories are `routineactions`, `cadenceactions`,
+`appointmentsok`, and `shifteddayactions`. Old source aliases,
+categories, Pets and Orders ownership, and the dead `postpone1`
+handler came out. There is no compatibility layer.
+
+**The translator works the source out from the saved kind in one
+place.** The only spelling change is saved kind `oneTime` to
+notification source `onetime`. Shared dated rules still produce the
+exact source for Monthly, Quarterly, and Yearly.
+
+**Patrick ruled that Pets, Orders, and Look Ahead are out of the app
+and must not be left behind.** He has no old loads to keep anything
+for. Pets and Orders names came out of this job's tests. The dated
+Done log still saves under `lookahead_history`; that rename is the
+next session, through `_layout.tsx`, `CadenceListPage.tsx`, and
+`backup.tsx`.
+
+**Checks.** Mac suite 298 of 298, after Pets and Orders names came
+out of the tests. TypeScript still reports the same four starting
+errors in `leadmoments.ts` and `scheduler.ts`. Memory Test is
+unchanged. Siri, native names, and the three history storage keys
+were left as named later pieces, except the Look Ahead log now
+waiting in the handoff.
+
+**Session close.** The record was refreshed at Patrick's word.
+`pending.docx` was not regenerated.
+
 
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 

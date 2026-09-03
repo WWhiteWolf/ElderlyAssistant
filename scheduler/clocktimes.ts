@@ -1,6 +1,6 @@
 // The three Settings times of day, and the defaults when nothing is set.
 //
-// The new road uses these. Nothing live points at the To-Do reader for them.
+// The current one-list road uses these.
 
 import type { ClockTimes } from './leadmoments.ts';
 

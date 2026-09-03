@@ -1,13 +1,12 @@
 // The names a person sees on each page.
 //
-// File names, saved kinds, and banner sources stay as they are.
-// Live screens read from here so a rename is one change. Started at
-// #54-new; wired through headers, Home, + Add, and Daily's from-line
-// at #56-new.
+// Routes and saved kinds are separate from these visible labels.
+// Live screens read from here so a visible rename is one change. Started at
+// #54-new; wired through headers, Home, + Add, and Daily's from-line at
+// #56-new. The notification road reads the same labels.
 //
-// One Time is Appointments. Extended is Bucket List.
-// Look Ahead is only a leftover banner until it cycles off.
-// My Day, Pets, and To-Do are not live pages.
+// The saved kinds `oneTime` and `extended` appear as Appointments and Bucket
+// List.
 
 import type { ReminderKind } from '../modules/reminder-types';
 

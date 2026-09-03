@@ -1,9 +1,9 @@
 // The piece that turns a lead time into a moment on the clock.
 //
 // A shaped item says when it comes due. It does not say which moments to
-// actually arm. For the four screens built so far those were the same thing.
-// To-Do is different: each reminder on a task is a moment of its own, counted
-// back from the appointment. This is the counting.
+// actually arm. For the repeating kinds those were the same thing.
+// Appointments are different: each lead is a moment of its own, counted back
+// from the appointment. This is the counting.
 //
 // Every screen states its own lead times. An empty list means nothing to say.
 // There is no branch on a three-word trigger to interpret the list, and none
@@ -64,8 +64,8 @@ export function momentsFor(
     const moments: number[] = [];
     for (const lead of item.leadTimeList) {
         const at = momentFromLead(lead, base.moment, clockTimes);
-        // A moment at or before now has already gone. readToDo drops these
-        // today, and it must keep happening. stillwanted.ts cannot do it,
+        // A moment at or before now has already gone. Appointment reminders
+        // must keep dropping these. stillwanted.ts cannot do it,
         // because that block sees an item and this piece sees the moments.
         if (at > now) {
             moments.push(at);
@@ -578,10 +578,10 @@ function addCalendarDays(calendar: CivilCalendar, moment: number, count: number)
 /**
  * One lead time, as a moment, counted back from the base.
  *
- * Offset amounts are converted by multiplication, exactly as readToDo does
- * it today — minutes times sixty thousand, hours times three million six
- * hundred thousand, days times eighty-six million four hundred thousand.
- * Clock lead times step the calendar day, which is also what readToDo does.
+ * Offset amounts are converted by multiplication: minutes times sixty
+ * thousand, hours times three million six hundred thousand, and days times
+ * eighty-six million four hundred thousand. Clock lead times step the
+ * calendar day.
  */
 function momentFromLead(lead: LeadTime, base: number, clockTimes: ClockTimes): number {
     if (lead.leadFormCode === 'offset') {

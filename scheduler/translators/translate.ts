@@ -6,8 +6,8 @@
 // — all of that is answered further along, once, against the common shape. Its
 // whole job is to say what an item IS.
 //
-// There is one translator because nothing in the
-// engine goes by page. `stillwanted.ts` never mentions `sourceScreenCode`; it
+// There is one translator because nothing in the engine goes by page.
+// `stillwanted.ts` never mentions `sourceScreenCode`; it
 // branches on the capability bits, the state fields and `hasDueTimeBit`.
 // `armdepth.ts` answers one for every item. The screen code is carried
 // only so a tapped banner can be routed home. That is what the codes and the
@@ -62,13 +62,11 @@ export interface DueFields {
  * the second group is read from the saved item. Between them they are the whole
  * difference between kinds, which is why there is only one translator.
  */
-export interface ScreenRules<TSaved> {
+export interface ScreenRules {
     // ---- constants, the same for every item of the kind ----
 
-    /** The existing notification source used to route a tapped banner home. */
-    sourceScreenCode: SourceScreenCode;
     /**
-     * The unit they repeat in, left off for a one-time or extended item.
+     * The unit they repeat in, left off for an appointment or Bucket List item.
      *
      * The translator writes the repeat group from the row. It does not read a
      * repeat rule from the saved item.
@@ -79,7 +77,7 @@ export interface ScreenRules<TSaved> {
     /**
      * The weekday this saved item comes due on, when its kind has one.
      */
-    weekdayNumberOf?: (saved: TSaved) => number | undefined;
+    weekdayNumberOf?: (saved: ReminderItem) => number | undefined;
     /** The items can be marked done at all. */
     canBeDoneBit: boolean;
     /** They can be snoozed, postponed or delayed. */
@@ -89,18 +87,18 @@ export interface ScreenRules<TSaved> {
     /** The reminder stands for a group rather than one item. */
     standsForGroupBit: boolean;
     /** Which registered button set the banner carries. */
-    bannerButtonsCode: BannerButtonsCode;
+    bannerButtonsCode?: BannerButtonsCode;
 
     // ---- read from the saved item ----
 
-    idOf: (saved: TSaved) => string;
-    nameOf: (saved: TSaved) => string;
-    isDoneOf: (saved: TSaved) => boolean;
-    pushedBackStampOf: (saved: TSaved) => number | undefined;
-    dueOf: (saved: TSaved) => DueFields;
-    leadTimesOf: (saved: TSaved) => LeadTime[];
-    bannerTitleTextOf: (saved: TSaved) => string;
-    bannerBodyTextOf: (saved: TSaved) => string;
+    idOf: (saved: ReminderItem) => string;
+    nameOf: (saved: ReminderItem) => string;
+    isDoneOf: (saved: ReminderItem) => boolean;
+    pushedBackStampOf: (saved: ReminderItem) => number | undefined;
+    dueOf: (saved: ReminderItem) => DueFields;
+    leadTimesOf: (saved: ReminderItem) => LeadTime[];
+    bannerTitleTextOf: (saved: ReminderItem) => string;
+    bannerBodyTextOf: (saved: ReminderItem) => string;
 }
 
 // ---------------------------------------------------------------------------
@@ -110,7 +108,7 @@ export interface ScreenRules<TSaved> {
 /**
  * Turn one saved reminder into the common shape the engine reads.
  */
-function translateOne<TSaved>(rules: ScreenRules<TSaved>, saved: TSaved): ShapedItem {
+function translateOne(rules: ScreenRules, saved: ReminderItem): ShapedItem {
     const due = rules.dueOf(saved);
     const pushedBackToStamp = rules.pushedBackStampOf(saved);
     const weekdayNumber = rules.weekdayNumberOf?.(saved);
@@ -124,7 +122,7 @@ function translateOne<TSaved>(rules: ScreenRules<TSaved>, saved: TSaved): Shaped
     return {
         // ---- what the item is ----
 
-        sourceScreenCode: rules.sourceScreenCode,
+        sourceScreenCode: sourceForKind(saved.kind),
         itemIdText: rules.idOf(saved),
         itemNameText: rules.nameOf(saved),
 
@@ -177,8 +175,15 @@ function translateOne<TSaved>(rules: ScreenRules<TSaved>, saved: TSaved): Shaped
         // include the item's name or cadence in their banner words.
         bannerTitleText: rules.bannerTitleTextOf(saved),
         bannerBodyText: rules.bannerBodyTextOf(saved),
-        bannerButtonsCode: rules.bannerButtonsCode,
+        ...(rules.bannerButtonsCode !== undefined
+            ? { bannerButtonsCode: rules.bannerButtonsCode }
+            : {}),
     };
+}
+
+/** The one spelling change between a saved kind and a notification source. */
+function sourceForKind(kind: ReminderItem['kind']): SourceScreenCode {
+    return kind === 'oneTime' ? 'onetime' : kind;
 }
 
 // ---------------------------------------------------------------------------
@@ -196,7 +201,7 @@ const atTheMomentItself: LeadTime[] = [
 ];
 
 /**
- * The banner's due sentence for a One Time appointment.
+ * The banner's due sentence for an appointment.
  */
 function twoDigits(n: number): string {
     return n < 10 ? `0${n}` : `${n}`;
@@ -233,8 +238,7 @@ function leadTimesFromReminders(item: ReminderItem): LeadTime[] {
     });
 }
 
-const dailyCadenceRules: ScreenRules<ReminderItem> = {
-    sourceScreenCode: 'myday',
+const dailyCadenceRules: ScreenRules = {
     repeatUnitCode: 'day',
     repeatIntervalCount: 1,
     canBeDoneBit: true,
@@ -255,8 +259,7 @@ const dailyCadenceRules: ScreenRules<ReminderItem> = {
     bannerBodyTextOf: (item) => `Time for ${item.label}!`,
 };
 
-const weeklyCadenceRules: ScreenRules<ReminderItem> = {
-    sourceScreenCode: 'myweek',
+const weeklyCadenceRules: ScreenRules = {
     repeatUnitCode: 'week',
     repeatIntervalCount: 1,
     canBeDoneBit: true,
@@ -285,8 +288,7 @@ const weeklyCadenceRules: ScreenRules<ReminderItem> = {
     bannerBodyTextOf: (item) => `Time for ${item.label}!`,
 };
 
-const datedCadenceRules: ScreenRules<ReminderItem> = {
-    sourceScreenCode: 'lookahead',
+const datedCadenceRules: ScreenRules = {
     canBeDoneBit: false,
     canBePushedBackBit: true,
     doneEndsItemBit: false,
@@ -295,7 +297,7 @@ const datedCadenceRules: ScreenRules<ReminderItem> = {
         item.kind === 'yearly' ? 'Yearly'
         : item.kind === 'quarterly' ? 'Quarterly'
         : 'Monthly',
-    bannerButtonsCode: 'lookaheadactions',
+    bannerButtonsCode: 'cadenceactions',
     idOf: (item) => item.id,
     nameOf: (item) => item.label,
     isDoneOf: () => false,
@@ -330,13 +332,12 @@ const datedCadenceRules: ScreenRules<ReminderItem> = {
     bannerBodyTextOf: (item) => `Time for ${item.label}!`,
 };
 
-const oneTimeCadenceRules: ScreenRules<ReminderItem> = {
-    sourceScreenCode: 'todo',
+const oneTimeCadenceRules: ScreenRules = {
     canBeDoneBit: true,
     canBePushedBackBit: false,
     doneEndsItemBit: true,
     standsForGroupBit: false,
-    bannerButtonsCode: 'todook',
+    bannerButtonsCode: 'appointmentsok',
     idOf: (item) => item.id,
     nameOf: (item) => item.label,
     isDoneOf: (item) => !!item.completed,
@@ -378,13 +379,11 @@ const oneTimeCadenceRules: ScreenRules<ReminderItem> = {
     },
 };
 
-const extendedCadenceRules: ScreenRules<ReminderItem> = {
-    sourceScreenCode: 'todo',
+const extendedCadenceRules: ScreenRules = {
     canBeDoneBit: true,
     canBePushedBackBit: false,
     doneEndsItemBit: true,
     standsForGroupBit: false,
-    bannerButtonsCode: 'todook',
     idOf: (item) => item.id,
     nameOf: (item) => item.label,
     isDoneOf: (item) => !!item.completed,
@@ -395,25 +394,22 @@ const extendedCadenceRules: ScreenRules<ReminderItem> = {
     bannerBodyTextOf: () => '',
 };
 
-function rulesForKind(kind: ReminderItem['kind']): ScreenRules<ReminderItem> | null {
-    if (kind === 'daily') return dailyCadenceRules;
-    if (kind === 'weekly') return weeklyCadenceRules;
-    if (kind === 'monthly' || kind === 'quarterly' || kind === 'yearly') {
-        return datedCadenceRules;
-    }
-    if (kind === 'oneTime') return oneTimeCadenceRules;
-    if (kind === 'extended') return extendedCadenceRules;
-    return null;
-}
+const rulesByKind: Record<ReminderItem['kind'], ScreenRules> = {
+    daily: dailyCadenceRules,
+    weekly: weeklyCadenceRules,
+    monthly: datedCadenceRules,
+    quarterly: datedCadenceRules,
+    yearly: datedCadenceRules,
+    oneTime: oneTimeCadenceRules,
+    extended: extendedCadenceRules,
+};
 
 /** Turn the one saved list into shaped items, in the order given. */
 export function translateReminderItems(items: ReminderItem[], now: number): ShapedItem[] {
     void now;
     const shaped: ShapedItem[] = [];
     for (const one of items) {
-        const rules = rulesForKind(one.kind);
-        if (!rules) continue;
-        shaped.push(withSavedOptions(one, translateOne(rules, one)));
+        shaped.push(withSavedOptions(one, translateOne(rulesByKind[one.kind], one)));
     }
     return shaped;
 }

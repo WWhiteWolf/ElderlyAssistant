@@ -42,7 +42,7 @@ export function runHealthTests(): void {
     });
 
     test('A list that could not be read speaks', () => {
-        assert(faultSpeaks({ kind: 'list', listKey: 'my_routine' }), 'expected it to speak');
+        assert(faultSpeaks({ kind: 'list', listKey: 'reminder_items' }), 'expected it to speak');
     });
 
     test('A run that stopped part-way speaks', () => {
@@ -50,7 +50,7 @@ export function runHealthTests(): void {
     });
 
     test('The day failing to roll over speaks', () => {
-        assert(faultSpeaks({ kind: 'reset', listKey: 'my_routine' }), 'expected it to speak');
+        assert(faultSpeaks({ kind: 'reset', listKey: 'reminder_items' }), 'expected it to speak');
     });
 
     test("Yesterday's banners staying up stays quiet", () => {
@@ -59,10 +59,10 @@ export function runHealthTests(): void {
 
     // The sentences.
 
-    test('A screen is named the way the home page names it', () => {
+    test('Each live scheduler record has its current name', () => {
         assertSame(
-            [screenName('my_routine'), screenName('pets_feeds'), screenName('todo_tasks')],
-            ['My Day', 'My Pets Day', 'To-Do'],
+            [screenName('reminder_items'), screenName('weekly'), screenName('memtest_session')],
+            ['reminders', 'Weekly', 'Memory Test'],
             'the wrong names',
         );
     });
@@ -83,10 +83,10 @@ export function runHealthTests(): void {
         assert(said.includes('They are not there'), said);
     });
 
-    test('An unreadable list names the screen, never the storage key', () => {
-        const said = faultSentence({ kind: 'list', listKey: 'week_routine' });
-        assert(said.includes('My Week'), said);
-        assert(!said.includes('week_routine'), said);
+    test('An unreadable list names the page, never the storage key', () => {
+        const said = faultSentence({ kind: 'list', listKey: 'weekly' });
+        assert(said.includes('Weekly'), said);
+        assert(!said.includes('weekly'), said);
         assert(said.includes('left as they are'), 'it must not claim the reminders were taken off');
     });
 
@@ -107,16 +107,16 @@ export function runHealthTests(): void {
 
     test('Two different lists are two different faults', () => {
         assert(
-            faultSignature({ kind: 'list', listKey: 'my_routine' })
-                !== faultSignature({ kind: 'list', listKey: 'pets_feeds' }),
+            faultSignature({ kind: 'list', listKey: 'reminder_items' })
+                !== faultSignature({ kind: 'list', listKey: 'memtest_session' }),
             'expected different names',
         );
     });
 
     test('A quiet fault and a loud one about the same list are not confused', () => {
         assert(
-            faultSignature({ kind: 'list', listKey: 'my_routine' })
-                !== faultSignature({ kind: 'reset', listKey: 'my_routine' }),
+            faultSignature({ kind: 'list', listKey: 'reminder_items' })
+                !== faultSignature({ kind: 'reset', listKey: 'reminder_items' }),
             'expected different names',
         );
     });
@@ -162,7 +162,7 @@ export function runHealthTests(): void {
     });
 
     test('A sweep fault is left out when a reset fault speaks', () => {
-        const notice = noticeFor(run([{ kind: 'sweep' }, { kind: 'reset', listKey: 'my_routine' }]), null, TODAY);
+        const notice = noticeFor(run([{ kind: 'sweep' }, { kind: 'reset', listKey: 'reminder_items' }]), null, TODAY);
         assert(notice!.lines.length === 1, `expected one line, got ${notice!.lines.length}`);
     });
 
@@ -180,13 +180,13 @@ export function runHealthTests(): void {
 
     test('Permission is said first, then the missing reminders, then the run', () => {
         const notice = noticeFor(
-            run([{ kind: 'stopped' }, { kind: 'list', listKey: 'my_routine' }, { kind: 'create', count: 1 }, { kind: 'permission' }]),
+            run([{ kind: 'stopped' }, { kind: 'list', listKey: 'reminder_items' }, { kind: 'create', count: 1 }, { kind: 'permission' }]),
             null,
             TODAY,
         );
         assertSame(
             notice!.signatures,
-            ['permission', 'create', 'list:my_routine', 'stopped'],
+            ['permission', 'create', 'list:reminder_items', 'stopped'],
             'the wrong order',
         );
     });
@@ -240,23 +240,23 @@ export function runHealthTests(): void {
     // The reminders that never reached him.
 
     test('An item left undone yesterday is a miss', () => {
-        const misses = missesForRollover([item()], 'my_routine', YESTERDAY, false);
+        const misses = missesForRollover([item()], 'reminder_items', YESTERDAY, false);
         assertSame(
             misses,
-            [{ itemId: '1', label: 'Take pills', listKey: 'my_routine', forDay: YESTERDAY }],
+            [{ itemId: '1', label: 'Take pills', listKey: 'reminder_items', forDay: YESTERDAY }],
             'expected one miss',
         );
     });
 
     test('An item done yesterday is not a miss', () => {
-        const misses = missesForRollover([item({ completed: true })], 'my_routine', YESTERDAY, false);
+        const misses = missesForRollover([item({ completed: true })], 'reminder_items', YESTERDAY, false);
         assert(misses.length === 0, 'expected no miss');
     });
 
     test('An item with no time of day can miss nothing', () => {
         const misses = missesForRollover(
             [item({ hour: null, minute: null })],
-            'my_routine',
+            'reminder_items',
             YESTERDAY,
             false,
         );
@@ -264,14 +264,14 @@ export function runHealthTests(): void {
     });
 
     test('After a stretch away even a checked item is a miss', () => {
-        const misses = missesForRollover([item({ completed: true })], 'my_routine', YESTERDAY, true);
+        const misses = missesForRollover([item({ completed: true })], 'reminder_items', YESTERDAY, true);
         assert(misses.length === 1, 'expected the miss');
     });
 
     test('A stretch away still gives one miss per item, dated yesterday', () => {
         const misses = missesForRollover(
             [item({ id: '1' }), item({ id: '2' })],
-            'my_routine',
+            'reminder_items',
             YESTERDAY,
             true,
         );
@@ -279,20 +279,20 @@ export function runHealthTests(): void {
     });
 
     test('A fresh miss replaces the one already waiting for that item', () => {
-        const waiting = [{ itemId: '1', label: 'Take pills', listKey: 'my_routine', forDay: LAST_WEEK }];
-        const merged = mergeMisses(waiting, missesForRollover([item()], 'my_routine', YESTERDAY, false));
+        const waiting = [{ itemId: '1', label: 'Take pills', listKey: 'reminder_items', forDay: LAST_WEEK }];
+        const merged = mergeMisses(waiting, missesForRollover([item()], 'reminder_items', YESTERDAY, false));
         assertSame(merged.map((m) => m.forDay), [YESTERDAY], 'expected the newer one only');
     });
 
-    test('The same item on two screens is two misses', () => {
-        const waiting = [{ itemId: '1', label: 'Feed', listKey: 'pets_feeds', forDay: YESTERDAY }];
-        const merged = mergeMisses(waiting, missesForRollover([item()], 'my_routine', YESTERDAY, false));
+    test('The same item under two live records is two misses', () => {
+        const waiting = [{ itemId: '1', label: 'Take pills', listKey: 'weekly', forDay: YESTERDAY }];
+        const merged = mergeMisses(waiting, missesForRollover([item()], 'reminder_items', YESTERDAY, false));
         assert(merged.length === 2, `expected two, got ${merged.length}`);
     });
 
     test("A miss from yesterday is said as 'yesterday'", () => {
         const said = missSentence(
-            { itemId: '1', label: 'Take pills', listKey: 'my_routine', forDay: YESTERDAY },
+            { itemId: '1', label: 'Take pills', listKey: 'reminder_items', forDay: YESTERDAY },
             YESTERDAY,
         );
         assert(said === 'Take pills from yesterday is hanging!', said);
@@ -300,21 +300,21 @@ export function runHealthTests(): void {
 
     test('An older miss is said by its date', () => {
         const said = missSentence(
-            { itemId: '1', label: 'Take pills', listKey: 'my_routine', forDay: LAST_WEEK },
+            { itemId: '1', label: 'Take pills', listKey: 'reminder_items', forDay: LAST_WEEK },
             YESTERDAY,
         );
         assert(said === `Take pills from ${LAST_WEEK} is hanging!`, said);
     });
 
     test('A miss raises the pop-up on its own, with no fault at all', () => {
-        const misses = missesForRollover([item()], 'my_routine', YESTERDAY, false);
+        const misses = missesForRollover([item()], 'reminder_items', YESTERDAY, false);
         const notice = noticeFor(run(), null, TODAY, misses, YESTERDAY);
         assert(notice !== null, 'expected a notice');
         assertSame(notice!.lines, ['Take pills from yesterday is hanging!'], 'the wrong line');
     });
 
     test('The faults are said before the misses', () => {
-        const misses = missesForRollover([item()], 'my_routine', YESTERDAY, false);
+        const misses = missesForRollover([item()], 'reminder_items', YESTERDAY, false);
         const notice = noticeFor(run([{ kind: 'permission' }]), null, TODAY, misses, YESTERDAY);
         assert(notice!.lines.length === 2, `expected two lines, got ${notice!.lines.length}`);
         assert(notice!.lines[1].includes('hanging'), 'expected the miss last');
@@ -322,15 +322,15 @@ export function runHealthTests(): void {
 
     test('A miss is shown even when its fault was already tapped away today', () => {
         const seen = markSeen(null, ['permission'], TODAY);
-        const misses = missesForRollover([item()], 'my_routine', YESTERDAY, false);
+        const misses = missesForRollover([item()], 'reminder_items', YESTERDAY, false);
         const notice = noticeFor(run([{ kind: 'permission' }]), seen, TODAY, misses, YESTERDAY);
         assertSame(notice!.lines, ['Take pills from yesterday is hanging!'], 'expected the miss alone');
     });
 
     test('The misses shown are named so they can be cleared for good', () => {
-        const misses = missesForRollover([item()], 'my_routine', YESTERDAY, false);
+        const misses = missesForRollover([item()], 'reminder_items', YESTERDAY, false);
         const notice = noticeFor(run(), null, TODAY, misses, YESTERDAY);
-        assertSame(notice!.missIds, ['my_routine:1'], 'the wrong names');
+        assertSame(notice!.missIds, ['reminder_items:1'], 'the wrong names');
     });
 
     test('No faults and no misses is still silence', () => {

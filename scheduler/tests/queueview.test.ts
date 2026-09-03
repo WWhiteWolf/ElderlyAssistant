@@ -32,8 +32,8 @@ function moment(day: number, hour: number, minute = 0): number {
 function entry(changes: Partial<QueueEntry> = {}): QueueEntry {
     return {
         identifier: 'phone-1',
-        key: 'myday:1:base',
-        source: 'myday',
+        key: 'daily:1:base',
+        source: 'daily',
         label: 'Morning pills',
         itemId: '1',
         title: 'Daily Routine',
@@ -128,9 +128,9 @@ export function runQueueViewTests(): void {
         assertSame(toPending(entry({ source: 'somethingelse' }), NOW), null, 'expected nothing');
     });
 
-    test('A one-off source is named as the page and what made it', () => {
-        const row = toPending(entry({ source: 'petssnooze' }), NOW);
-        assertSame(row?.page, 'Pets — snoozed', 'expected the snooze named');
+    test('A Daily snooze is named separately from its base reminder', () => {
+        const row = toPending(entry({ source: 'dailysnooze' }), NOW);
+        assertSame(row?.page, 'Daily — snoozed', 'expected the snooze named');
     });
 
     test('A reminder with no name of its own still makes a readable row', () => {
@@ -139,10 +139,10 @@ export function runQueueViewTests(): void {
     });
 
     test('A reminder whose firing time cannot be read keeps its name but has no times', () => {
-        const row = toPending(entry({ source: 'myweekpostpone', trigger: null }), NOW);
+        const row = toPending(entry({ source: 'weeklysnooze', trigger: null }), NOW);
         assertSame(
             { page: row?.page, label: row?.label, nextDue: row?.nextDue, lastDue: row?.lastDue },
-            { page: 'Weekly — postponed', label: 'Morning pills', nextDue: null, lastDue: null },
+            { page: 'Weekly — snoozed', label: 'Morning pills', nextDue: null, lastDue: null },
             'expected a named row with no times',
         );
     });
@@ -158,7 +158,7 @@ export function runQueueViewTests(): void {
 
     test('A weekly reminder is named Weekly', () => {
         assertSame(
-            toPending(entry({ source: 'myweek', title: 'Weekly Chore' }), NOW)?.page,
+            toPending(entry({ source: 'weekly', title: 'Weekly Chore' }), NOW)?.page,
             'Weekly',
             'expected Weekly',
         );
@@ -166,49 +166,53 @@ export function runQueueViewTests(): void {
 
     test('An Appointments reminder is named Appointments', () => {
         assertSame(
-            toPending(entry({ source: 'todo', title: '📋 Reminder: Dentist' }), NOW)?.page,
+            toPending(entry({ source: 'onetime', title: '📋 Reminder: Dentist' }), NOW)?.page,
             'Appointments',
             'expected Appointments',
         );
     });
 
-    test('A Bucket List reminder is named Bucket List', () => {
+    test('Bucket List has no notification row', () => {
         assertSame(
-            toPending(entry({ source: 'extended', title: '📋 Reminder: Paris' }), NOW)?.page,
-            'Bucket List',
-            'expected Bucket List',
+            toPending(entry({ source: 'extended', title: '📋 Reminder: Paris' }), NOW),
+            null,
+            'Bucket List produces no reminder',
         );
     });
 
-    test('A Monthly reminder takes its page name from the banner heading', () => {
+    test('A Monthly reminder takes its page name from its source', () => {
         assertSame(
-            toPending(entry({ source: 'lookahead', title: 'Monthly' }), NOW)?.page,
+            toPending(entry({ source: 'monthly', title: 'Different heading' }), NOW)?.page,
             'Monthly',
             'expected Monthly',
         );
     });
 
-    test('A Quarterly reminder takes its page name from the banner heading', () => {
+    test('A Quarterly reminder takes its page name from its source', () => {
         assertSame(
-            toPending(entry({ source: 'lookahead', title: 'Quarterly' }), NOW)?.page,
+            toPending(entry({ source: 'quarterly', title: 'Different heading' }), NOW)?.page,
             'Quarterly',
             'expected Quarterly',
         );
     });
 
-    test('A Yearly reminder takes its page name from the banner heading', () => {
+    test('A Yearly reminder takes its page name from its source', () => {
         assertSame(
-            toPending(entry({ source: 'lookahead', title: 'Yearly' }), NOW)?.page,
+            toPending(entry({ source: 'yearly', title: 'Different heading' }), NOW)?.page,
             'Yearly',
             'expected Yearly',
         );
     });
 
-    test('A delayed Monthly reminder keeps Monthly in the name', () => {
+    test('Each delayed cadence keeps its own page name', () => {
         assertSame(
-            toPending(entry({ source: 'lookaheaddelay', title: 'Monthly' }), NOW)?.page,
-            'Monthly — delayed',
-            'expected Monthly delayed',
+            [
+                toPending(entry({ source: 'monthlydelay' }), NOW)?.page,
+                toPending(entry({ source: 'quarterlydelay' }), NOW)?.page,
+                toPending(entry({ source: 'yearlydelay' }), NOW)?.page,
+            ],
+            ['Monthly — delayed', 'Quarterly — delayed', 'Yearly — delayed'],
+            'expected each delayed cadence named directly',
         );
     });
 

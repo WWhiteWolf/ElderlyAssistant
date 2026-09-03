@@ -16,12 +16,14 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
-**#61-new is closed.** The hidden old pages and dead reader road are
-gone; Mac suite 300 of 300. The self-contained notification-name job
-for the fresh session is
-`docs-ref/build-sheets/build-sheet-notification-names.md`. Full story
-in `build-history.md`. Patrick will report the commit status at the
-next opening.
+**#62-new is closed.** Current names now travel the live notification
+road: Daily, Weekly, Monthly, Quarterly, Yearly, and Appointments each
+have their own source, and a Quarterly or Yearly banner tap opens its
+own page. Mac suite 298 of 298. Not on the phone. Full story in
+`build-history.md`.
+
+**#61-new is closed and committed** (Patrick, #62-new). The hidden old
+pages and dead reader road are gone. Full story in `build-history.md`.
 
 **#59-new is closed and committed** (Patrick, #60-new). Built
 Pending 4 and Pending 3, spinner consistency, and AM/PM check on Save.
@@ -60,24 +62,16 @@ Time as well as Daily. Monthly, Quarterly, and Yearly Done leave a
 tick; the saved date is not advanced. Extended has no day. Not on
 the phone yet.
 
-**#53-new is committed** (Patrick, #54-new). Scheduled Reminders rows name Daily, Weekly, Monthly,
-Quarterly, Yearly, and One Time. Monthly, Quarterly, and Yearly
-take the name from the banner heading, because they share one
-source. A leftover banner without one of those headings still
-says Look Ahead until it cycles off. Siri still says My Day
-Item. Unused old files still use the old names and are not on
-screen. **Daily and Weekly through Extended share one list row**
-(`components/ReminderItemRow.tsx`). Daily still composes its
-name; the cadence pages still pass the when-line. Mac suite
-466 of 466. Sit tests finished at #55-new.
+**#53-new is committed** (Patrick, #54-new). Daily and Weekly through
+Extended share one list row (`components/ReminderItemRow.tsx`). Sit
+tests finished at #55-new.
 
 **#52-new through #45-new are committed.** Landscape lock, Sit load,
 calendar, engine cutover — stories in `build-history.md`.
 
-**He is living with this build on the phone.** Old reader files stay
-until each replacement is proved and are not called. **A banner while
+**He is living with this build on the phone.** **A banner while
 Memory is on screen** asks to show, the same way Timer already
-does, at app start (#51-new, missing until then).
+does, at app start (#51-new).
 
 **Daily through Options are built.** Pages, banners and Siri write
 `reminder_items` through one save. Dual-write is gone. **The morning
@@ -104,9 +98,9 @@ Done do not advance the saved date. Extended has no banners; New and
 Edit have only the name, an optional note, and Done. Cancel closes and
 makes no change, including after + OPT.
 
-**Mac suite 489 of 489.** TypeScript currently reports four errors in
+**Mac suite 298 of 298.** TypeScript currently reports four errors in
 `scheduler/leadmoments.ts` and `scheduler/scheduler.ts`. They were
-outside #60-new and have not been examined.
+outside this job and have not been examined.
 
 ### The pages, settled by Patrick at #30-new
 
@@ -115,8 +109,8 @@ outside #60-new and have not been examined.
   that falls on today shows there with the every-day items. A dateless
   item has no day, so it does not.
 - **Weekly** — My Week.
-- **Monthly**, **Quarterly**, **Yearly** — Look Ahead's repeats, split by
-  how often. Look Ahead is not a once-only list. **A six-month item
+- **Monthly**, **Quarterly**, **Yearly** — dated repeats, split by
+  how often. **A six-month item
   lives on Quarterly** (Patrick, #33-new), still every six months.
 - **Appointments** (saved kind `oneTime`) — a date, no repeat, carrying To-Do's Reminders before
   chips. Any and all of those chips can be on at once. **There is no
@@ -144,7 +138,7 @@ outside #60-new and have not been examined.
   Holidays is the before-or-after. Reminders-before is
   not a row; it already lives on One Time. Each row opens that case.
 
-**On a view page, each item has Done and Snooze, and a tap on the tile opens the edit page.** Daily is the same: Snooze, Done, and Done that undoes (Patrick, #33-new, looking at Daily). Swipe still deletes. A tap on the name opens the edit page. Hold the name and slide to reorder (Patrick, #33-new). **Daily now carries My Day's log** — the same `my_history` list, written when Done is tapped, titled Log (Patrick, #36-new: none of the pages say My). **The My Day page is gone** (Patrick, #33-new). The `/myday` hop is not kept (Patrick, #35-new). The engine still names those reminders `myday`, so banners still open Daily.
+**On a view page, each item has Done and Snooze, and a tap on the tile opens the edit page.** Daily is the same: Snooze, Done, and Done that undoes (Patrick, #33-new, looking at Daily). Swipe still deletes. A tap on the name opens the edit page. Hold the name and slide to reorder (Patrick, #33-new). **Daily now carries My Day's log** — the same `my_history` list, written when Done is tapped, titled Log (Patrick, #36-new: none of the pages say My). **The My Day page is gone** (Patrick, #33-new). The `/myday` hop is not kept (Patrick, #35-new). Daily banners open Daily.
 
 **An item lives on one page; Daily may also show another page's item (Patrick, #32-new).**
 
@@ -203,10 +197,9 @@ needs its own small part. Patrick's own picture was of the user facing the
 huge input page. The page built at #29-new came out at #35-new.
 
 **The engine is finished and the one list goes through it.** Depth is
-one for every kind. The old readers are still in the project and the
-live run does not call them. **Memory Test is temporary and coming
-out** (Patrick, #51-new). **Timer is isolated deliberately** (Patrick,
-#51-new). Neither is a reason to keep the old reminder readers.
+one for every kind. The old readers came out at #61-new. **Memory Test
+is temporary and coming out** (Patrick, #51-new). **Timer is isolated
+deliberately** (Patrick, #51-new).
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -256,26 +249,27 @@ They are kept here because they still decide things.
 
 ## What is open in front of it
 
-**Next fresh session:** build
-`docs-ref/build-sheets/build-sheet-notification-names.md`. It replaces
-the retired source and category names through the live notification
-road and makes Monthly, Quarterly and Yearly banners return to their
-own pages. Storage and history names, and Siri and native names, are
-separate later pieces.
+**Next fresh session:** Monthly, Quarterly, and Yearly each get their
+own Done log. The leftover Look Ahead log (`lookahead_history`) comes
+out; it is not renamed. Patrick, #62-new: there is no Look Ahead, and
+there are no old loads to keep. The live path is `app/_layout.tsx`,
+`components/CadenceListPage.tsx`, and `app/backup.tsx`, which also still
+lists the old `lookahead_items` key. No compatibility layer. Other
+storage names, and Siri and native names, remain later pieces.
 
-**Nothing from #56-new through #59-new is on the phone yet.** Those are
+**Nothing from #56-new through #62-new is on the phone yet.** Those are
 later refinements; they do not reset the replacement pages' phone proof.
 
 **The paperwork half** (Patrick, #52-new): a thorough design spec
-(Pending 3; the rename belongs there), a User Guide from that or
+(Pending 2; the rename belongs there), a User Guide from that or
 after it, on his website, and a way in the app to find it (Pending
-4), a Feedback button similar to Mystery (Pending 5), a file for
-what testing has covered and will cover (Pending 6; during-build
+3), a Feedback button similar to Mystery (Pending 4), a file for
+what testing has covered and will cover (Pending 5; during-build
 tests are thrown away).
 
 **Memory Test is temporary and coming out. Timer is isolated
-deliberately.** Neither belongs to the notification-naming build
-(Patrick, #51-new).
+deliberately.** Neither belongs to giving those three pages their own
+logs.
 
 **The build sheets are the pattern for this work** — each self-contained,
 carrying the answers themselves rather than pointing at other documents,
@@ -330,9 +324,7 @@ task, so the phone can top the queue up on days the app is not opened.
 None of its pieces are installed. It can only ever sit on top of arming
 ahead, because the days it fails are the days the arming is for.
 
-**Still unread**: `app/memorytest.tsx`; and the test files other than My
-Day's, Pets' and My Week's. The old Look Ahead and To-Do screens went
-out unread at #35-new.
+**Still unread**: `app/memorytest.tsx`.
 
 **Timer is not working right** (Patrick, #5-new), said in passing and not
 examined. It is deliberately outside the module, and the whole Timer

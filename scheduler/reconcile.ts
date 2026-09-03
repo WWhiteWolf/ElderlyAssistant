@@ -18,7 +18,7 @@ export interface QueueEntry {
     // Our name for it, when it is one of ours. Reminders left over from the
     // old way of scheduling have none.
     key?: string;
-    // Which screen it belongs to.
+    // Which current reminder source it belongs to.
     source?: string;
     // When it fires. Null when it could not be read.
     trigger: WantedTrigger | null;
@@ -71,15 +71,17 @@ export const ROOM_FOR_OTHERS = 8;
  * on the phone. They are unknown, not empty.
  */
 export const REMINDER_ITEM_SOURCES = [
-    'myday',
-    'mydaysnooze',
-    'pets',
-    'petssnooze',
-    'myweek',
-    'myweekpostpone',
-    'lookahead',
-    'lookaheaddelay',
-    'todo',
+    'daily',
+    'dailysnooze',
+    'weekly',
+    'weeklysnooze',
+    'monthly',
+    'monthlydelay',
+    'quarterly',
+    'quarterlydelay',
+    'yearly',
+    'yearlydelay',
+    'onetime',
 ];
 
 /** Sources whose held reminders must be left untouched after a failed read. */
@@ -127,7 +129,7 @@ export function nextFireTime(trigger: WantedTrigger, now: number): number {
  * changes one item touches one reminder instead of tearing the whole set down
  * and building it again.
  *
- * `ownedSources` says which screens the scheduler answers for. A reminder from
+ * `ownedSources` says which sources the scheduler answers for. A reminder from
  * anywhere else is never cancelled and never counted as ours.
  */
 export function reconcile(

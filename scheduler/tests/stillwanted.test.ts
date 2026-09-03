@@ -20,7 +20,7 @@ function at(year: number, month: number, day: number, hour: number, minute: numb
  */
 function item(changes: Partial<ShapedItem> = {}): ShapedItem {
     return {
-        sourceScreenCode: 'myday',
+        sourceScreenCode: 'daily',
         itemIdText: 'a1',
         itemNameText: 'Take the tablets',
         repeatUnitCode: 'day',
@@ -96,10 +96,10 @@ export function runStillWantedTests(): void {
     });
 
     test('An item that cannot be marked done is never treated as done', () => {
-        // Look Ahead has no done field at all, so its done state is always
+        // A dated cadence has no done field at all, so its done state is always
         // false and this is what keeps it out of the question.
         const said = isStillWanted(item({
-            sourceScreenCode: 'lookahead',
+            sourceScreenCode: 'monthly',
             canBeDoneBit: false,
             isDoneBit: true,
         }), NOW);
@@ -216,10 +216,10 @@ export function runStillWantedTests(): void {
     });
 
     test('A push-back on an item that cannot be pushed back is ignored', () => {
-        // A To-Do appointment: it cannot be snoozed, so a stamp on it means
+        // An appointment: it cannot be snoozed, so a stamp on it means
         // nothing, and no exception anywhere is needed to say so.
         const said = isStillWanted(item({
-            sourceScreenCode: 'todo',
+            sourceScreenCode: 'onetime',
             canBePushedBackBit: false,
             pushedBackToStamp: at(2026, 5, 1, 22, 0),
         }), NOW);
@@ -228,9 +228,9 @@ export function runStillWantedTests(): void {
 
     // ---- the kinds answering as a rule rather than an exception ----
 
-    test('A To-Do appointment with neither bit set is simply wanted', () => {
+    test('An appointment with neither bit set is simply wanted', () => {
         const said = isStillWanted(item({
-            sourceScreenCode: 'todo',
+            sourceScreenCode: 'onetime',
             dueMoment: at(2026, 5, 3, 14, 0),
             canBeDoneBit: false,
             canBePushedBackBit: false,
@@ -243,10 +243,10 @@ export function runStillWantedTests(): void {
     });
 
     test('A group reminder is answered no differently from any other', () => {
-        // To-Do's eight o'clock background banner stands for all the tasks at
-        // once. The bit is there to be read further along, not here.
+        // A group reminder stands for several items at once. The bit is there
+        // to be read further along, not here.
         const said = isStillWanted(item({
-            sourceScreenCode: 'todo',
+            sourceScreenCode: 'onetime',
             itemIdText: 'background',
             standsForGroupBit: true,
         }), NOW);

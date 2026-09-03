@@ -98,61 +98,16 @@ export default function RootLayout() {
     return () => sub.remove();
   }, []);
 
-  // Register the My Day snooze category once, so its notifications can show
-  // Snooze buttons (15 / 30 / 60 min). Category id has no ':' or '-' per Expo docs.
+  // Register the four current banner categories once. Category ids have no
+  // ':' or '-' per Expo's rules.
   useEffect(() => {
     // Register the categories SEQUENTIALLY (await each). Expo registers a
     // category via a read-modify-write of the whole category set; firing all
     // four concurrently can race on a cold first-launch cache and drop some
-    // (worked in the Simulator, lost myweekactions on device). Awaiting each
-    // call makes every read-modify-write finish before the next begins.
+    // on the device. Awaiting each call makes every read-modify-write finish
+    // before the next begins.
     (async () => {
-      await Notifications.setNotificationCategoryAsync('mydaysnooze', [
-        { identifier: 'done', buttonTitle: 'Done' },
-        { identifier: 'snooze15', buttonTitle: 'Snooze 15 min' },
-        { identifier: 'snooze30', buttonTitle: 'Snooze 30 min' },
-        { identifier: 'snooze60', buttonTitle: 'Snooze 60 min' },
-      ]);
-      // To-Do banners carry ONE button (Patrick, #56 — softens #40's
-      // buttonless call after living with it): press-and-hold shows just OK,
-      // which closes the banner without opening the app (the 'ok' action is
-      // a no-op in the handler below). A To-Do has no need of a snooze
-      // (Patrick), so the banner carries that single OK button only.
-      // The old 'todosnooze' category (OK + Done) is not registered anywhere,
-      // so no To-Do banner can show a Done or a Snooze button. The handler
-      // below therefore answers no To-Do button at all: those two branches
-      // could never run and have been taken out.
-      await Notifications.setNotificationCategoryAsync('todook', [
-        { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
-      ]);
-      // My Week reminders: mark Done, or push the reminder one day forward.
-      await Notifications.setNotificationCategoryAsync('myweekactions', [
-        { identifier: 'done', buttonTitle: 'Done' },
-        { identifier: 'postpone1', buttonTitle: '+1 Day' },
-      ]);
-      // Look Ahead (long-lead) reminders: mark Done, or delay this one reminder by a
-      // day / week / month. Delay only pushes this alert out — no log, no date change.
-      await Notifications.setNotificationCategoryAsync('lookaheadactions', [
-        { identifier: 'done', buttonTitle: 'Done' },
-        { identifier: 'delayday', buttonTitle: 'Delay 1 Day' },
-        { identifier: 'delayweek', buttonTitle: 'Delay 1 Week' },
-        { identifier: 'delaymonth', buttonTitle: 'Delay 1 Month' },
-      ]);
-      // A missing day: the last day that exists was used. Then keeps that
-      // day; Next Day is a one-day push-back for this occurrence only.
-      await Notifications.setNotificationCategoryAsync('shifteddayactions', [
-        { identifier: 'then', buttonTitle: 'Then' },
-        { identifier: 'nextday', buttonTitle: 'Next Day' },
-      ]);
-      // Shared ROUTINE popup (Step 4 routine half, #39): ONE button set for
-      // My Day / My Week / Pets, replacing their three separate categories.
-      // Registered here first; each page starts using it only when its
-      // scheduling code switches categoryIdentifier to 'routineactions'.
-      // OK = silence just this popup; Skip = this occurrence only (cancels the
-      // item's pending one-offs, nothing marked/logged); Delay = snooze this one
-      // reminder; Done = check off + log (with a past-day guard).
-      // Done FIRST (Patrick, #62): on the Apple Watch the buttons show as a
-      // vertical list and he had to scroll to the bottom to reach Done.
+      // Daily and Weekly share one set: Done, OK, Skip, then the three delays.
       await Notifications.setNotificationCategoryAsync('routineactions', [
         { identifier: 'done', buttonTitle: 'Done' },
         { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
@@ -160,6 +115,23 @@ export default function RootLayout() {
         { identifier: 'snooze15', buttonTitle: 'Delay 15 min' },
         { identifier: 'snooze30', buttonTitle: 'Delay 30 min' },
         { identifier: 'snooze60', buttonTitle: 'Delay 60 min' },
+      ]);
+      // Monthly, Quarterly and Yearly share the dated-cadence actions.
+      await Notifications.setNotificationCategoryAsync('cadenceactions', [
+        { identifier: 'done', buttonTitle: 'Done' },
+        { identifier: 'delayday', buttonTitle: 'Delay 1 Day' },
+        { identifier: 'delayweek', buttonTitle: 'Delay 1 Week' },
+        { identifier: 'delaymonth', buttonTitle: 'Delay 1 Month' },
+      ]);
+      // Appointments have only OK, which closes the banner without opening.
+      await Notifications.setNotificationCategoryAsync('appointmentsok', [
+        { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
+      ]);
+      // A missing day: the last day that exists was used. Then keeps that
+      // day; Next Day is a one-day push-back for this occurrence only.
+      await Notifications.setNotificationCategoryAsync('shifteddayactions', [
+        { identifier: 'then', buttonTitle: 'Then' },
+        { identifier: 'nextday', buttonTitle: 'Next Day' },
       ]);
     })();
   }, []);
@@ -219,32 +191,25 @@ export default function RootLayout() {
     // tapped notification; we do nothing else (no done, no snooze, no routing).
     if (action === 'ok') return;
 
-    // "Skip" (shared routine popup): skip THIS occurrence only. Cancels the
-    // item's still-pending one-off reminders (snoozes / a My Week postpone) so
-    // it stops nagging this round — but nothing is marked done and nothing is
-    // logged; the base repeat brings the item back next cycle. The base DAILY /
-    // WEEKLY reminder is deliberately NOT touched.
+    // "Skip" on a routine banner skips THIS occurrence only. It clears the
+    // item's still-pending snooze so it stops nagging this round, but nothing
+    // is marked done or logged; the base reminder brings the item back next
+    // cycle. The Daily or Weekly base reminder is deliberately not touched.
     if (action === 'skip') {
       const itemId = data?.itemId as string | undefined;
       if (!itemId) return;
       (async () => {
-        // #10-new, and My Week joins them at #20-new: all three routine screens
-        // write their one-off reminder down on the item, so taking it off the
-        // phone by hand would not hold — the module would read the stamp on its
-        // next run and put the reminder straight back. The stamp is what has to
-        // go, and then the module does the taking off.
+        // Both routine kinds write their one-off reminder down on the item, so
+        // taking it off the phone by hand would not hold: the next run would
+        // read the stamp and put the reminder straight back. The stamp is what
+        // has to go, and then the scheduler does the taking off.
         //
-        // My Day and Pets call theirs a snooze and My Week calls its one a
-        // postpone, which is the same thing at a different distance: one moment
-        // in the future for this occurrence only. So the only difference here is
-        // which field the stamp lives in.
-        //
-        // Skip is registered on 'routineactions' and on no other category, and
-        // that category belongs to these three screens alone, so there is no
-        // other source for this to answer for.
+        // Daily and Weekly use the same saved `snoozedUntil` stamp: one moment
+        // in the future for this occurrence only. Skip is registered on
+        // `routineactions` and on no other category.
         const source = data?.source as string | undefined;
-        const isDay = source === 'myday' || source === 'mydaysnooze';
-        const isWeek = source === 'myweek' || source === 'myweekpostpone';
+        const isDay = source === 'daily' || source === 'dailysnooze';
+        const isWeek = source === 'weekly' || source === 'weeklysnooze';
         if (!isDay && !isWeek) return;
 
         const items = await loadReminderItems();
@@ -258,16 +223,16 @@ export default function RootLayout() {
       return;
     }
 
-    // Snooze action buttons: reschedule ONLY this item, N minutes out, and leave
-    // every other reminder (To-Do, Timer, other My Day items) untouched.
+    // Snooze action buttons: reschedule only this item, N minutes out, and
+    // leave every other reminder untouched.
     if (action === 'snooze15' || action === 'snooze30' || action === 'snooze60') {
       const minutes = action === 'snooze15' ? 15 : action === 'snooze30' ? 30 : 60;
       const source = data?.source as string | undefined;
-      const isDay = source === 'myday' || source === 'mydaysnooze';
-      const isWeek = source === 'myweek' || source === 'myweekpostpone';
+      const isDay = source === 'daily' || source === 'dailysnooze';
+      const isWeek = source === 'weekly' || source === 'weeklysnooze';
 
-      // #10-new, and My Week joins them at #20-new: the routine screens
-      // write the delay down on the item instead of arming it here.
+      // Both routine kinds write the delay down on the item instead of arming
+      // it here.
       //
       // Nothing is scheduled. The stamp on the item IS the delay: the module
       // reads it back and puts the reminder on the phone, so a delay made from
@@ -277,11 +242,8 @@ export default function RootLayout() {
       // duplicates. The item's base repeat is left alone, as it always was;
       // iOS clears the shown banner itself when an action is tapped.
       //
-      // My Week's field is called `postponedTo` because that is the word its own
-      // page uses on its own button. A snooze and a postpone are the same thing
-      // at different distances — one moment in the future for this occurrence
-      // only — so they share the one stamp instead of each having its own, and a
-      // chore can never be carrying two delays at once.
+      // One `snoozedUntil` stamp means a second delay moves the first instead
+      // of leaving another reminder behind.
       if (isDay || isWeek) {
         const itemId = data?.itemId as string | undefined;
         if (!itemId) return;
@@ -296,8 +258,8 @@ export default function RootLayout() {
       return;
     }
 
-    // Look Ahead "Delay" buttons: push just THIS reminder out by a day / week /
-    // month from now. No log, and no change to the item's real due date.
+    // Dated-cadence "Delay" buttons push just THIS reminder out by a day, week
+    // or month from now. There is no log and no change to the real due date.
     //
     // Nothing is armed here. The stamp on the item IS the delay: the scheduler
     // reads it back and puts the reminder on the phone, so a delay made from a
@@ -305,6 +267,12 @@ export default function RootLayout() {
     // A prior delay needs no cancelling — one stamp per item means one wanted
     // reminder under one name, which the module moves rather than duplicates.
     if (action === 'delayday' || action === 'delayweek' || action === 'delaymonth') {
+      const source = data?.source as string | undefined;
+      const isDated =
+        source === 'monthly' || source === 'monthlydelay'
+        || source === 'quarterly' || source === 'quarterlydelay'
+        || source === 'yearly' || source === 'yearlydelay';
+      if (!isDated) return;
       const itemId = data?.itemId as string | undefined;
       if (!itemId) return;
       const target = new Date();
@@ -351,52 +319,18 @@ export default function RootLayout() {
       return;
     }
 
-    // My Week "+1 Day" action: push this chore's reminder to tomorrow at its
-    // own time, without opening the app.
-    //
-    // Nothing is armed here. The stamp on the chore IS the postpone: the
-    // scheduler reads it back and puts the reminder on the phone, so a postpone
-    // made from a banner and one made on the page are now the same act written
-    // the same way. A prior postpone needs no cancelling — one stamp per chore
-    // means one wanted reminder under one name, which the module moves rather
-    // than duplicates. The chore's base WEEKLY repeat is left alone, as it
-    // always was; iOS clears the shown banner itself when an action is tapped.
-    if (action === 'postpone1') {
-      const itemId = data?.itemId as string | undefined;
-      if (!itemId) return;
-      (async () => {
-        const items = await loadReminderItems();
-        const chore = items.find((c) => c.id === itemId);
-        if (!chore) return;
-        const target = new Date();
-        target.setDate(target.getDate() + 1);
-        target.setHours(typeof chore.hour === 'number' ? chore.hour : 12, typeof chore.minute === 'number' ? chore.minute : 0, 0, 0);
-        await saveReminderItems(items.map((c) =>
-          c.id === itemId ? { ...c, snoozedUntil: target.getTime() } : c
-        ));
-      })();
-      return;
-    }
-
     // "Done" action button: mark this item complete in storage, the banner
-    // equivalent of the on-screen Log (✓) button. It does NOT cancel the fired
-    // reminder — that was never true of My Week's branch and stopped being true
-    // of My Day's and Pets' when the module took the repeats over. iOS clears
-    // the shown banner itself on an action tap, and the base repeat is left
-    // alone so it fires again next time round.
+    // equivalent of the on-screen Log (✓) button. It does not cancel the fired
+    // reminder. iOS clears the shown banner itself on an action tap, and the
+    // base cadence is left alone so it can fire again next time round.
     if (action === 'done') {
       const source = data?.source as string | undefined;
       const itemId = data?.itemId as string | undefined;
 
-      // A To-Do banner has no Done button, so nothing answers one here. Its
-      // branch came out with the snooze above.
-
-      // My Week "Done": mark the chore complete for the week + log it, and clear
-      // any pending postpone. We do NOT cancel the fired notification's id — the
-      // base reminder is a WEEKLY repeat that must fire again next week; iOS
-      // auto-clears the shown banner on an action tap. (The weekly reset clears
-      // the ✓ when the chore's day comes around again.)
-      if (source === 'myweek' || source === 'myweekpostpone') {
+      // Weekly Done marks the item complete for this cycle, logs it under the
+      // existing history key, and clears any pending snooze. The weekly reset
+      // clears the tick when the item's day comes around again.
+      if (source === 'weekly' || source === 'weeklysnooze') {
         (async () => {
           const items = await loadReminderItems();
           const fired = new Date(response.notification.date * 1000);
@@ -422,9 +356,13 @@ export default function RootLayout() {
         return;
       }
 
-      // Look Ahead "Done": log the completion (dated from when the reminder fired).
-      // The repeat recipe is left unchanged; the engine finds the next occurrence.
-      if (source === 'lookahead' || source === 'lookaheaddelay') {
+      // Dated-cadence Done logs the completion from the firing time. The repeat
+      // recipe is left unchanged; the engine finds the next occurrence.
+      if (
+        source === 'monthly' || source === 'monthlydelay'
+        || source === 'quarterly' || source === 'quarterlydelay'
+        || source === 'yearly' || source === 'yearlydelay'
+      ) {
         (async () => {
           const items = await loadReminderItems();
           const item = items.find((i) => i.id === itemId);
@@ -451,8 +389,7 @@ export default function RootLayout() {
         return;
       }
 
-      if (source === 'pets' || source === 'petssnooze') return;
-      if (source !== 'myday' && source !== 'mydaysnooze') return;
+      if (source !== 'daily' && source !== 'dailysnooze') return;
       (async () => {
         if (itemId) {
           const items = await loadReminderItems();
@@ -494,14 +431,18 @@ export default function RootLayout() {
     const highlight = data?.itemId as string | undefined;
     const params = highlight ? { highlight } : undefined;
 
-    if (source === 'todo') {
-      router.push({ pathname: '/onetime', params } as Href);
-    } else if (source === 'myday' || source === 'mydaysnooze') {
+    if (source === 'daily' || source === 'dailysnooze') {
       router.push({ pathname: '/daily', params });
-    } else if (source === 'myweek' || source === 'myweekpostpone') {
+    } else if (source === 'weekly' || source === 'weeklysnooze') {
       router.push({ pathname: '/weekly', params } as Href);
-    } else if (source === 'lookahead' || source === 'lookaheaddelay') {
+    } else if (source === 'monthly' || source === 'monthlydelay') {
       router.push({ pathname: '/monthly', params } as Href);
+    } else if (source === 'quarterly' || source === 'quarterlydelay') {
+      router.push({ pathname: '/quarterly', params } as Href);
+    } else if (source === 'yearly' || source === 'yearlydelay') {
+      router.push({ pathname: '/yearly', params } as Href);
+    } else if (source === 'onetime') {
+      router.push({ pathname: '/onetime', params } as Href);
     } else if (source === 'memorytest') {
       // The 5-minute recall banner — land straight on the recall screen. There
       // is only ever one reminder from that page, so it needs no highlight

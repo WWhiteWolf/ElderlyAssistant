@@ -1,14 +1,14 @@
 // The daily reset, as plain arithmetic.
 //
 // Clearing yesterday's checkmarks is part of the same clean slate as sweeping
-// yesterday's banners. Until now it happened only when My Day or Pets was
-// opened, which is the same screen-bound fault the reminders had: if neither
-// screen was visited, the day never rolled over. The deciding is done here,
-// where Node can check it; the reading and writing is done by the module.
+// yesterday's banners. It once happened only when a daily page was opened,
+// which was the same page-bound fault the reminders had: an unvisited page
+// never rolled over. The deciding is done here, where Node can check it; the
+// reading and writing is done by the module.
 //
 // Nothing in this file touches storage, the phone, React Native or Expo.
 
-/** What the reset needs of an item. Both screens' items have this much. */
+/** What the reset needs of a Daily item. */
 export interface ResettableItem {
     id: string;
     completed: boolean;

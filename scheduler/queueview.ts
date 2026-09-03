@@ -20,59 +20,33 @@ import type { WantedTrigger } from './types.ts';
 /**
  * What each page is called on screen.
  *
- * The key is the source the app tags a reminder with, which is also how a
- * tapped banner finds its way back to the right page. A source that is not in
- * here belongs to something the screen cannot name — the Timer above all — and
- * those are counted but never listed (Patrick, #12-new).
+ * The key is the current source the app tags a reminder with, which is also
+ * how a tapped banner finds its way back to the right page. A source that is
+ * not here belongs to something the screen cannot name — the Timer above all
+ * — and those are counted but never listed (Patrick, #12-new).
  *
- * The one-off sources are named as the page and the thing that made them, so a
- * snoozed item does not look like a second copy of the daily one.
- *
- * Monthly, Quarterly and Yearly share the lookahead source, so those rows take
- * their page name from the banner heading already on the reminder. The names
- * here for that source are the fallback when the heading is not one of the
- * three.
+ * Every cadence has its own source. A snoozed or delayed source is named
+ * separately so it does not look like a second copy of the base reminder.
  */
 export const PAGE_NAMES: Record<string, string> = {
-    myday: PAGE_LABELS.daily,
-    mydaysnooze: `${PAGE_LABELS.daily} — snoozed`,
-    pets: 'Pets',
-    petssnooze: 'Pets — snoozed',
-    myweek: PAGE_LABELS.weekly,
-    // A Delay tapped on a Weekly banner is written down as a postpone and
-    // shows under this same name (#20-new). There is no separate snoozed row
-    // for Weekly, because there is no separate stamp behind one.
-    myweekpostpone: `${PAGE_LABELS.weekly} — postponed`,
-    lookahead: 'Look Ahead',
-    lookaheaddelay: 'Look Ahead — delayed',
-    todo: PAGE_LABELS.oneTime,
-    extended: PAGE_LABELS.extended,
+    daily: PAGE_LABELS.daily,
+    dailysnooze: `${PAGE_LABELS.daily} — snoozed`,
+    weekly: PAGE_LABELS.weekly,
+    weeklysnooze: `${PAGE_LABELS.weekly} — snoozed`,
+    monthly: PAGE_LABELS.monthly,
+    monthlydelay: `${PAGE_LABELS.monthly} — delayed`,
+    quarterly: PAGE_LABELS.quarterly,
+    quarterlydelay: `${PAGE_LABELS.quarterly} — delayed`,
+    yearly: PAGE_LABELS.yearly,
+    yearlydelay: `${PAGE_LABELS.yearly} — delayed`,
+    onetime: PAGE_LABELS.oneTime,
     memorytest: PAGE_LABELS.memorytest,
-    orders: 'Orders',
-    orderssnooze: 'Orders — snoozed',
 };
-
-const CADENCE_HEADINGS = new Set<string>([
-    PAGE_LABELS.monthly,
-    PAGE_LABELS.quarterly,
-    PAGE_LABELS.yearly,
-]);
 
 /** The page name a queue row should show. */
 function pageNameOf(entry: QueueEntry): string | undefined {
     if (!entry.source) return undefined;
-    const named = PAGE_NAMES[entry.source];
-    if (!named) return undefined;
-    if (
-        (entry.source === 'lookahead' || entry.source === 'lookaheaddelay')
-        && entry.title
-        && CADENCE_HEADINGS.has(entry.title)
-    ) {
-        return entry.source === 'lookaheaddelay'
-            ? `${entry.title} — delayed`
-            : entry.title;
-    }
-    return named;
+    return PAGE_NAMES[entry.source];
 }
 
 /** One pending reminder, described for a person rather than for the app. */

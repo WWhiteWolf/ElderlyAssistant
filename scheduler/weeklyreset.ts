@@ -1,15 +1,14 @@
 // The weekly reset, as plain arithmetic.
 //
-// My Week's checkmarks clear on their own cycle rather than on the day
-// boundary the two daily screens share, so this is a sibling of `dailyreset.ts`
-// and not an extension of it. The daily reset turns on one saved date for a
-// whole screen; My Week has no single boundary at all, because each chore
-// rolls over on its own day of the week.
+// Weekly checkmarks clear on their own cycle rather than on the Daily
+// boundary, so this is a sibling of `dailyreset.ts` and not an extension of
+// it. The daily reset turns on one saved date for a whole kind; Weekly has no
+// single boundary at all, because each item rolls over on its own weekday.
 //
-// The arithmetic here was lifted out of `app/myweek.tsx`, where it was sound
-// but could only run when that screen was open. It is unchanged in what it
-// decides — only where it lives, and the fact that `now` is now handed in
-// rather than read from the clock, so a test can say what time it is.
+// The arithmetic used to live on a page, where it could run only while that
+// page was open. It is unchanged in what it decides — only where it lives,
+// and the fact that `now` is handed in rather than read from the clock, so a
+// test can say what time it is.
 //
 // Nothing in this file touches storage, the phone, React Native or Expo.
 
