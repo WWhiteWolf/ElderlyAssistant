@@ -3,7 +3,7 @@
 One line per file, live or history, so a session can tell whether a
 document exists and which file is the home. Written at #30-new.
 
-**`docs` is the live desk.** History lives in `docs-ref`. The thirteen
+**`docs` is the live desk.** History lives in `docs-ref`. The fourteen
 build sheets are in `docs-ref/build-sheets`. If the index has no file
 for a thing, ask Patrick. Do not invent a home.
 
@@ -77,6 +77,7 @@ History, not the road. Record of what was built and why.
 - **`build-sheet-chalendar.md`** — #48-new. The calendar page. Built at #49-new.
 - **`build-sheet-where-helper.md`** — #57-new. The Where? helper from Home and the calendar. Built at #58-new.
 - **`build-sheet-calendar-fire-time.md`** — #59-new. 24-hour fire time on the calendar day list. Built at #59-new.
+- **`build-sheet-notification-names.md`** — #61-new. Current source and category names through the live notification road. Ready for a fresh build session.
 
 ## Not here any more
 

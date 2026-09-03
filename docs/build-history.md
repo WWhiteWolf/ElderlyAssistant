@@ -3698,6 +3698,56 @@ list. Simulator checks are Patrick's. Not on the phone yet.
 **Committed** (Patrick, #59-new).
 
 
+## #61-new (2026-09-03): old pages and readers removed; notification-name sheet written
+
+**The goal was to scrub the retired page names and stale code from the
+app.** The replacement reminder pages had already been proved on
+Patrick's phone, so the condition that kept the old readers in place
+was met.
+
+**The old page layer came out first.** Four hidden FUSE copies of My
+Day, Pets, My Week, and Look Ahead were still sitting under `app/`.
+They were not routes and had no live references. All four were
+deleted.
+
+**The dead reader road came out as one piece.** Five unused reader
+modules — My Day, Pets, My Week, Look Ahead, and To-Do — were deleted,
+along with their five direct reader tests and five duplicate
+per-page translator tests. `scheduler/translators/translate.ts` now
+contains only the translator for the one live `reminder_items` list.
+The remaining reminders-for tests now build `ReminderItem` fixtures
+and cover Daily, Weekly, Monthly, Quarterly, Yearly, and Appointments
+through that live translator. The general repeat, missing-day, Skip,
+and Done checks remain.
+
+**Checks.** The scheduler suite passed 300 of 300 after the removal.
+The fall from 489 is the removal of tests for code that no longer
+exists, not a failing or skipped live suite. No notification source,
+category, history, storage, Siri, or native name changed in that
+piece.
+
+**Backward compatibility is not part of the scrub** (Patrick).
+Patrick is the app's only holder, has reset the app to nothing, and
+has removed all old storage pages. Old queued notifications, fault
+records, source aliases, categories, and cleanup paths therefore need
+not be kept. A retired name still used by the current build is to be
+replaced through its whole live path.
+
+**The next worker job was settled and written before stopping.**
+`docs-ref/build-sheets/build-sheet-notification-names.md` gives the
+fresh session the exact current sources and categories, the complete
+read and edit boundary, the deliberate storage and Siri exceptions,
+and the checks. It also separates Monthly, Quarterly, and Yearly
+notification sources, curing the present body-tap route that sends all
+three to Monthly. `docs/index.md` now lists fourteen build sheets.
+
+**Session close.** The document check reports `handoff.md` under 400
+lines. Patrick said `pending.txt` can wait, so neither it nor
+`pending.docx` was changed. The fresh session starts from the
+notification-name sheet at maximum effort; #61-new's commit status is
+for Patrick to report there.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

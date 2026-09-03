@@ -16,6 +16,13 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
+**#61-new is closed.** The hidden old pages and dead reader road are
+gone; Mac suite 300 of 300. The self-contained notification-name job
+for the fresh session is
+`docs-ref/build-sheets/build-sheet-notification-names.md`. Full story
+in `build-history.md`. Patrick will report the commit status at the
+next opening.
+
 **#59-new is closed and committed** (Patrick, #60-new). Built
 Pending 4 and Pending 3, spinner consistency, and AM/PM check on Save.
 **Calendar day list:** saved `hour`/`minute` as 24-hour `HH:MM` before
@@ -208,6 +215,12 @@ out** (Patrick, #51-new). **Timer is isolated deliberately** (Patrick,
 These are Patrick's and they govern the work rather than describing it.
 They are kept here because they still decide things.
 
+- **The old-page scrub preserves nothing for backward compatibility**
+  (Patrick, #61-new). Patrick is the only holder of the app, has reset it
+  to nothing, and has removed all old storage pages. Old notifications,
+  storage, fault records, categories, sources and cleanup paths may come
+  out. An old-named identifier still used by the current build is changed
+  through its whole live path rather than kept for old state.
 - **Reminders being rock solid is the top goal — but not the only one,
   and consistency is another high priority** (#16-new, corrected at
   #17-new). That correction reversed a recommendation made minutes
@@ -243,11 +256,12 @@ They are kept here because they still decide things.
 
 ## What is open in front of it
 
-**Next session (Patrick, #60-new): remove the old pages and readers that
-the live app no longer calls, then scrub the stale code they leave
-behind.** The replacement pages have been proved on his phone for a few
-days. That meets the standing condition which kept the old readers in
-place.
+**Next fresh session:** build
+`docs-ref/build-sheets/build-sheet-notification-names.md`. It replaces
+the retired source and category names through the live notification
+road and makes Monthly, Quarterly and Yearly banners return to their
+own pages. Storage and history names, and Siri and native names, are
+separate later pieces.
 
 **Nothing from #56-new through #59-new is on the phone yet.** Those are
 later refinements; they do not reset the replacement pages' phone proof.
@@ -260,8 +274,8 @@ what testing has covered and will cover (Pending 6; during-build
 tests are thrown away).
 
 **Memory Test is temporary and coming out. Timer is isolated
-deliberately.** Neither is a reason to keep the old reminder
-readers (Patrick, #51-new).
+deliberately.** Neither belongs to the notification-naming build
+(Patrick, #51-new).
 
 **The build sheets are the pattern for this work** — each self-contained,
 carrying the answers themselves rather than pointing at other documents,
@@ -293,11 +307,6 @@ still applies if those are taken up later:
   strings like `8:05 AM` and `Every day at 8:00 AM`.
 - **The logs are already 24-hour everywhere.** It is the tiles that are
   not.
-
-**My Week's old reader still ignores the tick.** That file is not
-called. The live weekly road reads the tick. The old test named *A chore
-already ticked still gets its weekly reminder* goes when the reader
-files come out.
 
 **Miss-telling extended to all cadences** (#55-new). Committed. Not on the phone yet.
 
@@ -377,7 +386,6 @@ replaces; never rename anything to or from `index.html` there (see
 `Projects/Reminder Engine/docs-ref/reminder-shape.drawio`.
 
 **Working documents live in `docs`.** History lives in `docs-ref`,
-including the thirteen build sheets. `docs/index.md` says which file is
+including the fourteen build sheets. `docs/index.md` says which file is
 the home. He calls them working documents; live desk means the same
-thing. This was written in an App-Docs session, 2026-08-31. Session
-#59-new is closed; Patrick is committing.
+thing. This was written in an App-Docs session, 2026-08-31.
