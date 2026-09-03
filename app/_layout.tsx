@@ -32,9 +32,9 @@ export default function RootLayout() {
 
   // Siri "mark item done" (Approach B). The Swift App Intent drops a tiny note
   // into the shared App Group box and wakes the app; here we read that note,
-  // apply it with My Day's existing done-logic, and clear it. We also republish
-  // the current My Day items every time the app becomes active, so Siri's voice
-  // list stays fresh even if the My Day screen hasn't been opened this session.
+  // apply it with Daily's existing done-logic, and clear it. We also republish
+  // the current Daily items every time the app becomes active, so Siri's voice
+  // list stays fresh even if the Daily screen hasn't been opened this session.
   // Runs on mount (cold launch straight from Siri) and on every foreground.
   useEffect(() => {
     const applyPendingNote = async () => {
@@ -44,7 +44,7 @@ export default function RootLayout() {
         const items = await loadReminderItems();
         const daily = items.filter((one) => one.kind === 'daily');
         // Keep Siri's view of the list current.
-        AppGroup.setMyDayItems(daily.map((i) => ({ id: i.id, label: i.label })));
+        AppGroup.setDailyItems(daily.map((i) => ({ id: i.id, label: i.label })));
 
         const note = AppGroup.getPendingNote();
         if (!note || note.action !== 'markDone') return;

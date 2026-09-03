@@ -3823,6 +3823,41 @@ the phone.
 were refreshed at Patrick's word. `pending.docx` was not regenerated.
 
 
+## #64-new (2026-09-03): Siri says Daily and Remember
+
+**The goal was the Siri scrub: stale and idle Siri code, and native
+names.** No compatibility layer. Memory Test and Timer stayed out.
+
+**Siri's live names now match the app.** My Day is Daily. Elyfont and
+Remember When are Remember. The spoken type is Daily Item. The shared
+box, the JS bridge, and the Swift types all say Daily. The shortcuts
+provider is `RememberShortcuts`. Mark-done still lands on Daily.
+
+**The open-app spike came out.** `OpenRememberWhenIntent` only opened
+the app and did nothing else. Siri already opens the app by its own
+name. The mark-done phrases stayed, in the same file as the live
+intent.
+
+**Patrick ruled** that Siri's list is Daily's own items only. Other
+pages showing on Daily are a view; those items fire from their own
+pages. Adding Siri commands is later. Phone load waits until the
+scrub is finished.
+
+**A leftover hunt of the live road found no old Siri names and no old
+pages.** Backup still lists retired keys so a restore can strip them.
+Saved kinds `oneTime` and `extended`, and routes `/onetime` and
+`/extended`, stay until the next session, when they take Appointments
+and Bucket List through the live path.
+
+**Checks.** No suite was run. The four TypeScript errors in
+`leadmoments.ts` and `scheduler.ts` were left as they were. Not on
+the phone. The new Siri names need an EAS build.
+
+**Session close.** `handoff.md`, `build-history.md`, `in-flight.md`,
+and `pending.txt` were refreshed at Patrick's word. `pending.docx`
+was not regenerated. Patrick will commit.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

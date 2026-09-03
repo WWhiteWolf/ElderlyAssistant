@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-03 (#63-new, session close)
+Last updated: 2026-09-03 (#64-new, session close)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -16,8 +16,10 @@ to know why something was done the way it was.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-THE SIRI SCRUB (Patrick, #63-new). Siri and native names. The page
-logs already use the current page names. No compatibility layer.
+SAVED KINDS TO CURRENT NAMES (Patrick, #64-new). The saved kinds
+oneTime and extended, and the routes /onetime and /extended, take
+Appointments and Bucket List through the live path. No compatibility
+layer. Phone load waits until the scrub is finished.
 
 
 PENDING
@@ -37,8 +39,9 @@ Things waiting on something — mostly on the phone.
    today, Daily every-day with no clock until Set time, AM/PM check on
    Save (skipped when time set on 24-hour picker); current notification
    names through the live road (#62-new); every page log under the
-   current page name (#63-new). Those later refinements do not reset
-   the replacement pages' phone proof.
+   current page name (#63-new); Siri says Daily and Remember, and the
+   open-app leftover is out (#64-new). Those later refinements do not
+   reset the replacement pages' phone proof.
 2. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
     sitting treated One Time's missing notice at the set time as
     a bug. He had decided it that way. A spec would have said so.
@@ -125,21 +128,23 @@ WHAT IS DONE, NEWEST FIRST
 One line each. The full story of any of them is in
 docs/build-history.md.
 
-1. #63-new — every page log uses the current page name. The leftover
+1. #64-new — Siri says Daily and Remember. Open-app leftover out.
+   Saved kinds are next. Not on the phone.
+2. #63-new — every page log uses the current page name. The leftover
    Look Ahead log came out. Sit backup and near-fire-set deleted.
-   Siri and native names are next. Not on the phone.
-2. #62-new — current notification names through the live road.
+   Not on the phone. Committed (Patrick, #64-new).
+3. #62-new — current notification names through the live road.
    Daily, Weekly, Monthly, Quarterly, Yearly, and Appointments each
    have their own source. A Quarterly or Yearly banner tap opens its
    own page. Pets and Orders names out of the tests. Mac 298. Not
    on the phone. Committed (Patrick, #63-new).
-3. #61-new — hidden old pages and dead reader road removed.
+4. #61-new — hidden old pages and dead reader road removed.
    Notification-name sheet written. Mac 300. Committed (Patrick, #62-new).
-4. #59-new — calendar day-list fire time (old Pending 4); useless
+5. #59-new — calendar day-list fire time (old Pending 4); useless
    spinners removed; AM/PM popup on Save when time set on 12-hour row
    only (24-hour box or digit spinner skips it). Patrick said excellent.
    Mac 489. Not on the phone. Patrick is committing.
-5. #58-new — the Where? helper built from its sheet. 🧭 badge after
+6. #58-new — the Where? helper built from its sheet. 🧭 badge after
    Daily, calendar month button, transparent `app/where.tsx`, eight
    landings on existing New forms, `formContext: oneTimeForToday`
    split from `returnTo`. Mac 489. Not on the phone. Committed (Patrick, #59-new).

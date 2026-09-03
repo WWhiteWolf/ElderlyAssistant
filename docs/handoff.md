@@ -16,10 +16,13 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
-**#63-new is closed.** Every page log uses the current page name.
+**#64-new is closed.** Siri says Daily and Remember. The open-app
+leftover is out. Saved kinds are next. Not on the phone. Full story
+in `build-history.md`.
+
+**#63-new is closed and committed** (Patrick, #64-new). Every page log uses the current page name.
 The leftover Look Ahead log is out. Sit backup and near-fire-set
-are deleted. Siri and native names are next. Not on the phone.
-Full story in `build-history.md`.
+are deleted. Not on the phone. Full story in `build-history.md`.
 
 **#62-new is closed and committed** (Patrick, #63-new). Current names now travel the live notification
 road: Daily, Weekly, Monthly, Quarterly, Yearly, and Appointments each
@@ -256,14 +259,24 @@ They are kept here because they still decide things.
   sit the right way up in both landscape turns, still in the same
   spots. The title stays as it is. Built at #51-new and extended
   to the second landscape turn at #60-new.
+- **Siri's voice list is Daily's own items only** (Patrick, #64-new).
+  Other pages showing on Daily are a view; those items fire from their
+  own pages. **Siri mark-done lands on Daily**; that is fine.
+  **Adding Siri commands is later.** **Phone load waits until the
+  scrub is finished.**
 
 ## What is open in front of it
 
-**Next fresh session:** the Siri scrub — Siri and native names
-(Patrick, #63-new). No compatibility layer.
+**Next session:** saved kinds `oneTime` and `extended`, and the routes
+`/onetime` and `/extended`, take the current names Appointments and
+Bucket List through the live path. No compatibility layer
+(Patrick, #64-new).
 
-**Nothing from #56-new through #63-new is on the phone yet.** Those are
-later refinements; they do not reset the replacement pages' phone proof.
+**Phone load waits until the scrub is finished.** Paperwork is Pending 2–5.
+
+**Nothing from #56-new through this sitting is on the phone yet.** Those
+are later refinements; they do not reset the replacement pages' phone
+proof.
 
 **The paperwork half** (Patrick, #52-new): a thorough design spec
 (Pending 2; the rename belongs there), a User Guide from that or

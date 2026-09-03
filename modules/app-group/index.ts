@@ -5,14 +5,14 @@
 // API so callers work with plain objects.
 
 import AppGroupModule from './src/AppGroupModule';
-import { MyDayItem, PendingNote } from './src/AppGroup.types';
+import { DailyItem, PendingNote } from './src/AppGroup.types';
 
-export { MyDayItem, PendingNote };
+export { DailyItem, PendingNote };
 
-// RN -> shared box: publish the current My Day items so the Siri intent can
-// offer them by voice. Call this whenever the My Day list changes.
-export function setMyDayItems(items: MyDayItem[]): void {
-  AppGroupModule.setMyDayItems(JSON.stringify(items));
+// RN -> shared box: publish the current Daily items so the Siri intent can
+// offer them by voice. Call this whenever the Daily list changes.
+export function setDailyItems(items: DailyItem[]): void {
+  AppGroupModule.setDailyItems(JSON.stringify(items));
 }
 
 // Shared box -> RN: read the note the Siri intent dropped (or null if none).

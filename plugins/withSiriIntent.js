@@ -1,5 +1,5 @@
-// STAGE 0 FEASIBILITY SPIKE — config plugin that injects the no-op Siri
-// App Intent into the iOS app at prebuild time.
+// Config plugin that injects the Siri mark-done App Intent into the iOS app
+// at prebuild time.
 //
 // Why a config plugin at all: this project's ios/ folder is gitignored
 // (Continuous Native Generation), so EAS regenerates the native project on
@@ -90,7 +90,7 @@ const withAppGroupEntitlement = (config) =>
     return cfg;
   });
 
-// 4. Refresh App Shortcut parameters at launch so Siri re-reads the live My Day
+// 4. Refresh App Shortcut parameters at launch so Siri re-reads the live Daily
 // item list. A parameterized App Shortcut ("Mark <item> done") only switches on
 // once the system has the item values in hand. iOS reads them when it registers
 // the app's shortcuts — at install, while our shared box is still empty — and
@@ -109,12 +109,21 @@ const withShortcutRefresh = (config) =>
       );
     }
 
+    contents = contents.replace(
+      'RememberWhenShortcuts.updateAppShortcutParameters',
+      'RememberShortcuts.updateAppShortcutParameters'
+    );
+    contents = contents.replace(
+      'MemoryShortcuts.updateAppShortcutParameters',
+      'RememberShortcuts.updateAppShortcutParameters'
+    );
+
     if (!contents.includes('updateAppShortcutParameters')) {
       const anchor =
         'return super.application(application, didFinishLaunchingWithOptions: launchOptions)';
       const injected =
         'if #available(iOS 16.0, *) {\n' +
-        '      RememberWhenShortcuts.updateAppShortcutParameters()\n' +
+        '      RememberShortcuts.updateAppShortcutParameters()\n' +
         '    }\n\n    ' +
         anchor;
       contents = contents.replace(anchor, injected);

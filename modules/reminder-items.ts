@@ -87,7 +87,7 @@ export async function loadReminderItems(): Promise<ReminderItem[]> {
 export async function saveReminderItems(items: ReminderItem[]): Promise<void> {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     const daily = items.filter((one) => one.kind === 'daily');
-    AppGroup.setMyDayItems(daily.map((one) => ({ id: one.id, label: one.label })));
+    AppGroup.setDailyItems(daily.map((one) => ({ id: one.id, label: one.label })));
     warnIfFull(await runScheduler());
 }
 

@@ -1,6 +1,6 @@
-// A single My Day item as shared with the Siri side (just what Siri needs to
+// A single Daily item as shared with the Siri side (just what Siri needs to
 // offer it by voice and tell us which one was picked).
-export type MyDayItem = {
+export type DailyItem = {
   id: string;
   label: string;
 };

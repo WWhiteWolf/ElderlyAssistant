@@ -4,29 +4,31 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-03, at the close of #63-new.
+Last written: 2026-09-03, at the close of #64-new.
 
 ## Read this first
 
-- **The next Memory session is #64-new.**
-- **The next code session:** the Siri scrub — Siri and native names.
-  No compatibility layer.
-- Nothing from #56-new through #63-new is on the phone.
+- **The next Memory session is #65-new.**
+- **The next code session:** saved kinds `oneTime` and `extended`, and
+  the routes `/onetime` and `/extended`, take Appointments and Bucket
+  List through the live path. No compatibility layer.
+- Phone load waits until the scrub is finished.
 
 ## What is in
 
-Every page log uses the current page name. The leftover Look Ahead
-log is out. Sit backup and near-fire-set are deleted.
+Siri says Daily and Remember. The open-app leftover is out. Page logs
+already use the current names.
 
 ## What is next
 
-Patrick leads. The Siri scrub. Then a phone load. Paperwork is
+Patrick leads. The saved-kind rename. Phone load waits. Paperwork is
 Pending 2–5.
 
 ## Do not reopen
 
-The seven current log keys. A compatibility layer for old loads.
+Adding Siri commands. A phone load before the scrub is finished.
 Regenerating `pending.docx` unless he asks. The four TypeScript
 errors in `leadmoments.ts` and `scheduler.ts`. Treating Memory Test
-or Timer as part of the Siri scrub. History docs that keep old
-names for the past.
+or Timer as part of this scrub. History docs that keep old names for
+the past. Changing saved kinds in a way that keeps the old names
+alongside the new.

@@ -10,7 +10,7 @@ class AppGroupModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("AppGroup")
 
-    Function("setMyDayItems") { _: String -> }
+    Function("setDailyItems") { _: String -> }
 
     Function("getPendingNote") { -> null as String? }
 

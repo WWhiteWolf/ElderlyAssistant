@@ -13,7 +13,7 @@ import ExpoModulesCore
 // App ID in Apple's developer portal (noted in withSiriIntent.js).
 //
 // Two keys live in the box:
-//   "myDayItems"  — written by RN: a JSON string of the current My Day items
+//   "dailyItems"  — written by RN: a JSON string of the current Daily items
 //                   ([{ "id": ..., "label": ... }]). The Siri intent reads it
 //                   so it can offer your real, live items by voice.
 //   "pendingNote" — written by the Siri intent: a JSON string describing one
@@ -26,9 +26,9 @@ public class AppGroupModule: Module {
   public func definition() -> ModuleDefinition {
     Name("AppGroup")
 
-    // RN -> box: store the current My Day items (already JSON-stringified in JS).
-    Function("setMyDayItems") { (json: String) in
-      UserDefaults(suiteName: APP_GROUP)?.set(json, forKey: "myDayItems")
+    // RN -> box: store the current Daily items (already JSON-stringified in JS).
+    Function("setDailyItems") { (json: String) in
+      UserDefaults(suiteName: APP_GROUP)?.set(json, forKey: "dailyItems")
     }
 
     // box -> RN: read the note the Siri intent dropped, or nil if none.

@@ -5,7 +5,7 @@ import { NativeModule, requireNativeModule } from 'expo';
 // JSON strings to keep the native marshalling trivial; index.ts wraps them in
 // a typed API.
 declare class AppGroupModule extends NativeModule<{}> {
-  setMyDayItems(json: string): void;
+  setDailyItems(json: string): void;
   getPendingNote(): string | null;
   clearPendingNote(): void;
 }

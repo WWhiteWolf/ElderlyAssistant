@@ -1,7 +1,7 @@
 {
   "name": "app-group",
   "version": "0.1.0",
-  "description": "App Group bridge: shares My Day items with, and reads notes from, the Siri App Intent.",
+  "description": "App Group bridge: shares Daily items with, and reads notes from, the Siri App Intent.",
   "main": "index.ts",
   "keywords": ["react-native", "expo", "app-group", "AppGroup"],
   "license": "MIT",
