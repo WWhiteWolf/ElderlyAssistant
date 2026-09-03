@@ -16,9 +16,15 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
-**#57-new settled the Where? helper and wrote its self-contained build
-sheet**, `docs-ref/build-sheets/build-sheet-where-helper.md`. No code
-was built. It is ready for a worker session.
+**#58-new built the Where? helper** from
+`docs-ref/build-sheets/build-sheet-where-helper.md`. One transparent
+route (`app/where.tsx`), six files edited. `formContext: oneTimeForToday`
+is separate from `returnTo` in `item-edit`. Mac suite 489 of 489. Not
+on the phone yet. Not committed yet — Patrick will commit when he
+comes in.
+
+**#57-new is committed** (Patrick, #58-new). The helper design and
+build sheet only; no code in that session.
 
 **#56-new is committed** (Patrick, #57-new; Patrick said very good).
 One Time is **Appointments** and Extended is **Bucket List** on every live
@@ -227,10 +233,7 @@ They are kept here because they still decide things.
 
 ## What is open in front of it
 
-**Next session:** build the helper from
-`docs-ref/build-sheets/build-sheet-where-helper.md`. The decisions and
-the code read are finished; #57-new built no code. Nothing from
-#56-new is on the phone yet.
+**Nothing from #56-new or #58-new is on the phone yet.**
 
 **Pending 7:** calendar day list should show 24-hour fire time. Sit
 tests are finished. **Not safe to compress** (#56-new): no build sheet,
@@ -239,21 +242,6 @@ before building. Its own short session.
 
 **Pending 9:** all screens in any rotation. Today the lock is 90°
 counter-clockwise, headers on the left.
-
-**The helper's** first question (#53-new) is "Does this item repeat?"
-Repeats → every day, week, month,
-quarter, or year. Does not repeat → for today? → appointment or Bucket
-List add. **Where? is another badge on Home**, with a 🧭 compass. It
-follows Daily; in landscape it sits at the bottom with Memory Test.
-The calendar's unused header button is also Where? It is not on the
-reminder pages. Calendar day's list has no + Add. **Cancel closes one
-layer** (#57-new): New returns to the helper; the helper returns to the
-Home or calendar screen that opened it. **Save closes both layers** and
-returns directly to that opening screen.
-
-The sheet makes the helper a real transparent route beneath New, not a
-patch, and separates One Time for today's form context from return
-routing.
 
 **The paperwork half** (Patrick, #52-new): a thorough design spec
 (Pending 11; the rename belongs there), a User Guide from that or
@@ -386,4 +374,4 @@ replaces; never rename anything to or from `index.html` there (see
 including the twelve build sheets. `docs/index.md` says which file is
 the home. He calls them working documents; live desk means the same
 thing. This was written in an App-Docs session, 2026-08-31. This
-session is #57-new.
+session is #58-new.

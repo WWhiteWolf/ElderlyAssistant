@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { PAGE_LABELS } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
 import { HeaderButton, PageFrame } from '../components/PageFrame';
 import {
@@ -180,7 +181,13 @@ export default function CalendarScreen() {
                     </TouchableOpacity>
                 </View>
             )}
-            <HeaderButton />
+            {selectedDay ? (
+                <HeaderButton />
+            ) : (
+                <HeaderButton onPress={() => router.push('/where' as Href)}>
+                    <Text style={styles.headerBtnText}>{PAGE_LABELS.where}</Text>
+                </HeaderButton>
+            )}
         </View>
     );
 

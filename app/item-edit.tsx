@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
+import { useLocalSearchParams, useNavigation, useRouter, type Href } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
     Alert,
@@ -11,6 +11,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { StackActions } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl from '../components/DateTimeControl';
 import { HeaderButton, PageFrame } from '../components/PageFrame';
@@ -223,12 +224,15 @@ function assembleFormItem(parts: {
 
 export default function ItemEditScreen() {
     const router = useRouter();
+    const navigation = useNavigation();
     const theme = useTheme();
     const styles = makeStyles(theme);
-    const { id, kind, returnTo, viewYear, viewMonth, dayYear, dayMonth, dayDate } = useLocalSearchParams<{
+    const { id, kind, returnTo, formContext, viaHelper, viewYear, viewMonth, dayYear, dayMonth, dayDate } = useLocalSearchParams<{
         id?: string | string[];
         kind?: string | string[];
         returnTo?: string | string[];
+        formContext?: string | string[];
+        viaHelper?: string | string[];
         viewYear?: string | string[];
         viewMonth?: string | string[];
         dayYear?: string | string[];
@@ -237,6 +241,8 @@ export default function ItemEditScreen() {
     }>();
     const editingId = asParam(id) || null;
     const page = asParam(returnTo) || 'daily';
+    const isOneTimeForToday = asParam(formContext) === 'oneTimeForToday';
+    const fromHelper = asParam(viaHelper) === '1';
     const startKind = kindFrom(asParam(kind), page);
     const calendarReturn = page === 'calendar' ? {
         viewYear: asParam(viewYear),
@@ -272,19 +278,27 @@ export default function ItemEditScreen() {
     monthlyPatternRef.current = monthlyPattern;
     const noteRef = useRef(note);
     noteRef.current = note;
-    const kindOptions = optionCasesForKind(editKind, page === 'daily');
+    const kindOptions = optionCasesForKind(editKind, isOneTimeForToday);
     const applied = appliedOptionRows(optionSettings).filter((one) =>
         kindOptions.some((c) => c.id === one.id),
     );
 
     const goBack = () => {
+        if (fromHelper) {
+            router.back();
+            return;
+        }
         if (router.canDismiss()) router.dismissAll();
         router.replace(pathFor(page, calendarReturn));
     };
 
     const afterSave = () => {
+        if (fromHelper) {
+            navigation.dispatch(StackActions.pop(2));
+            return;
+        }
         if (router.canDismiss()) router.dismissAll();
-        if (!editingId && editKind === 'oneTime' && page === 'daily') {
+        if (!editingId && editKind === 'oneTime' && isOneTimeForToday) {
             router.replace('/onetime' as Href);
         } else {
             router.replace(pathFor(page, calendarReturn));
@@ -345,7 +359,7 @@ export default function ItemEditScreen() {
                 setOptionSettings(emptyOptionSettings());
                 setMonthlyPattern('date');
                 setNote('');
-                if (nextKind === 'oneTime' && page === 'daily') {
+                if (nextKind === 'oneTime' && isOneTimeForToday) {
                     const today = new Date();
                     today.setHours(12, 0, 0, 0);
                     setPendingDate(today);
@@ -371,9 +385,9 @@ export default function ItemEditScreen() {
         };
         setup();
         return () => { cancelled = true; };
-    }, [editingId, kind, page]);
+    }, [editingId, kind, page, isOneTimeForToday]);
 
-    const presets = (page === 'daily' && editKind === 'oneTime') ? DAILY_ONE_TIME_PRESETS : ONE_TIME_PRESETS;
+    const presets = (isOneTimeForToday && editKind === 'oneTime') ? DAILY_ONE_TIME_PRESETS : ONE_TIME_PRESETS;
 
     const isPresetSelected = (p: ReminderPreset): boolean => {
         if (p.kind === 'clock') {

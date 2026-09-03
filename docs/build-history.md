@@ -3565,6 +3565,36 @@ checker is run at the session close. Patrick is committing this
 session. Next is the worker build from the sheet.
 
 
+## #58-new (2026-09-03): the Where? helper built
+
+**The goal was the worker build from**
+`docs-ref/build-sheets/build-sheet-where-helper.md`. #57-new wrote
+the sheet; this sitting built it.
+
+**What was built.** `app/where.tsx` is a transparent Expo Router
+screen — shaded overlay and popup card, four question stages, eight
+landings on the existing New forms. Home gains a 🧭 Where? badge
+after Daily (`constants/page-names.ts`). The calendar month header's
+right button opens the same helper; the day-list header stays empty.
+`_layout.tsx` registers `where` as a transparent modal.
+
+**Navigation.** Home or calendar → helper → New is a real three-layer
+stack. Cancel or Back from New returns to the helper question that
+opened it. Cancel from the helper returns to the opening screen.
+Successful Save pops both New and the helper (`StackActions.pop(2)`).
+
+**One Time for today.** `formContext: oneTimeForToday` is now
+separate from `returnTo`. Daily passes it for One Time for today adds
+and for editing a `oneTime` item from Daily. The helper's Yes landing
+passes the same context. `item-edit` uses it for today's date, the
+four reminder chips, and time zone only on + OPT.
+
+**Checks.** Mac suite 489 of 489. `/where` uses the same `Href` cast
+as `/calendar` until the next Expo build refreshes the generated route
+list. Simulator checks are Patrick's. Not on the phone yet. Session
+closed; Patrick will commit when he comes in.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

@@ -28,6 +28,7 @@ const modules = [
   { id: 'weekly', label: PAGE_LABELS.weekly, icon: '🗓️' },
   { id: 'calendar', label: PAGE_LABELS.calendar, icon: '📅' },
   { id: 'daily', label: PAGE_LABELS.daily, icon: '☀️' },
+  { id: 'where', label: PAGE_LABELS.where, icon: '🧭' },
 ];
 
 export default function HomeScreen() {
@@ -35,8 +36,8 @@ export default function HomeScreen() {
     const theme = useTheme();
     const styles = makeStyles(theme);
     const landscape = useLandscape();
-    // Landscape puts Memory Test last so the other twelve fill four
-    // across and three down (Patrick, #51-new). Portrait keeps this order.
+    // Landscape keeps the ordinary badge order and puts Memory Test last.
+    // Where? and Memory Test therefore share the bottom row (Patrick, #57-new).
     const shown = landscape
         ? [
             ...modules.filter((one) => one.id !== 'memorytest'),
@@ -61,6 +62,7 @@ export default function HomeScreen() {
         if (id === 'timer') router.push('/timer');
         if (id === 'calendar') router.push('/calendar' as Href);
         if (id === 'daily') router.push('/daily' as Href);
+        if (id === 'where') router.push('/where' as Href);
         if (id === 'weekly') router.push('/weekly' as Href);
         if (id === 'monthly') router.push('/monthly' as Href);
         if (id === 'quarterly') router.push('/quarterly' as Href);
@@ -180,8 +182,8 @@ const makeStyles = (t: Theme) =>
             alignItems: 'center',
             paddingVertical: 12,
         },
-        // Landscape: four across, three down. Memory Test is last and may
-        // sit off the screen (Patrick, #51-new).
+        // Landscape stays four across. Where? starts the bottom row, with
+        // Memory Test last (Patrick, #57-new).
         tileLandscape: {
             width: '22%',
         },

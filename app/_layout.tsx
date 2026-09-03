@@ -523,6 +523,15 @@ export default function RootLayout() {
       <Stack.Screen name="memorytest" options={{ headerShown: false }} />
       <Stack.Screen name="reminders" options={{ headerShown: false }} />
       <Stack.Screen name="calendar" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="where"
+        options={{
+          headerShown: false,
+          presentation: 'transparentModal',
+          contentStyle: { backgroundColor: 'transparent' },
+          animation: 'fade',
+        }}
+      />
       <Stack.Screen name="daily" options={{ headerShown: false }} />
       <Stack.Screen name="item-edit" options={{ headerShown: false }} />
       <Stack.Screen name="weekly" options={{ headerShown: false }} />

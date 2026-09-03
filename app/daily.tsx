@@ -89,12 +89,27 @@ export default function DailyScreen() {
     );
 
     const openEdit = (item: ReminderItem) => {
-        router.push({ pathname: '/item-edit', params: { id: item.id, kind: item.kind, returnTo: 'daily' } } as Href);
+        router.push({
+            pathname: '/item-edit',
+            params: {
+                id: item.id,
+                kind: item.kind,
+                returnTo: 'daily',
+                ...(item.kind === 'oneTime' ? { formContext: 'oneTimeForToday' } : {}),
+            },
+        } as Href);
     };
 
     const openNew = (kind: 'daily' | 'oneTime') => {
         setShowAddPopup(false);
-        router.push({ pathname: '/item-edit', params: { kind, returnTo: 'daily' } } as Href);
+        router.push({
+            pathname: '/item-edit',
+            params: {
+                kind,
+                returnTo: 'daily',
+                ...(kind === 'oneTime' ? { formContext: 'oneTimeForToday' } : {}),
+            },
+        } as Href);
     };
 
     const writeItems = (updated: ReminderItem[]) => {
