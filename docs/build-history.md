@@ -3621,9 +3621,51 @@ the warning. No time → one tap as before. `app/item-edit.tsx` and
 
 **Session close.** Patrick said excellent. **Next session:** rotation
 **0°, 90°, and 270°**; **180° out**; headers at the physical top of the
-phone (recorded in handoff and pending). Patrick is committing.
+phone (recorded in handoff and pending). **Committed** (Patrick,
+#60-new).
 
 **Checks.** Mac suite 489 of 489. Not on the phone yet.
+
+
+## #60-new (2026-09-03): 0°, 90°, and 270° rotation
+
+**The goal was the top What's Next item.** Keep the working upright
+portrait and 90° counter-clockwise turn, add only 270°
+counter-clockwise, and keep 180° upside-down out. The screen below
+the header stays the same in both landscape turns. The header stays at
+the physical top of the phone — left at 90°, right at 270° — with its
+buttons in the same places and their words upright.
+
+**The first road was thrown away.** It inferred the turn from safe-area
+values and then changed the shared landscape path. Patrick found that
+only upright portrait was still correct. At his word, all seven changed
+files were restored to their exact #59-new state and the added
+orientation package was removed before starting again.
+
+**The finished road preserves the old path.**
+`expo-screen-orientation` now supplies one app-wide orientation reading
+through `components/AppOrientation.tsx`; safe-area values do not decide
+the turn. `components/PageFrame.tsx` leaves its existing portrait and
+left-header landscape layouts in place and adds a separate mirrored
+right-header branch. The body is unchanged. Header buttons, and Home's
+small face, counter-turn so they read normally.
+
+`app.json` and `ios/RememberWhen/Info.plist` allow portrait plus both
+landscape turns. The Stack uses its default orientation mask, which
+keeps upside-down portrait out. The first right-header translation put
+the header's contents outside its clipped band; keeping the working
+translation and changing only the side and rotation fixed it.
+
+**Proof.** Patrick checked all three allowed turns and said, "That's it,
+you got it!" Mac suite 489 of 489. Lint found no errors in the changed
+files. The full TypeScript check still reports four errors in untouched
+scheduler files; they were not part of this work.
+
+**Next session.** Remove the old pages and readers which the live app no
+longer calls, then scrub the stale code they leave behind. Patrick says
+the replacement pages have been on his phone for a few days, so their
+phone-proof condition is met. Later refinements not yet loaded do not
+reset that proof.
 
 
 ## #58-new (2026-09-03): the Where? helper built

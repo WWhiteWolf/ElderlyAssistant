@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-03 (#59-new, session close)
+Last updated: 2026-09-03 (#60-new, session close)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -16,9 +16,10 @@ to know why something was done the way it was.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-**Rotation: 0°, 90°, and 270°** (Patrick, end of #59-new). **180° out.**
-Headers stay with the **physical top of the phone**. Next session. Today:
-0° and 90° only (#52-new).
+REMOVE OLD PAGES AND READERS, THEN SCRUB STALE CODE (Patrick, #60-new).
+The replacement pages have been proved on his phone for a few days, so
+the condition that kept the old readers in place has been met. Remove
+what the live app no longer calls, then check the code left behind.
 
 
 PENDING
@@ -37,26 +38,27 @@ Things waiting on something — mostly on the phone.
    fire time, date picker off for weekday patterns and One Time for
    today, Daily every-day with no clock until Set time, AM/PM check on
    Save (skipped when time set on 24-hour picker) — all of #59-new.
+   Those later refinements do not reset the replacement pages' phone
+   proof.
 2. RETIRING THE OLD READERS. The live run does not call them. They
-   stay in the project until each replacement is proved on the phone.
-   That order is yours, from #19-new, restated at #39-new. Memory Test
-   is temporary and coming out. Timer is isolated deliberately.
-   Neither is a reason to keep these files (Patrick, #51-new).
-3. ROTATION: 0°, 90°, AND 270° (Patrick, end of #59-new). **180° out.**
-    Headers stay with the **physical top of the phone** in every allowed
-    turn. Next session. Today: 0° and 90° only (#52-new).
-4. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
+   stayed until each replacement was proved on the phone. Patrick says
+   the replacement pages have now been on his phone for a few days, so
+   that condition is met. Removing the old pages and readers, then
+   scrubbing stale code, is What's Next. Memory Test is temporary and
+   coming out. Timer is isolated deliberately. Neither is a reason to
+   keep these files (Patrick, #51-new).
+3. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
     sitting treated One Time's missing notice at the set time as
     a bug. He had decided it that way. A spec would have said so.
     Changing the name of One Time to Appointments belongs in
     that spec, and Extended to Bucket List.
-5. A USER GUIDE, from that spec or merely after it (Patrick,
+4. A USER GUIDE, from that spec or merely after it (Patrick,
     #52-new). He needs to provide it on his website, and a way
     in the app to find it or get it.
-6. A FEEDBACK BUTTON IN THE APP, similar to Mystery (Patrick,
+5. A FEEDBACK BUTTON IN THE APP, similar to Mystery (Patrick,
     #52-new). That is how the app lets you find or get the
     User Guide.
-7. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
+6. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
     WILL COVER (Patrick, #52-new). The during-build tests are
     thrown away. The run is not kept.
 

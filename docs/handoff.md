@@ -16,7 +16,7 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
-**#59-new is closed** (Patrick said excellent, end of #59-new). Built
+**#59-new is closed and committed** (Patrick, #60-new). Built
 Pending 4 and Pending 3, spinner consistency, and AM/PM check on Save.
 **Calendar day list:** saved `hour`/`minute` as 24-hour `HH:MM` before
 the name (`app/calendar.tsx`; sheet at
@@ -26,7 +26,7 @@ Daily every-day with no time — Set time button only (`app/item-edit.tsx`).
 **AM/PM on Save:** quiet popup when the time was set on the 12-hour row;
 **no popup** when set with the 24-hour box or digit spinner
 (`DateTimeControl.tsx` passes `timeVia`). Mac suite 489 of 489. Not on
-the phone yet. Patrick is committing. Full story in `build-history.md`.
+the phone yet. Full story in `build-history.md`.
 
 **#58-new is committed** (Patrick, #59-new). The Where? helper from
 `docs-ref/build-sheets/build-sheet-where-helper.md`. One transparent
@@ -97,9 +97,9 @@ Done do not advance the saved date. Extended has no banners; New and
 Edit have only the name, an optional note, and Done. Cancel closes and
 makes no change, including after + OPT.
 
-**Mac suite 489 of 489.** One TypeScript error stands and is not a
-fault: Expo's generated router list predates Scheduled Reminders and
-rewrites itself on the next build.
+**Mac suite 489 of 489.** TypeScript currently reports four errors in
+`scheduler/leadmoments.ts` and `scheduler/scheduler.ts`. They were
+outside #60-new and have not been examined.
 
 ### The pages, settled by Patrick at #30-new
 
@@ -224,42 +224,39 @@ They are kept here because they still decide things.
   to remember. This is why the returning arrows land on a decision block,
   and why recovery on opening is not a step bolted to the front of a run.
 - **Landscape is an optional view** (Patrick, #50-new). It does not
-  force rotating the phone. **Only 0 and 90° counter-clockwise**
-  (`LandscapeRight`: island on the left). 180, 270, and the other
-  90 are out because the island and the home indicator stay put
-  and cover the view. The same limits on the calendar. **The
-  header stays at the top of the normal portrait view** — on the
-  **left** in landscape, which is the island for this turn
-  (Patrick, #52-new) — **as the portrait header itself**: original
+  force rotating the phone. **The allowed turns are 0°, 90°
+  counter-clockwise, and 270° counter-clockwise; 180° upside-down
+  is out** (Patrick, #60-new). The same limits apply to the calendar.
+  **The header stays at the physical top of the phone** — at the
+  top in portrait, on the left at 90°, and on the right at 270° —
+  **as the portrait header itself**: original
   place and shape, the round buttons, the title in the middle, not
   restacked down the side. Titles stay the same way up as in
   portrait because the whole header is rotated as a unit. One-
   character vertical titles are out. **The Bridge lines stay with
   the headers.** Pages that open from other places turn with the
   page, in the same window. The calendar month grid was not rebuilt.
-  **The header buttons rotate in-place on the header**
-  (Patrick, #50-new). The words on the buttons sit the right way
-  up for landscape, still in the same spots. The title stays as
-  it is. Built at #51-new.
+  **The header buttons rotate in-place on the header.** The words
+  sit the right way up in both landscape turns, still in the same
+  spots. The title stays as it is. Built at #51-new and extended
+  to the second landscape turn at #60-new.
 
 ## What is open in front of it
 
-**Next session (Patrick, end of #59-new): rotation in three turns only —
-0°, 90°, and 270°.** **180° upside-down is out.** Headers stay with the
-**physical top of the phone** in every allowed turn. Not the old two-turn
-lock alone (#52-new was 0° and 90° only). Everything else waits until
-after that or on the phone.
+**Next session (Patrick, #60-new): remove the old pages and readers that
+the live app no longer calls, then scrub the stale code they leave
+behind.** The replacement pages have been proved on his phone for a few
+days. That meets the standing condition which kept the old readers in
+place.
 
-**Nothing from #56-new through #59-new is on the phone yet.**
-
-**Pending 3:** 0°, 90°, and 270°; 180° out; headers at the physical top.
-Next session.
+**Nothing from #56-new through #59-new is on the phone yet.** Those are
+later refinements; they do not reset the replacement pages' phone proof.
 
 **The paperwork half** (Patrick, #52-new): a thorough design spec
-(Pending 4; the rename belongs there), a User Guide from that or
+(Pending 3; the rename belongs there), a User Guide from that or
 after it, on his website, and a way in the app to find it (Pending
-5), a Feedback button similar to Mystery (Pending 6), a file for
-what testing has covered and will cover (Pending 7; during-build
+4), a Feedback button similar to Mystery (Pending 5), a file for
+what testing has covered and will cover (Pending 6; during-build
 tests are thrown away).
 
 **Memory Test is temporary and coming out. Timer is isolated

@@ -10,6 +10,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { useLandscapeHeaderSide } from '../components/AppOrientation';
 import { PageFrame, uprightInLandscape, useLandscape } from '../components/PageFrame';
 import { PAGE_LABELS } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
@@ -36,6 +37,7 @@ export default function HomeScreen() {
     const theme = useTheme();
     const styles = makeStyles(theme);
     const landscape = useLandscape();
+    const headerSide = useLandscapeHeaderSide();
     // Landscape keeps the ordinary badge order and puts Memory Test last.
     // Where? and Memory Test therefore share the bottom row (Patrick, #57-new).
     const shown = landscape
@@ -89,7 +91,7 @@ export default function HomeScreen() {
                             <View style={{ width: 70, alignItems: 'flex-start' }}>
                                 <Image
                                     source={require('../assets/images/icon-face.png')}
-                                    style={[styles.headerIcon, uprightInLandscape(landscape)]}
+                                    style={[styles.headerIcon, uprightInLandscape(landscape, headerSide)]}
                                 />
                             </View>
                             <View style={{ flex: 1, alignItems: 'center' }}>

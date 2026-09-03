@@ -4,6 +4,7 @@ import { Stack, useRouter, type Href } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { AppState, Alert } from 'react-native';
 import { ThemeProvider } from '../constants/Themes';
+import { AppOrientationProvider } from '../components/AppOrientation';
 import { CoverRoot } from '../components/Cover';
 import * as AppGroup from '../modules/app-group';
 import {
@@ -510,9 +511,10 @@ export default function RootLayout() {
   }, [response]);
 
   return (
+    <AppOrientationProvider>
     <ThemeProvider>
     <CoverRoot>
-    <Stack screenOptions={{ orientation: 'all' }}>
+    <Stack screenOptions={{ orientation: 'default' }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="home" options={{ headerShown: false }} />
       <Stack.Screen name="shopping" options={{ headerShown: false }} />
@@ -544,5 +546,6 @@ export default function RootLayout() {
     </Stack>
     </CoverRoot>
     </ThemeProvider>
+    </AppOrientationProvider>
   );
 }
