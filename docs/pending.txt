@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-03 (#67-new)
+Last updated: 2026-09-04 (#69-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -18,32 +18,19 @@ Timer and Memory Test are not this list.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-PHONE LOAD. The name scrub is finished (#61-new through #65-new).
-Nothing is missing before an EAS build and a phone load
-(Patrick, #67-new). Paperwork is Pending 2–5.
+PHONE LOAD. The leftover cleanup is built (#69-new) and not on the
+phone yet. Last load is #67-new. Paperwork is Pending 2–5.
 
 
 PENDING
 ------------------------------------------------------------------
 Things waiting on something — mostly on the phone.
 
-1. EVERYTHING BUILT SINCE THE LAST PHONE LOAD. Last load is the Sit
-   load with landscape (#52-new): 90° counter-clockwise, headers on
-   the left. He exported his real list first. Calendar and landscape
-   are on the phone. Built since then and not on the phone: the miss
-   notice for Weekly, Monthly, Quarterly, Yearly, and One Time
-   (#55-new, committed); Appointments and Bucket List on every live
-   screen (#56-new); a failed daily clear-out now spoken in the
-   opening pop-up (#56-new, Pending 2); the Where? helper from Home
-   and the calendar month (#58-new); all of #59-new — calendar day-list
-   fire time, date picker off for weekday patterns and One Time for
-   today, Daily every-day with no clock until Set time, AM/PM check on
-   Save (skipped when time set on 24-hour picker); current notification
-   names through the live road (#62-new); every page log under the
-   current page name (#63-new); Siri says Daily and Remember, and the
-   open-app leftover is out (#64-new); saved kinds and routes are
-   appointments and bucketlist (#65-new). Those later refinements do not
-   reset the replacement pages' phone proof.
+1. EVERYTHING BUILT SINCE THE LAST PHONE LOAD. Last load is #67-new.
+   Landscape 90° counter-clockwise, headers on the left. Calendar and
+   landscape are on the phone. He has not exhaustively tested it; what
+   he has used is working. Built since then and not on the phone: the
+   leftover cleanup (#69-new).
 2. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
     sitting treated One Time's missing notice at the set time as
     a bug. He had decided it that way. A spec would have said so.
@@ -129,9 +116,13 @@ WHAT IS DONE, NEWEST FIRST
 One line each. The full story of any of them is in
 docs/handoff-history.md.
 
-1. #67-new — nothing missing before an EAS phone load. The three
+1. #69-new — leftover cleanup built. Dead exports, leftover theme
+   tokens, leftover page words in test titles. Mac 298. TypeScript
+   clean. Nothing about how reminders fire changed.
+2. #68-new — leftover cleanup sheet written. No code. Committed.
+3. #67-new — nothing missing before an EAS phone load. The three
    held-back items went to Nice-to-have 3; do not raise them in
-   reports. Patrick will commit.
+   reports. Committed.
 2. #66-new — the live desk pruned; archive renamed to handoff-history;
    #65-new written into the archive. Phone load is next.
    Committed (Patrick, #67-new).

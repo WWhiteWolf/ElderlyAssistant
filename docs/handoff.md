@@ -15,11 +15,12 @@ who decides. It is not a claim that the files were refreshed.
 He is living with the #67-new load on the phone. Landscape 90°
 counter-clockwise, headers on the left. Calendar and landscape are on
 the phone. He has not exhaustively tested it; what he has used is
-working. **#67-new is committed.**
+working. **#67-new is committed.** **#68-new is committed.**
 
-Saved kinds, routes, page files, and banner sources are `appointments`
-and `bucketlist`. Siri says Daily and Remember. Mac suite 298 of 298.
-TypeScript is clean.
+The leftover cleanup is built (#69-new). Nothing about how reminders
+are armed, named, or shown changed. Saved kinds, routes, page files,
+and banner sources are `appointments` and `bucketlist`. Siri says
+Daily and Remember. Mac suite 298 of 298. TypeScript is clean.
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -66,11 +67,8 @@ These are Patrick's and they govern the work rather than describing it.
 
 ## What is open in front of it
 
-**Cleanup sheet** at `docs/build-sheet-cleanup.md` (#68-new). A fresh
-session builds it.
-
-The name scrub is finished. The #67-new load is on the phone.
-Paperwork is Pending 2–5.
+The name scrub is finished. The leftover cleanup is built. The
+#67-new load is on the phone. Paperwork is Pending 2–5.
 
 **The build sheets are the pattern for this work** — each
 self-contained, carrying the answers themselves rather than pointing at

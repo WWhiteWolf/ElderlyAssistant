@@ -3951,6 +3951,31 @@ Patrick's word. The archive's name is `handoff-history.md` (was
 `build-history.md`). Patrick will commit.
 
 
+## #68-new (2026-09-04): leftover cleanup sheet written
+
+**The opener was to assess an outside report.** The leftovers it
+found were confirmed. A build sheet was written at
+`docs/build-sheet-cleanup.md`. No code was changed. A fresh session
+was to build it.
+
+**Session close.** No docs refresh in that sitting. **Committed.**
+
+
+## #69-new (2026-09-04): leftover cleanup built
+
+**The leftover cleanup sheet was built.** Dead exports, ten unused
+theme tokens, leftover page words in test titles, and one stretch of
+the live design file that still argued a daily item arms two. Daily's
+One Time for today was left alone. Nothing about how reminders are
+armed, named, or shown changed.
+
+**Checks.** Mac suite 298 of 298. TypeScript fully clean.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `in-flight.md`,
+and `pending.txt` were refreshed at Patrick's word. `pending.docx` was
+not regenerated. The cleanup sheet is in `docs-ref/build-sheets`.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and
