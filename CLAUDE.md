@@ -17,7 +17,7 @@
    and **is brought up to date at every update from now on**
    (his instruction, #31-new) — it is how he tracks the work,
    so it is never left for a later pass.
-   `docs/build-history.md` is opened only when something
+   `docs/handoff-history.md` is opened only when something
    finished needs tracing.
 
    `docs/index.md` says what every file in `docs` and in
@@ -88,14 +88,14 @@
      and starts being skimmed, and what is being carried there is
      finished work.
    - **Nothing is deleted from `handoff.md` until it exists in
-     `docs/build-history.md`.** At #31-new a prune done on trust
+     `docs/handoff-history.md`.** At #31-new a prune done on trust
      would have destroyed five whole sessions, none of which had
      ever been written into the history.
-   - **Every session has an entry in `build-history.md`**, written
+   - **Every session has an entry in `handoff-history.md`**, written
      at its close. That is the one write the end of a session
      still owes, because the handoff is already current.
    - **The test for a block being pruned**: finished, so it goes to
-     the history; still decides something, so it goes to the
+     `handoff-history.md`; still decides something, so it goes to the
      handoff's standing rulings; undone or unanswered, so it
      stays. A block answering none of the three is already gone.
    - **Write the condition, not the ceremony.** A rule that says

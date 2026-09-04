@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-03 (#65-new)
+Last updated: 2026-09-03 (#66-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -10,14 +10,16 @@ numbers belong to the heading above them and start again at 1 under
 each one, so they will shift as things are added and finished.
 
 The session-by-session story is not kept here any more. It lives in
-docs/build-history.md, which is the archive to look at when you want
+docs/handoff-history.md, which is the archive to look at when you want
 to know why something was done the way it was.
+
+Timer and Memory Test are not this list.
 
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-PHONE LOAD WAITS until the scrub is finished. Paperwork is Pending
-2–5.
+PHONE LOAD. The name scrub is finished (#61-new through #65-new).
+Paperwork is Pending 2–5.
 
 
 PENDING
@@ -107,28 +109,27 @@ built. None of these is a job to do.
    survive the night. The coffee-and-water sort says a thing was
    done today and is meaningless the morning after. They must never
    be merged.
-9. THE MEMORY TEST ALLOWS ONE SESSION A DAY. Once the day's score
-   is logged the Start button is replaced by that score and "Come
-   back tomorrow", so it can only be tried on a fresh day.
-10. TIMES SET BY SPINNING THROUGH NOON OR MIDNIGHT BEFORE #27-new
+9. TIMES SET BY SPINNING THROUGH NOON OR MIDNIGHT BEFORE #27-new
     are stored in the wrong half of the day and want re-setting.
-11. TASKS SAVED BEFORE THE DATE FIX carry a date they were given
+10. TASKS SAVED BEFORE THE DATE FIX carry a date they were given
     rather than one you chose.
-12. A BIG PIECE GETS A BUILD SHEET FIRST — self-contained, carrying
+11. A BIG PIECE GETS A BUILD SHEET FIRST — self-contained, carrying
     every answer, so whoever builds it never has to ask you a
     design question.
-13. BARE SESSION NUMBERS mean the old shared chain. This project's
+12. BARE SESSION NUMBERS mean the old shared chain. This project's
     own chain is written #1-new, #2-new, and so on.
-14. WORKING DOCUMENTS LIVE IN docs. History lives in docs-ref, and
-    the twelve build sheets are in docs-ref/build-sheets. The index
+13. WORKING DOCUMENTS LIVE IN docs. History lives in docs-ref, and
+    the build sheets are in docs-ref/build-sheets. The index
     says which file is the home. He calls them working documents;
     live desk means the same thing. (App-Docs, 2026-08-31)
-15. THE CALENDAR PAGE SHOWS DATED ITEMS. No every-day Daily items,
-    no Extended. No Done or Snooze on the month or the day’s list.
+14. THE CALENDAR PAGE SHOWS DATED ITEMS. No every-day Daily items,
+    no Bucket List. No Done or Snooze on the month or the day’s list.
     Names in a day box are one line and scroll vertically.
-    Landscape is an optional view, 0 and 90° counter-clockwise
-    only, headers on the left, all pages.
-16. HAVING A GOOD IDEA LEADS TO OVERREACHING (Patrick, #52-new).
+    Landscape is an optional view: 0°, 90° counter-clockwise, and
+    270° counter-clockwise; 180° upside-down is out. Headers stay
+    at the physical top of the phone, all pages. The calendar month
+    grid was not rebuilt.
+15. HAVING A GOOD IDEA LEADS TO OVERREACHING (Patrick, #52-new).
     The feedback he needs is the trim: what part is worth it,
     and what is more than is there.
 
@@ -136,13 +137,17 @@ built. None of these is a job to do.
 WHAT IS DONE, NEWEST FIRST
 ------------------------------------------------------------------
 One line each. The full story of any of them is in
-docs/build-history.md.
+docs/handoff-history.md.
 
-1. #65-new — saved kinds, routes, page files, and banner sources are
+1. #66-new — the live desk pruned; archive renamed to handoff-history;
+   #65-new written into the archive. Phone load is next. Patrick will
+   commit.
+2. #65-new — saved kinds, routes, page files, and banner sources are
    appointments and bucketlist. TypeScript is clean: the four errors
    were the checker, not the running code. Mac 298. Not on the phone.
-2. #64-new — Siri says Daily and Remember. Open-app leftover out.
-   Not on the phone.
+   Committed (Patrick, #66-new).
+3. #64-new — Siri says Daily and Remember. Open-app leftover out.
+   Not on the phone. Committed (Patrick, #65-new).
 3. #63-new — every page log uses the current page name. The leftover
    Look Ahead log came out. Sit backup and near-fire-set deleted.
    Not on the phone. Committed (Patrick, #64-new).
@@ -344,22 +349,16 @@ PARKED ON PURPOSE
 ------------------------------------------------------------------
 1. Voice control through Siri. Set aside after much effort; revisit
    only if a future iPhone update fixes the name-matching.
-2. THE TIMER is a different effort (Patrick, #42-new), not this
-   reminder stretch. It takes Stop (Pause) / Continue (Go) on the
-   tile, a log, the Timer not working right, the loud alarm that
-   was meant to follow five minutes later, and making Loud alert
-   actually louder (a custom sound and special Apple permission).
-   Revisit only as its own work.
-3. Backup "Merge" option — BACK-MOST BURNER (#67): you are 90% sure
+2. Backup "Merge" option — BACK-MOST BURNER (#67): you are 90% sure
    you are dropping it. Restore keeps REPLACING everything, which
    works fine for your one-device use. Only revisit if you raise
    it.
-4. Import files/documents into the Vault — PARKED (#69). The idea
+3. Import files/documents into the Vault — PARKED (#69). The idea
    became "Vault pages" (paste text straight into a Vault item, no
    files) in the #68 roadmap; in #69 you started the talk-through,
    weren't ready, and parked the whole thing. The Vault stays as it
    is until you run into a real need. Not to be re-raised.
-5. The Android icon pictures and the splash (startup) image still
+4. The Android icon pictures and the splash (startup) image still
    carry the old placeholder art — deliberately left for later when
    the main icon got the new face (#65). (Moved here from
    Nice-to-have, #1-new.)

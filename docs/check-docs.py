@@ -15,9 +15,9 @@ The three conditions:
 
 1. `handoff.md` is under the size at which it stops being read whole.
    Past that it carries finished work, and finished work belongs in
-   `build-history.md`.
+   `handoff-history.md`.
 
-2. Every session has an entry in `build-history.md`. This is the fault
+2. Every session has an entry in `handoff-history.md`. This is the fault
    that hid five whole sessions until #31-new — nobody could see the gap,
    because seeing it meant reading a 2,900-line file.
 
@@ -47,7 +47,7 @@ HANDOFF_LINE_LIMIT = 400
 
 # #14-new and #15-new have no entry and never will unless somebody writes
 # them. Both are accounted for in `reminder-rebuild.md` and the gap is
-# recorded in `build-history.md` itself, so they are not reported again.
+# recorded in `handoff-history.md` itself, so they are not reported again.
 KNOWN_GAPS = {14, 15}
 
 
@@ -63,7 +63,7 @@ def handoff_size() -> tuple[bool, str]:
 
 
 def history_gaps() -> tuple[bool, str]:
-    history = (DOCS / "build-history.md").read_text(encoding="utf-8")
+    history = (DOCS / "handoff-history.md").read_text(encoding="utf-8")
 
     # Headings only. A wrapped line of body text can begin with "#31-new"
     # and would otherwise count as an entry that does not exist — which it
@@ -100,9 +100,9 @@ def history_gaps() -> tuple[bool, str]:
         else ""
     )
     if not missing:
-        return True, f"build-history.md has an entry for every session.{tail}"
+        return True, f"handoff-history.md has an entry for every session.{tail}"
     names = ", ".join(f"#{n}-new" for n in missing)
-    return False, f"build-history.md has no entry for {names}.{tail}"
+    return False, f"handoff-history.md has no entry for {names}.{tail}"
 
 
 def docx_matches_txt() -> tuple[bool, str]:

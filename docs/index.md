@@ -37,7 +37,7 @@ just because it is listed.
 
 ## Tracing — in `docs`
 
-- **`build-history.md`** — the session record. Headings are its index. Never read whole.
+- **`handoff-history.md`** — the archive of the handoff. Headings are its index. Never read whole.
 - **`reminder-rebuild.md`** — #15-new through #18-new. Not the live design. One live part: "What is already right."
 - **`outside-review.md`** — Grok's #17-new reading of the reminder code, marked later true or not.
 - **`ElderlyAssistant-notification-findings.md`** — a read-only review of the notification faults, 19 August 2026.

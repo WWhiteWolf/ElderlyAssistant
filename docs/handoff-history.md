@@ -1,4 +1,4 @@
-# Build history — A Place To Remember (Memory)
+# Handoff history — A Place To Remember (Memory)
 
 The session-by-session record of Memory's own chain, in Mystery's
 build-history shape: every section heading carries the session
@@ -3856,6 +3856,72 @@ the phone. The new Siri names need an EAS build.
 **Session close.** `handoff.md`, `build-history.md`, `in-flight.md`,
 and `pending.txt` were refreshed at Patrick's word. `pending.docx`
 was not regenerated. Patrick will commit.
+
+
+## #65-new (2026-09-03): saved kinds and routes are appointments and bucketlist
+
+**The goal was to change saved kinds and routes to Appointments and
+Bucket List.** Visible names already said that (#56-new). The saved
+kind, route, page file, and banner source still said `oneTime` /
+`extended` and `/onetime` / `/extended`.
+
+**The live path now uses one word in each place.** Saved kinds, routes,
+page files, and banner sources are `appointments` and `bucketlist`.
+Visible names stay Appointments and Bucket List. Daily's form setting
+is `appointmentsForToday`. The old spelling rewrite from `oneTime` to
+`onetime` came out; the translator now uses the saved kind as the
+source. No compatibility layer.
+
+**Patrick ruled** that Daily's "One Time for today" is not the
+Appointments page. It is Daily's own add for a one-shot that belongs
+to this day. Those words are not an old name to change.
+
+**Backup's retired strip-keys** `onetime_history` and
+`extended_history` stay, so a restore can still clear the old logs.
+
+**The four TypeScript errors** in `scheduler/leadmoments.ts` and
+`scheduler/scheduler.ts` were the checker, not the running code. A
+missing import, a local name for a field already checked, and a
+missing checkmark counting as not done made the checker agree. Nothing
+about how reminders run was meant to change.
+
+**Checks.** Mac suite 298 of 298. TypeScript is clean. Not on the phone.
+
+**This sitting did not write its history entry.** The gap was found at
+#66-new and the entry is written here. **Committed** (Patrick, #66-new).
+
+
+## #66-new (2026-09-03): the live desk pruned; the archive renamed
+
+**The opener was three things set aside on purpose.** The sitting became
+an updating and pruning session after the live desk was found carrying
+finished work.
+
+**#65-new had no history entry.** It was written from the handoff and
+pending, and marked committed (Patrick, this sitting).
+
+**The handoff was taken down to live work.** Closed-sitting recaps came
+out first, then build decisions that already lived in the archive. The
+file went from 412 lines to 140. Phone load is next. The name scrub is
+finished.
+
+**Pending was brought current.** What's Next is the phone load. Facts 15
+no longer says 0° and 90° only.
+
+**The archive was renamed** `docs/handoff-history.md` (was
+`build-history.md`). Live pointers were updated. Past sittings inside
+the archive still use the old name.
+
+**Timer and Memory Test are not this stream** (Patrick). One note in the
+handoff and one line in pending. Do not keep bringing them up here.
+
+**Patrick is one person, not a team** (Patrick). Rule 27 of
+`Projects/CLAUDE.md`. Claude still follows the rules. That file lives
+in the Projects repository, not this one.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `in-flight.md`,
+and `pending.txt` were refreshed at Patrick's word. `pending.docx` was
+not regenerated. Patrick will commit.
 
 
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
