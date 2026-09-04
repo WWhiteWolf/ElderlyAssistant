@@ -25,8 +25,8 @@ export type SourceScreenCode =
     | 'monthly'
     | 'quarterly'
     | 'yearly'
-    | 'onetime'
-    | 'extended';
+    | 'appointments'
+    | 'bucketlist';
 
 /**
  * The unit a repeating item counts in.

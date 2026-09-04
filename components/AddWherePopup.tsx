@@ -11,8 +11,8 @@ const WHERE_KINDS: ReminderKind[] = [
     'monthly',
     'quarterly',
     'yearly',
-    'oneTime',
-    'extended',
+    'appointments',
+    'bucketlist',
 ];
 
 export const WHERE_CHOICES = WHERE_KINDS.map((kind) => ({
@@ -37,7 +37,7 @@ export default function AddWherePopup({
 
     const choose = (kind: ReminderKind) => {
         onClose();
-        const dest = returnTo ?? (kind === 'oneTime' ? 'onetime' : kind);
+        const dest = returnTo ?? kind;
         router.push({ pathname: '/item-edit', params: { kind, returnTo: dest } } as Href);
     };
 

@@ -449,7 +449,7 @@ export function runLeadMomentsTests(): void {
         assertSame(
             momentsFor(
                 item({
-                    sourceScreenCode: 'onetime',
+                    sourceScreenCode: 'appointments',
                     floatsWithPhoneBit: false,
                     dueTimeZoneText: 'America/Los_Angeles',
                     dueMoment: at(2026, 5, 15, 0, 30),
@@ -530,7 +530,7 @@ export function runLeadMomentsTests(): void {
     test('An appointment on Thanksgiving 2026 moves to the Wednesday before', () => {
         assertSame(
             momentsOf({
-                sourceScreenCode: 'onetime',
+                sourceScreenCode: 'appointments',
                 dueMoment: at(2026, 10, 26, 9, 0),
                 holidayMoveCode: 'before',
                 leadTimeList: [NOTHING_BEFORE],

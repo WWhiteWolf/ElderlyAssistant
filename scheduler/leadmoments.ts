@@ -290,7 +290,8 @@ function nextMonthlyByWeekday(
             let days = daysMatching(year, month, weekday);
             if (item.repeatAfterDayCount !== undefined) {
                 // Only the first weekday after the numbered day is the occurrence.
-                days = days.filter((day) => day > item.repeatAfterDayCount);
+                const afterDay = item.repeatAfterDayCount;
+                days = days.filter((day) => day > afterDay);
                 if (days.length > 0) {
                     days = [days[0]];
                 }

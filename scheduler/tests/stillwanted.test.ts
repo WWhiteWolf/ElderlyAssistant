@@ -219,7 +219,7 @@ export function runStillWantedTests(): void {
         // An appointment: it cannot be snoozed, so a stamp on it means
         // nothing, and no exception anywhere is needed to say so.
         const said = isStillWanted(item({
-            sourceScreenCode: 'onetime',
+            sourceScreenCode: 'appointments',
             canBePushedBackBit: false,
             pushedBackToStamp: at(2026, 5, 1, 22, 0),
         }), NOW);
@@ -230,7 +230,7 @@ export function runStillWantedTests(): void {
 
     test('An appointment with neither bit set is simply wanted', () => {
         const said = isStillWanted(item({
-            sourceScreenCode: 'onetime',
+            sourceScreenCode: 'appointments',
             dueMoment: at(2026, 5, 3, 14, 0),
             canBeDoneBit: false,
             canBePushedBackBit: false,
@@ -246,7 +246,7 @@ export function runStillWantedTests(): void {
         // A group reminder stands for several items at once. The bit is there
         // to be read further along, not here.
         const said = isStillWanted(item({
-            sourceScreenCode: 'onetime',
+            sourceScreenCode: 'appointments',
             itemIdText: 'background',
             standsForGroupBit: true,
         }), NOW);

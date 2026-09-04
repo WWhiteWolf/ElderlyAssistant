@@ -67,7 +67,7 @@ export function runTranslatorCadenceTests(): void {
 
     test('An appointment carries its leads', () => {
         const shaped = shapeOf(item({
-            kind: 'oneTime',
+            kind: 'appointments',
             year: 2026,
             month: 5,
             day: 10,
@@ -77,16 +77,16 @@ export function runTranslatorCadenceTests(): void {
         }));
         assertSame(
             [shaped.sourceScreenCode, shaped.doneEndsItemBit, shaped.leadTimeList.length, shaped.bannerButtonsCode],
-            ['onetime', true, 1, 'appointmentsok'],
+            ['appointments', true, 1, 'appointmentsok'],
             'an appointment keeps its one-off shape and current source',
         );
     });
 
     test('An Extended item has no due time', () => {
-        const shaped = shapeOf(item({ kind: 'extended' }));
+        const shaped = shapeOf(item({ kind: 'bucketlist' }));
         assertSame(
             [shaped.sourceScreenCode, shaped.hasDueTimeBit, shaped.leadTimeList.length],
-            ['extended', false, 0],
+            ['bucketlist', false, 0],
             'a Bucket List item has no due time',
         );
     });
@@ -96,7 +96,7 @@ export function runTranslatorCadenceTests(): void {
             [
                 item({ id: 'a', kind: 'daily', hour: 8, minute: 0 }),
                 item({ id: 'b', kind: 'weekly', day: 1, hour: 9, minute: 0 }),
-                item({ id: 'c', kind: 'extended' }),
+                item({ id: 'c', kind: 'bucketlist' }),
             ],
             NOW,
         );
@@ -296,7 +296,7 @@ export function runTranslatorCadenceTests(): void {
 
     test('Extended has no Options cases', () => {
         assertSame(
-            optionCasesForKind('extended').map((one) => one.id),
+            optionCasesForKind('bucketlist').map((one) => one.id),
             [],
             'Extended is the name, an optional note, and Done',
         );
@@ -320,7 +320,7 @@ export function runTranslatorCadenceTests(): void {
 
     test('One Time for today from Daily has only time zone', () => {
         assertSame(
-            optionCasesForKind('oneTime', true).map((one) => one.id),
+            optionCasesForKind('appointments', true).map((one) => one.id),
             ['timezone'],
             'Daily\'s One Time for today is time zone only',
         );
@@ -328,7 +328,7 @@ export function runTranslatorCadenceTests(): void {
 
     test('One Time from its own page keeps holidays and time zone', () => {
         assertSame(
-            optionCasesForKind('oneTime').map((one) => one.id),
+            optionCasesForKind('appointments').map((one) => one.id),
             ['holidays', 'timezone'],
             'One Time on its own page keeps Weekly\'s holidays and time zone',
         );

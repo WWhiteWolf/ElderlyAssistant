@@ -81,7 +81,7 @@ export const REMINDER_ITEM_SOURCES = [
     'quarterlydelay',
     'yearly',
     'yearlydelay',
-    'onetime',
+    'appointments',
 ];
 
 /** Sources whose held reminders must be left untouched after a failed read. */

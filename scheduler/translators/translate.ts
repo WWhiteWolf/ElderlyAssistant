@@ -29,7 +29,6 @@ import type {
     LeadTime,
     RepeatUnitCode,
     ShapedItem,
-    SourceScreenCode,
 } from '../inputshape.ts';
 import type { ReminderItem } from '../../modules/reminder-types.ts';
 import {
@@ -122,7 +121,7 @@ function translateOne(rules: ScreenRules, saved: ReminderItem): ShapedItem {
     return {
         // ---- what the item is ----
 
-        sourceScreenCode: sourceForKind(saved.kind),
+        sourceScreenCode: saved.kind,
         itemIdText: rules.idOf(saved),
         itemNameText: rules.nameOf(saved),
 
@@ -179,11 +178,6 @@ function translateOne(rules: ScreenRules, saved: ReminderItem): ShapedItem {
             ? { bannerButtonsCode: rules.bannerButtonsCode }
             : {}),
     };
-}
-
-/** The one spelling change between a saved kind and a notification source. */
-function sourceForKind(kind: ReminderItem['kind']): SourceScreenCode {
-    return kind === 'oneTime' ? 'onetime' : kind;
 }
 
 // ---------------------------------------------------------------------------
@@ -332,7 +326,7 @@ const datedCadenceRules: ScreenRules = {
     bannerBodyTextOf: (item) => `Time for ${item.label}!`,
 };
 
-const oneTimeCadenceRules: ScreenRules = {
+const appointmentsCadenceRules: ScreenRules = {
     canBeDoneBit: true,
     canBePushedBackBit: false,
     doneEndsItemBit: true,
@@ -379,7 +373,7 @@ const oneTimeCadenceRules: ScreenRules = {
     },
 };
 
-const extendedCadenceRules: ScreenRules = {
+const bucketlistCadenceRules: ScreenRules = {
     canBeDoneBit: true,
     canBePushedBackBit: false,
     doneEndsItemBit: true,
@@ -400,8 +394,8 @@ const rulesByKind: Record<ReminderItem['kind'], ScreenRules> = {
     monthly: datedCadenceRules,
     quarterly: datedCadenceRules,
     yearly: datedCadenceRules,
-    oneTime: oneTimeCadenceRules,
-    extended: extendedCadenceRules,
+    appointments: appointmentsCadenceRules,
+    bucketlist: bucketlistCadenceRules,
 };
 
 /** Turn the one saved list into shaped items, in the order given. */

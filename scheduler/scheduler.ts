@@ -19,7 +19,7 @@ import { isNewDay, resetForNewDay } from './dailyreset.ts';
 import { resetForNewCycle } from './weeklyreset.ts';
 import type { ResettableChore } from './weeklyreset.ts';
 import { HEALTH_KEY, MISSES_KEY, addRun, faultSignature, mergeMisses, missesForRollover } from './health.ts';
-import type { Miss, RunFault, RunRecord } from './health.ts';
+import type { Miss, MissableItem, RunFault, RunRecord } from './health.ts';
 import { clearStartingOccurrenceTicks, missablesDueOnDays, unprocessedDays } from './miss-candidates.ts';
 import type { WantedReminder, WantedTrigger } from './types.ts';
 
@@ -71,7 +71,7 @@ export const OWNED_SOURCES = [
     'quarterlydelay',
     'yearly',
     'yearlydelay',
-    'onetime',
+    'appointments',
     'memorytest',
 ];
 

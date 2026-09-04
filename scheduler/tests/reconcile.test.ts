@@ -22,7 +22,7 @@ const OWNED = [
     'quarterlydelay',
     'yearly',
     'yearlydelay',
-    'onetime',
+    'appointments',
     'memorytest',
 ];
 
@@ -227,7 +227,7 @@ export function runReconcileTests(): void {
     test('A failed reminder list names the reminder sources as unread', () => {
         const unread = unreadSourcesFor(['reminder_items']);
         assert(unread.includes('daily'), 'Daily’s held reminders must be kept');
-        assert(unread.includes('onetime'), 'Appointments’ held reminders must be kept');
+        assert(unread.includes('appointments'), 'Appointments’ held reminders must be kept');
         assert(!unread.includes('memorytest'), 'Memory Test is a different saved thing');
     });
 

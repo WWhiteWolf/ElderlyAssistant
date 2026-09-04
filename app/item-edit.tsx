@@ -69,7 +69,7 @@ const ONE_TIME_PRESETS: ReminderPreset[] = [
     { label: 'Month', kind: 'clock', daysBefore: 30, timeOfDay: 'evening' },
 ];
 
-const KINDS: ReminderKind[] = ['daily', 'weekly', 'monthly', 'quarterly', 'yearly', 'oneTime', 'extended'];
+const KINDS: ReminderKind[] = ['daily', 'weekly', 'monthly', 'quarterly', 'yearly', 'appointments', 'bucketlist'];
 
 function asParam(value: string | string[] | undefined): string | undefined {
     if (Array.isArray(value)) return value[0];
@@ -78,7 +78,6 @@ function asParam(value: string | string[] | undefined): string | undefined {
 
 function kindFrom(kind?: string, returnTo?: string): ReminderKind {
     if (kind && KINDS.includes(kind as ReminderKind)) return kind as ReminderKind;
-    if (returnTo === 'onetime') return 'oneTime';
     if (returnTo && KINDS.includes(returnTo as ReminderKind)) return returnTo as ReminderKind;
     return 'daily';
 }
@@ -88,10 +87,10 @@ function formHasTimeSet(
     pendingTime: Date | null,
     timeSet: boolean,
 ): boolean {
-    if (editKind === 'extended') return false;
+    if (editKind === 'bucketlist') return false;
     if (editKind === 'daily') return pendingTime !== null;
     if (editKind === 'weekly') return true;
-    if (editKind === 'oneTime') return timeSet;
+    if (editKind === 'appointments') return timeSet;
     if (editKind === 'monthly' || editKind === 'quarterly' || editKind === 'yearly') return true;
     return false;
 }
@@ -128,8 +127,8 @@ function pathFor(
         case 'monthly': return '/monthly' as Href;
         case 'quarterly': return '/quarterly' as Href;
         case 'yearly': return '/yearly' as Href;
-        case 'onetime': return '/onetime' as Href;
-        case 'extended': return '/extended' as Href;
+        case 'appointments': return '/appointments' as Href;
+        case 'bucketlist': return '/bucketlist' as Href;
         default: return '/daily' as Href;
     }
 }
@@ -149,7 +148,7 @@ function assembleFormItem(parts: {
     optionSettings: OptionSettings;
     monthlyPattern: MonthlyPattern;
     note: string;
-    isOneTimeForToday: boolean;
+    isAppointmentsForToday: boolean;
 }): ReminderItem {
     const base: ReminderItem = parts.existing ?? {
         id: parts.id,
@@ -196,9 +195,9 @@ function assembleFormItem(parts: {
             next.day = parts.pendingDate.getDate();
         }
         delete next.reminders;
-    } else if (parts.editKind === 'oneTime') {
+    } else if (parts.editKind === 'appointments') {
         const now = new Date();
-        const when = parts.isOneTimeForToday
+        const when = parts.isAppointmentsForToday
             ? new Date(
                 now.getFullYear(),
                 now.getMonth(),
@@ -211,7 +210,7 @@ function assembleFormItem(parts: {
             : (parts.dateSet ? parts.pendingDate : now);
         next = {
             ...next,
-            ...(parts.isOneTimeForToday || parts.dateSet
+            ...(parts.isAppointmentsForToday || parts.dateSet
                 ? { year: when.getFullYear(), month: when.getMonth(), day: when.getDate() }
                 : {}),
             ...hourMinuteOf({
@@ -220,7 +219,7 @@ function assembleFormItem(parts: {
             }),
             reminders: parts.reminders,
         };
-        if (!parts.isOneTimeForToday && !parts.dateSet) {
+        if (!parts.isAppointmentsForToday && !parts.dateSet) {
             delete next.year;
             delete next.month;
             delete next.day;
@@ -276,7 +275,7 @@ export default function ItemEditScreen() {
     }>();
     const editingId = asParam(id) || null;
     const page = asParam(returnTo) || 'daily';
-    const isOneTimeForToday = asParam(formContext) === 'oneTimeForToday';
+    const isAppointmentsForToday = asParam(formContext) === 'appointmentsForToday';
     const fromHelper = asParam(viaHelper) === '1';
     const startKind = kindFrom(asParam(kind), page);
     const calendarReturn = page === 'calendar' ? {
@@ -314,7 +313,7 @@ export default function ItemEditScreen() {
     monthlyPatternRef.current = monthlyPattern;
     const noteRef = useRef(note);
     noteRef.current = note;
-    const kindOptions = optionCasesForKind(editKind, isOneTimeForToday);
+    const kindOptions = optionCasesForKind(editKind, isAppointmentsForToday);
     const applied = appliedOptionRows(optionSettings).filter((one) =>
         kindOptions.some((c) => c.id === one.id),
     );
@@ -334,8 +333,8 @@ export default function ItemEditScreen() {
             return;
         }
         if (router.canDismiss()) router.dismissAll();
-        if (!editingId && editKind === 'oneTime' && isOneTimeForToday) {
-            router.replace('/onetime' as Href);
+        if (!editingId && editKind === 'appointments' && isAppointmentsForToday) {
+            router.replace('/appointments' as Href);
         } else {
             router.replace(pathFor(page, calendarReturn));
         }
@@ -358,7 +357,7 @@ export default function ItemEditScreen() {
                         const t = new Date(new Date().setHours(found.hour, found.minute, 0, 0));
                         setPendingTime(t);
                         setTimeSet(true);
-                        if (found.kind !== 'weekly' && found.kind !== 'daily' && found.kind !== 'extended') {
+                        if (found.kind !== 'weekly' && found.kind !== 'daily' && found.kind !== 'bucketlist') {
                             setPendingDate(new Date(
                                 typeof found.year === 'number' ? found.year : t.getFullYear(),
                                 typeof found.month === 'number' ? found.month : t.getMonth(),
@@ -370,7 +369,7 @@ export default function ItemEditScreen() {
                             ));
                         }
                     } else if (
-                        found.kind === 'monthly' || found.kind === 'quarterly' || found.kind === 'yearly' || found.kind === 'oneTime'
+                        found.kind === 'monthly' || found.kind === 'quarterly' || found.kind === 'yearly' || found.kind === 'appointments'
                     ) {
                         if (typeof found.year === 'number' && typeof found.month === 'number' && typeof found.day === 'number') {
                             setPendingDate(new Date(found.year, found.month, found.day, 12, 0, 0, 0));
@@ -379,10 +378,10 @@ export default function ItemEditScreen() {
                             setDateSet(false);
                         }
                     }
-                    if (found.kind === 'oneTime') {
+                    if (found.kind === 'appointments') {
                         setReminders(found.reminders ?? []);
                     }
-                    if (found.kind === 'extended' || found.kind === 'daily' || found.kind === 'weekly') {
+                    if (found.kind === 'bucketlist' || found.kind === 'daily' || found.kind === 'weekly') {
                         setTimeSet(typeof found.hour === 'number');
                     }
                     setOptionSettings(optionsFromItem(found));
@@ -395,7 +394,7 @@ export default function ItemEditScreen() {
                 setOptionSettings(emptyOptionSettings());
                 setMonthlyPattern('date');
                 setNote('');
-                if (nextKind === 'oneTime' && isOneTimeForToday) {
+                if (nextKind === 'appointments' && isAppointmentsForToday) {
                     const today = new Date();
                     today.setHours(12, 0, 0, 0);
                     setPendingDate(today);
@@ -407,7 +406,7 @@ export default function ItemEditScreen() {
                     setPendingDate(d);
                     setDateSet(true);
                     setTimeSet(true);
-                } else if (nextKind === 'extended') {
+                } else if (nextKind === 'bucketlist') {
                     setTimeSet(false);
                     setPendingTime(null);
                 } else if (nextKind === 'weekly') {
@@ -421,9 +420,9 @@ export default function ItemEditScreen() {
         };
         setup();
         return () => { cancelled = true; };
-    }, [editingId, kind, page, isOneTimeForToday]);
+    }, [editingId, kind, page, isAppointmentsForToday]);
 
-    const presets = (isOneTimeForToday && editKind === 'oneTime') ? DAILY_ONE_TIME_PRESETS : ONE_TIME_PRESETS;
+    const presets = (isAppointmentsForToday && editKind === 'appointments') ? DAILY_ONE_TIME_PRESETS : ONE_TIME_PRESETS;
 
     const isPresetSelected = (p: ReminderPreset): boolean => {
         if (p.kind === 'clock') {
@@ -479,7 +478,7 @@ export default function ItemEditScreen() {
             optionSettings: optionSettingsRef.current,
             monthlyPattern: monthlyPatternRef.current,
             note: noteRef.current,
-            isOneTimeForToday,
+            isAppointmentsForToday,
         });
 
         const updated = list.some((one) => one.id === id)
@@ -515,12 +514,12 @@ export default function ItemEditScreen() {
             Alert.alert('Check Date & Time', 'The typed date or time is not a real one. Fix the box outlined in red, then save.');
             return;
         }
-        const dateKinds: ReminderKind[] = ['monthly', 'quarterly', 'yearly', 'oneTime'];
+        const dateKinds: ReminderKind[] = ['monthly', 'quarterly', 'yearly', 'appointments'];
         if (dateKinds.includes(editKind) && !dateTimeValid) {
             Alert.alert('Check Date & Time', 'The typed date or time is not a real one. Fix the box outlined in red, then save.');
             return;
         }
-        if (editKind === 'oneTime' && reminders.length === 0) {
+        if (editKind === 'appointments' && reminders.length === 0) {
             Alert.alert('No Reminder Set', "Are you sure you don't want to set a Reminder?", [
                 { text: 'Go Back', style: 'cancel' },
                 { text: 'Save Anyway', onPress: () => { finishSave(); } },
@@ -574,7 +573,7 @@ export default function ItemEditScreen() {
                         <Text style={styles.cancelBtnText}>Cancel</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.confirmBtn} onPress={save}>
-                        <Text style={styles.confirmBtnText}>{editKind === 'extended' ? 'Done' : 'Save'}</Text>
+                        <Text style={styles.confirmBtnText}>{editKind === 'bucketlist' ? 'Done' : 'Save'}</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -655,10 +654,10 @@ export default function ItemEditScreen() {
                     />
                 )}
 
-                {editKind === 'oneTime' && (
+                {editKind === 'appointments' && (
                     <>
                         <DateTimeControl
-                            mode={isOneTimeForToday ? 'time' : 'datetime'}
+                            mode={isAppointmentsForToday ? 'time' : 'datetime'}
                             value={pendingDate}
                             onChange={(d, half, timeVia) => {
                                 setPendingDate(d);
@@ -668,7 +667,7 @@ export default function ItemEditScreen() {
                             }}
                             onValidityChange={setDateTimeValid}
                             timeLabel="Time"
-                            {...(isOneTimeForToday ? {} : {
+                            {...(isAppointmentsForToday ? {} : {
                                 optionalDate: true,
                                 dateSet,
                                 onClearDate: () => setDateSet(false),

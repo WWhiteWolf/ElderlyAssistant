@@ -41,8 +41,8 @@ function historyKeyFor(kind: ReminderKind): string | null {
     if (kind === 'monthly') return 'monthly_history';
     if (kind === 'quarterly') return 'quarterly_history';
     if (kind === 'yearly') return 'yearly_history';
-    if (kind === 'oneTime') return 'appointments_history';
-    if (kind === 'extended') return 'bucket_list_history';
+    if (kind === 'appointments') return 'appointments_history';
+    if (kind === 'bucketlist') return 'bucket_list_history';
     return null;
 }
 
@@ -304,7 +304,7 @@ export default function CadenceListPage({
                                 onDragEnd={endDrag}
                                 onSnooze={() => setSnoozeItemId(item.id)}
                                 onDone={() => {
-                                    if ((kind === 'weekly' || kind === 'monthly' || kind === 'quarterly' || kind === 'yearly' || kind === 'oneTime' || kind === 'extended') && item.completed) {
+                                    if ((kind === 'weekly' || kind === 'monthly' || kind === 'quarterly' || kind === 'yearly' || kind === 'appointments' || kind === 'bucketlist') && item.completed) {
                                         undoDone(item.id);
                                         return;
                                     }

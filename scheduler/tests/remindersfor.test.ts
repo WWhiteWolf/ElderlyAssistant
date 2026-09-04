@@ -360,7 +360,7 @@ export function runRemindersForTests(): void {
 
     function appointment(changes: Partial<ReminderItem> = {}): ReminderItem {
         return reminderItem({
-            kind: 'oneTime',
+            kind: 'appointments',
             id: 't1',
             label: 'Dentist',
             year: 2026,
@@ -384,7 +384,7 @@ export function runRemindersForTests(): void {
     test('An appointment reminder fires that far before the due moment', () => {
         const wanted = appointmentWanted(appointment());
         assertSame(wanted.length, 1, 'one reminder on the appointment, one wanted');
-        assertSame(wanted[0].key, 'onetime:t1:r1', 'the reminder\'s own id, so two leads never share a name');
+        assertSame(wanted[0].key, 'appointments:t1:r1', 'the reminder\'s own id, so two leads never share a name');
         assertSame(
             wanted[0].trigger,
             { kind: 'date', at: new Date(2026, 5, 10, 13, 30, 0, 0).getTime() },
@@ -399,7 +399,7 @@ export function runRemindersForTests(): void {
                 appointmentReminder({ id: 'r2', amount: 1, unit: 'days' }),
             ],
         }));
-        assertSame(wanted.map((r) => r.key), ['onetime:t1:r1', 'onetime:t1:r2'], 'depth does not trim lead times');
+        assertSame(wanted.map((r) => r.key), ['appointments:t1:r1', 'appointments:t1:r2'], 'depth does not trim lead times');
     });
 
     test('An appointment with no reminders set gets nothing', () => {
@@ -415,7 +415,7 @@ export function runRemindersForTests(): void {
         const wanted = appointmentWanted(appointment({ label: 'Dentist' }));
         assertSame(
             [wanted[0].source, wanted[0].title, wanted[0].body, wanted[0].categoryIdentifier],
-            ['onetime', '📋 Reminder: Dentist', 'Due: 06/10/26 at 14:00', 'appointmentsok'],
+            ['appointments', '📋 Reminder: Dentist', 'Due: 06/10/26 at 14:00', 'appointmentsok'],
             'the one-list path must preserve the live banner',
         );
     });

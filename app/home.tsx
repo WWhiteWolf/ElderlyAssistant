@@ -21,8 +21,8 @@ const modules = [
   { id: 'shopping', label: PAGE_LABELS.shopping, icon: '🛒' },
   { id: 'vault', label: PAGE_LABELS.vault, icon: '🔒' },
   { id: 'timer', label: PAGE_LABELS.timer, icon: '⏰' },
-  { id: 'onetime', label: PAGE_LABELS.oneTime, icon: '✅' },
-  { id: 'extended', label: PAGE_LABELS.extended, icon: '✅' },
+  { id: 'appointments', label: PAGE_LABELS.appointments, icon: '✅' },
+  { id: 'bucketlist', label: PAGE_LABELS.bucketlist, icon: '✅' },
   { id: 'yearly', label: PAGE_LABELS.yearly, icon: '🔭' },
   { id: 'quarterly', label: PAGE_LABELS.quarterly, icon: '🔭' },
   { id: 'monthly', label: PAGE_LABELS.monthly, icon: '🔭' },
@@ -69,8 +69,8 @@ export default function HomeScreen() {
         if (id === 'monthly') router.push('/monthly' as Href);
         if (id === 'quarterly') router.push('/quarterly' as Href);
         if (id === 'yearly') router.push('/yearly' as Href);
-        if (id === 'onetime') router.push('/onetime' as Href);
-        if (id === 'extended') router.push('/extended' as Href);
+        if (id === 'appointments') router.push('/appointments' as Href);
+        if (id === 'bucketlist') router.push('/bucketlist' as Href);
         if (id === 'options') router.push('/options' as Href);
         if (id === 'vault') router.push('/vault');
         if (id === 'memorytest') router.push('/memorytest');

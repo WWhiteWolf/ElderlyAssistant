@@ -166,7 +166,7 @@ export function runQueueViewTests(): void {
 
     test('An Appointments reminder is named Appointments', () => {
         assertSame(
-            toPending(entry({ source: 'onetime', title: '📋 Reminder: Dentist' }), NOW)?.page,
+            toPending(entry({ source: 'appointments', title: '📋 Reminder: Dentist' }), NOW)?.page,
             'Appointments',
             'expected Appointments',
         );
@@ -174,7 +174,7 @@ export function runQueueViewTests(): void {
 
     test('Bucket List has no notification row', () => {
         assertSame(
-            toPending(entry({ source: 'extended', title: '📋 Reminder: Paris' }), NOW),
+            toPending(entry({ source: 'bucketlist', title: '📋 Reminder: Paris' }), NOW),
             null,
             'Bucket List produces no reminder',
         );

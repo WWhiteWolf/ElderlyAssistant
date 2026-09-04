@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-03 (#64-new, session close)
+Last updated: 2026-09-03 (#65-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -16,10 +16,8 @@ to know why something was done the way it was.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-SAVED KINDS TO CURRENT NAMES (Patrick, #64-new). The saved kinds
-oneTime and extended, and the routes /onetime and /extended, take
-Appointments and Bucket List through the live path. No compatibility
-layer. Phone load waits until the scrub is finished.
+PHONE LOAD WAITS until the scrub is finished. Paperwork is Pending
+2–5.
 
 
 PENDING
@@ -40,7 +38,8 @@ Things waiting on something — mostly on the phone.
    Save (skipped when time set on 24-hour picker); current notification
    names through the live road (#62-new); every page log under the
    current page name (#63-new); Siri says Daily and Remember, and the
-   open-app leftover is out (#64-new). Those later refinements do not
+   open-app leftover is out (#64-new); saved kinds and routes are
+   appointments and bucketlist (#65-new). Those later refinements do not
    reset the replacement pages' phone proof.
 2. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
     sitting treated One Time's missing notice at the set time as
@@ -54,8 +53,19 @@ Things waiting on something — mostly on the phone.
     #52-new). That is how the app lets you find or get the
     User Guide.
 5. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
-    WILL COVER (Patrick, #52-new). The during-build tests are
-    thrown away. The run is not kept.
+   WILL COVER (Patrick, #52-new). The during-build tests are
+   thrown away. The run is not kept.
+6. THE RUN RECORD ON SCHEDULED REMINDERS. Held back at #15-new
+   and never built. That screen would show whether the last
+   reminder run went well or failed.
+7. CHECK MY REMINDERS, from Still To Do. A set of checks for
+   why the phone stayed quiet. The shape is already settled
+   there. Agreed to come after the reminders themselves are
+   solid (Patrick, #15-new).
+8. A BACKGROUND TASK, so the phone can top the reminder queue
+   up on days the app is not opened. None of it is installed.
+   It can only ever sit on top of arming ahead, never
+   underneath.
 
 
 FACTS THAT APPLY TO THE ONGOING WORK
@@ -75,7 +85,7 @@ built. None of these is a job to do.
    Before, Week, Month — and any and all of them can be on at once.
    There is no reminder at the set time: that is too late; you
    are either there or you missed it (Patrick, #52-new). The page
-   is called Appointments (#56-new; saved kind stays oneTime).
+   is called Appointments (#56-new; saved kind appointments, #65-new).
 4. DAILY'S OWN ADD IS ONLY ABOUT TODAY. Two kinds: an every-day
    item, or a One Time for today. On One Time for today the
    Reminders before chips are only 30 min., 1 hour, 2 hours, and
@@ -93,7 +103,7 @@ built. None of these is a job to do.
    opened is not being used, and what the old second copy protected
    was one day and no more.
 8. AN EXTENDED ITEM AND A DAILY TICK ARE OPPOSITES. A Bucket List
-   item (saved kind extended) says a thing is not yet done and must
+   item (saved kind bucketlist) says a thing is not yet done and must
    survive the night. The coffee-and-water sort says a thing was
    done today and is meaningless the morning after. They must never
    be merged.
@@ -128,19 +138,22 @@ WHAT IS DONE, NEWEST FIRST
 One line each. The full story of any of them is in
 docs/build-history.md.
 
-1. #64-new — Siri says Daily and Remember. Open-app leftover out.
-   Saved kinds are next. Not on the phone.
-2. #63-new — every page log uses the current page name. The leftover
+1. #65-new — saved kinds, routes, page files, and banner sources are
+   appointments and bucketlist. TypeScript is clean: the four errors
+   were the checker, not the running code. Mac 298. Not on the phone.
+2. #64-new — Siri says Daily and Remember. Open-app leftover out.
+   Not on the phone.
+3. #63-new — every page log uses the current page name. The leftover
    Look Ahead log came out. Sit backup and near-fire-set deleted.
    Not on the phone. Committed (Patrick, #64-new).
-3. #62-new — current notification names through the live road.
+4. #62-new — current notification names through the live road.
    Daily, Weekly, Monthly, Quarterly, Yearly, and Appointments each
    have their own source. A Quarterly or Yearly banner tap opens its
    own page. Pets and Orders names out of the tests. Mac 298. Not
    on the phone. Committed (Patrick, #63-new).
-4. #61-new — hidden old pages and dead reader road removed.
+5. #61-new — hidden old pages and dead reader road removed.
    Notification-name sheet written. Mac 300. Committed (Patrick, #62-new).
-5. #59-new — calendar day-list fire time (old Pending 4); useless
+6. #59-new — calendar day-list fire time (old Pending 4); useless
    spinners removed; AM/PM popup on Save when time set on 12-hour row
    only (24-hour box or digit spinner skips it). Patrick said excellent.
    Mac 489. Not on the phone. Patrick is committing.

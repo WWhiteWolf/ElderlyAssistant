@@ -15,12 +15,12 @@ const STORAGE_KEY = 'reminder_items';
 export const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 export const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-export const FROM_PAGE: Record<Exclude<ReminderKind, 'daily' | 'extended'>, string> = {
+export const FROM_PAGE: Record<Exclude<ReminderKind, 'daily' | 'bucketlist'>, string> = {
     weekly: `from ${PAGE_LABELS.weekly}`,
     monthly: `from ${PAGE_LABELS.monthly}`,
     quarterly: `from ${PAGE_LABELS.quarterly}`,
     yearly: `from ${PAGE_LABELS.yearly}`,
-    oneTime: `from ${PAGE_LABELS.oneTime}`,
+    appointments: `from ${PAGE_LABELS.appointments}`,
 };
 
 const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
@@ -34,7 +34,7 @@ export function hourMinuteOf(saved: { hour?: number | null; minute?: number | nu
 
 /** True when this item has a reminder that can fire, so Snooze can mean something. */
 export function hasReminderSet(item: ReminderItem): boolean {
-    if (item.kind === 'oneTime') {
+    if (item.kind === 'appointments') {
         return (item.reminders?.length ?? 0) > 0;
     }
     const shaped = translateReminderItems([item], Date.now())[0];
@@ -112,8 +112,8 @@ const DAILY_KIND_RANK: Record<ReminderKind, number> = {
     monthly: 2,
     quarterly: 3,
     yearly: 4,
-    oneTime: 5,
-    extended: 6,
+    appointments: 5,
+    bucketlist: 6,
 };
 
 export function sortDailyVisible(items: ReminderItem[]): ReminderItem[] {
@@ -208,7 +208,7 @@ export function formatItemWhen(item: ReminderItem): string {
         return time ? `${day} after ${after} · ${time}` : `${day} after ${after}`;
     }
     if (
-        (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly' || item.kind === 'oneTime')
+        (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly' || item.kind === 'appointments')
         && typeof item.month === 'number'
         && typeof item.day === 'number'
         && typeof item.year === 'number'

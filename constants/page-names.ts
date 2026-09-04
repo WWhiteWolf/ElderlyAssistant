@@ -1,12 +1,10 @@
 // The names a person sees on each page.
 //
-// Routes and saved kinds are separate from these visible labels.
-// Live screens read from here so a visible rename is one change. Started at
-// #54-new; wired through headers, Home, + Add, and Daily's from-line at
-// #56-new. The notification road reads the same labels.
-//
-// The saved kinds `oneTime` and `extended` appear as Appointments and Bucket
-// List.
+// Routes and saved kinds are the same word: `appointments` and `bucketlist`.
+// These labels are the words a person sees. Live screens read from here so a
+// visible rename is one change. Started at #54-new; wired through headers,
+// Home, + Add, and Daily's from-line at #56-new. The notification road reads
+// the same labels. Saved kinds and routes took those words at #65-new.
 
 import type { ReminderKind } from '../modules/reminder-types';
 
@@ -18,8 +16,8 @@ export const PAGE_LABELS = {
     monthly: 'Monthly',
     quarterly: 'Quarterly',
     yearly: 'Yearly',
-    oneTime: 'Appointments',
-    extended: 'Bucket List',
+    appointments: 'Appointments',
+    bucketlist: 'Bucket List',
     options: 'Options',
     calendar: 'Calendar',
     shopping: 'Shopping List',

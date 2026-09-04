@@ -39,7 +39,7 @@ export const PAGE_NAMES: Record<string, string> = {
     quarterlydelay: `${PAGE_LABELS.quarterly} — delayed`,
     yearly: PAGE_LABELS.yearly,
     yearlydelay: `${PAGE_LABELS.yearly} — delayed`,
-    onetime: PAGE_LABELS.oneTime,
+    appointments: PAGE_LABELS.appointments,
     memorytest: PAGE_LABELS.memorytest,
 };
 

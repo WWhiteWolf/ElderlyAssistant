@@ -55,7 +55,7 @@ function eventsForMonth(items: ReminderItem[], year: number, month: number): Rem
     const lastDay = new Date(year, month + 1, 0).getDate();
     const byDay: ReminderItem[][] = Array.from({ length: lastDay + 1 }, () => []);
     for (const item of items) {
-        if (item.kind === 'daily' || item.kind === 'extended') continue;
+        if (item.kind === 'daily' || item.kind === 'bucketlist') continue;
         for (const day of shadedDaysForItem(item, year, month)) {
             if (day >= 1 && day <= lastDay) byDay[day].push(item);
         }

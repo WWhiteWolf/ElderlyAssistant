@@ -28,9 +28,9 @@ export function isDateOf(item: ReminderItem, when: Date): boolean {
 export function shownOnDate(item: ReminderItem, when: Date): boolean {
     if (item.kind === 'daily') return true;
     if (item.kind === 'weekly') return item.day === when.getDay();
-    if (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly' || item.kind === 'oneTime') {
+    if (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly' || item.kind === 'appointments') {
         if (isDateOf(item, when)) return true;
-        if (item.kind === 'oneTime') return false;
+        if (item.kind === 'appointments') return false;
         const shaped = translateReminderItems([item], when.getTime())[0];
         if (!shaped) return false;
         const start = new Date(when);

@@ -51,15 +51,15 @@ export default function WhereScreen() {
     } else if (stage === 'today') {
         title = 'Is that for today?';
         choices = [
-            { label: 'Yes', onPress: () => openForm('oneTime', 'oneTimeForToday') },
+            { label: 'Yes', onPress: () => openForm('appointments', 'appointmentsForToday') },
             { label: 'No', onPress: () => setStage('kind') },
         ];
     } else {
         title =
             'Is this an occurrence that has a specific time and date, like an appointment? Or is it the rare item with no deadline or due date, like a Bucket List desire?';
         choices = [
-            { label: 'Appointment', onPress: () => openForm('oneTime') },
-            { label: 'Bucket List', onPress: () => openForm('extended') },
+            { label: 'Appointment', onPress: () => openForm('appointments') },
+            { label: 'Bucket List', onPress: () => openForm('bucketlist') },
         ];
     }
 

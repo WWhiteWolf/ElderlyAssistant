@@ -16,8 +16,8 @@ export type ReminderKind =
     | 'monthly'
     | 'quarterly'
     | 'yearly'
-    | 'oneTime'
-    | 'extended';
+    | 'appointments'
+    | 'bucketlist';
 
 // One row on the saved list `reminder_items`. A page is a filter on this
 // list rather than a store of its own.

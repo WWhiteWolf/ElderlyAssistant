@@ -11,7 +11,8 @@
 /** What the reset needs of a Daily item. */
 export interface ResettableItem {
     id: string;
-    completed: boolean;
+    // A missing checkmark is not done.
+    completed?: boolean;
     // A snooze belongs to the day it was made, so a new day clears it.
     snoozedUntil?: number;
 }

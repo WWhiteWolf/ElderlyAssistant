@@ -42,14 +42,14 @@ export function runMissCandidateTests(): void {
     });
 
     test('A One Time item is due on its saved date and not the next day', () => {
-        const oneTime = item({
-            kind: 'oneTime',
+        const appointments = item({
+            kind: 'appointments',
             year: WEDNESDAY.getFullYear(),
             month: WEDNESDAY.getMonth(),
             day: WEDNESDAY.getDate(),
         });
-        assert(shownOnDate(oneTime, WEDNESDAY), 'expected One Time on its date');
-        assert(!shownOnDate(oneTime, THURSDAY), 'expected One Time off the next day');
+        assert(shownOnDate(appointments, WEDNESDAY), 'expected One Time on its date');
+        assert(!shownOnDate(appointments, THURSDAY), 'expected One Time off the next day');
     });
 
     test('A first-Thursday Monthly item is due that Thursday and not the Wednesday before', () => {
@@ -65,7 +65,7 @@ export function runMissCandidateTests(): void {
     });
 
     test('An Extended item is due on no day', () => {
-        assert(!shownOnDate(item({ kind: 'extended' }), WEDNESDAY), 'expected Extended off');
+        assert(!shownOnDate(item({ kind: 'bucketlist' }), WEDNESDAY), 'expected Extended off');
     });
 
     test('The ordinary next morning is only yesterday', () => {
@@ -178,7 +178,7 @@ export function runMissCandidateTests(): void {
     test('A One Time item for yesterday left undone is a miss', () => {
         const misses = missesOn(
             [item({
-                kind: 'oneTime',
+                kind: 'appointments',
                 year: WEDNESDAY.getFullYear(),
                 month: WEDNESDAY.getMonth(),
                 day: WEDNESDAY.getDate(),
@@ -191,7 +191,7 @@ export function runMissCandidateTests(): void {
     });
 
     test('An Extended item is never a miss', () => {
-        const misses = missesOn([item({ kind: 'extended', hour: 8, minute: 0 })], [WEDNESDAY], false);
+        const misses = missesOn([item({ kind: 'bucketlist', hour: 8, minute: 0 })], [WEDNESDAY], false);
         assert(misses.length === 0, 'expected Extended to stay out');
     });
 

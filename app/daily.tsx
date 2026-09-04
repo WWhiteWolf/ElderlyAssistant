@@ -95,19 +95,19 @@ export default function DailyScreen() {
                 id: item.id,
                 kind: item.kind,
                 returnTo: 'daily',
-                ...(item.kind === 'oneTime' ? { formContext: 'oneTimeForToday' } : {}),
+                ...(item.kind === 'appointments' ? { formContext: 'appointmentsForToday' } : {}),
             },
         } as Href);
     };
 
-    const openNew = (kind: 'daily' | 'oneTime') => {
+    const openNew = (kind: 'daily' | 'appointments') => {
         setShowAddPopup(false);
         router.push({
             pathname: '/item-edit',
             params: {
                 kind,
                 returnTo: 'daily',
-                ...(kind === 'oneTime' ? { formContext: 'oneTimeForToday' } : {}),
+                ...(kind === 'appointments' ? { formContext: 'appointmentsForToday' } : {}),
             },
         } as Href);
     };
@@ -259,7 +259,7 @@ export default function DailyScreen() {
                 ? `${format12Hour(item.hour, item.minute)} `
                 : '';
         const from =
-            item.kind !== 'daily' && item.kind !== 'extended'
+            item.kind !== 'daily' && item.kind !== 'bucketlist'
                 ? ` ${FROM_PAGE[item.kind]}`
                 : '';
         return `${time}${item.label}${from}`;
@@ -401,7 +401,7 @@ export default function DailyScreen() {
                             <TouchableOpacity style={styles.choiceBtn} onPress={() => openNew('daily')}>
                                 <Text style={styles.choiceBtnText}>Every day</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.choiceBtn} onPress={() => openNew('oneTime')}>
+                            <TouchableOpacity style={styles.choiceBtn} onPress={() => openNew('appointments')}>
                                 <Text style={styles.choiceBtnText}>One Time for today</Text>
                             </TouchableOpacity>
                             <View style={styles.modalBtns}>

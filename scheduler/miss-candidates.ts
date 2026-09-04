@@ -39,7 +39,7 @@ export function unprocessedDays(savedDate: string, today: Date, maxDays = 366): 
 /** Items that fell on any of those days, other than Extended. */
 export function dueOnDays(items: ReminderItem[], days: Date[]): ReminderItem[] {
     return items.filter((item) => {
-        if (item.kind === 'extended') return false;
+        if (item.kind === 'bucketlist') return false;
         return days.some((day) => shownOnDate(item, day));
     });
 }

@@ -445,8 +445,8 @@ export default function RootLayout() {
       router.push({ pathname: '/quarterly', params } as Href);
     } else if (source === 'yearly' || source === 'yearlydelay') {
       router.push({ pathname: '/yearly', params } as Href);
-    } else if (source === 'onetime') {
-      router.push({ pathname: '/onetime', params } as Href);
+    } else if (source === 'appointments') {
+      router.push({ pathname: '/appointments', params } as Href);
     } else if (source === 'memorytest') {
       // The 5-minute recall banner — land straight on the recall screen. There
       // is only ever one reminder from that page, so it needs no highlight
@@ -485,8 +485,8 @@ export default function RootLayout() {
       <Stack.Screen name="monthly" options={{ headerShown: false }} />
       <Stack.Screen name="quarterly" options={{ headerShown: false }} />
       <Stack.Screen name="yearly" options={{ headerShown: false }} />
-      <Stack.Screen name="onetime" options={{ headerShown: false }} />
-      <Stack.Screen name="extended" options={{ headerShown: false }} />
+      <Stack.Screen name="appointments" options={{ headerShown: false }} />
+      <Stack.Screen name="bucketlist" options={{ headerShown: false }} />
       <Stack.Screen name="options" options={{ headerShown: false }} />
     </Stack>
     </CoverRoot>

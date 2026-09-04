@@ -16,8 +16,18 @@ and #30-new all had no entry at all.
 
 ## Where things stand
 
-**#64-new is closed.** Siri says Daily and Remember. The open-app
-leftover is out. Saved kinds are next. Not on the phone. Full story
+**#65-new is closed.** Saved kinds, routes, page files, and banner
+sources are `appointments` and `bucketlist`, the same word in each
+place. Visible names stay Appointments and Bucket List. The rewrite
+from `oneTime` to `onetime` is out. Daily's form setting is
+`appointmentsForToday`. No compatibility layer. Backup's retired
+strip-keys `onetime_history` and `extended_history` stay, so a restore
+can still clear the old logs. TypeScript is clean: the four errors in
+`scheduler/leadmoments.ts` and `scheduler/scheduler.ts` were the
+checker, not the running code. Mac suite 298 of 298. Not on the phone.
+
+**#64-new is closed and committed** (Patrick, #65-new). Siri says Daily and Remember. The open-app
+leftover is out. Not on the phone. Full story
 in `build-history.md`.
 
 **#63-new is closed and committed** (Patrick, #64-new). Every page log uses the current page name.
@@ -106,9 +116,9 @@ Done do not advance the saved date. Extended has no banners; New and
 Edit have only the name, an optional note, and Done. Cancel closes and
 makes no change, including after + OPT.
 
-**Mac suite 298 of 298.** TypeScript currently reports four errors in
-`scheduler/leadmoments.ts` and `scheduler/scheduler.ts`. They were
-outside this job and have not been examined.
+**Mac suite 298 of 298.** TypeScript is clean (#65-new: the four errors
+in `scheduler/leadmoments.ts` and `scheduler/scheduler.ts` were the
+checker, not the running code).
 
 ### The pages, settled by Patrick at #30-new
 
@@ -120,12 +130,13 @@ outside this job and have not been examined.
 - **Monthly**, **Quarterly**, **Yearly** — dated repeats, split by
   how often. **A six-month item
   lives on Quarterly** (Patrick, #33-new), still every six months.
-- **Appointments** (saved kind `oneTime`) — a date, no repeat, carrying To-Do's Reminders before
+- **Appointments** (saved kind `appointments`, route `/appointments`) — a date, no repeat, carrying To-Do's Reminders before
   chips. Any and all of those chips can be on at once. **There is no
   reminder at the set time** (Patrick, #52-new): that is too late;
   you are either there or you missed it. Renamed from One Time at
-  #56-new; saved words on the phone stay as they are.
-- **Bucket List** (saved kind `extended`) — items to be done sometime in the future,
+  #56-new. At #65-new the saved kind, route, page file, and banner
+  source are `appointments` (Patrick).
+- **Bucket List** (saved kind `bucketlist`, route `/bucketlist`) — items to be done sometime in the future,
   with no deadline, no due date, and no set time. It gets no banners.
   New and Edit have only the name, an optional note, and Done. It can
   be edited like the others. **That shape is in** (#42-new).
@@ -156,7 +167,9 @@ Extended.
 
 **Daily's own add is narrower than the others'.** It is only about this
 day, and offers two kinds — an every-day item, or a One Time for today
-with Reminders before. **On One Time for today those chips are only**
+with Reminders before. **One Time for today is Daily's own add for a
+one-shot that belongs to this day, not the Appointments page**
+(Patrick, #65-new). **On One Time for today those chips are only**
 30 min., 1 hour, 2 hours, and Time of — Time of is the item's own time
 (Patrick, #33-new). **+ OPT on those two Daily adds is only time zone**
 (#42-new). Pets is just another every-day item on it. The
@@ -164,7 +177,7 @@ other cadence pages keep their own adds, because on those the page is the
 whole meaning of Repeat.
 
 Save on an every-day item returns to Daily. **Save on One Time for
-today returns to One Time** (#34-new). Cancel and the header Home still
+today returns to Appointments** (#34-new). Cancel and the header Home still
 go to Daily, where the add started. A My Day banner
 or a Siri mark-done now opens Daily, not the old My Day page, so a
 save is not followed by that page covering what you just landed on
@@ -264,13 +277,11 @@ They are kept here because they still decide things.
   own pages. **Siri mark-done lands on Daily**; that is fine.
   **Adding Siri commands is later.** **Phone load waits until the
   scrub is finished.**
+- **Daily's "One Time for today" is not the Appointments page**
+  (Patrick, #65-new). It is Daily's own add for a one-shot that belongs
+  to this day. Do not treat those words as an old name to change.
 
 ## What is open in front of it
-
-**Next session:** saved kinds `oneTime` and `extended`, and the routes
-`/onetime` and `/extended`, take the current names Appointments and
-Bucket List through the live path. No compatibility layer
-(Patrick, #64-new).
 
 **Phone load waits until the scrub is finished.** Paperwork is Pending 2–5.
 
@@ -336,10 +347,20 @@ skip a single instance. The whole case for arming ahead rests on it, and
 it is general knowledge of the phone rather than something read in the
 installed notification package.
 
+**Showing the run record on the Scheduled Reminders screen** was held back
+from #15-new and has still not been built (Pending 6).
+
+**Check My Reminders, from Still To Do** (raised by Patrick, #15-new; Pending 7). Its
+six checks and its shape are already settled in that project at SA-19 and
+SA-20 — whether it was ever actually built there has not been checked. It
+answers a different half than the failure record does: it asks why the
+phone stayed quiet, where the record asks whether the app armed anything
+at all. Agreed to come after the reminders themselves are solid.
+
 **A thing to add later if wanted, and never underneath**: a background
 task, so the phone can top the queue up on days the app is not opened.
 None of its pieces are installed. It can only ever sit on top of arming
-ahead, because the days it fails are the days the arming is for.
+ahead, because the days it fails are the days the arming is for (Pending 8).
 
 **Still unread**: `app/memorytest.tsx`.
 
@@ -351,16 +372,6 @@ when they fire; and the loud alarm meant to follow five minutes after the
 base alert is created only when two conditions are both true, one of them
 a `profile` value that has never been looked at. Patrick raised the loud
 alarm himself at #12-new as something that was meant to work and does not.
-
-**Showing the run record on the Scheduled Reminders screen** was held back
-from #15-new and has still not been built.
-
-**Check My Reminders, from Still To Do** (raised by Patrick, #15-new). Its
-six checks and its shape are already settled in that project at SA-19 and
-SA-20 — whether it was ever actually built there has not been checked. It
-answers a different half than the failure record does: it asks why the
-phone stayed quiet, where the record asks whether the app armed anything
-at all. Agreed to come after the reminders themselves are solid.
 
 **One separate fix-list item** remains in `docs/reminder-rebuild.md`:
 saying the banner instruction once in the housing instead of on eight
