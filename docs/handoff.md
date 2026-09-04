@@ -30,6 +30,11 @@ These are Patrick's and they govern the work rather than describing it.
 - **Timer and Memory Test are not this stream** (Patrick, #66-new).
   They have their own place. Do not keep bringing them up here.
 
+- **The run record on Scheduled Reminders, Check My Reminders, and
+  the background task that tops the queue are nice-to-have**
+  (Patrick, #67-new). They live in pending's Nice-to-have. He is
+  not doing them now. Do not raise them in reports.
+
 - **The old-page scrub preserves nothing for backward compatibility**
   (Patrick, #61-new). An old-named identifier still used by the current
   build is changed through its whole live path rather than kept for old
@@ -61,8 +66,9 @@ These are Patrick's and they govern the work rather than describing it.
 
 ## What is open in front of it
 
-**Phone load is next.** The name scrub is finished. Paperwork is
-Pending 2–5.
+**Phone load is next.** The name scrub is finished. **Nothing is
+missing before an EAS build and a phone load** (Patrick, #67-new).
+Paperwork is Pending 2–5.
 
 **The build sheets are the pattern for this work** — each
 self-contained, carrying the answers themselves rather than pointing at
@@ -80,16 +86,6 @@ time first. The code no longer does.
 
 **One claim still unchecked**: that a repeating alarm cannot be told to
 skip a single instance.
-
-**Showing the run record on the Scheduled Reminders screen** was held
-back from #15-new and has still not been built (Pending 6).
-
-**Check My Reminders, from Still To Do** (Pending 7). Agreed to come
-after the reminders themselves are solid.
-
-**A background task**, so the phone can top the queue up on days the
-app is not opened. None of its pieces are installed. It can only ever
-sit on top of arming ahead (Pending 8).
 
 **One separate fix-list item** remains in `docs/reminder-rebuild.md`:
 saying the banner instruction once in the housing instead of on eight

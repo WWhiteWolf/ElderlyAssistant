@@ -3921,7 +3921,34 @@ in the Projects repository, not this one.
 
 **Session close.** `handoff.md`, `handoff-history.md`, `in-flight.md`,
 and `pending.txt` were refreshed at Patrick's word. `pending.docx` was
-not regenerated. Patrick will commit.
+not regenerated. **Committed** (Patrick, #67-new).
+
+
+## #67-new (2026-09-03): nothing missing before the phone load
+
+**The opener was three things set aside on purpose.** They were not in
+the handoff that way. #66-new had opened on them, spent the sitting
+pruning the live desk, and wrote phone load as next. The three sat in
+Pending 6–8 as ordinary waiting items.
+
+**They are not being done now** (Patrick). They went to pending's
+Nice-to-have. Do not raise them in reports. Two of them would help a
+person check why a reminder is not working: the run record on
+Scheduled Reminders, and Check My Reminders. The background task is
+not a check; it would top the queue on days the app is not opened.
+
+**Still To Do was looked at and closed.** Only Check My Reminders has a
+settled design there, and it is not built. The other two are this
+app's.
+
+**The question from #65-new, asked again:** is there anything missing
+before an EAS build and a phone load to prove things out. **Nothing is
+missing.** The name scrub is finished.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `pending.txt`,
+`pending.docx`, and `App-Docs/master-handoff.md` were refreshed at
+Patrick's word. The archive's name is `handoff-history.md` (was
+`build-history.md`). Patrick will commit.
 
 
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)

@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-03 (#66-new)
+Last updated: 2026-09-03 (#67-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -19,7 +19,8 @@ Timer and Memory Test are not this list.
 WHAT'S NEXT
 ------------------------------------------------------------------
 PHONE LOAD. The name scrub is finished (#61-new through #65-new).
-Paperwork is Pending 2–5.
+Nothing is missing before an EAS build and a phone load
+(Patrick, #67-new). Paperwork is Pending 2–5.
 
 
 PENDING
@@ -57,17 +58,6 @@ Things waiting on something — mostly on the phone.
 5. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
    WILL COVER (Patrick, #52-new). The during-build tests are
    thrown away. The run is not kept.
-6. THE RUN RECORD ON SCHEDULED REMINDERS. Held back at #15-new
-   and never built. That screen would show whether the last
-   reminder run went well or failed.
-7. CHECK MY REMINDERS, from Still To Do. A set of checks for
-   why the phone stayed quiet. The shape is already settled
-   there. Agreed to come after the reminders themselves are
-   solid (Patrick, #15-new).
-8. A BACKGROUND TASK, so the phone can top the reminder queue
-   up on days the app is not opened. None of it is installed.
-   It can only ever sit on top of arming ahead, never
-   underneath.
 
 
 FACTS THAT APPLY TO THE ONGOING WORK
@@ -139,10 +129,13 @@ WHAT IS DONE, NEWEST FIRST
 One line each. The full story of any of them is in
 docs/handoff-history.md.
 
-1. #66-new — the live desk pruned; archive renamed to handoff-history;
-   #65-new written into the archive. Phone load is next. Patrick will
-   commit.
-2. #65-new — saved kinds, routes, page files, and banner sources are
+1. #67-new — nothing missing before an EAS phone load. The three
+   held-back items went to Nice-to-have 3; do not raise them in
+   reports. Patrick will commit.
+2. #66-new — the live desk pruned; archive renamed to handoff-history;
+   #65-new written into the archive. Phone load is next.
+   Committed (Patrick, #67-new).
+3. #65-new — saved kinds, routes, page files, and banner sources are
    appointments and bucketlist. TypeScript is clean: the four errors
    were the checker, not the running code. Mac 298. Not on the phone.
    Committed (Patrick, #66-new).
@@ -343,6 +336,33 @@ NICE-TO-HAVE LATER
 2. Watch List overhaul — its own session, talk-through first (moved
    from What's Next, your call #55). The night-and-time-a-TV-show-
    airs idea folds into it.
+3. HELP A USER CHECK WHY A REMINDER IS NOT WORKING, and a
+   background task that is not a check (Patrick, #67-new). Not
+   being done now. Do not raise in reports.
+
+   The run record on Scheduled Reminders. The last run is already
+   written down, and a failure already speaks in the opening
+   pop-up. That pop-up can be tapped away, and it only talks
+   about the newest run. Scheduled Reminders only shows what the
+   phone is holding now. This would put the record on that screen
+   so you can look later at whether the last run went well or
+   failed, including the quieter faults the pop-up never raises.
+   Held back at #15-new and never built.
+
+   Check My Reminders. The pop-up knows when the app itself
+   failed, or when permission is off. It does not know why a
+   banner still never appeared: permission granted quietly,
+   alerts or sound or the lock screen off, Focus, a scheduled
+   summary. A Settings row you tap on purpose: it checks those
+   things, and it can send one test reminder so you can see
+   whether the phone will actually speak. Never built.
+
+   A background task to top the queue. This is not a check. It
+   tries to keep the queue topped up on days the app is not
+   opened. It does not explain a silence. None of it is
+   installed. The phone gives it least to an unused app, and none
+   if the app has been swiped away, so it can only ever sit on
+   top of arming ahead, never underneath.
 
 
 PARKED ON PURPOSE
