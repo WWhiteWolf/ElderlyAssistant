@@ -82,7 +82,7 @@ export function runTranslatorCadenceTests(): void {
         );
     });
 
-    test('An Extended item has no due time', () => {
+    test('A Bucket List item has no due time', () => {
         const shaped = shapeOf(item({ kind: 'bucketlist' }));
         assertSame(
             [shaped.sourceScreenCode, shaped.hasDueTimeBit, shaped.leadTimeList.length],
@@ -294,11 +294,11 @@ export function runTranslatorCadenceTests(): void {
         );
     });
 
-    test('Extended has no Options cases', () => {
+    test('Bucket List has no Options cases', () => {
         assertSame(
             optionCasesForKind('bucketlist').map((one) => one.id),
             [],
-            'Extended is the name, an optional note, and Done',
+            'Bucket List is the name, an optional note, and Done',
         );
     });
 
@@ -326,11 +326,11 @@ export function runTranslatorCadenceTests(): void {
         );
     });
 
-    test('One Time from its own page keeps holidays and time zone', () => {
+    test('Appointments from its own page keeps holidays and time zone', () => {
         assertSame(
             optionCasesForKind('appointments').map((one) => one.id),
             ['holidays', 'timezone'],
-            'One Time on its own page keeps Weekly\'s holidays and time zone',
+            'Appointments on its own page keeps Weekly\'s holidays and time zone',
         );
     });
 }

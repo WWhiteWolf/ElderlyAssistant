@@ -41,15 +41,15 @@ export function runMissCandidateTests(): void {
         assert(!shownOnDate(weekly, THURSDAY), 'expected Weekly off on Thursday');
     });
 
-    test('A One Time item is due on its saved date and not the next day', () => {
+    test('An Appointments item is due on its saved date and not the next day', () => {
         const appointments = item({
             kind: 'appointments',
             year: WEDNESDAY.getFullYear(),
             month: WEDNESDAY.getMonth(),
             day: WEDNESDAY.getDate(),
         });
-        assert(shownOnDate(appointments, WEDNESDAY), 'expected One Time on its date');
-        assert(!shownOnDate(appointments, THURSDAY), 'expected One Time off the next day');
+        assert(shownOnDate(appointments, WEDNESDAY), 'expected Appointments on its date');
+        assert(!shownOnDate(appointments, THURSDAY), 'expected Appointments off the next day');
     });
 
     test('A first-Thursday Monthly item is due that Thursday and not the Wednesday before', () => {
@@ -64,8 +64,8 @@ export function runMissCandidateTests(): void {
         assert(!shownOnDate(monthly, WEDNESDAY), 'expected first Thursday off on Wednesday');
     });
 
-    test('An Extended item is due on no day', () => {
-        assert(!shownOnDate(item({ kind: 'bucketlist' }), WEDNESDAY), 'expected Extended off');
+    test('A Bucket List item is due on no day', () => {
+        assert(!shownOnDate(item({ kind: 'bucketlist' }), WEDNESDAY), 'expected Bucket List off');
     });
 
     test('The ordinary next morning is only yesterday', () => {
@@ -175,24 +175,24 @@ export function runMissCandidateTests(): void {
         assertSame(misses.map((m) => m.label), ['Sit Yearly'], 'expected the Yearly miss');
     });
 
-    test('A One Time item for yesterday left undone is a miss', () => {
+    test('An Appointments item for yesterday left undone is a miss', () => {
         const misses = missesOn(
             [item({
                 kind: 'appointments',
                 year: WEDNESDAY.getFullYear(),
                 month: WEDNESDAY.getMonth(),
                 day: WEDNESDAY.getDate(),
-                label: 'Sit One Time',
+                label: 'Sit Appointments',
             })],
             [WEDNESDAY],
             false,
         );
-        assertSame(misses.map((m) => m.label), ['Sit One Time'], 'expected the One Time miss');
+        assertSame(misses.map((m) => m.label), ['Sit Appointments'], 'expected the Appointments miss');
     });
 
-    test('An Extended item is never a miss', () => {
+    test('A Bucket List item is never a miss', () => {
         const misses = missesOn([item({ kind: 'bucketlist', hour: 8, minute: 0 })], [WEDNESDAY], false);
-        assert(misses.length === 0, 'expected Extended to stay out');
+        assert(misses.length === 0, 'expected Bucket List to stay out');
     });
 
     test('A first-Thursday item is not a miss on the Wednesday before', () => {

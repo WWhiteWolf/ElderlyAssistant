@@ -250,14 +250,14 @@ export function runReconcileTests(): void {
     test('Changing only the buttons replaces the held reminder', () => {
         const trigger: WantedTrigger = { kind: 'daily', hour: 8, minute: 0 };
         const rebuttoned = want('daily:a:base', trigger);
-        rebuttoned.categoryIdentifier = 'dailysnooze';
+        rebuttoned.categoryIdentifier = 'cadenceactions';
         const plan = reconcile(
             [rebuttoned],
             [held('n1', 'daily:a:base', trigger)],
             OWNED,
             NOW,
         );
-        assertSame(plan.replace.map((one) => one.reminder.categoryIdentifier), ['dailysnooze'], 'the new button set reaches the queue');
+        assertSame(plan.replace.map((one) => one.reminder.categoryIdentifier), ['cadenceactions'], 'the new button set reaches the queue');
         assertSame(plan.keep, 0, 'same key and time is not enough when the buttons moved');
     });
 }

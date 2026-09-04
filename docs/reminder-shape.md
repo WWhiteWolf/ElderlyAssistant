@@ -611,24 +611,26 @@ however deep the block arms.
 **When the module re-plans**, found by checking every call site: at launch, on
 the app coming to the front, and after every save.
 
-**So what the second occurrence buys is one unopened day.** The moment armed
+**So what the second occurrence bought is one unopened day.** The moment armed
 for today is spent the instant it fires, and nothing puts the next one up until
 the app is opened. With one only, a day on which the app is never opened is a
 day the next reminder was never armed, and the morning after is silent. With
 two, today's fires and tomorrow's is already standing there.
 
-**It is worth more to a daily item than to a weekly one**, which is the reverse
+**It was worth more to a daily item than to a weekly one**, which is the reverse
 of what the old comment assumed. A daily item has only until the next morning
 for the app to be opened; a weekly chore has a whole week for the same thing to
 happen.
 
-**Patrick's question was whether it is still needed, and the answer is yes.**
-The second occurrence exists only because these are single moments; single
-moments exist only because a repeating alarm cannot be told to skip the day an
-item was ticked off, the only way to skip being to cancel the whole repeat.
-Both of those are still true, and My Week is about to move across for the same
-reason. The one thing that would remove the need is going back to repeats,
-which brings back the fault Patrick reported in the first place.
+**Patrick's question was whether it is still needed, and the answer then was
+yes.** The second occurrence existed only because these are single moments;
+single moments exist only because a repeating alarm cannot be told to skip the
+day an item was ticked off, the only way to skip being to cancel the whole
+repeat. Both of those were still true then, and My Week was about to move
+across for the same reason. The one thing that would remove the need is going
+back to repeats, which brings back the fault Patrick reported in the first
+place. **Depth was later settled at one for every kind. The second copy's work
+is recovery on opening.**
 
 **One honest limit on that.** The claim that a repeating alarm cannot skip a
 single instance is general knowledge of the phone, not a reading of the
@@ -652,8 +654,9 @@ can answer per kind:
   Ahead and To-Do already work this way, by never importing the number.
 - **Weekly**: one is enough. After a chore fires, the app has a whole week to
   be opened before the next is due.
-- **Daily**: the only kind where a second earns its place, the gap being one
-  night.
+- **Daily**: was then the only kind where a second earned its place, the gap
+  being one night. **Settled at one for every kind; recovery on opening does
+  that work.**
 
 **And My Week then costs nothing to cure** — one place per chore, which is what
 it costs today as a true weekly repeat.

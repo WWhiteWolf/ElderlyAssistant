@@ -50,16 +50,6 @@ export interface RepeatWeekday {
     weekdayOrdinalCount?: number;
 }
 
-/**
- * Which of the two forms a lead time takes.
- *
- * An offset is counted straight back from the due moment — twenty minutes
- * before, two hours before. A clock lead time is counted back a whole number
- * of days and then set to one of the three times named in Settings, which is
- * what a person means by "the evening before".
- */
-export type LeadFormCode = 'offset' | 'clock';
-
 /** The units an offset lead time is counted in. */
 export type LeadUnitCode = 'minutes' | 'hours' | 'days';
 

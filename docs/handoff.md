@@ -12,10 +12,10 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-He is living with the Sit load on the phone (#52-new): landscape 90°
+He is living with the #67-new load on the phone. Landscape 90°
 counter-clockwise, headers on the left. Calendar and landscape are on
-the phone. **Nothing from #56-new through #65-new is on the phone yet.**
-Those later refinements do not reset the replacement pages' phone proof.
+the phone. He has not exhaustively tested it; what he has used is
+working. **#67-new is committed.**
 
 Saved kinds, routes, page files, and banner sources are `appointments`
 and `bucketlist`. Siri says Daily and Remember. Mac suite 298 of 298.
@@ -66,8 +66,10 @@ These are Patrick's and they govern the work rather than describing it.
 
 ## What is open in front of it
 
-**Phone load is next.** The name scrub is finished. **Nothing is
-missing before an EAS build and a phone load** (Patrick, #67-new).
+**Cleanup sheet** at `docs/build-sheet-cleanup.md` (#68-new). A fresh
+session builds it.
+
+The name scrub is finished. The #67-new load is on the phone.
 Paperwork is Pending 2–5.
 
 **The build sheets are the pattern for this work** — each
