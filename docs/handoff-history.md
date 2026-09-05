@@ -3976,6 +3976,31 @@ and `pending.txt` were refreshed at Patrick's word. `pending.docx` was
 not regenerated. The cleanup sheet is in `docs-ref/build-sheets`.
 
 
+## #70-new (2026-09-05): Grok review recorded; Help, Birthdays, and phone findings
+
+**The opener was Wispr Flow on the Mac and a Grok 4.6 High read-only
+review of the live app.** The review text is in
+`docs/grok-review-2026-09-05.md`. Nothing in the app was changed. An
+implementation plan (Phases 1–4) went into `handoff.md` and
+`pending.txt`.
+
+**Patrick on the phone.** Monthly Done should advance the saved date
+again (#41-new reversed). Options — 2nd Thursday saves correctly; the
+selected chip does not update. Help (was Where?): visible name **Help**,
+Home badge **?**; helper step 1 **Repeats every**; steps 2–3 Cancel back
+one step, not Home.
+
+**New work named.** Birthdays page — name, date, yearly reminder; like
+Appointments with selectable **On the day** and **Day Before** chips;
+build sheet first. Quarterly + Add — selectable 30, 60, 90 days; Patrick:
+the engine already knows how to take in the data.
+
+**#69-new is committed.** Nothing built since then.
+
+**Session close.** `handoff.md`, `handoff-history.md`, and `pending.txt`
+refreshed. `pending.docx` regenerated. Patrick will commit.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

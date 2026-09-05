@@ -41,6 +41,7 @@ just because it is listed.
 - **`reminder-rebuild.md`** — #15-new through #18-new. Not the live design. One live part: "What is already right."
 - **`outside-review.md`** — Grok's #17-new reading of the reminder code, marked later true or not.
 - **`ElderlyAssistant-notification-findings.md`** — a read-only review of the notification faults, 19 August 2026.
+- **`grok-review-2026-09-05.md`** — Grok 4.6 High read-only review of the live app, September 2026.
 
 ## Quiet — in `docs`
 

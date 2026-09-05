@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-04 (#69-new)
+Last updated: 2026-09-05 (#70-new close)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -18,31 +18,67 @@ Timer and Memory Test are not this list.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-PHONE LOAD. The leftover cleanup is built (#69-new) and not on the
-phone yet. Last load is #67-new. Paperwork is Pending 2–5.
+GROK REVIEW FIXES. Phase 1 is three definite fixes (quarterly month,
+Reset All Data banners, banner cold-launch dedupe). Phase 2 is one
+apply-then-schedule door (build sheet first). Phase 3 is UI aligned
+with the translator. BIRTHDAYS PAGE — build sheet first, then build;
+name, date, yearly reminder. See handoff.
+
+PHONE LOAD. #69-new is committed and not on the phone yet. Last load
+is #67-new. Paperwork is Pending 11–14.
 
 
 PENDING
 ------------------------------------------------------------------
-Things waiting on something — mostly on the phone.
+Things waiting on something — mostly on the phone or on a build.
 
 1. EVERYTHING BUILT SINCE THE LAST PHONE LOAD. Last load is #67-new.
-   Landscape 90° counter-clockwise, headers on the left. Calendar and
-   landscape are on the phone. He has not exhaustively tested it; what
-   he has used is working. Built since then and not on the phone: the
-   leftover cleanup (#69-new).
-2. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
+   Built since then and not on the phone: the leftover cleanup (#69-new,
+   committed).
+2. GROK REVIEW — PHASE 1 (ACT ON). Three fixes, no design questions:
+   quarterly can land in the wrong month; Reset All Data does not cancel
+   reminders on the phone; banner Done/Skip/Snooze may replay on cold
+   launch (dedupe is memory-only today).
+3. MONTHLY DONE SHOULD ADVANCE THE TILE (Patrick, this session). Done on
+   Monthly, Quarterly, and Yearly should move the saved date so the tile
+   shows the next cycle armed — as before #41-new. Today only ticks and
+   logs; the date on the tile does not move.
+4. OPTIONS — 2ND THURSDAY CHIP DOES NOT UPDATE (Patrick, this session,
+   verified on phone). The pattern saves correctly. The selected chip
+   does not change to show 2nd Thursday is active, so it still looks like
+   the dated choice.
+5. BIRTHDAYS PAGE (Patrick, this session). New Home page. Each item:
+   a name and a date, yearly reminder. Almost like Appointments: Day Before
+   only as the before chip. Unlike Appointments, it reminds on the birthday
+   itself — **On the day** and **Day Before** are both selectable chips.
+   Build sheet first.
+6. HELP PAGE (Patrick, this session — was Where?). Visible name **Help**;
+   Home badge **?** not 🧭.
+7. HELP HELPER — WORDING AND CANCEL (Patrick, this session). Step 1 first
+   choice **Repeats every** only; fix the question that says “every” on a
+   later step. Steps 2 and 3: Cancel back one step, not Home (`where.tsx`).
+8. QUARTERLY ADD — 30, 60, 90 DAYS (Patrick, this session). On + Add
+   for Quarterly, selectable chips for 30, 60, and 90 days. Not a new
+   page. The engine already knows how to take in this data; the work is
+   the Add chips writing it.
+9. GROK REVIEW — PHASE 2 (ONE DOOR). Build sheet, then build: banner,
+   Siri, pages, and Settings all go through one apply-then-schedule
+   path so the queue matches what changed.
+10. GROK REVIEW — PHASE 3 (UI FOLLOWS TRANSLATOR). Rows and banner
+   buttons use what the translator already knows — Snooze, Done, Skip
+   honest for each kind.
+11. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
     sitting treated One Time's missing notice at the set time as
     a bug. He had decided it that way. A spec would have said so.
     Changing the name of One Time to Appointments belongs in
     that spec, and Extended to Bucket List.
-3. A USER GUIDE, from that spec or merely after it (Patrick,
+12. A USER GUIDE, from that spec or merely after it (Patrick,
     #52-new). He needs to provide it on his website, and a way
     in the app to find it or get it.
-4. A FEEDBACK BUTTON IN THE APP, similar to Mystery (Patrick,
+13. A FEEDBACK BUTTON IN THE APP, similar to Mystery (Patrick,
     #52-new). That is how the app lets you find or get the
     User Guide.
-5. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
+14. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
    WILL COVER (Patrick, #52-new). The during-build tests are
    thrown away. The run is not kept.
 
@@ -116,9 +152,10 @@ WHAT IS DONE, NEWEST FIRST
 One line each. The full story of any of them is in
 docs/handoff-history.md.
 
-1. #69-new — leftover cleanup built. Dead exports, leftover theme
-   tokens, leftover page words in test titles. Mac 298. TypeScript
-   clean. Nothing about how reminders fire changed.
+1. #69-new — leftover cleanup built and committed. Dead exports,
+   leftover theme tokens, leftover page words in test titles. Mac 298.
+   TypeScript clean. Nothing about how reminders fire changed. Not on
+   the phone.
 2. #68-new — leftover cleanup sheet written. No code. Committed.
 3. #67-new — nothing missing before an EAS phone load. The three
    held-back items went to Nice-to-have 3; do not raise them in
@@ -316,6 +353,16 @@ docs/handoff-history.md.
 DECISIONS TO MAKE WHEN YOU'RE READY
 ------------------------------------------------------------------
 1. The dark startup flash (moved here from Parked, #1-new).
+2. SKIP — one word, two stories (Grok review). Banner clears a snooze;
+   engine has a skip stamp production never writes. Wire the stamp or
+   drop it?
+3. APPOINTMENTS IN THE MORNING MISS LIST (Grok review). Design says no
+   reminder at appointment time; rollover still lists them as hanging.
+   Intentional or noise?
+4. RESTORE (Grok review). Items come back; previous health and miss
+   lists stay. Clear them or leave them?
+5. CLOCK-STYLE LEADS AND NAMED ZONES (Grok review). "Morning of" uses
+   the phone zone even when the appointment has a named zone.
 
 
 NICE-TO-HAVE LATER

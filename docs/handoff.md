@@ -16,11 +16,16 @@ He is living with the #67-new load on the phone. Landscape 90°
 counter-clockwise, headers on the left. Calendar and landscape are on
 the phone. He has not exhaustively tested it; what he has used is
 working. **#67-new is committed.** **#68-new is committed.**
+**#69-new is committed.**
 
-The leftover cleanup is built (#69-new). Nothing about how reminders
-are armed, named, or shown changed. Saved kinds, routes, page files,
+Nothing has been built since #69-new. Saved kinds, routes, page files,
 and banner sources are `appointments` and `bucketlist`. Siri says
 Daily and Remember. Mac suite 298 of 298. TypeScript is clean.
+
+A read-only Grok 4.6 High review of the live app is recorded in
+`docs/grok-review-2026-09-05.md`. The engine is coherent; the faults
+sit beside it in banner handling, quarterly dates, and buttons that do
+not match what the engine does.
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -64,32 +69,99 @@ These are Patrick's and they govern the work rather than describing it.
 - **The 24-hour digit spinner stays** (#36-new) — tap the type-in box.
 - **Do not connect `floatDay`.** An incomplete zone currently floats
   with the phone; leave that unless Patrick says otherwise (#41-new).
+- **Monthly, Quarterly, and Yearly Done advances the saved date**
+  (Patrick, this session). #41-new stopped that; he did not notice
+  until now. Done should move the date on the item so the tile shows
+  the next cycle armed — as it did before #41-new. Today Done only
+  ticks and logs; the tile date does not move.
+- **The Where? page is Help** (Patrick, this session). The visible name
+  is **Help**, not Where? The Home badge is **?**, not 🧭. The route
+  may stay `where.tsx`.
 
 ## What is open in front of it
 
-The name scrub is finished. The leftover cleanup is built. The
-#67-new load is on the phone. Paperwork is Pending 2–5.
+The #67-new load is on the phone. #69-new is committed but not on the
+phone. Paperwork is Pending 11–14.
 
-**The build sheets are the pattern for this work** — each
-self-contained, carrying the answers themselves rather than pointing at
-other documents. **A sheet's read list should name what the pattern it
-points at actually imports** (#25-new).
+**Grok review follow-up** (`docs/grok-review-2026-09-05.md`). Plan below;
+details and modularity notes are in that file.
 
-**Display tiles** (Scheduled Reminders sentences, `formatClock`, and
-the rest) are not part of the 12-hour spinner ruling. What remains is
-`settings.tsx` and `formatClock` in `scheduler/queueview.ts`. The logs
-are already 24-hour; the tiles are not.
+**Phase 1 — Act on** (three definite fixes, no design questions):
 
-**`docs-ref/build-sheets/build-sheet.md` has not been brought level with
-the reorder** (#24-new). It describes `stillwanted.ts` asking no due
-time first. The code no longer does.
+1. **Quarterly wrong month** — `nextByMonthDay` in `scheduler/leadmoments.ts`
+   walks from the current month; yearly uses the saved month. Test with seed
+   month ≠ now.
+2. **Reset All Data leaves banners** — `settings.tsx`: run scheduler after
+   wipe so owned notifications are cancelled.
+3. **Banner replay on cold launch** — `_layout.tsx` dedupe is in-memory only;
+   persist handled keys or confirm on phone and fix if replay happens.
 
-**One claim still unchecked**: that a repeating alarm cannot be told to
-skip a single instance.
+**Birthdays page** (Patrick, this session). A new page, own place on Home.
+Each item is a **name and a date**, with a **yearly reminder**. Almost
+like Appointments, but simpler: **Day Before** only as the before chip.
+Unlike Appointments, Birthdays **does remind on the day itself** —
+Appointments deliberately has no reminder at the set time. **On the day**
+and **Day Before** are both selectable chips. Build sheet first per
+standing pattern. Second new page not yet named.
 
-**One separate fix-list item** remains in `docs/reminder-rebuild.md`:
-saying the banner instruction once in the housing instead of on eight
-pages.
+**Help helper — wording and Cancel** (Patrick, this session). In
+`app/where.tsx`: only the **first choice** on step 1 should read
+**Repeats every** (not bare “Repeats”); fix the question that wrongly
+says “every” on a later step. On steps 2 and 3, **Cancel goes back one
+step**, not Home — today every stage’s Cancel calls `router.back()`.
+
+**Quarterly — interval chips on Add** (Patrick, this session). On + Add
+for Quarterly, selectable **30, 60, and 90 days** (not a new page).
+**The engine already knows how to take in this data** (Patrick) — the
+work is the Add chips writing it, not new engine arithmetic.
+
+**Patrick on the phone** (this session):
+
+4. **Monthly Done should advance the tile** — `CadenceListPage` `markDone`
+   only sets `completed`; it does not move the saved date. Restore advance
+   on Done for Monthly, Quarterly, and Yearly so the tile shows the next
+   cycle armed. Reverses #41-new.
+5. **Options — 2nd Thursday chip does not update** (Patrick verified this
+   session). The pattern **saves correctly** — the data is right. The UI
+   fault is the **selected chip** does not change to show 2nd Thursday is
+   active, so it still looks like the dated choice even after save.
+
+**Phase 2 — One door** (build sheet first):
+
+6. Single **apply change, then schedule** path for banner, Siri, pages, and
+   Settings — so the phone's queue matches what was just changed and a stale
+   save cannot overwrite a Done.
+
+**Phase 3 — UI follows translator**:
+
+7. Rows and banner buttons read what the translator already knows (Snooze,
+   Done, Skip). Appointments must not offer Snooze the engine ignores; Skip
+   needs one story (wire the engine stamp or drop it). Monthly Done advance
+   is separate (item 4 above). Second-Thursday chip is separate (item 5).
+
+**Phase 4 — Consider** (Patrick decides before build): Appointments in the
+morning miss list; Settings times without scheduler run; Restore leaving old
+health/miss lists; clock-style leads and named zones. Listed in pending
+Decisions 2–5.
+
+**Still open from before:**
+
+**Display tiles** (Scheduled Reminders sentences, `formatClock`, and the rest)
+are not part of the 12-hour spinner ruling. What remains is `settings.tsx` and
+`formatClock` in `scheduler/queueview.ts`.
+
+**`docs-ref/build-sheets/build-sheet.md` has not been brought level with the
+reorder** (#24-new).
+
+**One claim still unchecked**: that a repeating alarm cannot be told to skip a
+single instance.
+
+**One separate fix-list item** in `docs/reminder-rebuild.md`: banner instruction
+once in the housing instead of on eight pages.
+
+**The build sheets are the pattern for Phase 2 and beyond** — each
+self-contained, carrying the answers themselves rather than pointing at other
+documents.
 
 ## Facts worth carrying
 
