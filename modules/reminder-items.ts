@@ -2,6 +2,7 @@ import { PAGE_LABELS } from '../constants/page-names';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as AppGroup from './app-group';
 import { runDailyReset, runScheduler, runWeeklyReset } from '../scheduler/scheduler';
+import { lastOccurrence } from '../scheduler/weeklyreset';
 import { warnIfFull } from '../scheduler/warn';
 import { translateReminderItems } from '../scheduler/translators/translate';
 import { shadedDaysInMonth } from '../scheduler/leadmoments';
@@ -32,13 +33,24 @@ export function hourMinuteOf(saved: { hour?: number | null; minute?: number | nu
     return {};
 }
 
-/** True when this item has a reminder that can fire, so Snooze can mean something. */
+/** True when Snooze would mean something the engine will honour. */
 export function hasReminderSet(item: ReminderItem): boolean {
-    if (item.kind === 'appointments') {
-        return (item.reminders?.length ?? 0) > 0;
-    }
     const shaped = translateReminderItems([item], Date.now())[0];
-    return !!shaped?.hasDueTimeBit;
+    return !!shaped?.canBePushedBackBit && !!shaped.hasDueTimeBit;
+}
+
+/** The due moment of this cycle, which Skip stamps so the engine arms the next. */
+export function thisCycleDueStamp(item: ReminderItem, now: number = Date.now()): number | undefined {
+    if (typeof item.hour !== 'number' || typeof item.minute !== 'number') return undefined;
+    if (item.kind === 'daily') {
+        const due = new Date(now);
+        due.setHours(item.hour, item.minute, 0, 0);
+        return due.getTime();
+    }
+    if (item.kind === 'weekly' && typeof item.day === 'number') {
+        return lastOccurrence(item.day, item.hour, item.minute, now);
+    }
+    return undefined;
 }
 
 // Roll a dated repeat forward to its next occurrence that lands in the
@@ -242,6 +254,8 @@ export function formatItemWhen(item: ReminderItem): string {
 }
 
 export function snoozeLineOf(item: ReminderItem): string | null {
+    const shaped = translateReminderItems([item], Date.now())[0];
+    if (!shaped?.canBePushedBackBit) return null;
     if (item.snoozedUntil == null || item.snoozedUntil <= Date.now()) return null;
     const when = new Date(item.snoozedUntil);
     return `Snoozed till: ${format12Hour(when.getHours(), when.getMinutes())}`;

@@ -21,15 +21,21 @@ working. **#67-new is committed.** **#68-new is committed.**
 **#72-new is committed.** Built the hangings lock and Grok Phase 1. Not on the phone.
 The day-roll lock still needs a night of all-green Daily, then a morning
 open on a new load, to confirm the pop-up stays quiet.
-**#73-new built Grok Phase 2** — one apply-then-schedule door. Not on the
+**#73-new is committed.** Built Grok Phase 2 — one apply-then-schedule door. Not on the
 phone. Sheet: `docs-ref/build-sheets/build-sheet-one-door.md`. Saved kinds,
 routes, page files, and banner sources
 are `appointments` and `bucketlist`. Siri says Daily and Remember.
-Mac suite 302 of 302. TypeScript is clean.
+**#74-new built Grok Phase 3**, and Appointments at the set time.
+Appointments do not offer Snooze. Skip writes the engine stamp.
+Appointments fire at the set time as well as any before chips. Not on the
+phone.
+Mac suite 304 of 304. TypeScript is clean.
 
 A read-only Grok 4.6 High review of the live app is recorded in
 `docs/grok-review-2026-09-05.md`. Phase 1 is done at #72-new. Phase 2 is
-done at #73-new. Phase 3 remains.
+done at #73-new. Phase 3 is done at #74-new. Appointments fire at the
+set time. Restore’s leftover health and miss lists wait for a
+merge-restore sitting. Morning of may float with the phone.
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -81,25 +87,32 @@ These are Patrick's and they govern the work rather than describing it.
 - **The Where? page is Help** (Patrick, #70-new). The visible name
   is **Help**, not Where? The Home badge is **?**, not 🧭. The route
   may stay `where.tsx`.
+- **Skip drops this cycle and arms the next** (Patrick, #74-new). It is
+  not Done, and it is not only clearing a snooze.
+- **Appointments remind at the set time** (Patrick, #74-new). This
+  reverses #52-new. They act like the rest of the app. The before chips
+  still stand.
+- **Morning of is not the set time** (Patrick, #74-new). A clock-style
+  lead may float with the phone even when the appointment has a named
+  zone.
 
 ## What is open in front of it
 
 The #67-new load is on the phone. #69-new is committed but not on the
 phone. The day-roll lock, quarterly month, Reset All Data banners,
-banner-tap write-down (**#72-new is committed**), and the one-door
-(**#73-new, built**) are not on the phone. Paperwork is Pending 9–12.
+banner-tap write-down (**#72-new is committed**), the one-door
+(**#73-new is committed**), and Phase 3 (**#74-new, built**) are not on
+the phone. Paperwork is Pending 8–11.
 
 **Grok review follow-up** (`docs/grok-review-2026-09-05.md`). Phase 1 is
-done at #72-new. **Phase 2 is built** at #73-new, not on the phone.
-Phase 3 remains.
+done at #72-new. Phase 2 is committed at #73-new. **Phase 3 is built** at
+#74-new, not on the phone. Appointments fire at the set time.
 
 **Birthdays page** (Patrick, #70-new). A new page, own place on Home.
 Each item is a **name and a date**, with a **yearly reminder**. Almost
 like Appointments, but simpler: **Day Before** only as the before chip.
-Unlike Appointments, Birthdays **does remind on the day itself** —
-Appointments deliberately has no reminder at the set time. **On the day**
-and **Day Before** are both selectable chips. Build sheet first per
-standing pattern. Second new page not yet named.
+**On the day** and **Day Before** are both selectable chips. Build sheet
+first per standing pattern. Second new page not yet named.
 
 **Help helper — wording and Cancel** (Patrick, #70-new). In
 `app/where.tsx`: only the **first choice** on step 1 should read
@@ -123,17 +136,11 @@ work is the Add chips writing it, not new engine arithmetic.
    fault is the **selected chip** does not change to show 2nd Thursday is
    active, so it still looks like the dated choice even after save.
 
-**Phase 3 — UI follows translator**:
-
-7. Rows and banner buttons read what the translator already knows (Snooze,
-   Done, Skip). Appointments must not offer Snooze the engine ignores; Skip
-   needs one story (wire the engine stamp or drop it). Monthly Done advance
-   is separate (item 4 above). Second-Thursday chip is separate (item 5).
-
-**Phase 4 — Consider** (Patrick decides before build): Appointments in the
-morning miss list; Restore leaving old health/miss lists; clock-style leads
-and named zones. Listed in pending Decisions 3–5. Settings clock times now
-run the scheduler (Phase 2).
+**Phase 4.** Appointments fire at the set time (Patrick, #74-new) —
+built; this reverses #52-new. Restore’s leftover health and miss lists
+wait for a sitting that discusses merge as an option. Morning of may
+float with the phone; it is not the set time. Settings clock times
+already run the scheduler (Phase 2).
 
 **Still open from before:**
 
@@ -150,9 +157,8 @@ single instance.
 **One separate fix-list item** in `docs/reminder-rebuild.md`: banner instruction
 once in the housing instead of on eight pages.
 
-**The build sheets are the pattern for Phase 3 and beyond** — each
-self-contained, carrying the answers themselves rather than pointing at other
-documents.
+**The build sheets are the pattern for a new page** — each self-contained,
+carrying the answers themselves rather than pointing at other documents.
 
 ## Facts worth carrying
 

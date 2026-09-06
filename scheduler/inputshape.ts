@@ -246,8 +246,8 @@ export interface ShapedItem {
      *
      * One stamp, like push-back. Skip is this cycle, then the next event is
      * armed. It is not done. A one-off has no next event, so a stamp on an
-     * item with no repeat unit is ignored. The translator does not read this
-     * from saved items in this step; tests construct it.
+     * item with no repeat unit is ignored. The translator reads this from the
+     * saved item when Skip has written it.
      */
     skippedCycleStamp?: number;
 

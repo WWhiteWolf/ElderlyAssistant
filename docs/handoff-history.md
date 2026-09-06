@@ -4068,6 +4068,42 @@ what is open to build.
 regenerated. Patrick will commit. Phase 3 remains.
 
 
+## #74-new (2026-09-06): Grok Phase 3 — Snooze and Skip follow the translator
+
+**The goal was Grok Phase 3.** Rows and banners follow what the
+translator already knows.
+
+**Appointments do not offer Snooze.** The row used to show Snooze
+whenever lead reminders were set. The translator’s
+`canBePushedBackBit` is false for Appointments, and the engine never
+reads that stamp. Snooze now shows only when the translator says the
+kind can be pushed back and it has a due time. The “Snoozed till…”
+line follows the same bit. The Appointments banner was already OK
+only.
+
+**Skip writes the engine stamp** (Patrick, this sitting). Skip means
+this firing and this cycle are dropped, and the next cycle is armed.
+It is not Done, and it is not only clearing a snooze. The banner
+stamps `skippedCycleStamp` with this cycle’s due moment and clears a
+standing snooze. The translator now reads that stamp. Daily Skip arms
+tomorrow; Weekly Skip arms the next week.
+
+**Left separate.** Monthly Done still ticks and does not advance the
+tile. The 2nd Thursday chip still does not show as selected. Those
+were already open items.
+
+**Phase 4, this sitting.** Appointments fire at the set time, reversing
+#52-new; the before chips still stand. Restore’s leftover health and
+miss lists wait for a sitting that discusses merge as an option. Morning
+of is not the set time and may float with the phone.
+
+**Checks.** Mac suite 304 of 304. TypeScript clean. Not on the phone.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `in-flight.md`,
+and `pending.txt` refreshed. `pending.docx` regenerated. Patrick will
+commit.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

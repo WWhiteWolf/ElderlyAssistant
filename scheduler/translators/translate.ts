@@ -160,6 +160,9 @@ function translateOne(rules: ScreenRules, saved: ReminderItem): ShapedItem {
         // `stillwanted.ts` already makes it; making it twice, in two places,
         // is how the two would come to disagree.
         ...(pushedBackToStamp != null ? { pushedBackToStamp } : {}),
+        ...(typeof saved.skippedCycleStamp === 'number'
+            ? { skippedCycleStamp: saved.skippedCycleStamp }
+            : {}),
 
         // ---- how far ahead to speak ----
 
@@ -355,7 +358,9 @@ const appointmentsCadenceRules: ScreenRules = {
         }
         return { hasDueTimeBit: false };
     },
-    leadTimesOf: (item) => leadTimesFromReminders(item),
+    // The set time itself, then any reminders-before chips. An empty chip
+    // list still speaks at the appointment (#74-new; reverses #52-new).
+    leadTimesOf: (item) => [...atTheMomentItself, ...leadTimesFromReminders(item)],
     bannerTitleTextOf: (item) => `📋 Reminder: ${item.label}`,
     bannerBodyTextOf: (item) => {
         if (typeof item.year !== 'number'

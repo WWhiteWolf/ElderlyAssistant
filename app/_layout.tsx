@@ -10,6 +10,7 @@ import * as AppGroup from '../modules/app-group';
 import {
     applyReminderChange,
     loadReminderItems,
+    thisCycleDueStamp,
     type ReminderItem,
 } from '../modules/reminder-items';
 import { showHealthNotice } from '../scheduler/notice';
@@ -213,22 +214,15 @@ export default function RootLayout() {
     // tapped notification; we do nothing else (no done, no snooze, no routing).
     if (action === 'ok') return;
 
-    // "Skip" on a routine banner skips THIS occurrence only. It clears the
-    // item's still-pending snooze so it stops nagging this round, but nothing
-    // is marked done or logged; the base reminder brings the item back next
-    // cycle. The Daily or Weekly base reminder is deliberately not touched.
+    // Skip drops this cycle and arms the next. It is not Done, and it is not
+    // only clearing a snooze. The stamp is this cycle's due moment; the engine
+    // reads it and finds the next event. A standing snooze goes with the cycle
+    // it belonged to. Skip is registered on `routineactions` and on no other
+    // category.
     if (action === 'skip') {
       const itemId = data?.itemId as string | undefined;
       if (!itemId) return;
       (async () => {
-        // Both routine kinds write their one-off reminder down on the item, so
-        // taking it off the phone by hand would not hold: the next run would
-        // read the stamp and put the reminder straight back. The stamp is what
-        // has to go, and then the scheduler does the taking off.
-        //
-        // Daily and Weekly use the same saved `snoozedUntil` stamp: one moment
-        // in the future for this occurrence only. Skip is registered on
-        // `routineactions` and on no other category.
         const source = data?.source as string | undefined;
         const isDay = source === 'daily' || source === 'dailysnooze';
         const isWeek = source === 'weekly' || source === 'weeklysnooze';
@@ -238,7 +232,8 @@ export default function RootLayout() {
           if (it.id !== itemId) return it;
           const { snoozedUntil: _cleared, ...rest } = it;
           void _cleared;
-          return rest;
+          const stamp = thisCycleDueStamp(it);
+          return stamp !== undefined ? { ...rest, skippedCycleStamp: stamp } : rest;
         }));
       })();
       return;

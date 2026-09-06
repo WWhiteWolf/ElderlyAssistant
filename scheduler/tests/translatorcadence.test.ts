@@ -77,8 +77,8 @@ export function runTranslatorCadenceTests(): void {
         }));
         assertSame(
             [shaped.sourceScreenCode, shaped.doneEndsItemBit, shaped.leadTimeList.length, shaped.bannerButtonsCode],
-            ['appointments', true, 1, 'appointmentsok'],
-            'an appointment keeps its one-off shape and current source',
+            ['appointments', true, 2, 'appointmentsok'],
+            'the set time is one lead, and each before-chip is another',
         );
     });
 
@@ -110,6 +110,12 @@ export function runTranslatorCadenceTests(): void {
     test('A ticked daily item still becomes a shaped item', () => {
         const shaped = shapeOf(item({ kind: 'daily', hour: 8, minute: 0, completed: true }));
         assert(shaped.isDoneBit, 'the tick comes across so still-wanted can judge it');
+    });
+
+    test('A saved skip stamp reaches the common shape', () => {
+        const stamp = new Date(2026, 5, 1, 8, 0, 0, 0).getTime();
+        const shaped = shapeOf(item({ kind: 'daily', hour: 8, minute: 0, skippedCycleStamp: stamp }));
+        assertSame(shaped.skippedCycleStamp, stamp, 'Skip is a saved stamp the engine already knows how to read');
     });
 
     test('A named time zone reaches the common shape as a complete pair', () => {

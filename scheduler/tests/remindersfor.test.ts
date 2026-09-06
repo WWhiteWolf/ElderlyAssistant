@@ -112,6 +112,21 @@ export function runRemindersForTests(): void {
         );
     });
 
+    test('A saved Daily skip stamp arms tomorrow, not today', () => {
+        const todayDue = new Date(2026, 7, 25, 8, 0, 0, 0).getTime();
+        const now = new Date(2026, 7, 25, 8, 1, 0, 0).getTime();
+        const armed = dailyOccurrences(daily({
+            hour: 8,
+            minute: 0,
+            skippedCycleStamp: todayDue,
+        }), now);
+        assertSame(
+            armed.map((r) => readable((r.trigger as { at: number }).at)),
+            ['2026-8-26 8:00'],
+            'Skip drops this cycle and arms the next',
+        );
+    });
+
     test('An occurrence is named for the day it falls on', () => {
         assertSame(
             dailyOccurrences(daily({ hour: 8, minute: 0 })).map((r) => r.key),
@@ -400,12 +415,19 @@ export function runRemindersForTests(): void {
 
     test('An appointment reminder fires that far before the due moment', () => {
         const wanted = appointmentWanted(appointment());
-        assertSame(wanted.length, 1, 'one reminder on the appointment, one wanted');
-        assertSame(wanted[0].key, 'appointments:t1:r1', 'the reminder\'s own id, so two leads never share a name');
+        const before = wanted.find((r) => r.key === 'appointments:t1:r1');
+        const atTime = wanted.find((r) => r.key === 'appointments:t1:base');
+        assertSame(wanted.length, 2, 'the set time and the before-chip both stand');
+        assert(before != null, 'the before-chip keeps its own id');
         assertSame(
-            wanted[0].trigger,
+            before!.trigger,
             { kind: 'date', at: new Date(2026, 5, 10, 13, 30, 0, 0).getTime() },
             'thirty minutes before two is half past one',
+        );
+        assertSame(
+            atTime!.trigger,
+            { kind: 'date', at: new Date(2026, 5, 10, 14, 0, 0, 0).getTime() },
+            'the appointment time itself also fires',
         );
     });
 
@@ -416,12 +438,22 @@ export function runRemindersForTests(): void {
                 appointmentReminder({ id: 'r2', amount: 1, unit: 'days' }),
             ],
         }));
-        assertSame(wanted.map((r) => r.key), ['appointments:t1:r1', 'appointments:t1:r2'], 'depth does not trim lead times');
+        assertSame(
+            wanted.map((r) => r.key),
+            ['appointments:t1:base', 'appointments:t1:r1', 'appointments:t1:r2'],
+            'depth does not trim lead times, and the set time is named base',
+        );
     });
 
-    test('An appointment with no reminders set gets nothing', () => {
-        assertSame(appointmentWanted(appointment({ reminders: [] })).length, 0,
-            'an empty list means nothing to say, not even at the appointment');
+    test('An appointment with no before chips still speaks at the set time', () => {
+        const wanted = appointmentWanted(appointment({ reminders: [] }));
+        assertSame(wanted.length, 1, 'the set time is enough');
+        assertSame(wanted[0].key, 'appointments:t1:base', 'named as the appointment itself');
+        assertSame(
+            wanted[0].trigger,
+            { kind: 'date', at: new Date(2026, 5, 10, 14, 0, 0, 0).getTime() },
+            'two o\'clock on the appointment day',
+        );
     });
 
     test('A finished appointment gets nothing', () => {

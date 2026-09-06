@@ -35,6 +35,9 @@ export interface ReminderItem {
     completed?: boolean;
     doneAt?: number;
     snoozedUntil?: number;
+    // Skip: the due moment of the cycle that was skipped. The engine drops
+    // that cycle and arms the next. Not Done.
+    skippedCycleStamp?: number;
     // Options written from + OPT (#37-new). Time zone, holidays, a second
     // Thursday and a Wednesday after the 6th are read by the translator.
     // Extra tap is Then or Next Day on a shifted banner, not a field.
