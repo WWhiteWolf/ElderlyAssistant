@@ -4,28 +4,24 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-06, at the close of #72-new.
+Last written: 2026-09-06, at the close of #73-new.
 
 ## Read this first
 
-- **The next Memory session is #73-new.**
-- **Its goal is Grok Phase 2:** one apply-then-schedule door. Build sheet first.
-- **Phone load:** #72-new built, not on the phone. Last load #67-new. #69-new
-  committed, not loaded. Paperwork Pending 10–13.
+- **#73-new is closed.** Grok Phase 2 is built: one apply-then-schedule
+  door. Sheet: `docs-ref/build-sheets/build-sheet-one-door.md`.
+- **Phone load:** #73-new built, not on the phone. Last load #67-new.
+  #69-new and #72-new committed, not loaded. Paperwork Pending 9–12.
 
 ## What is in
 
-#72-new: hangings lock and Grok Phase 1. Mac suite 302. TypeScript clean.
-
-## Recording
-
-The Grok review itself has no session number. A fix taken from it carries
-the session that did the work. Finished work goes in What is Done, not
-What's Next. The phone-load line may name what is built and not on the phone.
+#73-new: `applyReminderChange` is the one door. Banner, Siri, pages,
+Restore, and Settings clock times go through it. Mac suite 302.
+TypeScript clean.
 
 ## What is next
 
-Phase 2. Patrick leads.
+Patrick leads. Phase 3 remains on the list.
 
 ## Do not reopen
 

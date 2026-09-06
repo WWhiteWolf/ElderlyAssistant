@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { HeaderButton, PageFrame } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
-import { loadReminderItems, saveReminderItems } from '../modules/reminder-items';
+import { applyReminderChange } from '../modules/reminder-items';
 
 // Format the backup file. Bump VERSION only if the shape changes,
 // so a future Import can tell how to read an older file.
@@ -249,7 +249,7 @@ export default function BackupScreen() {
             await AsyncStorage.multiRemove(RETIRED_KEYS);
 
             // Write the one list from the restored copy, so reminders still arm.
-            await saveReminderItems(await loadReminderItems());
+            await applyReminderChange((items) => items);
 
             Alert.alert('Restore complete', 'Your backup has been restored.', [
                 { text: 'OK', onPress: () => router.replace('/home') },

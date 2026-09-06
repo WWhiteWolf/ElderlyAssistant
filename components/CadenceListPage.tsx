@@ -21,8 +21,8 @@ import { Theme, useTheme } from '../constants/Themes';
 import {
     dragKindTo,
     formatItemWhen,
+    applyReminderChange,
     loadReminderItems,
-    saveReminderItems,
     type ReminderItem,
     type ReminderKind,
 } from '../modules/reminder-items';
@@ -103,9 +103,8 @@ export default function CadenceListPage({
         }, [refreshFromStorage]),
     );
 
-    const writeItems = (updated: ReminderItem[]) => {
-        setItems(updated);
-        void saveReminderItems(updated);
+    const writeItems = (patch: (list: ReminderItem[]) => ReminderItem[]) => {
+        void applyReminderChange(patch).then(setItems);
     };
 
     const writeHistory = (updated: HistoryEntry[]) => {
@@ -131,14 +130,14 @@ export default function CadenceListPage({
         };
         writeHistory([newEntry, ...history].slice(0, 50));
         if (kind === 'weekly') {
-            writeItems(items.map((one) => {
+            writeItems((list) => list.map((one) => {
                 if (one.id !== id) return one;
                 const { snoozedUntil, ...rest } = one;
                 return { ...rest, completed: true, doneAt: Date.now() };
             }));
             return;
         }
-        writeItems(items.map((one) => {
+        writeItems((list) => list.map((one) => {
             if (one.id !== id) return one;
             const { snoozedUntil, ...rest } = one;
             return { ...rest, completed: true };
@@ -153,7 +152,7 @@ export default function CadenceListPage({
             {
                 text: 'Mark not done',
                 onPress: () => {
-                    writeItems(items.map((one) =>
+                    writeItems((list) => list.map((one) =>
                         one.id === id ? { ...one, completed: false, doneAt: undefined } : one
                     ));
                 },
@@ -166,7 +165,7 @@ export default function CadenceListPage({
         const item = items.find((one) => one.id === snoozeItemId);
         if (!item) { setSnoozeItemId(null); return; }
         const target = Date.now() + minutes * 60 * 1000;
-        writeItems(items.map((one) =>
+        writeItems((list) => list.map((one) =>
             one.id === item.id ? { ...one, snoozedUntil: target } : one
         ));
         setSnoozeItemId(null);
@@ -205,10 +204,12 @@ export default function CadenceListPage({
         const meta = dragMeta.current;
         if (!meta && !draggingIdRef.current) return;
         if (meta) {
-            const next = dragKindTo(meta.snapshot, kind, meta.id, dragToIndex.current);
-            itemsRef.current = next;
-            setItems(next);
-            void saveReminderItems(next);
+            void applyReminderChange((list) =>
+                dragKindTo(list, kind, meta.id, dragToIndex.current)
+            ).then((next) => {
+                itemsRef.current = next;
+                setItems(next);
+            });
         }
         dragMeta.current = null;
         draggingIdRef.current = null;
@@ -221,7 +222,7 @@ export default function CadenceListPage({
             {
                 text: 'Delete',
                 style: 'destructive',
-                onPress: () => writeItems(items.filter((one) => one.id !== id)),
+                onPress: () => writeItems((list) => list.filter((one) => one.id !== id)),
             },
         ]);
     };

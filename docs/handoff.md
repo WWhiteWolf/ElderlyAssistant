@@ -18,15 +18,18 @@ the phone. He has not exhaustively tested it; what he has used is
 working. **#67-new is committed.** **#68-new is committed.**
 **#69-new is committed.**
 
-**#72-new built the hangings lock and Grok Phase 1.** Not on the phone.
-**Next session (#73-new): Grok Phase 2** — one apply-then-schedule door,
-build sheet first. Saved kinds, routes, page files, and banner sources
+**#72-new is committed.** Built the hangings lock and Grok Phase 1. Not on the phone.
+The day-roll lock still needs a night of all-green Daily, then a morning
+open on a new load, to confirm the pop-up stays quiet.
+**#73-new built Grok Phase 2** — one apply-then-schedule door. Not on the
+phone. Sheet: `docs-ref/build-sheets/build-sheet-one-door.md`. Saved kinds,
+routes, page files, and banner sources
 are `appointments` and `bucketlist`. Siri says Daily and Remember.
 Mac suite 302 of 302. TypeScript is clean.
 
 A read-only Grok 4.6 High review of the live app is recorded in
-`docs/grok-review-2026-09-05.md`. Phase 1 is done at #72-new. Phase 2
-is next. Phase 3 remains.
+`docs/grok-review-2026-09-05.md`. Phase 1 is done at #72-new. Phase 2 is
+done at #73-new. Phase 3 remains.
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -82,15 +85,12 @@ These are Patrick's and they govern the work rather than describing it.
 ## What is open in front of it
 
 The #67-new load is on the phone. #69-new is committed but not on the
-phone. The day-roll lock, quarterly month, Reset All Data banners, and
-banner-tap write-down (#72-new) are built and not on the phone.
-Paperwork is Pending 10–13.
-
-**Hangings** (#72-new). Day-roll lock built. Needs a night of all-green
-Daily, then a morning open, to confirm the pop-up stays quiet.
+phone. The day-roll lock, quarterly month, Reset All Data banners,
+banner-tap write-down (**#72-new is committed**), and the one-door
+(**#73-new, built**) are not on the phone. Paperwork is Pending 9–12.
 
 **Grok review follow-up** (`docs/grok-review-2026-09-05.md`). Phase 1 is
-done at #72-new. **Phase 2 is next session's goal** (build sheet first).
+done at #72-new. **Phase 2 is built** at #73-new, not on the phone.
 Phase 3 remains.
 
 **Birthdays page** (Patrick, #70-new). A new page, own place on Home.
@@ -123,12 +123,6 @@ work is the Add chips writing it, not new engine arithmetic.
    fault is the **selected chip** does not change to show 2nd Thursday is
    active, so it still looks like the dated choice even after save.
 
-**Phase 2 — One door** (build sheet first):
-
-6. Single **apply change, then schedule** path for banner, Siri, pages, and
-   Settings — so the phone's queue matches what was just changed and a stale
-   save cannot overwrite a Done.
-
 **Phase 3 — UI follows translator**:
 
 7. Rows and banner buttons read what the translator already knows (Snooze,
@@ -137,9 +131,9 @@ work is the Add chips writing it, not new engine arithmetic.
    is separate (item 4 above). Second-Thursday chip is separate (item 5).
 
 **Phase 4 — Consider** (Patrick decides before build): Appointments in the
-morning miss list; Settings times without scheduler run; Restore leaving old
-health/miss lists; clock-style leads and named zones. Listed in pending
-Decisions 2–5.
+morning miss list; Restore leaving old health/miss lists; clock-style leads
+and named zones. Listed in pending Decisions 3–5. Settings clock times now
+run the scheduler (Phase 2).
 
 **Still open from before:**
 
@@ -156,7 +150,7 @@ single instance.
 **One separate fix-list item** in `docs/reminder-rebuild.md`: banner instruction
 once in the housing instead of on eight pages.
 
-**The build sheets are the pattern for Phase 2 and beyond** — each
+**The build sheets are the pattern for Phase 3 and beyond** — each
 self-contained, carrying the answers themselves rather than pointing at other
 documents.
 

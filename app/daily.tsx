@@ -23,7 +23,7 @@ import {
     FROM_PAGE,
     format12Hour,
     loadReminderItems,
-    saveReminderItems,
+    applyReminderChange,
     sortDailyVisible,
     type ReminderItem,
 } from '../modules/reminder-items';
@@ -112,9 +112,8 @@ export default function DailyScreen() {
         } as Href);
     };
 
-    const writeItems = (updated: ReminderItem[]) => {
-        setItems(updated);
-        void saveReminderItems(updated);
+    const writeItems = (patch: (list: ReminderItem[]) => ReminderItem[]) => {
+        void applyReminderChange(patch).then(setItems);
     };
 
     const writeHistory = (updated: HistoryEntry[]) => {
@@ -139,7 +138,7 @@ export default function DailyScreen() {
             note: '',
         };
         writeHistory([newEntry, ...history].slice(0, 50));
-        writeItems(items.map((one) => {
+        writeItems((list) => list.map((one) => {
             if (one.id !== id) return one;
             const { snoozedUntil, ...rest } = one;
             return {
@@ -158,7 +157,7 @@ export default function DailyScreen() {
             {
                 text: 'Mark not done',
                 onPress: () => {
-                    writeItems(items.map((one) =>
+                    writeItems((list) => list.map((one) =>
                         one.id === id ? { ...one, completed: false, doneAt: undefined } : one
                     ));
                 },
@@ -171,7 +170,7 @@ export default function DailyScreen() {
         const item = items.find((one) => one.id === snoozeItemId);
         if (!item) { setSnoozeItemId(null); return; }
         const target = Date.now() + minutes * 60 * 1000;
-        writeItems(items.map((one) =>
+        writeItems((list) => list.map((one) =>
             one.id === item.id ? { ...one, snoozedUntil: target } : one
         ));
         setSnoozeItemId(null);
@@ -210,10 +209,12 @@ export default function DailyScreen() {
         const meta = dragMeta.current;
         if (!meta && !draggingIdRef.current) return;
         if (meta) {
-            const next = dragVisibleTo(meta.snapshot, meta.id, dragToIndex.current);
-            itemsRef.current = next;
-            setItems(next);
-            void saveReminderItems(next);
+            void applyReminderChange((list) =>
+                dragVisibleTo(list, meta.id, dragToIndex.current)
+            ).then((next) => {
+                itemsRef.current = next;
+                setItems(next);
+            });
         }
         dragMeta.current = null;
         draggingIdRef.current = null;
@@ -227,8 +228,7 @@ export default function DailyScreen() {
                 text: 'Delete',
                 style: 'destructive',
                 onPress: () => {
-                    const updated = items.filter((one) => one.id !== id);
-                    writeItems(updated);
+                    writeItems((list) => list.filter((one) => one.id !== id));
                 },
             },
         ]);

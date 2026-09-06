@@ -18,6 +18,7 @@ import {
 import DateTimeControl from '../components/DateTimeControl';
 import { HeaderButton, PageFrame } from '../components/PageFrame';
 import { Theme, useTheme, useThemeControls } from '../constants/Themes';
+import { applyReminderChange } from '../modules/reminder-items';
 import { runScheduler } from '../scheduler/scheduler';
 
 export default function SettingsScreen() {
@@ -100,6 +101,7 @@ export default function SettingsScreen() {
             setEveningTime(hhmm);
             await AsyncStorage.setItem('reminder_evening_time', hhmm);
         }
+        await applyReminderChange((items) => items);
         setShowTimeModal(false);
     };
 

@@ -4035,6 +4035,39 @@ and `pending.txt` refreshed. `pending.docx` regenerated. Patrick will
 commit.
 
 
+## #73-new (2026-09-06): Grok Phase 2 — one apply-then-schedule door
+
+**The goal was Grok Phase 2.** The sheet was written first, then built
+in this sitting: `docs-ref/build-sheets/build-sheet-one-door.md`.
+
+**What the read found.** `saveReminderItems` already stored the list and
+ran the scheduler. The live fault was Daily and the cadence pages
+writing the list they were holding, which could overwrite a banner
+Done. Settings morning, midday, and evening times saved and did not
+run the scheduler.
+
+**The door.** `applyReminderChange` in `modules/reminder-items.ts`
+loads the list, applies a patch, then uses that write. Patches run one
+after another; none is dropped. Banner, Siri, Daily, cadence pages,
+item-edit, Restore, and Settings clock times all go through it.
+`saveReminderItems` is no longer imported anywhere else.
+
+**What differed from the sheet.** Dated-cadence banner Done now saves
+the list, then writes the log, because the door is the load. `npx tsc`
+is the wrong program here; the check used the project’s own compiler.
+
+**Hangings** stays out of the handoff’s open list. The day-roll lock
+still needs a night of all-green Daily and a morning open on a new
+load to confirm; that line sits with where things stand, not with
+what is open to build.
+
+**Checks.** Mac suite 302 of 302. TypeScript clean. Not on the phone.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `in-flight.md`,
+`docs/index.md`, and `pending.txt` refreshed. `pending.docx`
+regenerated. Patrick will commit. Phase 3 remains.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

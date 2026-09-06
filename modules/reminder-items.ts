@@ -84,11 +84,33 @@ export async function loadReminderItems(): Promise<ReminderItem[]> {
 
 // Write the one list and run the scheduler. Siri's voice list is the daily
 // items on this same list.
-export async function saveReminderItems(items: ReminderItem[]): Promise<void> {
+async function saveReminderItems(items: ReminderItem[]): Promise<void> {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     const daily = items.filter((one) => one.kind === 'daily');
     AppGroup.setDailyItems(daily.map((one) => ({ id: one.id, label: one.label })));
     warnIfFull(await runScheduler());
+}
+
+// One door for every change of the saved list: read it as it is now, apply
+// this patch, then save. A page must not write a list it was holding, because
+// a banner or Siri Done that landed in between would be overwritten.
+//
+// Each patch waits for the previous one to finish. Unlike the scheduler's run
+// gate, a later patch is never dropped — each change is different and each
+// must run.
+let writeTail: Promise<void> = Promise.resolve();
+
+export async function applyReminderChange(
+    patch: (items: ReminderItem[]) => ReminderItem[],
+): Promise<ReminderItem[]> {
+    const run = writeTail.then(async () => {
+        const current = await loadReminderItems();
+        const next = patch(current);
+        await saveReminderItems(next);
+        return next;
+    });
+    writeTail = run.then(() => undefined, () => undefined);
+    return run;
 }
 
 export function isTodayDate(item: ReminderItem) {

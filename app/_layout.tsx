@@ -8,8 +8,9 @@ import { AppOrientationProvider } from '../components/AppOrientation';
 import { CoverRoot } from '../components/Cover';
 import * as AppGroup from '../modules/app-group';
 import {
+    applyReminderChange,
     loadReminderItems,
-    saveReminderItems,
+    type ReminderItem,
 } from '../modules/reminder-items';
 import { showHealthNotice } from '../scheduler/notice';
 import { runScheduler } from '../scheduler/scheduler';
@@ -43,31 +44,37 @@ export default function RootLayout() {
       if (applyingNote.current) return;
       applyingNote.current = true;
       try {
-        const items = await loadReminderItems();
-        const daily = items.filter((one) => one.kind === 'daily');
-        // Keep Siri's view of the list current.
-        AppGroup.setDailyItems(daily.map((i) => ({ id: i.id, label: i.label })));
-
         const note = AppGroup.getPendingNote();
-        if (!note || note.action !== 'markDone') return;
+        if (!note || note.action !== 'markDone') {
+          const items = await loadReminderItems();
+          const daily = items.filter((one) => one.kind === 'daily');
+          // Keep Siri's view of the list current.
+          AppGroup.setDailyItems(daily.map((i) => ({ id: i.id, label: i.label })));
+          return;
+        }
 
         // Find the item: prefer the id Siri handed back, else match the label.
-        let item = note.itemId ? items.find((i) => i.id === note.itemId) : undefined;
-        if (!item && note.label) {
-          const spoken = note.label.trim().toLowerCase();
-          item = daily.find((i) => i.label.trim().toLowerCase() === spoken);
-        }
-        if (!item) {
+        let target: { id: string; label: string } | undefined;
+        await applyReminderChange((items) => {
+          const daily = items.filter((one) => one.kind === 'daily');
+          let item = note.itemId ? items.find((i) => i.id === note.itemId) : undefined;
+          if (!item && note.label) {
+            const spoken = note.label.trim().toLowerCase();
+            item = daily.find((i) => i.label.trim().toLowerCase() === spoken);
+          }
+          if (!item) return items;
+          target = item;
+          const found = item;
+          const { snoozedUntil: _cleared, ...rest } = found;
+          void _cleared;
+          return items.map((i) =>
+            i.id === found.id ? { ...rest, completed: true } : i
+          );
+        });
+        if (!target) {
           AppGroup.clearPendingNote();
           return;
         }
-        const target = item;
-
-        const { snoozedUntil: _cleared, ...rest } = target;
-        void _cleared;
-        await saveReminderItems(items.map((i) =>
-          i.id === target.id ? { ...rest, completed: true } : i
-        ));
 
         // Durable history entry, dated from when Siri ran (firedAt) — same shape,
         // 50-cap, and fire-time dating as the banner-Done path, so an after-
@@ -227,8 +234,7 @@ export default function RootLayout() {
         const isWeek = source === 'weekly' || source === 'weeklysnooze';
         if (!isDay && !isWeek) return;
 
-        const items = await loadReminderItems();
-        await saveReminderItems(items.map((it) => {
+        await applyReminderChange((items) => items.map((it) => {
           if (it.id !== itemId) return it;
           const { snoozedUntil: _cleared, ...rest } = it;
           void _cleared;
@@ -263,9 +269,8 @@ export default function RootLayout() {
         const itemId = data?.itemId as string | undefined;
         if (!itemId) return;
         (async () => {
-          const items = await loadReminderItems();
           const target = Date.now() + minutes * 60 * 1000;
-          await saveReminderItems(items.map((i) =>
+          await applyReminderChange((items) => items.map((i) =>
             i.id === itemId ? { ...i, snoozedUntil: target } : i
           ));
         })();
@@ -297,8 +302,7 @@ export default function RootLayout() {
       (async () => {
         // Stamp the item. The page reads the same stamp to show the snooze line
         // under its name.
-        const items = await loadReminderItems();
-        await saveReminderItems(items.map((i) =>
+        await applyReminderChange((items) => items.map((i) =>
           i.id === itemId ? { ...i, snoozedUntil: target.getTime() } : i
         ));
       })();
@@ -316,20 +320,21 @@ export default function RootLayout() {
       const itemId = data?.itemId as string | undefined;
       if (!itemId) return;
       (async () => {
-        const items = await loadReminderItems();
-        const item = items.find((i) => i.id === itemId);
-        if (!item) return;
-        const target = new Date();
-        target.setDate(target.getDate() + 1);
-        target.setHours(
-          typeof item.hour === 'number' ? item.hour : 12,
-          typeof item.minute === 'number' ? item.minute : 0,
-          0,
-          0,
-        );
-        await saveReminderItems(items.map((i) =>
-          i.id === itemId ? { ...i, snoozedUntil: target.getTime() } : i
-        ));
+        await applyReminderChange((items) => {
+          const item = items.find((i) => i.id === itemId);
+          if (!item) return items;
+          const target = new Date();
+          target.setDate(target.getDate() + 1);
+          target.setHours(
+            typeof item.hour === 'number' ? item.hour : 12,
+            typeof item.minute === 'number' ? item.minute : 0,
+            0,
+            0,
+          );
+          return items.map((i) =>
+            i.id === itemId ? { ...i, snoozedUntil: target.getTime() } : i
+          );
+        });
       })();
       return;
     }
@@ -347,9 +352,8 @@ export default function RootLayout() {
       // clears the tick when the item's day comes around again.
       if (source === 'weekly' || source === 'weeklysnooze') {
         (async () => {
-          const items = await loadReminderItems();
           const fired = new Date(response.notification.date * 1000);
-          await saveReminderItems(items.map((c) => {
+          await applyReminderChange((items) => items.map((c) => {
             if (c.id !== itemId) return c;
             const { snoozedUntil: _cleared, ...rest } = c;
             void _cleared;
@@ -379,8 +383,17 @@ export default function RootLayout() {
         || source === 'yearly' || source === 'yearlydelay'
       ) {
         (async () => {
-          const items = await loadReminderItems();
-          const item = items.find((i) => i.id === itemId);
+          let item: ReminderItem | undefined;
+          await applyReminderChange((items) => {
+            item = items.find((i) => i.id === itemId);
+            if (!item) return items;
+            const { snoozedUntil, ...rest } = item;
+            void snoozedUntil;
+            return items.map((i) => {
+              if (i.id !== itemId) return i;
+              return { ...rest, completed: true };
+            });
+          });
           if (!item) return;
           const fired = new Date(response.notification.date * 1000);
           const historyKey =
@@ -398,12 +411,6 @@ export default function RootLayout() {
             note: '',
           };
           await AsyncStorage.setItem(historyKey, JSON.stringify([newEntry, ...hist].slice(0, 50)));
-          await saveReminderItems(items.map((i) => {
-            if (i.id !== itemId) return i;
-            const { snoozedUntil, ...rest } = item;
-            void snoozedUntil;
-            return { ...rest, completed: true };
-          }));
         })();
         return;
       }
@@ -411,8 +418,7 @@ export default function RootLayout() {
       if (source !== 'daily' && source !== 'dailysnooze') return;
       (async () => {
         if (itemId) {
-          const items = await loadReminderItems();
-          await saveReminderItems(items.map((it) => {
+          await applyReminderChange((items) => items.map((it) => {
             if (it.id !== itemId) return it;
             const { snoozedUntil, ...rest } = it;
             void snoozedUntil;

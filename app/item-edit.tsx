@@ -20,8 +20,8 @@ import { Theme, useTheme } from '../constants/Themes';
 import {
     DAY_NAMES,
     hourMinuteOf,
+    applyReminderChange,
     loadReminderItems,
-    saveReminderItems,
     type LeadReminder,
     type ReminderItem,
     type ReminderKind,
@@ -460,7 +460,6 @@ export default function ItemEditScreen() {
 
     const persist = async (leave: boolean) => {
         const name = tempName.trim();
-        const list = await loadReminderItems();
         const id = editingId ?? writtenIdRef.current ?? Date.now().toString();
         writtenIdRef.current = id;
         const next = assembleFormItem({
@@ -481,10 +480,11 @@ export default function ItemEditScreen() {
             isAppointmentsForToday,
         });
 
-        const updated = list.some((one) => one.id === id)
-            ? list.map((one) => (one.id === id ? next : one))
-            : [...list, next];
-        await saveReminderItems(updated);
+        await applyReminderChange((list) =>
+            list.some((one) => one.id === id)
+                ? list.map((one) => (one.id === id ? next : one))
+                : [...list, next]
+        );
         setExisting(next);
         if (leave) afterSave();
     };
