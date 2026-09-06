@@ -4,30 +4,32 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-06, at the close of #75-new.
+Last written: 2026-09-06, at the close of #76-new.
 
 ## Read this first
 
-- **#75-new is closed.** Four pages will leave Memory: Timer Alerts,
-  Vault, Shopping List, and Memory Test. Copies of the four page files
-  are in `Projects/stray apps`. Not a running app.
+- **#76-new is closed.** Timer Alerts, Vault, Shopping List, and Memory
+  Test no longer run in Memory. Copies remain in `Projects/stray apps`.
+  Not a running app.
 - **Phone load:** last load #67-new. #69-new, #72-new, and #73-new
   committed, not loaded. #74-new built, not on the phone. Paperwork
-  Pending 8–11.
+  Pending 8–11. Mac 298.
 
 ## What is in
 
-The four pages still run in Memory. Own apps vs one group app is open.
-Timer Alerts and Memory Test are simple one-time alerts and do not take
-the engine. What's coming in was not settled. Merge still waits.
+The four pages are out. Memory Test’s engine pieces were dropped, not
+moved. The shopping list on the phone was dropped; a later shopping
+list will have a backup of its own. Vault was empty. On the next load
+those saved keys come off the phone.
 
 ## What is next
 
-The sitting that takes them out, or what's coming in. Birthdays stay
-on the list. The hole in Memory is in `handoff.md`.
+Merge and Restore leftovers. Restore still leaves the old health and
+miss lists standing. What's coming in was not settled. Birthdays stay
+on the list.
 
 ## Do not reopen
 
 The three nice-to-have reminder checks. Regenerating `pending.docx`
-unless he asks. Merge restore, unless he opens that sitting. Do not
-treat the four leaving pages as Memory engine work.
+unless he asks. Do not treat the four leaving pages as Memory engine
+work. Do not raise how those four become apps.

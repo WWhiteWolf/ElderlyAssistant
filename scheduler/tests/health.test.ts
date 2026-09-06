@@ -61,8 +61,8 @@ export function runHealthTests(): void {
 
     test('Each live scheduler record has its current name', () => {
         assertSame(
-            [screenName('reminder_items'), screenName('weekly'), screenName('memtest_session')],
-            ['reminders', 'Weekly', 'Memory Test'],
+            [screenName('reminder_items'), screenName('weekly')],
+            ['reminders', 'Weekly'],
             'the wrong names',
         );
     });
@@ -108,7 +108,7 @@ export function runHealthTests(): void {
     test('Two different lists are two different faults', () => {
         assert(
             faultSignature({ kind: 'list', listKey: 'reminder_items' })
-                !== faultSignature({ kind: 'list', listKey: 'memtest_session' }),
+                !== faultSignature({ kind: 'list', listKey: 'weekly' }),
             'expected different names',
         );
     });

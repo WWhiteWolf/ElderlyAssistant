@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-06 (#75-new — four pages leaving Memory)
+Last updated: 2026-09-06 (#76-new — four pages out of Memory)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -13,18 +13,16 @@ The session-by-session story is not kept here any more. It lives in
 docs/handoff-history.md, which is the archive to look at when you want
 to know why something was done the way it was.
 
-Timer Alerts, Vault, Shopping List, and Memory Test are leaving
-Memory (#75-new). Do not raise them as engine work. The sitting that
-takes them out of Memory is Pending 12.
+Timer Alerts, Vault, Shopping List, and Memory Test left Memory at
+#76-new. Copies stay in Projects/stray apps. Do not raise them as
+engine work. The shopping list is wanted later, with a backup of its
+own.
 
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-FOUR PAGES LEAVING MEMORY (#75-new). Timer Alerts, Vault, Shopping
-List, and Memory Test will move. Copies of the four page files are in
-Projects/stray apps, as source, not as a running app. Own apps or one
-group app is still open. The pages are still in Memory. What's coming
-in was not settled. Birthdays stay on the list. Merge still waits.
+MERGE AND RESTORE LEFTOVERS. Restore still leaves the old health and
+miss lists standing. Pages in and out is done.
 
 PHONE LOAD. #69-new is committed and not on the phone yet. The day-roll
 lock, quarterly month, Reset All Data banners, banner-tap write-down
@@ -76,17 +74,6 @@ Things waiting on something — mostly on the phone or on a build.
 11. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
    WILL COVER (Patrick, #52-new). The during-build tests are
    thrown away. The run is not kept.
-12. TAKE THE FOUR PAGES OUT OF MEMORY (Patrick, #75-new). Timer
-   Alerts, Vault, Shopping List, and Memory Test still run here.
-   Source copies are in Projects/stray apps. When they leave:
-   drop the four Home badges and the landscape Memory Test last-row
-   case; drop the four screens and the Memory Test banner landing
-   (Cover stays); drop Extra Vault Security in Settings; stop Backup
-   carrying shopping, the Vault password lock, and Memory Test; drop
-   the four labels in page-names; take Memory Test out of the
-   scheduler (reader, owned source, session load, health and queue
-   names, tests). Timer was never in the engine. Own apps vs one
-   group app is still open. What's coming in was not settled.
 
 
 FACTS THAT APPLY TO THE ONGOING WORK
@@ -158,12 +145,19 @@ WHAT IS DONE, NEWEST FIRST
 One line each. The full story of any of them is in
 docs/handoff-history.md.
 
-1. #75-new — four pages leaving Memory. Timer Alerts, Vault, Shopping
+1. #76-new — four pages out of Memory. Timer Alerts, Vault, Shopping
+   List, and Memory Test are gone from the live app. Copies remain in
+   Projects/stray apps. Shopping list wanted later with its own backup;
+   the list on the phone was dropped. Vault was empty. Memory Test data
+   and engine pieces were dropped. Backup no longer carries them. Mac 298.
+   TypeScript clean.
+
+2. #75-new — four pages leaving Memory. Timer Alerts, Vault, Shopping
    List, and Memory Test will move. Copies of the four page files are
    in Projects/stray apps, as source, not as a running app. Memory was
    not stripped. What's coming in was not settled. Merge still waits.
 
-2. #74-new — Grok Phase 3, and Appointments at the set time. Appointments
+3. #74-new — Grok Phase 3, and Appointments at the set time. Appointments
    do not offer Snooze. Skip writes the engine skip stamp. Appointments
    fire at the set time as well as any before chips. Mac 304. TypeScript
    clean. Not on the phone.

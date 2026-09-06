@@ -18,6 +18,32 @@ import { runScheduler } from '../scheduler/scheduler';
 
 const LAST_BANNER_TAP_KEY = 'last_banner_tap';
 
+const LEFT_PAGE_KEYS = [
+  'shopping_items',
+  'memtest_session',
+  'memtest_history',
+  'vault_items',
+  'vault_categories',
+  'vault_pin_enabled',
+];
+
+async function dropLeftPages() {
+  await AsyncStorage.multiRemove(LEFT_PAGE_KEYS);
+  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+  await Promise.all(
+    scheduled
+      .filter((n) => {
+        const data = (n.content.data ?? {}) as Record<string, unknown>;
+        return (
+          data.source === 'memorytest' ||
+          data.timerId != null ||
+          n.content.categoryIdentifier === 'timer'
+        );
+      })
+      .map((n) => Notifications.cancelScheduledNotificationAsync(n.identifier)),
+  );
+}
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -162,11 +188,17 @@ export default function RootLayout() {
   // before the run is done — and it is shown from here so it finds Patrick
   // wherever he is, not only on the home page.
   //
-  // #51-new: ask to show banners while Memory is on screen, the same way
-  // Timer already does, then run the scheduler against that answer.
+  // #51-new: ask to show banners while Memory is on screen, then run the
+  // scheduler against that answer.
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      try {
+        await dropLeftPages();
+      } catch {
+        // The four pages' keys may linger; reminders still need to arm.
+      }
+      if (cancelled) return;
       const { status } = await Notifications.requestPermissionsAsync();
       if (cancelled) return;
       if (status !== 'granted') {
@@ -463,11 +495,6 @@ export default function RootLayout() {
       router.push({ pathname: '/yearly', params } as Href);
     } else if (source === 'appointments') {
       router.push({ pathname: '/appointments', params } as Href);
-    } else if (source === 'memorytest') {
-      // The 5-minute recall banner — land straight on the recall screen. There
-      // is only ever one reminder from that page, so it needs no highlight
-      // (Patrick, #13-new).
-      router.push('/memorytest');
     }
     })();
     return () => { cancelled = true; };
@@ -480,12 +507,8 @@ export default function RootLayout() {
     <Stack screenOptions={{ orientation: 'default' }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="home" options={{ headerShown: false }} />
-      <Stack.Screen name="shopping" options={{ headerShown: false }} />
-      <Stack.Screen name="timer" options={{ headerShown: false }} />
       <Stack.Screen name="settings" options={{ headerShown: false }} />
-      <Stack.Screen name="vault" options={{ headerShown: false }} />
       <Stack.Screen name="backup" options={{ headerShown: false }} />
-      <Stack.Screen name="memorytest" options={{ headerShown: false }} />
       <Stack.Screen name="reminders" options={{ headerShown: false }} />
       <Stack.Screen name="calendar" options={{ headerShown: false }} />
       <Stack.Screen

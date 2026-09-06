@@ -120,7 +120,6 @@ export const NOTICE_FOOTER =
 export function screenName(listKey: string): string {
     if (listKey === 'reminder_items') return 'reminders';
     if (listKey === 'weekly') return 'Weekly';
-    if (listKey === 'memtest_session') return 'Memory Test';
     return listKey;
 }
 

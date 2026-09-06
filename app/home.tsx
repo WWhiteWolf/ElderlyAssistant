@@ -17,10 +17,6 @@ import { Theme, useTheme } from '../constants/Themes';
 
 const modules = [
   { id: 'options', label: PAGE_LABELS.options, icon: '⚙️' },
-  { id: 'memorytest', label: PAGE_LABELS.memorytest, icon: '🧠' },
-  { id: 'shopping', label: PAGE_LABELS.shopping, icon: '🛒' },
-  { id: 'vault', label: PAGE_LABELS.vault, icon: '🔒' },
-  { id: 'timer', label: PAGE_LABELS.timer, icon: '⏰' },
   { id: 'appointments', label: PAGE_LABELS.appointments, icon: '✅' },
   { id: 'bucketlist', label: PAGE_LABELS.bucketlist, icon: '✅' },
   { id: 'yearly', label: PAGE_LABELS.yearly, icon: '🔭' },
@@ -38,14 +34,6 @@ export default function HomeScreen() {
     const styles = makeStyles(theme);
     const landscape = useLandscape();
     const headerSide = useLandscapeHeaderSide();
-    // Landscape keeps the ordinary badge order and puts Memory Test last.
-    // Where? and Memory Test therefore share the bottom row (Patrick, #57-new).
-    const shown = landscape
-        ? [
-            ...modules.filter((one) => one.id !== 'memorytest'),
-            ...modules.filter((one) => one.id === 'memorytest'),
-        ]
-        : modules;
 
     const [userName, setUserName] = useState('');
 
@@ -60,8 +48,6 @@ export default function HomeScreen() {
     );
 
     const handleTile = (id: string) => {
-        if (id === 'shopping') router.push('/shopping');
-        if (id === 'timer') router.push('/timer');
         if (id === 'calendar') router.push('/calendar' as Href);
         if (id === 'daily') router.push('/daily' as Href);
         if (id === 'where') router.push('/where' as Href);
@@ -72,8 +58,6 @@ export default function HomeScreen() {
         if (id === 'appointments') router.push('/appointments' as Href);
         if (id === 'bucketlist') router.push('/bucketlist' as Href);
         if (id === 'options') router.push('/options' as Href);
-        if (id === 'vault') router.push('/vault');
-        if (id === 'memorytest') router.push('/memorytest');
     };
 
     return (
@@ -107,18 +91,14 @@ export default function HomeScreen() {
             >
             {/* #62 four-band bridge — now the shared component (#63 rollout). */}
             <ScrollView contentContainerStyle={styles.grid}>
-                {shown.map((mod) => (
+                {modules.map((mod) => (
                     <TouchableOpacity
                         key={mod.id}
                         style={[styles.tile, landscape && styles.tileLandscape]}
                         onPress={() => handleTile(mod.id)}
                     >
                         <View style={styles.iconCircle}>
-                            {mod.id === 'shopping' ? (
-                                <Ionicons name="cart" size={24} color={theme.cartIcon} />
-                            ) : (
-                                <Text style={styles.tileIcon}>{mod.icon}</Text>
-                            )}
+                            <Text style={styles.tileIcon}>{mod.icon}</Text>
                         </View>
                         <Text style={styles.tileLabel}>{mod.label}</Text>
                     </TouchableOpacity>
@@ -184,8 +164,7 @@ const makeStyles = (t: Theme) =>
             alignItems: 'center',
             paddingVertical: 12,
         },
-        // Landscape stays four across. Where? starts the bottom row, with
-        // Memory Test last (Patrick, #57-new).
+        // Landscape stays four across.
         tileLandscape: {
             width: '22%',
         },

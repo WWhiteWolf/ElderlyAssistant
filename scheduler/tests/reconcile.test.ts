@@ -23,7 +23,6 @@ const OWNED = [
     'yearly',
     'yearlydelay',
     'appointments',
-    'memorytest',
 ];
 
 function want(key: string, trigger: WantedTrigger, source = 'daily'): WantedReminder {
@@ -228,7 +227,6 @@ export function runReconcileTests(): void {
         const unread = unreadSourcesFor(['reminder_items']);
         assert(unread.includes('daily'), 'Daily’s held reminders must be kept');
         assert(unread.includes('appointments'), 'Appointments’ held reminders must be kept');
-        assert(!unread.includes('memorytest'), 'Memory Test is a different saved thing');
     });
 
     test('Changing only the visible words replaces the held reminder', () => {

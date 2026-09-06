@@ -27,8 +27,6 @@ import { translateReminderItems } from './translators/translate.ts';
 import { remindersFor } from './remindersfor.ts';
 import { DEFAULT_CLOCK_TIMES } from './clocktimes.ts';
 import type { ClockTimes, TimeOfDay } from './leadmoments.ts';
-import { readMemoryTest } from './readers/memorytest.ts';
-import type { MemoryTestSession } from './readers/memorytest.ts';
 import type { ReminderItem } from '../modules/reminder-types.ts';
 import { applyOpsFor } from './apply.ts';
 import { beginRun, consumePending, endRun } from './rungate.ts';
@@ -53,9 +51,6 @@ import { oneDailyReset } from './resetgate.ts';
  * Appointments carry one current source and only the OK action. They cannot
  * be pushed back.
  *
- * Memory Test keeps its isolated source and remains owned by this scheduler.
- * Its saved session and reader stay separate from the one reminder list.
- *
  * Bucket List produces no reminder, so it has no owned notification source.
  *
  * This set is also the boundary used by reconciliation: anything outside it
@@ -73,7 +68,6 @@ export const OWNED_SOURCES = [
     'yearly',
     'yearlydelay',
     'appointments',
-    'memorytest',
 ];
 
 /**
@@ -340,26 +334,12 @@ export async function gatherWanted(
         failedKeys.push('reminder_items');
     }
 
-    // The memory test saves one session rather than a list.
-    let session: MemoryTestSession | null = null;
-    let memtestFailed = false;
-    try {
-        const raw = await AsyncStorage.getItem('memtest_session');
-        if (raw) session = JSON.parse(raw) as MemoryTestSession;
-    } catch {
-        session = null;
-        memtestFailed = true;
-        faults.push({ kind: 'list', listKey: 'memtest_session' });
-        failedKeys.push('memtest_session');
-    }
-
     const fromList = saved.failed
         ? []
         : remindersFor(translateReminderItems(saved.items, now), now, times);
-    const fromMemtest = memtestFailed ? [] : readMemoryTest(session, now);
 
     return {
-        wanted: [...fromList, ...fromMemtest],
+        wanted: fromList,
         faults,
         unreadSources: unreadSourcesFor(failedKeys),
     };

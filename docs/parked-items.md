@@ -7,9 +7,14 @@ move it back into `handoff.md` once it's the live goal. Add new ideas as they co
 This file holds only still-open work. Finished items aren't archived in the docs —
 git history keeps the full record.
 
-Last updated: 2026-07-07 (session #66 — the MEMORY TEST page was
-built: five learning rounds + 5-minute recall, 🧠 Home tile,
-banner routing, backup keys. New parked items below.)
+Last updated: 2026-09-06 (session #76-new — later decisions)
+
+---
+
+## Decisions to be made later
+
+- How the four pages that left Memory become apps (Patrick, #76-new).
+  Do not raise this.
 
 ---
 

@@ -90,9 +90,6 @@ export function unreadSourcesFor(failedListKeys: string[]): string[] {
     if (failedListKeys.includes('reminder_items')) {
         unread.push(...REMINDER_ITEM_SOURCES);
     }
-    if (failedListKeys.includes('memtest_session')) {
-        unread.push('memorytest');
-    }
     return unread;
 }
 

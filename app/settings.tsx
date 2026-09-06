@@ -9,7 +9,6 @@ import {
     Platform,
     ScrollView,
     StyleSheet,
-    Switch,
     Text,
     TextInput,
     TouchableOpacity,
@@ -30,7 +29,6 @@ export default function SettingsScreen() {
     const [newUserName, setNewUserName] = useState('');
     const [biometricAvailable, setBiometricAvailable] = useState(false);
     const [biometricEnabled, setBiometricEnabled] = useState(false);
-    const [vaultPinEnabled, setVaultPinEnabled] = useState(false);
     const [editingName, setEditingName] = useState(false);
     const [morningTime, setMorningTime] = useState('08:00');
     const [middayTime, setMiddayTime] = useState('12:00');
@@ -51,13 +49,11 @@ export default function SettingsScreen() {
         try {
             const name = await AsyncStorage.getItem('user_name');
             const biometric = await AsyncStorage.getItem('biometric_enabled');
-            const vaultPin = await AsyncStorage.getItem('vault_pin_enabled');
             const morning = await AsyncStorage.getItem('reminder_morning_time');
             const midday = await AsyncStorage.getItem('reminder_midday_time');
             const evening = await AsyncStorage.getItem('reminder_evening_time');
             if (name) { setUserName(name); setNewUserName(name); }
             if (biometric) setBiometricEnabled(biometric === 'true');
-            if (vaultPin) setVaultPinEnabled(vaultPin === 'true');
             if (morning) setMorningTime(morning);
             if (midday) setMiddayTime(midday);
             if (evening) setEveningTime(evening);
@@ -139,20 +135,6 @@ export default function SettingsScreen() {
         }
     };*/
 
-    const toggleVaultPin = async (value: boolean) => {
-        if (!value) {
-            // Turning protection OFF — require Face ID / passcode first, so a
-            // person holding the phone can't silently disable Vault security.
-            const result = await LocalAuthentication.authenticateAsync({
-                promptMessage: 'Authenticate to turn off Vault security',
-                fallbackLabel: 'Use Passcode',
-            });
-            if (!result.success) return;   // auth failed/cancelled — leave it ON
-        }
-        setVaultPinEnabled(value);
-        await AsyncStorage.setItem('vault_pin_enabled', value.toString());
-    };
-
     const resetApp = async () => {
         Alert.alert(
             'Reset All Data',
@@ -161,8 +143,7 @@ export default function SettingsScreen() {
                 { text: 'Cancel', style: 'cancel' },
                 {
                     text: 'Continue', style: 'destructive', onPress: async () => {
-                        // Confirm identity with Face ID / passcode before wiping,
-                        // matching the Vault gate (no more 6-digit PIN).
+                        // Confirm identity with Face ID / passcode before wiping.
                         const result = await LocalAuthentication.authenticateAsync({
                             promptMessage: 'Authenticate to reset all data',
                             fallbackLabel: 'Use Passcode',
@@ -290,22 +271,6 @@ export default function SettingsScreen() {
                             </View>
                             <Text style={styles.settingArrow}>›</Text>
                         </TouchableOpacity>
-                    </View>
-
-                    <Text style={styles.sectionHeader}>Security</Text>
-                    <View style={styles.settingCard}>
-                        <View style={styles.settingRow}>
-                            <View style={{ flex: 1 }}>
-                                <Text style={styles.settingLabel}>Extra Vault Security</Text>
-                                <Text style={styles.settingHint}>Require Face ID to open Vault</Text>
-                            </View>
-                            <Switch
-                                value={vaultPinEnabled}
-                                onValueChange={toggleVaultPin}
-                                trackColor={{ false: theme.switchTrackOff, true: theme.switchTrackOn }}
-                                thumbColor={theme.switchThumb}
-                            />
-                        </View>
                     </View>
 
                     <Text style={styles.sectionHeader}>Backup</Text>

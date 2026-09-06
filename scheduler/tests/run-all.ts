@@ -10,7 +10,6 @@
 // As more of the scheduler is written, each part's tests get a line here.
 
 import { report } from './runner.ts';
-import { runMemoryTestTests } from './memorytest.test.ts';
 import { runReconcileTests } from './reconcile.test.ts';
 import { runDailyResetTests } from './dailyreset.test.ts';
 import { runWeeklyResetTests } from './weeklyreset.test.ts';
@@ -25,9 +24,6 @@ import { runRemindersForTests } from './remindersfor.test.ts';
 import { runApplyTests } from './apply.test.ts';
 import { runRunGateTests } from './rungate.test.ts';
 import { runResetGateTests } from './resetgate.test.ts';
-
-console.log('\nMemory Test reader');
-runMemoryTestTests();
 
 console.log('\nReconcile');
 runReconcileTests();

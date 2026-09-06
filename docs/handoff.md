@@ -12,12 +12,15 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-**#75-new** settled which pages leave Memory. Timer Alerts, Vault,
-Shopping List, and Memory Test will move. Source copies of the four
-page files are in `Projects/stray apps`. Not a running app. Whether they
-become their own apps or one group app is still open. The four pages
-are still in the live app. Merge and Restore leftovers were opened,
-then deferred so this could be settled first.
+**#76-new** took Timer Alerts, Vault, Shopping List, and Memory Test out of
+Memory. Source copies remain in `Projects/stray apps`. Not a running app.
+The shopping list is wanted later, with a backup of its own; the list on the
+phone was dropped. Vault was empty and came off. Memory Test data was
+dropped. Memory Test’s engine pieces were dropped, not moved. Backup no
+longer carries shopping, vault, or Memory Test. Extra Vault Security is
+gone. On the next load those saved keys come off the phone, and leftover
+Timer and Memory Test alerts are cancelled.
+**#75-new is committed.**
 
 He is living with the #67-new load on the phone. Landscape 90°
 counter-clockwise, headers on the left. Calendar and landscape are on
@@ -36,7 +39,7 @@ are `appointments` and `bucketlist`. Siri says Daily and Remember.
 Appointments do not offer Snooze. Skip writes the engine stamp.
 Appointments fire at the set time as well as any before chips. Not on the
 phone.
-Mac suite 304 of 304. TypeScript is clean.
+Mac suite 298 of 298. TypeScript is clean.
 
 A read-only Grok 4.6 High review of the live app is recorded in
 `docs/grok-review-2026-09-05.md`. Phase 1 is done at #72-new. Phase 2 is
@@ -50,14 +53,13 @@ merge-restore sitting. Morning of may float with the phone.
 
 These are Patrick's and they govern the work rather than describing it.
 
-- **Timer Alerts, Vault, Shopping List, and Memory Test will leave
-  Memory** (Patrick, #75-new). They move to `Projects/stray apps`.
-  Whether each is its own app or they share one group app is open.
-  Source copies of the four page files are there; it is not a running
-  app. Timer Alerts and Memory Test are simple one-time alerts — a
-  reminder within the hour — and do not take the reminder engine with
-  them. Do not treat them as Memory engine work. They stay in the live
-  app until a sitting takes them out.
+- **Timer Alerts, Vault, Shopping List, and Memory Test have left
+  Memory** (Patrick, #75-new; taken out at #76-new). Copies remain in
+  `Projects/stray apps`. Timer Alerts and Memory Test are simple one-time
+  alerts — a reminder within the hour — and do not take the reminder
+  engine with them. Do not treat them as Memory engine work. The
+  shopping list will have a backup of its own when it exists again.
+  How those four become apps is a later decision; do not raise it.
 
 - **The run record on Scheduled Reminders, Check My Reminders, and
   the background task that tops the queue are nice-to-have**
@@ -114,25 +116,8 @@ These are Patrick's and they govern the work rather than describing it.
 **What's coming in was not settled this sitting.** Birthdays remain on
 the list. The second new page is not yet named.
 
-**Take the four pages out of Memory** when that sitting opens. They
-still run here. When they leave:
-
-- Home: drop the four badges. Landscape’s special case that puts
-  Memory Test last goes with it.
-- The app shell: drop the four screens from `_layout.tsx`, and drop
-  the banner tap that opens Memory Test. `Cover` stays — Daily,
-  Settings, and others still use it.
-- Settings: drop Extra Vault Security.
-- Backup: stop carrying shopping, the Vault (including the password
-  lock), and Memory Test.
-- Names: drop the four labels in `page-names.ts`.
-- The reminder engine: take Memory Test out — the reader, the owned
-  source, the session load, the health and queue names, and its tests.
-  Timer was never in the engine.
-
-**Merge and Restore leftovers** wait. Restore still leaves the old
-health and miss lists standing. He opened that sitting, then put pages
-in and out first.
+**Merge and Restore leftovers** are next. Restore still leaves the old
+health and miss lists standing. Pages in and out is done.
 
 The #67-new load is on the phone. #69-new is committed but not on the
 phone. The day-roll lock, quarterly month, Reset All Data banners,

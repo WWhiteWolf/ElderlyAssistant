@@ -4134,6 +4134,39 @@ second new page is not yet named. Merge and Restore leftovers wait.
 `pending.docx` regenerated.
 
 
+## #76-new (2026-09-06): four pages out of Memory
+
+**The goal — done.** Timer Alerts, Vault, Shopping List, and Memory Test
+no longer run in Memory. Source copies remain in `Projects/stray apps`.
+Not a running app.
+
+**What came out.** The four page files; Home’s four badges and the
+landscape Memory Test last-row case; the four screens and the Memory
+Test banner landing (`Cover` stays); Extra Vault Security; Backup no
+longer carries shopping, vault, or Memory Test, and a restore strips
+those keys; the four labels in `page-names.ts`; and Memory Test’s
+reader, owned source, session load, health and queue names, and tests.
+Timer was never in the engine.
+
+**Data.** Memory Test data was dropped. The shopping list on the phone
+was dropped; a later shopping list will have a backup of its own. Vault
+was empty and came off. On the next load those saved keys come off the
+phone, and leftover Timer and Memory Test alerts are cancelled.
+
+**How those four become apps** was parked as a later decision. Do not
+raise it.
+
+**What's coming in was not settled.** Birthdays remain on the list. The
+second new page is not yet named.
+
+**Checks.** Mac suite 298 of 298. TypeScript clean. Not on the phone.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `in-flight.md`,
+`pending.txt`, and `App-Docs/master-handoff.md` refreshed.
+`pending.docx` regenerated. Patrick will commit. Next is Merge and
+Restore leftovers.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

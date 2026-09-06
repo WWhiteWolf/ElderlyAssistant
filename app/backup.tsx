@@ -1,6 +1,4 @@
-import 'react-native-get-random-values'; // must load before crypto-js so AES has a secure RNG
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CryptoJS from 'crypto-js';
 import * as DocumentPicker from 'expo-document-picker';
 import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
@@ -22,8 +20,6 @@ import { applyReminderChange } from '../modules/reminder-items';
 const BACKUP_VERSION = 2;
 
 // Everything that travels in the backup in plain (readable) form.
-// Deliberately EXCLUDES user_pin and pin_set (the retired PIN), and
-// vault_items (handled separately, encrypted).
 const READABLE_KEYS = [
     'reminder_items',
     'reminder_last_date',
@@ -34,17 +30,15 @@ const READABLE_KEYS = [
     'yearly_history',
     'appointments_history',
     'bucket_list_history',
-    'shopping_items',
-    'memtest_session', 'memtest_history',
-    'vault_categories',
-    'user_name', 'biometric_enabled', 'vault_pin_enabled',
+    'user_name', 'biometric_enabled',
     'reminder_morning_time', 'reminder_midday_time', 'reminder_evening_time',
     'app_theme', 'popup_style',
 ];
 
 // Old page lists. Taken off the backup at #35-new. A restore still
 // removes them so they cannot linger on the phone. The old log keys
-// left the backup at #63-new; a restore strips them.
+// left the backup at #63-new; a restore strips them. Shopping, Vault,
+// and Memory Test left at #76-new; a restore strips those too.
 const RETIRED_KEYS = [
     'my_routine', 'my_last_date', 'my_coffee', 'my_water',
     'week_routine',
@@ -59,31 +53,24 @@ const RETIRED_KEYS = [
     'extended_history',
     'watchlist_movies', 'watchlist_shows',
     'orders_items', 'orders_history',
+    'shopping_items',
+    'memtest_session', 'memtest_history',
+    'vault_items', 'vault_categories', 'vault_pin_enabled',
 ];
-
-const VAULT_KEY = 'vault_items';
 
 export default function BackupScreen() {
     const router = useRouter();
     const theme = useTheme();
     const styles = makeStyles(theme);
 
-    // Step 4 + 5: build the JSON, write the file, open the share sheet.
-    const finishExport = async (
-        data: Record<string, string | null>,
-        encryptedVault: string | null,
-    ) => {
+    const finishExport = async (data: Record<string, string | null>) => {
         try {
             const backup = {
                 app: 'A Place To Remember',
                 type: 'remember-backup',
                 version: BACKUP_VERSION,
                 exportedAt: new Date().toISOString(),
-                vaultEncrypted: !!encryptedVault,
                 data,
-                vault: encryptedVault
-                    ? { encrypted: true, payload: encryptedVault }
-                    : { encrypted: false, payload: null },
             };
             const json = JSON.stringify(backup, null, 2);
 
@@ -123,96 +110,14 @@ export default function BackupScreen() {
         }
     };
 
-    // Second password entry — must match the first, or nothing is saved.
-    const confirmPassword = (
-        firstPassword: string,
-        vaultRaw: string,
-        data: Record<string, string | null>,
-    ) => {
-        Alert.prompt(
-            'Confirm Password',
-            'Type the same backup password again.',
-            [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                    text: 'Confirm',
-                    onPress: (second?: string) => {
-                        if (second !== firstPassword) {
-                            Alert.alert(
-                                'Passwords did not match',
-                                'The two entries were different, so no file was created. Please tap Export and try again.',
-                            );
-                            return;
-                        }
-                        const encrypted = CryptoJS.AES.encrypt(
-                            vaultRaw,
-                            firstPassword,
-                        ).toString();
-                        finishExport(data, encrypted);
-                    },
-                },
-            ],
-            'secure-text',
-        );
-    };
-
-    // First password entry (only reached when the Vault has items).
-    const promptForPassword = (
-        vaultRaw: string,
-        data: Record<string, string | null>,
-    ) => {
-        Alert.prompt(
-            'Backup Password',
-            'Create a password to lock your Vault inside this backup. You will need this same password to restore the Vault later, so keep it somewhere safe.',
-            [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                    text: 'Next',
-                    onPress: (first?: string) => {
-                        if (!first || first.length < 4) {
-                            Alert.alert(
-                                'Password too short',
-                                'Please use at least 4 characters. No file was created.',
-                            );
-                            return;
-                        }
-                        confirmPassword(first, vaultRaw, data);
-                    },
-                },
-            ],
-            'secure-text',
-        );
-    };
-
     const handleExport = async () => {
         try {
-            // Step 1: gather the readable data.
             const pairs = await AsyncStorage.multiGet(READABLE_KEYS);
             const data: Record<string, string | null> = {};
             pairs.forEach(([key, value]) => {
                 data[key] = value;
             });
-
-            // Step 2: does the Vault actually hold anything?
-            const vaultRaw = await AsyncStorage.getItem(VAULT_KEY);
-            let vaultHasItems = false;
-            if (vaultRaw) {
-                try {
-                    const parsed = JSON.parse(vaultRaw);
-                    vaultHasItems = Array.isArray(parsed)
-                        ? parsed.length > 0
-                        : !!parsed;
-                } catch {
-                    vaultHasItems = vaultRaw.trim().length > 0;
-                }
-            }
-
-            // Step 3: password only when there's something to protect.
-            if (vaultHasItems && vaultRaw) {
-                promptForPassword(vaultRaw, data);
-            } else {
-                await finishExport(data, null);
-            }
+            await finishExport(data);
         } catch {
             Alert.alert(
                 'Export failed',
@@ -224,10 +129,7 @@ export default function BackupScreen() {
     // Final step: overwrite storage with the backup, then go Home.
     // For a TRUE replace, any key not present in the backup is removed,
     // so nothing from the old data lingers.
-    const applyRestore = async (
-        data: Record<string, string | null>,
-        vaultValue: string | null,
-    ) => {
+    const applyRestore = async (data: Record<string, string | null>) => {
         try {
             const toSet: [string, string][] = [];
             const toRemove: string[] = [];
@@ -237,12 +139,6 @@ export default function BackupScreen() {
                 if (typeof v === 'string') toSet.push([key, v]);
                 else toRemove.push(key);
             });
-
-            if (typeof vaultValue === 'string' && vaultValue.length > 0) {
-                toSet.push([VAULT_KEY, vaultValue]);
-            } else {
-                toRemove.push(VAULT_KEY);
-            }
 
             if (toSet.length) await AsyncStorage.multiSet(toSet);
             if (toRemove.length) await AsyncStorage.multiRemove(toRemove);
@@ -263,61 +159,18 @@ export default function BackupScreen() {
     };
 
     // The "are you sure" gate — nothing is overwritten until this is confirmed.
-    const confirmAndRestore = (
-        data: Record<string, string | null>,
-        vaultValue: string | null,
-    ) => {
+    const confirmAndRestore = (data: Record<string, string | null>) => {
         Alert.alert(
             'Replace Everything?',
-            'This will replace everything currently in the app — your lists, routines, settings, and Vault — with the contents of this backup. This cannot be undone.',
+            'This will replace everything currently in the app — your lists, routines, and settings — with the contents of this backup. This cannot be undone.',
             [
                 { text: 'Cancel', style: 'cancel' },
                 {
                     text: 'Replace',
                     style: 'destructive',
-                    onPress: () => applyRestore(data, vaultValue),
+                    onPress: () => applyRestore(data),
                 },
             ],
-        );
-    };
-
-    // Encrypted Vault: ask once for the backup password and decrypt.
-    // A wrong password yields empty/garbage, which we catch — and change nothing.
-    const promptImportPassword = (parsed: any) => {
-        Alert.prompt(
-            'Backup Password',
-            'Enter the backup password you set when you exported this file, to unlock its Vault.',
-            [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                    text: 'Unlock',
-                    onPress: (password?: string) => {
-                        if (!password) {
-                            Alert.alert(
-                                'No password',
-                                'No password was entered, so nothing was changed.',
-                            );
-                            return;
-                        }
-                        let vaultValue: string;
-                        try {
-                            const bytes = CryptoJS.AES.decrypt(parsed.vault.payload, password);
-                            const text = bytes.toString(CryptoJS.enc.Utf8);
-                            if (!text) throw new Error('empty');
-                            JSON.parse(text); // sanity-check it's real Vault data
-                            vaultValue = text;
-                        } catch {
-                            Alert.alert(
-                                'Wrong password',
-                                'That password did not unlock the backup’s Vault, so nothing was changed. Please try Import again.',
-                            );
-                            return;
-                        }
-                        confirmAndRestore(parsed.data, vaultValue);
-                    },
-                },
-            ],
-            'secure-text',
         );
     };
 
@@ -357,14 +210,7 @@ export default function BackupScreen() {
                 return;
             }
 
-            const vault = parsed.vault || { encrypted: false, payload: null };
-            if (vault.encrypted && vault.payload) {
-                promptImportPassword(parsed);
-            } else {
-                const vaultValue =
-                    typeof vault.payload === 'string' ? vault.payload : null;
-                confirmAndRestore(parsed.data, vaultValue);
-            }
+            confirmAndRestore(parsed.data);
         } catch {
             Alert.alert(
                 'Import failed',
@@ -406,11 +252,6 @@ export default function BackupScreen() {
                     <Text style={styles.bigBtnText}>Import Backup</Text>
                     <Text style={styles.bigBtnSub}>Restore from a backup file</Text>
                 </TouchableOpacity>
-
-                <Text style={styles.note}>
-                    If your Vault has items, you'll be asked for a backup password to lock
-                    that part of the file.
-                </Text>
             </ScrollView>
             </PageFrame>
         </View>
@@ -475,13 +316,6 @@ const makeStyles = (t: Theme) =>
         },
         bigBtnText: { fontSize: 22, fontWeight: '600', color: t.cardTitle },
         bigBtnSub: { fontSize: 15, color: t.mutedText, marginTop: 4 },
-        note: {
-            fontSize: 14,
-            color: t.mutedText,
-            textAlign: 'center',
-            marginTop: 12,
-            fontStyle: 'italic',
-        },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
         headerSpacer: { width: 54 },
     });
