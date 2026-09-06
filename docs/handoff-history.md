@@ -4001,6 +4001,40 @@ the engine already knows how to take in the data.
 refreshed. `pending.docx` regenerated. Patrick will commit.
 
 
+## #71-new: abandoned because of Cursor's poor performance
+
+Nothing was accomplished. The sitting was abandoned.
+
+
+## #72-new (2026-09-06): hangings lock and Grok Phase 1
+
+**The goal was bugs, starting with hangings.** Daily was all green last
+night; this morning the miss pop-up listed yesterday. The day-roll can
+run twice on open; the second pass no longer sees the ticks. A second
+call now waits. Needs a night of all-green Daily and a morning open on
+a new load to confirm.
+
+**Grok Phase 1, all three, at #72-new.** Quarterly walks from the saved
+month, like yearly. Reset All Data runs the scheduler after the wipe.
+The last banner tap is written down so Done, Skip, or Snooze cannot
+replay on a cold launch.
+
+**How the record is kept, settled this sitting.** The Grok review itself
+has no session number. A fix taken from it carries the session that did
+the work. Finished work goes in What is Done, not What's Next. The
+phone-load line may still name what is built and not on the phone. What
+is Done was numbered 1 through 57 with no repeats.
+
+**Next session's goal is Grok Phase 2** — one apply-then-schedule door,
+build sheet first.
+
+**Checks.** Mac suite 302 of 302. TypeScript clean. Not on the phone.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `in-flight.md`,
+and `pending.txt` refreshed. `pending.docx` regenerated. Patrick will
+commit.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

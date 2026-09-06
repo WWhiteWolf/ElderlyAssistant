@@ -18,6 +18,7 @@ import {
 import DateTimeControl from '../components/DateTimeControl';
 import { HeaderButton, PageFrame } from '../components/PageFrame';
 import { Theme, useTheme, useThemeControls } from '../constants/Themes';
+import { runScheduler } from '../scheduler/scheduler';
 
 export default function SettingsScreen() {
     const router = useRouter();
@@ -166,6 +167,10 @@ export default function SettingsScreen() {
                         });
                         if (result.success) {
                             await AsyncStorage.clear();
+                            // The wipe does not take reminders off the phone.
+                            // The scheduler does that: an empty list means
+                            // every owned reminder is cancelled.
+                            await runScheduler();
                             router.replace('/home');
                         } else {
                             Alert.alert('Reset Cancelled', 'Your data was not deleted.');

@@ -24,6 +24,7 @@ import { runLeadMomentsTests } from './leadmoments.test.ts';
 import { runRemindersForTests } from './remindersfor.test.ts';
 import { runApplyTests } from './apply.test.ts';
 import { runRunGateTests } from './rungate.test.ts';
+import { runResetGateTests } from './resetgate.test.ts';
 
 console.log('\nMemory Test reader');
 runMemoryTestTests();
@@ -66,5 +67,8 @@ runApplyTests();
 
 console.log('\nRun gate');
 runRunGateTests();
+
+console.log('\nDay-roll gate');
+runResetGateTests();
 
 report();

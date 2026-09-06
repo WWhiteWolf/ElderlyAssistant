@@ -4,23 +4,28 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-05, at the close of #70-new.
+Last written: 2026-09-06, at the close of #72-new.
 
 ## Read this first
 
-- **The next Memory session is #71-new.**
-- **Phone load:** #69-new committed, not on the phone. Last load #67-new.
-- **Grok review** recorded; plan in `handoff.md`. **Birthdays** and **Help**
-  fixes named. Paperwork Pending 11–14.
+- **The next Memory session is #73-new.**
+- **Its goal is Grok Phase 2:** one apply-then-schedule door. Build sheet first.
+- **Phone load:** #72-new built, not on the phone. Last load #67-new. #69-new
+  committed, not loaded. Paperwork Pending 10–13.
 
 ## What is in
 
-#69-new committed. Grok 4.6 High review in `docs/grok-review-2026-09-05.md`.
-Open work in `handoff.md` and `pending.txt`. Mac suite 298. TypeScript clean.
+#72-new: hangings lock and Grok Phase 1. Mac suite 302. TypeScript clean.
+
+## Recording
+
+The Grok review itself has no session number. A fix taken from it carries
+the session that did the work. Finished work goes in What is Done, not
+What's Next. The phone-load line may name what is built and not on the phone.
 
 ## What is next
 
-Patrick leads.
+Phase 2. Patrick leads.
 
 ## Do not reopen
 

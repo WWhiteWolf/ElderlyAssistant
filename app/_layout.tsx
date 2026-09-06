@@ -14,6 +14,8 @@ import {
 import { showHealthNotice } from '../scheduler/notice';
 import { runScheduler } from '../scheduler/scheduler';
 
+const LAST_BANNER_TAP_KEY = 'last_banner_tap';
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -181,11 +183,24 @@ export default function RootLayout() {
     const action = response.actionIdentifier;
     const notifId = response.notification.request.identifier;
     // Dedupe per (notification, action) so we don't re-handle on every re-render.
+    // Expo can still hand back the last tap after the app has died; the in-memory
+    // mark is gone then, so the last tap is also written down.
     const handledKey = `${notifId}:${action}`;
     if (handledId.current === handledKey) return;
-    handledId.current = handledKey;
 
-    const data = response.notification.request.content.data;
+    let cancelled = false;
+    (async () => {
+      const previous = await AsyncStorage.getItem(LAST_BANNER_TAP_KEY);
+      if (cancelled) return;
+      if (previous === handledKey) {
+        handledId.current = handledKey;
+        return;
+      }
+      handledId.current = handledKey;
+      await AsyncStorage.setItem(LAST_BANNER_TAP_KEY, handledKey);
+      if (cancelled) return;
+
+      const data = response.notification.request.content.data;
 
     // "OK" action: just acknowledge this one alert. iOS already clears the
     // tapped notification; we do nothing else (no done, no snooze, no routing).
@@ -453,6 +468,8 @@ export default function RootLayout() {
       // (Patrick, #13-new).
       router.push('/memorytest');
     }
+    })();
+    return () => { cancelled = true; };
   }, [response]);
 
   return (

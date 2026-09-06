@@ -380,6 +380,25 @@ export function runLeadMomentsTests(): void {
         );
     });
 
+    test('A quarterly item uses the saved month, not this month', () => {
+        assertSame(
+            momentsFor(
+                item({
+                    sourceScreenCode: 'quarterly',
+                    repeatUnitCode: 'month',
+                    repeatIntervalCount: 3,
+                    dueHour: 10,
+                    dueMinute: 0,
+                    dueMoment: at(2026, 0, 15, 10, 0),
+                }),
+                at(2026, 1, 1, 9, 0),
+                CLOCK,
+            ),
+            [at(2026, 3, 15, 10, 0)],
+            'January, April, July, October — from February the next is April, not February or May',
+        );
+    });
+
     test('A last date of 1 March 2026 on a daily item due at eight, from 1 March at nine, produces no moment', () => {
         assertSame(
             momentsFor(

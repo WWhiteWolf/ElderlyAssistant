@@ -32,6 +32,7 @@ import type { MemoryTestSession } from './readers/memorytest.ts';
 import type { ReminderItem } from '../modules/reminder-types.ts';
 import { applyOpsFor } from './apply.ts';
 import { beginRun, consumePending, endRun } from './rungate.ts';
+import { oneDailyReset } from './resetgate.ts';
 
 /**
  * The current notification sources the scheduler answers for.
@@ -91,9 +92,17 @@ export const OWNED_SOURCES = [
  * reads the date and does nothing else. The list load calls it before it reads,
  * so a page never draws yesterday's checkmarks from a stale load.
  *
+ * Two callers can arrive together on open — the Siri list refresh and the
+ * scheduler. They share one roll: a second call waits for the first instead of
+ * reading the ticks after they have already been cleared.
+ *
  * It answers with whatever went wrong, which is nothing on an ordinary day.
  */
 export async function runDailyReset(): Promise<RunFault[]> {
+    return oneDailyReset(rollTheDayOver);
+}
+
+async function rollTheDayOver(): Promise<RunFault[]> {
     const now = new Date();
     const today = now.toLocaleDateString();
     const faults: RunFault[] = [];

@@ -228,6 +228,9 @@ function nextWeekly(item: ShapedItem, now: number, calendar: CivilCalendar): Bas
  *
  * The seed day comes from `dueMoment` when it is present, otherwise from
  * `now`'s date. Year also takes the month of the year from that same seed.
+ * A several-month step (quarterly) takes that month too, then walks forward
+ * by the step — walking from now's month would land on the wrong third of
+ * the year.
  * A day that does not exist in the target month uses the last day that does,
  * and that occurrence is marked shifted.
  */
@@ -256,8 +259,8 @@ function nextByMonthDay(
         }
         return null;
     }
-    let year = start.year;
-    let month = start.month;
+    let year = seed.year;
+    let month = seed.month;
     for (let n = 0; n < 48; n++) {
         const candidate = civilAt(calendar, year, month, seedDay, item.dueHour, item.dueMinute);
         if (candidate.moment > now) {

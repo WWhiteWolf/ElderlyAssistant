@@ -328,6 +328,23 @@ export function runRemindersForTests(): void {
         );
     });
 
+    test('A Quarterly item keeps the saved month when that is not this month', () => {
+        const fromFebruary = new Date(2026, 1, 1, 9, 0, 0, 0).getTime();
+        const base = datedWanted(
+            'quarterly',
+            { year: 2026, month: 0, day: 15 },
+            fromFebruary,
+        ).find((r) => r.source === 'quarterly')!;
+        assertSame(
+            [base.key, base.trigger],
+            [
+                'quarterly:d1:20260415',
+                { kind: 'date', at: new Date(2026, 3, 15, 10, 45, 0, 0).getTime() },
+            ],
+            'from February a January quarterly arms April, not February or May',
+        );
+    });
+
     test('A Yearly item arms the next yearly occurrence', () => {
         const base = datedWanted('yearly').find((r) => r.source === 'yearly')!;
         assertSame(

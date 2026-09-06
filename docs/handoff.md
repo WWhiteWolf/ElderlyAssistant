@@ -18,14 +18,15 @@ the phone. He has not exhaustively tested it; what he has used is
 working. **#67-new is committed.** **#68-new is committed.**
 **#69-new is committed.**
 
-Nothing has been built since #69-new. Saved kinds, routes, page files,
-and banner sources are `appointments` and `bucketlist`. Siri says
-Daily and Remember. Mac suite 298 of 298. TypeScript is clean.
+**#72-new built the hangings lock and Grok Phase 1.** Not on the phone.
+**Next session (#73-new): Grok Phase 2** — one apply-then-schedule door,
+build sheet first. Saved kinds, routes, page files, and banner sources
+are `appointments` and `bucketlist`. Siri says Daily and Remember.
+Mac suite 302 of 302. TypeScript is clean.
 
 A read-only Grok 4.6 High review of the live app is recorded in
-`docs/grok-review-2026-09-05.md`. The engine is coherent; the faults
-sit beside it in banner handling, quarterly dates, and buttons that do
-not match what the engine does.
+`docs/grok-review-2026-09-05.md`. Phase 1 is done at #72-new. Phase 2
+is next. Phase 3 remains.
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -70,33 +71,29 @@ These are Patrick's and they govern the work rather than describing it.
 - **Do not connect `floatDay`.** An incomplete zone currently floats
   with the phone; leave that unless Patrick says otherwise (#41-new).
 - **Monthly, Quarterly, and Yearly Done advances the saved date**
-  (Patrick, this session). #41-new stopped that; he did not notice
-  until now. Done should move the date on the item so the tile shows
+  (Patrick, #70-new). #41-new stopped that; he did not notice
+  until then. Done should move the date on the item so the tile shows
   the next cycle armed — as it did before #41-new. Today Done only
   ticks and logs; the tile date does not move.
-- **The Where? page is Help** (Patrick, this session). The visible name
+- **The Where? page is Help** (Patrick, #70-new). The visible name
   is **Help**, not Where? The Home badge is **?**, not 🧭. The route
   may stay `where.tsx`.
 
 ## What is open in front of it
 
 The #67-new load is on the phone. #69-new is committed but not on the
-phone. Paperwork is Pending 11–14.
+phone. The day-roll lock, quarterly month, Reset All Data banners, and
+banner-tap write-down (#72-new) are built and not on the phone.
+Paperwork is Pending 10–13.
 
-**Grok review follow-up** (`docs/grok-review-2026-09-05.md`). Plan below;
-details and modularity notes are in that file.
+**Hangings** (#72-new). Day-roll lock built. Needs a night of all-green
+Daily, then a morning open, to confirm the pop-up stays quiet.
 
-**Phase 1 — Act on** (three definite fixes, no design questions):
+**Grok review follow-up** (`docs/grok-review-2026-09-05.md`). Phase 1 is
+done at #72-new. **Phase 2 is next session's goal** (build sheet first).
+Phase 3 remains.
 
-1. **Quarterly wrong month** — `nextByMonthDay` in `scheduler/leadmoments.ts`
-   walks from the current month; yearly uses the saved month. Test with seed
-   month ≠ now.
-2. **Reset All Data leaves banners** — `settings.tsx`: run scheduler after
-   wipe so owned notifications are cancelled.
-3. **Banner replay on cold launch** — `_layout.tsx` dedupe is in-memory only;
-   persist handled keys or confirm on phone and fix if replay happens.
-
-**Birthdays page** (Patrick, this session). A new page, own place on Home.
+**Birthdays page** (Patrick, #70-new). A new page, own place on Home.
 Each item is a **name and a date**, with a **yearly reminder**. Almost
 like Appointments, but simpler: **Day Before** only as the before chip.
 Unlike Appointments, Birthdays **does remind on the day itself** —
@@ -104,18 +101,18 @@ Appointments deliberately has no reminder at the set time. **On the day**
 and **Day Before** are both selectable chips. Build sheet first per
 standing pattern. Second new page not yet named.
 
-**Help helper — wording and Cancel** (Patrick, this session). In
+**Help helper — wording and Cancel** (Patrick, #70-new). In
 `app/where.tsx`: only the **first choice** on step 1 should read
 **Repeats every** (not bare “Repeats”); fix the question that wrongly
 says “every” on a later step. On steps 2 and 3, **Cancel goes back one
 step**, not Home — today every stage’s Cancel calls `router.back()`.
 
-**Quarterly — interval chips on Add** (Patrick, this session). On + Add
+**Quarterly — interval chips on Add** (Patrick, #70-new). On + Add
 for Quarterly, selectable **30, 60, and 90 days** (not a new page).
 **The engine already knows how to take in this data** (Patrick) — the
 work is the Add chips writing it, not new engine arithmetic.
 
-**Patrick on the phone** (this session):
+**Patrick on the phone** (#70-new):
 
 4. **Monthly Done should advance the tile** — `CadenceListPage` `markDone`
    only sets `completed`; it does not move the saved date. Restore advance
