@@ -4104,6 +4104,36 @@ and `pending.txt` refreshed. `pending.docx` regenerated. Patrick will
 commit.
 
 
+## #75-new (2026-09-06): four pages leaving Memory; source copies in stray apps
+
+**The opener was Merge on Restore.** He changed the order: settle which
+pages go in and which come out, before Merge or the leftover health and
+miss lists.
+
+**What leaves.** Timer Alerts, Vault, Shopping List, and Memory Test
+will move. Whether they become their own apps or one group app is open.
+The folder `Projects/stray apps` was created empty, then received copies
+of the four page files as source, not as a running app. Timer Alerts and
+Memory Test are simple one-time alerts — a reminder within the hour —
+and do not take the reminder engine with them.
+
+**Memory was not changed.** The four pages still run there. When a later
+sitting takes them out, the hole is: Home's four badges and the
+landscape Memory Test last-row case; the four screens and the Memory
+Test banner landing in `_layout.tsx` (`Cover` stays); Extra Vault
+Security in Settings; Backup's shopping, Vault (including the password
+lock), and Memory Test keys; the four labels in `page-names.ts`; and
+Memory Test's reader, owned source, session load, health and queue
+names, and tests in the scheduler. Timer was never in the engine.
+
+**What's coming in was not settled.** Birthdays remain on the list. The
+second new page is not yet named. Merge and Restore leftovers wait.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `in-flight.md`,
+`pending.txt`, and `App-Docs/master-handoff.md` refreshed.
+`pending.docx` regenerated.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

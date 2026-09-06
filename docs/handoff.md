@@ -12,6 +12,13 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
+**#75-new** settled which pages leave Memory. Timer Alerts, Vault,
+Shopping List, and Memory Test will move. Source copies of the four
+page files are in `Projects/stray apps`. Not a running app. Whether they
+become their own apps or one group app is still open. The four pages
+are still in the live app. Merge and Restore leftovers were opened,
+then deferred so this could be settled first.
+
 He is living with the #67-new load on the phone. Landscape 90°
 counter-clockwise, headers on the left. Calendar and landscape are on
 the phone. He has not exhaustively tested it; what he has used is
@@ -43,8 +50,14 @@ merge-restore sitting. Morning of may float with the phone.
 
 These are Patrick's and they govern the work rather than describing it.
 
-- **Timer and Memory Test are not this stream** (Patrick, #66-new).
-  They have their own place. Do not keep bringing them up here.
+- **Timer Alerts, Vault, Shopping List, and Memory Test will leave
+  Memory** (Patrick, #75-new). They move to `Projects/stray apps`.
+  Whether each is its own app or they share one group app is open.
+  Source copies of the four page files are there; it is not a running
+  app. Timer Alerts and Memory Test are simple one-time alerts — a
+  reminder within the hour — and do not take the reminder engine with
+  them. Do not treat them as Memory engine work. They stay in the live
+  app until a sitting takes them out.
 
 - **The run record on Scheduled Reminders, Check My Reminders, and
   the background task that tops the queue are nice-to-have**
@@ -97,6 +110,29 @@ These are Patrick's and they govern the work rather than describing it.
   zone.
 
 ## What is open in front of it
+
+**What's coming in was not settled this sitting.** Birthdays remain on
+the list. The second new page is not yet named.
+
+**Take the four pages out of Memory** when that sitting opens. They
+still run here. When they leave:
+
+- Home: drop the four badges. Landscape’s special case that puts
+  Memory Test last goes with it.
+- The app shell: drop the four screens from `_layout.tsx`, and drop
+  the banner tap that opens Memory Test. `Cover` stays — Daily,
+  Settings, and others still use it.
+- Settings: drop Extra Vault Security.
+- Backup: stop carrying shopping, the Vault (including the password
+  lock), and Memory Test.
+- Names: drop the four labels in `page-names.ts`.
+- The reminder engine: take Memory Test out — the reader, the owned
+  source, the session load, the health and queue names, and its tests.
+  Timer was never in the engine.
+
+**Merge and Restore leftovers** wait. Restore still leaves the old
+health and miss lists standing. He opened that sitting, then put pages
+in and out first.
 
 The #67-new load is on the phone. #69-new is committed but not on the
 phone. The day-roll lock, quarterly month, Reset All Data banners,
