@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-07 (#81-new — Birthdays built)
+Last updated: 2026-09-07 (#81-new — Birthdays on the phone)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -24,35 +24,37 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-Birthdays page is built. Not checked on the simulator. Not on the phone.
+#82-new — Quarterly 30 / 60 / 90 chips on Add. Short sitting.
+Prescriptions come due every 30 or 90 days.
 
-The phone is still on the #67-new load. Paperwork is Pending 4–7.
+The second new page is not yet named. Day-roll lock still wants a
+night of all-green Daily on this load.
+
+The phone is on the #81-new load. Spec, user guide, feedback button,
+and testing file are Pending 2–5.
 
 
 PENDING
 ------------------------------------------------------------------
-Things waiting on something — mostly on the phone or on a build.
+Things waiting on something — mostly on a build.
 
-1. PHONE LOAD. Last load is #67-new. Everything built since then is
-   not on the phone.
-2. BIRTHDAYS PAGE. Built at #81-new. Own kind `birthdays` on the one
-   list. Not checked on the simulator. Not on the phone.
-3. QUARTERLY ADD — 30, 60, 90 DAYS (Patrick, #70-new). On + Add
-   for Quarterly, selectable chips for 30, 60, and 90 days. Not a new
-   page. The engine already knows how to take in this data; the work is
-   the Add chips writing it.
-4. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
+1. QUARTERLY ADD — 30, 60, 90 DAYS (Patrick, #70-new). Next sitting.
+   On + Add for Quarterly, selectable chips for 30, 60, and 90 days.
+   Not a new page. The engine already knows how to take in this data;
+   the work is the Add chips writing it. Prescriptions come due every
+   30 or 90 days.
+2. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
     sitting treated One Time's missing notice at the set time as
     a bug. He had decided it that way. A spec would have said so.
     Changing the name of One Time to Appointments belongs in
     that spec, and Extended to Bucket List.
-5. A USER GUIDE, from that spec or merely after it (Patrick,
+3. A USER GUIDE, from that spec or merely after it (Patrick,
     #52-new). He needs to provide it on his website, and a way
     in the app to find it or get it.
-6. A FEEDBACK BUTTON IN THE APP, similar to Mystery (Patrick,
+4. A FEEDBACK BUTTON IN THE APP, similar to Mystery (Patrick,
     #52-new). That is how the app lets you find or get the
     User Guide.
-7. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
+5. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
    WILL COVER (Patrick, #52-new). The during-build tests are
    thrown away. The run is not kept.
 
@@ -131,11 +133,16 @@ A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
 
+66. #81-new — Birthdays page. Own kind on the one list. Copy of
+   Appointments, yearly Done. Help has Birthday. Forty-six birthdays
+   merged on the phone. iOS back-to-previous-app confirmed correct on
+   the phone. Mac 305. TypeScript clean. On the phone.
+
 65. #80-new — Duplicate miss warning on open (one pop-up, right theme).
    iOS back link — status bar from orientation; plist stays no for RCT.
-   Help page (**Help**, **?** badge) and helper (Repeats / Does not,
-   Cancel back one step). Checked on the simulator. Mac 301. TypeScript
-   clean. Not on the phone.
+   Confirmed correct on the phone at #81-new. Help page (**Help**, **?**
+   badge) and helper (Repeats / Does not, Cancel back one step).
+   Checked on the simulator. Mac 301. TypeScript clean.
 
 64. #79-new — Monthly Done advances the tile; Options chip picks stay
    lit on Monthly, Quarterly, and Yearly while you set a second Thursday
@@ -438,7 +445,7 @@ PARKED ON PURPOSE
 RESTORE MERGE
 ------------------------------------------------------------------
 The one store for this sitting's Restore decisions (#77-new). Done.
-Checked on the simulator. Not on the phone.
+Checked on the simulator. Merge checked on the phone at #81-new.
 
 1. Restore will get a Merge choice. Merge is no longer parked.
 2. Merge keeps what is already in the app, and adds from the backup

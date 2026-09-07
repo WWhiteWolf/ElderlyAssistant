@@ -12,13 +12,13 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-He is living with the **#67-new** load on the phone. Landscape 90°
+He is living with the **#81-new** load on the phone. Landscape 90°
 counter-clockwise, headers on the left. What he has used is working.
 
-**#81-new is built.** Birthdays page. Mac suite 305 of 305. TypeScript
-is clean. Not checked on the simulator. Not on the phone.
-**#80-new is committed.** Duplicate miss warning on open, iOS back-to-previous-app
-link, and Help. Checked on the simulator. Not on the phone.
+**#81-new is on the phone.** Birthdays page. Forty-six birthdays merged
+from a backup. Help’s Birthday choice opens Birthdays’ New. The iOS
+back-to-previous-app control is correct on the phone (#80-new work,
+confirmed this sitting). Mac suite 305 of 305. TypeScript is clean.
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -88,8 +88,14 @@ These are Patrick's and they govern the work rather than describing it.
 - **The Where? page is Help** (Patrick, #70-new; wording at #80-new).
   The visible name is **Help**, not Where? The Home badge is **?**, not
   🧭. The route may stay `where.tsx`. Step 1 choices are **Repeats** and
-  **Does not**. Step 2 asks how often, with no stray “every”. Cancel on
+  **Does not**. Step 2 asks how often, with no stray “every”, and includes
+  **Birthday**, which opens Birthdays’ New, not Yearly. Cancel on
   steps 2 and 3 goes back one step; step 1 Cancel closes.
+- **Birthdays is a copy of Appointments on the screen, and a yearly
+  reminder on the one list** (Patrick, #81-new). Own saved kind
+  `birthdays`. Date required. Same reminder chips as Appointments,
+  any and all on at once. Done advances the year. An item on Birthdays
+  is not also on Appointments or Yearly.
 - **Skip drops this cycle and arms the next** (Patrick, #74-new). It is
   not Done, and it is not only clearing a snooze.
 - **Appointments remind at the set time** (Patrick, #74-new). This
@@ -101,20 +107,18 @@ These are Patrick's and they govern the work rather than describing it.
 
 ## What is open in front of it
 
-**Birthdays is built** (#81-new). Own kind `birthdays` on the one list.
-Sheet: `docs-ref/build-sheets/build-sheet-birthdays.md`. Not checked
-on the simulator. Not on the phone. The second new page is not yet named.
+**Next session: Quarterly interval chips on Add** (Patrick, #70-new).
+Selectable **30, 60, and 90 days** (not a new page). The engine already
+knows how to take in this data — the work is the Add chips writing it.
+A short sitting. Prescriptions come due every 30 or 90 days.
 
-The phone is still on the #67-new load. Everything built since then is
-not on the phone. Paperwork is Pending 4–7.
+The second new page is not yet named.
+
+The phone is on the **#81-new** load. Spec, user guide, feedback
+button, and testing file are Pending 2–5.
 
 **Day-roll lock** still needs a night of all-green Daily, then a morning
 open on a new load, to confirm the pop-up stays quiet.
-
-**Quarterly — interval chips on Add** (Patrick, #70-new). On + Add
-for Quarterly, selectable **30, 60, and 90 days** (not a new page).
-**The engine already knows how to take in this data** (Patrick) — the
-work is the Add chips writing it, not new engine arithmetic.
 
 **Still open from before:**
 

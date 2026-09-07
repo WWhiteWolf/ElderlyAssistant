@@ -17,6 +17,38 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #81-new (2026-09-07): Birthdays page; forty-six merged on the phone
+
+**The goal was to add the Birthdays page.**
+
+**#80-new was committed**, asked at the open.
+
+**Birthdays.** A copy of Appointments on the screen: same list, same
+New and Edit, same reminder chips, same datetime. Own saved kind
+`birthdays` on the one list `reminder_items`, so an item is not also
+on Appointments or Yearly. Date required. Time optional; empty chips
+still speak at the set time. Done advances the saved date by a year,
+like Yearly. Help’s how-often step gained **Birthday**, which opens
+Birthdays’ New; **Year** still opens Yearly. Home tile after
+Appointments. Sheet: `docs-ref/build-sheets/build-sheet-birthdays.md`.
+
+**Forty-six birthdays** were written into a Merge backup at 10 AM and
+merged on the phone. Help’s Birthday choice is on the phone and
+correct. **The iOS back-to-previous-app control is correct on the
+phone** (#80-new work, confirmed this sitting).
+
+**Checks.** Mac suite 305 of 305. TypeScript clean. On the phone.
+
+**Decision for next session.** Quarterly interval chips on Add: **30,
+60, and 90 days**. Short sitting. The engine already takes the
+interval. Prescriptions come due every 30 or 90 days.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `pending.txt`,
+`in-flight.md`, and `App-Docs/master-handoff.md` refreshed.
+`pending.docx` not regenerated. History is newest-on-top; Done numbers
+grow from the oldest line so a new sitting does not renumber the rest.
+
+
 ## #80-new (2026-09-07): Duplicate miss warning; iOS back link; Help
 
 **The goal was bug fixes**, then Help (then Pending 3 and 4).

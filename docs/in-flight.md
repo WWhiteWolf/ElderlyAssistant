@@ -4,26 +4,26 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-07, at the close of #80-new.
+Last written: 2026-09-07, at the close of #81-new.
 
 ## Read this first
 
-- **#80-new is closed.** Duplicate miss warning on open, iOS back link,
-  and Help. Checked on the simulator. Not on the phone.
-- **Phone load:** last load #67-new. Everything built since then is not
-  on the phone. Paperwork Pending 4–7. Mac 301.
+- **#81-new is closed.** Birthdays page. Own kind on the one list. Help
+  has Birthday. Forty-six birthdays merged on the phone. iOS
+  back-to-previous-app confirmed on the phone.
+- **Phone load:** #81-new. Mac 305.
 
 ## What is in
 
-Help is the visible name; Home badge is **?**. Step 1 is Repeats / Does
-not. Cancel on later steps goes back one step. The miss notice shows
-once, in the app's theme. Status bar follows the page; the plist key
-stays **no**.
+Birthdays copies Appointments on the screen and repeats yearly. Date
+required. Same chips. Done advances the year. An item on Birthdays is
+not also on Appointments or Yearly.
 
 ## What is next
 
-Birthdays page — mirror Appointments. Name and date, yearly reminder.
-On the day and Day Before chips. Build sheet first.
+**#82-new — Quarterly 30 / 60 / 90 chips on Add.** Short sitting. The
+engine already takes the interval. Prescriptions come due every 30 or
+90 days.
 
 ## Do not reopen
 
