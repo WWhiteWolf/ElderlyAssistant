@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-07 (#82-new — Quarterly 30 / 60 / 90 chips on the Mac)
+Last updated: 2026-09-07 (#82-new — Quarterly 30 / 60 / 90 chips on the phone)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -24,40 +24,29 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-#82-new — Quarterly 30 / 60 / 90 chips on Add. In on the Mac, not
-on the phone. No chip stays every three months. A chip counts from
-the date entered when it is set. Prescriptions come due every 30
-or 90 days.
-
 The second new page is not yet named. Day-roll lock still wants a
 night of all-green Daily on this load.
 
-The phone is on the #81-new load. Spec, user guide, feedback button,
-and testing file are Pending 2–5.
+The phone is on the #82-new load. Spec, user guide, feedback button,
+and testing file are Pending 1–4.
 
 
 PENDING
 ------------------------------------------------------------------
 Things waiting on something — mostly on a build.
 
-1. QUARTERLY ADD — 30, 60, 90 DAYS (Patrick, #70-new; built at
-   #82-new). On + Add for Quarterly, selectable chips for 30, 60,
-   and 90 days. Not a new page. No chip stays every three months.
-   A chip counts from the date entered when it is set. In on the
-   Mac, not on the phone. Prescriptions come due every 30 or 90
-   days.
-2. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
+1. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
     sitting treated One Time's missing notice at the set time as
     a bug. He had decided it that way. A spec would have said so.
     Changing the name of One Time to Appointments belongs in
     that spec, and Extended to Bucket List.
-3. A USER GUIDE, from that spec or merely after it (Patrick,
+2. A USER GUIDE, from that spec or merely after it (Patrick,
     #52-new). He needs to provide it on his website, and a way
     in the app to find it or get it.
-4. A FEEDBACK BUTTON IN THE APP, similar to Mystery (Patrick,
+3. A FEEDBACK BUTTON IN THE APP, similar to Mystery (Patrick,
     #52-new). That is how the app lets you find or get the
     User Guide.
-5. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
+4. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
    WILL COVER (Patrick, #52-new). The during-build tests are
    thrown away. The run is not kept.
 
@@ -135,6 +124,11 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+67. #82-new — Quarterly 30 / 60 / 90 chips on Add. No chip stays
+   every three months. A chip counts from the date entered when it
+   is set. Done on a 90-day item moved to December 6. Mac 310.
+   TypeScript clean. On the phone.
 
 66. #81-new — Birthdays page. Own kind on the one list. Copy of
    Appointments, yearly Done. Help has Birthday. Forty-six birthdays

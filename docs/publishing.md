@@ -32,6 +32,12 @@ screenshots, privacy-policy text, and the like — belongs here in the
 app's own repo (per the strategy doc). As that material gets made, keep
 it under `docs/` and list it below so it's findable.
 
+- **`docs/connect-submit.md`** — the beginning-to-end App Store
+  Connect journey for this app, written at #82-new from the first
+  submit. Use that file instead of Apple’s missing-items list. The
+  EAS commands at the bottom of this page are the Mac half of the
+  same road.
+
 **Picture at #46-new and #47-new** (also in `Publishing-Strategy.docx`):
 
 Mystery Clues Track Sheet is live on the App Store since 2026-08-06.
@@ -61,11 +67,15 @@ often a thing comes back, or a one-time, or someday, shown on Daily
 when it belongs today. TickTick is the comparable; he used it and was
 left wanting a daily that did not need a clock.
 
-Money is still being discovered. The first submit does not have to
-declare the app as paid. Free is a real price. Price can change later.
-People who already downloaded a free app keep it. To charge, the Paid
-Apps Agreement and tax and banking must be active; signing that does
-not make Memory paid. TickTick is free plus about $36 a year.
+Money for the first submit is settled (Patrick, #82-new). The listing
+is **free**, with **manual distribution**: he releases the version
+himself after Apple approves. Price can change later. People who
+already downloaded a free app keep it. To charge, the Paid Apps
+Agreement and tax and banking must be active; signing that does not
+make Memory paid. TickTick is free plus about $36 a year.
+
+The App Store name is **A Place To Remember**. The subtitle is
+**Memory Assist reminders** (Patrick, #82-new).
 
 Screenshots and privacy-policy text are still not started.
 

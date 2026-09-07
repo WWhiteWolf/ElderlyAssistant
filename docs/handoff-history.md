@@ -29,14 +29,12 @@ three months. A chip counts that many days from the date entered when
 it is set. Done and the engine follow the same step. The list tile
 still shows the date.
 
-**Checks.** Mac suite 310 of 310. TypeScript clean. Not on the phone
-yet. Phone load is this sitting's last step, after which Pending 1
-moves to Done.
+**Checks.** Mac suite 310 of 310. TypeScript clean. On the phone. A
+90-day item fired two minutes ahead; Done moved it to December 6.
 
-**Docs refresh.** `handoff.md`, `handoff-history.md` (the old build
-history name), `pending.txt`, `in-flight.md`, and
-`App-Docs/master-handoff.md`. `pending.docx` not regenerated. Pending 1
-stays until the phone load.
+**Session close.** `handoff.md`, `handoff-history.md`, `pending.txt`,
+`in-flight.md`, and `App-Docs/master-handoff.md` refreshed.
+`pending.docx` not regenerated. Pending 1 moved to Done 67.
 
 ## #81-new (2026-09-07): Birthdays page; forty-six merged on the phone
 

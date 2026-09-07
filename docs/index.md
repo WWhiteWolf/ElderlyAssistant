@@ -47,6 +47,7 @@ just because it is listed.
 
 - **`parked-items.md`** — the deferred backlog. Last touched at #66.
 - **`publishing.md`** — pointer to App-Docs, and Memory's publishing picture from #46-new and #47-new. Patrick's EAS steps are at the end.
+- **`connect-submit.md`** — beginning-to-end App Store Connect journey for the first submit. Written at #82-new. Use it instead of Apple’s missing-items list.
 - **`roadmap.md`** — step-back milestones. Rewritten at #68.
 
 ## Retired — in `docs-ref`

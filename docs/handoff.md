@@ -12,14 +12,12 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-He is living with the **#81-new** load on the phone. Landscape 90°
+He is living with the **#82-new** load on the phone. Landscape 90°
 counter-clockwise, headers on the left. What he has used is working.
 
-**#81-new is on the phone.** Birthdays page. Forty-six birthdays merged
-from a backup. Help’s Birthday choice opens Birthdays’ New. The iOS
-back-to-previous-app control is correct on the phone (#80-new work,
-confirmed this sitting). **#82-new chips are in on the Mac**, not on
-the phone. Mac suite 310 of 310. TypeScript is clean.
+**#82-new is on the phone.** Quarterly 30 / 60 / 90 chips on Add. A
+90-day item fired, Done moved it to December 6. Mac suite 310 of 310.
+TypeScript is clean.
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -113,15 +111,13 @@ These are Patrick's and they govern the work rather than describing it.
 
 ## What is open in front of it
 
-**This sitting: Quarterly 30 / 60 / 90 chips on Add** (Patrick, #70-new;
-shape at #82-new). Selectable **30, 60, and 90 days** (not a new page).
-No chip stays every three months. A chip counts from the date entered
-when it is set. Prescriptions come due every 30 or 90 days.
-
 The second new page is not yet named.
 
-The phone is on the **#81-new** load. Spec, user guide, feedback
-button, and testing file are Pending 2–5.
+`docs/publishing.md` was updated at #82-new with the first-submit
+listing. Drop this note next sitting.
+
+The phone is on the **#82-new** load. Spec, user guide, feedback
+button, and testing file are Pending 1–4.
 
 **Day-roll lock** still needs a night of all-green Daily, then a morning
 open on a new load, to confirm the pop-up stays quiet.
