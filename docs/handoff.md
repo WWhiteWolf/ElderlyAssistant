@@ -12,7 +12,7 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-**#76-new** took Timer Alerts, Vault, Shopping List, and Memory Test out of
+**#76-new is committed.** It took Timer Alerts, Vault, Shopping List, and Memory Test out of
 Memory. Source copies remain in `Projects/stray apps`. Not a running app.
 The shopping list is wanted later, with a backup of its own; the list on the
 phone was dropped. Vault was empty and came off. Memory Test data was
@@ -21,6 +21,10 @@ longer carries shopping, vault, or Memory Test. Extra Vault Security is
 gone. On the next load those saved keys come off the phone, and leftover
 Timer and Memory Test alerts are cancelled.
 **#75-new is committed.**
+
+**#77-new.** Restore with Merge is done. Checked on the simulator. Not
+on the phone. The story is in `handoff-history.md`. The decisions live
+in pending under Restore Merge.
 
 He is living with the #67-new load on the phone. Landscape 90°
 counter-clockwise, headers on the left. Calendar and landscape are on
@@ -44,8 +48,8 @@ Mac suite 298 of 298. TypeScript is clean.
 A read-only Grok 4.6 High review of the live app is recorded in
 `docs/grok-review-2026-09-05.md`. Phase 1 is done at #72-new. Phase 2 is
 done at #73-new. Phase 3 is done at #74-new. Appointments fire at the
-set time. Restore’s leftover health and miss lists wait for a
-merge-restore sitting. Morning of may float with the phone.
+set time. Restore’s leftover health and miss lists come off on Replace
+(#77-new). Morning of may float with the phone.
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -53,6 +57,18 @@ merge-restore sitting. Morning of may float with the phone.
 
 These are Patrick's and they govern the work rather than describing it.
 
+- **Restore with Merge is done** (Patrick, #77-new). This reverses
+  the parked drop from #67-new and #75-new. The collected store is
+  pending's Restore Merge. Merge keeps what is already in the app, and
+  adds from the backup only what is not already there. A backup reminder
+  is already in the app when it has the same identity the app wrote into
+  the backup file. People choose Merge or Replace before they pick a
+  file. After they pick the file, the app still asks them to confirm
+  before it changes anything. Replace takes off the old health, miss,
+  and already-told notes. Merge leaves them. Settings and page logs do
+  not need to be saved or restored. The backup does not carry them.
+  There are no existing backup files. We are not keeping an older backup
+  shape.
 - **Timer Alerts, Vault, Shopping List, and Memory Test have left
   Memory** (Patrick, #75-new; taken out at #76-new). Copies remain in
   `Projects/stray apps`. Timer Alerts and Memory Test are simple one-time
@@ -116,14 +132,16 @@ These are Patrick's and they govern the work rather than describing it.
 **What's coming in was not settled this sitting.** Birthdays remain on
 the list. The second new page is not yet named.
 
-**Merge and Restore leftovers** are next. Restore still leaves the old
-health and miss lists standing. Pages in and out is done.
+**Daily Save lands on Appointments** (Patrick, #77-new). New items
+entered on Daily, then Save, drop him in Appointments with those items,
+not Daily. Next bug to fix.
 
 The #67-new load is on the phone. #69-new is committed but not on the
 phone. The day-roll lock, quarterly month, Reset All Data banners,
 banner-tap write-down (**#72-new is committed**), the one-door
-(**#73-new is committed**), and Phase 3 (**#74-new, built**) are not on
-the phone. Paperwork is Pending 8–11.
+(**#73-new is committed**), Phase 3 (**#74-new, built**), and Restore
+with Merge (**#77-new, done**) are not on the phone. Paperwork is Pending
+8–11.
 
 **Grok review follow-up** (`docs/grok-review-2026-09-05.md`). Phase 1 is
 done at #72-new. Phase 2 is committed at #73-new. **Phase 3 is built** at
@@ -159,7 +177,7 @@ work is the Add chips writing it, not new engine arithmetic.
 
 **Phase 4.** Appointments fire at the set time (Patrick, #74-new) —
 built; this reverses #52-new. Restore’s leftover health and miss lists
-wait for a sitting that discusses merge as an option. Morning of may
+come off on Replace (#77-new). Morning of may
 float with the phone; it is not the set time. Settings clock times
 already run the scheduler (Phase 2).
 

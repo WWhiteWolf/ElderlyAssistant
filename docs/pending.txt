@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-06 (#76-new — four pages out of Memory)
+Last updated: 2026-09-06 (#77-new — Restore with Merge done)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -21,14 +21,15 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-MERGE AND RESTORE LEFTOVERS. Restore still leaves the old health and
-miss lists standing. Pages in and out is done.
+DAILY SAVE LANDS ON APPOINTMENTS (Patrick, #77-new). New items entered
+on Daily, then Save, drop him in Appointments with those items, not
+Daily. Next bug to fix.
 
 PHONE LOAD. #69-new is committed and not on the phone yet. The day-roll
 lock, quarterly month, Reset All Data banners, banner-tap write-down
-(#72-new, committed), the one-door (#73-new, committed), and Phase 3
-(#74-new, built) are not on the phone. Last load is #67-new. Paperwork
-is Pending 8–11.
+(#72-new, committed), the one-door (#73-new, committed), Phase 3
+(#74-new, built), and Restore with Merge (#77-new, done) are not on the
+phone. Last load is #67-new. Paperwork is Pending 8–11.
 
 
 PENDING
@@ -38,7 +39,7 @@ Things waiting on something — mostly on the phone or on a build.
 1. EVERYTHING BUILT SINCE THE LAST PHONE LOAD. Last load is #67-new.
    Built since then and not on the phone: the leftover cleanup (#69-new,
    committed), the hangings lock plus Grok Phase 1 (#72-new, committed),
-   the one-door (#73-new, committed), and Grok Phase 3 (#74-new, built).
+   the one-door (#73-new, committed),    Grok Phase 3 (#74-new, built), and Restore with Merge (#77-new, done).
 2. MONTHLY DONE SHOULD ADVANCE THE TILE (Patrick, #70-new). Done on
    Monthly, Quarterly, and Yearly should move the saved date so the tile
    shows the next cycle armed — as before #41-new. Today only ticks and
@@ -74,6 +75,9 @@ Things waiting on something — mostly on the phone or on a build.
 11. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
    WILL COVER (Patrick, #52-new). The during-build tests are
    thrown away. The run is not kept.
+12. DAILY SAVE LANDS ON APPOINTMENTS (Patrick, #77-new). New items
+   entered on Daily, then Save, drop him in Appointments with those
+   items, not Daily.
 
 
 FACTS THAT APPLY TO THE ONGOING WORK
@@ -145,7 +149,13 @@ WHAT IS DONE, NEWEST FIRST
 One line each. The full story of any of them is in
 docs/handoff-history.md.
 
-1. #76-new — four pages out of Memory. Timer Alerts, Vault, Shopping
+1. #77-new — Restore with Merge. Choose Replace or Merge before picking
+   a file, then confirm. Merge keeps what is already in the app and adds
+   what is not. Replace takes off the old health, miss, and already-told
+   notes. The backup no longer carries settings or page logs. Checked on
+   the simulator. Mac 298. TypeScript clean. Not on the phone.
+
+2. #76-new — four pages out of Memory. Timer Alerts, Vault, Shopping
    List, and Memory Test are gone from the live app. Copies remain in
    Projects/stray apps. Shopping list wanted later with its own backup;
    the list on the phone was dropped. Vault was empty. Memory Test data
@@ -420,15 +430,34 @@ PARKED ON PURPOSE
 ------------------------------------------------------------------
 1. Voice control through Siri. Set aside after much effort; revisit
    only if a future iPhone update fixes the name-matching.
-2. Backup "Merge" option — BACK-MOST BURNER (#67): you are 90% sure
-   you are dropping it. Restore keeps REPLACING everything, which
-   works fine for your one-device use. Raised at #75-new, then
-   deferred so pages in and out could be settled first. Leftover
-   health and miss lists after a restore wait for that same sitting
-   (Patrick, #74-new).
-3. Import files/documents into the Vault — PARKED (#69). Travels with
+2. Import files/documents into the Vault — PARKED (#69). Travels with
    Vault to stray apps (#75-new). Not to be re-raised in Memory.
-4. The Android icon pictures and the splash (startup) image still
+3. The Android icon pictures and the splash (startup) image still
    carry the old placeholder art — deliberately left for later when
    the main icon got the new face (#65). (Moved here from
    Nice-to-have, #1-new.)
+
+
+RESTORE MERGE
+------------------------------------------------------------------
+The one store for this sitting's Restore decisions (#77-new). Done.
+Checked on the simulator. Not on the phone.
+
+1. Restore will get a Merge choice. Merge is no longer parked.
+2. Merge keeps what is already in the app, and adds from the backup
+   only what is not already there.
+3. A backup reminder is already in the app when it has the same
+   identity the app wrote into the backup file.
+4. People choose Merge or Replace before they pick a file.
+5. After they pick the file, the app still asks them to confirm
+   before it changes anything.
+6. Replace takes off the old health, miss, and already-told notes.
+   Merge leaves them.
+7. Settings and page logs do not need to be saved or restored. The
+   backup does not carry them.
+8. There are no existing backup files. We are not keeping an older
+   backup shape.
+9. The Backup page says: Choose, replace, or merge to pick a file.
+10. Checked on the simulator (#77-new). Export a full file, delete three
+    items, export that, Merge with the first file: the three items came
+    back. Replace with the second file: those three items were gone.

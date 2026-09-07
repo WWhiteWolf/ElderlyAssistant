@@ -4166,6 +4166,37 @@ second new page is not yet named.
 `pending.docx` regenerated. Patrick will commit. Next is Merge and
 Restore leftovers.
 
+## #77-new (2026-09-06): Restore with Merge
+
+**The goal — done.** Restore with Merge is off the open list. Backup and
+Restore now has Replace and Merge. People choose before they pick a
+file, then confirm. Merge keeps what is already in the app and adds from
+the backup only what is not already there, matching by the identity the
+app wrote into the backup file. Replace puts the backup's reminders in
+place of these, and takes off the old health, miss, and already-told
+notes. Settings and page logs stay on the phone; the backup does not
+carry them. There were no existing backup files, so the file shape was
+not kept old. The Backup page says: Choose, replace, or merge to pick a
+file.
+
+**Checked on the simulator.** Export a full file, delete three items,
+export that, Merge with the first file: the three items came back.
+Replace with the second file: those three items were gone.
+
+**The collected store** of these decisions is pending's Restore Merge.
+The standing ruling in the hand-off file still governs.
+
+**Checks.** Mac suite 298 of 298. TypeScript clean. Not on the phone.
+
+**Still open this sitting.** Daily Save lands on Appointments: new items
+entered on Daily, then Save, drop him in Appointments with those items,
+not Daily.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `in-flight.md`,
+`pending.txt`, and `App-Docs/master-handoff.md` refreshed.
+`pending.docx` regenerated. Patrick will commit. Next is Daily Save
+landing on Appointments.
+
 
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
