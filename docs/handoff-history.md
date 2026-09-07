@@ -4230,6 +4230,42 @@ refreshed. `pending.docx` not regenerated. Patrick will commit. Next is
 Monthly Done should advance the tile (Pending 2).
 
 
+## #79-new (2026-09-06): Monthly Done advances the tile; Options chips stay lit
+
+**The goal was Pending 2** — Monthly, Quarterly, and Yearly Done should
+move the saved date so the tile shows the next cycle armed (Patrick,
+#70-new; reverses #41-new).
+
+**What was wrong.** `CadenceListPage` `markDone` only set `completed` for
+Monthly, Quarterly, and Yearly. The log entry was written, but the saved
+date did not move. `advanceDatedItem` was already written in
+`modules/reminder-items.ts`; Done did not call it.
+
+**What was built.** Done on Monthly, Quarterly, and Yearly now calls
+`advanceDatedItem`, then sets `completed: true` and logs as before.
+Weekly is unchanged.
+
+**Checked on the simulator** by Patrick. The date on the row moves
+forward and the next cycle arms.
+
+**Pending 3 — Options chip picks did not stay lit** (Patrick, #70-new).
+The pattern saved correctly, but each chip tap ran the monthly-pattern
+clearing step before both second-Thursday chips were set, so the
+highlight never stuck.
+
+**What was built for Pending 3.** `item-edit.tsx` only clears the other
+monthly patterns when the pattern actually changes, not on every chip
+tap. Partial picks stay in state and the buttons stay highlighted.
+
+**Checked on the simulator** by Patrick. Second-Thursday chips stay lit
+while you set them.
+
+**Checks.** Mac suite 301 of 301. TypeScript clean. Not on the phone.
+
+**Session close.** `handoff.md`, `handoff-history.md`, and `pending.txt`
+refreshed. `pending.docx` not regenerated. Patrick will commit.
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and

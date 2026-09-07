@@ -744,7 +744,11 @@ export default function ItemEditScreen() {
                     }
                     const last = lastEnteredMonthlyPattern(optionSettings, next, monthlyPattern);
                     setMonthlyPattern(last);
-                    setOptionSettings(withLastMonthlyPattern(next, last));
+                    if (last !== monthlyPattern) {
+                        setOptionSettings(withLastMonthlyPattern(next, last));
+                    } else {
+                        setOptionSettings(next);
+                    }
                 }}
                 startId={optionsStartId}
                 onClose={() => setShowOptions(false)}

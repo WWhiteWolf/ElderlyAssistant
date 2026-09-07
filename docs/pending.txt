@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-06 (#78-new — Daily One Time for today is Daily's own)
+Last updated: 2026-09-06 (#79-new — Monthly Done and Options chips)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -21,16 +21,13 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-MONTHLY DONE SHOULD ADVANCE THE TILE (Patrick, #70-new; Pending 2).
-Done on Monthly, Quarterly, and Yearly should move the saved date so the
-tile shows the next cycle armed. Next bug to fix.
-
 PHONE LOAD. #69-new is committed and not on the phone yet. The day-roll
 lock, quarterly month, Reset All Data banners, banner-tap write-down
 (#72-new, committed), the one-door (#73-new, committed), Phase 3
-(#74-new, built), Restore with Merge (#77-new, done), and Daily's One
-Time for today as its own one-shot (#78-new, built) are not on the
-phone. Last load is #67-new. Paperwork is Pending 8–11.
+(#74-new, built), Restore with Merge (#77-new, done), Daily's One
+Time for today as its own one-shot (#78-new, committed), and #79-new
+(Monthly Done advances the tile and Options chips stay lit, built) are
+not on the phone. Last load is #67-new. Paperwork is Pending 6–9.
 
 
 PENDING
@@ -41,41 +38,34 @@ Things waiting on something — mostly on the phone or on a build.
    Built since then and not on the phone: the leftover cleanup (#69-new,
    committed), the hangings lock plus Grok Phase 1 (#72-new, committed),
    the one-door (#73-new, committed), Grok Phase 3 (#74-new, built),
-   Restore with Merge (#77-new, done), and Daily's One Time for today
-   as its own one-shot (#78-new, built).
-2. MONTHLY DONE SHOULD ADVANCE THE TILE (Patrick, #70-new). Done on
-   Monthly, Quarterly, and Yearly should move the saved date so the tile
-   shows the next cycle armed — as before #41-new. Today only ticks and
-   logs; the date on the tile does not move.
-3. OPTIONS — 2ND THURSDAY CHIP DOES NOT UPDATE (Patrick, #70-new,
-   verified on phone). The pattern saves correctly. The selected chip
-   does not change to show 2nd Thursday is active, so it still looks like
-   the dated choice.
-4. BIRTHDAYS PAGE (Patrick, #70-new). New Home page. Each item:
+   Restore with Merge (#77-new, done), Daily's One Time for today
+   as its own one-shot (#78-new, committed), and #79-new (Monthly Done
+   advances the tile and Options chips stay lit, built).
+2. BIRTHDAYS PAGE (Patrick, #70-new). New Home page. Each item:
    a name and a date, yearly reminder. Almost like Appointments: Day Before
    only as the before chip. **On the day** and **Day Before** are both
    selectable chips. Build sheet first.
-5. HELP PAGE (Patrick, #70-new — was Where?). Visible name **Help**;
+3. HELP PAGE (Patrick, #70-new — was Where?). Visible name **Help**;
    Home badge **?** not 🧭.
-6. HELP HELPER — WORDING AND CANCEL (Patrick, #70-new). Step 1 first
+4. HELP HELPER — WORDING AND CANCEL (Patrick, #70-new). Step 1 first
    choice **Repeats every** only; fix the question that says “every” on a
    later step. Steps 2 and 3: Cancel back one step, not Home (`where.tsx`).
-7. QUARTERLY ADD — 30, 60, 90 DAYS (Patrick, #70-new). On + Add
+5. QUARTERLY ADD — 30, 60, 90 DAYS (Patrick, #70-new). On + Add
    for Quarterly, selectable chips for 30, 60, and 90 days. Not a new
    page. The engine already knows how to take in this data; the work is
    the Add chips writing it.
-8. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
+6. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
     sitting treated One Time's missing notice at the set time as
     a bug. He had decided it that way. A spec would have said so.
     Changing the name of One Time to Appointments belongs in
     that spec, and Extended to Bucket List.
-9. A USER GUIDE, from that spec or merely after it (Patrick,
+7. A USER GUIDE, from that spec or merely after it (Patrick,
     #52-new). He needs to provide it on his website, and a way
     in the app to find it or get it.
-10. A FEEDBACK BUTTON IN THE APP, similar to Mystery (Patrick,
+8. A FEEDBACK BUTTON IN THE APP, similar to Mystery (Patrick,
     #52-new). That is how the app lets you find or get the
     User Guide.
-11. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
+9. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
    WILL COVER (Patrick, #52-new). The during-build tests are
    thrown away. The run is not kept.
 
@@ -152,7 +142,12 @@ WHAT IS DONE, NEWEST FIRST
 One line each. The full story of any of them is in
 docs/handoff-history.md.
 
-1. #78-new — Daily One Time for today. Save stays on Daily. The item
+1. #79-new — Monthly Done advances the tile; Options chip picks stay
+   lit on Monthly, Quarterly, and Yearly while you set a second Thursday
+   or Wednesday after the 6th. Checked on the simulator. Mac 301.
+   TypeScript clean. Not on the phone.
+
+2. #78-new — Daily One Time for today. Save stays on Daily. The item
    is Daily's own one-shot, not an Appointment. Help's "for today? Yes"
    opens the same one-shot. Mac 300. TypeScript clean. Not on the phone.
 

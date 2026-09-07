@@ -43,11 +43,16 @@ are `appointments` and `bucketlist`. Siri says Daily and Remember.
 Appointments do not offer Snooze. Skip writes the engine stamp.
 Appointments fire at the set time as well as any before chips. Not on the
 phone.
-**#78-new built.** Daily's One Time for today is its own one-shot (`oneTime`).
-Save stays on Daily. Appointments does not get those items. Help's "for
-today? Yes" opens the same one-shot. Checked on the simulator. Not on the
-phone.
-Mac suite 300 of 300. TypeScript is clean.
+**#78-new is committed.** Daily's One Time for today is its own one-shot
+(`oneTime`). Save stays on Daily. Appointments does not get those items.
+Help's "for today? Yes" opens the same one-shot. Checked on the simulator.
+Not on the phone.
+**#79-new built.** Monthly, Quarterly, and Yearly Done advances the saved
+date again. `CadenceListPage` `markDone` calls `advanceDatedItem` so the
+tile shows the next cycle armed. Options chip picks on Monthly, Quarterly,
+and Yearly stay highlighted while you set a second Thursday or Wednesday
+after the 6th. Checked on the simulator. Not on the phone.
+Mac suite 301 of 301. TypeScript is clean.
 
 A read-only Grok 4.6 High review of the live app is recorded in
 `docs/grok-review-2026-09-05.md`. Phase 1 is done at #72-new. Phase 2 is
@@ -117,10 +122,9 @@ These are Patrick's and they govern the work rather than describing it.
 - **Do not connect `floatDay`.** An incomplete zone currently floats
   with the phone; leave that unless Patrick says otherwise (#41-new).
 - **Monthly, Quarterly, and Yearly Done advances the saved date**
-  (Patrick, #70-new). #41-new stopped that; he did not notice
-  until then. Done should move the date on the item so the tile shows
-  the next cycle armed — as it did before #41-new. Today Done only
-  ticks and logs; the tile date does not move.
+  (Patrick, #70-new; built at #79-new). #41-new stopped that; he did
+  not notice until then. Done moves the date on the item so the tile
+  shows the next cycle armed — as it did before #41-new.
 - **The Where? page is Help** (Patrick, #70-new). The visible name
   is **Help**, not Where? The Home badge is **?**, not 🧭. The route
   may stay `where.tsx`.
@@ -135,18 +139,17 @@ These are Patrick's and they govern the work rather than describing it.
 
 ## What is open in front of it
 
-**#78-new built.** Daily One Time for today is fixed. Next bug: **Monthly
-Done should advance the tile** (Patrick, #70-new; Pending 2).
-
-**What's coming in was not settled this sitting.** Birthdays remain on
+**#79-new built.** Monthly Done advances the tile and Options chips stay
+lit. **What's coming in was not settled this sitting.** Birthdays remain on
 the list. The second new page is not yet named.
 
 The #67-new load is on the phone. #69-new is committed but not on the
 phone. The day-roll lock, quarterly month, Reset All Data banners,
 banner-tap write-down (**#72-new is committed**), the one-door
 (**#73-new is committed**), Phase 3 (**#74-new, built**), Restore with
-Merge (**#77-new, done**), and Daily's One Time for today
-(**#78-new, built**) are not on the phone. Paperwork is Pending 8–11.
+Merge (**#77-new, done**), Daily's One Time for today
+(**#78-new, committed**), and Monthly Done advances the tile
+(**#79-new, built**) are not on the phone. Paperwork is Pending 6–9.
 
 **Grok review follow-up** (`docs/grok-review-2026-09-05.md`). Phase 1 is
 done at #72-new. Phase 2 is committed at #73-new. **Phase 3 is built** at
@@ -168,20 +171,6 @@ step**, not Home — today every stage’s Cancel calls `router.back()`.
 for Quarterly, selectable **30, 60, and 90 days** (not a new page).
 **The engine already knows how to take in this data** (Patrick) — the
 work is the Add chips writing it, not new engine arithmetic.
-
-**Monthly Done should advance the tile** (Patrick, #70-new; Pending 2).
-`CadenceListPage` `markDone` only sets `completed`; it does not move the
-saved date. Restore advance on Done for Monthly, Quarterly, and Yearly so
-the tile shows the next cycle armed. Reverses #41-new. Today Done only
-ticks and logs; the tile date does not move. `advanceDatedItem` is already
-written; Done does not call it yet.
-
-**Patrick on the phone** (#70-new):
-
-5. **Options — 2nd Thursday chip does not update** (Patrick verified this
-   session). The pattern **saves correctly** — the data is right. The UI
-   fault is the **selected chip** does not change to show 2nd Thursday is
-   active, so it still looks like the dated choice even after save.
 
 **Phase 4.** Appointments fire at the set time (Patrick, #74-new) —
 built; this reverses #52-new. Restore’s leftover health and miss lists

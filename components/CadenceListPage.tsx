@@ -19,6 +19,7 @@ import { ReminderItemRow } from './ReminderItemRow';
 import { pageLabelFor } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
 import {
+    advanceDatedItem,
     dragKindTo,
     formatItemWhen,
     applyReminderChange,
@@ -134,6 +135,13 @@ export default function CadenceListPage({
                 if (one.id !== id) return one;
                 const { snoozedUntil, ...rest } = one;
                 return { ...rest, completed: true, doneAt: Date.now() };
+            }));
+            return;
+        }
+        if (kind === 'monthly' || kind === 'quarterly' || kind === 'yearly') {
+            writeItems((list) => list.map((one) => {
+                if (one.id !== id) return one;
+                return { ...advanceDatedItem(one), completed: true };
             }));
             return;
         }

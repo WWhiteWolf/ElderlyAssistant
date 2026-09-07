@@ -300,6 +300,32 @@ export function runTranslatorCadenceTests(): void {
         );
     });
 
+    test('A partial second Thursday is kept until the pattern changes', () => {
+        const start = emptyOptionSettings();
+        let pattern: 'date' | 'secondThursday' | 'wednesdayAfter' = 'date';
+        let settings = start;
+
+        const apply = (next: typeof start) => {
+            const last = lastEnteredMonthlyPattern(settings, next, pattern);
+            settings = last !== pattern ? withLastMonthlyPattern(next, last) : next;
+            pattern = last;
+        };
+
+        apply({ ...settings, weekdayOrdinal: 2 });
+        assertSame(
+            [pattern, settings.weekdayOrdinal, settings.ordinalWeekday],
+            ['date', 2, undefined],
+            'the first chip alone stays lit while the pattern is still open',
+        );
+
+        apply({ ...settings, ordinalWeekday: 4 });
+        assertSame(
+            [pattern, settings.weekdayOrdinal, settings.ordinalWeekday],
+            ['secondThursday', 2, 4],
+            'the second chip completes the pattern',
+        );
+    });
+
     test('A saved Then or Next Day on the item does not reach the common shape', () => {
         const shaped = shapeOf(item({
             kind: 'monthly',
