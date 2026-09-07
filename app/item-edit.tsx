@@ -69,7 +69,7 @@ const ONE_TIME_PRESETS: ReminderPreset[] = [
     { label: 'Month', kind: 'clock', daysBefore: 30, timeOfDay: 'evening' },
 ];
 
-const KINDS: ReminderKind[] = ['daily', 'weekly', 'monthly', 'quarterly', 'yearly', 'appointments', 'bucketlist'];
+const KINDS: ReminderKind[] = ['daily', 'oneTime', 'weekly', 'monthly', 'quarterly', 'yearly', 'appointments', 'bucketlist'];
 
 function asParam(value: string | string[] | undefined): string | undefined {
     if (Array.isArray(value)) return value[0];
@@ -90,7 +90,7 @@ function formHasTimeSet(
     if (editKind === 'bucketlist') return false;
     if (editKind === 'daily') return pendingTime !== null;
     if (editKind === 'weekly') return true;
-    if (editKind === 'appointments') return timeSet;
+    if (editKind === 'appointments' || editKind === 'oneTime') return timeSet;
     if (editKind === 'monthly' || editKind === 'quarterly' || editKind === 'yearly') return true;
     return false;
 }
@@ -148,7 +148,6 @@ function assembleFormItem(parts: {
     optionSettings: OptionSettings;
     monthlyPattern: MonthlyPattern;
     note: string;
-    isAppointmentsForToday: boolean;
 }): ReminderItem {
     const base: ReminderItem = parts.existing ?? {
         id: parts.id,
@@ -195,22 +194,35 @@ function assembleFormItem(parts: {
             next.day = parts.pendingDate.getDate();
         }
         delete next.reminders;
-    } else if (parts.editKind === 'appointments') {
+    } else if (parts.editKind === 'oneTime') {
         const now = new Date();
-        const when = parts.isAppointmentsForToday
-            ? new Date(
-                now.getFullYear(),
-                now.getMonth(),
-                now.getDate(),
-                parts.pendingDate.getHours(),
-                parts.pendingDate.getMinutes(),
-                0,
-                0,
-            )
-            : (parts.dateSet ? parts.pendingDate : now);
+        const when = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+            parts.pendingDate.getHours(),
+            parts.pendingDate.getMinutes(),
+            0,
+            0,
+        );
         next = {
             ...next,
-            ...(parts.isAppointmentsForToday || parts.dateSet
+            year: when.getFullYear(),
+            month: when.getMonth(),
+            day: when.getDate(),
+            ...hourMinuteOf({
+                hour: parts.timeSet ? parts.pendingDate.getHours() : null,
+                minute: parts.timeSet ? parts.pendingDate.getMinutes() : null,
+            }),
+            reminders: parts.reminders,
+        };
+        delete next.intervalMonths;
+    } else if (parts.editKind === 'appointments') {
+        const now = new Date();
+        const when = parts.dateSet ? parts.pendingDate : now;
+        next = {
+            ...next,
+            ...(parts.dateSet
                 ? { year: when.getFullYear(), month: when.getMonth(), day: when.getDate() }
                 : {}),
             ...hourMinuteOf({
@@ -219,7 +231,7 @@ function assembleFormItem(parts: {
             }),
             reminders: parts.reminders,
         };
-        if (!parts.isAppointmentsForToday && !parts.dateSet) {
+        if (!parts.dateSet) {
             delete next.year;
             delete next.month;
             delete next.day;
@@ -261,11 +273,10 @@ export default function ItemEditScreen() {
     const navigation = useNavigation();
     const theme = useTheme();
     const styles = makeStyles(theme);
-    const { id, kind, returnTo, formContext, viaHelper, viewYear, viewMonth, dayYear, dayMonth, dayDate } = useLocalSearchParams<{
+    const { id, kind, returnTo, viaHelper, viewYear, viewMonth, dayYear, dayMonth, dayDate } = useLocalSearchParams<{
         id?: string | string[];
         kind?: string | string[];
         returnTo?: string | string[];
-        formContext?: string | string[];
         viaHelper?: string | string[];
         viewYear?: string | string[];
         viewMonth?: string | string[];
@@ -275,7 +286,6 @@ export default function ItemEditScreen() {
     }>();
     const editingId = asParam(id) || null;
     const page = asParam(returnTo) || 'daily';
-    const isAppointmentsForToday = asParam(formContext) === 'appointmentsForToday';
     const fromHelper = asParam(viaHelper) === '1';
     const startKind = kindFrom(asParam(kind), page);
     const calendarReturn = page === 'calendar' ? {
@@ -313,7 +323,7 @@ export default function ItemEditScreen() {
     monthlyPatternRef.current = monthlyPattern;
     const noteRef = useRef(note);
     noteRef.current = note;
-    const kindOptions = optionCasesForKind(editKind, isAppointmentsForToday);
+    const kindOptions = optionCasesForKind(editKind);
     const applied = appliedOptionRows(optionSettings).filter((one) =>
         kindOptions.some((c) => c.id === one.id),
     );
@@ -333,11 +343,7 @@ export default function ItemEditScreen() {
             return;
         }
         if (router.canDismiss()) router.dismissAll();
-        if (!editingId && editKind === 'appointments' && isAppointmentsForToday) {
-            router.replace('/appointments' as Href);
-        } else {
-            router.replace(pathFor(page, calendarReturn));
-        }
+        router.replace(pathFor(page, calendarReturn));
     };
 
     useEffect(() => {
@@ -369,7 +375,7 @@ export default function ItemEditScreen() {
                             ));
                         }
                     } else if (
-                        found.kind === 'monthly' || found.kind === 'quarterly' || found.kind === 'yearly' || found.kind === 'appointments'
+                        found.kind === 'monthly' || found.kind === 'quarterly' || found.kind === 'yearly' || found.kind === 'appointments' || found.kind === 'oneTime'
                     ) {
                         if (typeof found.year === 'number' && typeof found.month === 'number' && typeof found.day === 'number') {
                             setPendingDate(new Date(found.year, found.month, found.day, 12, 0, 0, 0));
@@ -378,7 +384,7 @@ export default function ItemEditScreen() {
                             setDateSet(false);
                         }
                     }
-                    if (found.kind === 'appointments') {
+                    if (found.kind === 'appointments' || found.kind === 'oneTime') {
                         setReminders(found.reminders ?? []);
                     }
                     if (found.kind === 'bucketlist' || found.kind === 'daily' || found.kind === 'weekly') {
@@ -394,7 +400,7 @@ export default function ItemEditScreen() {
                 setOptionSettings(emptyOptionSettings());
                 setMonthlyPattern('date');
                 setNote('');
-                if (nextKind === 'appointments' && isAppointmentsForToday) {
+                if (nextKind === 'oneTime') {
                     const today = new Date();
                     today.setHours(12, 0, 0, 0);
                     setPendingDate(today);
@@ -420,9 +426,9 @@ export default function ItemEditScreen() {
         };
         setup();
         return () => { cancelled = true; };
-    }, [editingId, kind, page, isAppointmentsForToday]);
+    }, [editingId, kind, page]);
 
-    const presets = (isAppointmentsForToday && editKind === 'appointments') ? DAILY_ONE_TIME_PRESETS : ONE_TIME_PRESETS;
+    const presets = editKind === 'oneTime' ? DAILY_ONE_TIME_PRESETS : ONE_TIME_PRESETS;
 
     const isPresetSelected = (p: ReminderPreset): boolean => {
         if (p.kind === 'clock') {
@@ -477,7 +483,6 @@ export default function ItemEditScreen() {
             optionSettings: optionSettingsRef.current,
             monthlyPattern: monthlyPatternRef.current,
             note: noteRef.current,
-            isAppointmentsForToday,
         });
 
         await applyReminderChange((list) =>
@@ -514,12 +519,12 @@ export default function ItemEditScreen() {
             Alert.alert('Check Date & Time', 'The typed date or time is not a real one. Fix the box outlined in red, then save.');
             return;
         }
-        const dateKinds: ReminderKind[] = ['monthly', 'quarterly', 'yearly', 'appointments'];
+        const dateKinds: ReminderKind[] = ['monthly', 'quarterly', 'yearly', 'appointments', 'oneTime'];
         if (dateKinds.includes(editKind) && !dateTimeValid) {
             Alert.alert('Check Date & Time', 'The typed date or time is not a real one. Fix the box outlined in red, then save.');
             return;
         }
-        if (editKind === 'appointments' && reminders.length === 0) {
+        if ((editKind === 'appointments' || editKind === 'oneTime') && reminders.length === 0) {
             Alert.alert('No Reminder Set', "Are you sure you don't want to set a Reminder?", [
                 { text: 'Go Back', style: 'cancel' },
                 { text: 'Save Anyway', onPress: () => { finishSave(); } },
@@ -654,10 +659,10 @@ export default function ItemEditScreen() {
                     />
                 )}
 
-                {editKind === 'appointments' && (
+                {(editKind === 'appointments' || editKind === 'oneTime') && (
                     <>
                         <DateTimeControl
-                            mode={isAppointmentsForToday ? 'time' : 'datetime'}
+                            mode={editKind === 'oneTime' ? 'time' : 'datetime'}
                             value={pendingDate}
                             onChange={(d, half, timeVia) => {
                                 setPendingDate(d);
@@ -667,7 +672,7 @@ export default function ItemEditScreen() {
                             }}
                             onValidityChange={setDateTimeValid}
                             timeLabel="Time"
-                            {...(isAppointmentsForToday ? {} : {
+                            {...(editKind === 'oneTime' ? {} : {
                                 optionalDate: true,
                                 dateSet,
                                 onClearDate: () => setDateSet(false),

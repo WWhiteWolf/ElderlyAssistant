@@ -41,6 +41,17 @@ export function runMissCandidateTests(): void {
         assert(!shownOnDate(weekly, THURSDAY), 'expected Weekly off on Thursday');
     });
 
+    test('A Daily one-shot is due on its saved date and not the next day', () => {
+        const oneTime = item({
+            kind: 'oneTime',
+            year: WEDNESDAY.getFullYear(),
+            month: WEDNESDAY.getMonth(),
+            day: WEDNESDAY.getDate(),
+        });
+        assert(shownOnDate(oneTime, WEDNESDAY), 'expected Daily one-shot on its date');
+        assert(!shownOnDate(oneTime, THURSDAY), 'expected Daily one-shot off the next day');
+    });
+
     test('An Appointments item is due on its saved date and not the next day', () => {
         const appointments = item({
             kind: 'appointments',

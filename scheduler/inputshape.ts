@@ -21,6 +21,7 @@
 /** The current source carried from a saved kind into notification data. */
 export type SourceScreenCode =
     | 'daily'
+    | 'oneTime'
     | 'weekly'
     | 'monthly'
     | 'quarterly'

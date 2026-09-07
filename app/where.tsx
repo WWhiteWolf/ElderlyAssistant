@@ -21,13 +21,14 @@ export default function WhereScreen() {
 
     const close = () => router.back();
 
-    const openForm = (kind: string, formContext?: string) => {
-        const routeParams: Record<string, string> = {
-            kind,
-            viaHelper: '1',
-        };
-        if (formContext) routeParams.formContext = formContext;
-        router.push({ pathname: '/item-edit', params: routeParams } as Href);
+    const openForm = (kind: string) => {
+        router.push({
+            pathname: '/item-edit',
+            params: {
+                kind,
+                viaHelper: '1',
+            },
+        } as Href);
     };
 
     let title = '';
@@ -51,7 +52,7 @@ export default function WhereScreen() {
     } else if (stage === 'today') {
         title = 'Is that for today?';
         choices = [
-            { label: 'Yes', onPress: () => openForm('appointments', 'appointmentsForToday') },
+            { label: 'Yes', onPress: () => openForm('oneTime') },
             { label: 'No', onPress: () => setStage('kind') },
         ];
     } else {

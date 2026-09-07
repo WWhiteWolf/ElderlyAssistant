@@ -65,6 +65,23 @@ export function runTranslatorCadenceTests(): void {
         assert(shaped.hasDueTimeBit, 'a time is a due time');
     });
 
+    test('A Daily one-shot carries its leads and opens Daily', () => {
+        const shaped = shapeOf(item({
+            kind: 'oneTime',
+            year: 2026,
+            month: 5,
+            day: 10,
+            hour: 14,
+            minute: 0,
+            reminders: [{ id: 'r1', amount: 30, unit: 'minutes', kind: 'offset' }],
+        }));
+        assertSame(
+            [shaped.sourceScreenCode, shaped.doneEndsItemBit, shaped.leadTimeList.length, shaped.bannerButtonsCode, shaped.bannerTitleText],
+            ['oneTime', true, 2, 'appointmentsok', 'Daily Routine'],
+            'a Daily one-shot is a one-off that still belongs to Daily',
+        );
+    });
+
     test('An appointment carries its leads', () => {
         const shaped = shapeOf(item({
             kind: 'appointments',
@@ -326,7 +343,7 @@ export function runTranslatorCadenceTests(): void {
 
     test('One Time for today from Daily has only time zone', () => {
         assertSame(
-            optionCasesForKind('appointments', true).map((one) => one.id),
+            optionCasesForKind('oneTime').map((one) => one.id),
             ['timezone'],
             'Daily\'s One Time for today is time zone only',
         );

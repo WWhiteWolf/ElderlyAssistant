@@ -378,6 +378,12 @@ const appointmentsCadenceRules: ScreenRules = {
     },
 };
 
+const oneTimeCadenceRules: ScreenRules = {
+    ...appointmentsCadenceRules,
+    bannerTitleTextOf: () => 'Daily Routine',
+    bannerBodyTextOf: (item) => `Time for ${item.label}!`,
+};
+
 const bucketlistCadenceRules: ScreenRules = {
     canBeDoneBit: true,
     canBePushedBackBit: false,
@@ -395,6 +401,7 @@ const bucketlistCadenceRules: ScreenRules = {
 
 const rulesByKind: Record<ReminderItem['kind'], ScreenRules> = {
     daily: dailyCadenceRules,
+    oneTime: oneTimeCadenceRules,
     weekly: weeklyCadenceRules,
     monthly: datedCadenceRules,
     quarterly: datedCadenceRules,

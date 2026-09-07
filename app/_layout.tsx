@@ -495,6 +495,8 @@ export default function RootLayout() {
       router.push({ pathname: '/yearly', params } as Href);
     } else if (source === 'appointments') {
       router.push({ pathname: '/appointments', params } as Href);
+    } else if (source === 'oneTime') {
+      router.push({ pathname: '/daily', params });
     }
     })();
     return () => { cancelled = true; };

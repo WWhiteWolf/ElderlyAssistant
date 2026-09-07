@@ -16,7 +16,7 @@ const STORAGE_KEY = 'reminder_items';
 export const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 export const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-export const FROM_PAGE: Record<Exclude<ReminderKind, 'daily' | 'bucketlist'>, string> = {
+export const FROM_PAGE: Record<Exclude<ReminderKind, 'daily' | 'oneTime' | 'bucketlist'>, string> = {
     weekly: `from ${PAGE_LABELS.weekly}`,
     monthly: `from ${PAGE_LABELS.monthly}`,
     quarterly: `from ${PAGE_LABELS.quarterly}`,
@@ -142,12 +142,13 @@ export function shadedDaysForItem(item: ReminderItem, year: number, month: numbe
 
 const DAILY_KIND_RANK: Record<ReminderKind, number> = {
     daily: 0,
-    weekly: 1,
-    monthly: 2,
-    quarterly: 3,
-    yearly: 4,
-    appointments: 5,
-    bucketlist: 6,
+    oneTime: 1,
+    weekly: 2,
+    monthly: 3,
+    quarterly: 4,
+    yearly: 5,
+    appointments: 6,
+    bucketlist: 7,
 };
 
 export function sortDailyVisible(items: ReminderItem[]): ReminderItem[] {
@@ -242,7 +243,7 @@ export function formatItemWhen(item: ReminderItem): string {
         return time ? `${day} after ${after} · ${time}` : `${day} after ${after}`;
     }
     if (
-        (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly' || item.kind === 'appointments')
+        (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly' || item.kind === 'appointments' || item.kind === 'oneTime')
         && typeof item.month === 'number'
         && typeof item.day === 'number'
         && typeof item.year === 'number'

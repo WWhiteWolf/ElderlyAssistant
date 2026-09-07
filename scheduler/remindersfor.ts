@@ -116,6 +116,7 @@ function pushBackSource(screen: SourceScreenCode): string | null {
             return 'quarterlydelay';
         case 'yearly':
             return 'yearlydelay';
+        case 'oneTime':
         case 'appointments':
         case 'bucketlist':
             return null;

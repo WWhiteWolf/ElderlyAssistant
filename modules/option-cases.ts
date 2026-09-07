@@ -88,10 +88,9 @@ function casesFor(ids: string[]): OptionCase[] {
     );
 }
 
-export function optionCasesForKind(kind: string, fromDaily?: boolean): OptionCase[] {
-    if (kind === 'daily') return casesFor(TIMEZONE_IDS);
+export function optionCasesForKind(kind: string): OptionCase[] {
+    if (kind === 'daily' || kind === 'oneTime') return casesFor(TIMEZONE_IDS);
     if (kind === 'bucketlist') return [];
-    if (kind === 'appointments' && fromDaily) return casesFor(TIMEZONE_IDS);
     if (kind === 'weekly' || kind === 'appointments') return casesFor(CONNECTED_IDS);
     if (kind === 'monthly' || kind === 'quarterly' || kind === 'yearly') return casesFor(MONTHLY_IDS);
     return [];

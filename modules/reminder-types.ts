@@ -12,6 +12,7 @@ export interface LeadReminder {
 
 export type ReminderKind =
     | 'daily'
+    | 'oneTime'
     | 'weekly'
     | 'monthly'
     | 'quarterly'

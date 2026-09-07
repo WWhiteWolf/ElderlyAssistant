@@ -19,18 +19,18 @@ export function isDateOf(item: ReminderItem, when: Date): boolean {
 /**
  * True when this item belongs on Daily on `when`.
  *
- * Daily items belong every day. Weekly items belong on their weekday. One Time
- * belongs only on its saved date. Monthly, Quarterly and Yearly belong on the
- * saved date, or on the day the engine's next occurrence lands — first
- * Thursday and Wednesday after the 6th have no saved date that matches.
- * Extended never belongs; it has no day.
+ * Daily items belong every day. Weekly items belong on their weekday. A
+ * Daily one-shot and an Appointment belong only on the saved date. Monthly,
+ * Quarterly and Yearly belong on the saved date, or on the day the engine's
+ * next occurrence lands — first Thursday and Wednesday after the 6th have no
+ * saved date that matches. Extended never belongs; it has no day.
  */
 export function shownOnDate(item: ReminderItem, when: Date): boolean {
     if (item.kind === 'daily') return true;
     if (item.kind === 'weekly') return item.day === when.getDay();
-    if (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly' || item.kind === 'appointments') {
+    if (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly' || item.kind === 'appointments' || item.kind === 'oneTime') {
         if (isDateOf(item, when)) return true;
-        if (item.kind === 'appointments') return false;
+        if (item.kind === 'appointments' || item.kind === 'oneTime') return false;
         const shaped = translateReminderItems([item], when.getTime())[0];
         if (!shaped) return false;
         const start = new Date(when);

@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-06 (#77-new — Restore with Merge done)
+Last updated: 2026-09-06 (#78-new — Daily One Time for today is Daily's own)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -21,14 +21,15 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-DAILY SAVE LANDS ON APPOINTMENTS (Patrick, #77-new). New items entered
-on Daily, then Save, drop him in Appointments with those items, not
-Daily. Next bug to fix.
+MONTHLY DONE SHOULD ADVANCE THE TILE (Patrick, #70-new; Pending 2).
+Done on Monthly, Quarterly, and Yearly should move the saved date so the
+tile shows the next cycle armed. Next bug to fix.
 
 PHONE LOAD. #69-new is committed and not on the phone yet. The day-roll
 lock, quarterly month, Reset All Data banners, banner-tap write-down
 (#72-new, committed), the one-door (#73-new, committed), Phase 3
-(#74-new, built), and Restore with Merge (#77-new, done) are not on the
+(#74-new, built), Restore with Merge (#77-new, done), and Daily's One
+Time for today as its own one-shot (#78-new, built) are not on the
 phone. Last load is #67-new. Paperwork is Pending 8–11.
 
 
@@ -39,7 +40,9 @@ Things waiting on something — mostly on the phone or on a build.
 1. EVERYTHING BUILT SINCE THE LAST PHONE LOAD. Last load is #67-new.
    Built since then and not on the phone: the leftover cleanup (#69-new,
    committed), the hangings lock plus Grok Phase 1 (#72-new, committed),
-   the one-door (#73-new, committed),    Grok Phase 3 (#74-new, built), and Restore with Merge (#77-new, done).
+   the one-door (#73-new, committed), Grok Phase 3 (#74-new, built),
+   Restore with Merge (#77-new, done), and Daily's One Time for today
+   as its own one-shot (#78-new, built).
 2. MONTHLY DONE SHOULD ADVANCE THE TILE (Patrick, #70-new). Done on
    Monthly, Quarterly, and Yearly should move the saved date so the tile
    shows the next cycle armed — as before #41-new. Today only ticks and
@@ -75,9 +78,6 @@ Things waiting on something — mostly on the phone or on a build.
 11. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
    WILL COVER (Patrick, #52-new). The during-build tests are
    thrown away. The run is not kept.
-12. DAILY SAVE LANDS ON APPOINTMENTS (Patrick, #77-new). New items
-   entered on Daily, then Save, drop him in Appointments with those
-   items, not Daily.
 
 
 FACTS THAT APPLY TO THE ONGOING WORK
@@ -102,8 +102,11 @@ built. None of these is a job to do.
    item, or a One Time for today. On One Time for today the
    Reminders before chips are only 30 min., 1 hour, 2 hours, and
    Time of (the item's own time). Save on that kind comes back on
-   Appointments, which has the Log, not Daily. The other pages keep their
+   Daily. It is Daily's own one-shot, not an Appointment. An
+   Appointment that falls today still shows on Daily as from
+   Appointments, and still lives on Appointments. The other pages keep their
    own adds, because on those the page is the whole meaning of Repeat.
+   (#78-new)
 5. ONE REMINDER PER ITEM, NOT TWO, and the app puts itself right
    when you open it: it tells you what you missed, then sets the
    reminders again. That is your own reasoning and it replaced the
@@ -149,7 +152,11 @@ WHAT IS DONE, NEWEST FIRST
 One line each. The full story of any of them is in
 docs/handoff-history.md.
 
-1. #77-new — Restore with Merge. Choose Replace or Merge before picking
+1. #78-new — Daily One Time for today. Save stays on Daily. The item
+   is Daily's own one-shot, not an Appointment. Help's "for today? Yes"
+   opens the same one-shot. Mac 300. TypeScript clean. Not on the phone.
+
+2. #77-new — Restore with Merge. Choose Replace or Merge before picking
    a file, then confirm. Merge keeps what is already in the app and adds
    what is not. Replace takes off the old health, miss, and already-told
    notes. The backup no longer carries settings or page logs. Checked on

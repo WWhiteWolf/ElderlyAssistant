@@ -68,6 +68,7 @@ export const OWNED_SOURCES = [
     'yearly',
     'yearlydelay',
     'appointments',
+    'oneTime',
 ];
 
 /**

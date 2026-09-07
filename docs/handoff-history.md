@@ -4198,6 +4198,38 @@ not Daily.
 landing on Appointments.
 
 
+## #78-new (2026-09-06): Daily One Time for today is Daily's own
+
+**The goal was bug fixes**, starting with Daily Save landing on
+Appointments (#77-new left that open).
+
+**What was wrong.** Daily's + Add, One Time for today, saved the item as
+an Appointment. Save could land on Appointments. Help's "Is that for
+today? Yes" used the same wrong path (`appointmentsForToday` on the
+Appointments kind).
+
+**What was built.** Daily's One Time for today is its own saved kind,
+`oneTime`. It is a one-shot for today, not an Appointment. Save stays on
+Daily. Appointments does not list those items. An Appointment that falls
+today still shows on Daily as from Appointments and still lives on
+Appointments. Help's "for today? Yes" opens the same one-shot. The
+`appointmentsForToday` formContext came out; the kind carries the meaning.
+Banner tap on a one-shot opens Daily.
+
+**Monthly Done should advance the tile** (Pending 2) was looked at but
+not built this sitting. `advanceDatedItem` is already written; Done on
+Monthly, Quarterly, and Yearly still only ticks and logs.
+
+**Checked on the simulator** by Patrick. One Time for today stays on
+Daily and does not enter Appointments.
+
+**Checks.** Mac suite 300 of 300. TypeScript clean. Not on the phone.
+
+**Session close.** `handoff.md`, `handoff-history.md`, and `pending.txt`
+refreshed. `pending.docx` not regenerated. Patrick will commit. Next is
+Monthly Done should advance the tile (Pending 2).
+
+
 ## Appendix — the scheduler plan, kept whole (folded in at #12-new)
 
 This is `docs/scheduler-plan.md` exactly as it stood when the eighth and
