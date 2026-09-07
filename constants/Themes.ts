@@ -95,6 +95,9 @@ export interface Theme {
     tileHalo: string;         // halo color
     tileHaloOpacity: number;  // shadowOpacity
     tileHaloRadius: number;   // shadowRadius
+    // iOS status bar and the back-to-previous-app link (#80-new).
+    statusBarOnHeader: 'light' | 'dark';
+    statusBarOnPage: 'light' | 'dark';
 }
 
 export const Themes: Record<ThemeName, Theme> = {
@@ -161,6 +164,8 @@ export const Themes: Record<ThemeName, Theme> = {
         tileHalo: '#1a6e8a',      // #56: header teal-blue
         tileHaloOpacity: 0,       // #64: halo OFF (Patrick trying no-halo; was 0.75 pre-#64 — restore both numbers to bring it back)
         tileHaloRadius: 8,
+        statusBarOnHeader: 'light',
+        statusBarOnPage: 'dark',
     },
     // Dark — the warm dark theme exactly as approved #43 / built #44.
     dark: {
@@ -225,6 +230,8 @@ export const Themes: Record<ThemeName, Theme> = {
         tileHalo: '#f0a83a',      // #56: header gold
         tileHaloOpacity: 0,       // #64: halo OFF (Patrick trying no-halo; was 0.55 pre-#64 — restore both numbers to bring it back)
         tileHaloRadius: 7,
+        statusBarOnHeader: 'dark',
+        statusBarOnPage: 'light',
     },
 };
 
@@ -247,6 +254,8 @@ interface ThemeControls {
     setThemeName: (name: ThemeName) => void;
     popupStyle: PopupStyle;
     setPopupStyle: (style: PopupStyle) => void;
+    /** False until the saved theme and popup-style choices have been read. */
+    preferencesReady: boolean;
 }
 
 const ThemeContext = createContext<ThemeControls | null>(null);
@@ -256,19 +265,28 @@ const ThemeContext = createContext<ThemeControls | null>(null);
 export function ThemeProvider({ children }: { children: ReactNode }) {
     const [themeName, setThemeNameState] = useState<ThemeName>(DEFAULT_THEME);
     const [popupStyle, setPopupStyleState] = useState<PopupStyle>('match');
+    const [preferencesReady, setPreferencesReady] = useState(false);
 
     // Load the saved choices once at startup. Until they arrive the app
     // shows DEFAULT_THEME, so a dark-theme user may see a brief light
     // flash on launch.
     useEffect(() => {
         (async () => {
+            let loadedTheme: ThemeName = DEFAULT_THEME;
+            let loadedPopup: PopupStyle = 'match';
             try {
                 const t = await AsyncStorage.getItem(THEME_STORAGE_KEY);
-                if (t === 'light' || t === 'dark') setThemeNameState(t);
+                if (t === 'light' || t === 'dark') loadedTheme = t;
                 const p = await AsyncStorage.getItem(POPUP_STORAGE_KEY);
-                if (p === 'match' || p === 'phone') setPopupStyleState(p);
+                if (p === 'match' || p === 'phone') loadedPopup = p;
+                setThemeNameState(loadedTheme);
+                setPopupStyleState(loadedPopup);
             } catch (e) {
                 console.error(e);
+            } finally {
+                // Set before the health notice can run, so Alert styling is right.
+                Appearance.setColorScheme(loadedPopup === 'match' ? loadedTheme : null);
+                setPreferencesReady(true);
             }
         })();
     }, []);
@@ -291,7 +309,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
     return createElement(
         ThemeContext.Provider,
-        { value: { themeName, setThemeName, popupStyle, setPopupStyle } },
+        { value: { themeName, setThemeName, popupStyle, setPopupStyle, preferencesReady } },
         children,
     );
 }

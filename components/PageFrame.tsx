@@ -1,3 +1,4 @@
+import { StatusBar } from 'expo-status-bar';
 import { useState, type ReactNode } from 'react';
 import { StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -60,10 +61,12 @@ export function PageFrame({
     children: ReactNode;
     bridge?: boolean;
 }) {
+    const theme = useTheme();
     const landscape = useLandscape();
     const headerSide = useLandscapeHeaderSide();
     const { height } = useWindowDimensions();
     const [thickness, setThickness] = useState(0);
+    const statusBarStyle = landscape ? theme.statusBarOnPage : theme.statusBarOnHeader;
 
     const chrome = (
         <View
@@ -80,6 +83,7 @@ export function PageFrame({
     if (!landscape) {
         return (
             <View style={styles.frame}>
+                <StatusBar style={statusBarStyle} />
                 <SafeAreaView style={{ backgroundColor: headerColor }} edges={['top']}>
                     {header}
                 </SafeAreaView>
@@ -91,10 +95,20 @@ export function PageFrame({
 
     const band = thickness > 0 ? thickness : 88;
     const shortSide = height;
+    const pageBody = (
+        <SafeAreaView
+            style={{ flex: 1, backgroundColor: theme.pageBackground }}
+            edges={['top']}
+        >
+            <View style={styles.body}>{children}</View>
+        </SafeAreaView>
+    );
+
     if (headerSide === 'right') {
         return (
             <View style={styles.frameLandscape}>
-                <View style={styles.body}>{children}</View>
+                <StatusBar style={statusBarStyle} />
+                {pageBody}
                 <SafeAreaView style={{ backgroundColor: headerColor }} edges={['right']}>
                     <View style={{ width: band, flex: 1, overflow: 'hidden' }}>
                         <View
@@ -117,6 +131,7 @@ export function PageFrame({
 
     return (
         <View style={styles.frameLandscape}>
+            <StatusBar style={statusBarStyle} />
             <SafeAreaView style={{ backgroundColor: headerColor }} edges={['left']}>
                 <View style={{ width: band, flex: 1, overflow: 'hidden' }}>
                     <View
@@ -133,7 +148,7 @@ export function PageFrame({
                     </View>
                 </View>
             </SafeAreaView>
-            <View style={styles.body}>{children}</View>
+            {pageBody}
         </View>
     );
 }

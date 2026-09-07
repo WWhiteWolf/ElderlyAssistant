@@ -3,7 +3,7 @@ import * as Notifications from 'expo-notifications';
 import { Stack, useRouter, type Href } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { AppState, Alert } from 'react-native';
-import { ThemeProvider } from '../constants/Themes';
+import { ThemeProvider, useThemeControls } from '../constants/Themes';
 import { AppOrientationProvider } from '../components/AppOrientation';
 import { CoverRoot } from '../components/Cover';
 import * as AppGroup from '../modules/app-group';
@@ -42,6 +42,51 @@ async function dropLeftPages() {
       })
       .map((n) => Notifications.cancelScheduledNotificationAsync(n.identifier)),
   );
+}
+
+/** Runs the scheduler and health notice once preferences are loaded. */
+function SchedulerHost() {
+  const { preferencesReady } = useThemeControls();
+  const appStateRef = useRef(AppState.currentState);
+
+  useEffect(() => {
+    if (!preferencesReady) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        await dropLeftPages();
+      } catch {
+        // The four pages' keys may linger; reminders still need to arm.
+      }
+      if (cancelled) return;
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (cancelled) return;
+      if (status !== 'granted') {
+        Alert.alert('Permission Needed', 'Please enable notifications in settings.');
+      }
+      await runScheduler();
+      if (cancelled) return;
+      if (status === 'granted') await showHealthNotice();
+    })();
+
+    const sub = AppState.addEventListener('change', (next) => {
+      if (
+        appStateRef.current.match(/inactive|background/)
+        && next === 'active'
+      ) {
+        runScheduler().then(showHealthNotice);
+      }
+      appStateRef.current = next;
+    });
+
+    return () => {
+      cancelled = true;
+      sub.remove();
+    };
+  }, [preferencesReady]);
+
+  return null;
 }
 
 Notifications.setNotificationHandler({
@@ -170,51 +215,6 @@ export default function RootLayout() {
         { identifier: 'nextday', buttonTitle: 'Next Day' },
       ]);
     })();
-  }, []);
-
-  // The scheduler owns every reminder. It runs once on launch and again every
-  // time the app comes back to the front, and each time it works the whole set
-  // of reminders out afresh from the saved lists and makes the phone match. So
-  // a reminder that went missing — for any reason at all — comes back on its
-  // own, without the screen that owns it ever being opened.
-  //
-  // While the screens are still arming their own reminders, this is safe: the
-  // scheduler matches by name, so a reminder that is already right is left
-  // exactly where it is and nothing is ever created twice.
-  //
-  // #15-new: the run now writes down how it went, and the pop-up speaks if a
-  // reminder is not going to arrive. It waits for the run to finish rather than
-  // being hung on a page, because on a cold launch the first page draws long
-  // before the run is done — and it is shown from here so it finds Patrick
-  // wherever he is, not only on the home page.
-  //
-  // #51-new: ask to show banners while Memory is on screen, then run the
-  // scheduler against that answer.
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        await dropLeftPages();
-      } catch {
-        // The four pages' keys may linger; reminders still need to arm.
-      }
-      if (cancelled) return;
-      const { status } = await Notifications.requestPermissionsAsync();
-      if (cancelled) return;
-      if (status !== 'granted') {
-        Alert.alert('Permission Needed', 'Please enable notifications in settings.');
-      }
-      await runScheduler();
-      if (cancelled) return;
-      if (status === 'granted') await showHealthNotice();
-    })();
-    const sub = AppState.addEventListener('change', (state) => {
-      if (state === 'active') runScheduler().then(showHealthNotice);
-    });
-    return () => {
-      cancelled = true;
-      sub.remove();
-    };
   }, []);
 
   useEffect(() => {
@@ -505,6 +505,7 @@ export default function RootLayout() {
   return (
     <AppOrientationProvider>
     <ThemeProvider>
+    <SchedulerHost />
     <CoverRoot>
     <Stack screenOptions={{ orientation: 'default' }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />

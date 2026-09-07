@@ -12,53 +12,12 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-**#76-new is committed.** It took Timer Alerts, Vault, Shopping List, and Memory Test out of
-Memory. Source copies remain in `Projects/stray apps`. Not a running app.
-The shopping list is wanted later, with a backup of its own; the list on the
-phone was dropped. Vault was empty and came off. Memory Test data was
-dropped. Memory Test’s engine pieces were dropped, not moved. Backup no
-longer carries shopping, vault, or Memory Test. Extra Vault Security is
-gone. On the next load those saved keys come off the phone, and leftover
-Timer and Memory Test alerts are cancelled.
-**#75-new is committed.**
+He is living with the **#67-new** load on the phone. Landscape 90°
+counter-clockwise, headers on the left. What he has used is working.
 
-**#77-new is committed.** Restore with Merge is done. Checked on the simulator. Not
-on the phone. The story is in `handoff-history.md`. The decisions live
-in pending under Restore Merge.
-
-He is living with the #67-new load on the phone. Landscape 90°
-counter-clockwise, headers on the left. Calendar and landscape are on
-the phone. He has not exhaustively tested it; what he has used is
-working. **#67-new is committed.** **#68-new is committed.**
-**#69-new is committed.**
-
-**#72-new is committed.** Built the hangings lock and Grok Phase 1. Not on the phone.
-The day-roll lock still needs a night of all-green Daily, then a morning
-open on a new load, to confirm the pop-up stays quiet.
-**#73-new is committed.** Built Grok Phase 2 — one apply-then-schedule door. Not on the
-phone. Sheet: `docs-ref/build-sheets/build-sheet-one-door.md`. Saved kinds,
-routes, page files, and banner sources
-are `appointments` and `bucketlist`. Siri says Daily and Remember.
-**#74-new built Grok Phase 3**, and Appointments at the set time.
-Appointments do not offer Snooze. Skip writes the engine stamp.
-Appointments fire at the set time as well as any before chips. Not on the
-phone.
-**#78-new is committed.** Daily's One Time for today is its own one-shot
-(`oneTime`). Save stays on Daily. Appointments does not get those items.
-Help's "for today? Yes" opens the same one-shot. Checked on the simulator.
-Not on the phone.
-**#79-new built.** Monthly, Quarterly, and Yearly Done advances the saved
-date again. `CadenceListPage` `markDone` calls `advanceDatedItem` so the
-tile shows the next cycle armed. Options chip picks on Monthly, Quarterly,
-and Yearly stay highlighted while you set a second Thursday or Wednesday
-after the 6th. Checked on the simulator. Not on the phone.
-Mac suite 301 of 301. TypeScript is clean.
-
-A read-only Grok 4.6 High review of the live app is recorded in
-`docs/grok-review-2026-09-05.md`. Phase 1 is done at #72-new. Phase 2 is
-done at #73-new. Phase 3 is done at #74-new. Appointments fire at the
-set time. Restore’s leftover health and miss lists come off on Replace
-(#77-new). Morning of may float with the phone.
+**#80-new is built.** Duplicate miss warning on open, iOS back-to-previous-app
+link, and Help. Checked on the simulator. Not on the phone.
+**#79-new is committed.** Mac suite 301 of 301. TypeScript is clean.
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -125,9 +84,11 @@ These are Patrick's and they govern the work rather than describing it.
   (Patrick, #70-new; built at #79-new). #41-new stopped that; he did
   not notice until then. Done moves the date on the item so the tile
   shows the next cycle armed — as it did before #41-new.
-- **The Where? page is Help** (Patrick, #70-new). The visible name
-  is **Help**, not Where? The Home badge is **?**, not 🧭. The route
-  may stay `where.tsx`.
+- **The Where? page is Help** (Patrick, #70-new; wording at #80-new).
+  The visible name is **Help**, not Where? The Home badge is **?**, not
+  🧭. The route may stay `where.tsx`. Step 1 choices are **Repeats** and
+  **Does not**. Step 2 asks how often, with no stray “every”. Cancel on
+  steps 2 and 3 goes back one step; step 1 Cancel closes.
 - **Skip drops this cycle and arms the next** (Patrick, #74-new). It is
   not Done, and it is not only clearing a snooze.
 - **Appointments remind at the set time** (Patrick, #74-new). This
@@ -139,44 +100,21 @@ These are Patrick's and they govern the work rather than describing it.
 
 ## What is open in front of it
 
-**#79-new built.** Monthly Done advances the tile and Options chips stay
-lit. **What's coming in was not settled this sitting.** Birthdays remain on
-the list. The second new page is not yet named.
+**Next session: Birthdays.** Mirror Appointments. Each item is a name
+and a date, with a yearly reminder. **On the day** and **Day Before**
+are both selectable chips. Build sheet first. The second new page is
+not yet named.
 
-The #67-new load is on the phone. #69-new is committed but not on the
-phone. The day-roll lock, quarterly month, Reset All Data banners,
-banner-tap write-down (**#72-new is committed**), the one-door
-(**#73-new is committed**), Phase 3 (**#74-new, built**), Restore with
-Merge (**#77-new, done**), Daily's One Time for today
-(**#78-new, committed**), and Monthly Done advances the tile
-(**#79-new, built**) are not on the phone. Paperwork is Pending 6–9.
+The phone is still on the #67-new load. Everything built since then is
+not on the phone. Paperwork is Pending 4–7.
 
-**Grok review follow-up** (`docs/grok-review-2026-09-05.md`). Phase 1 is
-done at #72-new. Phase 2 is committed at #73-new. **Phase 3 is built** at
-#74-new, not on the phone. Appointments fire at the set time.
-
-**Birthdays page** (Patrick, #70-new). A new page, own place on Home.
-Each item is a **name and a date**, with a **yearly reminder**. Almost
-like Appointments, but simpler: **Day Before** only as the before chip.
-**On the day** and **Day Before** are both selectable chips. Build sheet
-first per standing pattern. Second new page not yet named.
-
-**Help helper — wording and Cancel** (Patrick, #70-new). In
-`app/where.tsx`: only the **first choice** on step 1 should read
-**Repeats every** (not bare “Repeats”); fix the question that wrongly
-says “every” on a later step. On steps 2 and 3, **Cancel goes back one
-step**, not Home — today every stage’s Cancel calls `router.back()`.
+**Day-roll lock** still needs a night of all-green Daily, then a morning
+open on a new load, to confirm the pop-up stays quiet.
 
 **Quarterly — interval chips on Add** (Patrick, #70-new). On + Add
 for Quarterly, selectable **30, 60, and 90 days** (not a new page).
 **The engine already knows how to take in this data** (Patrick) — the
 work is the Add chips writing it, not new engine arithmetic.
-
-**Phase 4.** Appointments fire at the set time (Patrick, #74-new) —
-built; this reverses #52-new. Restore’s leftover health and miss lists
-come off on Replace (#77-new). Morning of may
-float with the phone; it is not the set time. Settings clock times
-already run the scheduler (Phase 2).
 
 **Still open from before:**
 

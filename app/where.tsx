@@ -11,7 +11,7 @@ import { Theme, useTheme } from '../constants/Themes';
 
 type Stage = 'repeat' | 'every' | 'today' | 'kind';
 
-/** The Where? helper — a transparent route so New can sit above it on the stack. */
+/** The Help helper — a transparent route so New can sit above it on the stack. */
 export default function WhereScreen() {
     const router = useRouter();
     const theme = useTheme();
@@ -20,6 +20,12 @@ export default function WhereScreen() {
     const [stage, setStage] = useState<Stage>('repeat');
 
     const close = () => router.back();
+
+    const cancel = () => {
+        if (stage === 'every' || stage === 'today') setStage('repeat');
+        else if (stage === 'kind') setStage('today');
+        else close();
+    };
 
     const openForm = (kind: string) => {
         router.push({
@@ -38,10 +44,10 @@ export default function WhereScreen() {
         title = 'Does this item repeat?';
         choices = [
             { label: 'Repeats', onPress: () => setStage('every') },
-            { label: 'Does not repeat', onPress: () => setStage('today') },
+            { label: 'Does not', onPress: () => setStage('today') },
         ];
     } else if (stage === 'every') {
-        title = 'Does this item occur every:';
+        title = 'How often does this item occur?';
         choices = [
             { label: 'Every day', onPress: () => openForm('daily') },
             { label: 'Week', onPress: () => openForm('weekly') },
@@ -83,7 +89,7 @@ export default function WhereScreen() {
                         </TouchableOpacity>
                     ))}
                     <View style={styles.modalBtns}>
-                        <TouchableOpacity style={styles.cancelBtn} onPress={close}>
+                        <TouchableOpacity style={styles.cancelBtn} onPress={cancel}>
                             <Text style={styles.cancelBtnText}>Cancel</Text>
                         </TouchableOpacity>
                     </View>

@@ -92,8 +92,10 @@
      would have destroyed five whole sessions, none of which had
      ever been written into the history.
    - **Every session has an entry in `handoff-history.md`**, written
-     at its close. That is the one write the end of a session
-     still owes, because the handoff is already current.
+     at its close, **newest on top**. The new section goes above the
+     rest, never under them and never above the Appendix. That is
+     the one write the end of a session still owes, because the
+     handoff is already current.
    - **The test for a block being pruned**: finished, so it goes to
      `handoff-history.md`; still decides something, so it goes to the
      handoff's standing rulings; undone or unanswered, so it

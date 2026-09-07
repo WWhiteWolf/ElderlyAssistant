@@ -12,7 +12,7 @@ import type { ReminderKind } from '../modules/reminder-types';
 export const PAGE_LABELS = {
     home: 'A Place To Remember',
     daily: 'Daily',
-    where: 'Where?',
+    where: 'Help',
     weekly: 'Weekly',
     monthly: 'Monthly',
     quarterly: 'Quarterly',

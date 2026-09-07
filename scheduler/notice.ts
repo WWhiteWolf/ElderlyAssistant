@@ -38,6 +38,9 @@ async function readMisses(): Promise<Miss[]> {
     return Array.isArray(parsed) ? (parsed as Miss[]) : [];
 }
 
+/** True while an alert is on screen — blocks a second call stacking on open. */
+let noticeShowing = false;
+
 /** Yesterday, written the way the phone writes a date. */
 function yesterdaysDate(): string {
     const when = new Date();
@@ -53,6 +56,7 @@ function yesterdaysDate(): string {
  * tomorrow, a miss is something he has now been told about.
  */
 export async function showHealthNotice(): Promise<void> {
+    if (noticeShowing) return;
     try {
         const today = new Date().toLocaleDateString();
         const seen = await readSeen();
@@ -62,10 +66,12 @@ export async function showHealthNotice(): Promise<void> {
 
         const message = [...notice.lines, notice.footer].join('\n\n');
 
+        noticeShowing = true;
         Alert.alert(notice.title, message, [
             {
                 text: 'OK',
                 onPress: () => {
+                    noticeShowing = false;
                     // Written down after the tap, so a pop-up dismissed by
                     // something else — the app being closed on it — comes back.
                     // If either write fails the thing is simply said again,
@@ -86,6 +92,7 @@ export async function showHealthNotice(): Promise<void> {
             },
         ]);
     } catch {
+        noticeShowing = false;
         // The notice failing is not worth a notice of its own.
     }
 }
