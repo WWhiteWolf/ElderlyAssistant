@@ -343,6 +343,18 @@ export function runRemindersForTests(): void {
         );
     });
 
+    test('A Quarterly 90-day item arms ninety days from the entered date', () => {
+        const base = datedWanted('quarterly', { intervalDays: 90 }).find((r) => r.source === 'quarterly')!;
+        assertSame(
+            [base.key, base.trigger],
+            [
+                'quarterly:d1:20261112',
+                { kind: 'date', at: new Date(2026, 10, 12, 10, 45, 0, 0).getTime() },
+            ],
+            '14 August plus ninety days is 12 November, not three calendar months',
+        );
+    });
+
     test('A Quarterly item keeps the saved month when that is not this month', () => {
         const fromFebruary = new Date(2026, 1, 1, 9, 0, 0, 0).getTime();
         const base = datedWanted(

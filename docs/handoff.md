@@ -18,7 +18,8 @@ counter-clockwise, headers on the left. What he has used is working.
 **#81-new is on the phone.** Birthdays page. Forty-six birthdays merged
 from a backup. Help’s Birthday choice opens Birthdays’ New. The iOS
 back-to-previous-app control is correct on the phone (#80-new work,
-confirmed this sitting). Mac suite 305 of 305. TypeScript is clean.
+confirmed this sitting). **#82-new chips are in on the Mac**, not on
+the phone. Mac suite 310 of 310. TypeScript is clean.
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -96,6 +97,11 @@ These are Patrick's and they govern the work rather than describing it.
   `birthdays`. Date required. Same reminder chips as Appointments,
   any and all on at once. Done advances the year. An item on Birthdays
   is not also on Appointments or Yearly.
+- **Quarterly 30, 60, and 90 day chips** (Patrick, #82-new). On Add,
+  selectable chips. No chip stays every three months. A chip counts
+  that many days from the date entered when it is set. One chip at a
+  time; a second tap clears it. The list tile still shows the date.
+  Done and the engine follow the same step.
 - **Skip drops this cycle and arms the next** (Patrick, #74-new). It is
   not Done, and it is not only clearing a snooze.
 - **Appointments remind at the set time** (Patrick, #74-new). This
@@ -107,10 +113,10 @@ These are Patrick's and they govern the work rather than describing it.
 
 ## What is open in front of it
 
-**Next session: Quarterly interval chips on Add** (Patrick, #70-new).
-Selectable **30, 60, and 90 days** (not a new page). The engine already
-knows how to take in this data — the work is the Add chips writing it.
-A short sitting. Prescriptions come due every 30 or 90 days.
+**This sitting: Quarterly 30 / 60 / 90 chips on Add** (Patrick, #70-new;
+shape at #82-new). Selectable **30, 60, and 90 days** (not a new page).
+No chip stays every three months. A chip counts from the date entered
+when it is set. Prescriptions come due every 30 or 90 days.
 
 The second new page is not yet named.
 

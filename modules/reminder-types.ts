@@ -33,6 +33,9 @@ export interface ReminderItem {
     month?: number;
     day?: number;
     intervalMonths?: number;
+    // Quarterly Add chips: 30, 60, or 90 days from the entered date.
+    // Left off means every three months, as before.
+    intervalDays?: number;
     reminders?: LeadReminder[];
     completed?: boolean;
     doneAt?: number;

@@ -146,6 +146,7 @@ function assembleFormItem(parts: {
     timeSet: boolean;
     reminders: LeadReminder[];
     intervalMonths: number;
+    intervalDays: number | null;
     optionSettings: OptionSettings;
     monthlyPattern: MonthlyPattern;
     note: string;
@@ -170,6 +171,7 @@ function assembleFormItem(parts: {
         delete next.day;
         delete next.reminders;
         delete next.intervalMonths;
+        delete next.intervalDays;
     } else if (parts.editKind === 'weekly') {
         const t = parts.pendingTime ?? new Date(new Date().setHours(12, 0, 0, 0));
         next = {
@@ -182,6 +184,7 @@ function assembleFormItem(parts: {
         delete next.month;
         delete next.reminders;
         delete next.intervalMonths;
+        delete next.intervalDays;
     } else if (parts.editKind === 'monthly' || parts.editKind === 'quarterly' || parts.editKind === 'yearly') {
         next = {
             ...next,
@@ -193,6 +196,12 @@ function assembleFormItem(parts: {
             next.year = parts.pendingDate.getFullYear();
             next.month = parts.pendingDate.getMonth();
             next.day = parts.pendingDate.getDate();
+        }
+        if (parts.editKind === 'quarterly'
+            && (parts.intervalDays === 30 || parts.intervalDays === 60 || parts.intervalDays === 90)) {
+            next.intervalDays = parts.intervalDays;
+        } else {
+            delete next.intervalDays;
         }
         delete next.reminders;
     } else if (parts.editKind === 'oneTime') {
@@ -218,6 +227,7 @@ function assembleFormItem(parts: {
             reminders: parts.reminders,
         };
         delete next.intervalMonths;
+        delete next.intervalDays;
     } else if (parts.editKind === 'appointments') {
         const now = new Date();
         const when = parts.dateSet ? parts.pendingDate : now;
@@ -238,6 +248,7 @@ function assembleFormItem(parts: {
             delete next.day;
         }
         delete next.intervalMonths;
+        delete next.intervalDays;
     } else if (parts.editKind === 'birthdays') {
         const when = parts.pendingDate;
         next = {
@@ -252,6 +263,7 @@ function assembleFormItem(parts: {
             reminders: parts.reminders,
         };
         delete next.intervalMonths;
+        delete next.intervalDays;
     } else {
         delete next.year;
         delete next.month;
@@ -260,6 +272,7 @@ function assembleFormItem(parts: {
         delete next.minute;
         delete next.reminders;
         delete next.intervalMonths;
+        delete next.intervalDays;
     }
 
     if (optionCasesForKind(parts.editKind).length > 0) {
@@ -314,6 +327,7 @@ export default function ItemEditScreen() {
     const [loaded, setLoaded] = useState(false);
     const [editKind, setEditKind] = useState<ReminderKind>(startKind);
     const [intervalMonths, setIntervalMonths] = useState(3);
+    const [intervalDays, setIntervalDays] = useState<number | null>(null);
     const [tempName, setTempName] = useState('');
     const [pendingDay, setPendingDay] = useState(() => new Date().getDay());
     const [pendingTime, setPendingTime] = useState<Date | null>(null);
@@ -373,6 +387,11 @@ export default function ItemEditScreen() {
                     setEditKind(found.kind);
                     setTempName(found.label);
                     if (typeof found.intervalMonths === 'number') setIntervalMonths(found.intervalMonths);
+                    if (found.intervalDays === 30 || found.intervalDays === 60 || found.intervalDays === 90) {
+                        setIntervalDays(found.intervalDays);
+                    } else {
+                        setIntervalDays(null);
+                    }
                     if (typeof found.day === 'number' && found.kind === 'weekly') setPendingDay(found.day);
                     if (typeof found.hour === 'number' && typeof found.minute === 'number') {
                         const t = new Date(new Date().setHours(found.hour, found.minute, 0, 0));
@@ -415,6 +434,7 @@ export default function ItemEditScreen() {
                 setOptionSettings(emptyOptionSettings());
                 setMonthlyPattern('date');
                 setNote('');
+                setIntervalDays(null);
                 if (nextKind === 'oneTime') {
                     const today = new Date();
                     today.setHours(12, 0, 0, 0);
@@ -501,6 +521,7 @@ export default function ItemEditScreen() {
             timeSet,
             reminders,
             intervalMonths,
+            intervalDays,
             optionSettings: optionSettingsRef.current,
             monthlyPattern: monthlyPatternRef.current,
             note: noteRef.current,
@@ -679,6 +700,22 @@ export default function ItemEditScreen() {
                         timeLabel="Time"
                         onValidityChange={setDateTimeValid}
                     />
+                )}
+
+                {editKind === 'quarterly' && (
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
+                        {([30, 60, 90] as const).map((days) => (
+                            <TouchableOpacity
+                                key={days}
+                                style={[styles.recurBtn, intervalDays === days && styles.recurBtnActive]}
+                                onPress={() => setIntervalDays(intervalDays === days ? null : days)}
+                            >
+                                <Text style={[styles.recurBtnText, intervalDays === days && styles.recurBtnTextActive]}>
+                                    {days} days
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
                 )}
 
                 {(editKind === 'appointments' || editKind === 'oneTime' || editKind === 'birthdays') && (

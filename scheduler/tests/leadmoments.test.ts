@@ -75,6 +75,7 @@ export function runLeadMomentsTests(): void {
                 repeatUnitCode: 'day',
                 dueHour: 18,
                 dueMinute: 0,
+                dueMoment: undefined,
             }),
             [at(2026, 5, 1, 18, 0)],
             'the time has not gone by, so the base is today',
@@ -88,6 +89,7 @@ export function runLeadMomentsTests(): void {
                 repeatUnitCode: 'day',
                 dueHour: 8,
                 dueMinute: 0,
+                dueMoment: undefined,
             }),
             [at(2026, 5, 2, 8, 0)],
             'the day is stepped, so the time of day is kept',
@@ -399,6 +401,40 @@ export function runLeadMomentsTests(): void {
         );
     });
 
+    test('A 90-day quarterly item counts from the entered date, not from today', () => {
+        assertSame(
+            momentsFor(
+                item({
+                    sourceScreenCode: 'quarterly',
+                    repeatUnitCode: 'day',
+                    repeatIntervalCount: 90,
+                    dueHour: 10,
+                    dueMinute: 0,
+                    dueMoment: at(2026, 0, 15, 10, 0),
+                }),
+                at(2026, 1, 1, 9, 0),
+                CLOCK,
+            ),
+            [at(2026, 3, 15, 10, 0)],
+            '15 January plus ninety days is 15 April',
+        );
+    });
+
+    test('A 30-day quarterly item whose entered date is still ahead uses that date', () => {
+        assertSame(
+            momentsOf({
+                sourceScreenCode: 'quarterly',
+                repeatUnitCode: 'day',
+                repeatIntervalCount: 30,
+                dueHour: 10,
+                dueMinute: 0,
+                dueMoment: at(2026, 5, 10, 10, 0),
+            }),
+            [at(2026, 5, 10, 10, 0)],
+            'the first due date has not come yet, so that is the next time',
+        );
+    });
+
     test('A last date of 1 March 2026 on a daily item due at eight, from 1 March at nine, produces no moment', () => {
         assertSame(
             momentsFor(
@@ -407,6 +443,7 @@ export function runLeadMomentsTests(): void {
                     repeatUntilMoment: at(2026, 2, 1, 0, 0),
                     dueHour: 8,
                     dueMinute: 0,
+                    dueMoment: undefined,
                 }),
                 at(2026, 2, 1, 9, 0),
                 CLOCK,
@@ -426,6 +463,7 @@ export function runLeadMomentsTests(): void {
                 floatsWithPhoneBit: true,
                 dueHour: 8,
                 dueMinute: 0,
+                dueMoment: undefined,
             }),
             [at(2026, 5, 2, 8, 0)],
             'NOW is nine, so eight o\'clock has gone by and the base is tomorrow',
@@ -448,6 +486,7 @@ export function runLeadMomentsTests(): void {
                     dueTimeZoneText: 'America/New_York',
                     dueHour: 8,
                     dueMinute: 0,
+                    dueMoment: undefined,
                 }),
                 noonUtc,
                 CLOCK,

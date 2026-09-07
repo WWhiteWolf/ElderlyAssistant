@@ -500,6 +500,10 @@ function withSavedOptions(saved: ReminderItem, shaped: ShapedItem): ShapedItem {
 }
 
 function withMonthlyRepeat(saved: ReminderItem, shaped: ShapedItem): ShapedItem {
+    if (saved.kind === 'quarterly'
+        && (saved.intervalDays === 30 || saved.intervalDays === 60 || saved.intervalDays === 90)) {
+        return { ...shaped, repeatUnitCode: 'day', repeatIntervalCount: saved.intervalDays };
+    }
     const thursday = secondThursdayComplete(saved);
     const wednesday = wednesdayAfterComplete(saved);
     const interval =

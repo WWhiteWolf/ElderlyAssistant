@@ -192,8 +192,9 @@ function nextDaily(item: ShapedItem, now: number, calendar: CivilCalendar): Base
         return null;
     }
     const step = intervalOf(item);
-    const start = calendar.partsOf(now);
-    let moment = calendar.at(start.year, start.month, start.day, item.dueHour, item.dueMinute);
+    const seedMoment = item.dueMoment !== undefined ? item.dueMoment : now;
+    const seed = calendar.partsOf(seedMoment);
+    let moment = calendar.at(seed.year, seed.month, seed.day, item.dueHour, item.dueMinute);
     while (moment <= now) {
         moment = addCalendarDays(calendar, moment, step);
     }

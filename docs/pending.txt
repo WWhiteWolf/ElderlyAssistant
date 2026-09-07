@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-07 (#81-new — Birthdays on the phone)
+Last updated: 2026-09-07 (#82-new — Quarterly 30 / 60 / 90 chips on the Mac)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -24,8 +24,10 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-#82-new — Quarterly 30 / 60 / 90 chips on Add. Short sitting.
-Prescriptions come due every 30 or 90 days.
+#82-new — Quarterly 30 / 60 / 90 chips on Add. In on the Mac, not
+on the phone. No chip stays every three months. A chip counts from
+the date entered when it is set. Prescriptions come due every 30
+or 90 days.
 
 The second new page is not yet named. Day-roll lock still wants a
 night of all-green Daily on this load.
@@ -38,11 +40,12 @@ PENDING
 ------------------------------------------------------------------
 Things waiting on something — mostly on a build.
 
-1. QUARTERLY ADD — 30, 60, 90 DAYS (Patrick, #70-new). Next sitting.
-   On + Add for Quarterly, selectable chips for 30, 60, and 90 days.
-   Not a new page. The engine already knows how to take in this data;
-   the work is the Add chips writing it. Prescriptions come due every
-   30 or 90 days.
+1. QUARTERLY ADD — 30, 60, 90 DAYS (Patrick, #70-new; built at
+   #82-new). On + Add for Quarterly, selectable chips for 30, 60,
+   and 90 days. Not a new page. No chip stays every three months.
+   A chip counts from the date entered when it is set. In on the
+   Mac, not on the phone. Prescriptions come due every 30 or 90
+   days.
 2. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
     sitting treated One Time's missing notice at the set time as
     a bug. He had decided it that way. A spec would have said so.

@@ -17,6 +17,27 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #82-new (2026-09-07): Quarterly 30 / 60 / 90 chips on Add
+
+**The goal was to add 30, 60, and 90 days to Quarterly.**
+
+**#81-new was committed**, asked at the open.
+
+**Chips.** On Quarterly Add and Edit: **30 days**, **60 days**, and
+**90 days**. One at a time; a second tap clears. No chip stays every
+three months. A chip counts that many days from the date entered when
+it is set. Done and the engine follow the same step. The list tile
+still shows the date.
+
+**Checks.** Mac suite 310 of 310. TypeScript clean. Not on the phone
+yet. Phone load is this sitting's last step, after which Pending 1
+moves to Done.
+
+**Docs refresh.** `handoff.md`, `handoff-history.md` (the old build
+history name), `pending.txt`, `in-flight.md`, and
+`App-Docs/master-handoff.md`. `pending.docx` not regenerated. Pending 1
+stays until the phone load.
+
 ## #81-new (2026-09-07): Birthdays page; forty-six merged on the phone
 
 **The goal was to add the Birthdays page.**

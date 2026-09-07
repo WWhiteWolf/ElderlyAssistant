@@ -407,4 +407,37 @@ export function runTranslatorCadenceTests(): void {
             'Birthdays copy Appointments’ holidays and time zone, not Yearly’s extra cases',
         );
     });
+
+    test('A Quarterly item with no day chip repeats every three months', () => {
+        const shaped = shapeOf(item({
+            kind: 'quarterly',
+            year: 2026,
+            month: 0,
+            day: 15,
+            hour: 10,
+            minute: 0,
+        }));
+        assertSame(
+            [shaped.repeatUnitCode, shaped.repeatIntervalCount],
+            ['month', 3],
+            'no chip is every three months, as before',
+        );
+    });
+
+    test('A Quarterly 90-day chip repeats in days from the entered date', () => {
+        const shaped = shapeOf(item({
+            kind: 'quarterly',
+            year: 2026,
+            month: 0,
+            day: 15,
+            hour: 10,
+            minute: 0,
+            intervalDays: 90,
+        }));
+        assertSame(
+            [shaped.repeatUnitCode, shaped.repeatIntervalCount],
+            ['day', 90],
+            'the chip writes a day count the engine already steps',
+        );
+    });
 }

@@ -57,10 +57,6 @@ export function thisCycleDueStamp(item: ReminderItem, now: number = Date.now()):
 // Roll a dated repeat forward to its next occurrence that lands in the
 // future, including clamping to the last day of a shorter month.
 export function advanceDatedItem(item: ReminderItem): ReminderItem {
-    const step =
-        item.kind === 'yearly' || item.kind === 'birthdays' ? 12
-        : item.kind === 'monthly' ? 1
-        : (item.intervalMonths ?? 3);
     const hour = typeof item.hour === 'number' ? item.hour : 12;
     const minute = typeof item.minute === 'number' ? item.minute : 0;
     const anchorDay = typeof item.day === 'number' ? item.day : 1;
@@ -74,11 +70,23 @@ export function advanceDatedItem(item: ReminderItem): ReminderItem {
         0,
     );
     const now = new Date();
+    const dayStep =
+        item.intervalDays === 30 || item.intervalDays === 60 || item.intervalDays === 90
+            ? item.intervalDays
+            : 0;
     do {
-        const tmi = d.getMonth() + step;
-        const y = d.getFullYear() + Math.floor(tmi / 12);
-        const m = ((tmi % 12) + 12) % 12;
-        d = new Date(y, m, Math.min(anchorDay, daysInMonth(y, m)), hour, minute, 0, 0);
+        if (dayStep > 0) {
+            d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + dayStep, hour, minute, 0, 0);
+        } else {
+            const step =
+                item.kind === 'yearly' || item.kind === 'birthdays' ? 12
+                : item.kind === 'monthly' ? 1
+                : (item.intervalMonths ?? 3);
+            const tmi = d.getMonth() + step;
+            const y = d.getFullYear() + Math.floor(tmi / 12);
+            const m = ((tmi % 12) + 12) % 12;
+            d = new Date(y, m, Math.min(anchorDay, daysInMonth(y, m)), hour, minute, 0, 0);
+        }
     } while (d <= now);
     const { snoozedUntil, ...rest } = item;
     void snoozedUntil;

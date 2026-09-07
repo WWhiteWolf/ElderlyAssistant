@@ -4,26 +4,27 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-07, at the close of #81-new.
+Last written: 2026-09-07, during #82-new, before the phone load.
 
 ## Read this first
 
-- **#81-new is closed.** Birthdays page. Own kind on the one list. Help
-  has Birthday. Forty-six birthdays merged on the phone. iOS
-  back-to-previous-app confirmed on the phone.
-- **Phone load:** #81-new. Mac 305.
+- **#82-new chips are in on the Mac.** Quarterly Add and Edit: 30, 60,
+  and 90 days. Not on the phone yet.
+- **Phone load:** still #81-new. Mac 310.
 
 ## What is in
 
-Birthdays copies Appointments on the screen and repeats yearly. Date
-required. Same chips. Done advances the year. An item on Birthdays is
-not also on Appointments or Yearly.
+No chip stays every three months. A chip counts that many days from
+the date entered when it is set. One chip at a time; a second tap
+clears it. Done and the engine follow the same step. The list tile
+still shows the date.
 
 ## What is next
 
-**#82-new — Quarterly 30 / 60 / 90 chips on Add.** Short sitting. The
-engine already takes the interval. Prescriptions come due every 30 or
-90 days.
+Patrick loads #82-new on the phone at the end of this sitting. Then
+Pending 1 moves to Done.
+
+The second new page is not yet named.
 
 ## Do not reopen
 
