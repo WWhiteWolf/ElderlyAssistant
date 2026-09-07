@@ -69,7 +69,7 @@ const ONE_TIME_PRESETS: ReminderPreset[] = [
     { label: 'Month', kind: 'clock', daysBefore: 30, timeOfDay: 'evening' },
 ];
 
-const KINDS: ReminderKind[] = ['daily', 'oneTime', 'weekly', 'monthly', 'quarterly', 'yearly', 'appointments', 'bucketlist'];
+const KINDS: ReminderKind[] = ['daily', 'oneTime', 'weekly', 'monthly', 'quarterly', 'yearly', 'appointments', 'birthdays', 'bucketlist'];
 
 function asParam(value: string | string[] | undefined): string | undefined {
     if (Array.isArray(value)) return value[0];
@@ -90,7 +90,7 @@ function formHasTimeSet(
     if (editKind === 'bucketlist') return false;
     if (editKind === 'daily') return pendingTime !== null;
     if (editKind === 'weekly') return true;
-    if (editKind === 'appointments' || editKind === 'oneTime') return timeSet;
+    if (editKind === 'appointments' || editKind === 'birthdays' || editKind === 'oneTime') return timeSet;
     if (editKind === 'monthly' || editKind === 'quarterly' || editKind === 'yearly') return true;
     return false;
 }
@@ -128,6 +128,7 @@ function pathFor(
         case 'quarterly': return '/quarterly' as Href;
         case 'yearly': return '/yearly' as Href;
         case 'appointments': return '/appointments' as Href;
+        case 'birthdays': return '/birthdays' as Href;
         case 'bucketlist': return '/bucketlist' as Href;
         default: return '/daily' as Href;
     }
@@ -236,6 +237,20 @@ function assembleFormItem(parts: {
             delete next.month;
             delete next.day;
         }
+        delete next.intervalMonths;
+    } else if (parts.editKind === 'birthdays') {
+        const when = parts.pendingDate;
+        next = {
+            ...next,
+            year: when.getFullYear(),
+            month: when.getMonth(),
+            day: when.getDate(),
+            ...hourMinuteOf({
+                hour: parts.timeSet ? parts.pendingDate.getHours() : null,
+                minute: parts.timeSet ? parts.pendingDate.getMinutes() : null,
+            }),
+            reminders: parts.reminders,
+        };
         delete next.intervalMonths;
     } else {
         delete next.year;
@@ -375,7 +390,7 @@ export default function ItemEditScreen() {
                             ));
                         }
                     } else if (
-                        found.kind === 'monthly' || found.kind === 'quarterly' || found.kind === 'yearly' || found.kind === 'appointments' || found.kind === 'oneTime'
+                        found.kind === 'monthly' || found.kind === 'quarterly' || found.kind === 'yearly' || found.kind === 'appointments' || found.kind === 'birthdays' || found.kind === 'oneTime'
                     ) {
                         if (typeof found.year === 'number' && typeof found.month === 'number' && typeof found.day === 'number') {
                             setPendingDate(new Date(found.year, found.month, found.day, 12, 0, 0, 0));
@@ -384,7 +399,7 @@ export default function ItemEditScreen() {
                             setDateSet(false);
                         }
                     }
-                    if (found.kind === 'appointments' || found.kind === 'oneTime') {
+                    if (found.kind === 'appointments' || found.kind === 'birthdays' || found.kind === 'oneTime') {
                         setReminders(found.reminders ?? []);
                     }
                     if (found.kind === 'bucketlist' || found.kind === 'daily' || found.kind === 'weekly') {
@@ -412,6 +427,12 @@ export default function ItemEditScreen() {
                     setPendingDate(d);
                     setDateSet(true);
                     setTimeSet(true);
+                } else if (nextKind === 'birthdays') {
+                    const d = new Date();
+                    d.setHours(12, 0, 0, 0);
+                    setPendingDate(d);
+                    setDateSet(true);
+                    setTimeSet(false);
                 } else if (nextKind === 'bucketlist') {
                     setTimeSet(false);
                     setPendingTime(null);
@@ -519,12 +540,12 @@ export default function ItemEditScreen() {
             Alert.alert('Check Date & Time', 'The typed date or time is not a real one. Fix the box outlined in red, then save.');
             return;
         }
-        const dateKinds: ReminderKind[] = ['monthly', 'quarterly', 'yearly', 'appointments', 'oneTime'];
+        const dateKinds: ReminderKind[] = ['monthly', 'quarterly', 'yearly', 'appointments', 'birthdays', 'oneTime'];
         if (dateKinds.includes(editKind) && !dateTimeValid) {
             Alert.alert('Check Date & Time', 'The typed date or time is not a real one. Fix the box outlined in red, then save.');
             return;
         }
-        if ((editKind === 'appointments' || editKind === 'oneTime') && reminders.length === 0) {
+        if ((editKind === 'appointments' || editKind === 'birthdays' || editKind === 'oneTime') && reminders.length === 0) {
             Alert.alert('No Reminder Set', "Are you sure you don't want to set a Reminder?", [
                 { text: 'Go Back', style: 'cancel' },
                 { text: 'Save Anyway', onPress: () => { finishSave(); } },
@@ -545,6 +566,7 @@ export default function ItemEditScreen() {
     const namePlaceholder =
         editKind === 'daily' ? 'e.g. Breakfast, Morning Medication'
         : editKind === 'weekly' ? 'e.g. Trash, Laundry'
+        : editKind === 'birthdays' ? 'e.g. someone’s name'
         : 'What needs to be done?';
 
     return (
@@ -659,7 +681,7 @@ export default function ItemEditScreen() {
                     />
                 )}
 
-                {(editKind === 'appointments' || editKind === 'oneTime') && (
+                {(editKind === 'appointments' || editKind === 'oneTime' || editKind === 'birthdays') && (
                     <>
                         <DateTimeControl
                             mode={editKind === 'oneTime' ? 'time' : 'datetime'}
@@ -672,11 +694,11 @@ export default function ItemEditScreen() {
                             }}
                             onValidityChange={setDateTimeValid}
                             timeLabel="Time"
-                            {...(editKind === 'oneTime' ? {} : {
+                            {...(editKind === 'appointments' ? {
                                 optionalDate: true,
                                 dateSet,
                                 onClearDate: () => setDateSet(false),
-                            })}
+                            } : {})}
                             optionalTime
                             timeSet={timeSet}
                             onClearTime={() => {

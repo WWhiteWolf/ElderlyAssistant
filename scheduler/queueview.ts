@@ -40,6 +40,7 @@ export const PAGE_NAMES: Record<string, string> = {
     yearly: PAGE_LABELS.yearly,
     yearlydelay: `${PAGE_LABELS.yearly} — delayed`,
     appointments: PAGE_LABELS.appointments,
+    birthdays: PAGE_LABELS.birthdays,
     oneTime: PAGE_LABELS.daily,
 };
 

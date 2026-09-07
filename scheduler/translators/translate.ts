@@ -378,6 +378,55 @@ const appointmentsCadenceRules: ScreenRules = {
     },
 };
 
+const birthdaysCadenceRules: ScreenRules = {
+    canBeDoneBit: false,
+    canBePushedBackBit: false,
+    doneEndsItemBit: false,
+    standsForGroupBit: false,
+    bannerButtonsCode: 'appointmentsok',
+    idOf: (item) => item.id,
+    nameOf: (item) => item.label,
+    isDoneOf: () => false,
+    pushedBackStampOf: () => undefined,
+    dueOf: (item) => {
+        if (typeof item.year === 'number'
+            && typeof item.month === 'number'
+            && typeof item.day === 'number') {
+            return {
+                hasDueTimeBit: true,
+                dueMoment: new Date(
+                    item.year,
+                    item.month,
+                    item.day,
+                    item.hour ?? 12,
+                    item.minute ?? 0,
+                    0,
+                    0,
+                ).getTime(),
+            };
+        }
+        return { hasDueTimeBit: false };
+    },
+    // The set time itself, then any reminders-before chips. An empty chip
+    // list still speaks at the birthday.
+    leadTimesOf: (item) => [...atTheMomentItself, ...leadTimesFromReminders(item)],
+    bannerTitleTextOf: (item) => `📋 Reminder: ${item.label}`,
+    bannerBodyTextOf: (item) => {
+        if (typeof item.year !== 'number'
+            || typeof item.month !== 'number'
+            || typeof item.day !== 'number') {
+            return '';
+        }
+        return dueSentence(
+            item.year,
+            item.month,
+            item.day,
+            item.hour ?? 12,
+            item.minute ?? 0,
+        );
+    },
+};
+
 const oneTimeCadenceRules: ScreenRules = {
     ...appointmentsCadenceRules,
     bannerTitleTextOf: () => 'Daily Routine',
@@ -407,6 +456,7 @@ const rulesByKind: Record<ReminderItem['kind'], ScreenRules> = {
     quarterly: datedCadenceRules,
     yearly: datedCadenceRules,
     appointments: appointmentsCadenceRules,
+    birthdays: birthdaysCadenceRules,
     bucketlist: bucketlistCadenceRules,
 };
 
@@ -443,7 +493,7 @@ function withSavedOptions(saved: ReminderItem, shaped: ShapedItem): ShapedItem {
     if (saved.holidayMove === 'before' || saved.holidayMove === 'after') {
         out = { ...out, holidayMoveCode: saved.holidayMove };
     }
-    if (saved.kind === 'monthly' || saved.kind === 'quarterly' || saved.kind === 'yearly') {
+    if (saved.kind === 'monthly' || saved.kind === 'quarterly' || saved.kind === 'yearly' || saved.kind === 'birthdays') {
         out = withMonthlyRepeat(saved, out);
     }
     return out;
@@ -454,10 +504,10 @@ function withMonthlyRepeat(saved: ReminderItem, shaped: ShapedItem): ShapedItem 
     const wednesday = wednesdayAfterComplete(saved);
     const interval =
         saved.kind === 'monthly' ? 1
-        : saved.kind === 'yearly' ? 1
+        : saved.kind === 'yearly' || saved.kind === 'birthdays' ? 1
         : (typeof saved.intervalMonths === 'number' ? saved.intervalMonths : 3);
     if (thursday && wednesday) {
-        if (saved.kind === 'yearly') {
+        if (saved.kind === 'yearly' || saved.kind === 'birthdays') {
             return { ...shaped, repeatUnitCode: 'year', repeatIntervalCount: 1 };
         }
         return { ...shaped, repeatUnitCode: 'month', repeatIntervalCount: interval };
@@ -466,7 +516,7 @@ function withMonthlyRepeat(saved: ReminderItem, shaped: ShapedItem): ShapedItem 
         return {
             ...shaped,
             repeatUnitCode: 'month',
-            repeatIntervalCount: saved.kind === 'yearly' ? 12 : interval,
+            repeatIntervalCount: saved.kind === 'yearly' || saved.kind === 'birthdays' ? 12 : interval,
             repeatWeekdayList: [{
                 weekdayNumber: saved.ordinalWeekday,
                 weekdayOrdinalCount: saved.weekdayOrdinal,
@@ -477,12 +527,12 @@ function withMonthlyRepeat(saved: ReminderItem, shaped: ShapedItem): ShapedItem 
         return {
             ...shaped,
             repeatUnitCode: 'month',
-            repeatIntervalCount: saved.kind === 'yearly' ? 12 : interval,
+            repeatIntervalCount: saved.kind === 'yearly' || saved.kind === 'birthdays' ? 12 : interval,
             repeatWeekdayList: [{ weekdayNumber: saved.afterWeekday }],
             repeatAfterDayCount: typeof saved.afterDayCount === 'number' ? saved.afterDayCount : 6,
         };
     }
-    if (saved.kind === 'yearly') {
+    if (saved.kind === 'yearly' || saved.kind === 'birthdays') {
         return { ...shaped, repeatUnitCode: 'year', repeatIntervalCount: 1 };
     }
     return { ...shaped, repeatUnitCode: 'month', repeatIntervalCount: interval };

@@ -172,6 +172,14 @@ export function runQueueViewTests(): void {
         );
     });
 
+    test('A Birthdays reminder is named Birthdays', () => {
+        assertSame(
+            toPending(entry({ source: 'birthdays', title: '📋 Reminder: Pat' }), NOW)?.page,
+            'Birthdays',
+            'expected Birthdays',
+        );
+    });
+
     test('Bucket List has no notification row', () => {
         assertSame(
             toPending(entry({ source: 'bucketlist', title: '📋 Reminder: Paris' }), NOW),

@@ -27,6 +27,7 @@ export type SourceScreenCode =
     | 'quarterly'
     | 'yearly'
     | 'appointments'
+    | 'birthdays'
     | 'bucketlist';
 
 /**

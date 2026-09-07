@@ -99,6 +99,23 @@ export function runTranslatorCadenceTests(): void {
         );
     });
 
+    test('A birthday repeats yearly and carries appointment leads', () => {
+        const shaped = shapeOf(item({
+            kind: 'birthdays',
+            year: 2026,
+            month: 5,
+            day: 10,
+            hour: 14,
+            minute: 0,
+            reminders: [{ id: 'r1', amount: 30, unit: 'minutes', kind: 'offset' }],
+        }));
+        assertSame(
+            [shaped.sourceScreenCode, shaped.repeatUnitCode, shaped.repeatIntervalCount, shaped.doneEndsItemBit, shaped.leadTimeList.length, shaped.bannerButtonsCode],
+            ['birthdays', 'year', 1, false, 2, 'appointmentsok'],
+            'a birthday comes round every year and still speaks on the day and each chip',
+        );
+    });
+
     test('A Bucket List item has no due time', () => {
         const shaped = shapeOf(item({ kind: 'bucketlist' }));
         assertSame(
@@ -380,6 +397,14 @@ export function runTranslatorCadenceTests(): void {
             optionCasesForKind('appointments').map((one) => one.id),
             ['holidays', 'timezone'],
             'Appointments on its own page keeps Weekly\'s holidays and time zone',
+        );
+    });
+
+    test('Birthdays keep the same Options as Appointments', () => {
+        assertSame(
+            optionCasesForKind('birthdays').map((one) => one.id),
+            ['holidays', 'timezone'],
+            'Birthdays copy Appointments’ holidays and time zone, not Yearly’s extra cases',
         );
     });
 }

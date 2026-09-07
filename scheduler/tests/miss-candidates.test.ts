@@ -63,6 +63,19 @@ export function runMissCandidateTests(): void {
         assert(!shownOnDate(appointments, THURSDAY), 'expected Appointments off the next day');
     });
 
+    test('A Birthdays item is due on its saved date', () => {
+        const birthdays = item({
+            kind: 'birthdays',
+            year: WEDNESDAY.getFullYear(),
+            month: WEDNESDAY.getMonth(),
+            day: WEDNESDAY.getDate(),
+            hour: 12,
+            minute: 0,
+        });
+        assert(shownOnDate(birthdays, WEDNESDAY), 'expected Birthdays on its date');
+        assert(!shownOnDate(birthdays, THURSDAY), 'expected Birthdays off the next day');
+    });
+
     test('A first-Thursday Monthly item is due that Thursday and not the Wednesday before', () => {
         const monthly = item({
             kind: 'monthly',

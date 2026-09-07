@@ -495,6 +495,8 @@ export default function RootLayout() {
       router.push({ pathname: '/yearly', params } as Href);
     } else if (source === 'appointments') {
       router.push({ pathname: '/appointments', params } as Href);
+    } else if (source === 'birthdays') {
+      router.push({ pathname: '/birthdays', params } as Href);
     } else if (source === 'oneTime') {
       router.push({ pathname: '/daily', params });
     }
@@ -530,6 +532,7 @@ export default function RootLayout() {
       <Stack.Screen name="quarterly" options={{ headerShown: false }} />
       <Stack.Screen name="yearly" options={{ headerShown: false }} />
       <Stack.Screen name="appointments" options={{ headerShown: false }} />
+      <Stack.Screen name="birthdays" options={{ headerShown: false }} />
       <Stack.Screen name="bucketlist" options={{ headerShown: false }} />
       <Stack.Screen name="options" options={{ headerShown: false }} />
     </Stack>

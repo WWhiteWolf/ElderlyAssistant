@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-07 (#80-new — bugs, Help, Birthdays next)
+Last updated: 2026-09-07 (#81-new — Birthdays built)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -24,7 +24,7 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-Birthdays page — mirror Appointments. Build sheet first.
+Birthdays page is built. Not checked on the simulator. Not on the phone.
 
 The phone is still on the #67-new load. Paperwork is Pending 4–7.
 
@@ -35,9 +35,8 @@ Things waiting on something — mostly on the phone or on a build.
 
 1. PHONE LOAD. Last load is #67-new. Everything built since then is
    not on the phone.
-2. BIRTHDAYS PAGE. New Home page. Mirror Appointments. Each item: a
-   name and a date, yearly reminder. **On the day** and **Day Before**
-   are both selectable chips. Build sheet first.
+2. BIRTHDAYS PAGE. Built at #81-new. Own kind `birthdays` on the one
+   list. Not checked on the simulator. Not on the phone.
 3. QUARTERLY ADD — 30, 60, 90 DAYS (Patrick, #70-new). On + Add
    for Quarterly, selectable chips for 30, 60, and 90 days. Not a new
    page. The engine already knows how to take in this data; the work is

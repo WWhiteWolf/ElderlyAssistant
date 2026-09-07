@@ -82,6 +82,7 @@ export const REMINDER_ITEM_SOURCES = [
     'yearly',
     'yearlydelay',
     'appointments',
+    'birthdays',
     'oneTime',
 ];
 

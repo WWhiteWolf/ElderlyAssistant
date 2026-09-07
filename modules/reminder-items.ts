@@ -22,6 +22,7 @@ export const FROM_PAGE: Record<Exclude<ReminderKind, 'daily' | 'oneTime' | 'buck
     quarterly: `from ${PAGE_LABELS.quarterly}`,
     yearly: `from ${PAGE_LABELS.yearly}`,
     appointments: `from ${PAGE_LABELS.appointments}`,
+    birthdays: `from ${PAGE_LABELS.birthdays}`,
 };
 
 const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
@@ -57,7 +58,7 @@ export function thisCycleDueStamp(item: ReminderItem, now: number = Date.now()):
 // future, including clamping to the last day of a shorter month.
 export function advanceDatedItem(item: ReminderItem): ReminderItem {
     const step =
-        item.kind === 'yearly' ? 12
+        item.kind === 'yearly' || item.kind === 'birthdays' ? 12
         : item.kind === 'monthly' ? 1
         : (item.intervalMonths ?? 3);
     const hour = typeof item.hour === 'number' ? item.hour : 12;
@@ -148,7 +149,8 @@ const DAILY_KIND_RANK: Record<ReminderKind, number> = {
     quarterly: 4,
     yearly: 5,
     appointments: 6,
-    bucketlist: 7,
+    birthdays: 7,
+    bucketlist: 8,
 };
 
 export function sortDailyVisible(items: ReminderItem[]): ReminderItem[] {
@@ -243,7 +245,7 @@ export function formatItemWhen(item: ReminderItem): string {
         return time ? `${day} after ${after} · ${time}` : `${day} after ${after}`;
     }
     if (
-        (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly' || item.kind === 'appointments' || item.kind === 'oneTime')
+        (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly' || item.kind === 'appointments' || item.kind === 'birthdays' || item.kind === 'oneTime')
         && typeof item.month === 'number'
         && typeof item.day === 'number'
         && typeof item.year === 'number'

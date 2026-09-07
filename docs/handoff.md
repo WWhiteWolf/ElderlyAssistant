@@ -15,9 +15,10 @@ who decides. It is not a claim that the files were refreshed.
 He is living with the **#67-new** load on the phone. Landscape 90°
 counter-clockwise, headers on the left. What he has used is working.
 
-**#80-new is built.** Duplicate miss warning on open, iOS back-to-previous-app
+**#81-new is built.** Birthdays page. Mac suite 305 of 305. TypeScript
+is clean. Not checked on the simulator. Not on the phone.
+**#80-new is committed.** Duplicate miss warning on open, iOS back-to-previous-app
 link, and Help. Checked on the simulator. Not on the phone.
-**#79-new is committed.** Mac suite 301 of 301. TypeScript is clean.
 
     node --experimental-strip-types scheduler/tests/run-all.ts
 
@@ -100,10 +101,9 @@ These are Patrick's and they govern the work rather than describing it.
 
 ## What is open in front of it
 
-**Next session: Birthdays.** Mirror Appointments. Each item is a name
-and a date, with a yearly reminder. **On the day** and **Day Before**
-are both selectable chips. Build sheet first. The second new page is
-not yet named.
+**Birthdays is built** (#81-new). Own kind `birthdays` on the one list.
+Sheet: `docs-ref/build-sheets/build-sheet-birthdays.md`. Not checked
+on the simulator. Not on the phone. The second new page is not yet named.
 
 The phone is still on the #67-new load. Everything built since then is
 not on the phone. Paperwork is Pending 4–7.

@@ -54,6 +54,7 @@ export default function WhereScreen() {
             { label: 'Month', onPress: () => openForm('monthly') },
             { label: 'Quarter', onPress: () => openForm('quarterly') },
             { label: 'Year', onPress: () => openForm('yearly') },
+            { label: 'Birthday', onPress: () => openForm('birthdays') },
         ];
     } else if (stage === 'today') {
         title = 'Is that for today?';

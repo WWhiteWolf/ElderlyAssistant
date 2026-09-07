@@ -18,6 +18,7 @@ export const PAGE_LABELS = {
     quarterly: 'Quarterly',
     yearly: 'Yearly',
     appointments: 'Appointments',
+    birthdays: 'Birthdays',
     bucketlist: 'Bucket List',
     options: 'Options',
     calendar: 'Calendar',

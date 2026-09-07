@@ -23,6 +23,7 @@ const OWNED = [
     'yearly',
     'yearlydelay',
     'appointments',
+    'birthdays',
     'oneTime',
 ];
 
@@ -228,6 +229,7 @@ export function runReconcileTests(): void {
         const unread = unreadSourcesFor(['reminder_items']);
         assert(unread.includes('daily'), 'Daily’s held reminders must be kept');
         assert(unread.includes('appointments'), 'Appointments’ held reminders must be kept');
+        assert(unread.includes('birthdays'), 'Birthdays’ held reminders must be kept');
         assert(unread.includes('oneTime'), 'Daily one-shot held reminders must be kept');
     });
 

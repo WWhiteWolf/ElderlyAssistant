@@ -79,6 +79,7 @@ History, not the road. Record of what was built and why.
 - **`build-sheet-notification-names.md`** — #61-new. Current source and category names through the live notification road. Built at #62-new.
 - **`build-sheet-cleanup.md`** — leftover cleanup. Written at #68-new. Built at #69-new.
 - **`build-sheet-one-door.md`** — Grok Phase 2. One apply-then-schedule door. Written and built at #73-new.
+- **`build-sheet-birthdays.md`** — #81-new. Birthdays page. Written and built at #81-new.
 
 ## Not here any more
 

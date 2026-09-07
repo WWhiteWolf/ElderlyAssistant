@@ -18,6 +18,7 @@ import { Theme, useTheme } from '../constants/Themes';
 const modules = [
   { id: 'options', label: PAGE_LABELS.options, icon: '⚙️' },
   { id: 'appointments', label: PAGE_LABELS.appointments, icon: '✅' },
+  { id: 'birthdays', label: PAGE_LABELS.birthdays, icon: '🎂' },
   { id: 'bucketlist', label: PAGE_LABELS.bucketlist, icon: '✅' },
   { id: 'yearly', label: PAGE_LABELS.yearly, icon: '🔭' },
   { id: 'quarterly', label: PAGE_LABELS.quarterly, icon: '🔭' },
@@ -56,6 +57,7 @@ export default function HomeScreen() {
         if (id === 'quarterly') router.push('/quarterly' as Href);
         if (id === 'yearly') router.push('/yearly' as Href);
         if (id === 'appointments') router.push('/appointments' as Href);
+        if (id === 'birthdays') router.push('/birthdays' as Href);
         if (id === 'bucketlist') router.push('/bucketlist' as Href);
         if (id === 'options') router.push('/options' as Href);
     };
