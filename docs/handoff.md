@@ -15,14 +15,17 @@ who decides. It is not a claim that the files were refreshed.
 He is living with the **#82-new** load on the phone. Landscape 90°
 counter-clockwise, headers on the left. What he has used is working.
 #83-new built the dated Done-tick morning clear; that load is not on
-the phone.
+the phone. #84-new put Daily onto the shared list; that load is not
+on the phone.
 
-**Next sitting:** implement Daily onto the shared list. After this
-file, open `docs/designed-implementation.md`. That is the guide. How
-to implement `app/daily.tsx` is in that file. Do not change the engine.
-Do not ask Patrick a design question the guide already answers. Banner
-housing is after Daily. Home, Option, and a Settings password are a
-separate issue.
+**Next sitting:** banner housing onto the bits. After this file, open
+`docs/designed-implementation.md`. That is the guide. Do not change
+the engine. Do not ask Patrick a design question the guide already
+answers. This is a fresh-session piece: `app/_layout.tsx` and
+`scheduler/translators/translate.ts` are about 540 lines each, unread
+at the close of the Daily sitting, and Done, Skip, Snooze, and the
+tap still branch on which page the banner came from (Patrick, #84-new).
+Home, Option, and a Settings password are a separate issue.
 
 ## Standing rulings
 
@@ -141,12 +144,11 @@ These are Patrick's and they govern the work rather than describing it.
 
 **#84-new:** the sheets, and the spec, are designed implementation of the
 whole app. They do not collect new decisions. The ruling is in Standing
-rulings. The guide is `docs/designed-implementation.md`. What the spec is
-supposed to be, and how to implement `app/daily.tsx`, are in that
-file. Exclusive groups are not in the engine yet. Done is a code with
-three words: thisCycle, advanceDate, endItem. That code is not in the
-engine yet. The two-way bit is not enough. "Not in the engine yet"
-means not on the translator's table. The scheduler stays.
+rulings. The guide is `docs/designed-implementation.md`. Exclusive groups
+are not in the engine yet. Done is a code with three words: thisCycle,
+advanceDate, endItem. That code is not in the engine yet. The two-way
+bit is not enough. "Not in the engine yet" means not on the translator's
+table. The scheduler stays.
 
 Treat the pages the way the engine was treated. A page has a few jobs.
 Every reminder page fits those pieces. Rebuild what does not fit.
@@ -155,29 +157,25 @@ Do not rebuild Home, Help, Calendar, Settings, Backup, or Scheduled
 Reminders.
 
 What already fits: the engine, the one list, the one save door, the
-shared list page (`components/CadenceListPage.tsx` — Weekly through
+shared list page (`components/CadenceListPage.tsx` — Daily through
 Bucket List, each route only names its kind), the one edit form
 (`app/item-edit.tsx`), the one row (`components/ReminderItemRow.tsx`),
-the date-and-time control, and the page chrome.
+the date-and-time control, and the page chrome. Daily's extras — visitors,
+One Time for today, Daily's own add, the time-and-from row label, the
+Daily log, reorder of the visible list, and Done following the item — live
+on that shared page. `app/daily.tsx` is the same thin route as Weekly.
 
-What does not fit, and the three sheets, one at a time:
+What does not fit, remaining sheets, one at a time:
 
-1. **Daily onto the shared list.** `app/daily.tsx` does the same jobs
-   as the shared list — list, row, Done, Snooze, log — in its own copy.
-   It already uses the row and the save door. A sheet must carry the
-   extras, not invent them: visitors from other pages, One Time for
-   today, Daily's own add, and same-day undo. Files already read:
-   `app/daily.tsx`, `components/CadenceListPage.tsx`,
-   `components/ReminderItemRow.tsx`, `modules/reminder-items.ts`.
-2. **Banner housing onto the bits.** `app/_layout.tsx` still writes
+1. **Banner housing onto the bits.** `app/_layout.tsx` still writes
    Done, Skip, Snooze, and the log by source. The engine already names
    the button set (`bannerButtonsCode` in
    `scheduler/translators/translate.ts`). The row and the banner both
    read the bits. They do not remember the page. The log is not one
-   piece yet: Daily, the shared list, the banner, and Siri each write
-   it. Files already read: `app/_layout.tsx`,
-   `scheduler/translators/translate.ts`.
-3. **Siri out of sight**, a short sheet. Take it out of what a person
+   piece yet: the shared list, the banner, and Siri each write it.
+   Fresh session (Patrick, #84-new). Files already read:
+   `app/_layout.tsx`, `scheduler/translators/translate.ts`.
+2. **Siri out of sight**, a short sheet. Take it out of what a person
    can see. Do not tear out the structure kept for a later in-app
    Siri. Do not raise Siri. Research is later. Files already read:
    `plugins/withSiriIntent.js`, `plugins/ios/MarkItemDoneIntent.swift`,
@@ -185,7 +183,7 @@ What does not fit, and the three sheets, one at a time:
 
 Rulings for those sheets are already in Standing rulings: Done tick,
 banner buttons on the bit field, Siri out of sight. Do not reopen
-them. The morning clear for the dated Done tick was built this sitting
+them. The morning clear for the dated Done tick was built at #83-new
 in `scheduler/miss-candidates.ts`.
 
 The second new page is not yet named.

@@ -1,8 +1,9 @@
-// The one list row for Daily and for Weekly through Extended.
+// The one list row for Daily and for Weekly through Bucket List.
 //
-// Daily still composes its own name (time, visiting page). The cadence pages
-// still pass the when-line as the subtitle. Buttons, swipe, and hold-to-reorder
-// live here so a later change cannot land on one list and miss the other.
+// Daily composes its name (time, visiting page) on the shared list page. The
+// other pages still pass the when-line as the subtitle. Buttons, swipe, and
+// hold-to-reorder live here so a later change cannot land on one list and miss
+// the other.
 
 import { useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';

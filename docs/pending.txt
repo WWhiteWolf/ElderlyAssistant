@@ -27,14 +27,15 @@ WHAT'S NEXT
 The design description of the whole app is the designed
 implementation (Patrick, #84-new). It is the guide. A sitting builds
 from docs/designed-implementation.md and does not ask Patrick a
-design question. That file says what the spec is supposed to be, what
-is and is not in it, and how to implement app/daily.tsx.
+design question.
 
-Next sitting: implement Daily onto the shared list from that guide.
-Do not change the engine. Banner housing is after Daily.
+Next sitting: banner housing onto the bits from that guide. Do not
+change the engine. Fresh session: the housing file and the translator
+are about 540 lines each, and Done, Skip, Snooze, and the tap still
+branch on which page the banner came from.
 
-Three leftovers, one at a time: Daily onto the shared list; banner
-housing onto the bits; Siri out of sight.
+Two leftovers, one at a time: banner housing onto the bits; Siri out
+of sight.
 
 #84-new ideas, a separate issue from those sheets: Home badges
 movable on Home; Option no longer reachable as a Home badge;
@@ -150,6 +151,10 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+72. #84-new — Daily onto the shared list. app/daily.tsx is the same
+   thin route as Weekly. Extras live on the shared list page.
+   TypeScript clean. Engine not touched. Not on the phone.
 
 71. #84-new — design guide. Whole-app designed implementation in
    docs/designed-implementation.md. Next sitting implements Daily from

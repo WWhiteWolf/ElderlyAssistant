@@ -17,11 +17,13 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
-## #84-new (2026-09-08): design guide; next sitting implements Daily
+## #84-new (2026-09-08): design guide; Daily onto the shared list
 
-**The goal was to input a few new ideas and plan the next steps.**
+**The goal of the first sitting was to input a few new ideas and plan
+the next steps.** The second sitting implemented Daily onto the
+shared list.
 
-**#83-new was committed**, asked at the open.
+**#83-new was committed**, asked at the open of both sittings.
 
 **Ideas.** Home badges movable on Home. Option no longer reachable as
 a Home badge. Settings needs password protection. Those are a
@@ -36,20 +38,28 @@ bits as they are now, and exclusive groups. The engine stays. "Not
 in the engine yet" means a named code is not yet on the translator's
 table. It does not mean the scheduler is unfinished.
 
-**The guide** is `docs/designed-implementation.md`. This sitting wrote
-the machinery, each kind, Daily on the shared list, the banner
+**The guide** is `docs/designed-implementation.md`. The first sitting
+wrote the machinery, each kind, Daily on the shared list, the banner
 housing, what the spec is supposed to be, and how to implement
 `app/daily.tsx`. The reminder-pages piece is enough to build Daily
 and then the banner. The rest of the app is not in it. Pending 1 is
 still the thorough spec for the whole app.
 
-**Next sitting.** Implement Daily onto the shared list from that
-guide. After the handoff, open the guide. Do not change the engine.
-Banner housing is after Daily.
+**Daily onto the shared list.** Built in the second sitting.
+`app/daily.tsx` is the same five-line route as Weekly. Daily's extras
+live on `components/CadenceListPage.tsx`: visitors and One Time, Daily's
+own add, the time-and-from row label, the Daily log, reorder of the
+visible list, and Done following the item. TypeScript clean. Engine not
+touched. Not on the phone.
+
+**Next sitting.** Banner housing onto the bits. Fresh session: the
+housing file and the translator are about 540 lines each, unread at
+this close, and Done, Skip, Snooze, and the tap still branch on source
+(Patrick, #84-new).
 
 **Session close.** `handoff.md`, `handoff-history.md`, and `pending.txt`
 refreshed. `pending.docx` not regenerated. Master hand-off Memory line
-updated to #84-new; the phone is still the #82-new load, testers and 72
+updated; the phone is still the #82-new load, testers and 72
 unchanged.
 
 ## #83-new (2026-09-07): code review; Done-tick morning clear; page-shape map

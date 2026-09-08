@@ -21,9 +21,13 @@ import { Theme, useTheme } from '../constants/Themes';
 import {
     advanceDatedItem,
     dragKindTo,
+    dragVisibleTo,
+    format12Hour,
     formatItemWhen,
+    FROM_PAGE,
     applyReminderChange,
     loadReminderItems,
+    sortDailyVisible,
     type ReminderItem,
     type ReminderKind,
 } from '../modules/reminder-items';
@@ -38,6 +42,7 @@ interface HistoryEntry {
 }
 
 function historyKeyFor(kind: ReminderKind): string | null {
+    if (kind === 'daily') return 'daily_history';
     if (kind === 'weekly') return 'weekly_history';
     if (kind === 'monthly') return 'monthly_history';
     if (kind === 'quarterly') return 'quarterly_history';
@@ -46,6 +51,23 @@ function historyKeyFor(kind: ReminderKind): string | null {
     if (kind === 'birthdays') return 'birthdays_history';
     if (kind === 'bucketlist') return 'bucket_list_history';
     return null;
+}
+
+function visibleFor(kind: ReminderKind, items: ReminderItem[]): ReminderItem[] {
+    if (kind === 'daily') return sortDailyVisible(items);
+    return items.filter((one) => one.kind === kind);
+}
+
+function dailyRowLabel(item: ReminderItem): string {
+    const time =
+        typeof item.hour === 'number' && typeof item.minute === 'number'
+            ? `${format12Hour(item.hour, item.minute)} `
+            : '';
+    const from =
+        item.kind !== 'daily' && item.kind !== 'oneTime' && item.kind !== 'bucketlist'
+            ? ` ${FROM_PAGE[item.kind]}`
+            : '';
+    return `${time}${item.label}${from}`;
 }
 
 export default function CadenceListPage({
@@ -60,6 +82,7 @@ export default function CadenceListPage({
     const styles = makeStyles(theme);
     const [items, setItems] = useState<ReminderItem[]>([]);
     const [history, setHistory] = useState<HistoryEntry[]>([]);
+    const [showAddPopup, setShowAddPopup] = useState(false);
     const [highlightId, setHighlightId] = useState<string | null>(null);
     const [draggingId, setDraggingId] = useState<string | null>(null);
     const [snoozeItemId, setSnoozeItemId] = useState<string | null>(null);
@@ -70,7 +93,7 @@ export default function CadenceListPage({
 
     const itemsRef = useRef(items);
     itemsRef.current = items;
-    const visible = items.filter((one) => one.kind === kind);
+    const visible = visibleFor(kind, items);
     const visibleRef = useRef(visible);
     visibleRef.current = visible;
     const rowHeights = useRef<Record<string, number>>({});
@@ -131,7 +154,7 @@ export default function CadenceListPage({
             note: '',
         };
         writeHistory([newEntry, ...history].slice(0, 50));
-        if (kind === 'weekly') {
+        if (item.kind === 'weekly') {
             writeItems((list) => list.map((one) => {
                 if (one.id !== id) return one;
                 const { snoozedUntil, ...rest } = one;
@@ -139,7 +162,7 @@ export default function CadenceListPage({
             }));
             return;
         }
-        if (kind === 'monthly' || kind === 'quarterly' || kind === 'yearly' || kind === 'birthdays') {
+        if (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly' || item.kind === 'birthdays') {
             writeItems((list) => list.map((one) => {
                 if (one.id !== id) return one;
                 return { ...advanceDatedItem(one), completed: true };
@@ -199,7 +222,7 @@ export default function CadenceListPage({
     const moveDrag = useCallback((y: number) => {
         const meta = dragMeta.current;
         if (!meta) return;
-        const vis = meta.snapshot.filter((one) => one.kind === kind);
+        const vis = visibleFor(kind, meta.snapshot);
         if (vis.length === 0) return;
         const avg =
             vis.reduce((sum, one) => sum + (rowHeights.current[one.id] ?? 40), 0) / vis.length;
@@ -214,7 +237,9 @@ export default function CadenceListPage({
         if (!meta && !draggingIdRef.current) return;
         if (meta) {
             void applyReminderChange((list) =>
-                dragKindTo(list, kind, meta.id, dragToIndex.current)
+                kind === 'daily'
+                    ? dragVisibleTo(list, meta.id, dragToIndex.current)
+                    : dragKindTo(list, kind, meta.id, dragToIndex.current)
             ).then((next) => {
                 itemsRef.current = next;
                 setItems(next);
@@ -272,6 +297,10 @@ export default function CadenceListPage({
                         <Text style={styles.title}>{pageLabelFor(kind)}</Text>
                         <HeaderButton
                             onPress={() => {
+                                if (kind === 'daily') {
+                                    setShowAddPopup(true);
+                                    return;
+                                }
                                 router.push({ pathname: '/item-edit', params: { kind, returnTo } } as Href);
                             }}
                         >
@@ -300,26 +329,20 @@ export default function CadenceListPage({
                                 item={item}
                                 highlighted={highlightId === item.id}
                                 dragging={draggingId === item.id}
-                                label={item.label}
-                                subtitle={formatItemWhen(item)}
+                                label={kind === 'daily' ? dailyRowLabel(item) : item.label}
+                                subtitle={kind === 'daily' ? undefined : formatItemWhen(item)}
                                 onTap={() => {
                                     if (highlightId === item.id) {
                                         setHighlightId(null);
                                         return;
                                     }
-                                    router.push({ pathname: '/item-edit', params: { id: item.id, kind, returnTo } } as Href);
+                                    router.push({ pathname: '/item-edit', params: { id: item.id, kind: item.kind, returnTo } } as Href);
                                 }}
                                 onDragStart={beginDrag}
                                 onDragMove={moveDrag}
                                 onDragEnd={endDrag}
                                 onSnooze={() => setSnoozeItemId(item.id)}
-                                onDone={() => {
-                                    if ((kind === 'weekly' || kind === 'monthly' || kind === 'quarterly' || kind === 'yearly' || kind === 'appointments' || kind === 'birthdays' || kind === 'bucketlist') && item.completed) {
-                                        undoDone(item.id);
-                                        return;
-                                    }
-                                    markDone(item.id);
-                                }}
+                                onDone={() => item.completed ? undoDone(item.id) : markDone(item.id)}
                                 onDelete={() => deleteEntry(item.id)}
                             />
                         </View>
@@ -394,6 +417,38 @@ export default function CadenceListPage({
                 </View>
             )}
 
+            {showAddPopup && (
+                <Cover visible={showAddPopup}>
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.pickerModal}>
+                            <Text style={styles.modalTitle}>New</Text>
+                            <TouchableOpacity
+                                style={styles.choiceBtn}
+                                onPress={() => {
+                                    setShowAddPopup(false);
+                                    router.push({ pathname: '/item-edit', params: { kind: 'daily', returnTo } } as Href);
+                                }}
+                            >
+                                <Text style={styles.choiceBtnText}>Every day</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.choiceBtn}
+                                onPress={() => {
+                                    setShowAddPopup(false);
+                                    router.push({ pathname: '/item-edit', params: { kind: 'oneTime', returnTo } } as Href);
+                                }}
+                            >
+                                <Text style={styles.choiceBtnText}>One Time for today</Text>
+                            </TouchableOpacity>
+                            <View style={styles.modalBtns}>
+                                <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowAddPopup(false)}>
+                                    <Text style={styles.cancelBtnText}>Cancel</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Cover>
+            )}
             {snoozeItemId && (
                 <Cover visible={!!snoozeItemId}>
                     <View style={styles.modalOverlay}>
@@ -500,6 +555,14 @@ const makeStyles = (t: Theme) =>
             width: '100%',
         },
         modalTitle: { fontSize: 18, fontWeight: '600', color: t.cardTitle, marginBottom: 10 },
+        choiceBtn: {
+            backgroundColor: t.buttonPrimary,
+            paddingVertical: 14,
+            borderRadius: 8,
+            alignItems: 'center',
+            marginBottom: 8,
+        },
+        choiceBtnText: { color: t.buttonPrimaryText, fontWeight: '600', fontSize: 16 },
         modalBtns: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 },
         cancelBtn: {
             backgroundColor: t.buttonNeutral,

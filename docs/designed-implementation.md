@@ -14,8 +14,8 @@ It is the designed implementation of the whole app, not a layer of
 decisions and rules, and not a photograph of the current code. Design
 first, then make the changes from this file.
 
-Daily's own copy and the banner still writing by source are what a
-build replaces. They are not the destination.
+Daily is on the shared list. The banner still writing by source is
+what a build replaces. That is not the destination.
 
 The engine stays. "Not in the engine yet" means a named code is not yet
 on the translator's table at the boundary. It does not mean the
@@ -23,8 +23,8 @@ scheduler is unfinished or needs changing.
 
 What is written now is the reminder-pages piece: the three ways a
 difference is written, what already stands, what Done does, each kind,
-Daily on the shared list, and the banner housing. That is enough to
-build Daily, and then the banner, without asking Patrick those questions.
+Daily on the shared list, and the banner housing. Daily is built. That
+is enough to build the banner, without asking Patrick those questions.
 
 What is not written: Home, Help, Calendar, Settings, Backup, Scheduled
 Reminders, Options beyond the exclusive-pattern refusal, movable Home
@@ -37,40 +37,34 @@ issue from putting the reminder pages on this machinery.
 
 ## How to implement Daily (`app/daily.tsx`)
 
-The next sitting builds this. It does not change the engine. It does
-not invent extras; they are already named under **Daily on the shared
-list** below.
+Built at #84-new. The engine was not changed. The extras are named
+under **Daily on the shared list** below.
 
 Weekly through Bucket List already use the shared list as a thin
 route. `app/weekly.tsx` is the pattern:
 
     return <CadenceListPage kind="weekly" returnTo="weekly" />;
 
-`app/daily.tsx` becomes that same kind of route, with kind `daily` and
+`app/daily.tsx` is that same kind of route, with kind `daily` and
 returnTo `daily`. Daily's jobs — list, row, Done, Snooze, log — live
 in `components/CadenceListPage.tsx`. They do not stay as a second copy
 in `app/daily.tsx`.
 
-The shared page does not yet do Daily's extras. Those extras go into
-the shared page (or a small Daily-only branch of it), not back into a
-full Daily file. They are:
+The shared page does Daily's extras. They are:
 
 - **The visible list** is `sortDailyVisible` / `shownOnDaily`, not
   `kind === 'daily'` only. Visitors and `oneTime` appear. Reorder uses
   `dragVisibleTo` / `placeVisible`, not `dragKindTo`.
-- **The log key** is `daily_history`. `historyKeyFor` today returns
-  nothing for Daily; that has to change.
+- **The log key** is `daily_history`.
 - **+ Add** opens Daily's own short choice: Every day, or One Time for
   today. Then it opens `item-edit` with that kind and `returnTo` daily.
   It does not send every add to kind `daily` the way Weekly does.
 - **Edit** uses the item's own kind, and comes back to Daily. A visitor
   is not saved as Daily.
-- **The row label** is the time, the name, and the from-line, as
-  `rowLabel` in `app/daily.tsx` does now. The other pages keep the
-  when-line as the subtitle.
+- **The row label** is the time, the name, and the from-line. The other
+  pages keep the when-line as the subtitle.
 - **Done follows the item**, not the page. A visitor on Daily uses that
-  item's Done action. `markDone` in the shared page still branches on the
-  page's kind; that has to follow the item.
+  item's Done action.
 
 Keep `ReminderItemRow` and `applyReminderChange`. Do not touch
 `stillwanted.ts`, `armdepth.ts`, or the scheduler core. If Done's three
