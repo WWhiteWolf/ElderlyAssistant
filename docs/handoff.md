@@ -15,7 +15,14 @@ who decides. It is not a claim that the files were refreshed.
 He is living with the **#82-new** load on the phone. Landscape 90°
 counter-clockwise, headers on the left. What he has used is working.
 #83-new built the dated Done-tick morning clear; that load is not on
-the phone. The page-shape map is below.
+the phone.
+
+**Next sitting:** implement Daily onto the shared list. After this
+file, open `docs/designed-implementation.md`. That is the guide. How
+to implement `app/daily.tsx` is in that file. Do not change the engine.
+Do not ask Patrick a design question the guide already answers. Banner
+housing is after Daily. Home, Option, and a Settings password are a
+separate issue.
 
 ## Standing rulings
 
@@ -61,6 +68,14 @@ These are Patrick's and they govern the work rather than describing it.
   private arrangement that happens to work.
 - **A rule that has to be remembered at every place that might need it is
   the wrong shape.** Build it into the machinery instead.
+- **The design description of the app is the designed implementation**
+  (Patrick, #84-new). It is the guide for the whole app, not only the
+  leftover page work. You look at how the thing is built — code words,
+  the options bit field as it is now, and groups of bits that work
+  together where only one of them can be true at once — instead of
+  keeping a separate layer of decisions and rules to remember and
+  apply. That is the same move as putting behaviour into the machinery,
+  now for the description of the app itself.
 - **Landscape is an optional view.** The allowed turns are 0°, 90°
   counter-clockwise, and 270° counter-clockwise; 180° upside-down is out
   (Patrick, #60-new).
@@ -124,7 +139,15 @@ These are Patrick's and they govern the work rather than describing it.
 
 ## What is open in front of it
 
-**#83-new map for the next sitting — write a sheet, not this map.**
+**#84-new:** the sheets, and the spec, are designed implementation of the
+whole app. They do not collect new decisions. The ruling is in Standing
+rulings. The guide is `docs/designed-implementation.md`. What the spec is
+supposed to be, and how to implement `app/daily.tsx`, are in that
+file. Exclusive groups are not in the engine yet. Done is a code with
+three words: thisCycle, advanceDate, endItem. That code is not in the
+engine yet. The two-way bit is not enough. "Not in the engine yet"
+means not on the translator's table. The scheduler stays.
+
 Treat the pages the way the engine was treated. A page has a few jobs.
 Every reminder page fits those pieces. Rebuild what does not fit.
 Keep what already fits. Highest purpose: reminders smooth and consistent.
@@ -166,6 +189,16 @@ them. The morning clear for the dated Done tick was built this sitting
 in `scheduler/miss-candidates.ts`.
 
 The second new page is not yet named.
+
+**#84-new ideas**, a separate issue from the page-shape sheets:
+
+1. Home badges movable on Home.
+2. Option is no longer reachable as a Home badge.
+3. Settings needs password protection.
+
+The #83-new line that says do not rebuild Home, Help, Calendar,
+Settings, Backup, or Scheduled Reminders still governs that rebuild.
+These three are not that rebuild.
 
 The phone is on the **#82-new** load. Spec, user guide, feedback
 button, and testing file are Pending 1–4.

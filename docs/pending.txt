@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-07 (#83-new)
+Last updated: 2026-09-08 (#84-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -24,9 +24,21 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-Three sheets, one at a time: Daily onto the shared list; banner
-housing onto the bits; Siri out of sight. The map is in
-docs/handoff.md. Next sitting writes a sheet, not the map.
+The design description of the whole app is the designed
+implementation (Patrick, #84-new). It is the guide. A sitting builds
+from docs/designed-implementation.md and does not ask Patrick a
+design question. That file says what the spec is supposed to be, what
+is and is not in it, and how to implement app/daily.tsx.
+
+Next sitting: implement Daily onto the shared list from that guide.
+Do not change the engine. Banner housing is after Daily.
+
+Three leftovers, one at a time: Daily onto the shared list; banner
+housing onto the bits; Siri out of sight.
+
+#84-new ideas, a separate issue from those sheets: Home badges
+movable on Home; Option no longer reachable as a Home badge;
+Settings needs password protection.
 
 The second new page is not yet named. Day-roll lock still wants a
 night of all-green Daily on this load.
@@ -43,7 +55,12 @@ Things waiting on something — mostly on a build.
     sitting treated One Time's missing notice at the set time as
     a bug. He had decided it that way. A spec would have said so.
     Changing the name of One Time to Appointments belongs in
-    that spec, and Extended to Bucket List.
+    that spec, and Extended to Bucket List. At #84-new the spec
+    is the designed implementation of the whole app: it is the
+    guide, and it replaces a separate layer of decisions and rules.
+    The first piece is docs/designed-implementation.md. This sitting
+    wrote the machinery, each kind, Daily on the shared list, and the
+    banner housing. Home and Settings are not in that piece.
 2. A USER GUIDE, from that spec or merely after it (Patrick,
     #52-new). He needs to provide it on his website, and a way
     in the app to find it or get it.
@@ -120,6 +137,11 @@ built. None of these is a job to do.
 15. HAVING A GOOD IDEA LEADS TO OVERREACHING (Patrick, #52-new).
     The feedback he needs is the trim: what part is worth it,
     and what is more than is there.
+16. THE DESIGN DESCRIPTION IS THE DESIGNED IMPLEMENTATION
+    (Patrick, #84-new). It is the guide for the whole app. A sitting
+    builds from docs/designed-implementation.md and does not ask
+    Patrick a design question. This sitting wrote the machinery, each
+    kind, Daily on the shared list, and the banner housing.
 
 
 WHAT IS DONE, NEWEST FIRST
@@ -128,6 +150,10 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+71. #84-new — design guide. Whole-app designed implementation in
+   docs/designed-implementation.md. Next sitting implements Daily from
+   it. Engine stays. No code.
 
 70. #83-new — pages like the engine. Rebuild what does not fit. Daily,
    banner housing, and Siri-out-of-sight are the three sheets. Banner

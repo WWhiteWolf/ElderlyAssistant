@@ -28,6 +28,7 @@ just because it is listed.
 ## Live design — in `docs`
 
 - **`reminder-shape.md`** — the live engine design. Wins where others disagree.
+- **`designed-implementation.md`** — the whole-app guide. A sitting builds from it and does not ask Patrick a design question. #84-new: what the spec is supposed to be, how to implement Daily, machinery, kinds, Daily on the shared list, banner housing. The next sitting opens this after the handoff.
 - **`spec-pages.md`** — the live spec for the reminder pages.
 
 ## History still in `docs`
