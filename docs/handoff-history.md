@@ -17,6 +17,85 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #90-new (2026-09-08): exclusive groups, Done, and Quarterly on the table
+
+**The goal was exclusive groups on the translator's table.**
+
+**#89-new was committed**, asked at the open.
+
+**Translator and engine.** Changing the translator is not changing
+the engine. The scheduler's decisions stay.
+
+**Exclusive groups cannot both be true** (Patrick). An exclusive
+group is bits that work together. Only one can be true. Turning one
+on turns the others off. There is no both-true case. The translator
+does not need a branch that finds both and then refuses them. The
+named group is a second Thursday and a Wednesday after the 6th, on
+the translator's table. The Options sheet already turns the others
+off.
+
+**Done** went onto the same table as thisCycle, advanceDate, and
+endItem. The Done door reads that code. stillwanted still answers
+two ways: the item is finished, or this occurrence is done.
+
+**Quarterly's step** went onto the table as none, days30, days60,
+and days90. The chips and Done read that set. The engine already
+steps a day-count and a three-month count. It does not read the
+four names.
+
+**Banner instruction.** The leftover open line came off. The
+instruction that lets a banner show is already once at the top of
+the app. The eight old page copies are gone.
+
+**Tests.** TypeScript clean. 316 passed, 0 failed. Engine
+decisions not changed. Not on the phone.
+
+**Next sitting.** Not named.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `pending.txt`,
+`in-flight.md` refreshed. `pending.docx` regenerated. Master
+hand-off Memory line updated. Phone still the #82-new load. Patrick
+will commit.
+
+## #89-new (2026-09-08): Calendar through Options in the spec
+
+**The goal was the next bite to go into the design spec.**
+
+**#88-new was committed**, asked at the open.
+
+**Calendar** went into `docs/designed-implementation.md`. Month view
+of the one list, not a kind. Help only chooses the kind; the
+save-the-item popup, New, sits above it. Save from an edit walks back
+to the day's item list. Back from that list is the month. Engine not
+touched.
+
+**Settings** went into the same file. Gear from Home, not a badge.
+Named times of day, name, Light or Dark, popup colors. Scheduled
+Reminders and Backup & Restore are doors off it. Reset All Data
+asks the phone to confirm, then wipes. Password stays nice-to-have.
+Engine not touched.
+
+**Backup** went into the same file. Export, Replace, Merge. Choose
+Replace or Merge first, then pick a file, then confirm. Merge is by
+the identity the app wrote into the file. Settings and page logs stay
+on the phone. Engine not touched.
+
+**Scheduled Reminders** went into the same file. What the phone is
+holding, not the saved list. Headings Today, Tomorrow, This Week,
+Later, and Time not known. Engine not touched.
+
+**Options** went into the same file. + OPT on the item form. The cases,
+which kinds get them, and the last monthly pattern on the sheet. The
+exclusive-pattern refusal was not reopened. Engine not touched.
+
+**Next sitting.** Exclusive groups on the translator's table, in a new
+session. Do not change the scheduler's decisions.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `pending.txt`,
+`in-flight.md`, and `docs/index.md` refreshed. `pending.docx`
+regenerated. Master hand-off Memory line updated. Phone still the
+#82-new load. Patrick will commit.
+
 ## #88-new (2026-09-08): Home built; Help in the spec; next bite next session
 
 **The goal was Home page changes.**

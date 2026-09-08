@@ -4,12 +4,22 @@ import * as AppGroup from './app-group';
 import { runDailyReset, runScheduler, runWeeklyReset } from '../scheduler/scheduler';
 import { lastOccurrence } from '../scheduler/weeklyreset';
 import { warnIfFull } from '../scheduler/warn';
-import { translateReminderItems } from '../scheduler/translators/translate';
+import {
+    quarterlyStepCodeOf,
+    quarterlyStepDaysOf,
+} from '../scheduler/inputshape';
+import { translateReminderItems, doneActionCodeOf } from '../scheduler/translators/translate';
 import { shadedDaysInMonth } from '../scheduler/leadmoments';
 import { isDateOf, shownOnDate } from '../scheduler/shown-on-date';
 import type { ReminderItem, ReminderKind } from './reminder-types';
 
 export type { LeadReminder, ReminderItem, ReminderKind } from './reminder-types';
+export {
+    quarterlyStepCodeOf,
+    quarterlyStepDaysOf,
+    QUARTERLY_STEP_CHIPS,
+} from '../scheduler/inputshape';
+export type { QuarterlyStepCode } from '../scheduler/inputshape';
 
 const STORAGE_KEY = 'reminder_items';
 
@@ -70,10 +80,7 @@ export function advanceDatedItem(item: ReminderItem): ReminderItem {
         0,
     );
     const now = new Date();
-    const dayStep =
-        item.intervalDays === 30 || item.intervalDays === 60 || item.intervalDays === 90
-            ? item.intervalDays
-            : 0;
+    const dayStep = quarterlyStepDaysOf(quarterlyStepCodeOf(item.intervalDays)) ?? 0;
     do {
         if (dayStep > 0) {
             d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + dayStep, hour, minute, 0, 0);
@@ -192,12 +199,12 @@ export async function markReminderDone(
     }
     await applyReminderChange((list) => list.map((one) => {
         if (one.id !== id) return one;
+        if (doneActionCodeOf(one.kind) === 'advanceDate') {
+            return { ...advanceDatedItem(one), completed: true };
+        }
         if (one.kind === 'weekly') {
             const { snoozedUntil, ...rest } = one;
             return { ...rest, completed: true, doneAt: Date.now() };
-        }
-        if (one.kind === 'monthly' || one.kind === 'quarterly' || one.kind === 'yearly' || one.kind === 'birthdays') {
-            return { ...advanceDatedItem(one), completed: true };
         }
         const { snoozedUntil, ...rest } = one;
         return { ...rest, completed: true };

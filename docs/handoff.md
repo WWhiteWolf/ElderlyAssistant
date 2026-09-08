@@ -19,9 +19,12 @@ on the phone. #87-new built banner housing onto the bits, both pieces,
 and took Siri out of sight; that load is not on the phone. **#88-new**
 built Home: badges move the iOS way, and Options is not on the grid.
 Help is in the designed implementation. That load is not on the phone.
+**#89-new** put Calendar, Settings, Backup, Scheduled Reminders, and
+Options into the designed implementation. Spec only; not a phone load.
 
-**Next sitting:** the next bite of the designed implementation
-(Patrick, #88-new close). One bite at a time. Do not change the engine.
+**#90-new** put exclusive groups, Done's three-word code, and the
+Quarterly step on the translator's table. Not on the phone. Next
+sitting is not named. Do not change the scheduler's decisions.
 
 ## Standing rulings
 
@@ -75,6 +78,11 @@ These are Patrick's and they govern the work rather than describing it.
   keeping a separate layer of decisions and rules to remember and
   apply. That is the same move as putting behaviour into the machinery,
   now for the description of the app itself.
+- **Exclusive groups cannot both be true** (Patrick, #90-new). An
+  exclusive group is bits that work together. Only one can be true.
+  Turning one on turns the others off. There is no both-true case for
+  the translator to handle. It does not need a branch that finds both
+  and then refuses them.
 - **Landscape is an optional view.** The allowed turns are 0°, 90°
   counter-clockwise, and 270° counter-clockwise; 180° upside-down is out
   (Patrick, #60-new).
@@ -138,11 +146,9 @@ These are Patrick's and they govern the work rather than describing it.
 
 **#84-new:** the sheets, and the spec, are designed implementation of the
 whole app. They do not collect new decisions. The ruling is in Standing
-rulings. The guide is `docs/designed-implementation.md`. Exclusive groups
-are not in the engine yet. Done is a code with three words: thisCycle,
-advanceDate, endItem. That code is not in the engine yet. The two-way
-bit is not enough. "Not in the engine yet" means not on the translator's
-table. The scheduler stays.
+rulings. The guide is `docs/designed-implementation.md`. Exclusive groups,
+Done's three-word code, and the Quarterly step are on the translator's
+table (#90-new). The scheduler stays. Next sitting is not named.
 
 Treat the pages the way the engine was treated. A page has a few jobs.
 Every reminder page fits those pieces. Rebuild what does not fit.
@@ -170,10 +176,9 @@ in `scheduler/miss-candidates.ts`.
 
 The phone is on the **#82-new** load. Spec, user guide, feedback
 button, and testing file are Pending 1–4. The spec is
-`docs/designed-implementation.md`. Home and Help are in it. What is
-not written: Calendar, Settings, Backup, Scheduled Reminders, Options
-beyond the exclusive-pattern refusal, and a Settings password
-(nice-to-have).
+`docs/designed-implementation.md`. Home, Help, Calendar, Settings,
+Backup, Scheduled Reminders, and Options are in it. What is not
+written: a Settings password (nice-to-have).
 
 Testers are on TestFlight External. The App Store heading is Waiting
 for Review on **72**. He is not aiming to go live. Manual release.
@@ -195,9 +200,6 @@ reorder** (#24-new).
 
 **One claim still unchecked**: that a repeating alarm cannot be told to skip a
 single instance.
-
-**One separate fix-list item** in `docs/reminder-rebuild.md`: banner instruction
-once in the housing instead of on eight pages.
 
 **The build sheets are the pattern for a new page** — each self-contained,
 carrying the answers themselves rather than pointing at other documents.

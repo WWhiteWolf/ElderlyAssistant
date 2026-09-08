@@ -30,7 +30,7 @@ function item(changes: Partial<ShapedItem> = {}): ShapedItem {
         floatsWithPhoneBit: true,
         canBeDoneBit: true,
         canBePushedBackBit: true,
-        doneEndsItemBit: false,
+        doneActionCode: 'thisCycle',
         standsForGroupBit: false,
         isDoneBit: false,
         leadTimeList: [],
@@ -87,7 +87,7 @@ export function runStillWantedTests(): void {
     });
 
     test('A task finished outright is not wanted at all', () => {
-        const said = isStillWanted(item({ isDoneBit: true, doneEndsItemBit: true }), NOW);
+        const said = isStillWanted(item({ isDoneBit: true, doneActionCode: 'endItem' }), NOW);
         assertSame(
             [said.wantsRemindersBit, said.dropsThisOccurrenceBit],
             [false, false],

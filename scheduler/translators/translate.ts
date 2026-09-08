@@ -26,10 +26,12 @@
 
 import type {
     BannerButtonsCode,
+    DoneActionCode,
     LeadTime,
     RepeatUnitCode,
     ShapedItem,
 } from '../inputshape.ts';
+import { MONTHLY_WEEKDAY_EXCLUSIVE_GROUP, quarterlyStepCodeOf, quarterlyStepDaysOf } from '../inputshape.ts';
 import type { ReminderItem } from '../../modules/reminder-types.ts';
 import {
     secondThursdayComplete,
@@ -81,8 +83,15 @@ export interface ScreenRules {
     canBeDoneBit: boolean;
     /** They can be snoozed, postponed or delayed. */
     canBePushedBackBit: boolean;
-    /** Done ends the item outright rather than only this occurrence. */
-    doneEndsItemBit: boolean;
+    /** What Done does for this kind. */
+    doneActionCode: DoneActionCode;
+    /**
+     * Bits that work together, of which only one can be true.
+     *
+     * Left off when the kind has no exclusive group. The monthly weekday
+     * group is second Thursday and Wednesday after the 6th.
+     */
+    exclusiveGroupBits?: readonly string[];
     /** The reminder stands for a group rather than one item. */
     standsForGroupBit: boolean;
     /** Which registered button set the banner carries. */
@@ -149,7 +158,7 @@ function translateOne(rules: ScreenRules, saved: ReminderItem): ShapedItem {
 
         canBeDoneBit: rules.canBeDoneBit,
         canBePushedBackBit: rules.canBePushedBackBit,
-        doneEndsItemBit: rules.doneEndsItemBit,
+        doneActionCode: rules.doneActionCode,
         standsForGroupBit: rules.standsForGroupBit,
 
         // ---- state: what has actually happened to this occurrence ----
@@ -240,7 +249,7 @@ const dailyCadenceRules: ScreenRules = {
     repeatIntervalCount: 1,
     canBeDoneBit: true,
     canBePushedBackBit: true,
-    doneEndsItemBit: false,
+    doneActionCode: 'thisCycle',
     standsForGroupBit: false,
     bannerTitleTextOf: () => 'Daily Routine',
     bannerButtonsCode: 'routineactions',
@@ -261,7 +270,7 @@ const weeklyCadenceRules: ScreenRules = {
     repeatIntervalCount: 1,
     canBeDoneBit: true,
     canBePushedBackBit: true,
-    doneEndsItemBit: false,
+    doneActionCode: 'thisCycle',
     standsForGroupBit: false,
     bannerTitleTextOf: () => 'Weekly Chore',
     bannerButtonsCode: 'routineactions',
@@ -288,7 +297,8 @@ const weeklyCadenceRules: ScreenRules = {
 const datedCadenceRules: ScreenRules = {
     canBeDoneBit: false,
     canBePushedBackBit: true,
-    doneEndsItemBit: false,
+    doneActionCode: 'advanceDate',
+    exclusiveGroupBits: MONTHLY_WEEKDAY_EXCLUSIVE_GROUP,
     standsForGroupBit: false,
     bannerTitleTextOf: (item) =>
         item.kind === 'yearly' ? 'Yearly'
@@ -332,7 +342,7 @@ const datedCadenceRules: ScreenRules = {
 const appointmentsCadenceRules: ScreenRules = {
     canBeDoneBit: true,
     canBePushedBackBit: false,
-    doneEndsItemBit: true,
+    doneActionCode: 'endItem',
     standsForGroupBit: false,
     bannerButtonsCode: 'appointmentsok',
     idOf: (item) => item.id,
@@ -381,7 +391,7 @@ const appointmentsCadenceRules: ScreenRules = {
 const birthdaysCadenceRules: ScreenRules = {
     canBeDoneBit: false,
     canBePushedBackBit: false,
-    doneEndsItemBit: false,
+    doneActionCode: 'advanceDate',
     standsForGroupBit: false,
     bannerButtonsCode: 'appointmentsok',
     idOf: (item) => item.id,
@@ -431,7 +441,7 @@ const oneTimeCadenceRules: ScreenRules = {
     ...appointmentsCadenceRules,
     bannerButtonsCode: 'routineactions',
     canBePushedBackBit: true,
-    doneEndsItemBit: false,
+    doneActionCode: 'thisCycle',
     pushedBackStampOf: (item) => item.snoozedUntil,
     bannerTitleTextOf: () => 'Daily Routine',
     bannerBodyTextOf: (item) => `Time for ${item.label}!`,
@@ -440,7 +450,7 @@ const oneTimeCadenceRules: ScreenRules = {
 const bucketlistCadenceRules: ScreenRules = {
     canBeDoneBit: true,
     canBePushedBackBit: false,
-    doneEndsItemBit: true,
+    doneActionCode: 'endItem',
     standsForGroupBit: false,
     idOf: (item) => item.id,
     nameOf: (item) => item.label,
@@ -481,9 +491,10 @@ export function translateReminderItems(items: ReminderItem[], now: number): Shap
  * rejected: the item keeps floating with the phone rather than silently
  * producing no reminder. Holidays are one code, absent when unused. A
  * complete second Thursday or Wednesday after the 6th becomes the engine's
- * weekday entry; a half-entered pair is left off. A numbered-day
- * weekday keeps only the first occurrence after that day. Shifted-day
- * preference is not mapped here.
+ * weekday entry; a half-entered pair is left off. Those two are one
+ * exclusive group: only one can be true, so the translator writes at most
+ * one. A numbered-day weekday keeps only the first occurrence after that
+ * day. Shifted-day preference is not mapped here.
  */
 function withSavedOptions(saved: ReminderItem, shaped: ShapedItem): ShapedItem {
     let out = shaped;
@@ -504,9 +515,18 @@ function withSavedOptions(saved: ReminderItem, shaped: ShapedItem): ShapedItem {
 }
 
 function withMonthlyRepeat(saved: ReminderItem, shaped: ShapedItem): ShapedItem {
-    if (saved.kind === 'quarterly'
-        && (saved.intervalDays === 30 || saved.intervalDays === 60 || saved.intervalDays === 90)) {
-        return { ...shaped, repeatUnitCode: 'day', repeatIntervalCount: saved.intervalDays };
+    if (saved.kind === 'quarterly') {
+        const step = quarterlyStepCodeOf(saved.intervalDays);
+        const days = quarterlyStepDaysOf(step);
+        if (days !== undefined) {
+            return {
+                ...shaped,
+                quarterlyStepCode: step,
+                repeatUnitCode: 'day',
+                repeatIntervalCount: days,
+            };
+        }
+        shaped = { ...shaped, quarterlyStepCode: step };
     }
     const thursday = secondThursdayComplete(saved);
     const wednesday = wednesdayAfterComplete(saved);
@@ -514,12 +534,6 @@ function withMonthlyRepeat(saved: ReminderItem, shaped: ShapedItem): ShapedItem 
         saved.kind === 'monthly' ? 1
         : saved.kind === 'yearly' || saved.kind === 'birthdays' ? 1
         : (typeof saved.intervalMonths === 'number' ? saved.intervalMonths : 3);
-    if (thursday && wednesday) {
-        if (saved.kind === 'yearly' || saved.kind === 'birthdays') {
-            return { ...shaped, repeatUnitCode: 'year', repeatIntervalCount: 1 };
-        }
-        return { ...shaped, repeatUnitCode: 'month', repeatIntervalCount: interval };
-    }
     if (thursday && saved.ordinalWeekday != null && saved.weekdayOrdinal != null) {
         return {
             ...shaped,
@@ -544,4 +558,14 @@ function withMonthlyRepeat(saved: ReminderItem, shaped: ShapedItem): ShapedItem 
         return { ...shaped, repeatUnitCode: 'year', repeatIntervalCount: 1 };
     }
     return { ...shaped, repeatUnitCode: 'month', repeatIntervalCount: interval };
+}
+
+/** What Done does for this saved kind, from the translator's table. */
+export function doneActionCodeOf(kind: ReminderItem['kind']): DoneActionCode {
+    return rulesByKind[kind].doneActionCode;
+}
+
+/** The exclusive group for this saved kind, if it has one. */
+export function exclusiveGroupBitsOf(kind: ReminderItem['kind']): readonly string[] | undefined {
+    return rulesByKind[kind].exclusiveGroupBits;
 }

@@ -45,7 +45,7 @@ function item(changes: Partial<ShapedItem> = {}): ShapedItem {
         floatsWithPhoneBit: true,
         canBeDoneBit: false,
         canBePushedBackBit: true,
-        doneEndsItemBit: false,
+        doneActionCode: 'advanceDate',
         standsForGroupBit: false,
         isDoneBit: false,
         leadTimeList: [NOTHING_BEFORE],

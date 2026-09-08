@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-08 (#88-new)
+Last updated: 2026-09-08 (#90-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -29,9 +29,12 @@ implementation (Patrick, #84-new). It is the guide. A sitting builds
 from docs/designed-implementation.md and does not ask Patrick a
 design question.
 
-Next sitting: the next bite of the designed implementation
-(Patrick, #88-new close). One bite at a time. Home and Help are in
-docs/designed-implementation.md. Do not change the engine.
+#90-new is closed. Exclusive groups, Done's three-word code, and
+the Quarterly step are on the translator's table. Next sitting is
+not named. Do not change the scheduler's decisions.
+Home, Help, Calendar, Settings, Backup, Scheduled Reminders,
+and Options are in docs/designed-implementation.md. A
+Settings password stays nice-to-have.
 
 Home was built at #88-new: badges move the iOS way; Options is not on
 the grid. Help is in the spec. Not on the phone.
@@ -58,7 +61,9 @@ Things waiting on something — mostly on a build.
     guide, and it replaces a separate layer of decisions and rules.
     The first piece is docs/designed-implementation.md. This sitting
     wrote the machinery, each kind, Daily on the shared list, and the
-    banner housing. Home and Help are in that piece. Settings is not.
+    banner housing. Home, Help, Calendar, Settings, Backup, Scheduled
+    Reminders, and Options are in that piece. A Settings password is
+    not.
 2. A USER GUIDE, from that spec or merely after it (Patrick,
     #52-new). He needs to provide it on his website, and a way
     in the app to find it or get it.
@@ -138,7 +143,8 @@ built. None of these is a job to do.
 16. THE DESIGN DESCRIPTION IS THE DESIGNED IMPLEMENTATION
     (Patrick, #84-new). It is the guide for the whole app. A sitting
     builds from docs/designed-implementation.md and does not ask
-    Patrick a design question. Home and Help are in that file.
+    Patrick a design question. Home, Help, Calendar, Settings, Backup,
+    Scheduled Reminders, and Options are in that file.
 
 
 WHAT IS DONE, NEWEST FIRST
@@ -147,6 +153,36 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+85. #90-new — Quarterly step on the translator's table. none, days30,
+   days60, days90. Chips and Done read the named set. Scheduler
+   decisions unchanged.
+
+84. #90-new — exclusive groups and Done's three words on the translator's
+   table. Second Thursday / Wednesday after: only one true. Done is
+   thisCycle, advanceDate, endItem. Scheduler decisions unchanged.
+
+83. #90-new — banner instruction already once at the top of the app.
+   The eight old page copies are gone. The leftover open line came off.
+
+82. #89-new — Options in the designed implementation. + OPT on the
+   item form. Last monthly pattern stays. Spec only. Engine not
+   touched.
+
+81. #89-new — Scheduled Reminders in the designed implementation.
+   Phone holding, not the saved list. Time not known stays. Spec only.
+   Engine not touched.
+
+80. #89-new — Backup in the designed implementation. Choose Replace
+   or Merge first, then pick a file, then confirm. Spec only. Engine
+   not touched.
+
+79. #89-new — Settings in the designed implementation. Gear from Home,
+   not a badge. Scheduled Reminders and Backup are doors off it. Spec
+   only. Engine not touched.
+
+78. #89-new — Calendar in the designed implementation. Month view of
+   the one list, not a kind. Spec only. Engine not touched.
 
 77. #88-new — Help in the designed implementation. No sheet. The
    “does not” lines stay: a sitting that built Help would need them.

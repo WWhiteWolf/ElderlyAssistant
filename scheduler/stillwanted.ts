@@ -62,7 +62,7 @@ export function isStillWanted(item: ShapedItem, now: number): StillWantedAnswer 
     //    is the daily reset's job and it already works, so this block only
     //    ever asks whether the item is done NOW.
     if (item.canBeDoneBit && item.isDoneBit) {
-        if (item.doneEndsItemBit) {
+        if (item.doneActionCode === 'endItem') {
             return answer(false, false, null, 'the item is done and done ends it');
         }
         // Only this occurrence goes. The ones after it stand, and the

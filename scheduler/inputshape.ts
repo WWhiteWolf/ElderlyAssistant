@@ -74,6 +74,63 @@ export type BannerButtonsCode =
     | 'shifteddayactions';
 
 /**
+ * What Done does. Only one of the three words is in force.
+ *
+ * thisCycle — this occurrence is done, and the item comes round again.
+ * advanceDate — this cycle is done, and the saved date moves to the next.
+ * endItem — the item is finished.
+ */
+export type DoneActionCode = 'thisCycle' | 'advanceDate' | 'endItem';
+
+/**
+ * The monthly weekday exclusive group. Only one of these bits can be true.
+ * Turning one on turns the others off. There is no both-true case.
+ */
+export const MONTHLY_WEEKDAY_EXCLUSIVE_GROUP = ['secondThursday', 'wednesdayAfter'] as const;
+export type MonthlyWeekdayExclusiveBit = (typeof MONTHLY_WEEKDAY_EXCLUSIVE_GROUP)[number];
+
+/**
+ * The Quarterly step. Only one of the four words is in force.
+ *
+ * none — every three months. days30, days60, days90 — that many days from
+ * the date entered. One chip at a time. A second tap is none.
+ */
+export type QuarterlyStepCode = 'none' | 'days30' | 'days60' | 'days90';
+
+export const QUARTERLY_STEP_CODES: readonly QuarterlyStepCode[] = [
+    'none',
+    'days30',
+    'days60',
+    'days90',
+];
+
+export const QUARTERLY_STEP_CHIPS: readonly Exclude<QuarterlyStepCode, 'none'>[] = [
+    'days30',
+    'days60',
+    'days90',
+];
+
+const QUARTERLY_STEP_DAYS: Record<Exclude<QuarterlyStepCode, 'none'>, number> = {
+    days30: 30,
+    days60: 60,
+    days90: 90,
+};
+
+/** The named Quarterly step for a saved day-count, or none. */
+export function quarterlyStepCodeOf(intervalDays?: number): QuarterlyStepCode {
+    if (intervalDays === 30) return 'days30';
+    if (intervalDays === 60) return 'days60';
+    if (intervalDays === 90) return 'days90';
+    return 'none';
+}
+
+/** The day-count the engine already steps, left off when the step is none. */
+export function quarterlyStepDaysOf(code: QuarterlyStepCode): number | undefined {
+    if (code === 'none') return undefined;
+    return QUARTERLY_STEP_DAYS[code];
+}
+
+/**
  * One lead time — how far ahead of the due moment to speak.
  *
  * The form code says which of the two sets of fields is the live one, so a
@@ -154,6 +211,12 @@ export interface ShapedItem {
      */
     repeatAfterDayCount?: number;
     /**
+     * The Quarterly step, when this item is Quarterly.
+     *
+     * Left off for every other kind. none is every three months.
+     */
+    quarterlyStepCode?: QuarterlyStepCode;
+    /**
      * A last date, as the ordinary count of milliseconds.
      *
      * Left off means the series does not end. A candidate after this moment
@@ -216,13 +279,13 @@ export interface ShapedItem {
     /** It can be snoozed, postponed or delayed. */
     canBePushedBackBit: boolean;
     /**
-     * Done ends the item outright rather than only this occurrence.
+     * What Done does for this kind.
      *
-     * The app has two kinds of done and they cannot share a bit. A chore
-     * ticked off is done for today and comes round again; a task finished is
-     * finished.
+     * The three words cannot share a two-way bit. A chore ticked off is done
+     * for today and comes round again; a dated cycle advances the saved date;
+     * a task finished is finished.
      */
-    doneEndsItemBit: boolean;
+    doneActionCode: DoneActionCode;
     /**
      * The reminder stands for a group rather than one item.
      *

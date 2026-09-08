@@ -492,7 +492,7 @@ export function runRemindersForTests(): void {
             floatsWithPhoneBit: true,
             canBeDoneBit: true,
             canBePushedBackBit: true,
-            doneEndsItemBit: false,
+            doneActionCode: 'thisCycle',
             standsForGroupBit: false,
             isDoneBit: false,
             leadTimeList: [{ leadFormCode: 'offset', leadAmount: 0, leadUnitCode: 'minutes' }],

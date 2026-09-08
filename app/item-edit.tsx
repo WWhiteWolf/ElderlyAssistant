@@ -22,9 +22,13 @@ import {
     hourMinuteOf,
     applyReminderChange,
     loadReminderItems,
+    quarterlyStepCodeOf,
+    quarterlyStepDaysOf,
+    QUARTERLY_STEP_CHIPS,
     type LeadReminder,
     type ReminderItem,
     type ReminderKind,
+    type QuarterlyStepCode,
 } from '../modules/reminder-items';
 import {
     optionCasesForKind,
@@ -146,7 +150,7 @@ function assembleFormItem(parts: {
     timeSet: boolean;
     reminders: LeadReminder[];
     intervalMonths: number;
-    intervalDays: number | null;
+    quarterlyStep: QuarterlyStepCode;
     optionSettings: OptionSettings;
     monthlyPattern: MonthlyPattern;
     note: string;
@@ -197,9 +201,9 @@ function assembleFormItem(parts: {
             next.month = parts.pendingDate.getMonth();
             next.day = parts.pendingDate.getDate();
         }
-        if (parts.editKind === 'quarterly'
-            && (parts.intervalDays === 30 || parts.intervalDays === 60 || parts.intervalDays === 90)) {
-            next.intervalDays = parts.intervalDays;
+        const days = quarterlyStepDaysOf(parts.quarterlyStep);
+        if (parts.editKind === 'quarterly' && days !== undefined) {
+            next.intervalDays = days;
         } else {
             delete next.intervalDays;
         }
@@ -327,7 +331,7 @@ export default function ItemEditScreen() {
     const [loaded, setLoaded] = useState(false);
     const [editKind, setEditKind] = useState<ReminderKind>(startKind);
     const [intervalMonths, setIntervalMonths] = useState(3);
-    const [intervalDays, setIntervalDays] = useState<number | null>(null);
+    const [quarterlyStep, setQuarterlyStep] = useState<QuarterlyStepCode>('none');
     const [tempName, setTempName] = useState('');
     const [pendingDay, setPendingDay] = useState(() => new Date().getDay());
     const [pendingTime, setPendingTime] = useState<Date | null>(null);
@@ -387,11 +391,7 @@ export default function ItemEditScreen() {
                     setEditKind(found.kind);
                     setTempName(found.label);
                     if (typeof found.intervalMonths === 'number') setIntervalMonths(found.intervalMonths);
-                    if (found.intervalDays === 30 || found.intervalDays === 60 || found.intervalDays === 90) {
-                        setIntervalDays(found.intervalDays);
-                    } else {
-                        setIntervalDays(null);
-                    }
+                    setQuarterlyStep(quarterlyStepCodeOf(found.intervalDays));
                     if (typeof found.day === 'number' && found.kind === 'weekly') setPendingDay(found.day);
                     if (typeof found.hour === 'number' && typeof found.minute === 'number') {
                         const t = new Date(new Date().setHours(found.hour, found.minute, 0, 0));
@@ -434,7 +434,7 @@ export default function ItemEditScreen() {
                 setOptionSettings(emptyOptionSettings());
                 setMonthlyPattern('date');
                 setNote('');
-                setIntervalDays(null);
+                setQuarterlyStep('none');
                 if (nextKind === 'oneTime') {
                     const today = new Date();
                     today.setHours(12, 0, 0, 0);
@@ -521,7 +521,7 @@ export default function ItemEditScreen() {
             timeSet,
             reminders,
             intervalMonths,
-            intervalDays,
+            quarterlyStep,
             optionSettings: optionSettingsRef.current,
             monthlyPattern: monthlyPatternRef.current,
             note: noteRef.current,
@@ -704,14 +704,14 @@ export default function ItemEditScreen() {
 
                 {editKind === 'quarterly' && (
                     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
-                        {([30, 60, 90] as const).map((days) => (
+                        {QUARTERLY_STEP_CHIPS.map((step) => (
                             <TouchableOpacity
-                                key={days}
-                                style={[styles.recurBtn, intervalDays === days && styles.recurBtnActive]}
-                                onPress={() => setIntervalDays(intervalDays === days ? null : days)}
+                                key={step}
+                                style={[styles.recurBtn, quarterlyStep === step && styles.recurBtnActive]}
+                                onPress={() => setQuarterlyStep(quarterlyStep === step ? 'none' : step)}
                             >
-                                <Text style={[styles.recurBtnText, intervalDays === days && styles.recurBtnTextActive]}>
-                                    {days} days
+                                <Text style={[styles.recurBtnText, quarterlyStep === step && styles.recurBtnTextActive]}>
+                                    {quarterlyStepDaysOf(step)} days
                                 </Text>
                             </TouchableOpacity>
                         ))}

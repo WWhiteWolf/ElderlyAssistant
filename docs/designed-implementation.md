@@ -27,10 +27,9 @@ difference is written, what already stands, what Done does, each kind,
 Daily on the shared list, and the banner housing. Daily is built. That
 is enough to build the banner, without asking Patrick those questions.
 
-What is not written: Calendar, Settings, Backup, Scheduled
-Reminders, Options beyond the exclusive-pattern refusal, and a Settings
-password. Pending 1 is still the thorough spec for the whole app. This
-file is the start of that, not the finish.
+What is not written: a Settings password. Pending 1 is still the
+thorough spec for the whole app. This file is the start of that, not
+the finish.
 
 ## How to implement Daily (`app/daily.tsx`)
 
@@ -63,11 +62,11 @@ The shared page does Daily's extras. They are:
 - **Done follows the item**, not the page. A visitor on Daily uses that
   item's Done action.
 
-Keep `ReminderItemRow` and `applyReminderChange`. Do not touch
-`stillwanted.ts`, `armdepth.ts`, or the scheduler core. If Done's three
-words are written down for the pages to read, they go on the
-translator's table in `scheduler/translators/translate.ts`, not inside
-the scheduler's decisions.
+Keep `ReminderItemRow` and `applyReminderChange`. Do not change
+`armdepth.ts` or the scheduler core. Done's three words are on the
+translator's table in `scheduler/translators/translate.ts`. The Done
+door reads them. stillwanted still answers two ways: the item is
+finished, or this occurrence is done.
 
 The design answers are in this file. A sitting that still has to ask
 Patrick a design question is not using it.
@@ -94,8 +93,8 @@ them, or is left off when it does not belong. The live sets in
 - **Which banner button set it carries** — routineactions,
   cadenceactions, appointmentsok, shifteddayactions.
 - **What Done does** — thisCycle, advanceDate, endItem. This code is
-  not in the engine yet. The two-way bit `doneEndsItemBit` is not
-  enough, because there are three actions. The code replaces that bit.
+  on the translator's table. The two-way bit is not enough, because
+  there are three actions. The code replaces that bit.
 - **A holiday move** — before, or after. Left off when unused.
 - **The form of a lead time** — offset from the due moment, or a clock
   time a number of days before. A lead time is one form, not half of
@@ -104,9 +103,8 @@ them, or is left off when it does not belong. The live sets in
 - **A named time of day** — morning, midday, evening.
 - **A Quarterly step** — none, days30, days60, days90. None means every
   three months. One chip at a time. A second tap clears it. The list
-  tile still shows the date. This is a code, not a remembered chip
-  rule. It is not in the engine yet as a named set; today it is a
-  number on the saved item.
+  tile still shows the date. This is a code on the translator's table.
+  The saved item still holds the day-count the engine already steps.
 
 A code word is the right shape when the thing is a choice of names.
 
@@ -138,14 +136,16 @@ fields. They do not remember the page.
 ### Exclusive groups
 
 An exclusive group is a group of bits that work together. Only one of
-them can be true at once. Turning one on turns the others off.
+them can be true at once. Turning one on turns the others off. There is
+no both-true case.
 
 This is for a difference that looks like bits but must not combine. A
 code word is the right shape when the thing is a choice of names.
 
-**A second Thursday and a Wednesday after the 6th cannot both apply.**
-That is one exclusive group. The translator already refuses both; the
-design is that refusal, not a remembered rule.
+**A second Thursday and a Wednesday after the 6th cannot both be true.**
+That is one exclusive group, on the translator's table. The Options
+sheet turns the others off when you set the last pattern. The translator
+writes at most one.
 
 ## What already stands
 
@@ -319,3 +319,95 @@ back one step.
 Does not asks: Is that for today? Yes opens Daily’s one-shot,
 `oneTime`. No asks Appointment or Bucket List. Cancel goes back one
 step.
+
+## Calendar
+
+Calendar is a month view of the one list, not a kind of its own. The
+page is `app/calendar.tsx`. Home opens it as `/calendar`.
+
+Daily and Bucket List stay off the month. Other items sit on the days
+the engine already shades. The names in a day cell are not taps. The
+whole day is. A tap opens that day's list, time then name. A tap on a
+row opens the one edit form, `app/item-edit.tsx`. After you make the
+edit, the save walk back brings you back to the item list. Hitting the
+Back button brings you back to the calendar.
+
+There is no + Add. New items from Calendar go through Help, which sits
+in the month header, the same Help as from Home. Help only chooses
+the kind. The save-the-item popup, New, sits above it.
+
+Arrows change the month. Home is in the header. The month fills the
+screen.
+
+## Settings
+
+Settings is not a kind of its own. The page is `app/settings.tsx`. Home
+opens it from the gear in the header. The gear is not a badge. Help is
+not on this page. Home is in the header.
+
+It holds the person's name, Light or Dark, and popup colors — Match App
+or Follow iPhone. It holds the three named times of day: morning,
+midday, and evening. Those times are the clock for Morning of, Day
+Before, and Night Before. A tap opens the time with the same
+date-and-time control as the rest of the app.
+
+Scheduled Reminders and Backup & Restore are doors off this page. They
+are not this page. Reset All Data asks the phone to confirm who you
+are, then wipes everything and lands on Home.
+
+## Backup
+
+Backup is not a kind of its own. The visible name is Backup & Restore.
+The page is `app/backup.tsx`. Settings opens it. Back is in the header.
+Help is not on this page.
+
+There are three acts: Export Backup, Replace from Backup, and Merge
+from Backup. You choose Replace or Merge first, then pick a file, then
+confirm. Export saves a file you can keep.
+
+Replace puts the backup's reminders in place of what is here, and takes
+off the missed-reminder notes. Merge keeps what is here and adds from
+the backup only what is not already here. A backup reminder is already
+here when it has the same identity the app wrote into the backup file.
+Settings and page logs stay on the phone. The backup does not carry
+them. A file that is not a current backup from this app changes
+nothing. After Replace or Merge, OK lands on Home.
+
+## Scheduled Reminders
+
+Scheduled Reminders is not a kind of its own. The page is
+`app/reminders.tsx`. Settings opens it. Back is in the header. Help is
+not on this page.
+
+It shows what the phone is holding, not the saved list. The count sits
+under the header, with how much room the phone has on the line beneath.
+Rows are grouped Today, Tomorrow, This Week, Later, and Time not known.
+A heading with nothing under it is left out. A tap opens a details
+popup: where it comes from, when it fires, last due, next due, the
+banner words, and its buttons. Close puts the popup away. A line at the
+foot names how many the phone is holding that this list does not show.
+
+## Options
+
+Options is not a Home page and not a kind of its own. The visible name
+is Options. `app/item-edit.tsx` carries + OPT. That opens
+`ScreenOptionsSheet` for the cases that belong to that item's kind.
+That is the only place Options is reached from.
+
+Done keeps the cases. Back leaves a case, or closes the sheet. Notes
+live on New and Edit, not here. Calendar shading is not a case. The
+saved field stays.
+
+The cases are Holidays, Time zone, an extra tap on a shifted day, a
+second Thursday, and a Wednesday after the 6th. Holidays is Day before
+or Day after. Time zone is Float with phone or Keep this zone. An extra
+tap on a shifted day is Then or Next day.
+
+Daily and One Time get Time zone only. Weekly, Appointments, and
+Birthdays get Holidays and Time zone. Monthly, Quarterly, and Yearly
+get all five. Bucket List gets none.
+
+On Monthly, Quarterly, and Yearly, the last pattern you set stays —
+the date, a second Thursday, or a Wednesday after the 6th — and the
+other comes off. That is how turning one on turns the others off, on
+the sheet.

@@ -3,7 +3,8 @@
 // The live scheduler calls translateReminderItems. These tests ask that each
 // kind reaches the same common facts the old per-screen rules already proved.
 
-import { translateReminderItems } from '../translators/translate.ts';
+import { translateReminderItems, doneActionCodeOf, exclusiveGroupBitsOf } from '../translators/translate.ts';
+import { MONTHLY_WEEKDAY_EXCLUSIVE_GROUP, QUARTERLY_STEP_CODES } from '../inputshape.ts';
 import { momentsFor } from '../leadmoments.ts';
 import type { ReminderItem } from '../../modules/reminder-types.ts';
 import {
@@ -76,8 +77,8 @@ export function runTranslatorCadenceTests(): void {
             reminders: [{ id: 'r1', amount: 30, unit: 'minutes', kind: 'offset' }],
         }));
         assertSame(
-            [shaped.sourceScreenCode, shaped.doneEndsItemBit, shaped.leadTimeList.length, shaped.bannerButtonsCode, shaped.bannerTitleText],
-            ['oneTime', false, 2, 'routineactions', 'Daily Routine'],
+            [shaped.sourceScreenCode, shaped.doneActionCode, shaped.leadTimeList.length, shaped.bannerButtonsCode, shaped.bannerTitleText],
+            ['oneTime', 'thisCycle', 2, 'routineactions', 'Daily Routine'],
             'a Daily one-shot is a one-off that still belongs to Daily',
         );
     });
@@ -93,8 +94,8 @@ export function runTranslatorCadenceTests(): void {
             reminders: [{ id: 'r1', amount: 30, unit: 'minutes', kind: 'offset' }],
         }));
         assertSame(
-            [shaped.sourceScreenCode, shaped.doneEndsItemBit, shaped.leadTimeList.length, shaped.bannerButtonsCode],
-            ['appointments', true, 2, 'appointmentsok'],
+            [shaped.sourceScreenCode, shaped.doneActionCode, shaped.leadTimeList.length, shaped.bannerButtonsCode],
+            ['appointments', 'endItem', 2, 'appointmentsok'],
             'the set time is one lead, and each before-chip is another',
         );
     });
@@ -110,8 +111,8 @@ export function runTranslatorCadenceTests(): void {
             reminders: [{ id: 'r1', amount: 30, unit: 'minutes', kind: 'offset' }],
         }));
         assertSame(
-            [shaped.sourceScreenCode, shaped.repeatUnitCode, shaped.repeatIntervalCount, shaped.doneEndsItemBit, shaped.leadTimeList.length, shaped.bannerButtonsCode],
-            ['birthdays', 'year', 1, false, 2, 'appointmentsok'],
+            [shaped.sourceScreenCode, shaped.repeatUnitCode, shaped.repeatIntervalCount, shaped.doneActionCode, shaped.leadTimeList.length, shaped.bannerButtonsCode],
+            ['birthdays', 'year', 1, 'advanceDate', 2, 'appointmentsok'],
             'a birthday comes round every year and still speaks on the day and each chip',
         );
     });
@@ -256,23 +257,25 @@ export function runTranslatorCadenceTests(): void {
         );
     });
 
-    test('Both weekday patterns together are not mapped as a combination', () => {
-        const shaped = shapeOf(item({
+    test('The monthly weekday exclusive group writes only one pattern', () => {
+        const thursday = shapeOf(item({
             kind: 'monthly',
-            year: 2026,
-            month: 5,
-            day: 10,
-            hour: 9,
+            hour: 8,
             minute: 0,
             weekdayOrdinal: 2,
             ordinalWeekday: 4,
+        }));
+        const wednesday = shapeOf(item({
+            kind: 'monthly',
+            hour: 8,
+            minute: 0,
             afterWeekday: 3,
             afterDayCount: 6,
         }));
         assertSame(
-            [shaped.repeatWeekdayList, shaped.repeatAfterDayCount, shaped.repeatUnitCode],
-            [undefined, undefined, 'month'],
-            'a worker does not invent which of the two weekday patterns wins',
+            [thursday.repeatAfterDayCount, wednesday.repeatWeekdayList?.[0]?.weekdayOrdinalCount],
+            [undefined, undefined],
+            'a second Thursday does not also write a Wednesday after, and the reverse',
         );
     });
 
@@ -408,6 +411,51 @@ export function runTranslatorCadenceTests(): void {
         );
     });
 
+    test('Done on the table is a three-word code', () => {
+        assertSame(
+            [
+                doneActionCodeOf('daily'),
+                doneActionCodeOf('weekly'),
+                doneActionCodeOf('oneTime'),
+                doneActionCodeOf('monthly'),
+                doneActionCodeOf('quarterly'),
+                doneActionCodeOf('yearly'),
+                doneActionCodeOf('birthdays'),
+                doneActionCodeOf('appointments'),
+                doneActionCodeOf('bucketlist'),
+            ],
+            [
+                'thisCycle',
+                'thisCycle',
+                'thisCycle',
+                'advanceDate',
+                'advanceDate',
+                'advanceDate',
+                'advanceDate',
+                'endItem',
+                'endItem',
+            ],
+            'each kind names what Done does, so the pages do not remember the kind',
+        );
+    });
+
+    test('Monthly, Quarterly, and Yearly carry the weekday exclusive group', () => {
+        assertSame(
+            [
+                exclusiveGroupBitsOf('monthly'),
+                exclusiveGroupBitsOf('quarterly'),
+                exclusiveGroupBitsOf('yearly'),
+                exclusiveGroupBitsOf('daily'),
+            ],
+            [
+                [...MONTHLY_WEEKDAY_EXCLUSIVE_GROUP],
+                [...MONTHLY_WEEKDAY_EXCLUSIVE_GROUP],
+                [...MONTHLY_WEEKDAY_EXCLUSIVE_GROUP],
+                undefined,
+            ],
+            'a second Thursday and a Wednesday after the 6th cannot both be true',
+        );
+    });
     test('A Quarterly item with no day chip repeats every three months', () => {
         const shaped = shapeOf(item({
             kind: 'quarterly',
@@ -418,8 +466,8 @@ export function runTranslatorCadenceTests(): void {
             minute: 0,
         }));
         assertSame(
-            [shaped.repeatUnitCode, shaped.repeatIntervalCount],
-            ['month', 3],
+            [shaped.repeatUnitCode, shaped.repeatIntervalCount, shaped.quarterlyStepCode],
+            ['month', 3, 'none'],
             'no chip is every three months, as before',
         );
     });
@@ -435,9 +483,17 @@ export function runTranslatorCadenceTests(): void {
             intervalDays: 90,
         }));
         assertSame(
-            [shaped.repeatUnitCode, shaped.repeatIntervalCount],
-            ['day', 90],
+            [shaped.repeatUnitCode, shaped.repeatIntervalCount, shaped.quarterlyStepCode],
+            ['day', 90, 'days90'],
             'the chip writes a day count the engine already steps',
+        );
+    });
+
+    test('The Quarterly step is a named set of four words', () => {
+        assertSame(
+            QUARTERLY_STEP_CODES.slice(),
+            ['none', 'days30', 'days60', 'days90'],
+            'an impossible step cannot be written down',
         );
     });
 }
