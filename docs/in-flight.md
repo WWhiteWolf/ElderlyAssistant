@@ -4,20 +4,19 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-07, at the close of #82-new.
+Last written: 2026-09-07, at the wrap of #82-new.
 
 ## Read this first
 
-- **#82-new is closed.** Quarterly 30 / 60 / 90 chips on Add. On the
-  phone. A 90-day item fired; Done moved it to December 6.
-- **Phone load:** #82-new. Mac 310.
+- **#82-new is closed.** Quarterly chips on the phone. First Connect
+  trip: testers on TestFlight External; App Store **72** waiting for
+  review. He is not aiming to go live.
+- **Phone load:** #82-new. Mac 310. **74** turns iPad off.
 
 ## What is in
 
-No chip stays every three months. A chip counts that many days from
-the date entered when it is set. One chip at a time; a second tap
-clears it. Done and the engine follow the same step. The list tile
-still shows the date.
+Chips as already recorded. Testers may use **72** or **74**. The
+Connect map is `docs/connect-submit.md`.
 
 ## What is next
 
@@ -31,3 +30,5 @@ The three nice-to-have reminder checks. Regenerating `pending.docx`
 unless he asks. Do not treat the four leaving pages as Memory engine
 work. Do not raise how those four become apps. Do not set
 `UIViewControllerBasedStatusBarAppearance` to yes — RCT requires **no**.
+Do not spend an EAS credit only to drop iPad. Do not raise 72 versus
+74 for testers.

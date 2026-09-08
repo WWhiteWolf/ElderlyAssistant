@@ -77,7 +77,11 @@ make Memory paid. TickTick is free plus about $36 a year.
 The App Store name is **A Place To Remember**. The subtitle is
 **Memory Assist reminders** (Patrick, #82-new).
 
-Screenshots and privacy-policy text are still not started.
+Three iPhone screenshots were supplied at #82-new. Connect also
+asked for iPad shots because **72** declared iPad. **74** turns
+iPad off. Privacy-policy text is still not a public page. The
+listing description, keywords, and the Connect journey live in
+`docs/connect-submit.md`.
 
 ## Build steps
 

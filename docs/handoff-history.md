@@ -17,9 +17,11 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
-## #82-new (2026-09-07): Quarterly 30 / 60 / 90 chips on Add
+## #82-new (2026-09-07): Quarterly chips; first Connect trip; TestFlight testers
 
-**The goal was to add 30, 60, and 90 days to Quarterly.**
+**The goal was to add 30, 60, and 90 days to Quarterly.** The sitting
+then ran the first App Store Connect trip, which he wanted for
+teammates on TestFlight, not for going live.
 
 **#81-new was committed**, asked at the open.
 
@@ -32,9 +34,28 @@ still shows the date.
 **Checks.** Mac suite 310 of 310. TypeScript clean. On the phone. A
 90-day item fired two minutes ahead; Done moved it to December 6.
 
+**Connect.** Name **A Place To Remember**, subtitle **Memory Assist
+reminders**, category **Productivity** (the word Primary is a
+placeholder). Description and keywords pasted. Three iPhone
+screenshots. Not a trader; Business DSA already Active. Free, manual
+release. App Store review of **72** is Waiting for Review. He is not
+aiming to go live.
+
+**TestFlight.** External testers added. Test Information filled.
+Attach a build from the iOS row, not the empty group picker. Internal
+Testing is not an invite box. **73** was truncated. **74** turns iPad
+off (`supportsTablet` false). Testers may use 72 or 74.
+
+**Journey.** `docs/connect-submit.md` is the beginning-to-end map:
+Mac build, testers, then Prepare for Submission for a full App Review
+and a manual release. A public privacy page and a support page are
+still not written.
+
 **Session close.** `handoff.md`, `handoff-history.md`, `pending.txt`,
-`in-flight.md`, and `App-Docs/master-handoff.md` refreshed.
-`pending.docx` not regenerated. Pending 1 moved to Done 67.
+`in-flight.md`, `docs/publishing.md`, and
+`App-Docs/master-handoff.md` refreshed. `pending.docx` not
+regenerated. Pending 1 (chips) moved to Done 67 earlier this sitting.
+Connect trip is Done 68.
 
 ## #81-new (2026-09-07): Birthdays page; forty-six merged on the phone
 

@@ -14,12 +14,7 @@ who decides. It is not a claim that the files were refreshed.
 
 He is living with the **#82-new** load on the phone. Landscape 90°
 counter-clockwise, headers on the left. What he has used is working.
-
-**#82-new is on the phone.** Quarterly 30 / 60 / 90 chips on Add. A
-90-day item fired, Done moved it to December 6. Mac suite 310 of 310.
-TypeScript is clean.
-
-    node --experimental-strip-types scheduler/tests/run-all.ts
+Quarterly chips are on Add; the ruling is below.
 
 ## Standing rulings
 
@@ -113,11 +108,17 @@ These are Patrick's and they govern the work rather than describing it.
 
 The second new page is not yet named.
 
-`docs/publishing.md` was updated at #82-new with the first-submit
-listing. Drop this note next sitting.
-
 The phone is on the **#82-new** load. Spec, user guide, feedback
 button, and testing file are Pending 1–4.
+
+Testers are on TestFlight External. The App Store heading is Waiting
+for Review on **72**. He is not aiming to go live. Manual release.
+**74** is iPhone-only. Testers may use 72 or 74. The journey is
+`docs/connect-submit.md`. A public privacy page and a support page
+are still not written.
+
+`docs/connect-submit.md` and `docs/publishing.md` were updated at
+the #82-new wrap. Drop this note next sitting.
 
 **Day-roll lock** still needs a night of all-green Daily, then a morning
 open on a new load, to confirm the pop-up stays quiet.

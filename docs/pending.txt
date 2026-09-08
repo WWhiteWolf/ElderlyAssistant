@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-07 (#82-new — Quarterly 30 / 60 / 90 chips on the phone)
+Last updated: 2026-09-07 (#82-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -124,6 +124,9 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+68. #82-new — first Connect trip. Testers on TestFlight. Journey in
+   docs/connect-submit.md.
 
 67. #82-new — Quarterly 30 / 60 / 90 chips on Add. No chip stays
    every three months. A chip counts from the date entered when it
