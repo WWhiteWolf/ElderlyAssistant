@@ -28,6 +28,7 @@ import type {
     BannerButtonsCode,
     DoneActionCode,
     LeadTime,
+    QuarterlyStepCode,
     RepeatUnitCode,
     ShapedItem,
 } from '../inputshape.ts';
@@ -96,6 +97,13 @@ export interface ScreenRules {
     standsForGroupBit: boolean;
     /** Which registered button set the banner carries. */
     bannerButtonsCode?: BannerButtonsCode;
+    /**
+     * The Quarterly step, left off on every other kind.
+     *
+     * none is every three months. A day-count is that many days from the
+     * entered date.
+     */
+    quarterlyStepOf?: (saved: ReminderItem) => QuarterlyStepCode;
 
     // ---- read from the saved item ----
 
@@ -126,6 +134,8 @@ function translateOne(rules: ScreenRules, saved: ReminderItem): ShapedItem {
         due.hasDueTimeBit && weekdayNumber !== undefined
             ? [{ weekdayNumber }]
             : undefined;
+    const quarterlyStep = rules.quarterlyStepOf?.(saved);
+    const quarterlyDays = quarterlyStep !== undefined ? quarterlyStepDaysOf(quarterlyStep) : undefined;
 
     return {
         // ---- what the item is ----
@@ -145,10 +155,15 @@ function translateOne(rules: ScreenRules, saved: ReminderItem): ShapedItem {
         ...(due.dueHour !== undefined ? { dueHour: due.dueHour } : {}),
         ...(due.dueMinute !== undefined ? { dueMinute: due.dueMinute } : {}),
         ...(due.dueMoment !== undefined ? { dueMoment: due.dueMoment } : {}),
-        ...(rules.repeatUnitCode !== undefined ? { repeatUnitCode: rules.repeatUnitCode } : {}),
-        ...(rules.repeatIntervalCount !== undefined
-            ? { repeatIntervalCount: rules.repeatIntervalCount }
-            : {}),
+        ...(quarterlyDays !== undefined
+            ? { repeatUnitCode: 'day' as const, repeatIntervalCount: quarterlyDays }
+            : {
+                ...(rules.repeatUnitCode !== undefined ? { repeatUnitCode: rules.repeatUnitCode } : {}),
+                ...(rules.repeatIntervalCount !== undefined
+                    ? { repeatIntervalCount: rules.repeatIntervalCount }
+                    : {}),
+            }),
+        ...(quarterlyStep !== undefined ? { quarterlyStepCode: quarterlyStep } : {}),
         ...(repeatWeekdayList !== undefined ? { repeatWeekdayList } : {}),
         // Default is float with the phone. The one-list translator overwrites
         // this from the saved Options fields when a named zone is present.
@@ -295,19 +310,17 @@ const weeklyCadenceRules: ScreenRules = {
 };
 
 const datedCadenceRules: ScreenRules = {
-    canBeDoneBit: false,
+    canBeDoneBit: true,
     canBePushedBackBit: true,
     doneActionCode: 'advanceDate',
     exclusiveGroupBits: MONTHLY_WEEKDAY_EXCLUSIVE_GROUP,
     standsForGroupBit: false,
     bannerTitleTextOf: (item) =>
-        item.kind === 'yearly' ? 'Yearly'
-        : item.kind === 'quarterly' ? 'Quarterly'
-        : 'Monthly',
+        item.kind === 'yearly' ? 'Yearly' : 'Monthly',
     bannerButtonsCode: 'cadenceactions',
     idOf: (item) => item.id,
     nameOf: (item) => item.label,
-    isDoneOf: () => false,
+    isDoneOf: (item) => !!item.completed,
     pushedBackStampOf: (item) => item.snoozedUntil,
     dueOf: (item) => {
         const hour = typeof item.hour === 'number' ? item.hour : undefined;
@@ -337,6 +350,12 @@ const datedCadenceRules: ScreenRules = {
     },
     leadTimesOf: () => atTheMomentItself,
     bannerBodyTextOf: (item) => `Time for ${item.label}!`,
+};
+
+const quarterlyCadenceRules: ScreenRules = {
+    ...datedCadenceRules,
+    bannerTitleTextOf: () => 'Quarterly',
+    quarterlyStepOf: (item) => quarterlyStepCodeOf(item.intervalDays),
 };
 
 const appointmentsCadenceRules: ScreenRules = {
@@ -389,14 +408,14 @@ const appointmentsCadenceRules: ScreenRules = {
 };
 
 const birthdaysCadenceRules: ScreenRules = {
-    canBeDoneBit: false,
+    canBeDoneBit: true,
     canBePushedBackBit: false,
     doneActionCode: 'advanceDate',
     standsForGroupBit: false,
     bannerButtonsCode: 'appointmentsok',
     idOf: (item) => item.id,
     nameOf: (item) => item.label,
-    isDoneOf: () => false,
+    isDoneOf: (item) => !!item.completed,
     pushedBackStampOf: () => undefined,
     dueOf: (item) => {
         if (typeof item.year === 'number'
@@ -467,7 +486,7 @@ const rulesByKind: Record<ReminderItem['kind'], ScreenRules> = {
     oneTime: oneTimeCadenceRules,
     weekly: weeklyCadenceRules,
     monthly: datedCadenceRules,
-    quarterly: datedCadenceRules,
+    quarterly: quarterlyCadenceRules,
     yearly: datedCadenceRules,
     appointments: appointmentsCadenceRules,
     birthdays: birthdaysCadenceRules,
@@ -492,9 +511,10 @@ export function translateReminderItems(items: ReminderItem[], now: number): Shap
  * producing no reminder. Holidays are one code, absent when unused. A
  * complete second Thursday or Wednesday after the 6th becomes the engine's
  * weekday entry; a half-entered pair is left off. Those two are one
- * exclusive group: only one can be true, so the translator writes at most
- * one. A numbered-day weekday keeps only the first occurrence after that
- * day. Shifted-day preference is not mapped here.
+ * exclusive group on the table: only one can be true. If both saved
+ * fields are complete, neither weekday pattern is written. Birthdays
+ * are not on that group. A numbered-day weekday keeps only the first
+ * occurrence after that day. Shifted-day preference is not mapped here.
  */
 function withSavedOptions(saved: ReminderItem, shaped: ShapedItem): ShapedItem {
     let out = shaped;
@@ -515,41 +535,36 @@ function withSavedOptions(saved: ReminderItem, shaped: ShapedItem): ShapedItem {
 }
 
 function withMonthlyRepeat(saved: ReminderItem, shaped: ShapedItem): ShapedItem {
-    if (saved.kind === 'quarterly') {
-        const step = quarterlyStepCodeOf(saved.intervalDays);
-        const days = quarterlyStepDaysOf(step);
-        if (days !== undefined) {
-            return {
-                ...shaped,
-                quarterlyStepCode: step,
-                repeatUnitCode: 'day',
-                repeatIntervalCount: days,
-            };
-        }
-        shaped = { ...shaped, quarterlyStepCode: step };
+    if (
+        shaped.quarterlyStepCode !== undefined
+        && quarterlyStepDaysOf(shaped.quarterlyStepCode) !== undefined
+    ) {
+        return shaped;
     }
-    const thursday = secondThursdayComplete(saved);
-    const wednesday = wednesdayAfterComplete(saved);
+    const group = exclusiveGroupBitsOf(saved.kind) ?? [];
+    const thursday = group.includes('secondThursday') && secondThursdayComplete(saved);
+    const wednesday = group.includes('wednesdayAfter') && wednesdayAfterComplete(saved);
     const interval =
         saved.kind === 'monthly' ? 1
         : saved.kind === 'yearly' || saved.kind === 'birthdays' ? 1
         : (typeof saved.intervalMonths === 'number' ? saved.intervalMonths : 3);
-    if (thursday && saved.ordinalWeekday != null && saved.weekdayOrdinal != null) {
+    if (thursday && wednesday) {
+        // Both complete is not a case the group allows. Write neither.
+    } else if (thursday && saved.ordinalWeekday != null && saved.weekdayOrdinal != null) {
         return {
             ...shaped,
             repeatUnitCode: 'month',
-            repeatIntervalCount: saved.kind === 'yearly' || saved.kind === 'birthdays' ? 12 : interval,
+            repeatIntervalCount: saved.kind === 'yearly' ? 12 : interval,
             repeatWeekdayList: [{
                 weekdayNumber: saved.ordinalWeekday,
                 weekdayOrdinalCount: saved.weekdayOrdinal,
             }],
         };
-    }
-    if (wednesday && saved.afterWeekday != null) {
+    } else if (wednesday && saved.afterWeekday != null) {
         return {
             ...shaped,
             repeatUnitCode: 'month',
-            repeatIntervalCount: saved.kind === 'yearly' || saved.kind === 'birthdays' ? 12 : interval,
+            repeatIntervalCount: saved.kind === 'yearly' ? 12 : interval,
             repeatWeekdayList: [{ weekdayNumber: saved.afterWeekday }],
             repeatAfterDayCount: typeof saved.afterDayCount === 'number' ? saved.afterDayCount : 6,
         };

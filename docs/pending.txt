@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-08 (#90-new)
+Last updated: 2026-09-08 (#91-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -29,9 +29,10 @@ implementation (Patrick, #84-new). It is the guide. A sitting builds
 from docs/designed-implementation.md and does not ask Patrick a
 design question.
 
-#90-new is closed. Exclusive groups, Done's three-word code, and
-the Quarterly step are on the translator's table. Next sitting is
-not named. Do not change the scheduler's decisions.
+#91-new is closed. The four table-door pieces are built. A
+later sitting can teach the save form to write the codes and
+leave the rest to the table. Do not change the scheduler's
+decisions.
 Home, Help, Calendar, Settings, Backup, Scheduled Reminders,
 and Options are in docs/designed-implementation.md. A
 Settings password stays nice-to-have.

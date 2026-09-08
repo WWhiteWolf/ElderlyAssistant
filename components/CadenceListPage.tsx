@@ -28,6 +28,8 @@ import {
     historyKeyFor,
     loadReminderItems,
     markReminderDone,
+    doneActionCodeOf,
+    snoozeChoicesOf,
     sortDailyVisible,
     type ReminderItem,
     type ReminderKind,
@@ -83,6 +85,8 @@ export default function CadenceListPage({
     const itemsRef = useRef(items);
     itemsRef.current = items;
     const visible = visibleFor(kind, items);
+    const snoozeTarget = snoozeItemId ? items.find((one) => one.id === snoozeItemId) : undefined;
+    const snoozeChoices = snoozeTarget ? snoozeChoicesOf(snoozeTarget) : [];
     const visibleRef = useRef(visible);
     visibleRef.current = visible;
     const rowHeights = useRef<Record<string, number>>({});
@@ -143,24 +147,49 @@ export default function CadenceListPage({
             {
                 text: 'Mark not done',
                 onPress: () => {
-                    writeItems((list) => list.map((one) =>
-                        one.id === id ? { ...one, completed: false, doneAt: undefined } : one
-                    ));
+                    writeItems((list) => list.map((one) => {
+                        if (one.id !== id) return one;
+                        if (
+                            doneActionCodeOf(one.kind) === 'advanceDate'
+                            && typeof one.priorYear === 'number'
+                            && typeof one.priorMonth === 'number'
+                            && typeof one.priorDay === 'number'
+                        ) {
+                            const {
+                                completed: _completed,
+                                doneAt: _doneAt,
+                                priorYear,
+                                priorMonth,
+                                priorDay,
+                                ...rest
+                            } = one;
+                            void _completed;
+                            void _doneAt;
+                            return {
+                                ...rest,
+                                year: priorYear,
+                                month: priorMonth,
+                                day: priorDay,
+                                completed: false,
+                            };
+                        }
+                        return { ...one, completed: false, doneAt: undefined };
+                    }));
                 },
             },
         ]);
     };
 
-    const snoozeItem = (minutes: number) => {
+    const snoozeItem = (stampAt: (now: number) => number, label: string) => {
         if (!snoozeItemId) return;
         const item = items.find((one) => one.id === snoozeItemId);
         if (!item) { setSnoozeItemId(null); return; }
-        const target = Date.now() + minutes * 60 * 1000;
+        const target = stampAt(Date.now());
         writeItems((list) => list.map((one) =>
             one.id === item.id ? { ...one, snoozedUntil: target } : one
         ));
         setSnoozeItemId(null);
-        Alert.alert('Snoozed', `${item.label} reminder set for ${minutes} minutes from now.`);
+        Alert.alert('Snoozed', `${item.label} reminder set for ${label} from now.`);
     };
 
     const beginDrag = useCallback((id: string, y: number) => {
@@ -414,18 +443,18 @@ export default function CadenceListPage({
                         <View style={styles.pickerModal}>
                             <Text style={styles.modalTitle}>Snooze Reminder</Text>
                             <Text style={styles.inputLabel}>
-                                {items.find((one) => one.id === snoozeItemId)?.label} — remind me again in:
+                                {snoozeTarget?.label} — remind me again in:
                             </Text>
                             <View style={styles.snoozeOptionRow}>
-                                <TouchableOpacity style={styles.snoozeOption} onPress={() => snoozeItem(15)}>
-                                    <Text style={styles.snoozeOptionText}>15 min</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.snoozeOption} onPress={() => snoozeItem(30)}>
-                                    <Text style={styles.snoozeOptionText}>30 min</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.snoozeOption} onPress={() => snoozeItem(60)}>
-                                    <Text style={styles.snoozeOptionText}>60 min</Text>
-                                </TouchableOpacity>
+                                {snoozeChoices.map((choice) => (
+                                    <TouchableOpacity
+                                        key={choice.label}
+                                        style={styles.snoozeOption}
+                                        onPress={() => snoozeItem(choice.stampAt, choice.label)}
+                                    >
+                                        <Text style={styles.snoozeOptionText}>{choice.label}</Text>
+                                    </TouchableOpacity>
+                                ))}
                             </View>
                             <View style={styles.modalBtns}>
                                 <TouchableOpacity style={styles.cancelBtn} onPress={() => setSnoozeItemId(null)}>

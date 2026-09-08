@@ -255,9 +255,17 @@ export function runMissCandidateTests(): void {
             month: THURSDAY.getMonth(),
             day: THURSDAY.getDate(),
             completed: true,
+            priorYear: 2026,
+            priorMonth: 7,
+            priorDay: 2,
         });
         const after = clearStartingOccurrenceTicks([monthly], THURSDAY);
         assert(after[0].completed === false, 'expected the old tick off at the new occurrence');
+        assertSame(
+            [after[0].priorYear, after[0].priorMonth, after[0].priorDay],
+            [undefined, undefined, undefined],
+            'the spent date must not come back on a later un-check',
+        );
     });
 
     test('A Monthly tick stays while the next due date is still ahead', () => {

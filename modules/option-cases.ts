@@ -212,8 +212,6 @@ export function applyConnectedOptions(item: ReminderItem, settings: OptionSettin
     return out;
 }
 
-export type MonthlyPattern = 'date' | 'secondThursday' | 'wednesdayAfter';
-
 export function secondThursdayComplete(s: {
     weekdayOrdinal?: number;
     ordinalWeekday?: number;
@@ -225,27 +223,45 @@ export function wednesdayAfterComplete(s: { afterWeekday?: number }): boolean {
     return s.afterWeekday != null;
 }
 
-export function monthlyPatternOf(item: {
+/** True when one weekday bit of the exclusive group is complete. */
+export function weekdayPatternComplete(s: {
     weekdayOrdinal?: number;
     ordinalWeekday?: number;
     afterWeekday?: number;
-}): MonthlyPattern {
-    if (secondThursdayComplete(item)) return 'secondThursday';
-    if (wednesdayAfterComplete(item)) return 'wednesdayAfter';
-    return 'date';
+}): boolean {
+    return secondThursdayComplete(s) || wednesdayAfterComplete(s);
 }
 
-/** The last of the three stays; the other two are cleared. */
-export function withLastMonthlyPattern(
-    settings: OptionSettings,
-    last: MonthlyPattern,
-): OptionSettings {
-    if (last === 'secondThursday') {
-        return { ...settings, afterWeekday: undefined, afterDayCount: 6 };
+function namedBitComplete(settings: OptionSettings, name: string): boolean {
+    if (name === 'secondThursday') return secondThursdayComplete(settings);
+    if (name === 'wednesdayAfter') return wednesdayAfterComplete(settings);
+    return false;
+}
+
+function namedBitChanged(prev: OptionSettings, next: OptionSettings, name: string): boolean {
+    if (name === 'secondThursday') {
+        return next.weekdayOrdinal !== prev.weekdayOrdinal
+            || next.ordinalWeekday !== prev.ordinalWeekday;
     }
-    if (last === 'wednesdayAfter') {
+    if (name === 'wednesdayAfter') {
+        return next.afterWeekday !== prev.afterWeekday
+            || next.afterDayCount !== prev.afterDayCount;
+    }
+    return false;
+}
+
+function clearNamedBit(settings: OptionSettings, name: string): OptionSettings {
+    if (name === 'secondThursday') {
         return { ...settings, weekdayOrdinal: undefined, ordinalWeekday: undefined };
     }
+    if (name === 'wednesdayAfter') {
+        return { ...settings, afterWeekday: undefined, afterDayCount: 6 };
+    }
+    return settings;
+}
+
+/** Turn the exclusive group off. Choosing a date is this, not a third bit. */
+export function clearExclusiveGroupFields(settings: OptionSettings): OptionSettings {
     return {
         ...settings,
         weekdayOrdinal: undefined,
@@ -255,48 +271,59 @@ export function withLastMonthlyPattern(
     };
 }
 
-export function lastEnteredMonthlyPattern(
+/**
+ * When one name on the table's list becomes complete, clear the others.
+ * The list is exclusiveGroupBitsOf of the kind.
+ */
+export function withExclusiveGroup(
     prev: OptionSettings,
     next: OptionSettings,
-    was: MonthlyPattern,
-): MonthlyPattern {
-    if (!secondThursdayComplete(next) && !wednesdayAfterComplete(next)) {
-        return 'date';
+    group: readonly string[] | undefined,
+): OptionSettings {
+    if (!group || group.length === 0) return next;
+    let out = next;
+    for (const name of group) {
+        if (namedBitComplete(next, name) && namedBitChanged(prev, next, name)) {
+            for (const other of group) {
+                if (other !== name) out = clearNamedBit(out, other);
+            }
+            return out;
+        }
     }
-    const thursdayChanged =
-        next.weekdayOrdinal !== prev.weekdayOrdinal
-        || next.ordinalWeekday !== prev.ordinalWeekday;
-    const wednesdayChanged =
-        next.afterWeekday !== prev.afterWeekday
-        || next.afterDayCount !== prev.afterDayCount;
-    if (secondThursdayComplete(next) && thursdayChanged) {
-        return 'secondThursday';
-    }
-    if (wednesdayAfterComplete(next) && wednesdayChanged) {
-        return 'wednesdayAfter';
-    }
-    return was;
+    return out;
 }
 
-export function applyLastPatternToItem(item: ReminderItem, last: MonthlyPattern): ReminderItem {
+/**
+ * Write only the one complete exclusive bit. Both complete is neither.
+ * Neither complete keeps the date and drops the weekday fields.
+ */
+export function applyExclusiveGroupToItem(
+    item: ReminderItem,
+    settings: OptionSettings,
+): ReminderItem {
     const out = { ...item };
-    if (last === 'date') {
-        delete out.weekdayOrdinal;
-        delete out.ordinalWeekday;
+    const thursday = secondThursdayComplete(settings);
+    const wednesday = wednesdayAfterComplete(settings);
+    if (thursday && !wednesday) {
         delete out.afterWeekday;
         delete out.afterDayCount;
+        delete out.year;
+        delete out.month;
+        delete out.day;
         return out;
     }
-    delete out.year;
-    delete out.month;
-    delete out.day;
-    if (last === 'secondThursday') {
-        delete out.afterWeekday;
-        delete out.afterDayCount;
-    } else {
+    if (wednesday && !thursday) {
         delete out.weekdayOrdinal;
         delete out.ordinalWeekday;
+        delete out.year;
+        delete out.month;
+        delete out.day;
+        return out;
     }
+    delete out.weekdayOrdinal;
+    delete out.ordinalWeekday;
+    delete out.afterWeekday;
+    delete out.afterDayCount;
     return out;
 }
 

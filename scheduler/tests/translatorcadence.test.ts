@@ -8,10 +8,10 @@ import { MONTHLY_WEEKDAY_EXCLUSIVE_GROUP, QUARTERLY_STEP_CODES } from '../inputs
 import { momentsFor } from '../leadmoments.ts';
 import type { ReminderItem } from '../../modules/reminder-types.ts';
 import {
-    lastEnteredMonthlyPattern,
-    withLastMonthlyPattern,
     emptyOptionSettings,
     optionCasesForKind,
+    withExclusiveGroup,
+    clearExclusiveGroupFields,
 } from '../../modules/option-cases.ts';
 import { assert, assertSame, test } from './runner.ts';
 
@@ -298,21 +298,20 @@ export function runTranslatorCadenceTests(): void {
         );
     });
 
-    test('The last of the three stays and clears the other two', () => {
+    test('The table list turns the other exclusive bit off', () => {
         const start = emptyOptionSettings();
         const withThursday = {
             ...start,
             weekdayOrdinal: 2,
             ordinalWeekday: 4,
         };
-        const last = lastEnteredMonthlyPattern(start, withThursday, 'date');
-        const cleared = withLastMonthlyPattern(withThursday, last);
+        const cleared = withExclusiveGroup(start, withThursday, MONTHLY_WEEKDAY_EXCLUSIVE_GROUP);
         assertSame(
-            [last, cleared.afterWeekday, cleared.weekdayOrdinal, cleared.ordinalWeekday],
-            ['secondThursday', undefined, 2, 4],
+            [cleared.afterWeekday, cleared.weekdayOrdinal, cleared.ordinalWeekday],
+            [undefined, 2, 4],
             'choosing a second Thursday clears a Wednesday after the 6th',
         );
-        const withDate = withLastMonthlyPattern(cleared, 'date');
+        const withDate = clearExclusiveGroupFields(cleared);
         assertSame(
             [withDate.weekdayOrdinal, withDate.ordinalWeekday],
             [undefined, undefined],
@@ -320,28 +319,29 @@ export function runTranslatorCadenceTests(): void {
         );
     });
 
-    test('A partial second Thursday is kept until the pattern changes', () => {
+    test('A partial second Thursday is kept until the pattern completes', () => {
         const start = emptyOptionSettings();
-        let pattern: 'date' | 'secondThursday' | 'wednesdayAfter' = 'date';
         let settings = start;
 
-        const apply = (next: typeof start) => {
-            const last = lastEnteredMonthlyPattern(settings, next, pattern);
-            settings = last !== pattern ? withLastMonthlyPattern(next, last) : next;
-            pattern = last;
-        };
-
-        apply({ ...settings, weekdayOrdinal: 2 });
+        settings = withExclusiveGroup(
+            settings,
+            { ...settings, weekdayOrdinal: 2 },
+            MONTHLY_WEEKDAY_EXCLUSIVE_GROUP,
+        );
         assertSame(
-            [pattern, settings.weekdayOrdinal, settings.ordinalWeekday],
-            ['date', 2, undefined],
+            [settings.weekdayOrdinal, settings.ordinalWeekday],
+            [2, undefined],
             'the first chip alone stays lit while the pattern is still open',
         );
 
-        apply({ ...settings, ordinalWeekday: 4 });
+        settings = withExclusiveGroup(
+            settings,
+            { ...settings, ordinalWeekday: 4 },
+            MONTHLY_WEEKDAY_EXCLUSIVE_GROUP,
+        );
         assertSame(
-            [pattern, settings.weekdayOrdinal, settings.ordinalWeekday],
-            ['secondThursday', 2, 4],
+            [settings.weekdayOrdinal, settings.ordinalWeekday],
+            [2, 4],
             'the second chip completes the pattern',
         );
     });
@@ -411,6 +411,47 @@ export function runTranslatorCadenceTests(): void {
         );
     });
 
+    test('Dated kinds can be marked done', () => {
+        const monthly = shapeOf(item({
+            kind: 'monthly',
+            year: 2026,
+            month: 5,
+            day: 10,
+            hour: 9,
+            minute: 0,
+        }));
+        const birthday = shapeOf(item({
+            kind: 'birthdays',
+            year: 2026,
+            month: 5,
+            day: 10,
+            hour: 14,
+            minute: 0,
+        }));
+        assertSame(
+            [monthly.canBeDoneBit, birthday.canBeDoneBit],
+            [true, true],
+            'dated kinds are allowed a tick; the three-word code says what it means',
+        );
+    });
+
+    test('A ticked dated item carries the tick', () => {
+        const shaped = shapeOf(item({
+            kind: 'monthly',
+            year: 2026,
+            month: 5,
+            day: 10,
+            hour: 9,
+            minute: 0,
+            completed: true,
+        }));
+        assertSame(
+            [shaped.isDoneBit, shaped.doneActionCode],
+            [true, 'advanceDate'],
+            'the translator reads the tick so the wanted-block can read the code',
+        );
+    });
+
     test('Done on the table is a three-word code', () => {
         assertSame(
             [
@@ -436,6 +477,46 @@ export function runTranslatorCadenceTests(): void {
                 'endItem',
             ],
             'each kind names what Done does, so the pages do not remember the kind',
+        );
+    });
+
+    test('Both weekday fields complete writes neither pattern', () => {
+        const shaped = shapeOf(item({
+            kind: 'monthly',
+            year: 2026,
+            month: 5,
+            day: 10,
+            hour: 8,
+            minute: 0,
+            weekdayOrdinal: 2,
+            ordinalWeekday: 4,
+            afterWeekday: 3,
+            afterDayCount: 6,
+        }));
+        assertSame(
+            [shaped.repeatWeekdayList, shaped.repeatAfterDayCount, shaped.repeatUnitCode],
+            [undefined, undefined, 'month'],
+            'both complete is not a case the group allows, so Thursday does not win',
+        );
+    });
+
+    test('Birthdays stay off the weekday exclusive path', () => {
+        const shaped = shapeOf(item({
+            kind: 'birthdays',
+            year: 2026,
+            month: 5,
+            day: 10,
+            hour: 14,
+            minute: 0,
+            weekdayOrdinal: 2,
+            ordinalWeekday: 4,
+            afterWeekday: 3,
+            afterDayCount: 6,
+        }));
+        assertSame(
+            [shaped.repeatUnitCode, shaped.repeatIntervalCount, shaped.repeatWeekdayList],
+            ['year', 1, undefined],
+            'Birthdays repeat yearly and do not carry a weekday list',
         );
     });
 

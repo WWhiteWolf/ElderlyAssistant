@@ -96,10 +96,9 @@ export function runStillWantedTests(): void {
     });
 
     test('An item that cannot be marked done is never treated as done', () => {
-        // A dated cadence has no done field at all, so its done state is always
-        // false and this is what keeps it out of the question.
+        // The capability bit still gates the state. Dated kinds can be marked
+        // done; this test is the gate, not Monthly as a cannot-be-done kind.
         const said = isStillWanted(item({
-            sourceScreenCode: 'monthly',
             canBeDoneBit: false,
             isDoneBit: true,
         }), NOW);
@@ -107,6 +106,20 @@ export function runStillWantedTests(): void {
             [said.wantsRemindersBit, said.dropsThisOccurrenceBit],
             [true, false],
             'the capability bit gates the state',
+        );
+    });
+
+    test('A dated tick is a mark and the new date is still wanted', () => {
+        const said = isStillWanted(item({
+            sourceScreenCode: 'monthly',
+            canBeDoneBit: true,
+            isDoneBit: true,
+            doneActionCode: 'advanceDate',
+        }), NOW);
+        assertSame(
+            [said.wantsRemindersBit, said.dropsThisOccurrenceBit, said.becauseText],
+            [true, false, 'the date already moved, the tick is a mark'],
+            'the date already moved, so the tick does not drop this occurrence',
         );
     });
 

@@ -17,6 +17,52 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #91-new (2026-09-08): second look, then the table doors
+
+**The goal was a second confirming look** at whether Memory is built
+from the designed shape and table, rather than from rules each place
+still has to remember.
+
+**The previous sitting was not yet committed.** It waited for this
+look.
+
+**The three first reads were confirmed.** Piece 1 the shape and the
+table. Piece 2 the list, the row, and the banner. Piece 3 the edit
+form and Options. The names were in the shape. The old remembering
+was still doing the work. The four-sitting remedy was confirmed.
+
+**The wanted-block is the load-bearing part of Done.** Dated kinds
+can be marked done. `advanceDate` plus a tick means still wanted:
+the date has already moved, so the tick is a mark and does not drop
+the new date.
+
+**The job sheet** is `docs-ref/build-sheets/build-sheet-table-doors.md`.
+All four pieces were built.
+
+1. Done is only the three-word code. Dated kinds can be marked done.
+   Un-check of a dated item puts the old date back from `priorYear`,
+   `priorMonth`, and `priorDay`. The morning clear drops those with
+   the tick. The Weekly-only Done path came out. Weekly still writes
+   `doneAt` because the weekly reset reads it.
+2. Exclusive groups are one group. The form turns the others off
+   from the table’s list. Both weekday fields complete writes
+   neither pattern. Birthdays stay off that path.
+3. The Quarterly step is a field on the table. Quarterly has its
+   own row. Save writes a day-count or a months-count, not both.
+4. The list’s Snooze distances come from the banner set. Skip
+   stamps a cycle when the item has a next cycle.
+
+**Tests.** TypeScript clean. 321 passed, 0 failed. Engine decisions
+not changed. Simulator checks were left for Patrick. Not on the
+phone.
+
+**Later sitting.** Teach the save form to write the codes and leave
+the rest to the table. `shifteddayactions` is still never written.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `pending.txt`,
+and `in-flight.md` refreshed. Phone still the #82-new load. Patrick
+will commit from the previous sitting that is still open.
+
 ## #90-new (2026-09-08): exclusive groups, Done, and Quarterly on the table
 
 **The goal was exclusive groups on the translator's table.**

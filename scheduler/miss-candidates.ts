@@ -91,8 +91,17 @@ export function clearStartingOccurrenceTicks<T extends ReminderItem>(items: T[],
         }
         if (!item.completed) return item;
         if (!shownOnDate(item, today) && !savedDateIsTodayOrPast(item, today)) return item;
-        const { doneAt: _doneAt, ...rest } = item;
+        const {
+            doneAt: _doneAt,
+            priorYear: _priorYear,
+            priorMonth: _priorMonth,
+            priorDay: _priorDay,
+            ...rest
+        } = item;
         void _doneAt;
+        void _priorYear;
+        void _priorMonth;
+        void _priorDay;
         return { ...rest, completed: false } as T;
     });
 }

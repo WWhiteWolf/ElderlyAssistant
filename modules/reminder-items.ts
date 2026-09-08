@@ -8,7 +8,8 @@ import {
     quarterlyStepCodeOf,
     quarterlyStepDaysOf,
 } from '../scheduler/inputshape';
-import { translateReminderItems, doneActionCodeOf } from '../scheduler/translators/translate';
+import { translateReminderItems, doneActionCodeOf, exclusiveGroupBitsOf } from '../scheduler/translators/translate';
+export { doneActionCodeOf, exclusiveGroupBitsOf };
 import { shadedDaysInMonth } from '../scheduler/leadmoments';
 import { isDateOf, shownOnDate } from '../scheduler/shown-on-date';
 import type { ReminderItem, ReminderKind } from './reminder-types';
@@ -50,17 +51,67 @@ export function hasReminderSet(item: ReminderItem): boolean {
     return !!shaped?.canBePushedBackBit && !!shaped.hasDueTimeBit;
 }
 
+export type SnoozeChoice = {
+    label: string;
+    stampAt: (now: number) => number;
+};
+
+/** Snooze distances from the banner set the table already gave this item. */
+export function snoozeChoicesOf(item: ReminderItem): SnoozeChoice[] {
+    const shaped = translateReminderItems([item], Date.now())[0];
+    if (shaped?.bannerButtonsCode === 'routineactions') {
+        return [
+            { label: '15 min', stampAt: (now) => now + 15 * 60 * 1000 },
+            { label: '30 min', stampAt: (now) => now + 30 * 60 * 1000 },
+            { label: '60 min', stampAt: (now) => now + 60 * 60 * 1000 },
+        ];
+    }
+    if (shaped?.bannerButtonsCode === 'cadenceactions') {
+        return [
+            {
+                label: 'Delay 1 Day',
+                stampAt: (now) => {
+                    const target = new Date(now);
+                    target.setDate(target.getDate() + 1);
+                    return target.getTime();
+                },
+            },
+            {
+                label: 'Delay 1 Week',
+                stampAt: (now) => {
+                    const target = new Date(now);
+                    target.setDate(target.getDate() + 7);
+                    return target.getTime();
+                },
+            },
+            {
+                label: 'Delay 1 Month',
+                stampAt: (now) => {
+                    const target = new Date(now);
+                    target.setMonth(target.getMonth() + 1);
+                    return target.getTime();
+                },
+            },
+        ];
+    }
+    return [];
+}
+
 /** The due moment of this cycle, which Skip stamps so the engine arms the next. */
 export function thisCycleDueStamp(item: ReminderItem, now: number = Date.now()): number | undefined {
-    if (typeof item.hour !== 'number' || typeof item.minute !== 'number') return undefined;
+    const shaped = translateReminderItems([item], now)[0];
+    if (!shaped?.repeatUnitCode) return undefined;
     if (item.kind === 'daily') {
+        if (typeof item.hour !== 'number' || typeof item.minute !== 'number') return undefined;
         const due = new Date(now);
         due.setHours(item.hour, item.minute, 0, 0);
         return due.getTime();
     }
     if (item.kind === 'weekly' && typeof item.day === 'number') {
+        if (typeof item.hour !== 'number' || typeof item.minute !== 'number') return undefined;
         return lastOccurrence(item.day, item.hour, item.minute, now);
     }
+    if (typeof shaped.dueMoment === 'number') return shaped.dueMoment;
     return undefined;
 }
 
@@ -200,13 +251,18 @@ export async function markReminderDone(
     await applyReminderChange((list) => list.map((one) => {
         if (one.id !== id) return one;
         if (doneActionCodeOf(one.kind) === 'advanceDate') {
-            return { ...advanceDatedItem(one), completed: true };
-        }
-        if (one.kind === 'weekly') {
-            const { snoozedUntil, ...rest } = one;
-            return { ...rest, completed: true, doneAt: Date.now() };
+            const prior =
+                typeof one.year === 'number'
+                && typeof one.month === 'number'
+                && typeof one.day === 'number'
+                    ? { priorYear: one.year, priorMonth: one.month, priorDay: one.day }
+                    : {};
+            return { ...advanceDatedItem({ ...one, ...prior }), completed: true };
         }
         const { snoozedUntil, ...rest } = one;
+        if (one.kind === 'weekly') {
+            return { ...rest, completed: true, doneAt: Date.now() };
+        }
         return { ...rest, completed: true };
     }));
 }

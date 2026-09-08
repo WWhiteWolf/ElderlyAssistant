@@ -55,8 +55,10 @@ export interface StillWantedAnswer {
 export function isStillWanted(item: ShapedItem, now: number): StillWantedAnswer {
     // 1. Done, and how far the done reaches. The capability bit gates the
     //    state: an item that cannot be marked done is never treated as done,
-    //    whatever its state field happens to say. A dated cadence falls out
-    //    here without an exception.
+    //    whatever its state field happens to say. The three-word code says
+    //    what a tick means. A dated cadence can be marked done; its date
+    //    has already moved, so the tick is a mark and this occurrence
+    //    still stands.
     //
     //    Nothing here knows about the day's rollover clearing the tick. That
     //    is the daily reset's job and it already works, so this block only
@@ -64,6 +66,9 @@ export function isStillWanted(item: ShapedItem, now: number): StillWantedAnswer 
     if (item.canBeDoneBit && item.isDoneBit) {
         if (item.doneActionCode === 'endItem') {
             return answer(false, false, null, 'the item is done and done ends it');
+        }
+        if (item.doneActionCode === 'advanceDate') {
+            return answer(true, false, null, 'the date already moved, the tick is a mark');
         }
         // Only this occurrence goes. The ones after it stand, and the
         // push-back stamp goes with the occurrence it belonged to, which is

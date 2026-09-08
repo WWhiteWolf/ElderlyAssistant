@@ -23,8 +23,11 @@ Help is in the designed implementation. That load is not on the phone.
 Options into the designed implementation. Spec only; not a phone load.
 
 **#90-new** put exclusive groups, Done's three-word code, and the
-Quarterly step on the translator's table. Not on the phone. Next
-sitting is not named. Do not change the scheduler's decisions.
+Quarterly step on the translator's table. Not on the phone.
+**#91-new** confirmed the first evaluation and built the four
+table-door pieces. The job sheet is
+`docs-ref/build-sheets/build-sheet-table-doors.md`. Not on the
+phone. Do not change the scheduler's decisions.
 
 ## Standing rulings
 
@@ -146,9 +149,14 @@ These are Patrick's and they govern the work rather than describing it.
 
 **#84-new:** the sheets, and the spec, are designed implementation of the
 whole app. They do not collect new decisions. The ruling is in Standing
-rulings. The guide is `docs/designed-implementation.md`. Exclusive groups,
-Done's three-word code, and the Quarterly step are on the translator's
-table (#90-new). The scheduler stays. Next sitting is not named.
+rulings. The guide is `docs/designed-implementation.md`. The scheduler
+stays.
+
+**#91-new:** the four table-door pieces are built. A later sitting
+can teach the save form to write the codes and leave the rest to
+the table. `shifteddayactions` is still never written. Leave the
+scheduler's decisions as they are. Leave Home, Help, Calendar,
+Settings, Backup, and Scheduled Reminders alone.
 
 Treat the pages the way the engine was treated. A page has a few jobs.
 Every reminder page fits those pieces. Rebuild what does not fit.

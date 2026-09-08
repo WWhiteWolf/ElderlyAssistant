@@ -21,6 +21,7 @@ import {
     DAY_NAMES,
     hourMinuteOf,
     applyReminderChange,
+    exclusiveGroupBitsOf,
     loadReminderItems,
     quarterlyStepCodeOf,
     quarterlyStepDaysOf,
@@ -37,11 +38,10 @@ import {
     optionsFromItem,
     applyConnectedOptions,
     keepOptionsForKind,
-    applyLastPatternToItem,
-    lastEnteredMonthlyPattern,
-    monthlyPatternOf,
-    withLastMonthlyPattern,
-    type MonthlyPattern,
+    applyExclusiveGroupToItem,
+    weekdayPatternComplete,
+    withExclusiveGroup,
+    clearExclusiveGroupFields,
     type OptionSettings,
 } from '../modules/option-cases';
 
@@ -152,7 +152,6 @@ function assembleFormItem(parts: {
     intervalMonths: number;
     quarterlyStep: QuarterlyStepCode;
     optionSettings: OptionSettings;
-    monthlyPattern: MonthlyPattern;
     note: string;
 }): ReminderItem {
     const base: ReminderItem = parts.existing ?? {
@@ -194,16 +193,21 @@ function assembleFormItem(parts: {
             ...next,
             hour: parts.pendingDate.getHours(),
             minute: parts.pendingDate.getMinutes(),
-            ...(parts.editKind === 'quarterly' ? { intervalMonths: parts.intervalMonths } : {}),
         };
-        if (parts.monthlyPattern === 'date') {
+        if (!weekdayPatternComplete(parts.optionSettings)) {
             next.year = parts.pendingDate.getFullYear();
             next.month = parts.pendingDate.getMonth();
             next.day = parts.pendingDate.getDate();
         }
-        const days = quarterlyStepDaysOf(parts.quarterlyStep);
-        if (parts.editKind === 'quarterly' && days !== undefined) {
-            next.intervalDays = days;
+        if (parts.editKind === 'quarterly') {
+            const days = quarterlyStepDaysOf(parts.quarterlyStep);
+            if (days !== undefined) {
+                next.intervalDays = days;
+                delete next.intervalMonths;
+            } else {
+                next.intervalMonths = 3;
+                delete next.intervalDays;
+            }
         } else {
             delete next.intervalDays;
         }
@@ -285,7 +289,7 @@ function assembleFormItem(parts: {
             parts.editKind,
         );
         if (parts.editKind === 'monthly' || parts.editKind === 'quarterly' || parts.editKind === 'yearly') {
-            next = applyLastPatternToItem(next, parts.monthlyPattern);
+            next = applyExclusiveGroupToItem(next, parts.optionSettings);
         }
     } else {
         next = keepOptionsForKind(
@@ -348,12 +352,9 @@ export default function ItemEditScreen() {
     const [showOptions, setShowOptions] = useState(false);
     const [optionsStartId, setOptionsStartId] = useState<string | null>(null);
     const [optionSettings, setOptionSettings] = useState<OptionSettings>(emptyOptionSettings);
-    const [monthlyPattern, setMonthlyPattern] = useState<MonthlyPattern>('date');
     const [note, setNote] = useState('');
     const optionSettingsRef = useRef(optionSettings);
     optionSettingsRef.current = optionSettings;
-    const monthlyPatternRef = useRef(monthlyPattern);
-    monthlyPatternRef.current = monthlyPattern;
     const noteRef = useRef(note);
     noteRef.current = note;
     const kindOptions = optionCasesForKind(editKind);
@@ -425,14 +426,12 @@ export default function ItemEditScreen() {
                         setTimeSet(typeof found.hour === 'number');
                     }
                     setOptionSettings(optionsFromItem(found));
-                    setMonthlyPattern(monthlyPatternOf(found));
                     setNote(found.notes ?? '');
                 }
             } else {
                 const nextKind = kindFrom(asParam(kind), page);
                 setEditKind(nextKind);
                 setOptionSettings(emptyOptionSettings());
-                setMonthlyPattern('date');
                 setNote('');
                 setQuarterlyStep('none');
                 if (nextKind === 'oneTime') {
@@ -523,7 +522,6 @@ export default function ItemEditScreen() {
             intervalMonths,
             quarterlyStep,
             optionSettings: optionSettingsRef.current,
-            monthlyPattern: monthlyPatternRef.current,
             note: noteRef.current,
         });
 
@@ -682,7 +680,7 @@ export default function ItemEditScreen() {
 
                 {(editKind === 'monthly' || editKind === 'quarterly' || editKind === 'yearly') && (
                     <DateTimeControl
-                        mode={monthlyPattern === 'date' ? 'datetime' : 'time'}
+                        mode={weekdayPatternComplete(optionSettings) ? 'time' : 'datetime'}
                         value={pendingDate}
                         onChange={(d, half, timeVia) => {
                             const dateMoved =
@@ -692,8 +690,7 @@ export default function ItemEditScreen() {
                             setPendingDate(d);
                             applyTimeVia(timeVia, setTimeVia24h);
                             if (dateMoved) {
-                                setMonthlyPattern('date');
-                                setOptionSettings(withLastMonthlyPattern(optionSettings, 'date'));
+                                setOptionSettings(clearExclusiveGroupFields(optionSettings));
                             }
                         }}
                         dateLabel="First Due Date"
@@ -801,13 +798,11 @@ export default function ItemEditScreen() {
                         setOptionSettings(next);
                         return;
                     }
-                    const last = lastEnteredMonthlyPattern(optionSettings, next, monthlyPattern);
-                    setMonthlyPattern(last);
-                    if (last !== monthlyPattern) {
-                        setOptionSettings(withLastMonthlyPattern(next, last));
-                    } else {
-                        setOptionSettings(next);
-                    }
+                    setOptionSettings(withExclusiveGroup(
+                        optionSettings,
+                        next,
+                        exclusiveGroupBitsOf(editKind),
+                    ));
                 }}
                 startId={optionsStartId}
                 onClose={() => setShowOptions(false)}

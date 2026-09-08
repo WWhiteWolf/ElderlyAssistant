@@ -83,6 +83,7 @@ History, not the road. Record of what was built and why.
 - **`build-sheet-one-door.md`** — Grok Phase 2. One apply-then-schedule door. Written and built at #73-new.
 - **`build-sheet-birthdays.md`** — #81-new. Birthdays page. Written and built at #81-new.
 - **`build-sheet-banner-housing.md`** — #85-new. Banner housing onto the bits. Two pieces. Built at #87-new.
+- **`build-sheet-table-doors.md`** — #91-new. Four sittings: Done as the three-word code, exclusive groups as one group, the Quarterly step on the table, then the row and banner read the button set. All four pieces built at #91-new. Not on the phone.
 
 ## Not here any more
 

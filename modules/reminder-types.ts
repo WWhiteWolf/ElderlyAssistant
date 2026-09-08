@@ -39,6 +39,11 @@ export interface ReminderItem {
     reminders?: LeadReminder[];
     completed?: boolean;
     doneAt?: number;
+    // The date that was on the item before dated Done moved it. Un-check
+    // puts these back. The morning clear drops them with the tick.
+    priorYear?: number;
+    priorMonth?: number;
+    priorDay?: number;
     snoozedUntil?: number;
     // Skip: the due moment of the cycle that was skipped. The engine drops
     // that cycle and arms the next. Not Done.
