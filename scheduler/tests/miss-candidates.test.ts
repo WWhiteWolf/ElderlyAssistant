@@ -260,7 +260,21 @@ export function runMissCandidateTests(): void {
         assert(after[0].completed === false, 'expected the old tick off at the new occurrence');
     });
 
-    test('A Monthly tick stays the day after it was made', () => {
+    test('A Monthly tick stays while the next due date is still ahead', () => {
+        const nextMonth = new Date(THURSDAY);
+        nextMonth.setMonth(nextMonth.getMonth() + 1);
+        const monthly = item({
+            kind: 'monthly',
+            year: nextMonth.getFullYear(),
+            month: nextMonth.getMonth(),
+            day: nextMonth.getDate(),
+            completed: true,
+        });
+        const after = clearStartingOccurrenceTicks([monthly], THURSDAY);
+        assert(after[0].completed === true, 'expected the tick still there');
+    });
+
+    test('A Monthly tick comes off when the saved date is already past', () => {
         const monthly = item({
             kind: 'monthly',
             year: WEDNESDAY.getFullYear(),
@@ -269,6 +283,30 @@ export function runMissCandidateTests(): void {
             completed: true,
         });
         const after = clearStartingOccurrenceTicks([monthly], THURSDAY);
-        assert(after[0].completed === true, 'expected the tick still there overnight');
+        assert(after[0].completed === false, 'expected the tick off after the due day');
+    });
+
+    test('A Birthdays tick comes off on its due morning', () => {
+        const birthdays = item({
+            kind: 'birthdays',
+            year: THURSDAY.getFullYear(),
+            month: THURSDAY.getMonth(),
+            day: THURSDAY.getDate(),
+            completed: true,
+        });
+        const after = clearStartingOccurrenceTicks([birthdays], THURSDAY);
+        assert(after[0].completed === false, 'expected the Birthdays tick off');
+    });
+
+    test('An Appointments tick stays even when its date is past', () => {
+        const appointments = item({
+            kind: 'appointments',
+            year: WEDNESDAY.getFullYear(),
+            month: WEDNESDAY.getMonth(),
+            day: WEDNESDAY.getDate(),
+            completed: true,
+        });
+        const after = clearStartingOccurrenceTicks([appointments], THURSDAY);
+        assert(after[0].completed === true, 'expected Appointments still done');
     });
 }

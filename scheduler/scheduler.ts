@@ -82,7 +82,8 @@ export const OWNED_SOURCES = [
  *
  * Misses for every kind that has a day are written first, from the ticks still
  * sitting on those items. Daily's ticks then clear with the day. Monthly,
- * Quarterly and Yearly ticks stay until that kind of day comes round again.
+ * Quarterly, Yearly and Birthdays ticks stay until the morning of the next due
+ * date, or come off if that date has already passed.
  *
  * It is safe to call at any time: on a day that has already been rolled over it
  * reads the date and does nothing else. The list load calls it before it reads,

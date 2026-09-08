@@ -17,6 +17,46 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #83-new (2026-09-07): code review; Done-tick morning clear; page-shape map
+
+**The goal was to review the current code** for leftover and for how
+well it meets the aims.
+
+**#82-new was committed**, asked at the open.
+
+**Done tick.** A review had treated the ✓ after dated Done as leftover.
+It is the mark that this cycle was done, because the new date is easy
+to miss. It stays until the morning of the next due date. A second tap
+while it is showing means un-check. Appointments and Bucket List stay
+as they are.
+
+**Morning clear.** Built into the same morning roll as Daily, in
+`scheduler/miss-candidates.ts`. Monthly, Quarterly, Yearly, and
+Birthdays: the tick comes off on the due morning, or on the first open
+after that date has already passed. Appointments stay done. Mac suite
+313 of 313. TypeScript clean. Not on the phone.
+
+**Pages like the engine.** A page has a few jobs. Every reminder page
+fits those pieces. Rebuild what does not fit. Keep what already fits:
+the engine, the one list, the shared list page, the one edit form, the
+one row. Daily is still its own copy. The banner housing still writes by
+source. Home, Help, Calendar, Settings, Backup, and Scheduled
+Reminders are not reminder pages and are not rebuilt. Highest purpose:
+reminders smooth and consistent. Do not rebuild everything.
+
+**Three sheets next**, one at a time: Daily onto the shared list;
+banner housing onto the bits; Siri out of sight. The map is in
+`docs/handoff.md`. This sitting wrote the map, not the sheets.
+
+**Siri.** Comes out of what a person can see. What is there now only
+opens the app. Keep in the back of the design a later in-app Siri.
+Low priority. Do not raise it. Research where Apple is headed is later.
+Banner buttons belong on the bit field.
+
+**Session close.** `handoff.md`, `handoff-history.md`, and `pending.txt`
+refreshed. `pending.docx` not regenerated. Master hand-off left: the
+phone is still the #82-new load, testers and 72 unchanged.
+
 ## #82-new (2026-09-07): Quarterly chips; first Connect trip; TestFlight testers
 
 **The goal was to add 30, 60, and 90 days to Quarterly.** The sitting

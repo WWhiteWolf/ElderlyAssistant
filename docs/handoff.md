@@ -14,7 +14,8 @@ who decides. It is not a claim that the files were refreshed.
 
 He is living with the **#82-new** load on the phone. Landscape 90°
 counter-clockwise, headers on the left. What he has used is working.
-Quarterly chips are on Add; the ruling is below.
+#83-new built the dated Done-tick morning clear; that load is not on
+the phone. The page-shape map is below.
 
 ## Standing rulings
 
@@ -63,8 +64,14 @@ These are Patrick's and they govern the work rather than describing it.
 - **Landscape is an optional view.** The allowed turns are 0°, 90°
   counter-clockwise, and 270° counter-clockwise; 180° upside-down is out
   (Patrick, #60-new).
-- **Siri's voice list is Daily's own items only** (Patrick, #64-new).
-  **Adding Siri commands is later.**
+- **Siri comes out of what a person can see** (Patrick, #83-new). This
+  replaces #64-new's Daily-only list and "adding commands is later."
+  What is there now only opens the app. A person who sees it thinks it
+  should do more, and that the app is broken. Take it out of sight.
+  Keep in the back of the design a later Siri that can go into the app
+  and do the work. The page pieces and the bit field are that structure;
+  we do not yet know Apple's shape. Low priority. Do not raise it.
+  Research where Apple is headed is later, not this sitting.
 - **Daily's "One Time for today" is not the Appointments page**
   (Patrick, #65-new; own kind at #78-new). Those words are not an old
   name to change. It is saved as `oneTime`, a one-shot that belongs to
@@ -79,6 +86,13 @@ These are Patrick's and they govern the work rather than describing it.
   (Patrick, #70-new; built at #79-new). #41-new stopped that; he did
   not notice until then. Done moves the date on the item so the tile
   shows the next cycle armed — as it did before #41-new.
+- **The Done tick on Monthly, Quarterly, Yearly, and Birthdays is the
+  mark that this cycle was done** (Patrick, #83-new). It is not
+  leftover. The date has already moved; the tick is how you see it.
+  It stays until the morning of the next due date, then comes off in
+  the same morning roll as Daily. A second tap while it is showing
+  means un-check, not Done for the new cycle. Appointments and Bucket
+  List stay as they are. Built at #83-new.
 - **The Where? page is Help** (Patrick, #70-new; wording at #80-new).
   The visible name is **Help**, not Where? The Home badge is **?**, not
   🧭. The route may stay `where.tsx`. Step 1 choices are **Repeats** and
@@ -97,6 +111,10 @@ These are Patrick's and they govern the work rather than describing it.
   Done and the engine follow the same step.
 - **Skip drops this cycle and arms the next** (Patrick, #74-new). It is
   not Done, and it is not only clearing a snooze.
+- **Banner buttons belong on the bit field** (Patrick, #83-new). Which
+  buttons an item gets — Done, Skip, Snooze, OK — is a bit of the
+  kind, the same as whether it can be done or pushed back. The row and
+  the banner both read those bits. They do not remember the page.
 - **Appointments remind at the set time** (Patrick, #74-new). This
   reverses #52-new. They act like the rest of the app. The before chips
   still stand.
@@ -105,6 +123,47 @@ These are Patrick's and they govern the work rather than describing it.
   zone.
 
 ## What is open in front of it
+
+**#83-new map for the next sitting — write a sheet, not this map.**
+Treat the pages the way the engine was treated. A page has a few jobs.
+Every reminder page fits those pieces. Rebuild what does not fit.
+Keep what already fits. Highest purpose: reminders smooth and consistent.
+Do not rebuild Home, Help, Calendar, Settings, Backup, or Scheduled
+Reminders.
+
+What already fits: the engine, the one list, the one save door, the
+shared list page (`components/CadenceListPage.tsx` — Weekly through
+Bucket List, each route only names its kind), the one edit form
+(`app/item-edit.tsx`), the one row (`components/ReminderItemRow.tsx`),
+the date-and-time control, and the page chrome.
+
+What does not fit, and the three sheets, one at a time:
+
+1. **Daily onto the shared list.** `app/daily.tsx` does the same jobs
+   as the shared list — list, row, Done, Snooze, log — in its own copy.
+   It already uses the row and the save door. A sheet must carry the
+   extras, not invent them: visitors from other pages, One Time for
+   today, Daily's own add, and same-day undo. Files already read:
+   `app/daily.tsx`, `components/CadenceListPage.tsx`,
+   `components/ReminderItemRow.tsx`, `modules/reminder-items.ts`.
+2. **Banner housing onto the bits.** `app/_layout.tsx` still writes
+   Done, Skip, Snooze, and the log by source. The engine already names
+   the button set (`bannerButtonsCode` in
+   `scheduler/translators/translate.ts`). The row and the banner both
+   read the bits. They do not remember the page. The log is not one
+   piece yet: Daily, the shared list, the banner, and Siri each write
+   it. Files already read: `app/_layout.tsx`,
+   `scheduler/translators/translate.ts`.
+3. **Siri out of sight**, a short sheet. Take it out of what a person
+   can see. Do not tear out the structure kept for a later in-app
+   Siri. Do not raise Siri. Research is later. Files already read:
+   `plugins/withSiriIntent.js`, `plugins/ios/MarkItemDoneIntent.swift`,
+   `modules/app-group`.
+
+Rulings for those sheets are already in Standing rulings: Done tick,
+banner buttons on the bit field, Siri out of sight. Do not reopen
+them. The morning clear for the dated Done tick was built this sitting
+in `scheduler/miss-candidates.ts`.
 
 The second new page is not yet named.
 
@@ -116,9 +175,6 @@ for Review on **72**. He is not aiming to go live. Manual release.
 **74** is iPhone-only. Testers may use 72 or 74. The journey is
 `docs/connect-submit.md`. A public privacy page and a support page
 are still not written.
-
-`docs/connect-submit.md` and `docs/publishing.md` were updated at
-the #82-new wrap. Drop this note next sitting.
 
 **Day-roll lock** still needs a night of all-green Daily, then a morning
 open on a new load, to confirm the pop-up stays quiet.

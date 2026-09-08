@@ -102,6 +102,12 @@ is named. The account of the naming is under the #16-new rulings below.
 
 Recorded so that a later session does not undo good work by mistake.
 
+**The Done tick that stays after Monthly, Quarterly, Yearly, or
+Birthdays advances the date is deliberate** (Patrick, #83-new). It is
+how you see that this cycle was done. Do not treat it as leftover. It
+comes off on the morning of the next due date, or on the first open
+after that date has already passed. Built at #83-new.
+
 **The shape of the module is the established one.** It works out the
 whole set of reminders that ought to exist, compares that against what
 the phone is holding, and changes only the difference. Every reminder

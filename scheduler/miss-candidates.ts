@@ -58,21 +58,39 @@ export function missablesDueOnDays(items: ReminderItem[], days: Date[]): Missabl
     return dueOnDays(items, days).map(missableOf);
 }
 
+/** True when the saved calendar date is today or already behind us. */
+function savedDateIsTodayOrPast(item: ReminderItem, today: Date): boolean {
+    if (typeof item.year !== 'number' || typeof item.month !== 'number' || typeof item.day !== 'number') {
+        return false;
+    }
+    const due = new Date(item.year, item.month, item.day).setHours(0, 0, 0, 0);
+    const start = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    return due <= start;
+}
+
 /**
- * Monthly, Quarterly and Yearly keep a tick until the next occurrence begins.
+ * Monthly, Quarterly, Yearly and Birthdays keep a tick until the next
+ * occurrence begins.
  *
- * The tick has to survive overnight so the day-roll can still see Done. When
- * that kind of day comes round again, the old tick would hide a new miss, so
- * it comes off at the start of the new occurrence. Weekly's own reset already
- * does this. One Time keeps Done for good. Daily is cleared with the day.
+ * The tick is how you see that this cycle was done, after Done has already
+ * moved the date. It comes off on the morning of that next due date, or on
+ * the first open after that date has already passed. Pattern days with no
+ * matching saved date still use whether the item falls today. Appointments
+ * and Bucket List are not in this set. Daily is cleared with the day.
+ * Weekly's own reset already does this.
  */
 export function clearStartingOccurrenceTicks<T extends ReminderItem>(items: T[], today: Date): T[] {
     return items.map((item) => {
-        if (item.kind !== 'monthly' && item.kind !== 'quarterly' && item.kind !== 'yearly') {
+        if (
+            item.kind !== 'monthly'
+            && item.kind !== 'quarterly'
+            && item.kind !== 'yearly'
+            && item.kind !== 'birthdays'
+        ) {
             return item;
         }
         if (!item.completed) return item;
-        if (!shownOnDate(item, today)) return item;
+        if (!shownOnDate(item, today) && !savedDateIsTodayOrPast(item, today)) return item;
         const { doneAt: _doneAt, ...rest } = item;
         void _doneAt;
         return { ...rest, completed: false } as T;

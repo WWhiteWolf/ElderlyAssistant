@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-07 (#82-new)
+Last updated: 2026-09-07 (#83-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -24,6 +24,10 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
+Three sheets, one at a time: Daily onto the shared list; banner
+housing onto the bits; Siri out of sight. The map is in
+docs/handoff.md. Next sitting writes a sheet, not the map.
+
 The second new page is not yet named. Day-roll lock still wants a
 night of all-green Daily on this load.
 
@@ -125,13 +129,21 @@ A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
 
+70. #83-new — pages like the engine. Rebuild what does not fit. Daily,
+   banner housing, and Siri-out-of-sight are the three sheets. Banner
+   buttons on the bit field. Siri out of sight. No sheets written.
+
+69. #83-new — dated Done-tick morning clear. Birthdays included. Past
+   due date clears. Appointments stay done. Mac 313. TypeScript clean.
+   Not on the phone.
+
 68. #82-new — first Connect trip. Testers on TestFlight. Journey in
-   docs/connect-submit.md.
+   docs/connect-submit.md. Committed (Patrick, #83-new).
 
 67. #82-new — Quarterly 30 / 60 / 90 chips on Add. No chip stays
    every three months. A chip counts from the date entered when it
    is set. Done on a 90-day item moved to December 6. Mac 310.
-   TypeScript clean. On the phone.
+   TypeScript clean. On the phone. Committed (Patrick, #83-new).
 
 66. #81-new — Birthdays page. Own kind on the one list. Copy of
    Appointments, yearly Done. Help has Birthday. Forty-six birthdays
@@ -432,8 +444,9 @@ NICE-TO-HAVE LATER
 
 PARKED ON PURPOSE
 ------------------------------------------------------------------
-1. Voice control through Siri. Set aside after much effort; revisit
-   only if a future iPhone update fixes the name-matching.
+1. Voice control through Siri. Taken out of what a person can see
+   (#83-new). Keep in the back of the design. Do not raise. Research
+   where Apple is headed is later.
 2. Import files/documents into the Vault — PARKED (#69). Travels with
    Vault to stray apps (#75-new). Not to be re-raised in Memory.
 3. The Android icon pictures and the splash (startup) image still
