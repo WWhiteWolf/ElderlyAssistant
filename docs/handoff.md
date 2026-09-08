@@ -18,14 +18,12 @@ counter-clockwise, headers on the left. What he has used is working.
 the phone. #84-new put Daily onto the shared list; that load is not
 on the phone.
 
-**Next sitting:** banner housing onto the bits. After this file, open
-`docs/designed-implementation.md`. That is the guide. Do not change
-the engine. Do not ask Patrick a design question the guide already
-answers. This is a fresh-session piece: `app/_layout.tsx` and
-`scheduler/translators/translate.ts` are about 540 lines each, unread
-at the close of the Daily sitting, and Done, Skip, Snooze, and the
-tap still branch on which page the banner came from (Patrick, #84-new).
-Home, Option, and a Settings password are a separate issue.
+**Next sitting:** banner housing onto the bits, from
+`docs-ref/build-sheets/build-sheet-banner-housing.md`. Two pieces: the
+door, then the housing. Stop between them. #85-new wrote the sheet and
+did not build. Do not change the engine. Do not ask Patrick a design
+question the sheet already answers. Home, Option, and a Settings
+password are a separate issue.
 
 ## Standing rulings
 
@@ -167,14 +165,11 @@ on that shared page. `app/daily.tsx` is the same thin route as Weekly.
 
 What does not fit, remaining sheets, one at a time:
 
-1. **Banner housing onto the bits.** `app/_layout.tsx` still writes
-   Done, Skip, Snooze, and the log by source. The engine already names
-   the button set (`bannerButtonsCode` in
-   `scheduler/translators/translate.ts`). The row and the banner both
-   read the bits. They do not remember the page. The log is not one
-   piece yet: the shared list, the banner, and Siri each write it.
-   Fresh session (Patrick, #84-new). Files already read:
-   `app/_layout.tsx`, `scheduler/translators/translate.ts`.
+1. **Banner housing onto the bits.** The job sheet is
+   `docs-ref/build-sheets/build-sheet-banner-housing.md`. Two pieces:
+   lift Done and the log so the list and the banner share them, then
+   put the housing on the item, not the source tag. Siri stays as it
+   is this sitting. #85-new wrote the sheet and did not build.
 2. **Siri out of sight**, a short sheet. Take it out of what a person
    can see. Do not tear out the structure kept for a later in-app
    Siri. Do not raise Siri. Research is later. Files already read:

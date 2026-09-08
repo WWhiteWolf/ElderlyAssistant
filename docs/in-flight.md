@@ -4,31 +4,25 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-07, at the wrap of #82-new.
+Last written: 2026-09-08, at #85-new.
 
 ## Read this first
 
-- **#82-new is closed.** Quarterly chips on the phone. First Connect
-  trip: testers on TestFlight External; App Store **72** waiting for
-  review. He is not aiming to go live.
-- **Phone load:** #82-new. Mac 310. **74** turns iPad off.
+- **#85-new wrote the banner-housing sheet and did not build.** The job
+  is `docs-ref/build-sheets/build-sheet-banner-housing.md`. Two pieces.
+  Stop between them.
+- **Phone load:** #82-new.
 
 ## What is in
 
-Chips as already recorded. Testers may use **72** or **74**. The
-Connect map is `docs/connect-submit.md`.
+The sheet. The design stays in `docs/designed-implementation.md`. Siri
+out of sight is the next sheet after this build, and is not raised.
 
 ## What is next
 
-The second new page is not yet named. Day-roll lock still wants a
-night of all-green Daily on this load. Spec, user guide, feedback
-button, and testing file are Pending 1–4.
+A fresh session builds piece 1, stops, then piece 2.
 
 ## Do not reopen
 
-The three nice-to-have reminder checks. Regenerating `pending.docx`
-unless he asks. Do not treat the four leaving pages as Memory engine
-work. Do not raise how those four become apps. Do not set
-`UIViewControllerBasedStatusBarAppearance` to yes — RCT requires **no**.
-Do not spend an EAS credit only to drop iPad. Do not raise 72 versus
-74 for testers.
+The engine. Siri. Home, Option, and a Settings password. The three
+nice-to-have reminder checks.

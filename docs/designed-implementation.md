@@ -15,7 +15,8 @@ decisions and rules, and not a photograph of the current code. Design
 first, then make the changes from this file.
 
 Daily is on the shared list. The banner still writing by source is
-what a build replaces. That is not the destination.
+what a build replaces. That is not the destination. The job sheet is
+`docs-ref/build-sheets/build-sheet-banner-housing.md`.
 
 The engine stays. "Not in the engine yet" means a named code is not yet
 on the translator's table at the boundary. It does not mean the

@@ -17,6 +17,32 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #85-new (2026-09-08): banner-housing sheet; two pieces; not built
+
+**The goal was to put banner housing onto the bits.**
+
+**#84-new was committed**, asked at the open.
+
+**Read, not built.** The housing still decides by the source tag. The
+translator already names a button set on each kind. One Time still
+inherits Appointments’ OK-only set. Dated Done on the banner does not
+move the date; the list does. The list’s Done is not a door the banner
+can call. Daily’s log stays Daily’s history, even for a visitor. Siri
+was not raised. The engine was not opened.
+
+**The job sheet** is `docs-ref/build-sheets/build-sheet-banner-housing.md`.
+Two pieces, stop between them: lift Done and the log into
+`modules/reminder-items.ts` and point the list at them; then put the
+housing on the item, not the source tag, and set One Time’s table row
+to Daily’s buttons. #85-new writes the sheet and does not build.
+
+**Next sitting.** A fresh session builds from that sheet. Do not change
+the engine.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `pending.txt`,
+`pending.docx`, `in-flight.md`, and `docs/index.md` refreshed. Master
+hand-off Memory line updated. Phone still the #82-new load.
+
 ## #84-new (2026-09-08): design guide; Daily onto the shared list
 
 **The goal of the first sitting was to input a few new ideas and plan

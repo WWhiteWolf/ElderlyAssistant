@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-08 (#84-new)
+Last updated: 2026-09-08 (#85-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -29,10 +29,10 @@ implementation (Patrick, #84-new). It is the guide. A sitting builds
 from docs/designed-implementation.md and does not ask Patrick a
 design question.
 
-Next sitting: banner housing onto the bits from that guide. Do not
-change the engine. Fresh session: the housing file and the translator
-are about 540 lines each, and Done, Skip, Snooze, and the tap still
-branch on which page the banner came from.
+Next sitting: banner housing onto the bits, from
+docs-ref/build-sheets/build-sheet-banner-housing.md. Two pieces: the
+door, then the housing. Stop between them. #85-new wrote the sheet
+and did not build. Do not change the engine.
 
 Two leftovers, one at a time: banner housing onto the bits; Siri out
 of sight.
