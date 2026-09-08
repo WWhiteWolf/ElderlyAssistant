@@ -19,14 +19,15 @@ import { ReminderItemRow } from './ReminderItemRow';
 import { pageLabelFor } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
 import {
-    advanceDatedItem,
     dragKindTo,
     dragVisibleTo,
     format12Hour,
     formatItemWhen,
     FROM_PAGE,
     applyReminderChange,
+    historyKeyFor,
     loadReminderItems,
+    markReminderDone,
     sortDailyVisible,
     type ReminderItem,
     type ReminderKind,
@@ -39,18 +40,6 @@ interface HistoryEntry {
     actual: string;
     what?: string;
     note?: string;
-}
-
-function historyKeyFor(kind: ReminderKind): string | null {
-    if (kind === 'daily') return 'daily_history';
-    if (kind === 'weekly') return 'weekly_history';
-    if (kind === 'monthly') return 'monthly_history';
-    if (kind === 'quarterly') return 'quarterly_history';
-    if (kind === 'yearly') return 'yearly_history';
-    if (kind === 'appointments') return 'appointments_history';
-    if (kind === 'birthdays') return 'birthdays_history';
-    if (kind === 'bucketlist') return 'bucket_list_history';
-    return null;
 }
 
 function visibleFor(kind: ReminderKind, items: ReminderItem[]): ReminderItem[] {
@@ -138,42 +127,12 @@ export default function CadenceListPage({
     };
 
     const markDone = (id: string) => {
-        const item = items.find((one) => one.id === id);
-        if (!item) return;
         const now = new Date().toLocaleTimeString([], {
             hour: 'numeric',
             minute: '2-digit',
             hour12: false,
         });
-        const newEntry: HistoryEntry = {
-            id: Date.now().toString(),
-            date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
-            sched: item.label,
-            actual: now,
-            what: '',
-            note: '',
-        };
-        writeHistory([newEntry, ...history].slice(0, 50));
-        if (item.kind === 'weekly') {
-            writeItems((list) => list.map((one) => {
-                if (one.id !== id) return one;
-                const { snoozedUntil, ...rest } = one;
-                return { ...rest, completed: true, doneAt: Date.now() };
-            }));
-            return;
-        }
-        if (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly' || item.kind === 'birthdays') {
-            writeItems((list) => list.map((one) => {
-                if (one.id !== id) return one;
-                return { ...advanceDatedItem(one), completed: true };
-            }));
-            return;
-        }
-        writeItems((list) => list.map((one) => {
-            if (one.id !== id) return one;
-            const { snoozedUntil, ...rest } = one;
-            return { ...rest, completed: true };
-        }));
+        void markReminderDone(id, historyKey, now).then(() => refreshFromStorage());
     };
 
     const undoDone = (id: string) => {

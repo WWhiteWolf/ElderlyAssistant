@@ -17,6 +17,49 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #87-new (2026-09-08): banner housing onto the bits; Siri out of sight; landscape status leaves the live handoff
+
+**The goal is to put banner housing onto the bits.**
+
+**The previous session was uncommitted**, asked at the open.
+
+**Piece 1, the door.** Done and the log write now live in
+`modules/reminder-items.ts`. The shared list calls that door and
+refreshes. One Time’s history key is Daily’s. The housing was not
+opened. The engine was not opened. 313 tests passed. TypeScript clean.
+Not on the phone.
+
+**Piece 2, the housing.** Done, Skip, delay, and the tap load the item
+by id. The source tag is not used. Dated Done moves the date, as the
+list already does. One Time’s table row is Daily’s buttons, can be
+pushed back, and Done does not end the item. Appointments’ due moment
+and reminder chips stay. The engine was not opened. 313 tests
+passed. TypeScript clean. Not on the phone.
+
+**Siri out of sight.** Built later in this sitting, at Patrick’s word.
+The Shortcuts and Siri phrases are offered no more. The intent, the
+plugin, the shared box, and the app’s note path stay for a later
+in-app Siri. A native rebuild is needed before the simulator or the
+phone shows it. 313 tests passed. TypeScript clean. Not on the
+phone.
+
+**Next sitting.** Home (Patrick, at the close). The #84-new ideas:
+Home badges movable on Home, and Option no longer reachable as a Home
+badge. Settings password is with that separate issue.
+
+**The live handoff no longer reports that landscape 90°
+counter-clockwise is working.** That report is a dozen sessions old.
+Patrick does not want it recited at session start. The sentence that
+left: Landscape 90° counter-clockwise, headers on the left. What he
+has used is working. The #82-new load on the phone stays in Where
+things stand. The standing ruling that landscape is an optional view
+stays.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `pending.txt`,
+`in-flight.md`, and `docs/index.md` refreshed. `pending.docx` not
+regenerated. Master hand-off Memory line updated. Phone still the
+#82-new load.
+
 ## #85-new (2026-09-08): banner-housing sheet; two pieces; not built
 
 **The goal was to put banner housing onto the bits.**

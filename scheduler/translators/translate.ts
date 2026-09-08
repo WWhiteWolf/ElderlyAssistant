@@ -429,6 +429,10 @@ const birthdaysCadenceRules: ScreenRules = {
 
 const oneTimeCadenceRules: ScreenRules = {
     ...appointmentsCadenceRules,
+    bannerButtonsCode: 'routineactions',
+    canBePushedBackBit: true,
+    doneEndsItemBit: false,
+    pushedBackStampOf: (item) => item.snoozedUntil,
     bannerTitleTextOf: () => 'Daily Routine',
     bannerBodyTextOf: (item) => `Time for ${item.label}!`,
 };

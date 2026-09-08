@@ -77,7 +77,7 @@ export function runTranslatorCadenceTests(): void {
         }));
         assertSame(
             [shaped.sourceScreenCode, shaped.doneEndsItemBit, shaped.leadTimeList.length, shaped.bannerButtonsCode, shaped.bannerTitleText],
-            ['oneTime', true, 2, 'appointmentsok', 'Daily Routine'],
+            ['oneTime', false, 2, 'routineactions', 'Daily Routine'],
             'a Daily one-shot is a one-off that still belongs to Daily',
         );
     });

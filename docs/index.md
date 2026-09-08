@@ -28,7 +28,7 @@ just because it is listed.
 ## Live design — in `docs`
 
 - **`reminder-shape.md`** — the live engine design. Wins where others disagree.
-- **`designed-implementation.md`** — the whole-app guide. A sitting builds from it and does not ask Patrick a design question. #84-new: Daily is built. Banner housing builds from `docs-ref/build-sheets/build-sheet-banner-housing.md`.
+- **`designed-implementation.md`** — the whole-app guide. A sitting builds from it and does not ask Patrick a design question. #84-new: Daily is built. #87-new: banner housing is built. Siri is out of sight.
 - **`spec-pages.md`** — the live spec for the reminder pages.
 
 ## History still in `docs`
@@ -82,7 +82,7 @@ History, not the road. Record of what was built and why.
 - **`build-sheet-cleanup.md`** — leftover cleanup. Written at #68-new. Built at #69-new.
 - **`build-sheet-one-door.md`** — Grok Phase 2. One apply-then-schedule door. Written and built at #73-new.
 - **`build-sheet-birthdays.md`** — #81-new. Birthdays page. Written and built at #81-new.
-- **`build-sheet-banner-housing.md`** — #85-new. Banner housing onto the bits. Two pieces. Not yet built.
+- **`build-sheet-banner-housing.md`** — #85-new. Banner housing onto the bits. Two pieces. Built at #87-new.
 
 ## Not here any more
 

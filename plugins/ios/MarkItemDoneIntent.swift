@@ -82,6 +82,11 @@ struct MarkItemDoneIntent: AppIntent {
     static var title: LocalizedStringResource = "Mark Item Done"
     static var description = IntentDescription("Marks one of your Daily items done in Remember.")
 
+    // Hidden from Siri and the Shortcuts app. What is there now only opens
+    // the app, so a person who sees it thinks the app is broken. The intent
+    // stays for a later in-app Siri.
+    static var isDiscoverable: Bool = false
+
     // Bring the app forward so the React Native side wakes and applies the note.
     static var openAppWhenRun: Bool = true
 
@@ -110,25 +115,26 @@ struct MarkItemDoneIntent: AppIntent {
 }
 
 // Makes the intents discoverable by Siri voice and the Shortcuts app with
-// spoken phrases. \(.applicationName) expands to the app's display name, and
-// \(\.$item) is the spoken item Siri matches against the live Daily list.
-//
-// An app may have only ONE AppShortcutsProvider, so every voice command is
-// listed here.
+// spoken phrases. An app may have only ONE AppShortcutsProvider, so every
+// voice command is listed here. The phrases stay in this file as the later
+// design; none are offered now, so a person does not see a command that
+// only opens the app.
 @available(iOS 16.0, *)
 struct RememberShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
-        AppShortcut(
-            intent: MarkItemDoneIntent(),
-            phrases: [
-                "Mark \(\.$item) done with \(.applicationName)",
-                "Mark \(\.$item) complete with \(.applicationName)",
-                "Mark \(\.$item) done in \(.applicationName)",
-                "Mark \(\.$item) done in the \(.applicationName) app",
-                "Complete \(\.$item) with \(.applicationName)"
-            ],
-            shortTitle: "Mark item done",
-            systemImageName: "checkmark.circle"
-        )
+        []
+        // Later in-app Siri, kept and not offered:
+        // AppShortcut(
+        //     intent: MarkItemDoneIntent(),
+        //     phrases: [
+        //         "Mark \(\.$item) done with \(.applicationName)",
+        //         "Mark \(\.$item) complete with \(.applicationName)",
+        //         "Mark \(\.$item) done in \(.applicationName)",
+        //         "Mark \(\.$item) done in the \(.applicationName) app",
+        //         "Complete \(\.$item) with \(.applicationName)"
+        //     ],
+        //     shortTitle: "Mark item done",
+        //     systemImageName: "checkmark.circle"
+        // )
     }
 }

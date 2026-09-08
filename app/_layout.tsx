@@ -9,14 +9,28 @@ import { CoverRoot } from '../components/Cover';
 import * as AppGroup from '../modules/app-group';
 import {
     applyReminderChange,
+    historyKeyFor,
     loadReminderItems,
+    markReminderDone,
     thisCycleDueStamp,
-    type ReminderItem,
+    type ReminderKind,
 } from '../modules/reminder-items';
 import { showHealthNotice } from '../scheduler/notice';
 import { runScheduler } from '../scheduler/scheduler';
 
 const LAST_BANNER_TAP_KEY = 'last_banner_tap';
+
+function pageForKind(kind: ReminderKind): string | null {
+  if (kind === 'daily' || kind === 'oneTime') return '/daily';
+  if (kind === 'weekly') return '/weekly';
+  if (kind === 'monthly') return '/monthly';
+  if (kind === 'quarterly') return '/quarterly';
+  if (kind === 'yearly') return '/yearly';
+  if (kind === 'appointments') return '/appointments';
+  if (kind === 'birthdays') return '/birthdays';
+  if (kind === 'bucketlist') return '/bucketlist';
+  return null;
+}
 
 const LEFT_PAGE_KEYS = [
   'shopping_items',
@@ -250,89 +264,56 @@ export default function RootLayout() {
     // only clearing a snooze. The stamp is this cycle's due moment; the engine
     // reads it and finds the next event. A standing snooze goes with the cycle
     // it belonged to. Skip is registered on `routineactions` and on no other
-    // category.
+    // category. The item is found by id, not by the source tag.
     if (action === 'skip') {
       const itemId = data?.itemId as string | undefined;
       if (!itemId) return;
-      (async () => {
-        const source = data?.source as string | undefined;
-        const isDay = source === 'daily' || source === 'dailysnooze';
-        const isWeek = source === 'weekly' || source === 'weeklysnooze';
-        if (!isDay && !isWeek) return;
-
-        await applyReminderChange((items) => items.map((it) => {
-          if (it.id !== itemId) return it;
-          const { snoozedUntil: _cleared, ...rest } = it;
-          void _cleared;
-          const stamp = thisCycleDueStamp(it);
-          return stamp !== undefined ? { ...rest, skippedCycleStamp: stamp } : rest;
-        }));
-      })();
+      await applyReminderChange((items) => items.map((it) => {
+        if (it.id !== itemId) return it;
+        const { snoozedUntil: _cleared, ...rest } = it;
+        void _cleared;
+        const stamp = thisCycleDueStamp(it);
+        return stamp !== undefined ? { ...rest, skippedCycleStamp: stamp } : rest;
+      }));
       return;
     }
 
-    // Snooze action buttons: reschedule only this item, N minutes out, and
-    // leave every other reminder untouched.
+    // Delay buttons write the delay on the item instead of arming it here.
+    //
+    // Nothing is scheduled. The stamp on the item IS the delay: the module
+    // reads it back and puts the reminder on the phone, so a delay made from
+    // a banner and one made on the page are the same act written the same
+    // way. A prior stamp needs no cancelling — one stamp per item means one
+    // wanted reminder under one name, which the module moves rather than
+    // duplicates. The item's base repeat is left alone, as it always was;
+    // iOS clears the shown banner itself when an action is tapped.
+    //
+    // One `snoozedUntil` stamp means a second delay moves the first instead
+    // of leaving another reminder behind. The item is found by id, not by
+    // the source tag.
     if (action === 'snooze15' || action === 'snooze30' || action === 'snooze60') {
       const minutes = action === 'snooze15' ? 15 : action === 'snooze30' ? 30 : 60;
-      const source = data?.source as string | undefined;
-      const isDay = source === 'daily' || source === 'dailysnooze';
-      const isWeek = source === 'weekly' || source === 'weeklysnooze';
-
-      // Both routine kinds write the delay down on the item instead of arming
-      // it here.
-      //
-      // Nothing is scheduled. The stamp on the item IS the delay: the module
-      // reads it back and puts the reminder on the phone, so a delay made from
-      // a banner and one made on the page are the same act written the same
-      // way. A prior stamp needs no cancelling — one stamp per item means one
-      // wanted reminder under one name, which the module moves rather than
-      // duplicates. The item's base repeat is left alone, as it always was;
-      // iOS clears the shown banner itself when an action is tapped.
-      //
-      // One `snoozedUntil` stamp means a second delay moves the first instead
-      // of leaving another reminder behind.
-      if (isDay || isWeek) {
-        const itemId = data?.itemId as string | undefined;
-        if (!itemId) return;
-        (async () => {
-          const target = Date.now() + minutes * 60 * 1000;
-          await applyReminderChange((items) => items.map((i) =>
-            i.id === itemId ? { ...i, snoozedUntil: target } : i
-          ));
-        })();
-      }
+      const itemId = data?.itemId as string | undefined;
+      if (!itemId) return;
+      const target = Date.now() + minutes * 60 * 1000;
+      await applyReminderChange((items) => items.map((i) =>
+        i.id === itemId ? { ...i, snoozedUntil: target } : i
+      ));
       return;
     }
 
     // Dated-cadence "Delay" buttons push just THIS reminder out by a day, week
     // or month from now. There is no log and no change to the real due date.
-    //
-    // Nothing is armed here. The stamp on the item IS the delay: the scheduler
-    // reads it back and puts the reminder on the phone, so a delay made from a
-    // banner and one made on the page are now the same act written the same way.
-    // A prior delay needs no cancelling — one stamp per item means one wanted
-    // reminder under one name, which the module moves rather than duplicates.
     if (action === 'delayday' || action === 'delayweek' || action === 'delaymonth') {
-      const source = data?.source as string | undefined;
-      const isDated =
-        source === 'monthly' || source === 'monthlydelay'
-        || source === 'quarterly' || source === 'quarterlydelay'
-        || source === 'yearly' || source === 'yearlydelay';
-      if (!isDated) return;
       const itemId = data?.itemId as string | undefined;
       if (!itemId) return;
       const target = new Date();
       if (action === 'delayday') target.setDate(target.getDate() + 1);
       else if (action === 'delayweek') target.setDate(target.getDate() + 7);
       else target.setMonth(target.getMonth() + 1);
-      (async () => {
-        // Stamp the item. The page reads the same stamp to show the snooze line
-        // under its name.
-        await applyReminderChange((items) => items.map((i) =>
-          i.id === itemId ? { ...i, snoozedUntil: target.getTime() } : i
-        ));
-      })();
+      await applyReminderChange((items) => items.map((i) =>
+        i.id === itemId ? { ...i, snoozedUntil: target.getTime() } : i
+      ));
       return;
     }
 
@@ -366,140 +347,39 @@ export default function RootLayout() {
       return;
     }
 
-    // "Done" action button: mark this item complete in storage, the banner
-    // equivalent of the on-screen Log (✓) button. It does not cancel the fired
-    // reminder. iOS clears the shown banner itself on an action tap, and the
-    // base cadence is left alone so it can fire again next time round.
+    // Done calls the same door the list uses. The history key is the item's
+    // kind. The clock time is the fire time. Dated Done therefore moves the
+    // date, as the list already does.
     if (action === 'done') {
-      const source = data?.source as string | undefined;
       const itemId = data?.itemId as string | undefined;
-
-      // Weekly Done marks the item complete for this cycle, logs it under the
-      // existing history key, and clears any pending snooze. The weekly reset
-      // clears the tick when the item's day comes around again.
-      if (source === 'weekly' || source === 'weeklysnooze') {
-        (async () => {
-          const fired = new Date(response.notification.date * 1000);
-          await applyReminderChange((items) => items.map((c) => {
-            if (c.id !== itemId) return c;
-            const { snoozedUntil: _cleared, ...rest } = c;
-            void _cleared;
-            return { ...rest, completed: true, doneAt: Date.now() };
-          }));
-          const label = (data?.label as string) || 'Chore';
-          const histRaw = await AsyncStorage.getItem('weekly_history');
-          const hist = histRaw ? (JSON.parse(histRaw) as any[]) : [];
-          const newEntry = {
-            id: Date.now().toString(),
-            date: fired.toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
-            sched: label,
-            actual: fired.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false }),
-            what: '',
-            note: '',
-          };
-          await AsyncStorage.setItem('weekly_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
-        })();
-        return;
-      }
-
-      // Dated-cadence Done logs the completion from the firing time. The repeat
-      // recipe is left unchanged; the engine finds the next occurrence.
-      if (
-        source === 'monthly' || source === 'monthlydelay'
-        || source === 'quarterly' || source === 'quarterlydelay'
-        || source === 'yearly' || source === 'yearlydelay'
-      ) {
-        (async () => {
-          let item: ReminderItem | undefined;
-          await applyReminderChange((items) => {
-            item = items.find((i) => i.id === itemId);
-            if (!item) return items;
-            const { snoozedUntil, ...rest } = item;
-            void snoozedUntil;
-            return items.map((i) => {
-              if (i.id !== itemId) return i;
-              return { ...rest, completed: true };
-            });
-          });
-          if (!item) return;
-          const fired = new Date(response.notification.date * 1000);
-          const historyKey =
-            source === 'monthly' || source === 'monthlydelay' ? 'monthly_history'
-            : source === 'quarterly' || source === 'quarterlydelay' ? 'quarterly_history'
-            : 'yearly_history';
-          const histRaw = await AsyncStorage.getItem(historyKey);
-          const hist = histRaw ? (JSON.parse(histRaw) as any[]) : [];
-          const newEntry = {
-            id: Date.now().toString(),
-            date: fired.toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
-            sched: item.label,
-            actual: fired.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false }),
-            what: '',
-            note: '',
-          };
-          await AsyncStorage.setItem(historyKey, JSON.stringify([newEntry, ...hist].slice(0, 50)));
-        })();
-        return;
-      }
-
-      if (source !== 'daily' && source !== 'dailysnooze') return;
-      (async () => {
-        if (itemId) {
-          await applyReminderChange((items) => items.map((it) => {
-            if (it.id !== itemId) return it;
-            const { snoozedUntil, ...rest } = it;
-            void snoozedUntil;
-            return { ...rest, completed: true };
-          }));
-        }
-        const label = (data?.label as string) || 'Reminder';
-        const fired = new Date(response.notification.date * 1000);
-        const histRaw = await AsyncStorage.getItem('daily_history');
-        const hist = histRaw ? (JSON.parse(histRaw) as any[]) : [];
-        const newEntry = {
-          id: Date.now().toString(),
-          date: fired.toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
-          sched: label,
-          actual: fired.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false }),
-          what: '',
-          note: '',
-        };
-        await AsyncStorage.setItem('daily_history', JSON.stringify([newEntry, ...hist].slice(0, 50)));
-      })();
+      if (!itemId) return;
+      const items = await loadReminderItems();
+      const item = items.find((one) => one.id === itemId);
+      if (!item) return;
+      const fired = new Date(response.notification.date * 1000);
+      const clockTime = fired.toLocaleTimeString([], {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: false,
+      });
+      await markReminderDone(itemId, historyKeyFor(item.kind), clockTime);
       return;
     }
 
     // Only navigate on a plain tap of the notification body, not action buttons.
     if (action !== Notifications.DEFAULT_ACTION_IDENTIFIER) return;
 
-    const source = data?.source as string | undefined;
-
-    // #13-new: carry the item's own id along with the page. Every reminder the
-    // module makes already holds the id of the thing it is about, and it was
-    // being dropped right here — so the tap landed on the right page and left
-    // the reader to find their own item on it. It now travels as `highlight`,
-    // and a page that knows what to do with it lights that row. A page that
-    // does not simply ignores it, so this is safe for all of them at once.
-    const highlight = data?.itemId as string | undefined;
-    const params = highlight ? { highlight } : undefined;
-
-    if (source === 'daily' || source === 'dailysnooze') {
-      router.push({ pathname: '/daily', params });
-    } else if (source === 'weekly' || source === 'weeklysnooze') {
-      router.push({ pathname: '/weekly', params } as Href);
-    } else if (source === 'monthly' || source === 'monthlydelay') {
-      router.push({ pathname: '/monthly', params } as Href);
-    } else if (source === 'quarterly' || source === 'quarterlydelay') {
-      router.push({ pathname: '/quarterly', params } as Href);
-    } else if (source === 'yearly' || source === 'yearlydelay') {
-      router.push({ pathname: '/yearly', params } as Href);
-    } else if (source === 'appointments') {
-      router.push({ pathname: '/appointments', params } as Href);
-    } else if (source === 'birthdays') {
-      router.push({ pathname: '/birthdays', params } as Href);
-    } else if (source === 'oneTime') {
-      router.push({ pathname: '/daily', params });
-    }
+    // The tap opens the item's own page from the saved kind. One Time opens
+    // Daily. If there is no item, do nothing. The source tag is not used.
+    const itemId = data?.itemId as string | undefined;
+    if (!itemId) return;
+    const items = await loadReminderItems();
+    const item = items.find((one) => one.id === itemId);
+    if (!item) return;
+    const params = { highlight: itemId };
+    const pathname = pageForKind(item.kind);
+    if (!pathname) return;
+    router.push({ pathname, params } as Href);
     })();
     return () => { cancelled = true; };
   }, [response]);

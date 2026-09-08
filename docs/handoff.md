@@ -12,18 +12,16 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-He is living with the **#82-new** load on the phone. Landscape 90°
-counter-clockwise, headers on the left. What he has used is working.
+He is living with the **#82-new** load on the phone.
 #83-new built the dated Done-tick morning clear; that load is not on
 the phone. #84-new put Daily onto the shared list; that load is not
-on the phone.
+on the phone. #87-new built banner housing onto the bits, both pieces,
+and took Siri out of sight; that load is not on the phone.
 
-**Next sitting:** banner housing onto the bits, from
-`docs-ref/build-sheets/build-sheet-banner-housing.md`. Two pieces: the
-door, then the housing. Stop between them. #85-new wrote the sheet and
-did not build. Do not change the engine. Do not ask Patrick a design
-question the sheet already answers. Home, Option, and a Settings
-password are a separate issue.
+**Next sitting:** Home (Patrick, #87-new close). The #84-new ideas:
+Home badges movable on Home, and Option no longer reachable as a Home
+badge. Settings password is with that separate issue. Do not change
+the engine.
 
 ## Standing rulings
 
@@ -80,14 +78,12 @@ These are Patrick's and they govern the work rather than describing it.
 - **Landscape is an optional view.** The allowed turns are 0°, 90°
   counter-clockwise, and 270° counter-clockwise; 180° upside-down is out
   (Patrick, #60-new).
-- **Siri comes out of what a person can see** (Patrick, #83-new). This
-  replaces #64-new's Daily-only list and "adding commands is later."
-  What is there now only opens the app. A person who sees it thinks it
-  should do more, and that the app is broken. Take it out of sight.
-  Keep in the back of the design a later Siri that can go into the app
-  and do the work. The page pieces and the bit field are that structure;
-  we do not yet know Apple's shape. Low priority. Do not raise it.
-  Research where Apple is headed is later, not this sitting.
+- **Siri is out of sight** (Patrick, #83-new; built at #87-new). The
+  Shortcuts and Siri phrases are offered no more. Keep in the back of
+  the design a later Siri that can go into the app and do the work.
+  The page pieces and the bit field are that structure; we do not yet
+  know Apple's shape. Research where Apple is headed is later. Do not
+  raise the later Siri.
 - **Daily's "One Time for today" is not the Appointments page**
   (Patrick, #65-new; own kind at #78-new). Those words are not an old
   name to change. It is saved as `oneTime`, a one-shot that belongs to
@@ -158,23 +154,14 @@ What already fits: the engine, the one list, the one save door, the
 shared list page (`components/CadenceListPage.tsx` — Daily through
 Bucket List, each route only names its kind), the one edit form
 (`app/item-edit.tsx`), the one row (`components/ReminderItemRow.tsx`),
-the date-and-time control, and the page chrome. Daily's extras — visitors,
+the date-and-time control, the page chrome, and banner housing on the
+bits. Daily's extras — visitors,
 One Time for today, Daily's own add, the time-and-from row label, the
 Daily log, reorder of the visible list, and Done following the item — live
 on that shared page. `app/daily.tsx` is the same thin route as Weekly.
 
-What does not fit, remaining sheets, one at a time:
-
-1. **Banner housing onto the bits.** The job sheet is
-   `docs-ref/build-sheets/build-sheet-banner-housing.md`. Two pieces:
-   lift Done and the log so the list and the banner share them, then
-   put the housing on the item, not the source tag. Siri stays as it
-   is this sitting. #85-new wrote the sheet and did not build.
-2. **Siri out of sight**, a short sheet. Take it out of what a person
-   can see. Do not tear out the structure kept for a later in-app
-   Siri. Do not raise Siri. Research is later. Files already read:
-   `plugins/withSiriIntent.js`, `plugins/ios/MarkItemDoneIntent.swift`,
-   `modules/app-group`.
+What does not fit: the reminder-page leftover sheets are built.
+Banner housing and Siri out of sight were the last two.
 
 Rulings for those sheets are already in Standing rulings: Done tick,
 banner buttons on the bit field, Siri out of sight. Do not reopen

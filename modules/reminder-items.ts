@@ -134,6 +134,76 @@ export async function applyReminderChange(
     return run;
 }
 
+// Which log this kind writes. One Time uses Daily's key.
+export function historyKeyFor(kind: ReminderKind): string | null {
+    if (kind === 'daily' || kind === 'oneTime') return 'daily_history';
+    if (kind === 'weekly') return 'weekly_history';
+    if (kind === 'monthly') return 'monthly_history';
+    if (kind === 'quarterly') return 'quarterly_history';
+    if (kind === 'yearly') return 'yearly_history';
+    if (kind === 'appointments') return 'appointments_history';
+    if (kind === 'birthdays') return 'birthdays_history';
+    if (kind === 'bucketlist') return 'bucket_list_history';
+    return null;
+}
+
+interface HistoryEntry {
+    id: string;
+    date: string;
+    sched: string;
+    actual: string;
+    what?: string;
+    note?: string;
+}
+
+// One Done line on this log. The caller passes the clock time so a page
+// can write now and a banner can write the fire time. Cap 50. The label
+// is the line's sched, as the list already writes it.
+export async function writeHistoryEntry(
+    historyKey: string,
+    clockTime: string,
+    sched: string,
+): Promise<void> {
+    const saved = await AsyncStorage.getItem(historyKey);
+    const existing: HistoryEntry[] = saved ? JSON.parse(saved) : [];
+    const entry: HistoryEntry = {
+        id: Date.now().toString(),
+        date: new Date().toLocaleDateString([], { month: '2-digit', day: '2-digit' }),
+        sched,
+        actual: clockTime,
+        what: '',
+        note: '',
+    };
+    await AsyncStorage.setItem(historyKey, JSON.stringify([entry, ...existing].slice(0, 50)));
+}
+
+// Mark this item done the way the list already does, and write the log.
+// The history key is the caller's, so Daily still logs a visitor on Daily.
+export async function markReminderDone(
+    id: string,
+    historyKey: string | null,
+    clockTime: string,
+): Promise<void> {
+    const items = await loadReminderItems();
+    const item = items.find((one) => one.id === id);
+    if (!item) return;
+    if (historyKey) {
+        await writeHistoryEntry(historyKey, clockTime, item.label);
+    }
+    await applyReminderChange((list) => list.map((one) => {
+        if (one.id !== id) return one;
+        if (one.kind === 'weekly') {
+            const { snoozedUntil, ...rest } = one;
+            return { ...rest, completed: true, doneAt: Date.now() };
+        }
+        if (one.kind === 'monthly' || one.kind === 'quarterly' || one.kind === 'yearly' || one.kind === 'birthdays') {
+            return { ...advanceDatedItem(one), completed: true };
+        }
+        const { snoozedUntil, ...rest } = one;
+        return { ...rest, completed: true };
+    }));
+}
+
 export function isTodayDate(item: ReminderItem) {
     return isDateOf(item, new Date());
 }

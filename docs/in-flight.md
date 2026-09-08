@@ -4,25 +4,28 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-08, at #85-new.
+Last written: 2026-09-08, at #87-new close.
 
 ## Read this first
 
-- **#85-new wrote the banner-housing sheet and did not build.** The job
-  is `docs-ref/build-sheets/build-sheet-banner-housing.md`. Two pieces.
-  Stop between them.
+- **#87-new built banner housing onto the bits, both pieces, and took
+  Siri out of sight.** Not on the phone. A native rebuild is needed
+  before Siri’s absence shows.
+- **Next sitting:** Home (Patrick, at the close).
 - **Phone load:** #82-new.
 
 ## What is in
 
-The sheet. The design stays in `docs/designed-implementation.md`. Siri
-out of sight is the next sheet after this build, and is not raised.
+Home. The #84-new ideas: Home badges movable on Home, and Option no
+longer reachable as a Home badge. Settings password is with that
+separate issue. The design stays in `docs/designed-implementation.md`.
 
 ## What is next
 
-A fresh session builds piece 1, stops, then piece 2.
+A fresh session on Home. Do not change the engine.
 
 ## Do not reopen
 
-The engine. Siri. Home, Option, and a Settings password. The three
-nice-to-have reminder checks.
+The engine. The later in-app Siri. The three nice-to-have reminder
+checks. Do not rebuild Help, Calendar, Backup, or Scheduled Reminders
+as part of the old page-shape rebuild.

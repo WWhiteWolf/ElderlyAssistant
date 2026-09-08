@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-08 (#85-new)
+Last updated: 2026-09-08 (#87-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -29,17 +29,12 @@ implementation (Patrick, #84-new). It is the guide. A sitting builds
 from docs/designed-implementation.md and does not ask Patrick a
 design question.
 
-Next sitting: banner housing onto the bits, from
-docs-ref/build-sheets/build-sheet-banner-housing.md. Two pieces: the
-door, then the housing. Stop between them. #85-new wrote the sheet
-and did not build. Do not change the engine.
+Next sitting: Home (Patrick, #87-new close). The #84-new ideas: Home
+badges movable on Home; Option no longer reachable as a Home badge.
+Settings needs password protection. Do not change the engine.
 
-Two leftovers, one at a time: banner housing onto the bits; Siri out
-of sight.
-
-#84-new ideas, a separate issue from those sheets: Home badges
-movable on Home; Option no longer reachable as a Home badge;
-Settings needs password protection.
+Banner housing onto the bits, both pieces, and Siri out of sight,
+were built at #87-new. Not on the phone.
 
 The second new page is not yet named. Day-roll lock still wants a
 night of all-green Daily on this load.
@@ -151,6 +146,19 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+75. #87-new — Siri out of sight. Shortcuts and Siri phrases offered
+   no more. Intent, plugin, shared box, and note path stay. Native
+   rebuild needed. TypeScript clean. Engine not touched. Not on the
+   phone.
+
+74. #87-new — banner-housing housing. Done, Skip, delay, and tap load
+   by id. One Time has Daily's buttons. TypeScript clean. Engine not
+   touched. Not on the phone.
+
+73. #87-new — banner-housing door. Done and the log write live in
+   reminder-items. The shared list calls that door. Housing waits.
+   TypeScript clean. Engine not touched. Not on the phone.
 
 72. #84-new — Daily onto the shared list. app/daily.tsx is the same
    thin route as Weekly. Extras live on the shared list page.
