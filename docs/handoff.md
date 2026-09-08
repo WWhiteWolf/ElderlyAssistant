@@ -16,12 +16,12 @@ He is living with the **#82-new** load on the phone.
 #83-new built the dated Done-tick morning clear; that load is not on
 the phone. #84-new put Daily onto the shared list; that load is not
 on the phone. #87-new built banner housing onto the bits, both pieces,
-and took Siri out of sight; that load is not on the phone.
+and took Siri out of sight; that load is not on the phone. **#88-new**
+built Home: badges move the iOS way, and Options is not on the grid.
+Help is in the designed implementation. That load is not on the phone.
 
-**Next sitting:** Home (Patrick, #87-new close). The #84-new ideas:
-Home badges movable on Home, and Option no longer reachable as a Home
-badge. Settings password is with that separate issue. Do not change
-the engine.
+**Next sitting:** the next bite of the designed implementation
+(Patrick, #88-new close). One bite at a time. Do not change the engine.
 
 ## Standing rulings
 
@@ -168,20 +168,12 @@ banner buttons on the bit field, Siri out of sight. Do not reopen
 them. The morning clear for the dated Done tick was built at #83-new
 in `scheduler/miss-candidates.ts`.
 
-The second new page is not yet named.
-
-**#84-new ideas**, a separate issue from the page-shape sheets:
-
-1. Home badges movable on Home.
-2. Option is no longer reachable as a Home badge.
-3. Settings needs password protection.
-
-The #83-new line that says do not rebuild Home, Help, Calendar,
-Settings, Backup, or Scheduled Reminders still governs that rebuild.
-These three are not that rebuild.
-
 The phone is on the **#82-new** load. Spec, user guide, feedback
-button, and testing file are Pending 1–4.
+button, and testing file are Pending 1–4. The spec is
+`docs/designed-implementation.md`. Home and Help are in it. What is
+not written: Calendar, Settings, Backup, Scheduled Reminders, Options
+beyond the exclusive-pattern refusal, and a Settings password
+(nice-to-have).
 
 Testers are on TestFlight External. The App Store heading is Waiting
 for Review on **72**. He is not aiming to go live. Manual release.

@@ -27,14 +27,10 @@ difference is written, what already stands, what Done does, each kind,
 Daily on the shared list, and the banner housing. Daily is built. That
 is enough to build the banner, without asking Patrick those questions.
 
-What is not written: Home, Help, Calendar, Settings, Backup, Scheduled
-Reminders, Options beyond the exclusive-pattern refusal, movable Home
-badges, Option off Home, and a Settings password. Pending 1 is still
-the thorough spec for the whole app. This file is the start of that,
-not the finish.
-
-Home badges, Option off Home, and a Settings password are a separate
-issue from putting the reminder pages on this machinery.
+What is not written: Calendar, Settings, Backup, Scheduled
+Reminders, Options beyond the exclusive-pattern refusal, and a Settings
+password. Pending 1 is still the thorough spec for the whole app. This
+file is the start of that, not the finish.
 
 ## How to implement Daily (`app/daily.tsx`)
 
@@ -280,3 +276,46 @@ The four registered sets, and no others, are:
 A banner naming a set the phone does not know shows no buttons at all.
 That has bitten this app before. New sets are added to the named list
 and registered; they are not invented at the housing.
+
+## Home
+
+The Home grid in `app/home.tsx` is the badges for the pages a person
+opens from Home. Options is not on that grid, and Home does not open
+`app/options.tsx`. The gear in the header stays where it is. It is not
+a badge.
+
+Options lives on the individual item form. `app/item-edit.tsx` carries
++ OPT. That opens `ScreenOptionsSheet` for the cases that belong to
+that item's kind. That is the only place Options needs to be reached
+from.
+
+Home badges move the way iOS already does, because people are already
+familiar and comfortable that way. You hold a badge. It comes up. It
+gives you the option to edit the screen. Then you slide a badge to the
+slot you want. The others make room. You leave edit with Done. The new
+order is remembered the next time Home opens.
+
+A tap still opens the page when you are not editing.
+
+## Help
+
+Help is the helper from Home and from Calendar. The visible name is
+Help. The Home badge is ?. The route is `app/where.tsx`. It is a
+transparent screen so New can sit above it.
+
+Help does not save an item. It asks which kind, then opens
+`app/item-edit.tsx` with that kind and `viaHelper`. Cancel on the form
+comes back to Help. Save on the form pops Help as well, and lands where
+the person came from.
+
+The first question is: Does this item repeat? The choices are Repeats
+and Does not. Cancel closes.
+
+Repeats asks: How often does this item occur? The choices are Every day,
+Week, Month, Quarter, Year, and Birthday. Those words do not carry a
+stray “every”. Birthday opens Birthdays’ New, not Yearly. Cancel goes
+back one step.
+
+Does not asks: Is that for today? Yes opens Daily’s one-shot,
+`oneTime`. No asks Appointment or Bucket List. Cancel goes back one
+step.

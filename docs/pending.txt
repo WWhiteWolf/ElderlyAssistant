@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-08 (#87-new)
+Last updated: 2026-09-08 (#88-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -29,15 +29,17 @@ implementation (Patrick, #84-new). It is the guide. A sitting builds
 from docs/designed-implementation.md and does not ask Patrick a
 design question.
 
-Next sitting: Home (Patrick, #87-new close). The #84-new ideas: Home
-badges movable on Home; Option no longer reachable as a Home badge.
-Settings needs password protection. Do not change the engine.
+Next sitting: the next bite of the designed implementation
+(Patrick, #88-new close). One bite at a time. Home and Help are in
+docs/designed-implementation.md. Do not change the engine.
+
+Home was built at #88-new: badges move the iOS way; Options is not on
+the grid. Help is in the spec. Not on the phone.
 
 Banner housing onto the bits, both pieces, and Siri out of sight,
 were built at #87-new. Not on the phone.
 
-The second new page is not yet named. Day-roll lock still wants a
-night of all-green Daily on this load.
+Day-roll lock still wants a night of all-green Daily on this load.
 
 The phone is on the #82-new load. Spec, user guide, feedback button,
 and testing file are Pending 1–4.
@@ -56,7 +58,7 @@ Things waiting on something — mostly on a build.
     guide, and it replaces a separate layer of decisions and rules.
     The first piece is docs/designed-implementation.md. This sitting
     wrote the machinery, each kind, Daily on the shared list, and the
-    banner housing. Home and Settings are not in that piece.
+    banner housing. Home and Help are in that piece. Settings is not.
 2. A USER GUIDE, from that spec or merely after it (Patrick,
     #52-new). He needs to provide it on his website, and a way
     in the app to find it or get it.
@@ -136,8 +138,7 @@ built. None of these is a job to do.
 16. THE DESIGN DESCRIPTION IS THE DESIGNED IMPLEMENTATION
     (Patrick, #84-new). It is the guide for the whole app. A sitting
     builds from docs/designed-implementation.md and does not ask
-    Patrick a design question. This sitting wrote the machinery, each
-    kind, Daily on the shared list, and the banner housing.
+    Patrick a design question. Home and Help are in that file.
 
 
 WHAT IS DONE, NEWEST FIRST
@@ -146,6 +147,15 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+77. #88-new — Help in the designed implementation. No sheet. The
+   “does not” lines stay: a sitting that built Help would need them.
+   Engine not touched.
+
+76. #88-new — Home. Badges move the iOS way (hold, Edit Home Screen,
+   slide, Done). Options is not on the grid; + OPT on an item is the
+   door. Gear stays. TypeScript clean. Engine not touched. Not on the
+   phone.
 
 75. #87-new — Siri out of sight. Shortcuts and Siri phrases offered
    no more. Intent, plugin, shared box, and note path stay. Native
@@ -479,6 +489,8 @@ NICE-TO-HAVE LATER
    installed. The phone gives it least to an unused app, and none
    if the app has been swiped away, so it can only ever sit on
    top of arming ahead, never underneath.
+4. Settings password protection — moved here at #88-new (was with
+   the #84-new Home ideas). Not being done now.
 
 
 PARKED ON PURPOSE

@@ -4,28 +4,27 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-08, at #87-new close.
+Last written: 2026-09-08, at #88-new close.
 
 ## Read this first
 
-- **#87-new built banner housing onto the bits, both pieces, and took
-  Siri out of sight.** Not on the phone. A native rebuild is needed
-  before Siri’s absence shows.
-- **Next sitting:** Home (Patrick, at the close).
+- **#88-new built Home and put Help in the spec.** Not on the phone.
+- **Next sitting:** the next bite of the designed implementation, one
+  bite at a time.
 - **Phone load:** #82-new.
 
 ## What is in
 
-Home. The #84-new ideas: Home badges movable on Home, and Option no
-longer reachable as a Home badge. Settings password is with that
-separate issue. The design stays in `docs/designed-implementation.md`.
+The designed implementation. Home and Help are in
+`docs/designed-implementation.md`. What is not written: Calendar,
+Settings, Backup, Scheduled Reminders, Options beyond the
+exclusive-pattern refusal.
 
 ## What is next
 
-A fresh session on Home. Do not change the engine.
+The next bite of that spec. Do not change the engine.
 
 ## Do not reopen
 
 The engine. The later in-app Siri. The three nice-to-have reminder
-checks. Do not rebuild Help, Calendar, Backup, or Scheduled Reminders
-as part of the old page-shape rebuild.
+checks. Settings password is nice-to-have.

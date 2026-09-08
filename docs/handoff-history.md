@@ -17,6 +17,37 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #88-new (2026-09-08): Home built; Help in the spec; next bite next session
+
+**The goal was Home page changes.**
+
+**#87-new was committed**, asked at the open.
+
+**Settings password** went to pending’s Nice-to-have. Out of the live
+handoffs. Not this sitting.
+
+**Home, from the designed implementation.** Options is not on the Home
+grid. Options lives on the item form, + OPT, `ScreenOptionsSheet`. That
+is the only reach. The gear stays. Badges move the iOS way: hold, it
+comes up, Edit Home Screen, slide, Done, order remembered. A tap still
+opens the page when you are not editing. TypeScript clean. Engine not
+touched. Not on the phone.
+
+**Help** went into `docs/designed-implementation.md`. No sheet. The
+“does not” lines stay, because a sitting that built Help would need
+them. Engine not touched.
+
+**The leftover “second new page is not yet named”** came out of pending
+and the live handoff. History was left alone.
+
+**Next sitting.** The next bite of the designed implementation, one
+bite at a time.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `pending.txt`,
+`in-flight.md`, and `docs/index.md` refreshed. `pending.docx`
+regenerated. Master hand-off Memory line updated. Phone still the
+#82-new load. Patrick will commit.
+
 ## #87-new (2026-09-08): banner housing onto the bits; Siri out of sight; landscape status leaves the live handoff
 
 **The goal is to put banner housing onto the bits.**
