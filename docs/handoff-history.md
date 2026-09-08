@@ -48,8 +48,9 @@ guide. After the handoff, open the guide. Do not change the engine.
 Banner housing is after Daily.
 
 **Session close.** `handoff.md`, `handoff-history.md`, and `pending.txt`
-refreshed. `pending.docx` not regenerated. Master hand-off left: the
-phone is still the #82-new load, testers and 72 unchanged.
+refreshed. `pending.docx` not regenerated. Master hand-off Memory line
+updated to #84-new; the phone is still the #82-new load, testers and 72
+unchanged.
 
 ## #83-new (2026-09-07): code review; Done-tick morning clear; page-shape map
 
