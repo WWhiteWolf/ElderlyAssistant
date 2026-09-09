@@ -13,10 +13,11 @@ who decides. It is not a claim that the files were refreshed.
 ## Where things stand
 
 You are living with the **#82-new** load on the phone. Through
-**#98-new** the work is in the project and the simulator. The User's
-Guide is written. Next session is a last scrub of the app before it
+**#98-new** the work is in the project and the simulator, and that
+session is committed. **#99-new** is the last review before the app
 goes on the phone and into the App Store. Do not change the
-scheduler's decisions.
+scheduler's decisions. The designed implementation is the guide, and
+it is not finished yet.
 
 ## Standing rulings
 
@@ -158,6 +159,11 @@ These are Patrick's and they govern the work rather than describing it.
   sure? Cancel backs out. Then it wipes.
 
 ## What is open in front of it
+
+**#99-new review.** Three lenses: bugs; whether Memory is coming out
+as one of the better reminder apps and one of the easier; leftover
+special rules on top of a kind, not the ordinary kind-per-page that
+software does. The designed implementation is not the last word.
 
 The guide is `docs/designed-implementation.md`. A sitting builds from
 it. The scheduler stays.

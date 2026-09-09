@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-09 (#98-new)
+Last updated: 2026-09-09 (#99-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -27,6 +27,11 @@ WHAT'S NEXT
 1. DAY-ROLL LOCK still wants a night of all-green Daily on this
    load, then a morning open on a new load, to confirm the pop-up
    stays quiet.
+2. LAST REVIEW BEFORE THE APP STORE (#99-new). Three lenses: bugs;
+   whether it is coming out as one of the better reminder apps and
+   one of the easier; leftover special rules on top of a kind, not
+   the ordinary kind-per-page that software does. The designed
+   implementation is not the last word.
 
 
 PENDING
