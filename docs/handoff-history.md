@@ -17,6 +17,40 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #92-new (2026-09-08): save form writes from the table
+
+**The goal was the leftover save form.** The table-door sheets named
+this as later: teach Save to write the codes and leave the rest to
+the table.
+
+**The job sheet** is `docs-ref/build-sheets/build-sheet-save-form.md`.
+Both pieces were built.
+
+1. Write codes on the table: what Save writes for the date, for the
+   time, and whether it keeps the reminders-before chips.
+2. Save writes from the table. The lift is
+   `modules/assemble-form-item.ts`. The edit form calls it. The
+   visible form still names kinds when it shows a row.
+
+**Tests.** TypeScript clean. 332 passed, 0 failed. Engine decisions
+not changed. Not on the phone.
+
+**Simulator.** Daily Save. One Time for today comes back on Daily.
+Monthly keeps the date; a second Thursday clears it. Quarterly one
+chip or none. Birthdays refuse Save with no date.
+
+**Bug, next session.** One Time for today on Daily has no Snooze.
+Daily every day with a time does. Simulator: 11 PM, 30 minutes
+before ticked. The line does not say from Appointments. Look at the
+bit set, and whether One Time was still entangled with Appointments.
+Appointments do not have Snooze. The table still starts One Time
+from the Appointments row, then turns push-back on.
+
+**Session close.** Next sitting takes that look. `handoff.md`,
+`handoff-history.md`, `pending.txt`, `in-flight.md`, and
+`App-Docs/master-handoff.md` refreshed. Phone still the #82-new
+load.
+
 ## #91-new (2026-09-08): second look, then the table doors
 
 **The goal was a second confirming look** at whether Memory is built

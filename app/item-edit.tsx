@@ -19,7 +19,6 @@ import ScreenOptionsSheet from '../components/ScreenOptionsSheet';
 import { Theme, useTheme } from '../constants/Themes';
 import {
     DAY_NAMES,
-    hourMinuteOf,
     applyReminderChange,
     exclusiveGroupBitsOf,
     loadReminderItems,
@@ -31,14 +30,12 @@ import {
     type ReminderKind,
     type QuarterlyStepCode,
 } from '../modules/reminder-items';
+import { assembleFormItem } from '../modules/assemble-form-item';
 import {
     optionCasesForKind,
     emptyOptionSettings,
     appliedOptionRows,
     optionsFromItem,
-    applyConnectedOptions,
-    keepOptionsForKind,
-    applyExclusiveGroupToItem,
     weekdayPatternComplete,
     withExclusiveGroup,
     clearExclusiveGroupFields,
@@ -136,172 +133,6 @@ function pathFor(
         case 'bucketlist': return '/bucketlist' as Href;
         default: return '/daily' as Href;
     }
-}
-
-function assembleFormItem(parts: {
-    existing: ReminderItem | null;
-    id: string;
-    name: string;
-    editKind: ReminderKind;
-    pendingDay: number;
-    pendingTime: Date | null;
-    pendingDate: Date;
-    dateSet: boolean;
-    timeSet: boolean;
-    reminders: LeadReminder[];
-    intervalMonths: number;
-    quarterlyStep: QuarterlyStepCode;
-    optionSettings: OptionSettings;
-    note: string;
-}): ReminderItem {
-    const base: ReminderItem = parts.existing ?? {
-        id: parts.id,
-        kind: parts.editKind,
-        label: parts.name,
-    };
-    let next: ReminderItem = { ...base, id: parts.id, kind: parts.editKind, label: parts.name };
-
-    if (parts.editKind === 'daily') {
-        next = {
-            ...next,
-            ...hourMinuteOf({
-                hour: parts.pendingTime ? parts.pendingTime.getHours() : null,
-                minute: parts.pendingTime ? parts.pendingTime.getMinutes() : null,
-            }),
-        };
-        delete next.year;
-        delete next.month;
-        delete next.day;
-        delete next.reminders;
-        delete next.intervalMonths;
-        delete next.intervalDays;
-    } else if (parts.editKind === 'weekly') {
-        const t = parts.pendingTime ?? new Date(new Date().setHours(12, 0, 0, 0));
-        next = {
-            ...next,
-            day: parts.pendingDay,
-            hour: t.getHours(),
-            minute: t.getMinutes(),
-        };
-        delete next.year;
-        delete next.month;
-        delete next.reminders;
-        delete next.intervalMonths;
-        delete next.intervalDays;
-    } else if (parts.editKind === 'monthly' || parts.editKind === 'quarterly' || parts.editKind === 'yearly') {
-        next = {
-            ...next,
-            hour: parts.pendingDate.getHours(),
-            minute: parts.pendingDate.getMinutes(),
-        };
-        if (!weekdayPatternComplete(parts.optionSettings)) {
-            next.year = parts.pendingDate.getFullYear();
-            next.month = parts.pendingDate.getMonth();
-            next.day = parts.pendingDate.getDate();
-        }
-        if (parts.editKind === 'quarterly') {
-            const days = quarterlyStepDaysOf(parts.quarterlyStep);
-            if (days !== undefined) {
-                next.intervalDays = days;
-                delete next.intervalMonths;
-            } else {
-                next.intervalMonths = 3;
-                delete next.intervalDays;
-            }
-        } else {
-            delete next.intervalDays;
-        }
-        delete next.reminders;
-    } else if (parts.editKind === 'oneTime') {
-        const now = new Date();
-        const when = new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            now.getDate(),
-            parts.pendingDate.getHours(),
-            parts.pendingDate.getMinutes(),
-            0,
-            0,
-        );
-        next = {
-            ...next,
-            year: when.getFullYear(),
-            month: when.getMonth(),
-            day: when.getDate(),
-            ...hourMinuteOf({
-                hour: parts.timeSet ? parts.pendingDate.getHours() : null,
-                minute: parts.timeSet ? parts.pendingDate.getMinutes() : null,
-            }),
-            reminders: parts.reminders,
-        };
-        delete next.intervalMonths;
-        delete next.intervalDays;
-    } else if (parts.editKind === 'appointments') {
-        const now = new Date();
-        const when = parts.dateSet ? parts.pendingDate : now;
-        next = {
-            ...next,
-            ...(parts.dateSet
-                ? { year: when.getFullYear(), month: when.getMonth(), day: when.getDate() }
-                : {}),
-            ...hourMinuteOf({
-                hour: parts.timeSet ? parts.pendingDate.getHours() : null,
-                minute: parts.timeSet ? parts.pendingDate.getMinutes() : null,
-            }),
-            reminders: parts.reminders,
-        };
-        if (!parts.dateSet) {
-            delete next.year;
-            delete next.month;
-            delete next.day;
-        }
-        delete next.intervalMonths;
-        delete next.intervalDays;
-    } else if (parts.editKind === 'birthdays') {
-        const when = parts.pendingDate;
-        next = {
-            ...next,
-            year: when.getFullYear(),
-            month: when.getMonth(),
-            day: when.getDate(),
-            ...hourMinuteOf({
-                hour: parts.timeSet ? parts.pendingDate.getHours() : null,
-                minute: parts.timeSet ? parts.pendingDate.getMinutes() : null,
-            }),
-            reminders: parts.reminders,
-        };
-        delete next.intervalMonths;
-        delete next.intervalDays;
-    } else {
-        delete next.year;
-        delete next.month;
-        delete next.day;
-        delete next.hour;
-        delete next.minute;
-        delete next.reminders;
-        delete next.intervalMonths;
-        delete next.intervalDays;
-    }
-
-    if (optionCasesForKind(parts.editKind).length > 0) {
-        next = keepOptionsForKind(
-            applyConnectedOptions(next, parts.optionSettings),
-            parts.editKind,
-        );
-        if (parts.editKind === 'monthly' || parts.editKind === 'quarterly' || parts.editKind === 'yearly') {
-            next = applyExclusiveGroupToItem(next, parts.optionSettings);
-        }
-    } else {
-        next = keepOptionsForKind(
-            applyConnectedOptions(next, emptyOptionSettings()),
-            parts.editKind,
-        );
-    }
-
-    const trimmedNote = parts.note.trim();
-    if (trimmedNote) next.notes = trimmedNote;
-    else delete next.notes;
-    return next;
 }
 
 export default function ItemEditScreen() {

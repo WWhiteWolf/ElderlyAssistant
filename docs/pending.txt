@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-08 (#91-new)
+Last updated: 2026-09-08 (#92-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -24,15 +24,24 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
+1. Bug (Patrick, #92-new). One Time for today on Daily has no
+   Snooze. Daily every day with a time does. Simulator: 11 PM,
+   30 minutes before ticked. The line does not say from
+   Appointments. Next session takes this look. Look at the bit
+   set, and whether One Time was still entangled with Appointments.
+   Appointments do not have Snooze. The table still starts One Time
+   from the Appointments row, then turns push-back on.
+
 The design description of the whole app is the designed
 implementation (Patrick, #84-new). It is the guide. A sitting builds
 from docs/designed-implementation.md and does not ask Patrick a
 design question.
 
-#91-new is closed. The four table-door pieces are built. A
-later sitting can teach the save form to write the codes and
-leave the rest to the table. Do not change the scheduler's
-decisions.
+#91-new is closed. The four table-door pieces are built. #92-new
+built the leftover save form: Save writes from the table. Both
+pieces. Simulator checks done except What's Next 1. The job is
+docs-ref/build-sheets/build-sheet-save-form.md. Not on the phone.
+Do not change the scheduler's decisions.
 Home, Help, Calendar, Settings, Backup, Scheduled Reminders,
 and Options are in docs/designed-implementation.md. A
 Settings password stays nice-to-have.
@@ -154,6 +163,13 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+87. #92-new — save form writes from the table. Both pieces.
+   Simulator checks done except One Time Snooze. Not on the phone.
+
+86. #91-new — four table-door pieces. Done as the three-word code,
+   exclusive groups as one group, Quarterly step, list Snooze from
+   the banner set. Not on the phone.
 
 85. #90-new — Quarterly step on the translator's table. none, days30,
    days60, days90. Chips and Done read the named set. Scheduler

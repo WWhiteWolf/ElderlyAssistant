@@ -3,7 +3,15 @@
 // The live scheduler calls translateReminderItems. These tests ask that each
 // kind reaches the same common facts the old per-screen rules already proved.
 
-import { translateReminderItems, doneActionCodeOf, exclusiveGroupBitsOf } from '../translators/translate.ts';
+import {
+    translateReminderItems,
+    doneActionCodeOf,
+    exclusiveGroupBitsOf,
+    dateWriteCodeOf,
+    timeWriteCodeOf,
+    keepsLeadChipsOf,
+    hasQuarterlyStepOf,
+} from '../translators/translate.ts';
 import { MONTHLY_WEEKDAY_EXCLUSIVE_GROUP, QUARTERLY_STEP_CODES } from '../inputshape.ts';
 import { momentsFor } from '../leadmoments.ts';
 import type { ReminderItem } from '../../modules/reminder-types.ts';
@@ -575,6 +583,72 @@ export function runTranslatorCadenceTests(): void {
             QUARTERLY_STEP_CODES.slice(),
             ['none', 'days30', 'days60', 'days90'],
             'an impossible step cannot be written down',
+        );
+    });
+
+    test('Save write codes sit on the table for every kind', () => {
+        assertSame(
+            [
+                dateWriteCodeOf('daily'),
+                dateWriteCodeOf('weekly'),
+                dateWriteCodeOf('monthly'),
+                dateWriteCodeOf('quarterly'),
+                dateWriteCodeOf('yearly'),
+                dateWriteCodeOf('oneTime'),
+                dateWriteCodeOf('appointments'),
+                dateWriteCodeOf('birthdays'),
+                dateWriteCodeOf('bucketlist'),
+            ],
+            ['none', 'weekday', 'calendar', 'calendar', 'calendar', 'today', 'optional', 'required', 'none'],
+            'Save asks the table what date fields belong',
+        );
+        assertSame(
+            [
+                timeWriteCodeOf('daily'),
+                timeWriteCodeOf('weekly'),
+                timeWriteCodeOf('monthly'),
+                timeWriteCodeOf('quarterly'),
+                timeWriteCodeOf('yearly'),
+                timeWriteCodeOf('oneTime'),
+                timeWriteCodeOf('appointments'),
+                timeWriteCodeOf('birthdays'),
+                timeWriteCodeOf('bucketlist'),
+            ],
+            [
+                'ifPendingTime',
+                'alwaysPendingTime',
+                'alwaysPendingDate',
+                'alwaysPendingDate',
+                'alwaysPendingDate',
+                'ifTimeSet',
+                'ifTimeSet',
+                'ifTimeSet',
+                'none',
+            ],
+            'Save asks the table what time fields belong',
+        );
+        assertSame(
+            [
+                keepsLeadChipsOf('daily'),
+                keepsLeadChipsOf('weekly'),
+                keepsLeadChipsOf('monthly'),
+                keepsLeadChipsOf('oneTime'),
+                keepsLeadChipsOf('appointments'),
+                keepsLeadChipsOf('birthdays'),
+                keepsLeadChipsOf('bucketlist'),
+            ],
+            [false, false, false, true, true, true, false],
+            'Save asks the table whether reminder chips belong',
+        );
+        assertSame(
+            [
+                hasQuarterlyStepOf('quarterly'),
+                hasQuarterlyStepOf('monthly'),
+                hasQuarterlyStepOf('yearly'),
+                hasQuarterlyStepOf('daily'),
+            ],
+            [true, false, false, false],
+            'only Quarterly writes a Quarterly step',
         );
     });
 }

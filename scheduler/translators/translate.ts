@@ -26,11 +26,13 @@
 
 import type {
     BannerButtonsCode,
+    DateWriteCode,
     DoneActionCode,
     LeadTime,
     QuarterlyStepCode,
     RepeatUnitCode,
     ShapedItem,
+    TimeWriteCode,
 } from '../inputshape.ts';
 import { MONTHLY_WEEKDAY_EXCLUSIVE_GROUP, quarterlyStepCodeOf, quarterlyStepDaysOf } from '../inputshape.ts';
 import type { ReminderItem } from '../../modules/reminder-types.ts';
@@ -86,6 +88,12 @@ export interface ScreenRules {
     canBePushedBackBit: boolean;
     /** What Done does for this kind. */
     doneActionCode: DoneActionCode;
+    /** What Save writes for year, month, and day. */
+    dateWriteCode: DateWriteCode;
+    /** What Save writes for hour and minute. */
+    timeWriteCode: TimeWriteCode;
+    /** True when Save keeps the reminders-before chips. */
+    keepsLeadChipsBit: boolean;
     /**
      * Bits that work together, of which only one can be true.
      *
@@ -265,6 +273,9 @@ const dailyCadenceRules: ScreenRules = {
     canBeDoneBit: true,
     canBePushedBackBit: true,
     doneActionCode: 'thisCycle',
+    dateWriteCode: 'none',
+    timeWriteCode: 'ifPendingTime',
+    keepsLeadChipsBit: false,
     standsForGroupBit: false,
     bannerTitleTextOf: () => 'Daily Routine',
     bannerButtonsCode: 'routineactions',
@@ -286,6 +297,9 @@ const weeklyCadenceRules: ScreenRules = {
     canBeDoneBit: true,
     canBePushedBackBit: true,
     doneActionCode: 'thisCycle',
+    dateWriteCode: 'weekday',
+    timeWriteCode: 'alwaysPendingTime',
+    keepsLeadChipsBit: false,
     standsForGroupBit: false,
     bannerTitleTextOf: () => 'Weekly Chore',
     bannerButtonsCode: 'routineactions',
@@ -313,6 +327,9 @@ const datedCadenceRules: ScreenRules = {
     canBeDoneBit: true,
     canBePushedBackBit: true,
     doneActionCode: 'advanceDate',
+    dateWriteCode: 'calendar',
+    timeWriteCode: 'alwaysPendingDate',
+    keepsLeadChipsBit: false,
     exclusiveGroupBits: MONTHLY_WEEKDAY_EXCLUSIVE_GROUP,
     standsForGroupBit: false,
     bannerTitleTextOf: (item) =>
@@ -362,6 +379,9 @@ const appointmentsCadenceRules: ScreenRules = {
     canBeDoneBit: true,
     canBePushedBackBit: false,
     doneActionCode: 'endItem',
+    dateWriteCode: 'optional',
+    timeWriteCode: 'ifTimeSet',
+    keepsLeadChipsBit: true,
     standsForGroupBit: false,
     bannerButtonsCode: 'appointmentsok',
     idOf: (item) => item.id,
@@ -411,6 +431,9 @@ const birthdaysCadenceRules: ScreenRules = {
     canBeDoneBit: true,
     canBePushedBackBit: false,
     doneActionCode: 'advanceDate',
+    dateWriteCode: 'required',
+    timeWriteCode: 'ifTimeSet',
+    keepsLeadChipsBit: true,
     standsForGroupBit: false,
     bannerButtonsCode: 'appointmentsok',
     idOf: (item) => item.id,
@@ -461,6 +484,9 @@ const oneTimeCadenceRules: ScreenRules = {
     bannerButtonsCode: 'routineactions',
     canBePushedBackBit: true,
     doneActionCode: 'thisCycle',
+    dateWriteCode: 'today',
+    timeWriteCode: 'ifTimeSet',
+    keepsLeadChipsBit: true,
     pushedBackStampOf: (item) => item.snoozedUntil,
     bannerTitleTextOf: () => 'Daily Routine',
     bannerBodyTextOf: (item) => `Time for ${item.label}!`,
@@ -470,6 +496,9 @@ const bucketlistCadenceRules: ScreenRules = {
     canBeDoneBit: true,
     canBePushedBackBit: false,
     doneActionCode: 'endItem',
+    dateWriteCode: 'none',
+    timeWriteCode: 'none',
+    keepsLeadChipsBit: false,
     standsForGroupBit: false,
     idOf: (item) => item.id,
     nameOf: (item) => item.label,
@@ -578,6 +607,26 @@ function withMonthlyRepeat(saved: ReminderItem, shaped: ShapedItem): ShapedItem 
 /** What Done does for this saved kind, from the translator's table. */
 export function doneActionCodeOf(kind: ReminderItem['kind']): DoneActionCode {
     return rulesByKind[kind].doneActionCode;
+}
+
+/** What Save writes for year, month, and day, from the translator's table. */
+export function dateWriteCodeOf(kind: ReminderItem['kind']): DateWriteCode {
+    return rulesByKind[kind].dateWriteCode;
+}
+
+/** What Save writes for hour and minute, from the translator's table. */
+export function timeWriteCodeOf(kind: ReminderItem['kind']): TimeWriteCode {
+    return rulesByKind[kind].timeWriteCode;
+}
+
+/** True when Save keeps the reminders-before chips. */
+export function keepsLeadChipsOf(kind: ReminderItem['kind']): boolean {
+    return rulesByKind[kind].keepsLeadChipsBit;
+}
+
+/** True when this kind writes a Quarterly step. */
+export function hasQuarterlyStepOf(kind: ReminderItem['kind']): boolean {
+    return rulesByKind[kind].quarterlyStepOf !== undefined;
 }
 
 /** The exclusive group for this saved kind, if it has one. */

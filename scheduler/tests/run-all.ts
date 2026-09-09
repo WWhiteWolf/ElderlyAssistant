@@ -19,6 +19,7 @@ import { runMissCandidateTests } from './miss-candidates.test.ts';
 import { runStillWantedTests } from './stillwanted.test.ts';
 import { runArmDepthTests } from './armdepth.test.ts';
 import { runTranslatorCadenceTests } from './translatorcadence.test.ts';
+import { runAssembleFormTests } from './assembleform.test.ts';
 import { runLeadMomentsTests } from './leadmoments.test.ts';
 import { runRemindersForTests } from './remindersfor.test.ts';
 import { runApplyTests } from './apply.test.ts';
@@ -51,6 +52,9 @@ runArmDepthTests();
 
 console.log('\nOne-list translator');
 runTranslatorCadenceTests();
+
+console.log('\nSave form');
+runAssembleFormTests();
 
 console.log('\nLead moments');
 runLeadMomentsTests();

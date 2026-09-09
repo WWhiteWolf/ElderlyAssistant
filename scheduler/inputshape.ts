@@ -83,6 +83,40 @@ export type BannerButtonsCode =
 export type DoneActionCode = 'thisCycle' | 'advanceDate' | 'endItem';
 
 /**
+ * What Save writes for year, month, and day.
+ *
+ * none — drop them.
+ * weekday — day is the weekday number; drop year and month.
+ * calendar — write the pending date unless an exclusive weekday bit is complete.
+ * today — write today’s date.
+ * required — always write the pending date.
+ * optional — write the pending date when a date was set; otherwise drop them.
+ */
+export type DateWriteCode =
+    | 'none'
+    | 'weekday'
+    | 'calendar'
+    | 'today'
+    | 'required'
+    | 'optional';
+
+/**
+ * What Save writes for hour and minute.
+ *
+ * none — drop them.
+ * ifPendingTime — write from the pending time when it is there.
+ * alwaysPendingTime — always write from the pending time; noon if missing.
+ * alwaysPendingDate — always write from the pending date’s time.
+ * ifTimeSet — write from the pending date’s time when a time was set.
+ */
+export type TimeWriteCode =
+    | 'none'
+    | 'ifPendingTime'
+    | 'alwaysPendingTime'
+    | 'alwaysPendingDate'
+    | 'ifTimeSet';
+
+/**
  * The monthly weekday exclusive group. Only one of these bits can be true.
  * Turning one on turns the others off. There is no both-true case.
  */
