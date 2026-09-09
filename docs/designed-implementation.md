@@ -331,6 +331,10 @@ order is remembered the next time Home opens.
 
 A tap still opens the page when you are not editing.
 
+The first time Home opens, a popup shows the User's Guide. Got it puts
+it away and it stays away. Reset All Data brings it back. The words are
+the same four paragraphs as the Settings page.
+
 Appointments is the check-mark. Bucket List is a rainbow. They do not
 share a picture.
 
@@ -393,8 +397,8 @@ date-and-time control as the rest of the app.
 
 Scheduled Reminders and Backup & Restore are doors off this page. They
 are not this page. User's Guide is a tile on this page. A tap opens a
-brief guide that lives in the app. The page is empty until the words
-are written. It does not go to a website.
+brief guide that lives in the app. The words are the same four
+paragraphs as the first-load popup on Home. It does not go to a website.
 Feedback is its own tile on this page. It opens the same popup Mystery
 Clues Tracker uses. Send opens the phone's Mail. The person reaches
 out; the app does not send the mail. Reset All Data sits in the Settings

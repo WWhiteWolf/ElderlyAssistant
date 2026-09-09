@@ -15,7 +15,9 @@ import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-nativ
 import { useLandscapeHeaderSide } from '../components/AppOrientation';
 import { Cover } from '../components/Cover';
 import { HeaderButton, PageFrame, uprightInLandscape, useLandscape } from '../components/PageFrame';
+import { PAGE_LABELS } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
+import { USER_GUIDE_PARAGRAPHS, USER_GUIDE_SEEN_KEY } from '../constants/user-guide';
 import {
     applySavedHomeOrder,
     HOME_BADGES,
@@ -140,6 +142,7 @@ export default function HomeScreen() {
     const [editing, setEditing] = useState(false);
     const [holdBadge, setHoldBadge] = useState<HomeBadge | null>(null);
     const [draggingId, setDraggingId] = useState<string | null>(null);
+    const [showWelcome, setShowWelcome] = useState(false);
 
     const badgesRef = useRef(badges);
     badgesRef.current = badges;
@@ -160,6 +163,8 @@ export default function HomeScreen() {
                 if (name) setUserName(name);
                 const raw = await AsyncStorage.getItem(HOME_BADGE_ORDER_KEY);
                 setBadges(applySavedHomeOrder(parseSavedHomeOrder(raw)));
+                const seen = await AsyncStorage.getItem(USER_GUIDE_SEEN_KEY);
+                setShowWelcome(seen !== 'true');
             };
             load();
         }, [])
@@ -217,6 +222,11 @@ export default function HomeScreen() {
         setEditing(false);
         void saveOrder(badgesRef.current);
     }, [saveOrder]);
+
+    const dismissWelcome = useCallback(() => {
+        setShowWelcome(false);
+        void AsyncStorage.setItem(USER_GUIDE_SEEN_KEY, 'true');
+    }, []);
 
     return (
         <GestureHandlerRootView style={styles.container}>
@@ -286,6 +296,26 @@ export default function HomeScreen() {
                 </View>
             </ScrollView>
             </PageFrame>
+            <Cover visible={showWelcome}>
+                <View style={styles.modalOverlay}>
+                    <View style={styles.pickerModal}>
+                        <Text style={styles.modalTitle}>{PAGE_LABELS.userGuide}</Text>
+                        <ScrollView
+                            style={styles.welcomeScroll}
+                            keyboardShouldPersistTaps="handled"
+                        >
+                            {USER_GUIDE_PARAGRAPHS.map((one) => (
+                                <Text key={one} style={styles.welcomeParagraph}>{one}</Text>
+                            ))}
+                        </ScrollView>
+                        <View style={styles.modalBtns}>
+                            <TouchableOpacity style={styles.gotItBtn} onPress={dismissWelcome}>
+                                <Text style={styles.choiceBtnText}>Got it</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Cover>
             <Cover visible={holdBadge != null}>
                 <View style={styles.modalOverlay}>
                     <View style={styles.pickerModal}>
@@ -428,6 +458,20 @@ const makeStyles = (t: Theme) =>
             width: '100%',
         },
         modalTitle: { fontSize: 18, fontWeight: '600', color: t.cardTitle, marginBottom: 10 },
+        welcomeScroll: { maxHeight: 400 },
+        welcomeParagraph: {
+            fontSize: 16,
+            color: t.bodyText,
+            lineHeight: 22,
+            marginBottom: 12,
+        },
+        gotItBtn: {
+            backgroundColor: t.buttonPrimary,
+            paddingVertical: 14,
+            borderRadius: 8,
+            alignItems: 'center',
+            flex: 1,
+        },
         choiceBtn: {
             backgroundColor: t.buttonPrimary,
             paddingVertical: 14,

@@ -1,8 +1,9 @@
 import { useRouter } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { HeaderButton, PageFrame } from '../components/PageFrame';
 import { PAGE_LABELS } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
+import { USER_GUIDE_PARAGRAPHS } from '../constants/user-guide';
 
 export default function UserGuideScreen() {
     const router = useRouter();
@@ -23,7 +24,11 @@ export default function UserGuideScreen() {
                     </View>
                 }
             >
-                <View style={styles.body} />
+                <ScrollView contentContainerStyle={styles.body}>
+                    {USER_GUIDE_PARAGRAPHS.map((one) => (
+                        <Text key={one} style={styles.paragraph}>{one}</Text>
+                    ))}
+                </ScrollView>
             </PageFrame>
         </View>
     );
@@ -50,5 +55,11 @@ const makeStyles = (t: Theme) =>
             textAlign: 'center',
         },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
-        body: { flex: 1 },
+        body: { padding: 20 },
+        paragraph: {
+            fontSize: 17,
+            color: t.bodyText,
+            lineHeight: 24,
+            marginBottom: 16,
+        },
     });

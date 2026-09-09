@@ -13,9 +13,10 @@ who decides. It is not a claim that the files were refreshed.
 ## Where things stand
 
 You are living with the **#82-new** load on the phone. Through
-**#97-new** the work is in the project and not on the phone. The
-phone build waits until after a preliminary User's Guide. Do not
-change the scheduler's decisions.
+**#98-new** the work is in the project and the simulator. The User's
+Guide is written. Next session is a last scrub of the app before it
+goes on the phone and into the App Store. Do not change the
+scheduler's decisions.
 
 ## Standing rulings
 
@@ -141,7 +142,9 @@ These are Patrick's and they govern the work rather than describing it.
   Next Day are the missing-day banner, not an Options choice. Done
   and Save do not turn the reminder into a 28th.
 - **The user's guide is brief, in the app, and a tile on Settings**
-  (Patrick, #97-new). It does not go on a website. The app is
+  (Patrick, #97-new). The same four paragraphs show as a first-load
+  popup on Home (Patrick, #98-new). Got it remembers. Reset All Data
+  brings it back. It does not go on a website. The app is
   self-contained. A person's data stays on the phone. The app does
   not reach out to read or write from the outside world. What is
   already in App Store Connect stays there.
@@ -179,7 +182,7 @@ the same thin route as Weekly.
 Spec and testing file are Pending 1 and 2.
 The spec is `docs/designed-implementation.md`. What is not written: a
 Settings password (nice-to-have). The user's guide is a tile on
-Settings. The page is empty, to be filled later.
+Settings. The words are in. First load on Home shows the same words.
 
 Testers are on TestFlight External. The App Store heading is Waiting
 for Review on **72**. He is not aiming to go live. Manual release.

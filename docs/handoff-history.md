@@ -17,6 +17,26 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #98-new (2026-09-09): User's Guide words; first-load popup
+
+**The goal was to write the User's Guide.**
+
+**#97-new was committed**, asked at the open.
+
+**The words.** Four short paragraphs. Warm, for someone who knows an
+iPhone and what reminders are. Mystery Clues Tracker's Player Guide
+set the voice. "This guide" came out of the last paragraph; it was
+odd on the page and in a popup.
+
+**First load.** The same four paragraphs show on Home the first time.
+Got it remembers. Reset All Data brings it back. The words live in
+one place so the page and the popup cannot drift.
+
+**Checked on the simulator.** Popup and Settings page both read well.
+
+He is putting this build in the App Store. Do not change the
+scheduler's decisions.
+
 ## #97-new (2026-09-09): two leftovers; Feedback; Reset in the header; empty User's Guide
 
 **The goal was to fix the remaining two bugs from the fourth

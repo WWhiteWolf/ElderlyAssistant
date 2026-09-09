@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-09 (#97-new)
+Last updated: 2026-09-09 (#98-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -24,15 +24,7 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. A BRIEF USER'S GUIDE IN THE APP (Patrick, #97-new). It is a tile
-   on Settings. A tap opens a brief guide that lives in the app. The
-   tile and the empty page are there. The words are not. Fill them
-   in a later sitting. It does not go on a website. The app is
-   self-contained. A person's data stays on the phone. The app does
-   not reach out to read or write from the outside world. What is
-   already in App Store Connect stays there.
-
-2. DAY-ROLL LOCK still wants a night of all-green Daily on this
+1. DAY-ROLL LOCK still wants a night of all-green Daily on this
    load, then a morning open on a new load, to confirm the pop-up
    stays quiet.
 
@@ -136,6 +128,9 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+97. #98-new — User's Guide words. First-load popup on Home with the
+    same four paragraphs. Got it remembers. Checked on the simulator.
 
 96. #97-new — User's Guide tile on Settings. Empty page, Back to
     Settings. Words wait for a later sitting. Not on the phone.
