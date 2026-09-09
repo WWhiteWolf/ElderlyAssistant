@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-09 (#99-new)
+Last updated: 2026-09-09 (#100-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -133,6 +133,10 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+98. #100-new — Yearly, Quarterly, and Monthly Home badges no longer
+    share a telescope. Yearly keeps it. Quarterly is a fallen leaf.
+    Monthly is a first-quarter moon. Checked on the simulator.
 
 97. #98-new — User's Guide words. First-load popup on Home with the
     same four paragraphs. Got it remembers. Checked on the simulator.

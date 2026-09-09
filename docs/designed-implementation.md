@@ -336,7 +336,9 @@ it away and it stays away. Reset All Data brings it back. The words are
 the same four paragraphs as the Settings page.
 
 Appointments is the check-mark. Bucket List is a rainbow. They do not
-share a picture.
+share a picture. Yearly keeps the telescope. Quarterly is a fallen
+leaf. Monthly is a first-quarter moon. Those three do not share a
+picture.
 
 ## Help
 

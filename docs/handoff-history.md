@@ -17,6 +17,20 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #100-new (2026-09-09): duplicate Home badges split
+
+**The goal was to change the duplicate Home page badge pictures
+before the App Store.**
+
+**#99-new was committed**, asked at the open.
+
+**The pictures.** Yearly, Quarterly, and Monthly all used the
+telescope. Yearly keeps it. Quarterly is a fallen leaf. Monthly is a
+first-quarter moon. Those two live in `modules/home-badges.ts`.
+Checked on the simulator.
+
+This is the load he is putting on the phone and in the App Store.
+
 ## #98-new (2026-09-09): User's Guide words; first-load popup
 
 **The goal was to write the User's Guide.**

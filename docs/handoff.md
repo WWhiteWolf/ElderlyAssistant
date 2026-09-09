@@ -13,11 +13,13 @@ who decides. It is not a claim that the files were refreshed.
 ## Where things stand
 
 You are living with the **#82-new** load on the phone. Through
-**#98-new** the work is in the project and the simulator, and that
-session is committed. **#99-new** is the last review before the app
-goes on the phone and into the App Store. Do not change the
-scheduler's decisions. The designed implementation is the guide, and
-it is not finished yet.
+**#99-new** the work is in the project and the simulator, and that
+session is committed. **#100-new** changed the duplicate Home badges.
+Quarterly is a fallen leaf, Monthly is a first-quarter moon, Yearly
+keeps the telescope. Checked on the simulator. **#99-new** is the last
+review before the app goes on the phone and into the App Store. Do not
+change the scheduler's decisions. The designed implementation is the
+guide, and it is not finished yet.
 
 ## Standing rulings
 
@@ -116,6 +118,10 @@ These are Patrick's and they govern the work rather than describing it.
   **Does not**. Step 2 asks how often, with no stray “every”, and includes
   **Birthday**, which opens Birthdays’ New, not Yearly. Cancel on
   steps 2 and 3 goes back one step; step 1 Cancel closes.
+- **Yearly, Quarterly, and Monthly Home badges** (Patrick, #100-new).
+  Yearly keeps the telescope. Quarterly is a fallen leaf. Monthly is a
+  first-quarter moon. They had all three used the telescope. Checked on
+  the simulator.
 - **Birthdays is a copy of Appointments on the screen, and a yearly
   reminder on the one list** (Patrick, #81-new). Own saved kind
   `birthdays`. Date required. Same reminder chips as Appointments,

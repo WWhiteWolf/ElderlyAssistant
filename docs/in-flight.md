@@ -4,24 +4,25 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-09, at #98-new.
+Last written: 2026-09-09, at #100-new.
 
 ## Read this first
 
-- **#98-new is in the project and the simulator, not on the phone.**
-  The User's Guide words are in. First-load popup on Home. He is
-  putting this build in the App Store.
+- **#100-new is in the project and the simulator, not on the phone.**
+  Duplicate Home badges split: Yearly keeps the telescope, Quarterly a
+  fallen leaf, Monthly a first-quarter moon. This is the load he is
+  building for the phone and the App Store.
 - Phone still the **#82-new** load until this build.
 
 ## What is in
 
-The designed implementation, including this sitting. User's Guide
-words and the first-load popup. Not yet on the phone.
+The Home badge pictures. Checked on the simulator. Not yet on the phone.
 
 ## What is next
 
-He builds and puts it in the App Store. Spec and testing file are
-Pending 1 and 2. Day-roll lock still wants a night of all-green Daily.
+He builds, puts the load on the phone, and goes to the App Store. Spec
+and testing file are Pending 1 and 2. Day-roll lock still wants a night
+of all-green Daily.
 
 ## Do not reopen
 
