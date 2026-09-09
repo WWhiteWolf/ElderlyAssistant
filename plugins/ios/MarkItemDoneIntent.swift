@@ -122,7 +122,6 @@ struct MarkItemDoneIntent: AppIntent {
 @available(iOS 16.0, *)
 struct RememberShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
-        []
         // Later in-app Siri, kept and not offered:
         // AppShortcut(
         //     intent: MarkItemDoneIntent(),
