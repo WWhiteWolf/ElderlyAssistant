@@ -17,6 +17,29 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #93-new (2026-09-08): Daily One Time snooze is on the table
+
+**The goal was to find the Daily One Time without snooze bug.**
+
+**#92-new was committed**, asked at the open.
+
+**The look.** One Time starts as Appointments, which have no Snooze.
+The table turns push-back on and uses Daily's banner buttons. Snooze
+is there now.
+
+**Patrick checked.** Daily with a time and One Time for today, both
+set two minutes ahead: both fire. Snoozes work from the edit page
+and from the banner.
+
+**Not everything is on the table.** The missing-day banner (Then,
+Next Day, when a month has no such day) is still never written.
+Leave it for a later sitting. Do not change the scheduler's
+decisions. Not on the phone.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `pending.txt`,
+`in-flight.md`, and `App-Docs/master-handoff.md` refreshed. Phone
+still the #82-new load.
+
 ## #92-new (2026-09-08): save form writes from the table
 
 **The goal was the leftover save form.** The table-door sheets named

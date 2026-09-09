@@ -4,27 +4,24 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-08, at #92-new close.
+Last written: 2026-09-08, at #93-new close.
 
 ## Read this first
 
-- **Next sitting takes What's Next 1:** One Time for today on Daily has no Snooze.
+- **#93-new confirmed Daily One Time snooze.** It is on the table. It
+  works from the edit page and from the banner.
 - **#92-new save form is in the project.** Not on the phone.
 - **Phone load:** #82-new.
 
 ## What is in
 
 The designed implementation. The four table-door pieces. Save writes
-from the table. Simulator checks for the save form are done except
-that bug.
+from the table. Daily One Time snooze is on the table and works.
 
 ## What is next
 
-One Time for today on Daily has no Snooze. Daily every day with a
-time does. Look at the bit set, and whether One Time was still
-entangled with Appointments. Appointments do not have Snooze. The
-table still starts One Time from the Appointments row, then turns
-push-back on.
+The missing-day banner is still never written. Leave it for a later
+sitting.
 
 Spec, user guide, feedback button, and testing file are Pending 1–4.
 

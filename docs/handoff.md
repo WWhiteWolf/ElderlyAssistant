@@ -29,9 +29,12 @@ table-door pieces. The job sheet is
 `docs-ref/build-sheets/build-sheet-table-doors.md`. Not on the
 phone. Do not change the scheduler's decisions.
 **#92-new** built the leftover save form. Save writes from the
-table. Simulator checks done except One Time Snooze. Next sitting
-takes that look. Not on the phone. Do not change the scheduler's
+table. Not on the phone. Do not change the scheduler's
 decisions.
+**#93-new** confirmed Daily One Time snooze. It is on the table and
+works from the edit page and from the banner. Not on the phone.
+Leave the missing-day banner for a later sitting. Do not change the
+scheduler's decisions.
 
 ## Standing rulings
 
@@ -156,19 +159,13 @@ whole app. They do not collect new decisions. The ruling is in Standing
 rulings. The guide is `docs/designed-implementation.md`. The scheduler
 stays.
 
-**Next sitting:** One Time for today on Daily has no Snooze. Daily
-every day with a time does. Look at the bit set, and whether One
-Time was still entangled with Appointments. Appointments do not
-have Snooze. The table still starts One Time from the Appointments
-row, then turns push-back on.
-
 **#91-new:** the four table-door pieces are built. Not on the
 phone. Do not change the scheduler's decisions.
 
 **#92-new:** the leftover save form is built. The job sheet is
 `docs-ref/build-sheets/build-sheet-save-form.md`. Both pieces are
-in the project. Simulator checks done except that Snooze bug.
-Not on the phone. `shifteddayactions` is still never written.
+in the project. Not on the phone. `shifteddayactions` is still
+never written. Leave that banner for a later sitting.
 Leave the scheduler's decisions as they are. Leave Home, Help,
 Calendar, Settings, Backup, and Scheduled Reminders alone.
 
