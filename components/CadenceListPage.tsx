@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -7,16 +6,14 @@ import {
     ScrollView,
     StyleSheet,
     Text,
-    TextInput,
     TouchableOpacity,
     View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { HeaderButton, PageFrame } from './PageFrame';
 import { Cover } from './Cover';
 import { ReminderItemRow } from './ReminderItemRow';
-import { pageLabelFor } from '../constants/page-names';
+import { PAGE_LABELS, pageLabelFor } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
 import {
     dragKindTo,
@@ -34,15 +31,6 @@ import {
     type ReminderItem,
     type ReminderKind,
 } from '../modules/reminder-items';
-
-interface HistoryEntry {
-    id: string;
-    date: string;
-    sched: string;
-    actual: string;
-    what?: string;
-    note?: string;
-}
 
 function visibleFor(kind: ReminderKind, items: ReminderItem[]): ReminderItem[] {
     if (kind === 'daily') return sortDailyVisible(items);
@@ -72,14 +60,10 @@ export default function CadenceListPage({
     const theme = useTheme();
     const styles = makeStyles(theme);
     const [items, setItems] = useState<ReminderItem[]>([]);
-    const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [showAddPopup, setShowAddPopup] = useState(false);
     const [highlightId, setHighlightId] = useState<string | null>(null);
     const [draggingId, setDraggingId] = useState<string | null>(null);
     const [snoozeItemId, setSnoozeItemId] = useState<string | null>(null);
-    const [editEntry, setEditEntry] = useState<HistoryEntry | null>(null);
-    const [editWhat, setEditWhat] = useState('');
-    const [editNote, setEditNote] = useState('');
     const historyKey = historyKeyFor(kind);
 
     const itemsRef = useRef(items);
@@ -106,10 +90,7 @@ export default function CadenceListPage({
 
     const refreshFromStorage = useCallback(async () => {
         setItems(await loadReminderItems());
-        if (!historyKey) return;
-        const saved = await AsyncStorage.getItem(historyKey);
-        setHistory(saved ? JSON.parse(saved) : []);
-    }, [historyKey]);
+    }, []);
 
     useFocusEffect(
         useCallback(() => {
@@ -123,11 +104,6 @@ export default function CadenceListPage({
 
     const writeItems = (patch: (list: ReminderItem[]) => ReminderItem[]) => {
         void applyReminderChange(patch).then(setItems);
-    };
-
-    const writeHistory = (updated: HistoryEntry[]) => {
-        setHistory(updated);
-        if (historyKey) void AsyncStorage.setItem(historyKey, JSON.stringify(updated));
     };
 
     const markDone = (id: string) => {
@@ -249,25 +225,6 @@ export default function CadenceListPage({
         ]);
     };
 
-    const deleteHistoryEntry = (id: string) => {
-        writeHistory(history.filter((one) => one.id !== id));
-    };
-
-    const clearAllHistory = () => {
-        Alert.alert(
-            'Clear All',
-            'Delete all log entries? This cannot be undone.',
-            [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                    text: 'Clear All',
-                    style: 'destructive',
-                    onPress: () => writeHistory([]),
-                },
-            ],
-        );
-    };
-
     return (
         <GestureHandlerRootView style={styles.container}>
             <PageFrame
@@ -283,17 +240,26 @@ export default function CadenceListPage({
                             <Text style={styles.headerBtnText}>Home</Text>
                         </HeaderButton>
                         <Text style={styles.title}>{pageLabelFor(kind)}</Text>
-                        <HeaderButton
-                            onPress={() => {
-                                if (kind === 'daily') {
-                                    setShowAddPopup(true);
-                                    return;
-                                }
-                                router.push({ pathname: '/item-edit', params: { kind, returnTo } } as Href);
-                            }}
-                        >
-                            <Text style={styles.headerBtnText}>+ Add</Text>
-                        </HeaderButton>
+                        <View style={styles.headerRight}>
+                            <HeaderButton
+                                onPress={() => {
+                                    router.push({ pathname: '/log', params: { kind, returnTo } } as Href);
+                                }}
+                            >
+                                <Text style={styles.headerBtnText}>{PAGE_LABELS.log}</Text>
+                            </HeaderButton>
+                            <HeaderButton
+                                onPress={() => {
+                                    if (kind === 'daily') {
+                                        setShowAddPopup(true);
+                                        return;
+                                    }
+                                    router.push({ pathname: '/item-edit', params: { kind, returnTo } } as Href);
+                                }}
+                            >
+                                <Text style={styles.headerBtnText}>+ Add</Text>
+                            </HeaderButton>
+                        </View>
                     </View>
                 }
             >
@@ -336,74 +302,8 @@ export default function CadenceListPage({
                         </View>
                     ))}
                 </View>
-
-                <View style={styles.historySection}>
-                    <View style={styles.historyHeader}>
-                        <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>Log</Text>
-                        {history.length > 0 && (
-                            <TouchableOpacity style={styles.clearAllBtn} onPress={clearAllHistory}>
-                                <Text style={styles.clearAllBtnText}>Clear All</Text>
-                            </TouchableOpacity>
-                        )}
-                    </View>
-                    <ScrollView style={styles.historyScroll} nestedScrollEnabled>
-                        {history.map((l) => (
-                            <Swipeable
-                                key={l.id}
-                                renderRightActions={() => (
-                                    <TouchableOpacity style={styles.swipeDelete} onPress={() => deleteHistoryEntry(l.id)}>
-                                        <Text style={styles.swipeDeleteText}>Delete</Text>
-                                    </TouchableOpacity>
-                                )}
-                            >
-                                <TouchableOpacity
-                                    style={styles.historyItem}
-                                    onPress={() => {
-                                        setEditEntry(l);
-                                        setEditWhat(l.what || '');
-                                        setEditNote(l.note || '');
-                                    }}
-                                >
-                                    <Text style={styles.historyText}>
-                                        {l.date} | {l.actual} | {l.sched}{l.what ? ` | ${l.what}` : ''}
-                                    </Text>
-                                </TouchableOpacity>
-                            </Swipeable>
-                        ))}
-                    </ScrollView>
-                </View>
             </ScrollView>
             </PageFrame>
-
-            {editEntry && (
-                <View style={styles.logModal}>
-                    <Text style={styles.modalTitle}>Edit Log Entry</Text>
-                    <Text style={styles.inputLabel}>Notes (optional)</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={editWhat}
-                        onChangeText={setEditWhat}
-                        placeholder="Add a note about this entry..."
-                        placeholderTextColor={theme.mutedText}
-                    />
-                    <View style={styles.modalBtns}>
-                        <TouchableOpacity style={styles.cancelBtn} onPress={() => setEditEntry(null)}>
-                            <Text style={styles.cancelBtnText}>Cancel</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.confirmBtn}
-                            onPress={() => {
-                                writeHistory(history.map((one) =>
-                                    one.id === editEntry.id ? { ...one, what: editWhat, note: editNote } : one
-                                ));
-                                setEditEntry(null);
-                            }}
-                        >
-                            <Text style={styles.confirmBtnText}>Save</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            )}
 
             {showAddPopup && (
                 <Cover visible={showAddPopup}>
@@ -489,6 +389,7 @@ const makeStyles = (t: Theme) =>
             textAlign: 'center',
         },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
+        headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
         scroll: { flex: 1 },
         section: {
             backgroundColor: t.card,
@@ -514,19 +415,6 @@ const makeStyles = (t: Theme) =>
         },
         snoozeOptionText: { color: t.delayText, fontWeight: '600', fontSize: 16 },
         inputLabel: { fontSize: 14, color: t.mutedText, marginBottom: 4 },
-        swipeDelete: {
-            backgroundColor: t.buttonDelete,
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: 80,
-            borderRadius: 10,
-            marginBottom: 4,
-        },
-        swipeDeleteText: {
-            color: t.buttonDeleteText,
-            fontWeight: '600',
-            fontSize: 15,
-        },
         modalOverlay: {
             flex: 1,
             backgroundColor: 'rgba(0,0,0,0.4)',
@@ -563,78 +451,4 @@ const makeStyles = (t: Theme) =>
             marginRight: 8,
         },
         cancelBtnText: { color: t.buttonNeutralText, fontWeight: '600' },
-        confirmBtn: {
-            backgroundColor: t.buttonPrimary,
-            padding: 12,
-            borderRadius: 8,
-            flex: 1,
-            alignItems: 'center',
-        },
-        confirmBtnText: { color: t.buttonPrimaryText, fontWeight: '600' },
-        sectionTitle: {
-            fontSize: 18,
-            fontWeight: '600',
-            color: t.cardTitle,
-            marginBottom: 10,
-        },
-        historySection: { marginHorizontal: 12, marginBottom: 12 },
-        historyScroll: {
-            height: 385,
-            backgroundColor: t.card,
-            borderRadius: 8,
-            padding: 8,
-            borderWidth: 0.5,
-            borderColor: t.cardBorder,
-        },
-        historyHeader: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 10,
-        },
-        historyItem: {
-            borderBottomWidth: 0.5,
-            borderBottomColor: t.progressTrack,
-            paddingVertical: 6,
-        },
-        historyText: { fontSize: 13, color: t.bodyText, lineHeight: 18 },
-        clearAllBtn: {
-            paddingVertical: 4,
-            paddingHorizontal: 10,
-            borderRadius: 6,
-            borderWidth: 0.5,
-            borderColor: t.mutedText,
-        },
-        clearAllBtnText: {
-            color: t.mutedText,
-            fontSize: 13,
-            fontWeight: '600',
-        },
-        logModal: {
-            position: 'absolute',
-            top: 100,
-            left: 20,
-            right: 20,
-            backgroundColor: t.card,
-            borderRadius: 12,
-            padding: 16,
-            borderWidth: 0.5,
-            borderColor: t.cardBorder,
-            elevation: 10,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.15,
-            shadowRadius: 4,
-            zIndex: 999,
-        },
-        input: {
-            borderWidth: 0.5,
-            borderColor: t.cardBorder,
-            borderRadius: 8,
-            padding: 10,
-            fontSize: 16,
-            backgroundColor: t.pageBackground,
-            marginBottom: 10,
-            color: t.bodyText,
-        },
     });

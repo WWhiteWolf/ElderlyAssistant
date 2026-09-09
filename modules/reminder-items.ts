@@ -369,5 +369,16 @@ export function snoozeLineOf(item: ReminderItem): string | null {
     if (!shaped?.canBePushedBackBit) return null;
     if (item.snoozedUntil == null || item.snoozedUntil <= Date.now()) return null;
     const when = new Date(item.snoozedUntil);
-    return `Snoozed till: ${format12Hour(when.getHours(), when.getMinutes())}`;
+    const time = format12Hour(when.getHours(), when.getMinutes());
+    const now = new Date();
+    const sameDay =
+        when.getFullYear() === now.getFullYear()
+        && when.getMonth() === now.getMonth()
+        && when.getDate() === now.getDate();
+    if (sameDay) return `Snoozed till: ${time}`;
+    const day = `${DAY_NAMES[when.getDay()]} ${MONTH_NAMES[when.getMonth()]} ${when.getDate()}`;
+    const withYear = when.getFullYear() === now.getFullYear()
+        ? day
+        : `${day}, ${when.getFullYear()}`;
+    return `Snoozed till: ${withYear} · ${time}`;
 }

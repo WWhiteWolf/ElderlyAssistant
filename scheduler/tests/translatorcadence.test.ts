@@ -628,7 +628,7 @@ export function runTranslatorCadenceTests(): void {
                 dateWriteCodeOf('birthdays'),
                 dateWriteCodeOf('bucketlist'),
             ],
-            ['none', 'weekday', 'calendar', 'calendar', 'calendar', 'today', 'optional', 'required', 'none'],
+            ['none', 'weekday', 'calendar', 'calendar', 'calendar', 'today', 'required', 'required', 'none'],
             'Save asks the table what date fields belong',
         );
         assertSame(

@@ -13,7 +13,6 @@ function parts(changes: Partial<AssembleFormParts> & Pick<AssembleFormParts, 'ed
         pendingDay: 2,
         pendingTime: new Date(2026, 5, 10, 8, 15, 0, 0),
         pendingDate,
-        dateSet: true,
         timeSet: true,
         reminders: [{ id: 'r1', amount: 30, unit: 'minutes', kind: 'offset' }],
         intervalMonths: 6,
@@ -157,15 +156,15 @@ export function runAssembleFormTests(): void {
         );
     });
 
-    test('Appointments with no date set has no year, month, or day', () => {
+    test('Appointments always write a date', () => {
         const next = assembleFormItem(parts({
             editKind: 'appointments',
-            dateSet: false,
+            pendingDate: new Date(2026, 5, 10, 12, 0, 0, 0),
         }));
         assertSame(
             [next.year, next.month, next.day],
-            [undefined, undefined, undefined],
-            'a missing date is not invented',
+            [2026, 5, 10],
+            'Appointments require a date',
         );
     });
 

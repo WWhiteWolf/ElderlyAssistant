@@ -51,7 +51,8 @@ The shared page does Daily's extras. They are:
 - **The visible list** is `sortDailyVisible` / `shownOnDaily`, not
   `kind === 'daily'` only. Visitors and `oneTime` appear. Reorder uses
   `dragVisibleTo` / `placeVisible`, not `dragKindTo`.
-- **The log key** is `daily_history`.
+- **The log key** is `daily_history`. The list does not show the log.
+  Log in the header opens Daily’s log only.
 - **+ Add** opens Daily's own short choice: Every day, or One Time for
   today. Then it opens `item-edit` with that kind and `returnTo` daily.
   It does not send every add to kind `daily` the way Weekly does.
@@ -157,8 +158,12 @@ Keep these. A build does not replace them.
   names its kind.
 - One edit form: `app/item-edit.tsx`.
 - One row: `components/ReminderItemRow.tsx`.
+- One log page: `app/log.tsx`. A reminder page only names its kind.
 - The date-and-time control, and the page chrome.
 - The engine, and the translator's table of kinds.
+
+When a time or a date does not have to be picked, tapping a field to
+set one still leaves a way back to none.
 
 ## What Done does
 
@@ -184,19 +189,27 @@ has no next cycle, so Skip does not apply.
 ## Each kind
 
 The row and the banner read these fields. A page does not keep a
-private copy of Done, Skip, or Snooze.
+private copy of Done, Skip, or Snooze. When a delay is later today,
+the row says Snoozed till and the clock. When it is another day, it
+also names the weekday and the date. If it crosses the year, the year
+is there too.
 
-**daily** — page Daily. Repeats every day. Done is thisCycle. It can be
-pushed back. Banner set routineactions: Done, OK, Skip, Delay 15 / 30
-/ 60 min. Speaks at the moment itself. Daily also shows other kinds
-that fall today; those items are not this kind.
+**daily** — page Daily. Repeats every day. Time is optional. New starts
+with no time until Set time. After a time is set, there is a way back
+to none. With a time, it speaks at that moment. With no time, it does
+not speak. It is there so you can mark it done when you have already
+done it. Done is thisCycle. It can be pushed back. Banner set
+routineactions: Done, OK, Skip, Delay 15 / 30 / 60 min. Daily also
+shows other kinds that fall today; those items are not this kind.
 
 **oneTime** — Daily's one-shot for today. No page of its own. Saved
 kind `oneTime`. Daily shows it. Appointments does not. A banner tap
 opens Daily. Save comes back on Daily. Done is thisCycle. It can be
 pushed back. Banner set routineactions, same words as Daily. The
 Reminders before chips are only 30 min., 1 hour, 2 hours, and Time of.
-It is not an Appointment.
+Save does not ask again when none of them is on. Time is optional.
+After a time is set, there is a way back to none. The set time still
+speaks. It is not an Appointment.
 
 **weekly** — page Weekly. Repeats every week on its weekday. Done is
 thisCycle. It can be pushed back. Banner set routineactions. Speaks at
@@ -218,17 +231,22 @@ chip at a time. The list tile still shows the date.
 **yearly** — page Yearly. Repeats every year. Date required. Done is
 advanceDate. It can be pushed back. Banner set cadenceactions.
 
-**appointments** — page Appointments. No repeat. Date required. Done is
-endItem. It cannot be pushed back. Banner set appointmentsok: OK only,
-which closes without opening the app. Speaks at the set time, and at
-any Reminders before chips. Any and all of those chips can be on at
-once. Morning of is not the set time.
+**appointments** — page Appointments. No repeat. Date required. The form
+does not offer to take the date off. Things with no date belong on
+Bucket List. Time is optional. After a time is set, there is a way back
+to none. Done is endItem. It cannot be pushed back. Banner set
+appointmentsok: OK only, which closes without opening the app. Speaks
+at the set time, and at any Reminders before chips. Any and all of
+those chips can be on at once. Save does not ask again when none of
+them is on. The set time still speaks. Morning of is not the set time.
 
 **birthdays** — page Birthdays. Own kind. A copy of Appointments on the
-screen, and a yearly reminder on the one list. Date required. Done is
+screen, and a yearly reminder on the one list. Date required. Time is
+optional. After a time is set, there is a way back to none. Done is
 advanceDate. It cannot be pushed back. Banner set appointmentsok. Same
-Reminders before chips as Appointments, any and all on at once. An
-item on Birthdays is not also on Appointments or Yearly.
+Reminders before chips as Appointments, any and all on at once. Save
+does not ask again when none of them is on. An item on Birthdays is not
+also on Appointments or Yearly.
 
 **bucketlist** — page Bucket List. No date and no time. Done is
 endItem. It cannot be pushed back. No banner to arm. It must never be
@@ -256,8 +274,16 @@ Daily.
 
 **Same-day undo.** Done is thisCycle. A second tap undoes.
 
-The log is one piece. Daily, the shared list, and the banner all call
-it. They do not each write their own.
+The log is one piece. Daily, the shared list, and the banner all write
+it. They do not each write their own. The list does not show it. Log in
+the header opens that page’s log only.
+
+## Log
+
+Log is not a Home page and not a kind of its own. The visible name is
+Log. Each reminder page carries Log in the header, beside + Add. That
+opens `app/log.tsx` for that page’s log only. There is not one log for
+everything. Back returns to the list.
 
 ## Banner housing
 
@@ -287,7 +313,7 @@ opens from Home. Options is not on that grid. There is no Options page.
 The gear in the header stays where it is. It is not a badge.
 
 Options lives on the individual item form. `app/item-edit.tsx` carries
-+ OPT. That opens `ScreenOptionsSheet` for the cases that belong to
+Options. That opens `ScreenOptionsSheet` for the cases that belong to
 that item's kind. That is the only place Options needs to be reached
 from.
 
@@ -299,6 +325,8 @@ order is remembered the next time Home opens.
 
 A tap still opens the page when you are not editing.
 
+Appointments and Bucket List do not share a picture.
+
 ## Help
 
 Help is the helper from Home and from Calendar. The visible name is
@@ -307,8 +335,8 @@ transparent screen so New can sit above it.
 
 Help does not save an item. It asks which kind, then opens
 `app/item-edit.tsx` with that kind and `viaHelper`. Cancel on the form
-comes back to Help. Save on the form pops Help as well, and lands where
-the person came from.
+comes back to Help. Save on the form pops Help as well, and opens the
+page where the item lives.
 
 The first question is: Does this item repeat? The choices are Repeats
 and Does not. Cancel closes.
@@ -319,8 +347,10 @@ stray “every”. Birthday opens Birthdays’ New, not Yearly. Cancel goes
 back one step.
 
 Does not asks: Is that for today? Yes opens Daily’s one-shot,
-`oneTime`. No asks Appointment or Bucket List. Cancel goes back one
-step.
+`oneTime`. No asks: Is this an occurrence that has a specific time
+and date, like an appointment? Or is it the rare item with no
+deadline or due date, like a Bucket List desire? The choices are
+Appointment and Bucket List. Cancel goes back one step.
 
 ## Calendar
 
@@ -329,8 +359,9 @@ page is `app/calendar.tsx`. Home opens it as `/calendar`.
 
 Daily and Bucket List stay off the month. Other items sit on the days
 the engine already shades. The names in a day cell are not taps. The
-whole day is. A tap opens that day's list, time then name. A tap on a
-row opens the one edit form, `app/item-edit.tsx`. After you make the
+whole day is. A tap opens that day's list, time then name. The time is
+the same 12-hour clock as the other pages. A tap on a row opens the
+one edit form, `app/item-edit.tsx`. After you make the
 edit, the save walk back brings you back to the item list. Hitting the
 Back button brings you back to the calendar.
 
@@ -392,7 +423,7 @@ foot names how many the phone is holding that this list does not show.
 ## Options
 
 Options is not a Home page and not a kind of its own. The visible name
-is Options. `app/item-edit.tsx` carries + OPT. That opens
+is Options. `app/item-edit.tsx` carries Options. That opens
 `ScreenOptionsSheet` for the cases that belong to that item's kind.
 That is the only place Options is reached from.
 
@@ -402,7 +433,8 @@ saved field stays.
 
 The cases are Holidays, Time zone, a second Thursday, and a Wednesday
 after the 6th. Holidays is Day before or Day after. Time zone is Float
-with phone or Keep this zone. Then and Next Day are the missing-day
+with phone or Keep this zone. When Keep this zone is on, the form line
+says Keep this zone and the zone name. Then and Next Day are the missing-day
 banner, not an Options case.
 
 Daily and One Time get Time zone only. Weekly, Appointments, and

@@ -58,7 +58,6 @@ export type AssembleFormParts = {
     pendingDay: number;
     pendingTime: Date | null;
     pendingDate: Date;
-    dateSet: boolean;
     timeSet: boolean;
     reminders: LeadReminder[];
     intervalMonths: number;
@@ -100,12 +99,6 @@ export function assembleFormItem(parts: AssembleFormParts): ReminderItem {
         next.day = now.getDate();
     } else if (dateCode === 'required') {
         writePendingDate(next, parts.pendingDate, parts.existing?.day);
-    } else if (parts.dateSet) {
-        writePendingDate(next, parts.pendingDate, parts.existing?.day);
-    } else {
-        delete next.year;
-        delete next.month;
-        delete next.day;
     }
 
     const timeCode = timeWriteCodeOf(kind);

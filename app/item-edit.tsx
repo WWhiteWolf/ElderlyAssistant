@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useNavigation, useRouter, type Href } from 'expo-router';
+import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
     Alert,
@@ -11,7 +11,6 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { StackActions } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimeControl from '../components/DateTimeControl';
 import { HeaderButton, PageFrame } from '../components/PageFrame';
@@ -142,7 +141,6 @@ function pathFor(
 
 export default function ItemEditScreen() {
     const router = useRouter();
-    const navigation = useNavigation();
     const theme = useTheme();
     const styles = makeStyles(theme);
     const { id, kind, returnTo, viaHelper, viewYear, viewMonth, dayYear, dayMonth, dayDate } = useLocalSearchParams<{
@@ -177,7 +175,6 @@ export default function ItemEditScreen() {
     const [pendingTime, setPendingTime] = useState<Date | null>(null);
     const [pendingTimeValid, setPendingTimeValid] = useState(true);
     const [pendingDate, setPendingDate] = useState<Date>(() => new Date(new Date().setHours(12, 0, 0, 0)));
-    const [dateSet, setDateSet] = useState(true);
     const [timeSet, setTimeSet] = useState(false);
     const [timeVia24h, setTimeVia24h] = useState(false);
     const [dateTimeValid, setDateTimeValid] = useState(true);
@@ -208,11 +205,17 @@ export default function ItemEditScreen() {
     };
 
     const afterSave = () => {
+        if (router.canDismiss()) router.dismissAll();
         if (fromHelper) {
-            navigation.dispatch(StackActions.pop(2));
+            const dest = pathFor(editKind);
+            const id = writtenIdRef.current;
+            if (id && typeof dest === 'string') {
+                router.replace({ pathname: dest, params: { highlight: id } } as Href);
+                return;
+            }
+            router.replace(dest);
             return;
         }
-        if (router.canDismiss()) router.dismissAll();
         router.replace(pathFor(page, calendarReturn));
     };
 
@@ -248,9 +251,6 @@ export default function ItemEditScreen() {
                     ) {
                         if (typeof found.year === 'number' && typeof found.month === 'number' && typeof found.day === 'number') {
                             setPendingDate(civilDate(found.year, found.month, found.day, 12, 0));
-                            setDateSet(true);
-                        } else {
-                            setDateSet(false);
                         }
                     }
                     if (found.kind === 'appointments' || found.kind === 'birthdays' || found.kind === 'oneTime') {
@@ -272,19 +272,16 @@ export default function ItemEditScreen() {
                     const today = new Date();
                     today.setHours(12, 0, 0, 0);
                     setPendingDate(today);
-                    setDateSet(true);
                     setTimeSet(false);
                 } else if (nextKind === 'monthly' || nextKind === 'quarterly' || nextKind === 'yearly') {
                     const d = new Date();
                     d.setHours(12, 0, 0, 0);
                     setPendingDate(d);
-                    setDateSet(true);
                     setTimeSet(true);
                 } else if (nextKind === 'birthdays') {
                     const d = new Date();
                     d.setHours(12, 0, 0, 0);
                     setPendingDate(d);
-                    setDateSet(true);
                     setTimeSet(false);
                 } else if (nextKind === 'bucketlist') {
                     setTimeSet(false);
@@ -350,7 +347,6 @@ export default function ItemEditScreen() {
             pendingDay,
             pendingTime,
             pendingDate,
-            dateSet,
             timeSet,
             reminders,
             intervalMonths,
@@ -398,13 +394,6 @@ export default function ItemEditScreen() {
             Alert.alert('Check Date & Time', 'The typed date or time is not a real one. Fix the box outlined in red, then save.');
             return;
         }
-        if ((editKind === 'appointments' || editKind === 'birthdays' || editKind === 'oneTime') && reminders.length === 0) {
-            Alert.alert('No Reminder Set', "Are you sure you don't want to set a Reminder?", [
-                { text: 'Go Back', style: 'cancel' },
-                { text: 'Save Anyway', onPress: () => { finishSave(); } },
-            ]);
-            return;
-        }
         finishSave();
     };
 
@@ -439,7 +428,7 @@ export default function ItemEditScreen() {
                                     setShowOptions(true);
                                 }}
                             >
-                                <Text style={styles.headerBtnText} numberOfLines={1} adjustsFontSizeToFit>+ OPT</Text>
+                                <Text style={styles.headerBtnText} numberOfLines={1} adjustsFontSizeToFit>Options</Text>
                             </HeaderButton>
                         ) : (
                             <HeaderButton />
@@ -557,16 +546,10 @@ export default function ItemEditScreen() {
                             onChange={(d, half, timeVia) => {
                                 setPendingDate(d);
                                 applyTimeVia(timeVia, setTimeVia24h);
-                                if (half === 'date') setDateSet(true);
                                 if (half === 'time') setTimeSet(true);
                             }}
                             onValidityChange={setDateTimeValid}
                             timeLabel="Time"
-                            {...(editKind === 'appointments' ? {
-                                optionalDate: true,
-                                dateSet,
-                                onClearDate: () => setDateSet(false),
-                            } : {})}
                             optionalTime
                             timeSet={timeSet}
                             onClearTime={() => {

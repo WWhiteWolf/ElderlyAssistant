@@ -44,6 +44,10 @@ The morning dated Done tick now reads that Done moves the date. The
 old Options page is gone. On New and Edit, Cancel and Save stay at
 the top while the form scrolls. Do not change the scheduler's
 decisions.
+**#96-new** is the easiest-and-best look. Log is off the list. Each
+reminder page carries Log in the header, beside + Add, and opens that
+page’s log only. Not on the phone. Do not change the scheduler's
+decisions.
 
 ## Standing rulings
 
@@ -200,12 +204,15 @@ item form.
 On New and Edit, Cancel and Save stay at the top while the form
 scrolls. Checked on Weekly in the simulator.
 
-**Next sitting:** how close the app comes to the easiest reminder to
-use, and the best reminder. The brief is `docs/easiest-and-best.md`.
-Open it after the handoff. Do not mix ordinary software with a
-special extra rule for one type of item. The whole app this time,
-including Home, Help, Calendar, Settings, Backup, and Scheduled
-Reminders. Judge first. Do not rebuild unless Patrick says Go.
+**#96-new:** the easiest-and-best look. Log is not on the list. Log in
+the header opens that page’s log only. There is not one log for
+everything. The design carries it. Not on the phone.
+
+**Next sitting:** two leftovers from #96-new. When a time or a date
+does not have to be picked, there is still a way back to none; that
+is in the design and not built. Appointments and Bucket List do not
+share a picture; that is in the design and not built. The pictures
+are not named. Do not change the scheduler's decisions.
 
 Do not change the scheduler's decisions.
 
@@ -219,11 +226,12 @@ What already fits: the engine, the one list, the one save door, the
 shared list page (`components/CadenceListPage.tsx` — Daily through
 Bucket List, each route only names its kind), the one edit form
 (`app/item-edit.tsx`), the one row (`components/ReminderItemRow.tsx`),
-the date-and-time control, the page chrome, and banner housing on the
-bits. Daily's extras — visitors,
-One Time for today, Daily's own add, the time-and-from row label, the
-Daily log, reorder of the visible list, and Done following the item — live
-on that shared page. `app/daily.tsx` is the same thin route as Weekly.
+the date-and-time control, the page chrome, banner housing on the
+bits, and the log page (`app/log.tsx`). Daily's extras — visitors,
+One Time for today, Daily's own add, the time-and-from row label,
+reorder of the visible list, and Done following the item — live
+on that shared page. The log is not on the list. `app/daily.tsx` is
+the same thin route as Weekly.
 
 What does not fit: the reminder-page leftover sheets are built.
 Banner housing and Siri out of sight were the last two.
@@ -237,7 +245,7 @@ moves the date, rather than listing kinds by name.
 The phone is on the **#82-new** load. Spec, user guide, feedback
 button, and testing file are Pending 1–4. The spec is
 `docs/designed-implementation.md`. Home, Help, Calendar, Settings,
-Backup, Scheduled Reminders, and Options are in it. What is not
+Backup, Scheduled Reminders, Options, and Log are in it. What is not
 written: a Settings password (nice-to-have).
 
 Testers are on TestFlight External. The App Store heading is Waiting

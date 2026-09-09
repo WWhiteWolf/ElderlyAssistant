@@ -111,7 +111,15 @@ export function appliedOptionRows(settings: OptionSettings): AppliedOption[] {
     }
     if (!settings.floatsWithPhone) {
         const one = named('timezone');
-        if (one) rows.push({ id: one.id, icon: one.icon, name: one.name, value: 'Switch off' });
+        if (one) {
+            const zone = settings.dueTimeZoneText ?? phoneTimeZone();
+            rows.push({
+                id: one.id,
+                icon: one.icon,
+                name: one.name,
+                value: `Keep this zone · ${zone}`,
+            });
+        }
     }
     if (settings.weekdayOrdinal != null && settings.ordinalWeekday != null) {
         const one = named('secondThursday');

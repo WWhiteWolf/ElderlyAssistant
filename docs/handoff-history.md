@@ -17,6 +17,66 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #96-new (2026-09-09): easiest-and-best look; Daily no-time; Options words; snooze day; Calendar 12-hour; Appointments date; Help Save; before-chips Save; Log page
+
+**The goal was to judge how close the app comes to the easiest
+reminder to use, and the best reminder.** The brief is
+`docs/easiest-and-best.md`. Judge first. Do not rebuild unless he
+says Go.
+
+**#95-new was committed**, asked at the open.
+
+**Daily with no time is a feature.** Timed Daily items speak. Untimed
+ones are there to mark done when you have already done it, with no
+reminder. That was not in the design, which is why the look treated
+it as a hole. It now sits in the daily paragraph of
+`docs/designed-implementation.md`.
+
+**Options words.** The form header says Options, not + OPT. When a
+named time zone is on, the line says Keep this zone and the zone
+name, not Switch off. The design carries the same words.
+
+**Snooze day.** A delay later today still writes only the clock. A
+delay on another day writes the weekday and the date, then the
+clock. If it crosses the year, the year is there too.
+
+**Calendar 12-hour.** The day list uses the same 12-hour clock as
+the other pages, not 08:00.
+
+**Appointments date.** Things with no date belong on Bucket List.
+Appointments now use the same date word Birthdays already used:
+required. The form no longer offers to take the date off. Time is
+unchanged. The unused word optional came off the named set. 339
+tests passed.
+
+**Help Save.** Save from Help used to put you back where you started.
+From Calendar, a Daily or Bucket List item never appeared. Save now
+opens the page where the item lives, and the new row is marked. Cancel
+still comes back to Help. The design sentence matches.
+
+**Help last question.** The long question before Appointment or Bucket
+List is acceptable. Those words are in the design. Do not shorten them.
+
+**Before-chips Save.** Save asked if you were sure you did not want a
+reminder when no before-chip was on. The set time still speaks. That
+popup is gone. The design says so for Appointments and One Time.
+
+**Log page.** The log came off the list. Each reminder page carries
+Log in the header, beside + Add. That opens that page’s log only.
+There is not one log for everything. Back returns to the list. Done
+still writes the same log. The design carries it. Not on the phone.
+
+**Way back to none.** First raised this sitting. When a time or a date
+does not have to be picked, a tap currently leaves no way back to
+none. The design says there is still a way back. It is not built.
+It waits for the next sitting.
+
+**Home pictures.** Appointments and Bucket List share a picture. The
+design now says they do not. It is not built. The pictures are not
+named. It waits for the next sitting.
+
+The sitting is still open.
+
 ## #95-new (2026-09-09): third evaluation, two leftovers, pinned Save
 
 **The goal was a third evaluation of the code**, the same aim as

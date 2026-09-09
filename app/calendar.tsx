@@ -12,6 +12,7 @@ import { Theme, useTheme } from '../constants/Themes';
 import { HeaderButton, PageFrame } from '../components/PageFrame';
 import {
     DAY_NAMES,
+    format12Hour,
     hourMinuteOf,
     loadReminderItems,
     MONTH_NAMES,
@@ -19,15 +20,10 @@ import {
     type ReminderItem,
 } from '../modules/reminder-items';
 
-function savedFireTime24(item: ReminderItem): string | null {
-    const { hour, minute } = hourMinuteOf(item);
-    if (hour == null || minute == null) return null;
-    return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-}
-
 function dayRowLabel(item: ReminderItem): string {
-    const fire = savedFireTime24(item);
-    return fire ? `${fire} ${item.label}` : item.label;
+    const { hour, minute } = hourMinuteOf(item);
+    if (hour == null || minute == null) return item.label;
+    return `${format12Hour(hour, minute)} ${item.label}`;
 }
 
 function asNum(value: string | string[] | undefined): number | undefined {

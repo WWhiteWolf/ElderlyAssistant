@@ -396,7 +396,7 @@ const appointmentsCadenceRules: ScreenRules = {
     canBeDoneBit: true,
     canBePushedBackBit: false,
     doneActionCode: 'endItem',
-    dateWriteCode: 'optional',
+    dateWriteCode: 'required',
     timeWriteCode: 'ifTimeSet',
     keepsLeadChipsBit: true,
     standsForGroupBit: false,

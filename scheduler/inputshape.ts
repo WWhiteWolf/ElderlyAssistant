@@ -90,15 +90,13 @@ export type DoneActionCode = 'thisCycle' | 'advanceDate' | 'endItem';
  * calendar — write the pending date unless an exclusive weekday bit is complete.
  * today — write today’s date.
  * required — always write the pending date.
- * optional — write the pending date when a date was set; otherwise drop them.
  */
 export type DateWriteCode =
     | 'none'
     | 'weekday'
     | 'calendar'
     | 'today'
-    | 'required'
-    | 'optional';
+    | 'required';
 
 /**
  * What Save writes for hour and minute.
