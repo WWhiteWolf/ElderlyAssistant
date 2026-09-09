@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-08 (#94-new)
+Last updated: 2026-09-09 (#95-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -37,9 +37,16 @@ put Then and Next Day on the dated rows and took those chips off
 Options. Done and Save keep a 31st as the 31st. Not on the phone.
 Do not change the scheduler's decisions.
 
-Next sitting is #95-new: a third evaluation of the code, the same
-aim as #91-new — whether it is a machine, not rules each place has
-to remember. Fresh load.
+#95-new did the third evaluation. Engine facts belong in the one
+description of each kind. What the add screen shows stays on the
+form. That is ordinary software, not a hole. This sitting took
+both leftovers: the morning dated Done tick now reads that Done
+moves the date, and the old Options page is gone. On New and Edit,
+Cancel and Save stay at the top while the form scrolls.
+
+Next sitting looks at how close the app comes to the easiest
+reminder to use, and the best reminder. The brief is
+docs/easiest-and-best.md.
 Home, Help, Calendar, Settings, Backup, Scheduled Reminders,
 and Options are in docs/designed-implementation.md. A
 Settings password stays nice-to-have.
@@ -161,6 +168,12 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+91. #95-new — New and Edit: Cancel and Save stay at the top while
+   the form scrolls. Checked on Weekly in the simulator.
+
+90. #95-new — morning dated Done tick reads that Done moves the
+   date. Old Options page gone.
 
 89. #94-new — missing-day banner on the dated rows. Options chips
    off. Done and Save keep a 31st as the 31st. February still uses

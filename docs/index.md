@@ -23,6 +23,7 @@ just because it is listed.
 - **`check-docs.py`** — checks the record. Changes nothing. `python3 docs/check-docs.py`
 - **`Memory features.docx`** — the inventory of what the app is and does, not the sell. Home of the substance for the store description (#47-new).
 - **`rfc-eval.md`** — #52-new evaluation of the app against RFC 5545 and RFC 8984. Live for this sitting.
+- **`easiest-and-best.md`** — sitting brief for the next look: easiest to use, and the best reminder. Written at #95-new. Carries the aim, the machine-versus-ordinary-software distinction, and what to look at.
 - **`clock-places.md`** — #52-new. Where the live app still asks the real clock. Written for a different idea than dating items near today.
 
 ## Live design — in `docs`

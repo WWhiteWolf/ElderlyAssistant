@@ -16,6 +16,7 @@
 import { shownOnDate } from './shown-on-date.ts';
 import type { MissableItem } from './health.ts';
 import type { ReminderItem } from '../modules/reminder-types.ts';
+import { doneActionCodeOf } from './translators/translate.ts';
 
 /**
  * The days whose occurrences have not yet been written as misses.
@@ -69,24 +70,18 @@ function savedDateIsTodayOrPast(item: ReminderItem, today: Date): boolean {
 }
 
 /**
- * Monthly, Quarterly, Yearly and Birthdays keep a tick until the next
- * occurrence begins.
+ * When Done moves the date, the tick stays until the next occurrence begins.
  *
  * The tick is how you see that this cycle was done, after Done has already
  * moved the date. It comes off on the morning of that next due date, or on
  * the first open after that date has already passed. Pattern days with no
- * matching saved date still use whether the item falls today. Appointments
- * and Bucket List are not in this set. Daily is cleared with the day.
- * Weekly's own reset already does this.
+ * matching saved date still use whether the item falls today. Done that
+ * ends the item is not this. Daily is cleared with the day. Weekly's own
+ * reset already does this.
  */
 export function clearStartingOccurrenceTicks<T extends ReminderItem>(items: T[], today: Date): T[] {
     return items.map((item) => {
-        if (
-            item.kind !== 'monthly'
-            && item.kind !== 'quarterly'
-            && item.kind !== 'yearly'
-            && item.kind !== 'birthdays'
-        ) {
+        if (doneActionCodeOf(item.kind) !== 'advanceDate') {
             return item;
         }
         if (!item.completed) return item;

@@ -283,9 +283,8 @@ and registered; they are not invented at the housing.
 ## Home
 
 The Home grid in `app/home.tsx` is the badges for the pages a person
-opens from Home. Options is not on that grid, and Home does not open
-`app/options.tsx`. The gear in the header stays where it is. It is not
-a badge.
+opens from Home. Options is not on that grid. There is no Options page.
+The gear in the header stays where it is. It is not a badge.
 
 Options lives on the individual item form. `app/item-edit.tsx` carries
 + OPT. That opens `ScreenOptionsSheet` for the cases that belong to

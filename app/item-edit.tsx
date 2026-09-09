@@ -447,7 +447,7 @@ export default function ItemEditScreen() {
                     </View>
                 }
             >
-            <ScrollView contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">
+            <View style={styles.formBody}>
                 <View style={styles.modalBtns}>
                     <TouchableOpacity style={styles.cancelBtn} onPress={goBack}>
                         <Text style={styles.cancelBtnText}>Cancel</Text>
@@ -456,7 +456,7 @@ export default function ItemEditScreen() {
                         <Text style={styles.confirmBtnText}>{editKind === 'bucketlist' ? 'Done' : 'Save'}</Text>
                     </TouchableOpacity>
                 </View>
-
+            <ScrollView style={styles.formScroll} contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">
                 <Text style={styles.inputLabel}>Name</Text>
                 <TextInput
                     style={styles.input}
@@ -622,6 +622,7 @@ export default function ItemEditScreen() {
                     </>
                 )}
             </ScrollView>
+            </View>
             </PageFrame>
             <ScreenOptionsSheet
                 visible={showOptions}
@@ -666,7 +667,9 @@ const makeStyles = (t: Theme) =>
             textAlign: 'center',
         },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
-        form: { padding: 16, paddingBottom: 40 },
+        formBody: { flex: 1 },
+        formScroll: { flex: 1 },
+        form: { paddingHorizontal: 16, paddingBottom: 40 },
         inputLabel: { fontSize: 14, color: t.mutedText, marginBottom: 4, marginTop: 8 },
         input: {
             borderWidth: 0.5,
@@ -689,7 +692,14 @@ const makeStyles = (t: Theme) =>
         recurBtnActive: { backgroundColor: t.buttonPrimary, borderColor: t.buttonPrimary },
         recurBtnText: { fontSize: 13, color: t.cardTitle },
         recurBtnTextActive: { color: t.buttonPrimaryText },
-        modalBtns: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 0, marginBottom: 8 },
+        modalBtns: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            paddingHorizontal: 16,
+            paddingTop: 16,
+            paddingBottom: 8,
+            backgroundColor: t.pageBackground,
+        },
         cancelBtn: {
             backgroundColor: t.buttonNeutral,
             borderWidth: 1,

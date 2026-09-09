@@ -307,6 +307,7 @@ export function runMissCandidateTests(): void {
     });
 
     test('An Appointments tick stays even when its date is past', () => {
+        // Done ends the item, so the dated-tick morning clear does not apply.
         const appointments = item({
             kind: 'appointments',
             year: WEDNESDAY.getFullYear(),

@@ -38,6 +38,12 @@ button set, and took those chips off Options. Done and Save keep a
 31st as the 31st. February still uses the 28th that month. Not a
 remembered rule. Not on the phone. Do not change the scheduler's
 decisions.
+**#95-new** did the third evaluation. Engine facts belong in the one
+description of each kind. What the add screen shows stays on the form.
+The morning dated Done tick now reads that Done moves the date. The
+old Options page is gone. On New and Edit, Cancel and Save stay at
+the top while the form scrolls. Do not change the scheduler's
+decisions.
 
 ## Standing rulings
 
@@ -83,6 +89,10 @@ These are Patrick's and they govern the work rather than describing it.
   private arrangement that happens to work.
 - **A rule that has to be remembered at every place that might need it is
   the wrong shape.** Build it into the machinery instead.
+- **Engine facts belong in the one description of each kind. What the
+  add screen shows stays on the form** (Patrick, #95-new). That is
+  ordinary software, not a hole. A special extra rule for one type of
+  item is the other thing.
 - **The design description of the app is the designed implementation**
   (Patrick, #84-new). It is the guide for the whole app, not only the
   leftover page work. You look at how the thing is built — code words,
@@ -178,10 +188,26 @@ Calendar, Settings, Backup, and Scheduled Reminders alone.
 **#94-new:** the missing-day banner is on the dated rows. Done and
 Save keep a 31st. Not on the phone.
 
-**#95-new:** a third evaluation of the code, the same aim as #91-new:
-whether it is built as a machine, not as rules each place has to
-remember. Do that sitting on a fresh load. Do not change the
-scheduler's decisions.
+**#95-new:** the third evaluation is done. Engine facts belong in the
+one description of each kind. What the add screen shows stays on the
+form. That is ordinary software, not a hole.
+
+The morning dated Done tick now reads that Done moves the date, in
+`scheduler/miss-candidates.ts`. The old Options page is gone, and
+the old where-does-it-belong popup with it. Options lives on the
+item form.
+
+On New and Edit, Cancel and Save stay at the top while the form
+scrolls. Checked on Weekly in the simulator.
+
+**Next sitting:** how close the app comes to the easiest reminder to
+use, and the best reminder. The brief is `docs/easiest-and-best.md`.
+Open it after the handoff. Do not mix ordinary software with a
+special extra rule for one type of item. The whole app this time,
+including Home, Help, Calendar, Settings, Backup, and Scheduled
+Reminders. Judge first. Do not rebuild unless Patrick says Go.
+
+Do not change the scheduler's decisions.
 
 Treat the pages the way the engine was treated. A page has a few jobs.
 Every reminder page fits those pieces. Rebuild what does not fit.
@@ -205,7 +231,8 @@ Banner housing and Siri out of sight were the last two.
 Rulings for those sheets are already in Standing rulings: Done tick,
 banner buttons on the bit field, Siri out of sight. Do not reopen
 them. The morning clear for the dated Done tick was built at #83-new
-in `scheduler/miss-candidates.ts`.
+in `scheduler/miss-candidates.ts`. At #95-new it reads that Done
+moves the date, rather than listing kinds by name.
 
 The phone is on the **#82-new** load. Spec, user guide, feedback
 button, and testing file are Pending 1–4. The spec is

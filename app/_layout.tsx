@@ -414,7 +414,6 @@ export default function RootLayout() {
       <Stack.Screen name="appointments" options={{ headerShown: false }} />
       <Stack.Screen name="birthdays" options={{ headerShown: false }} />
       <Stack.Screen name="bucketlist" options={{ headerShown: false }} />
-      <Stack.Screen name="options" options={{ headerShown: false }} />
     </Stack>
     </CoverRoot>
     </ThemeProvider>

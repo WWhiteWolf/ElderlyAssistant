@@ -17,6 +17,40 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #95-new (2026-09-09): third evaluation, two leftovers, pinned Save
+
+**The goal was a third evaluation of the code**, the same aim as
+#91-new: whether it is a machine, not remembered rules.
+
+**#94-new was committed**, asked at the open.
+
+**The test.** Engine facts belong in the one description of each
+kind. What the add screen shows stays on the form. That is ordinary
+software, not a hole. A special extra rule for one type of item is
+the other thing.
+
+**The look.** Done, Skip, Snooze, Save, and the banner follow the
+one description. Weekly acting like Weekly is ordinary software.
+
+**Two leftovers.** The morning that takes the dated Done tick off
+still listed Monthly, Quarterly, Yearly, and Birthdays by name.
+It now reads that Done moves the date. Appointments keep their
+tick, because Done ends the item. The old Options page, and the
+old where-does-it-belong popup, came out. Options lives on the
+item form. There is no Options page.
+
+**New and Edit.** Cancel and Save stay at the top while the form
+scrolls. Checked on Weekly in the simulator.
+
+**Tests.** TypeScript clean. 339 passed, 0 failed. Scheduler
+decisions unchanged.
+
+**Next sitting.** How close the app comes to the easiest reminder to
+use, and the best reminder. The brief is `docs/easiest-and-best.md`.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `pending.txt`,
+`in-flight.md`, and `App-Docs/master-handoff.md` refreshed.
+
 ## #94-new (2026-09-08): missing-day banner, and a 31st stays the 31st
 
 **The goal was to find the missing-day banner bug.**
