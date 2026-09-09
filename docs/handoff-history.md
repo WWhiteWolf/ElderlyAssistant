@@ -17,6 +17,46 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #97-new (2026-09-09): two leftovers; Feedback; Reset in the header; empty User's Guide
+
+**The goal was to fix the remaining two bugs from the fourth
+evaluation.**
+
+**#96-new was committed**, asked at the open.
+
+**Home pictures.** Appointments and Bucket List shared a check-mark.
+Bucket List’s Home badge is now a rainbow. Appointments keeps the
+check-mark. Named in `docs/designed-implementation.md`. Not on the
+phone.
+
+**Way back to none.** After a time was set, the time box opened the
+digit spinner and could not be emptied. That empty box had been the
+way back. No time now sits on the shared date-and-time control when
+time is optional and a time is set. Daily goes back to Set time.
+Appointments, One Time, and Birthdays go back to no time. Named in
+the design. Not on the phone.
+
+**The user's guide is in the app**, a tile on Settings. It does not
+go on a website. The app is self-contained. A person's data stays
+on the phone. The app does not reach out to read or write from the
+outside world. What is already in App Store Connect stays there.
+
+**Feedback** is its own tile on Settings, last of those tiles. It is
+the same popup Mystery Clues Tracker uses. Send opens the phone's
+Mail. The person reaches out; the app does not send the mail. The
+duplicate section headings came off those tiles.
+
+**Reset All Data** sits in the Settings header, not among the tiles
+and not on Backup & Restore. It is not a round button. A red warning
+mark, then Reset, then All, all in red. After Face ID or the passcode
+is accepted, it asks Are you sure? Cancel backs out. Then it wipes.
+The all-white passcode page is the phone's.
+
+**User's Guide.** The tile and an empty page are there, with Back to
+Settings. The words wait for a later sitting.
+
+Do not change the scheduler's decisions.
+
 ## #96-new (2026-09-09): easiest-and-best look; Daily no-time; Options words; snooze day; Calendar 12-hour; Appointments date; Help Save; before-chips Save; Log page
 
 **The goal was to judge how close the app comes to the easiest

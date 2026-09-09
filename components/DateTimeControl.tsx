@@ -24,9 +24,9 @@ import { Theme, useTheme } from '../constants/Themes';
 // - #3-new: optionalTime — a page may declare the time optional. While no
 //   time is set (timeSet=false) the spinners sit dulled at 12:00 PM and
 //   the box sits empty with a "No time set" hint; tapping any arrow or
-//   typing a time wakes it (onChange fires as usual), and emptying the
-//   box clears it (onClearTime fires). Meant for mode='time' pages; the
-//   #59 empty-box rule (empty repaints from the spinners) applies only
+//   the box wakes it (onChange fires as usual). After a time is set,
+//   No time is the way back (onClearTime fires). #97-new. The #59
+//   empty-box rule (empty repaints from the spinners) applies only
 //   when optionalTime is off.
 // - #27-new: optionalDate — the same again for the date half, and it
 //   behaves identically: dulled spinners, an empty box with a "No date
@@ -89,7 +89,7 @@ interface Props {
     // #3-new: the time is optional on this page. value stays a real Date
     // (the sleeping display dulls it at whatever the page passes — 12:00
     // by convention); timeSet says whether the item actually has a time;
-    // onClearTime fires when the typed box is emptied.
+    // onClearTime fires from No time.
     optionalTime?: boolean;
     timeSet?: boolean;
     onClearTime?: () => void;
@@ -246,6 +246,13 @@ export default function DateTimeControl({
         setShowTimeSpinner(true);
     };
 
+    const clearOptionalTime = () => {
+        setTimeText('');
+        setTimeBad(false);
+        setShowTimeSpinner(false);
+        onClearTime?.();
+    };
+
     // ---- typed input ----
 
     const onDateTyped = (text: string) => {
@@ -384,6 +391,11 @@ export default function DateTimeControl({
                             ? 'No time set — tap the arrows or the box to set one'
                             : 'Tap the box to set the time (24-hour clock)'}
                     </Text>
+                    {optionalTime && timeSet ? (
+                        <TouchableOpacity style={styles.noTimeBtn} onPress={clearOptionalTime}>
+                            <Text style={styles.noTimeBtnText}>No time</Text>
+                        </TouchableOpacity>
+                    ) : null}
                     {showTimeSpinner && (
                         <Cover visible={showTimeSpinner}>
                             <View style={styles.modalOverlay}>
@@ -474,6 +486,17 @@ const makeStyles = (t: Theme) => StyleSheet.create({
     typeBoxPlaceholder: { color: t.mutedText },
     typeBoxBad: { borderColor: t.buttonDelete, borderWidth: 1.5 },
     hint: { fontSize: 11, color: t.mutedText, marginBottom: 8 },
+    noTimeBtn: {
+        alignSelf: 'flex-start',
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: t.cardBorder,
+        backgroundColor: t.chip,
+        marginBottom: 8,
+    },
+    noTimeBtnText: { fontSize: 13, color: t.cardTitle },
     modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.4)',

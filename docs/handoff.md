@@ -12,42 +12,10 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-He is living with the **#82-new** load on the phone.
-#83-new built the dated Done-tick morning clear; that load is not on
-the phone. #84-new put Daily onto the shared list; that load is not
-on the phone. #87-new built banner housing onto the bits, both pieces,
-and took Siri out of sight; that load is not on the phone. **#88-new**
-built Home: badges move the iOS way, and Options is not on the grid.
-Help is in the designed implementation. That load is not on the phone.
-**#89-new** put Calendar, Settings, Backup, Scheduled Reminders, and
-Options into the designed implementation. Spec only; not a phone load.
-
-**#90-new** put exclusive groups, Done's three-word code, and the
-Quarterly step on the translator's table. Not on the phone.
-**#91-new** confirmed the first evaluation and built the four
-table-door pieces. The job sheet is
-`docs-ref/build-sheets/build-sheet-table-doors.md`. Not on the
-phone. Do not change the scheduler's decisions.
-**#92-new** built the leftover save form. Save writes from the
-table. Not on the phone. Do not change the scheduler's
-decisions.
-**#93-new** confirmed Daily One Time snooze. It is on the table and
-works from the edit page and from the banner. Not on the phone.
-**#94-new** put Then and Next Day on the dated rows as the missing-day
-button set, and took those chips off Options. Done and Save keep a
-31st as the 31st. February still uses the 28th that month. Not a
-remembered rule. Not on the phone. Do not change the scheduler's
-decisions.
-**#95-new** did the third evaluation. Engine facts belong in the one
-description of each kind. What the add screen shows stays on the form.
-The morning dated Done tick now reads that Done moves the date. The
-old Options page is gone. On New and Edit, Cancel and Save stay at
-the top while the form scrolls. Do not change the scheduler's
-decisions.
-**#96-new** is the easiest-and-best look. Log is off the list. Each
-reminder page carries Log in the header, beside + Add, and opens that
-page’s log only. Not on the phone. Do not change the scheduler's
-decisions.
+You are living with the **#82-new** load on the phone. Through
+**#97-new** the work is in the project and not on the phone. The
+phone build waits until after a preliminary User's Guide. Do not
+change the scheduler's decisions.
 
 ## Standing rulings
 
@@ -172,55 +140,30 @@ These are Patrick's and they govern the work rather than describing it.
   day still uses the last day that exists for that month. Then and
   Next Day are the missing-day banner, not an Options choice. Done
   and Save do not turn the reminder into a 28th.
+- **The user's guide is brief, in the app, and a tile on Settings**
+  (Patrick, #97-new). It does not go on a website. The app is
+  self-contained. A person's data stays on the phone. The app does
+  not reach out to read or write from the outside world. What is
+  already in App Store Connect stays there.
+- **Feedback is its own tile on Settings** (Patrick, #97-new). It is
+  the same popup Mystery Clues Tracker uses. Send opens the phone's
+  Mail. The person reaches out; the app does not send the mail.
+- **Reset All Data sits in the Settings header** (Patrick, #97-new). It
+  is not a tile, not its own section, and not on Backup & Restore. It
+  is not a round button. A red warning mark, then Reset, then All, all
+  in red. After Face ID or the passcode is accepted, it asks Are you
+  sure? Cancel backs out. Then it wipes.
 
 ## What is open in front of it
 
-**#84-new:** the sheets, and the spec, are designed implementation of the
-whole app. They do not collect new decisions. The ruling is in Standing
-rulings. The guide is `docs/designed-implementation.md`. The scheduler
-stays.
-
-**#91-new:** the four table-door pieces are built. Not on the
-phone. Do not change the scheduler's decisions.
-
-**#92-new:** the leftover save form is built. The job sheet is
-`docs-ref/build-sheets/build-sheet-save-form.md`. Both pieces are
-in the project. Not on the phone.
-Leave the scheduler's decisions as they are. Leave Home, Help,
-Calendar, Settings, Backup, and Scheduled Reminders alone.
-
-**#94-new:** the missing-day banner is on the dated rows. Done and
-Save keep a 31st. Not on the phone.
-
-**#95-new:** the third evaluation is done. Engine facts belong in the
-one description of each kind. What the add screen shows stays on the
-form. That is ordinary software, not a hole.
-
-The morning dated Done tick now reads that Done moves the date, in
-`scheduler/miss-candidates.ts`. The old Options page is gone, and
-the old where-does-it-belong popup with it. Options lives on the
-item form.
-
-On New and Edit, Cancel and Save stay at the top while the form
-scrolls. Checked on Weekly in the simulator.
-
-**#96-new:** the easiest-and-best look. Log is not on the list. Log in
-the header opens that page’s log only. There is not one log for
-everything. The design carries it. Not on the phone.
-
-**Next sitting:** two leftovers from #96-new. When a time or a date
-does not have to be picked, there is still a way back to none; that
-is in the design and not built. Appointments and Bucket List do not
-share a picture; that is in the design and not built. The pictures
-are not named. Do not change the scheduler's decisions.
-
-Do not change the scheduler's decisions.
+The guide is `docs/designed-implementation.md`. A sitting builds from
+it. The scheduler stays.
 
 Treat the pages the way the engine was treated. A page has a few jobs.
 Every reminder page fits those pieces. Rebuild what does not fit.
 Keep what already fits. Highest purpose: reminders smooth and consistent.
 Do not rebuild Home, Help, Calendar, Settings, Backup, or Scheduled
-Reminders.
+Reminders. Do not change the scheduler's decisions.
 
 What already fits: the engine, the one list, the one save door, the
 shared list page (`components/CadenceListPage.tsx` — Daily through
@@ -233,26 +176,16 @@ reorder of the visible list, and Done following the item — live
 on that shared page. The log is not on the list. `app/daily.tsx` is
 the same thin route as Weekly.
 
-What does not fit: the reminder-page leftover sheets are built.
-Banner housing and Siri out of sight were the last two.
-
-Rulings for those sheets are already in Standing rulings: Done tick,
-banner buttons on the bit field, Siri out of sight. Do not reopen
-them. The morning clear for the dated Done tick was built at #83-new
-in `scheduler/miss-candidates.ts`. At #95-new it reads that Done
-moves the date, rather than listing kinds by name.
-
-The phone is on the **#82-new** load. Spec, user guide, feedback
-button, and testing file are Pending 1–4. The spec is
-`docs/designed-implementation.md`. Home, Help, Calendar, Settings,
-Backup, Scheduled Reminders, Options, and Log are in it. What is not
-written: a Settings password (nice-to-have).
+Spec and testing file are Pending 1 and 2.
+The spec is `docs/designed-implementation.md`. What is not written: a
+Settings password (nice-to-have). The user's guide is a tile on
+Settings. The page is empty, to be filled later.
 
 Testers are on TestFlight External. The App Store heading is Waiting
 for Review on **72**. He is not aiming to go live. Manual release.
 **74** is iPhone-only. Testers may use 72 or 74. The journey is
-`docs/connect-submit.md`. A public privacy page and a support page
-are still not written.
+`docs/connect-submit.md`. What is already in App Store Connect stays
+there. There is no public website for the user's guide.
 
 **Day-roll lock** still needs a night of all-green Daily, then a morning
 open on a new load, to confirm the pop-up stays quiet.

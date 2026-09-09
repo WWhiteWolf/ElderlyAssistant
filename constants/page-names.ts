@@ -26,6 +26,7 @@ export const PAGE_LABELS = {
     reminders: 'Scheduled Reminders',
     backup: 'Backup & Restore',
     log: 'Log',
+    userGuide: "User's Guide",
 } as const;
 
 /** The page title for a saved reminder kind. A Daily one-shot lives on Daily. */

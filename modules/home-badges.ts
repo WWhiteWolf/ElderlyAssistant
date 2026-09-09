@@ -14,7 +14,7 @@ export type HomeBadge = {
 export const HOME_BADGES: HomeBadge[] = [
     { id: 'appointments', label: PAGE_LABELS.appointments, icon: '✅' },
     { id: 'birthdays', label: PAGE_LABELS.birthdays, icon: '🎂' },
-    { id: 'bucketlist', label: PAGE_LABELS.bucketlist, icon: '✅' },
+    { id: 'bucketlist', label: PAGE_LABELS.bucketlist, icon: '🌈' },
     { id: 'yearly', label: PAGE_LABELS.yearly, icon: '🔭' },
     { id: 'quarterly', label: PAGE_LABELS.quarterly, icon: '🔭' },
     { id: 'monthly', label: PAGE_LABELS.monthly, icon: '🔭' },

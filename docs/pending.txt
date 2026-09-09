@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-09 (#96-new)
+Last updated: 2026-09-09 (#97-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -24,50 +24,17 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-The design description of the whole app is the designed
-implementation (Patrick, #84-new). It is the guide. A sitting builds
-from docs/designed-implementation.md and does not ask Patrick a
-design question.
+1. A BRIEF USER'S GUIDE IN THE APP (Patrick, #97-new). It is a tile
+   on Settings. A tap opens a brief guide that lives in the app. The
+   tile and the empty page are there. The words are not. Fill them
+   in a later sitting. It does not go on a website. The app is
+   self-contained. A person's data stays on the phone. The app does
+   not reach out to read or write from the outside world. What is
+   already in App Store Connect stays there.
 
-#91-new is closed. The four table-door pieces are built. #92-new
-built the leftover save form: Save writes from the table. Both
-pieces. #93-new confirmed Daily One Time snooze: it is on the
-table and works from the edit page and from the banner. #94-new
-put Then and Next Day on the dated rows and took those chips off
-Options. Done and Save keep a 31st as the 31st. Not on the phone.
-Do not change the scheduler's decisions.
-
-#95-new did the third evaluation. Engine facts belong in the one
-description of each kind. What the add screen shows stays on the
-form. That is ordinary software, not a hole. This sitting took
-both leftovers: the morning dated Done tick now reads that Done
-moves the date, and the old Options page is gone. On New and Edit,
-Cancel and Save stay at the top while the form scrolls.
-
-#96-new is the easiest-and-best look. Log came off the list. Each
-reminder page carries Log beside + Add and opens that page’s log
-only. There is not one log for everything. The design carries it.
-Not on the phone.
-
-The rest of the easiest-and-best look left two leftovers for the
-next sitting. When a time or a date does not have to be picked,
-there is still a way back to none; that is in the design and not
-built. Appointments and Bucket List do not share a picture; that
-is in the design and not built. The pictures are not named.
-Home, Help, Calendar, Settings, Backup, Scheduled Reminders,
-Options, and Log are in docs/designed-implementation.md. A
-Settings password stays nice-to-have.
-
-Home was built at #88-new: badges move the iOS way; Options is not on
-the grid. Help is in the spec. Not on the phone.
-
-Banner housing onto the bits, both pieces, and Siri out of sight,
-were built at #87-new. Not on the phone.
-
-Day-roll lock still wants a night of all-green Daily on this load.
-
-The phone is on the #82-new load. Spec, user guide, feedback button,
-and testing file are Pending 1–4.
+2. DAY-ROLL LOCK still wants a night of all-green Daily on this
+   load, then a morning open on a new load, to confirm the pop-up
+   stays quiet.
 
 
 PENDING
@@ -86,13 +53,7 @@ Things waiting on something — mostly on a build.
     banner housing. Home, Help, Calendar, Settings, Backup, Scheduled
     Reminders, Options, and Log are in that piece. A Settings password is
     not.
-2. A USER GUIDE, from that spec or merely after it (Patrick,
-    #52-new). He needs to provide it on his website, and a way
-    in the app to find it or get it.
-3. A FEEDBACK BUTTON IN THE APP, similar to Mystery (Patrick,
-    #52-new). That is how the app lets you find or get the
-    User Guide.
-4. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
+2. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
    WILL COVER (Patrick, #52-new). The during-build tests are
    thrown away. The run is not kept.
 
@@ -175,6 +136,19 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+96. #97-new — User's Guide tile on Settings. Empty page, Back to
+    Settings. Words wait for a later sitting. Not on the phone.
+
+95. #97-new — Reset All Data in the Settings header. After Face ID
+    or passcode, Are you sure? Cancel backs out. Not on the phone.
+
+94. #97-new — Feedback tile on Settings. Same popup as Mystery.
+    Send opens Mail. Not on the phone.
+
+93. #97-new — Bucket List Home badge is a rainbow. No time is the
+    way back when a time does not have to be picked. Not on the
+    phone.
 
 92. #96-new — Log off the list. Each reminder page carries Log
     beside + Add and opens that page’s log only. Not on the phone.

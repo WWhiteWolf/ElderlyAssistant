@@ -31,6 +31,11 @@ What is not written: a Settings password. Pending 1 is still the
 thorough spec for the whole app. This file is the start of that, not
 the finish.
 
+The app is self-contained. A person's data stays on the phone. The
+app does not reach out to read or write from the outside world. What
+is already in App Store Connect stays there. There is no public
+website for the user's guide.
+
 ## How to implement Daily (`app/daily.tsx`)
 
 Built at #84-new. The engine was not changed. The extras are named
@@ -163,7 +168,8 @@ Keep these. A build does not replace them.
 - The engine, and the translator's table of kinds.
 
 When a time or a date does not have to be picked, tapping a field to
-set one still leaves a way back to none.
+set one still leaves a way back to none. That way back is No time on
+the date-and-time control.
 
 ## What Done does
 
@@ -325,7 +331,8 @@ order is remembered the next time Home opens.
 
 A tap still opens the page when you are not editing.
 
-Appointments and Bucket List do not share a picture.
+Appointments is the check-mark. Bucket List is a rainbow. They do not
+share a picture.
 
 ## Help
 
@@ -385,8 +392,17 @@ Before, and Night Before. A tap opens the time with the same
 date-and-time control as the rest of the app.
 
 Scheduled Reminders and Backup & Restore are doors off this page. They
-are not this page. Reset All Data asks the phone to confirm who you
-are, then wipes everything and lands on Home.
+are not this page. User's Guide is a tile on this page. A tap opens a
+brief guide that lives in the app. The page is empty until the words
+are written. It does not go to a website.
+Feedback is its own tile on this page. It opens the same popup Mystery
+Clues Tracker uses. Send opens the phone's Mail. The person reaches
+out; the app does not send the mail. Reset All Data sits in the Settings
+header, not among the tiles and not on Backup & Restore. It is not a
+round button. A red warning mark, then Reset, then All, all in red. It
+asks the phone to confirm who you are. After Face ID or the passcode
+is accepted, it asks Are you sure? Cancel backs out. Then it wipes
+everything and lands on Home.
 
 ## Backup
 

@@ -394,6 +394,7 @@ export default function RootLayout() {
       <Stack.Screen name="home" options={{ headerShown: false }} />
       <Stack.Screen name="settings" options={{ headerShown: false }} />
       <Stack.Screen name="backup" options={{ headerShown: false }} />
+      <Stack.Screen name="user-guide" options={{ headerShown: false }} />
       <Stack.Screen name="reminders" options={{ headerShown: false }} />
       <Stack.Screen name="calendar" options={{ headerShown: false }} />
       <Stack.Screen

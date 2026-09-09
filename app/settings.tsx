@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import {
     Alert,
     KeyboardAvoidingView,
+    Linking,
     Platform,
     ScrollView,
     StyleSheet,
@@ -15,13 +16,20 @@ import {
     View,
 } from 'react-native';
 import DateTimeControl from '../components/DateTimeControl';
-import { HeaderButton, PageFrame } from '../components/PageFrame';
+import { HeaderButton, PageFrame, uprightInLandscape, useLandscape } from '../components/PageFrame';
+import { useLandscapeHeaderSide } from '../components/AppOrientation';
 import { Theme, useTheme, useThemeControls } from '../constants/Themes';
 import { applyReminderChange } from '../modules/reminder-items';
 import { runScheduler } from '../scheduler/scheduler';
 
+const FEEDBACK_MAIL = 'jojoMurphy@tuta.com';
+
+type WorkedAnswer = 'Yes' | 'Mostly' | 'No' | '';
+
 export default function SettingsScreen() {
     const router = useRouter();
+    const landscape = useLandscape();
+    const headerSide = useLandscapeHeaderSide();
     const theme = useTheme();
     const styles = makeStyles(theme);
     const { themeName, setThemeName, popupStyle, setPopupStyle } = useThemeControls();
@@ -39,6 +47,12 @@ export default function SettingsScreen() {
     // True while the shared control's typed time box holds a real time;
     // Save is blocked with a warning while false (#61).
     const [pendingTimeValid, setPendingTimeValid] = useState(true);
+    const [showFeedback, setShowFeedback] = useState(false);
+    const [worked, setWorked] = useState<WorkedAnswer>('');
+    const [confusing, setConfusing] = useState('');
+    const [wanted, setWanted] = useState('');
+    const [other, setOther] = useState('');
+    const [rating, setRating] = useState(50);
 
     useEffect(() => {
         loadSettings();
@@ -135,6 +149,44 @@ export default function SettingsScreen() {
         }
     };*/
 
+    const openFeedback = () => {
+        setWorked('');
+        setConfusing('');
+        setWanted('');
+        setOther('');
+        setRating(50);
+        setShowFeedback(true);
+    };
+
+    const sendFeedback = async () => {
+        const body =
+            `A Place To Remember Feedback\n\n` +
+            `1. Did the app work correctly?\n${worked || '(not answered)'}\n\n` +
+            `2. Do you find anything confusing or hard to use?\n${confusing.trim() || '(none)'}\n\n` +
+            `3. Are there any features you would like it to have?\n${wanted.trim() || '(none)'}\n\n` +
+            `4. Do you have any other comments or suggestions?\n${other.trim() || '(none)'}\n\n` +
+            `5. Rating: ${rating}%`;
+        const url =
+            `mailto:${FEEDBACK_MAIL}` +
+            `?subject=${encodeURIComponent('A Place To Remember Feedback')}` +
+            `&body=${encodeURIComponent(body)}`;
+        try {
+            await Linking.openURL(url);
+            setShowFeedback(false);
+        } catch {
+            Alert.alert('Mail did not open', 'Copy your notes and send them from Mail when you can.');
+        }
+    };
+
+    const wipeAllData = async () => {
+        await AsyncStorage.clear();
+        // The wipe does not take reminders off the phone.
+        // The scheduler does that: an empty list means
+        // every owned reminder is cancelled.
+        await runScheduler();
+        router.replace('/home');
+    };
+
     const resetApp = async () => {
         Alert.alert(
             'Reset All Data',
@@ -147,15 +199,28 @@ export default function SettingsScreen() {
                         const result = await LocalAuthentication.authenticateAsync({
                             promptMessage: 'Authenticate to reset all data',
                             fallbackLabel: 'Use Passcode',
+                            cancelLabel: 'Back',
                         });
                         if (result.success) {
-                            await AsyncStorage.clear();
-                            // The wipe does not take reminders off the phone.
-                            // The scheduler does that: an empty list means
-                            // every owned reminder is cancelled.
-                            await runScheduler();
-                            router.replace('/home');
-                        } else {
+                            setTimeout(() => {
+                                Alert.alert(
+                                    'Are you sure?',
+                                    'This will permanently delete ALL your data. This cannot be undone.',
+                                    [
+                                        { text: 'Cancel', style: 'cancel' },
+                                        {
+                                            text: 'Reset All Data',
+                                            style: 'destructive',
+                                            onPress: () => { void wipeAllData(); },
+                                        },
+                                    ],
+                                );
+                            }, 300);
+                        } else if (
+                            result.error !== 'user_cancel'
+                            && result.error !== 'system_cancel'
+                            && result.error !== 'app_cancel'
+                        ) {
                             Alert.alert('Reset Cancelled', 'Your data was not deleted.');
                         }
                     }
@@ -174,7 +239,15 @@ export default function SettingsScreen() {
                             <Text style={styles.headerBtnText}>Home</Text>
                         </HeaderButton>
                         <Text style={styles.title}>Settings</Text>
-                        <View style={styles.backBtn} />
+                        <TouchableOpacity
+                            onPress={resetApp}
+                            style={[styles.resetHeader, uprightInLandscape(landscape, headerSide)]}
+                            activeOpacity={0.7}
+                        >
+                            <Text style={styles.resetEmblem}>{'\u26A0'}</Text>
+                            <Text style={styles.resetWord}>Reset</Text>
+                            <Text style={styles.resetWord}>All</Text>
+                        </TouchableOpacity>
                     </View>
                 }
             >
@@ -284,14 +357,23 @@ export default function SettingsScreen() {
                         </TouchableOpacity>
                     </View>
 
-                    <Text style={styles.sectionHeader}>Danger Zone</Text>
-                    <View style={styles.settingCard}>
-                        <TouchableOpacity style={styles.settingRow} onPress={resetApp}>
+                    <View style={[styles.settingCard, styles.tileAfter]}>
+                        <TouchableOpacity style={styles.settingRow} onPress={() => router.push('/user-guide')}>
                             <View style={{ flex: 1 }}>
-                                <Text style={[styles.settingLabel, { color: theme.buttonDelete }]}>Reset All Data</Text>
-                                <Text style={styles.settingHint}>Permanently deletes everything — cannot be undone</Text>
+                                <Text style={styles.settingLabel}>User's Guide</Text>
+                                <Text style={styles.settingHint}>How to use this app</Text>
                             </View>
-                            <Text style={[styles.settingArrow, { color: theme.buttonDelete }]}>›</Text>
+                            <Text style={styles.settingArrow}>›</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={[styles.settingCard, styles.tileAfter]}>
+                        <TouchableOpacity style={styles.settingRow} onPress={openFeedback}>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.settingLabel}>Feedback</Text>
+                                <Text style={styles.settingHint}>Suggest an improvement</Text>
+                            </View>
+                            <Text style={styles.settingArrow}>›</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -330,6 +412,94 @@ export default function SettingsScreen() {
                         </View>
                     </KeyboardAvoidingView>
                 </Cover>
+                <Cover visible={showFeedback}>
+                    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+                        <View style={styles.modalOverlay}>
+                            <View style={styles.pickerModal}>
+                                <Text style={styles.modalTitle}>Feedback</Text>
+                                <ScrollView
+                                    style={styles.feedbackScroll}
+                                    keyboardShouldPersistTaps="handled"
+                                >
+                                    <Text style={styles.feedbackInvite}>
+                                        Do you have an idea, or did something not work right? I'd love to hear it.
+                                    </Text>
+                                    <Text style={styles.feedbackQuestion}>Did the app work correctly?</Text>
+                                    <View style={styles.feedbackChoiceRow}>
+                                        {(['Yes', 'Mostly', 'No'] as const).map((one) => (
+                                            <TouchableOpacity
+                                                key={one}
+                                                style={[styles.choiceBtn, worked === one && styles.choiceBtnActive]}
+                                                onPress={() => setWorked(one)}
+                                            >
+                                                <Text style={[styles.choiceText, worked === one && styles.choiceTextActive]}>
+                                                    {one === 'Yes' ? 'Yes' : one === 'Mostly' ? 'Mostly' : 'No'}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        ))}
+                                    </View>
+                                    <Text style={styles.feedbackQuestion}>Do you find anything confusing or hard to use?</Text>
+                                    <TextInput
+                                        style={styles.feedbackBox}
+                                        value={confusing}
+                                        onChangeText={setConfusing}
+                                        placeholder="Describe anything confusing…"
+                                        placeholderTextColor={theme.mutedText}
+                                        multiline
+                                    />
+                                    <Text style={styles.feedbackQuestion}>Are there any features you would like it to have?</Text>
+                                    <TextInput
+                                        style={styles.feedbackBox}
+                                        value={wanted}
+                                        onChangeText={setWanted}
+                                        placeholder="Your most wanted feature…"
+                                        placeholderTextColor={theme.mutedText}
+                                        multiline
+                                    />
+                                    <Text style={styles.feedbackQuestion}>Do you have any other comments or suggestions?</Text>
+                                    <TextInput
+                                        style={styles.feedbackBox}
+                                        value={other}
+                                        onChangeText={setOther}
+                                        placeholder="Anything else…"
+                                        placeholderTextColor={theme.mutedText}
+                                        multiline
+                                    />
+                                    <Text style={styles.feedbackQuestion}>How would you rate this app?</Text>
+                                    <View style={styles.ratingLabels}>
+                                        <Text style={styles.feedbackInvite}>I don't like it</Text>
+                                        <Text style={styles.feedbackInvite}>I really like it</Text>
+                                    </View>
+                                    <View style={styles.ratingRow}>
+                                        <TouchableOpacity
+                                            style={styles.ratingStep}
+                                            onPress={() => setRating((n) => Math.max(0, n - 5))}
+                                        >
+                                            <Text style={styles.ratingStepText}>◀</Text>
+                                        </TouchableOpacity>
+                                        <Text style={styles.ratingValue}>{rating}%</Text>
+                                        <TouchableOpacity
+                                            style={styles.ratingStep}
+                                            onPress={() => setRating((n) => Math.min(100, n + 5))}
+                                        >
+                                            <Text style={styles.ratingStepText}>▶</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <Text style={styles.feedbackThanks}>THANK YOU VERY MUCH</Text>
+                                    <Text style={styles.feedbackAppreciate}>I appreciate your feedback</Text>
+                                </ScrollView>
+                                <View style={styles.modalBtns}>
+                                    <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowFeedback(false)}>
+                                        <Text style={styles.cancelBtnText}>Cancel</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.confirmBtn} onPress={sendFeedback}>
+                                        <Text style={styles.confirmBtnText}>Send Feedback</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </KeyboardAvoidingView>
+                </Cover>
         </View>
     );
 }
@@ -345,7 +515,23 @@ const makeStyles = (t: Theme) =>
             alignItems: 'center',
             paddingBottom: 8,
         },
-        backBtn: { width: 70 },
+        resetHeader: {
+            width: 54,
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        resetEmblem: {
+            fontSize: 16,
+            color: t.buttonDelete,
+            lineHeight: 18,
+        },
+        resetWord: {
+            fontSize: 11,
+            fontWeight: '700',
+            color: t.buttonDelete,
+            lineHeight: 13,
+            textAlign: 'center',
+        },
         title: {
             fontSize: 24,
             fontWeight: '500',
@@ -373,6 +559,7 @@ const makeStyles = (t: Theme) =>
             borderWidth: 0.5,
             borderColor: t.cardBorder,
         },
+        tileAfter: { marginTop: 10 },
         settingRow: {
             flexDirection: 'row',
             alignItems: 'center',
@@ -477,4 +664,47 @@ const makeStyles = (t: Theme) =>
             alignItems: 'center',
         },
         confirmBtnText: { color: t.buttonPrimaryText, fontWeight: '600' },
+        feedbackScroll: { maxHeight: 520 },
+        feedbackInvite: { fontSize: 14, fontStyle: 'italic', color: t.mutedText, marginBottom: 10, lineHeight: 20 },
+        feedbackQuestion: { fontSize: 14, fontWeight: '600', color: t.cardTitle, marginBottom: 6, marginTop: 8 },
+        feedbackChoiceRow: { flexDirection: 'row', gap: 8, marginBottom: 4 },
+        feedbackBox: {
+            borderWidth: 0.5,
+            borderColor: t.cardBorder,
+            borderRadius: 8,
+            padding: 8,
+            fontSize: 15,
+            color: t.bodyText,
+            backgroundColor: t.pageBackground,
+            minHeight: 56,
+            textAlignVertical: 'top',
+            marginBottom: 4,
+        },
+        ratingLabels: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
+        ratingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 8 },
+        ratingStep: {
+            backgroundColor: t.buttonPrimary,
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        ratingStepText: { color: t.buttonPrimaryText, fontSize: 16, fontWeight: '600' },
+        ratingValue: { fontSize: 18, fontWeight: '600', color: t.cardTitle, minWidth: 56, textAlign: 'center' },
+        feedbackThanks: {
+            fontSize: 15,
+            fontWeight: '700',
+            color: t.cardTitle,
+            textAlign: 'center',
+            marginTop: 8,
+            letterSpacing: 0.5,
+        },
+        feedbackAppreciate: {
+            fontSize: 14,
+            fontStyle: 'italic',
+            color: t.mutedText,
+            textAlign: 'center',
+            marginBottom: 8,
+        },
     });
