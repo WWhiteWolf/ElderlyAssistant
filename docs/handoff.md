@@ -33,8 +33,11 @@ table. Not on the phone. Do not change the scheduler's
 decisions.
 **#93-new** confirmed Daily One Time snooze. It is on the table and
 works from the edit page and from the banner. Not on the phone.
-Leave the missing-day banner for a later sitting. Do not change the
-scheduler's decisions.
+**#94-new** put Then and Next Day on the dated rows as the missing-day
+button set, and took those chips off Options. Done and Save keep a
+31st as the 31st. February still uses the 28th that month. Not a
+remembered rule. Not on the phone. Do not change the scheduler's
+decisions.
 
 ## Standing rulings
 
@@ -151,6 +154,10 @@ These are Patrick's and they govern the work rather than describing it.
 - **Morning of is not the set time** (Patrick, #74-new). A clock-style
   lead may float with the phone even when the appointment has a named
   zone.
+- **A 31st stays the 31st** (Patrick, #94-new). A month with no such
+  day still uses the last day that exists for that month. Then and
+  Next Day are the missing-day banner, not an Options choice. Done
+  and Save do not turn the reminder into a 28th.
 
 ## What is open in front of it
 
@@ -164,10 +171,17 @@ phone. Do not change the scheduler's decisions.
 
 **#92-new:** the leftover save form is built. The job sheet is
 `docs-ref/build-sheets/build-sheet-save-form.md`. Both pieces are
-in the project. Not on the phone. `shifteddayactions` is still
-never written. Leave that banner for a later sitting.
+in the project. Not on the phone.
 Leave the scheduler's decisions as they are. Leave Home, Help,
 Calendar, Settings, Backup, and Scheduled Reminders alone.
+
+**#94-new:** the missing-day banner is on the dated rows. Done and
+Save keep a 31st. Not on the phone.
+
+**#95-new:** a third evaluation of the code, the same aim as #91-new:
+whether it is built as a machine, not as rules each place has to
+remember. Do that sitting on a fresh load. Do not change the
+scheduler's decisions.
 
 Treat the pages the way the engine was treated. A page has a few jobs.
 Every reminder page fits those pieces. Rebuild what does not fit.

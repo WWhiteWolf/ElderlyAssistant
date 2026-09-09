@@ -245,7 +245,7 @@ function nextByMonthDay(
         return null;
     }
     const seed = calendar.partsOf(item.dueMoment !== undefined ? item.dueMoment : now);
-    const seedDay = seed.day;
+    const seedDay = item.dueMonthDay ?? seed.day;
     const seedMonth = seed.month;
     const step = intervalOf(item);
     const start = calendar.partsOf(now);

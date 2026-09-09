@@ -276,11 +276,21 @@ export interface ShapedItem {
     dueHour?: number;
     dueMinute?: number;
     /**
+     * The day of the month the series is for.
+     *
+     * A 31st stays 31 even when this month only has 28 days. The last day
+     * that exists is used for that month; the series is still the 31st.
+     * Left off when dueMoment already carries a real calendar day, as a
+     * one-off does.
+     */
+    dueMonthDay?: number;
+    /**
      * The one moment it comes due, as the ordinary count of milliseconds.
      *
      * A one-off uses this as the due moment itself. A monthly or yearly item
-     * may also carry it as the seed for the day of the month, and for the
-     * month of the year.
+     * may also carry it as the seed for the month of the year. The day of
+     * the month is `dueMonthDay` when that is present, so a 31st is not
+     * lost inside a shorter month.
      */
     dueMoment?: number;
     /**
@@ -384,4 +394,11 @@ export interface ShapedItem {
     bannerBodyText?: string;
     /** Which registered button set the banner carries. */
     bannerButtonsCode?: BannerButtonsCode;
+    /**
+     * Which registered button set a missing-day occurrence carries.
+     *
+     * Left off when this kind has no extra tap for a day that does not
+     * exist. Then and Next Day live here, not as a saved Options choice.
+     */
+    shiftedBannerButtonsCode?: BannerButtonsCode;
 }

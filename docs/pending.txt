@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-08 (#93-new)
+Last updated: 2026-09-08 (#94-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -32,10 +32,14 @@ design question.
 #91-new is closed. The four table-door pieces are built. #92-new
 built the leftover save form: Save writes from the table. Both
 pieces. #93-new confirmed Daily One Time snooze: it is on the
-table and works from the edit page and from the banner. The job is
-docs-ref/build-sheets/build-sheet-save-form.md. Not on the phone.
-Do not change the scheduler's decisions. The missing-day banner is
-still never written; leave it for a later sitting.
+table and works from the edit page and from the banner. #94-new
+put Then and Next Day on the dated rows and took those chips off
+Options. Done and Save keep a 31st as the 31st. Not on the phone.
+Do not change the scheduler's decisions.
+
+Next sitting is #95-new: a third evaluation of the code, the same
+aim as #91-new — whether it is a machine, not rules each place has
+to remember. Fresh load.
 Home, Help, Calendar, Settings, Backup, Scheduled Reminders,
 and Options are in docs/designed-implementation.md. A
 Settings password stays nice-to-have.
@@ -157,6 +161,10 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+89. #94-new — missing-day banner on the dated rows. Options chips
+   off. Done and Save keep a 31st as the 31st. February still uses
+   the 28th that month. Not a remembered rule. Not on the phone.
 
 88. #93-new — Daily One Time snooze. It was missing because One
    Time starts as Appointments. The table turns push-back on and

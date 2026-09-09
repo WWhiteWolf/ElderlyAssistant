@@ -56,6 +56,7 @@ export interface DueFields {
     hasDueTimeBit: boolean;
     dueHour?: number;
     dueMinute?: number;
+    dueMonthDay?: number;
     dueMoment?: number;
 }
 
@@ -105,6 +106,12 @@ export interface ScreenRules {
     standsForGroupBit: boolean;
     /** Which registered button set the banner carries. */
     bannerButtonsCode?: BannerButtonsCode;
+    /**
+     * Which registered button set a missing-day occurrence carries.
+     *
+     * Left off when this kind has no Then / Next Day banner.
+     */
+    shiftedBannerButtonsCode?: BannerButtonsCode;
     /**
      * The Quarterly step, left off on every other kind.
      *
@@ -162,6 +169,7 @@ function translateOne(rules: ScreenRules, saved: ReminderItem): ShapedItem {
         // interpreted before it could be told apart from an absence.
         ...(due.dueHour !== undefined ? { dueHour: due.dueHour } : {}),
         ...(due.dueMinute !== undefined ? { dueMinute: due.dueMinute } : {}),
+        ...(due.dueMonthDay !== undefined ? { dueMonthDay: due.dueMonthDay } : {}),
         ...(due.dueMoment !== undefined ? { dueMoment: due.dueMoment } : {}),
         ...(quarterlyDays !== undefined
             ? { repeatUnitCode: 'day' as const, repeatIntervalCount: quarterlyDays }
@@ -212,6 +220,9 @@ function translateOne(rules: ScreenRules, saved: ReminderItem): ShapedItem {
         ...(rules.bannerButtonsCode !== undefined
             ? { bannerButtonsCode: rules.bannerButtonsCode }
             : {}),
+        ...(rules.shiftedBannerButtonsCode !== undefined
+            ? { shiftedBannerButtonsCode: rules.shiftedBannerButtonsCode }
+            : {}),
     };
 }
 
@@ -234,6 +245,32 @@ const atTheMomentItself: LeadTime[] = [
  */
 function twoDigits(n: number): string {
     return n < 10 ? `0${n}` : `${n}`;
+}
+
+function lastDayOfMonth(year: number, month: number): number {
+    return new Date(year, month + 1, 0).getDate();
+}
+
+/** A dated item's due fields. The day of the month stays the saved day. */
+function datedDueOf(item: ReminderItem, hour: number | undefined, minute: number | undefined): DueFields {
+    if (typeof item.year !== 'number'
+        || typeof item.month !== 'number'
+        || typeof item.day !== 'number') {
+        if (hour !== undefined && minute !== undefined) {
+            return { hasDueTimeBit: true, dueHour: hour, dueMinute: minute };
+        }
+        return { hasDueTimeBit: false };
+    }
+    const h = hour ?? 0;
+    const m = minute ?? 0;
+    const day = Math.min(item.day, lastDayOfMonth(item.year, item.month));
+    return {
+        hasDueTimeBit: true,
+        dueMoment: new Date(item.year, item.month, day, h, m, 0, 0).getTime(),
+        dueHour: h,
+        dueMinute: m,
+        dueMonthDay: item.day,
+    };
 }
 
 function dueSentence(year: number, month: number, day: number, hour: number, minute: number): string {
@@ -335,6 +372,7 @@ const datedCadenceRules: ScreenRules = {
     bannerTitleTextOf: (item) =>
         item.kind === 'yearly' ? 'Yearly' : 'Monthly',
     bannerButtonsCode: 'cadenceactions',
+    shiftedBannerButtonsCode: 'shifteddayactions',
     idOf: (item) => item.id,
     nameOf: (item) => item.label,
     isDoneOf: (item) => !!item.completed,
@@ -342,28 +380,7 @@ const datedCadenceRules: ScreenRules = {
     dueOf: (item) => {
         const hour = typeof item.hour === 'number' ? item.hour : undefined;
         const minute = typeof item.minute === 'number' ? item.minute : undefined;
-        if (typeof item.year === 'number'
-            && typeof item.month === 'number'
-            && typeof item.day === 'number') {
-            return {
-                hasDueTimeBit: true,
-                dueMoment: new Date(
-                    item.year,
-                    item.month,
-                    item.day,
-                    hour ?? 0,
-                    minute ?? 0,
-                    0,
-                    0,
-                ).getTime(),
-                dueHour: hour ?? 0,
-                dueMinute: minute ?? 0,
-            };
-        }
-        if (hour !== undefined && minute !== undefined) {
-            return { hasDueTimeBit: true, dueHour: hour, dueMinute: minute };
-        }
-        return { hasDueTimeBit: false };
+        return datedDueOf(item, hour, minute);
     },
     leadTimesOf: () => atTheMomentItself,
     bannerBodyTextOf: (item) => `Time for ${item.label}!`,
@@ -436,28 +453,18 @@ const birthdaysCadenceRules: ScreenRules = {
     keepsLeadChipsBit: true,
     standsForGroupBit: false,
     bannerButtonsCode: 'appointmentsok',
+    shiftedBannerButtonsCode: 'shifteddayactions',
     idOf: (item) => item.id,
     nameOf: (item) => item.label,
     isDoneOf: (item) => !!item.completed,
     pushedBackStampOf: () => undefined,
     dueOf: (item) => {
-        if (typeof item.year === 'number'
-            && typeof item.month === 'number'
-            && typeof item.day === 'number') {
-            return {
-                hasDueTimeBit: true,
-                dueMoment: new Date(
-                    item.year,
-                    item.month,
-                    item.day,
-                    item.hour ?? 12,
-                    item.minute ?? 0,
-                    0,
-                    0,
-                ).getTime(),
-            };
+        if (typeof item.year !== 'number'
+            || typeof item.month !== 'number'
+            || typeof item.day !== 'number') {
+            return { hasDueTimeBit: false };
         }
-        return { hasDueTimeBit: false };
+        return datedDueOf(item, item.hour ?? 12, item.minute ?? 0);
     },
     // The set time itself, then any reminders-before chips. An empty chip
     // list still speaks at the birthday.
@@ -543,7 +550,8 @@ export function translateReminderItems(items: ReminderItem[], now: number): Shap
  * exclusive group on the table: only one can be true. If both saved
  * fields are complete, neither weekday pattern is written. Birthdays
  * are not on that group. A numbered-day weekday keeps only the first
- * occurrence after that day. Shifted-day preference is not mapped here.
+ * occurrence after that day. Then or Next Day is the table's missing-day
+ * button set, not a saved preference.
  */
 function withSavedOptions(saved: ReminderItem, shaped: ShapedItem): ShapedItem {
     let out = shaped;

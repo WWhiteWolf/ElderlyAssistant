@@ -10,18 +10,17 @@ export type OptionCase = {
 };
 
 export type HolidayMove = 'before' | 'after';
-export type ShiftedChoice = 'then' | 'next';
 
 // The values the Options case pages hold. Weekly's + OPT writes the
 // cases that apply onto the item. Daily's every-day item and One Time
 // for today get only time zone. Notes is a field on New and Edit, not
+// an Options case. Then and Next Day are the missing-day banner, not
 // an Options case.
 export type OptionSettings = {
     holidayMove?: HolidayMove;
     floatsWithPhone: boolean;
     dueTimeZoneText?: string;
     shadeCalendar: boolean;
-    shiftedChoice?: ShiftedChoice;
     weekdayOrdinal?: number;
     ordinalWeekday?: number;
     afterWeekday?: number;
@@ -54,12 +53,6 @@ export const OPTION_CASES: OptionCase[] = [
         body: 'A named zone for when the reminder should fire, rather than only the phone’s current zone.',
     },
     {
-        id: 'shifted',
-        icon: '👆',
-        name: 'An extra tap on a shifted day',
-        body: 'When a day does not exist in that month, the last day that exists is used. An extra tap then chooses that day or the next day, not skip.',
-    },
-    {
         id: 'secondThursday',
         icon: '📆',
         name: 'A second Thursday',
@@ -77,7 +70,6 @@ const CONNECTED_IDS = ['holidays', 'timezone'];
 const TIMEZONE_IDS = ['timezone'];
 const MONTHLY_IDS = [
     ...CONNECTED_IDS,
-    'shifted',
     'secondThursday',
     'wednesdayAfter',
 ];
@@ -121,17 +113,6 @@ export function appliedOptionRows(settings: OptionSettings): AppliedOption[] {
         const one = named('timezone');
         if (one) rows.push({ id: one.id, icon: one.icon, name: one.name, value: 'Switch off' });
     }
-    if (settings.shiftedChoice) {
-        const one = named('shifted');
-        if (one) {
-            rows.push({
-                id: one.id,
-                icon: one.icon,
-                name: one.name,
-                value: settings.shiftedChoice === 'then' ? 'Then' : 'Next day',
-            });
-        }
-    }
     if (settings.weekdayOrdinal != null && settings.ordinalWeekday != null) {
         const one = named('secondThursday');
         if (one) {
@@ -171,7 +152,6 @@ export function optionsFromItem(item: ReminderItem): OptionSettings {
         floatsWithPhone: item.floatsWithPhone !== false,
         dueTimeZoneText: item.dueTimeZoneText,
         shadeCalendar: !!item.shadeCalendar,
-        shiftedChoice: item.shiftedChoice,
         weekdayOrdinal: item.weekdayOrdinal,
         ordinalWeekday: item.ordinalWeekday,
         afterWeekday: item.afterWeekday,
@@ -193,8 +173,7 @@ export function applyConnectedOptions(item: ReminderItem, settings: OptionSettin
     if (settings.shadeCalendar) out.shadeCalendar = true;
     else delete out.shadeCalendar;
     delete out.floatDay;
-    if (settings.shiftedChoice) out.shiftedChoice = settings.shiftedChoice;
-    else delete out.shiftedChoice;
+    delete out.shiftedChoice;
     if (settings.weekdayOrdinal != null && settings.ordinalWeekday != null) {
         out.weekdayOrdinal = settings.weekdayOrdinal;
         out.ordinalWeekday = settings.ordinalWeekday;
@@ -331,9 +310,9 @@ export function keepOptionsForKind(item: ReminderItem, kind: string): ReminderIt
     const ids = new Set(optionCasesForKind(kind).map((c) => c.id));
     const out = { ...item };
     delete out.floatDay;
+    delete out.shiftedChoice;
     if (!ids.has('holidays')) delete out.holidayMove;
     // The calendar page replaced the shading row, but the saved field stays.
-    if (!ids.has('shifted')) delete out.shiftedChoice;
     if (!ids.has('secondThursday')) {
         delete out.weekdayOrdinal;
         delete out.ordinalWeekday;

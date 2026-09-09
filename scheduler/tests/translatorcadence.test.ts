@@ -67,11 +67,27 @@ export function runTranslatorCadenceTests(): void {
             minute: 0,
         }));
         assertSame(
-            [shaped.sourceScreenCode, shaped.repeatUnitCode, shaped.repeatIntervalCount, shaped.dueHour, shaped.bannerButtonsCode, shaped.bannerTitleText],
-            ['monthly', 'month', 1, 9, 'cadenceactions', 'Monthly'],
+            [shaped.sourceScreenCode, shaped.repeatUnitCode, shaped.repeatIntervalCount, shaped.dueHour, shaped.bannerButtonsCode, shaped.shiftedBannerButtonsCode, shaped.bannerTitleText],
+            ['monthly', 'month', 1, 9, 'cadenceactions', 'shifteddayactions', 'Monthly'],
             'a dated monthly item repeats each month from that day, and the banner names Monthly',
         );
         assert(shaped.hasDueTimeBit, 'a time is a due time');
+    });
+
+    test('A monthly 31st kept through February is still the 31st', () => {
+        const shaped = shapeOf(item({
+            kind: 'monthly',
+            year: 2026,
+            month: 1,
+            day: 31,
+            hour: 12,
+            minute: 0,
+        }));
+        assertSame(
+            [shaped.dueMonthDay, new Date(shaped.dueMoment ?? 0).getDate(), new Date(shaped.dueMoment ?? 0).getMonth()],
+            [31, 28, 1],
+            'February uses the 28th that month; the series is still the 31st',
+        );
     });
 
     test('A Daily one-shot carries its leads and opens Daily', () => {
@@ -369,6 +385,11 @@ export function runTranslatorCadenceTests(): void {
             undefined,
             'then or next day is an action on the shifted banner, not a recipe',
         );
+        assertSame(
+            shaped.shiftedBannerButtonsCode,
+            'shifteddayactions',
+            'the missing-day buttons are on the table',
+        );
     });
 
     test('Bucket List has no Options cases', () => {
@@ -416,6 +437,14 @@ export function runTranslatorCadenceTests(): void {
             optionCasesForKind('birthdays').map((one) => one.id),
             ['holidays', 'timezone'],
             'Birthdays copy Appointments’ holidays and time zone, not Yearly’s extra cases',
+        );
+    });
+
+    test('Monthly Options has no extra tap', () => {
+        assertSame(
+            optionCasesForKind('monthly').map((one) => one.id),
+            ['holidays', 'timezone', 'secondThursday', 'wednesdayAfter'],
+            'Then and Next Day are the missing-day banner, not an Options case',
         );
     });
 

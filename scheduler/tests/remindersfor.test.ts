@@ -496,6 +496,8 @@ export function runRemindersForTests(): void {
             standsForGroupBit: false,
             isDoneBit: false,
             leadTimeList: [{ leadFormCode: 'offset', leadAmount: 0, leadUnitCode: 'minutes' }],
+            bannerButtonsCode: 'cadenceactions',
+            shiftedBannerButtonsCode: 'shifteddayactions',
             ...changes,
         };
     }

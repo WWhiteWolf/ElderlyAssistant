@@ -13,6 +13,10 @@ export { doneActionCodeOf, exclusiveGroupBitsOf };
 import { shadedDaysInMonth } from '../scheduler/leadmoments';
 import { isDateOf, shownOnDate } from '../scheduler/shown-on-date';
 import type { ReminderItem, ReminderKind } from './reminder-types';
+import { advanceDatedItem } from './advance-dated-item';
+export { advanceDatedItem };
+
+const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
 
 export type { LeadReminder, ReminderItem, ReminderKind } from './reminder-types';
 export {
@@ -35,8 +39,6 @@ export const FROM_PAGE: Record<Exclude<ReminderKind, 'daily' | 'oneTime' | 'buck
     appointments: `from ${PAGE_LABELS.appointments}`,
     birthdays: `from ${PAGE_LABELS.birthdays}`,
 };
-
-const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
 
 export function hourMinuteOf(saved: { hour?: number | null; minute?: number | null }): { hour?: number; minute?: number } {
     if (typeof saved.hour === 'number' && typeof saved.minute === 'number') {
@@ -113,42 +115,6 @@ export function thisCycleDueStamp(item: ReminderItem, now: number = Date.now()):
     }
     if (typeof shaped.dueMoment === 'number') return shaped.dueMoment;
     return undefined;
-}
-
-// Roll a dated repeat forward to its next occurrence that lands in the
-// future, including clamping to the last day of a shorter month.
-export function advanceDatedItem(item: ReminderItem): ReminderItem {
-    const hour = typeof item.hour === 'number' ? item.hour : 12;
-    const minute = typeof item.minute === 'number' ? item.minute : 0;
-    const anchorDay = typeof item.day === 'number' ? item.day : 1;
-    let d = new Date(
-        typeof item.year === 'number' ? item.year : new Date().getFullYear(),
-        typeof item.month === 'number' ? item.month : 0,
-        anchorDay,
-        hour,
-        minute,
-        0,
-        0,
-    );
-    const now = new Date();
-    const dayStep = quarterlyStepDaysOf(quarterlyStepCodeOf(item.intervalDays)) ?? 0;
-    do {
-        if (dayStep > 0) {
-            d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + dayStep, hour, minute, 0, 0);
-        } else {
-            const step =
-                item.kind === 'yearly' || item.kind === 'birthdays' ? 12
-                : item.kind === 'monthly' ? 1
-                : (item.intervalMonths ?? 3);
-            const tmi = d.getMonth() + step;
-            const y = d.getFullYear() + Math.floor(tmi / 12);
-            const m = ((tmi % 12) + 12) % 12;
-            d = new Date(y, m, Math.min(anchorDay, daysInMonth(y, m)), hour, minute, 0, 0);
-        }
-    } while (d <= now);
-    const { snoozedUntil, ...rest } = item;
-    void snoozedUntil;
-    return { ...rest, year: d.getFullYear(), month: d.getMonth(), day: d.getDate() };
 }
 
 // Roll the day and the week first, then read. A page that draws this list
@@ -391,7 +357,8 @@ export function formatItemWhen(item: ReminderItem): string {
         && typeof item.day === 'number'
         && typeof item.year === 'number'
     ) {
-        const date = `${MONTH_NAMES[item.month]} ${item.day}, ${item.year}`;
+        const shownDay = Math.min(item.day, daysInMonth(item.year, item.month));
+        const date = `${MONTH_NAMES[item.month]} ${shownDay}, ${item.year}`;
         return time ? `${date} · ${time}` : date;
     }
     return time;

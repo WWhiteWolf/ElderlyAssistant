@@ -203,8 +203,10 @@ thisCycle. It can be pushed back. Banner set routineactions. Speaks at
 the moment itself.
 
 **monthly** — page Monthly. Repeats every month. Date required. Done is
-advanceDate. It can be pushed back. Banner set cadenceactions: Done,
-Delay 1 Day / 1 Week / 1 Month. Speaks at the moment itself.
+advanceDate. A 31st stays the 31st. A month with no such day uses the
+last day that exists for that month only. It can be pushed back. Banner
+set cadenceactions: Done, Delay 1 Day / 1 Week / 1 Month. A missing day
+uses shifteddayactions: Then, Next Day. Speaks at the moment itself.
 
 **quarterly** — page Quarterly. Repeats every three months when the
 step is none, or every 30, 60, or 90 days when that chip is set. Done
@@ -271,7 +273,8 @@ The four registered sets, and no others, are:
 - **appointmentsok** — OK, which closes without opening the app.
 - **shifteddayactions** — Then, Next Day. For a missing day of the
   month. Then keeps the last day that exists. Next Day is a one-day
-  push-back for this occurrence only.
+  push-back for this occurrence only. Dated rows name this set for
+  that occurrence. It is not an Options choice.
 
 A banner naming a set the phone does not know shows no buttons at all.
 That has bitten this app before. New sets are added to the named list
@@ -398,14 +401,15 @@ Done keeps the cases. Back leaves a case, or closes the sheet. Notes
 live on New and Edit, not here. Calendar shading is not a case. The
 saved field stays.
 
-The cases are Holidays, Time zone, an extra tap on a shifted day, a
-second Thursday, and a Wednesday after the 6th. Holidays is Day before
-or Day after. Time zone is Float with phone or Keep this zone. An extra
-tap on a shifted day is Then or Next day.
+The cases are Holidays, Time zone, a second Thursday, and a Wednesday
+after the 6th. Holidays is Day before or Day after. Time zone is Float
+with phone or Keep this zone. Then and Next Day are the missing-day
+banner, not an Options case.
 
 Daily and One Time get Time zone only. Weekly, Appointments, and
 Birthdays get Holidays and Time zone. Monthly, Quarterly, and Yearly
-get all five. Bucket List gets none.
+get Holidays, Time zone, a second Thursday, and a Wednesday after the
+6th. Bucket List gets none.
 
 On Monthly, Quarterly, and Yearly, the last pattern you set stays —
 the date, a second Thursday, or a Wednesday after the 6th — and the

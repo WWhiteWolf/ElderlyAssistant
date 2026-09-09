@@ -58,6 +58,50 @@ export function runAssembleFormTests(): void {
         );
     });
 
+    test('Monthly Save in February keeps a 31st as the 31st', () => {
+        const next = assembleFormItem(parts({
+            editKind: 'monthly',
+            existing: {
+                id: 'i1',
+                kind: 'monthly',
+                label: 'The 31st',
+                year: 2026,
+                month: 1,
+                day: 31,
+                hour: 12,
+                minute: 0,
+            },
+            pendingDate: new Date(2026, 1, 28, 12, 0, 0, 0),
+        }));
+        assertSame(
+            [next.year, next.month, next.day],
+            [2026, 1, 31],
+            'the picker can only show the 28th; Save must not turn the series into a 28th',
+        );
+    });
+
+    test('Monthly Save writes a day that was actually changed', () => {
+        const next = assembleFormItem(parts({
+            editKind: 'monthly',
+            existing: {
+                id: 'i1',
+                kind: 'monthly',
+                label: 'The 31st',
+                year: 2026,
+                month: 1,
+                day: 31,
+                hour: 12,
+                minute: 0,
+            },
+            pendingDate: new Date(2026, 1, 15, 12, 0, 0, 0),
+        }));
+        assertSame(
+            [next.year, next.month, next.day],
+            [2026, 1, 15],
+            'picking a real other day is a new series day',
+        );
+    });
+
     test('Monthly with a complete second Thursday drops the calendar date', () => {
         const next = assembleFormItem(parts({
             editKind: 'monthly',

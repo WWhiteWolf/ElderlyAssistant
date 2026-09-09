@@ -17,6 +17,37 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #94-new (2026-09-08): missing-day banner, and a 31st stays the 31st
+
+**The goal was to find the missing-day banner bug.**
+
+**#93-new was committed**, asked at the open.
+
+**The look.** Then and Next Day were not on Monthly's button set. They
+sat in Options as a saved choice the engine did not read. When
+February has no 31st, the engine marked that occurrence. That button
+set was registered, and not on any table row.
+
+**The banner.** Then and Next Day went onto the dated rows as the
+missing-day button set. The join reads that. The Options chips came
+off.
+
+**Done and Save.** A 31st that fired on the 28th was being saved as
+the 28th. Done now keeps the 31st. February still uses the 28th that
+month. Save does the same, so opening in February does not turn it
+into a 28th. That is in the machinery, not a remembered rule.
+
+**Tests.** TypeScript clean. 339 passed, 0 failed. Engine last-day
+rule unchanged. Not on the phone.
+
+**Next sitting.** A third evaluation of the code, the same aim as
+#91-new: whether it is a machine, not remembered rules. Fresh load.
+This sitting already had one heavy read.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `pending.txt`,
+`in-flight.md`, and `App-Docs/master-handoff.md` refreshed. Phone
+still the #82-new load.
+
 ## #93-new (2026-09-08): Daily One Time snooze is on the table
 
 **The goal was to find the Daily One Time without snooze bug.**

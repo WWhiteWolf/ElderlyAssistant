@@ -160,7 +160,9 @@ function baseReminder(
         label: item.itemNameText,
         title: item.bannerTitleText ?? '',
         body: item.bannerBodyText ?? '',
-        categoryIdentifier: shiftedForMissingDayBit ? 'shifteddayactions' : item.bannerButtonsCode,
+        categoryIdentifier: shiftedForMissingDayBit && item.shiftedBannerButtonsCode
+            ? item.shiftedBannerButtonsCode
+            : item.bannerButtonsCode,
         trigger: { kind: 'date', at },
         ...(shiftedForMissingDayBit ? { shiftedForMissingDayBit: true } : {}),
     };

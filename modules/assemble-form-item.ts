@@ -30,6 +30,26 @@ function hourMinuteOf(saved: { hour?: number | null; minute?: number | null }): 
     return {};
 }
 
+function lastDayOfMonth(year: number, month: number): number {
+    return new Date(year, month + 1, 0).getDate();
+}
+
+/** The day of the month the series is for, not the last day of a short month on the picker. */
+function seriesDayOf(pending: Date, existingDay: number | undefined): number {
+    const last = lastDayOfMonth(pending.getFullYear(), pending.getMonth());
+    const pendingDay = pending.getDate();
+    if (typeof existingDay === 'number' && existingDay > last && pendingDay === last) {
+        return existingDay;
+    }
+    return pendingDay;
+}
+
+function writePendingDate(next: ReminderItem, pending: Date, existingDay: number | undefined): void {
+    next.year = pending.getFullYear();
+    next.month = pending.getMonth();
+    next.day = seriesDayOf(pending, existingDay);
+}
+
 export type AssembleFormParts = {
     existing: ReminderItem | null;
     id: string;
@@ -67,9 +87,7 @@ export function assembleFormItem(parts: AssembleFormParts): ReminderItem {
         delete next.month;
     } else if (dateCode === 'calendar') {
         if (!weekdayPatternComplete(parts.optionSettings)) {
-            next.year = parts.pendingDate.getFullYear();
-            next.month = parts.pendingDate.getMonth();
-            next.day = parts.pendingDate.getDate();
+            writePendingDate(next, parts.pendingDate, parts.existing?.day);
         } else {
             delete next.year;
             delete next.month;
@@ -81,13 +99,9 @@ export function assembleFormItem(parts: AssembleFormParts): ReminderItem {
         next.month = now.getMonth();
         next.day = now.getDate();
     } else if (dateCode === 'required') {
-        next.year = parts.pendingDate.getFullYear();
-        next.month = parts.pendingDate.getMonth();
-        next.day = parts.pendingDate.getDate();
+        writePendingDate(next, parts.pendingDate, parts.existing?.day);
     } else if (parts.dateSet) {
-        next.year = parts.pendingDate.getFullYear();
-        next.month = parts.pendingDate.getMonth();
-        next.day = parts.pendingDate.getDate();
+        writePendingDate(next, parts.pendingDate, parts.existing?.day);
     } else {
         delete next.year;
         delete next.month;

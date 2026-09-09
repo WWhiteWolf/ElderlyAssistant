@@ -6,7 +6,6 @@ import {
     type HolidayMove,
     type OptionCase,
     type OptionSettings,
-    type ShiftedChoice,
 } from '../modules/option-cases';
 
 const ORDINALS: { value: number; label: string }[] = [
@@ -67,17 +66,6 @@ export default function OptionCaseBody({
                             <Text style={styles.zoneName}>{settings.dueTimeZoneText ?? phoneTimeZone()}</Text>
                         )}
                     </>
-                )}
-                {openCase.id === 'shifted' && (
-                    <ChipRow
-                        styles={styles}
-                        options={[
-                            { id: 'then' as ShiftedChoice, label: 'Then' },
-                            { id: 'next' as ShiftedChoice, label: 'Next day' },
-                        ]}
-                        value={settings.shiftedChoice}
-                        onChange={(shiftedChoice) => set({ shiftedChoice })}
-                    />
                 )}
                 {openCase.id === 'secondThursday' && (
                     <>

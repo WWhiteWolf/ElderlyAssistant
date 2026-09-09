@@ -382,6 +382,24 @@ export function runLeadMomentsTests(): void {
         );
     });
 
+    test('A 31st stored as February still comes round on 31 March', () => {
+        assertSame(
+            momentsFor(
+                item({
+                    repeatUnitCode: 'month',
+                    dueHour: 12,
+                    dueMinute: 0,
+                    dueMoment: at(2026, 1, 28, 12, 0),
+                    dueMonthDay: 31,
+                }),
+                at(2026, 2, 1, 9, 0),
+                CLOCK,
+            ),
+            [at(2026, 2, 31, 12, 0)],
+            'Done must not turn a 31st into a 28th',
+        );
+    });
+
     test('A quarterly item uses the saved month, not this month', () => {
         assertSame(
             momentsFor(

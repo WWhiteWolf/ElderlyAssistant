@@ -51,6 +51,11 @@ type ReminderPreset = {
     timeOfDay?: 'morning' | 'midday' | 'evening';
 };
 
+function civilDate(year: number, month: number, day: number, hour: number, minute: number): Date {
+    const last = new Date(year, month + 1, 0).getDate();
+    return new Date(year, month, Math.min(day, last), hour, minute, 0, 0);
+}
+
 const DAILY_ONE_TIME_PRESETS: ReminderPreset[] = [
     { label: '30 min.', kind: 'offset', amount: 30, unit: 'minutes' },
     { label: '1 hour', kind: 'offset', amount: 1, unit: 'hours' },
@@ -230,21 +235,19 @@ export default function ItemEditScreen() {
                         setPendingTime(t);
                         setTimeSet(true);
                         if (found.kind !== 'weekly' && found.kind !== 'daily' && found.kind !== 'bucketlist') {
-                            setPendingDate(new Date(
+                            setPendingDate(civilDate(
                                 typeof found.year === 'number' ? found.year : t.getFullYear(),
                                 typeof found.month === 'number' ? found.month : t.getMonth(),
                                 typeof found.day === 'number' ? found.day : t.getDate(),
                                 found.hour,
                                 found.minute,
-                                0,
-                                0,
                             ));
                         }
                     } else if (
                         found.kind === 'monthly' || found.kind === 'quarterly' || found.kind === 'yearly' || found.kind === 'appointments' || found.kind === 'birthdays' || found.kind === 'oneTime'
                     ) {
                         if (typeof found.year === 'number' && typeof found.month === 'number' && typeof found.day === 'number') {
-                            setPendingDate(new Date(found.year, found.month, found.day, 12, 0, 0, 0));
+                            setPendingDate(civilDate(found.year, found.month, found.day, 12, 0));
                             setDateSet(true);
                         } else {
                             setDateSet(false);
