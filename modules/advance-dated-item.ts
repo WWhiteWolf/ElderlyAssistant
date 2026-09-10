@@ -4,6 +4,7 @@ import {
     quarterlyStepCodeOf,
     quarterlyStepDaysOf,
 } from '../scheduler/inputshape.ts';
+import { repeatUnitCodeOf } from '../scheduler/translators/translate.ts';
 import type { ReminderItem } from './reminder-types.ts';
 
 const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
@@ -28,7 +29,7 @@ export function advanceDatedItem(item: ReminderItem, nowMs: number = Date.now())
             month = d.getMonth();
         } else {
             const step =
-                item.kind === 'yearly' || item.kind === 'birthdays' ? 12
+                repeatUnitCodeOf(item.kind) === 'year' ? 12
                 : item.kind === 'monthly' ? 1
                 : (item.intervalMonths ?? 3);
             const tmi = month + step;

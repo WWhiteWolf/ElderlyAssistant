@@ -12,14 +12,15 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-You are living with the **#82-new** load on the phone. Through
-**#99-new** the work is in the project and the simulator, and that
-session is committed. **#100-new** changed the duplicate Home badges.
-Quarterly is a fallen leaf, Monthly is a first-quarter moon, Yearly
-keeps the telescope. Checked on the simulator. **#99-new** is the last
-review before the app goes on the phone and into the App Store. Do not
-change the scheduler's decisions. The designed implementation is the
-guide, and it is not finished yet.
+Build **78** is on the phone. Scheduled Reminders is down to 14.
+How far ahead a waiting kind looks is a number on the table. Monthly
+is thirty days. Quarterly, Yearly, and Birthdays are sixty days, so a
+Month-before reminder can be armed. Several lead times on one item arm
+only the soonest still ahead. **#100-new** split the Home badges:
+Yearly keeps the telescope, Quarterly a fallen leaf, Monthly a
+first-quarter moon. A weekday monthly looks from the saved date, so
+Done takes it off Daily. That is in the project, not on 78. The designed
+implementation is the guide, and it is not finished yet.
 
 ## Standing rulings
 
@@ -65,6 +66,13 @@ These are Patrick's and they govern the work rather than describing it.
   private arrangement that happens to work.
 - **A rule that has to be remembered at every place that might need it is
   the wrong shape.** Build it into the machinery instead.
+- **Dated items wait about a month** (Patrick, 2026-09-09). That wait is
+  a bit on the table. Monthly, Quarterly, Yearly, and Birthdays have it
+  on. Daily, Weekly, Appointments, and the rest have it off. The join
+  reads the bit. Depth stays one. Opening the app arms a waiting item
+  when it has come close enough. Several lead times on one item also
+  use that depth: only the soonest still ahead is armed. When it has
+  fired, the next run arms the next.
 - **Engine facts belong in the one description of each kind. What the
   add screen shows stays on the form** (Patrick, #95-new). That is
   ordinary software, not a hole. A special extra rule for one type of
@@ -109,9 +117,11 @@ These are Patrick's and they govern the work rather than describing it.
   mark that this cycle was done** (Patrick, #83-new). It is not
   leftover. The date has already moved; the tick is how you see it.
   It stays until the morning of the next due date, then comes off in
-  the same morning roll as Daily. A second tap while it is showing
-  means un-check, not Done for the new cycle. Appointments and Bucket
-  List stay as they are. Built at #83-new.
+  the same morning roll as Daily. Yearly and Birthdays write year on
+  the table; the date-advance reads that word. A second tap while it is
+  showing means un-check, not Done for the new cycle. Appointments and
+  Bucket List stay as they are. Built at #83-new. The year word is
+  #100-new.
 - **The Where? page is Help** (Patrick, #70-new; wording at #80-new).
   The visible name is **Help**, not Where? The Home badge is **?**, not
   🧭. The route may stay `where.tsx`. Step 1 choices are **Repeats** and
@@ -196,11 +206,11 @@ The spec is `docs/designed-implementation.md`. What is not written: a
 Settings password (nice-to-have). The user's guide is a tile on
 Settings. The words are in. First load on Home shows the same words.
 
-Testers are on TestFlight External. The App Store heading is Waiting
-for Review on **72**. He is not aiming to go live. Manual release.
-**74** is iPhone-only. Testers may use 72 or 74. The journey is
-`docs/connect-submit.md`. What is already in App Store Connect stays
-there. There is no public website for the user's guide.
+Testers are on TestFlight External. The phone load is **78**. The App
+Store heading is Waiting for Review on **72**. He is not aiming to go
+live. Manual release. The journey is `docs/connect-submit.md`. What is
+already in App Store Connect stays there. There is no public website
+for the user's guide.
 
 **Day-roll lock** still needs a night of all-green Daily, then a morning
 open on a new load, to confirm the pop-up stays quiet.

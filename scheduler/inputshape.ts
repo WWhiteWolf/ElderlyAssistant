@@ -334,6 +334,13 @@ export interface ShapedItem {
      * This marks a reminder that stands for a group rather than one item.
      */
     standsForGroupBit: boolean;
+    /**
+     * How many calendar days ahead the due date may be before it takes a slot.
+     *
+     * Set once by the translator from the table. The join reads this number
+     * and measures from the due date. Left off means this kind does not wait.
+     */
+    waitsUntilNearDays?: number;
 
     // ---- state: what has actually happened to this occurrence ----
 

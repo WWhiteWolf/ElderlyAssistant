@@ -104,6 +104,13 @@ export interface ScreenRules {
     exclusiveGroupBits?: readonly string[];
     /** The reminder stands for a group rather than one item. */
     standsForGroupBit: boolean;
+    /**
+     * How many calendar days ahead the date may be before it takes a slot.
+     *
+     * Left off, this kind does not wait. The join reads this number and
+     * measures from the due date, so a reminder-before can be armed.
+     */
+    waitsUntilNearDays?: number;
     /** Which registered button set the banner carries. */
     bannerButtonsCode?: BannerButtonsCode;
     /**
@@ -191,6 +198,9 @@ function translateOne(rules: ScreenRules, saved: ReminderItem): ShapedItem {
         canBePushedBackBit: rules.canBePushedBackBit,
         doneActionCode: rules.doneActionCode,
         standsForGroupBit: rules.standsForGroupBit,
+        ...(rules.waitsUntilNearDays !== undefined
+            ? { waitsUntilNearDays: rules.waitsUntilNearDays }
+            : {}),
 
         // ---- state: what has actually happened to this occurrence ----
 
@@ -361,6 +371,8 @@ const weeklyCadenceRules: ScreenRules = {
 };
 
 const datedCadenceRules: ScreenRules = {
+    repeatUnitCode: 'month',
+    repeatIntervalCount: 1,
     canBeDoneBit: true,
     canBePushedBackBit: true,
     doneActionCode: 'advanceDate',
@@ -369,8 +381,8 @@ const datedCadenceRules: ScreenRules = {
     keepsLeadChipsBit: false,
     exclusiveGroupBits: MONTHLY_WEEKDAY_EXCLUSIVE_GROUP,
     standsForGroupBit: false,
-    bannerTitleTextOf: (item) =>
-        item.kind === 'yearly' ? 'Yearly' : 'Monthly',
+    waitsUntilNearDays: 30,
+    bannerTitleTextOf: () => 'Monthly',
     bannerButtonsCode: 'cadenceactions',
     shiftedBannerButtonsCode: 'shifteddayactions',
     idOf: (item) => item.id,
@@ -388,8 +400,17 @@ const datedCadenceRules: ScreenRules = {
 
 const quarterlyCadenceRules: ScreenRules = {
     ...datedCadenceRules,
+    waitsUntilNearDays: 60,
     bannerTitleTextOf: () => 'Quarterly',
     quarterlyStepOf: (item) => quarterlyStepCodeOf(item.intervalDays),
+};
+
+const yearlyCadenceRules: ScreenRules = {
+    ...datedCadenceRules,
+    repeatUnitCode: 'year',
+    repeatIntervalCount: 1,
+    waitsUntilNearDays: 60,
+    bannerTitleTextOf: () => 'Yearly',
 };
 
 const appointmentsCadenceRules: ScreenRules = {
@@ -445,6 +466,8 @@ const appointmentsCadenceRules: ScreenRules = {
 };
 
 const birthdaysCadenceRules: ScreenRules = {
+    repeatUnitCode: 'year',
+    repeatIntervalCount: 1,
     canBeDoneBit: true,
     canBePushedBackBit: false,
     doneActionCode: 'advanceDate',
@@ -452,6 +475,7 @@ const birthdaysCadenceRules: ScreenRules = {
     timeWriteCode: 'ifTimeSet',
     keepsLeadChipsBit: true,
     standsForGroupBit: false,
+    waitsUntilNearDays: 60,
     bannerButtonsCode: 'appointmentsok',
     shiftedBannerButtonsCode: 'shifteddayactions',
     idOf: (item) => item.id,
@@ -523,7 +547,7 @@ const rulesByKind: Record<ReminderItem['kind'], ScreenRules> = {
     weekly: weeklyCadenceRules,
     monthly: datedCadenceRules,
     quarterly: quarterlyCadenceRules,
-    yearly: datedCadenceRules,
+    yearly: yearlyCadenceRules,
     appointments: appointmentsCadenceRules,
     birthdays: birthdaysCadenceRules,
     bucketlist: bucketlistCadenceRules,
@@ -565,7 +589,8 @@ function withSavedOptions(saved: ReminderItem, shaped: ShapedItem): ShapedItem {
     if (saved.holidayMove === 'before' || saved.holidayMove === 'after') {
         out = { ...out, holidayMoveCode: saved.holidayMove };
     }
-    if (saved.kind === 'monthly' || saved.kind === 'quarterly' || saved.kind === 'yearly' || saved.kind === 'birthdays') {
+    const repeatUnit = repeatUnitCodeOf(saved.kind);
+    if (repeatUnit === 'month' || repeatUnit === 'year') {
         out = withMonthlyRepeat(saved, out);
     }
     return out;
@@ -581,9 +606,9 @@ function withMonthlyRepeat(saved: ReminderItem, shaped: ShapedItem): ShapedItem 
     const group = exclusiveGroupBitsOf(saved.kind) ?? [];
     const thursday = group.includes('secondThursday') && secondThursdayComplete(saved);
     const wednesday = group.includes('wednesdayAfter') && wednesdayAfterComplete(saved);
+    const unit = repeatUnitCodeOf(saved.kind);
     const interval =
-        saved.kind === 'monthly' ? 1
-        : saved.kind === 'yearly' || saved.kind === 'birthdays' ? 1
+        unit === 'year' || saved.kind === 'monthly' ? 1
         : (typeof saved.intervalMonths === 'number' ? saved.intervalMonths : 3);
     if (thursday && wednesday) {
         // Both complete is not a case the group allows. Write neither.
@@ -591,7 +616,7 @@ function withMonthlyRepeat(saved: ReminderItem, shaped: ShapedItem): ShapedItem 
         return {
             ...shaped,
             repeatUnitCode: 'month',
-            repeatIntervalCount: saved.kind === 'yearly' ? 12 : interval,
+            repeatIntervalCount: unit === 'year' ? 12 : interval,
             repeatWeekdayList: [{
                 weekdayNumber: saved.ordinalWeekday,
                 weekdayOrdinalCount: saved.weekdayOrdinal,
@@ -601,15 +626,20 @@ function withMonthlyRepeat(saved: ReminderItem, shaped: ShapedItem): ShapedItem 
         return {
             ...shaped,
             repeatUnitCode: 'month',
-            repeatIntervalCount: saved.kind === 'yearly' ? 12 : interval,
+            repeatIntervalCount: unit === 'year' ? 12 : interval,
             repeatWeekdayList: [{ weekdayNumber: saved.afterWeekday }],
             repeatAfterDayCount: typeof saved.afterDayCount === 'number' ? saved.afterDayCount : 6,
         };
     }
-    if (saved.kind === 'yearly' || saved.kind === 'birthdays') {
+    if (unit === 'year') {
         return { ...shaped, repeatUnitCode: 'year', repeatIntervalCount: 1 };
     }
     return { ...shaped, repeatUnitCode: 'month', repeatIntervalCount: interval };
+}
+
+/** The unit this saved kind repeats in, from the translator's table. */
+export function repeatUnitCodeOf(kind: ReminderItem['kind']): RepeatUnitCode | undefined {
+    return rulesByKind[kind].repeatUnitCode;
 }
 
 /** What Done does for this saved kind, from the translator's table. */
@@ -630,6 +660,11 @@ export function timeWriteCodeOf(kind: ReminderItem['kind']): TimeWriteCode {
 /** True when Save keeps the reminders-before chips. */
 export function keepsLeadChipsOf(kind: ReminderItem['kind']): boolean {
     return rulesByKind[kind].keepsLeadChipsBit;
+}
+
+/** How many days ahead the date may be, from the translator's table. */
+export function waitsUntilNearDaysOf(kind: ReminderItem['kind']): number | undefined {
+    return rulesByKind[kind].waitsUntilNearDays;
 }
 
 /** True when this kind writes a Quarterly step. */

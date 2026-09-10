@@ -125,6 +125,13 @@ built. None of these is a job to do.
     builds from docs/designed-implementation.md and does not ask
     Patrick a design question. Home, Help, Calendar, Settings, Backup,
     Scheduled Reminders, Options, and Log are in that file.
+17. DATED ITEMS WAIT ABOUT A MONTH (Patrick, 2026-09-09). That wait is
+    a bit on the table. Monthly, Quarterly, Yearly, and Birthdays have
+    it on. Daily, Weekly, Appointments, and the rest have it off. The
+    join reads the bit. Depth stays one. Opening the app arms a waiting
+    item when it has come close enough. Several lead times on one item
+    also use that depth: only the soonest still ahead is armed. When it
+    has fired, the next run arms the next.
 
 
 WHAT IS DONE, NEWEST FIRST
@@ -133,6 +140,16 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+101. #100-new — A weekday monthly looks from the saved date, so Done
+    takes it off Daily. 351 tests. Not on the phone.
+
+100. #100-new — Yearly and Birthdays write year on the table. How near
+    is a number: Monthly thirty days; Quarterly, Yearly, and Birthdays
+    sixty days, from the date. 350 tests. Not on the phone.
+
+99. 2026-09-09 — month wait as a table bit; soonest lead only.
+    Build 78 on the phone. Scheduled Reminders down to 14. 347 tests.
 
 98. #100-new — Yearly, Quarterly, and Monthly Home badges no longer
     share a telescope. Yearly keeps it. Quarterly is a fallen leaf.

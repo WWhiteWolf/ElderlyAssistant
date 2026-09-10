@@ -2,6 +2,7 @@
 // misses the day-roll should write.
 
 import type { ReminderItem } from '../../modules/reminder-types.ts';
+import { advanceDatedItem } from '../../modules/advance-dated-item.ts';
 import { missesForRollover } from '../health.ts';
 import {
     clearStartingOccurrenceTicks,
@@ -86,6 +87,23 @@ export function runMissCandidateTests(): void {
         });
         assert(shownOnDate(monthly, THURSDAY), 'expected first Thursday on 3 September 2026');
         assert(!shownOnDate(monthly, WEDNESDAY), 'expected first Thursday off on Wednesday');
+    });
+
+    test('Done on a Wednesday-after-the-6th Monthly item takes it off Daily', () => {
+        const today = new Date(2026, 8, 9, 10, 0, 0, 0);
+        const monthly = item({
+            kind: 'monthly',
+            afterWeekday: 3,
+            afterDayCount: 6,
+            year: 2026,
+            month: 8,
+            day: 9,
+            hour: 8,
+            minute: 0,
+        });
+        assert(shownOnDate(monthly, today), 'expected Wednesday after the 6th on 9 September 2026');
+        const after = { ...advanceDatedItem(monthly, today.getTime()), completed: true };
+        assert(!shownOnDate(after, today), 'expected it off Daily once Done moved the date');
     });
 
     test('A Bucket List item is due on no day', () => {

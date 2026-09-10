@@ -11,6 +11,8 @@ import {
     timeWriteCodeOf,
     keepsLeadChipsOf,
     hasQuarterlyStepOf,
+    waitsUntilNearDaysOf,
+    repeatUnitCodeOf,
 } from '../translators/translate.ts';
 import { MONTHLY_WEEKDAY_EXCLUSIVE_GROUP, QUARTERLY_STEP_CODES } from '../inputshape.ts';
 import { momentsFor } from '../leadmoments.ts';
@@ -514,6 +516,47 @@ export function runTranslatorCadenceTests(): void {
                 'endItem',
             ],
             'each kind names what Done does, so the pages do not remember the kind',
+        );
+    });
+
+    test('Yearly and Birthdays write year on the table', () => {
+        assertSame(
+            [
+                repeatUnitCodeOf('yearly'),
+                repeatUnitCodeOf('birthdays'),
+                repeatUnitCodeOf('monthly'),
+                repeatUnitCodeOf('appointments'),
+            ],
+            ['year', 'year', 'month', undefined],
+            'the date-advance reads that word, so it does not remember Yearly or Birthdays',
+        );
+    });
+
+    test('How near is a number on the table', () => {
+        assertSame(
+            [
+                waitsUntilNearDaysOf('daily'),
+                waitsUntilNearDaysOf('weekly'),
+                waitsUntilNearDaysOf('oneTime'),
+                waitsUntilNearDaysOf('monthly'),
+                waitsUntilNearDaysOf('quarterly'),
+                waitsUntilNearDaysOf('yearly'),
+                waitsUntilNearDaysOf('birthdays'),
+                waitsUntilNearDaysOf('appointments'),
+                waitsUntilNearDaysOf('bucketlist'),
+            ],
+            [
+                undefined,
+                undefined,
+                undefined,
+                30,
+                60,
+                60,
+                60,
+                undefined,
+                undefined,
+            ],
+            'each kind names how far ahead, so the join does not remember the kind',
         );
     });
 

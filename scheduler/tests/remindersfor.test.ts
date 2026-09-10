@@ -330,8 +330,14 @@ export function runRemindersForTests(): void {
         );
     });
 
-    test('A Quarterly item arms the next three-month occurrence', () => {
-        const base = datedWanted('quarterly').find((r) => r.source === 'quarterly')!;
+    test('A Quarterly item more than two months away is not armed yet', () => {
+        const wanted = datedWanted('quarterly').filter((r) => r.source === 'quarterly');
+        assertSame(wanted.length, 0, 'November is more than sixty days from 25 August');
+    });
+
+    test('A Quarterly item arms when the next date is inside two months', () => {
+        const near = new Date(2026, 8, 20, 9, 0, 0, 0).getTime();
+        const base = datedWanted('quarterly', {}, near).find((r) => r.source === 'quarterly')!;
         assertSame(
             [base.key, base.trigger, base.title],
             [
@@ -339,28 +345,21 @@ export function runRemindersForTests(): void {
                 { kind: 'date', at: new Date(2026, 10, 14, 10, 45, 0, 0).getTime() },
                 'Quarterly',
             ],
-            'the one-list path carries the three-month cadence into the join',
+            'from 20 September the 14 November fire is inside two months',
         );
     });
 
-    test('A Quarterly 90-day item arms ninety days from the entered date', () => {
-        const base = datedWanted('quarterly', { intervalDays: 90 }).find((r) => r.source === 'quarterly')!;
-        assertSame(
-            [base.key, base.trigger],
-            [
-                'quarterly:d1:20261112',
-                { kind: 'date', at: new Date(2026, 10, 12, 10, 45, 0, 0).getTime() },
-            ],
-            '14 August plus ninety days is 12 November, not three calendar months',
-        );
+    test('A Quarterly 90-day item more than two months away is not armed yet', () => {
+        const wanted = datedWanted('quarterly', { intervalDays: 90 }).filter((r) => r.source === 'quarterly');
+        assertSame(wanted.length, 0, '12 November is more than sixty days from 25 August');
     });
 
     test('A Quarterly item keeps the saved month when that is not this month', () => {
-        const fromFebruary = new Date(2026, 1, 1, 9, 0, 0, 0).getTime();
+        const fromMarch = new Date(2026, 2, 20, 9, 0, 0, 0).getTime();
         const base = datedWanted(
             'quarterly',
             { year: 2026, month: 0, day: 15 },
-            fromFebruary,
+            fromMarch,
         ).find((r) => r.source === 'quarterly')!;
         assertSame(
             [base.key, base.trigger],
@@ -368,12 +367,18 @@ export function runRemindersForTests(): void {
                 'quarterly:d1:20260415',
                 { kind: 'date', at: new Date(2026, 3, 15, 10, 45, 0, 0).getTime() },
             ],
-            'from February a January quarterly arms April, not February or May',
+            'from 20 March a January quarterly arms April, not February or May',
         );
     });
 
-    test('A Yearly item arms the next yearly occurrence', () => {
-        const base = datedWanted('yearly').find((r) => r.source === 'yearly')!;
+    test('A Yearly item more than two months away is not armed yet', () => {
+        const wanted = datedWanted('yearly').filter((r) => r.source === 'yearly');
+        assertSame(wanted.length, 0, 'next August is more than sixty days from this August');
+    });
+
+    test('A Yearly item arms when the next date is inside two months', () => {
+        const near = new Date(2027, 5, 20, 9, 0, 0, 0).getTime();
+        const base = datedWanted('yearly', {}, near).find((r) => r.source === 'yearly')!;
         assertSame(
             [base.key, base.trigger, base.title],
             [
@@ -381,7 +386,64 @@ export function runRemindersForTests(): void {
                 { kind: 'date', at: new Date(2027, 7, 14, 10, 45, 0, 0).getTime() },
                 'Yearly',
             ],
-            'the one-list path carries the yearly cadence into the join',
+            'from 20 June the 14 August fire is inside two months',
+        );
+    });
+
+    test('A Birthday more than two months away is not armed yet', () => {
+        const wanted = wantedOf(reminderItem({
+            kind: 'birthdays',
+            id: 'b1',
+            label: 'Clara',
+            year: 2026,
+            month: 10,
+            day: 2,
+            hour: 10,
+            minute: 0,
+        }));
+        assertSame(wanted.length, 0, '2 November is more than sixty days from 25 August');
+    });
+
+    test('A Birthday arms when the next date is inside two months', () => {
+        const near = new Date(2026, 8, 10, 9, 0, 0, 0).getTime();
+        const wanted = wantedOf(reminderItem({
+            kind: 'birthdays',
+            id: 'b1',
+            label: 'Clara',
+            year: 2026,
+            month: 10,
+            day: 2,
+            hour: 10,
+            minute: 0,
+        }), near);
+        assertSame(wanted.length, 1, 'from 10 September the 2 November birthday is inside two months');
+        assertSame(wanted[0].source, 'birthdays', 'the birthday source stays in use');
+    });
+
+    test('A Birthday Month-before is armed when the date is inside two months', () => {
+        const wanted = wantedOf(reminderItem({
+            kind: 'birthdays',
+            id: 'b1',
+            label: 'Clara',
+            year: 2026,
+            month: 9,
+            day: 14,
+            hour: 10,
+            minute: 0,
+            reminders: [{
+                id: 'month',
+                amount: 30,
+                unit: 'days',
+                kind: 'clock',
+                daysBefore: 30,
+                timeOfDay: 'evening',
+            }],
+        }));
+        assertSame(wanted.length, 1, '14 October is fifty days from 25 August, inside two months');
+        assertSame(
+            wanted[0].trigger,
+            { kind: 'date', at: new Date(2026, 8, 14, 19, 30, 0, 0).getTime() },
+            'the Month chip is the soonest lead, thirty days before the birthday',
         );
     });
 
@@ -392,6 +454,18 @@ export function runRemindersForTests(): void {
         const delay = wanted.find((r) => r.source === 'monthlydelay')!;
         assertSame(delay.key, 'monthlydelay:d1:base', 'one name, so delaying twice moves it');
         assertSame(delay.trigger, { kind: 'date', at }, 'the delay fires at its own moment');
+    });
+
+    test('A delay on a far Yearly item still stands', () => {
+        const at = NOW + 60 * MINUTE;
+        const wanted = datedWanted('yearly', { snoozedUntil: at });
+        assertSame(
+            wanted.filter((r) => r.source === 'yearly').length,
+            0,
+            'the far yearly date does not take a slot',
+        );
+        const delay = wanted.find((r) => r.source === 'yearlydelay')!;
+        assertSame(delay.trigger, { kind: 'date', at }, 'the promised delay still fires');
     });
 
     // ---- Appointments, with several leads on one due moment ----
@@ -428,22 +502,16 @@ export function runRemindersForTests(): void {
     test('An appointment reminder fires that far before the due moment', () => {
         const wanted = appointmentWanted(appointment());
         const before = wanted.find((r) => r.key === 'appointments:t1:r1');
-        const atTime = wanted.find((r) => r.key === 'appointments:t1:base');
-        assertSame(wanted.length, 2, 'the set time and the before-chip both stand');
-        assert(before != null, 'the before-chip keeps its own id');
+        assertSame(wanted.length, 1, 'only the soonest lead is armed');
+        assert(before != null, 'the before-chip is sooner than the set time, so it is the one');
         assertSame(
             before!.trigger,
             { kind: 'date', at: new Date(2026, 5, 10, 13, 30, 0, 0).getTime() },
             'thirty minutes before two is half past one',
         );
-        assertSame(
-            atTime!.trigger,
-            { kind: 'date', at: new Date(2026, 5, 10, 14, 0, 0, 0).getTime() },
-            'the appointment time itself also fires',
-        );
     });
 
-    test('Two reminders on one appointment both stand', () => {
+    test('Only the soonest lead on an appointment is armed', () => {
         const wanted = appointmentWanted(appointment({
             reminders: [
                 appointmentReminder({ id: 'r1', amount: 30, unit: 'minutes' }),
@@ -452,8 +520,23 @@ export function runRemindersForTests(): void {
         }));
         assertSame(
             wanted.map((r) => r.key),
-            ['appointments:t1:base', 'appointments:t1:r1', 'appointments:t1:r2'],
-            'depth does not trim lead times, and the set time is named base',
+            ['appointments:t1:r2'],
+            'one day before is sooner than thirty minutes before, so it is the one',
+        );
+    });
+
+    test('After the soonest lead has gone, the next one arms', () => {
+        const afterDayBefore = new Date(2026, 5, 9, 15, 0, 0, 0).getTime();
+        const wanted = appointmentWanted(appointment({
+            reminders: [
+                appointmentReminder({ id: 'r1', amount: 30, unit: 'minutes' }),
+                appointmentReminder({ id: 'r2', amount: 1, unit: 'days' }),
+            ],
+        }), afterDayBefore);
+        assertSame(
+            wanted.map((r) => r.key),
+            ['appointments:t1:r1'],
+            'the day-before has fired, so thirty minutes before is next',
         );
     });
 
@@ -465,6 +548,21 @@ export function runRemindersForTests(): void {
             wanted[0].trigger,
             { kind: 'date', at: new Date(2026, 5, 10, 14, 0, 0, 0).getTime() },
             'two o\'clock on the appointment day',
+        );
+    });
+
+    test('An appointment more than a month away still arms', () => {
+        const wanted = appointmentWanted(appointment({
+            year: 2026,
+            month: 7,
+            day: 10,
+            reminders: [],
+        }));
+        assertSame(wanted.length, 1, 'appointments do not wait for the month window');
+        assertSame(
+            wanted[0].trigger,
+            { kind: 'date', at: new Date(2026, 7, 10, 14, 0, 0, 0).getTime() },
+            '10 August from 1 June is still armed',
         );
     });
 

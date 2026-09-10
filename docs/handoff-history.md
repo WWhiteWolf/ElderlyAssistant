@@ -17,6 +17,54 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #100-new (2026-09-09): year on the table; how near is a number
+
+**The rest of this sitting, after the badges and after Build 78.**
+
+**Year on the table.** Yearly and Birthdays write year. Done reads that
+word. It does not ask whether the kind is Yearly or Birthdays. How long
+the tick reads Done is the next due date, not a Birthday rule. The extra
+Birthday sentence came out of the design.
+
+**How near.** A Birthday Month-before was missing the thirty-day wait.
+How far ahead is now a number on the table, measured from the due date.
+Monthly is thirty days. Quarterly, Yearly, and Birthdays are sixty days.
+The join reads the number. It does not list kinds.
+
+**Daily Done.** A plain monthly left Daily after Done. A
+Wednesday-after-the-6th monthly stayed, still ticked on Monthly. The
+weekday occurrence looked from today, not from the saved date. It now
+looks from the saved date, the same as a numbered-day monthly. Done
+moving the date takes it off Daily. Not a Daily special case.
+
+351 tests passed. This is in the project, not on Build 78.
+
+## 2026-09-09: month wait bit, soonest lead, Build 78
+
+**This sitting had no chain number.** The next session can name it.
+
+**Build 78 is on the phone.** Scheduled Reminders came down to 14.
+
+**The month wait.** After restore, Later looked flooded. Restore was
+not putting 52 weeks or 12 months of one item on the phone. It was
+arming every item's next fire at once, including birthdays months
+away, until Apple's 64-reminder ceiling cut off at about 56. Monthly,
+Quarterly, Yearly, and Birthdays now wait until the next fire is
+within thirty days. That wait is `waitsUntilNearBit` on the translator
+table. Daily, Weekly, Appointments, and the rest have it off. The join
+reads the bit. It does not list kinds.
+
+**The soonest lead.** Appointment "reminders before" were all on the
+phone at once. Depth of one now covers those times too: only the
+soonest still ahead is armed. When it has fired, the next run arms
+the next.
+
+**Birthday Done.** Unchanged. Done is advanceDate. The tick stays
+until the morning of the next birthday, so it can read Done for about
+a year.
+
+347 tests passed.
+
 ## #100-new (2026-09-09): duplicate Home badges split
 
 **The goal was to change the duplicate Home page badge pictures

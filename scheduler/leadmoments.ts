@@ -285,9 +285,12 @@ function nextMonthlyByWeekday(
     }
     const list = item.repeatWeekdayList;
     const step = intervalOf(item);
-    const start = calendar.partsOf(now);
-    let year = start.year;
-    let month = start.month;
+    // The saved date is the seed, the same as a numbered-day monthly. Done
+    // moves that date, so the next occurrence is next month's weekday, not
+    // today's. A missing date still starts from now.
+    const seed = calendar.partsOf(item.dueMoment !== undefined ? item.dueMoment : now);
+    let year = seed.year;
+    let month = seed.month;
     for (let n = 0; n < 48; n++) {
         const candidates: BaseMoment[] = [];
         for (const weekday of list) {

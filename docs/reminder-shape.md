@@ -69,7 +69,13 @@ scheduler can see how full the phone is. The budget is shared, so no
 single item can decide its own share of it.
 
 The two run in that order: first what is still wanted, then how deep to
-go with what is left.
+go with what is left. Depth is one. Waiting until the next fire is near
+is a bit on the table, on for Monthly, Quarterly, Yearly, and Birthdays,
+and off for Daily, Weekly, Appointments, and the rest. The join reads
+that bit. Opening the app arms a waiting item when it has come close
+enough. Several lead times on one item also use that depth: only the
+soonest still ahead is armed. When it has fired, the next run arms the
+next.
 
 ## What each store holds
 

@@ -39,4 +39,25 @@ export function runAdvanceDatedTests(): void {
             'March has a 31st, so that is the next date',
         );
     });
+
+    test('Done on a birthday moves the date a year', () => {
+        const next = advanceDatedItem(
+            {
+                id: 'b1',
+                kind: 'birthdays',
+                label: 'Pat',
+                year: 2026,
+                month: 5,
+                day: 10,
+                hour: 12,
+                minute: 0,
+            },
+            new Date(2026, 5, 10, 20, 0, 0, 0).getTime(),
+        );
+        assertSame(
+            [next.year, next.month, next.day],
+            [2027, 5, 10],
+            'Birthdays write year on the table, so Done steps a year',
+        );
+    });
 }

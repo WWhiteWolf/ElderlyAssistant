@@ -1,9 +1,11 @@
 // The join: shaped items become the reminders the phone should hold.
 //
 // The translator says what an item is. The two blocks say whether it is still
-// wanted and how many occurrences to arm. Lead moments turn each lead time
-// into a clock time. This file is the last step: it writes those answers as
-// WantedReminder records, which is the shape the reconcile already speaks.
+// wanted and how many occurrences to arm. A table number says how many days
+// ahead a waiting kind looks, measured from the due date. Lead moments turn
+// each lead time into a clock time. This file is the last step: it writes those
+// answers as WantedReminder records, which is the shape the reconcile already
+// speaks.
 //
 // Nothing here goes by page. A push-back's source name stays tied to the
 // current source of the saved kind, so a tapped banner still finds its page.
@@ -20,6 +22,17 @@ import type { ShapedItem, SourceScreenCode } from './inputshape.ts';
 import { makeKey } from './types.ts';
 import type { WantedReminder } from './types.ts';
 import { dayStamp, sameDay } from './readers/occurrences.ts';
+
+/**
+ * How near a waiting item's next fire must be, in calendar days.
+ *
+ * Who waits, and how many days, is on the table, not a list of kinds here.
+ */
+function isNearEnough(at: number, now: number, days: number): boolean {
+    const limit = new Date(now);
+    limit.setDate(limit.getDate() + days);
+    return at <= limit.getTime();
+}
 
 /**
  * Every reminder these shaped items call for, in the order the items were
@@ -56,17 +69,22 @@ export function remindersFor(
         }
 
         if (item.repeatUnitCode === undefined) {
-            // Depth is how many occurrences to arm, not how many lead times
-            // one occurrence carries. An appointment's several reminders all
-            // belong to the one appointment.
+            // Depth is one reminder, including among an appointment's
+            // several lead times. The soonest still ahead stands. When it
+            // has fired, the next run arms the next.
             if (answer.dropsThisOccurrenceBit) {
                 continue;
             }
+            const leads: { at: number; part: string }[] = [];
             for (const lead of item.leadTimeList) {
                 const ats = momentsFor({ ...item, leadTimeList: [lead] }, now, clockTimes);
                 for (const at of ats) {
-                    wanted.push(baseReminder(item, at, lead.leadPartText ?? 'base'));
+                    leads.push({ at, part: lead.leadPartText ?? 'base' });
                 }
+            }
+            leads.sort((a, b) => a.at - b.at);
+            for (const one of leads.slice(0, armDepthFor())) {
+                wanted.push(baseReminder(item, one.at, one.part));
             }
             continue;
         }
@@ -86,11 +104,19 @@ export function remindersFor(
             const today = new Date(now);
             moments = moments.filter((at) => !sameDay(new Date(at), today));
         }
+        moments.sort((a, b) => a - b);
         moments = moments.slice(0, armDepthFor());
 
         const base = baseMoment(item, from);
         const shifted = base !== null && base.shiftedForMissingDayBit;
         for (const at of moments) {
+            const nearDays = item.waitsUntilNearDays;
+            if (nearDays !== undefined) {
+                const due = base !== null ? base.moment : at;
+                if (!isNearEnough(due, now, nearDays)) {
+                    continue;
+                }
+            }
             wanted.push(baseReminder(item, at, undefined, shifted));
         }
     }

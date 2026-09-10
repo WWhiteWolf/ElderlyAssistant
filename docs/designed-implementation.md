@@ -95,7 +95,8 @@ them, or is left off when it does not belong. The live sets in
 - **Which kind the item is** — daily, oneTime, weekly, monthly,
   quarterly, yearly, appointments, birthdays, bucketlist.
 - **The unit it repeats in** — day, week, month, year. Left off, it is a
-  one-off.
+  one-off. Yearly and Birthdays write year on the translator's table.
+  The date-advance reads that word.
 - **Which banner button set it carries** — routineactions,
   cadenceactions, appointmentsok, shifteddayactions.
 - **What Done does** — thisCycle, advanceDate, endItem. This code is
@@ -184,13 +185,26 @@ Done is a code, `doneActionCode`. The three words are:
   while the tick is showing is un-check: this cycle was not done. The
   tick comes off, and the saved date is the cycle that had been due, not
   the next one. It is not Done for the newly armed cycle. Monthly,
-  Quarterly, Yearly, and Birthdays.
+  Quarterly, Yearly, and Birthdays. Yearly and Birthdays write year on
+  the table. The date-advance reads that word.
 - **endItem** — the item is finished. It stays on its page. It no
   longer fires. Delete is how you get rid of it. Appointments and
   Bucket List. They are not the dated tick.
 
 Skip is not Done. Skip drops this cycle and arms the next. A one-off
 has no next cycle, so Skip does not apply.
+
+## How far ahead to arm
+
+Depth is one. How far ahead a waiting kind looks is a number on the
+translator's table. Monthly is thirty days. Quarterly, Yearly, and
+Birthdays are sixty days, so a Month-before reminder can be armed.
+The join measures from the due date. Daily, Weekly, Appointments, and
+the rest do not wait. Several lead times on one item also use that
+depth: only the soonest still ahead is armed. When it has fired, the
+next run arms the next. The form can still have any and all Reminders
+before chips on at once. That is what is set, not how many sit on the
+phone.
 
 ## Each kind
 
@@ -225,7 +239,9 @@ the moment itself.
 advanceDate. A 31st stays the 31st. A month with no such day uses the
 last day that exists for that month only. It can be pushed back. Banner
 set cadenceactions: Done, Delay 1 Day / 1 Week / 1 Month. A missing day
-uses shifteddayactions: Then, Next Day. Speaks at the moment itself.
+uses shifteddayactions: Then, Next Day. Speaks at the moment itself. A
+second Thursday or Wednesday after the 6th looks from the saved date,
+the same as a numbered day. Done moving the date takes it off Daily.
 
 **quarterly** — page Quarterly. Repeats every three months when the
 step is none, or every 30, 60, or 90 days when that chip is set. Done
@@ -241,17 +257,18 @@ advanceDate. It can be pushed back. Banner set cadenceactions.
 does not offer to take the date off. Things with no date belong on
 Bucket List. Time is optional. After a time is set, there is a way back
 to none. Done is endItem. It cannot be pushed back. Banner set
-appointmentsok: OK only, which closes without opening the app. Speaks
-at the set time, and at any Reminders before chips. Any and all of
-those chips can be on at once. Save does not ask again when none of
-them is on. The set time still speaks. Morning of is not the set time.
+appointmentsok: OK only, which closes without opening the app. The form
+can have any and all Reminders before chips on at once. Save does not
+ask again when none of them is on. Morning of is not the set time. The
+phone holds only the soonest of those times still ahead.
 
 **birthdays** — page Birthdays. Own kind. A copy of Appointments on the
 screen, and a yearly reminder on the one list. Date required. Time is
 optional. After a time is set, there is a way back to none. Done is
 advanceDate. It cannot be pushed back. Banner set appointmentsok. Same
-Reminders before chips as Appointments, any and all on at once. Save
-does not ask again when none of them is on. An item on Birthdays is not
+Reminders before chips as Appointments. The form can have any and all
+on at once. The phone holds only the soonest still ahead. Save does
+not ask again when none of them is on. An item on Birthdays is not
 also on Appointments or Yearly.
 
 **bucketlist** — page Bucket List. No date and no time. Done is

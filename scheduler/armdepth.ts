@@ -16,13 +16,11 @@
 // through the join.
 
 /**
- * How many occurrences of an item to arm at once.
+ * How many reminders of one item to arm at once.
  *
- * Not this block's job: trimming to fit the phone's sixty-four places. That
- * lives in the reconcile and stays there, where the whole set can be seen at
- * once. It trims the furthest away first, which is self-healing, because the
- * thing dropped always has the most time left for a run to happen before it
- * matters.
+ * One stands. For an item with several lead times, that one is the soonest
+ * still ahead. Opening the app arms the next. Not this block's job: trimming
+ * to fit the phone's sixty-four places. That lives in the reconcile.
  */
 export function armDepthFor(): number {
     // One reminder stands, and opening the app arms the next.
