@@ -17,6 +17,19 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #104-new (2026-09-10): User's Guide on Settings; Help words in Help
+
+**Settings in the Guide.** Written with Patrick, one piece at a time.
+A list, then each piece explained below. Light or Dark, name, the
+three times, Scheduled Reminders, Backup, this Guide, Feedback, and
+Reset All Data. Backup is the reminders, not the Settings choices.
+The phone can hold 64; this app leaves 8 free, so it keeps to 56.
+
+**On the app.** The longer Guide is on the Settings User's Guide page
+and scrolls. Help uses the new pop-up words. First-open still has the
+four short paragraphs plus the fifth. Checked on the simulator. Looks
+good. He will build it and test on the phone. Not on 79.
+
 ## #103-new (2026-09-10): first-open; User's Guide and Help words
 
 **First-open.** The four short paragraphs stay. A fifth suggests

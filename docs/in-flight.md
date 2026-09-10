@@ -4,20 +4,19 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-10, at #103-new.
+Last written: 2026-09-10, at #104-new.
 
 ## Read this first
 
 - Build **79** is on the phone. Scheduled Reminders is down to 14.
-- **#103-new** first-open fifth paragraph and no scroll are in the project,
-  not on 79. The longer User's Guide and Help pop-up words are in
-  `docs/user-guide.md`. Almost complete. Not in the app.
+- **#104-new** put the longer User's Guide on the Settings page, and the
+  Help pop-up words into Help. Checked on the simulator. He will build
+  it and test on the phone. Not on 79.
 - The designed implementation is the guide.
 
 ## What is in
 
-Put `docs/user-guide.md` on the Settings User's Guide page, and the Help
-pop-up words into Help. The Guide page needs bullets for Help.
+Patrick is building #104-new to the phone to test the User's Guide and Help.
 
 ## What is next
 

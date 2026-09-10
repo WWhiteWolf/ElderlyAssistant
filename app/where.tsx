@@ -43,28 +43,28 @@ export default function WhereScreen() {
     if (stage === 'repeat') {
         title = 'Does this item repeat?';
         choices = [
-            { label: 'Repeats', onPress: () => setStage('every') },
-            { label: 'Does not', onPress: () => setStage('today') },
+            { label: 'Yes', onPress: () => setStage('every') },
+            { label: 'No', onPress: () => setStage('today') },
         ];
     } else if (stage === 'every') {
-        title = 'How often does this item occur?';
+        title = 'How often does this come round?';
         choices = [
             { label: 'Every day', onPress: () => openForm('daily') },
-            { label: 'Week', onPress: () => openForm('weekly') },
-            { label: 'Month', onPress: () => openForm('monthly') },
-            { label: 'Quarter', onPress: () => openForm('quarterly') },
-            { label: 'Year', onPress: () => openForm('yearly') },
-            { label: 'Birthday', onPress: () => openForm('birthdays') },
+            { label: 'Weekly', onPress: () => openForm('weekly') },
+            { label: 'Monthly', onPress: () => openForm('monthly') },
+            { label: 'Quarterly', onPress: () => openForm('quarterly') },
+            { label: 'Yearly', onPress: () => openForm('yearly') },
+            { label: 'For a birthday reminder', onPress: () => openForm('birthdays') },
         ];
     } else if (stage === 'today') {
-        title = 'Is that for today?';
+        title = 'Is this for today?';
         choices = [
             { label: 'Yes', onPress: () => openForm('oneTime') },
             { label: 'No', onPress: () => setStage('kind') },
         ];
     } else {
         title =
-            'Is this an occurrence that has a specific time and date, like an appointment? Or is it the rare item with no deadline or due date, like a Bucket List desire?';
+            "If it has a date and time, like a doctor's visit, that is Appointment. If it is something you want to do someday, with no date, that is Bucket List.";
         choices = [
             { label: 'Appointment', onPress: () => openForm('appointments') },
             { label: 'Bucket List', onPress: () => openForm('bucketlist') },

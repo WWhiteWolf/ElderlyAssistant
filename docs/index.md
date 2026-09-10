@@ -16,7 +16,7 @@ just because it is listed.
 ## The desk — in `docs`
 
 - **`handoff.md`** — the opening read. Where the work stands and what is open.
-- **`user-guide.md`** — #103-new words for the Settings User's Guide and the Help pop-ups. Almost complete. Not yet in the app.
+- **`user-guide.md`** — #104-new words for the Settings User's Guide and the Help pop-ups. On the Settings page and in Help.
 - **`in-flight.md`** — this session's desk. Replaced every time, never added to.
 - **`pending.txt`** — Patrick's list, and the source of the Word copy. Brought up to date at every update.
 - **`pending.docx`** — the copy Patrick reads. Generated from the txt, never hand-edited.
@@ -29,7 +29,7 @@ just because it is listed.
 ## Live design — in `docs`
 
 - **`reminder-shape.md`** — the live engine design. Wins where others disagree.
-- **`designed-implementation.md`** — the whole-app guide. A sitting builds from it and does not ask Patrick a design question. Filled at #101-new. Home, Help, Calendar, Settings, Backup, Scheduled Reminders, Options, and Log are in it. Banner housing is built. Siri is out of sight. User's Guide words are in; first load on Home shows those four, then a fifth that suggests opening the Guide. The longer Guide draft is `docs/user-guide.md`.
+- **`designed-implementation.md`** — the whole-app guide. A sitting builds from it and does not ask Patrick a design question. Filled at #101-new. Home, Help, Calendar, Settings, Backup, Scheduled Reminders, Options, and Log are in it. Banner housing is built. Siri is out of sight. User's Guide words are in; first load on Home shows those four, then a fifth that suggests opening the Guide. The longer Guide is on the Settings page (#104-new). Help pop-up words are in Help.
 - **`spec-pages.md`** — the live spec for the reminder pages.
 
 ## History still in `docs`

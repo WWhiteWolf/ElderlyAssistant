@@ -19,15 +19,15 @@ Month-before reminder can be armed. Several lead times on one item arm
 only the soonest still ahead. **#100-new** split the Home badges:
 Yearly keeps the telescope, Quarterly a fallen leaf, Monthly a
 first-quarter moon. A weekday monthly looks from the saved date, so
-Done takes it off Daily. Last session was committed. The **#99-new**
-review is done (Patrick, #101-new). The designed implementation is the
-guide. Calendar month arrows sit by the month name. Daily every-day New
-has room between Name, time, and Note. **#102-new** is in the project,
-not on 79: time spinner Cancel and Done, muted offset chips, Birthday
-on Calendar and Daily, and Birthdate on the form. **#103-new** first-open
-has the fifth paragraph and no scroll. The longer User's Guide and the
-Help pop-up words are in `docs/user-guide.md`, almost complete, not in
-the app.
+Done takes it off Daily. The **#99-new** review is done (Patrick,
+#101-new). The designed implementation is the guide. Calendar month
+arrows sit by the month name. Daily every-day New has room between
+Name, time, and Note. **#102-new** is in the project, not on 79: time
+spinner Cancel and Done, muted offset chips, Birthday on Calendar and
+Daily, and Birthdate on the form. **#103-new** first-open has the fifth
+paragraph and no scroll. **#104-new** put the longer User's Guide on
+the Settings page, and the Help pop-up words into Help. Checked on the
+simulator. He will build it and test on the phone. Not on 79.
 
 ## Standing rulings
 
@@ -135,12 +135,12 @@ These are Patrick's and they govern the work rather than describing it.
   item repeat? **Yes** / **No**. Step 2 is: How often does this come
   round? **Every day**, **Weekly**, **Monthly**, **Quarterly**,
   **Yearly**, **For a birthday reminder**. Birthday still opens
-  Birthdays’ New, not Yearly. Does not asks: Is this for today? Yes is
+  Birthdays’ New, not Yearly. No asks: Is this for today? Yes is
   One Time for today. No: If it has a date and time, like a doctor's
   visit, that is Appointment. If it is something you want to do
   someday, with no date, that is Bucket List. Cancel on steps 2 and 3
   goes back one step; step 1 Cancel closes. Words are in
-  `docs/user-guide.md`. Not yet in the app.
+  `docs/user-guide.md` and in Help (#104-new).
 - **Yearly, Quarterly, and Monthly Home badges** (Patrick, #100-new).
   Yearly keeps the telescope. Quarterly is a fallen leaf. Monthly is a
   first-quarter moon. They had all three used the telescope. Checked on
@@ -171,14 +171,15 @@ These are Patrick's and they govern the work rather than describing it.
   day still uses the last day that exists for that month. Then and
   Next Day are the missing-day banner, not an Options choice. Done
   and Save do not turn the reminder into a 28th.
-- **The user's guide is brief, in the app, and a tile on Settings**
+- **The user's guide is in the app, and a tile on Settings**
   (Patrick, #97-new). A first-load popup on Home (Patrick, #98-new)
   shows those four paragraphs, then a fifth that suggests opening
   the User's Guide first (Patrick, #103-new). Got it remembers. Reset
-  All Data brings it back. It does not go on a website. The app is
-  self-contained. A person's data stays on the phone. The app does
-  not reach out to read or write from the outside world. What is
-  already in App Store Connect stays there.
+  All Data brings it back. The Settings page has the longer Guide
+  (#104-new). It does not go on a website. The app is self-contained.
+  A person's data stays on the phone. The app does not reach out to
+  read or write from the outside world. What is already in App Store
+  Connect stays there.
 - **Feedback is its own tile on Settings** (Patrick, #97-new). It is
   the same popup Mystery Clues Tracker uses. Send opens the phone's
   Mail. The person reaches out; the app does not send the mail.
@@ -218,12 +219,11 @@ on that shared page. The log is not on the list. `app/daily.tsx` is
 the same thin route as Weekly.
 
 The spec is `docs/designed-implementation.md`. The testing file is
-Pending 1. The user's guide is a tile on Settings. That page still has
-the four paragraphs. First load on Home shows those four, then a fifth
-that suggests opening the User's Guide. The longer Guide, and the Help
-pop-up words, are in `docs/user-guide.md`. Put those in the app. The
-Guide page will need bullets for Help. Patrick said the Guide is
-almost complete.
+Pending 1. The user's guide is a tile on Settings. That page has the
+longer Guide (#104-new). First load on Home shows the four short
+paragraphs, then a fifth that suggests opening the User's Guide. Help
+uses the new pop-up words. Words are in `docs/user-guide.md` and in
+the app. Checked on the simulator. He will build it to the phone.
 
 Testers are on TestFlight External. The phone load is **79**. The App
 Store heading is Waiting for Review on **72**. He is not aiming to go

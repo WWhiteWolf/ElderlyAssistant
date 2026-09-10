@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { HeaderButton, PageFrame } from '../components/PageFrame';
 import { PAGE_LABELS } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
-import { USER_GUIDE_PARAGRAPHS } from '../constants/user-guide';
+import { USER_GUIDE_BLOCKS } from '../constants/user-guide';
 
 export default function UserGuideScreen() {
     const router = useRouter();
@@ -25,9 +25,43 @@ export default function UserGuideScreen() {
                 }
             >
                 <ScrollView contentContainerStyle={styles.body}>
-                    {USER_GUIDE_PARAGRAPHS.map((one) => (
-                        <Text key={one} style={styles.paragraph}>{one}</Text>
-                    ))}
+                    {USER_GUIDE_BLOCKS.map((block, index) => {
+                        if (block.type === 'heading') {
+                            return (
+                                <Text key={index} style={styles.heading}>{block.text}</Text>
+                            );
+                        }
+                        if (block.type === 'paragraph') {
+                            return (
+                                <Text key={index} style={styles.paragraph}>{block.text}</Text>
+                            );
+                        }
+                        if (block.type === 'lines') {
+                            return (
+                                <View key={index} style={styles.lines}>
+                                    {block.items.map((one) => (
+                                        <Text key={one} style={styles.line}>{one}</Text>
+                                    ))}
+                                </View>
+                            );
+                        }
+                        return (
+                            <View key={index} style={styles.bullets}>
+                                {block.items.map((one, itemIndex) => (
+                                    <View
+                                        key={`${one.text}-${itemIndex}`}
+                                        style={[
+                                            styles.bulletRow,
+                                            { paddingLeft: 8 + (one.level ?? 0) * 20 },
+                                        ]}
+                                    >
+                                        <Text style={styles.bulletMark}>•</Text>
+                                        <Text style={styles.bulletText}>{one.text}</Text>
+                                    </View>
+                                ))}
+                            </View>
+                        );
+                    })}
                 </ScrollView>
             </PageFrame>
         </View>
@@ -55,11 +89,43 @@ const makeStyles = (t: Theme) =>
             textAlign: 'center',
         },
         headerBtnText: { color: t.headerButton, fontSize: 13, fontWeight: '600' },
-        body: { padding: 20 },
+        body: { padding: 20, paddingBottom: 40 },
+        heading: {
+            fontSize: 20,
+            fontWeight: '600',
+            color: t.cardTitle,
+            marginTop: 8,
+            marginBottom: 10,
+        },
         paragraph: {
             fontSize: 17,
             color: t.bodyText,
             lineHeight: 24,
             marginBottom: 16,
+        },
+        lines: { marginBottom: 16, paddingLeft: 12 },
+        line: {
+            fontSize: 17,
+            color: t.bodyText,
+            lineHeight: 24,
+            marginBottom: 4,
+        },
+        bullets: { marginBottom: 16 },
+        bulletRow: {
+            flexDirection: 'row',
+            alignItems: 'flex-start',
+            marginBottom: 6,
+        },
+        bulletMark: {
+            fontSize: 17,
+            color: t.bodyText,
+            lineHeight: 24,
+            marginRight: 8,
+        },
+        bulletText: {
+            flex: 1,
+            fontSize: 17,
+            color: t.bodyText,
+            lineHeight: 24,
         },
     });

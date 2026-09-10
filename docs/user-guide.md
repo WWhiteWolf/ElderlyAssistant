@@ -1,7 +1,7 @@
 # User's Guide — words for the app
 
-From #103-new. Almost complete. Not yet on the Settings page.
-Help pop-up words are at the end. Those are not yet in Help.
+From #103-new. Settings section from #104-new. On the Settings
+User's Guide page. Help pop-up words are at the end, and in Help.
 
 The first-open popup on Home already has the four short paragraphs
 plus a fifth that suggests opening this Guide. That popup is in the
@@ -127,11 +127,95 @@ evening time.
 A One Time for today has a shorter list: thirty minutes, one hour,
 two hours, and Time of. Time of is the time you picked.
 
+## Settings
+
+Settings is reached by tapping the gear in the header of Home.
+
+- Settings is where you choose Light or Dark for the app, and whether
+  the colors match the phone or not.
+- You enter your name.
+- You set Morning Reminder Time, Midday Reminder Time, and Evening
+  Reminder Time.
+- Scheduled Reminders, when tapped, shows the reminders currently
+  armed on your phone.
+- Backup & Restore is for saving and retrieving your reminders.
+- This User's Guide is here.
+- Feedback is for emailing the developer with comments, suggestions,
+  or problems you want to pass on.
+- Reset All Data clears everything you have entered in this app.
+
+Each of these is explained below.
+
+You choose Light or Dark for the app, whichever is easier on your
+eyes.
+
+The pop-ups can follow that same choice, or they can follow the
+phone.
+
+You enter your name. Tap to set it, type it, and Save. Home will
+greet you by name.
+
+You set three times:
+
+Morning Reminder Time
+
+Midday Reminder Time
+
+Evening Reminder Time
+
+Tap one to change it. Reminders that come before an appointment use
+these clocks. That is explained earlier in this Guide.
+
+Scheduled Reminders is a list of what is currently armed on your
+phone. Tap it to see that list.
+
+- The phone can hold 64 reminders.
+- This app leaves 8 free, so it keeps to 56.
+
+You can use it to help keep the number of your reminders within that
+maximum, so that none will be dropped.
+
+Backup & Restore is for saving a copy of the reminders from your
+phone, and for putting them back on your phone. Export Backup saves
+a file you can keep.
+
+- Replace from Backup puts the backup's reminders in place of what
+  is here.
+- Merge from Backup keeps what is here and adds from the backup only
+  what is not already here.
+
+The Settings choices stay as they are on this phone. The app asks
+you to confirm before it changes anything.
+
+User's Guide is this Guide. Tap it, and it will help you to
+understand this app.
+
+Feedback is for comments, suggestions, or problems you want to pass
+on to the developer. Tap it, answer a few questions, and add
+comments or a question if you care to, then tap the Send Feedback
+button. It uses the phone's Mail to open a pre-addressed email to
+the developer, and sends it.
+
+Reset All Data is in the header of Settings. You will see a red
+warning mark, then Reset, then All, all in red.
+
+If you tap it, you will be asked more than once, so it is hard to do
+by accident.
+
+- Cancel leaves everything as it is.
+- Continue goes on. The phone asks for Face ID or your passcode,
+  just to be sure it is you.
+- Then it asks Are you sure?
+- Reset All Data clears everything you have in this app, and takes
+  you Home.
+
+The welcome words come back the next time you open the app.
+
 ---
 
 ## Help pop-ups
 
-Not yet in `app/where.tsx`. Same four steps. New words:
+In `app/where.tsx`. Same four steps. Words:
 
 Does this item repeat?
 

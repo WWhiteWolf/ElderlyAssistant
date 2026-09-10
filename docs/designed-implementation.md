@@ -441,8 +441,8 @@ No asks: Is this for today? Yes opens Daily’s one-shot, `oneTime`.
 No says: If it has a date and time, like a doctor's visit, that is
 Appointment. If it is something you want to do someday, with no date,
 that is Bucket List. The choices are Appointment and Bucket List.
-Cancel goes back one step. Those words are in `docs/user-guide.md`.
-They are not yet in `app/where.tsx`.
+Cancel goes back one step. Those words are in `docs/user-guide.md`
+and in `app/where.tsx` (#104-new).
 
 ## Calendar
 
@@ -481,11 +481,10 @@ Before, and Night Before. A tap opens the time with the same
 date-and-time control as the rest of the app.
 
 Scheduled Reminders and Backup & Restore are doors off this page. They
-are not this page. User's Guide is a tile on this page. A tap opens a
-brief guide that lives in the app. The page still has the four
-paragraphs. The longer words are in `docs/user-guide.md`, not yet on
-this page. The first-load popup on Home has those four and then a
-fifth that suggests opening this page. It does not go to a website.
+are not this page. User's Guide is a tile on this page. A tap opens the
+longer Guide that lives in the app (#104-new). The first-load popup on
+Home has the four short paragraphs and then a fifth that suggests
+opening this page. It does not go to a website.
 Feedback is its own tile on this page. It opens the same popup Mystery
 Clues Tracker uses. Send opens the phone's Mail. The person reaches
 out; the app does not send the mail. Reset All Data sits in the Settings
