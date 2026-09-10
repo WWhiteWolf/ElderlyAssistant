@@ -30,6 +30,7 @@ import {
     type QuarterlyStepCode,
 } from '../modules/reminder-items';
 import { assembleFormItem } from '../modules/assemble-form-item';
+import { dateLabelTextOf, timeWriteCodeOf } from '../scheduler/translators/translate';
 import {
     optionCasesForKind,
     emptyOptionSettings,
@@ -177,6 +178,7 @@ export default function ItemEditScreen() {
     const [pendingDate, setPendingDate] = useState<Date>(() => new Date(new Date().setHours(12, 0, 0, 0)));
     const [timeSet, setTimeSet] = useState(false);
     const [timeVia24h, setTimeVia24h] = useState(false);
+    const [openDaily12h, setOpenDaily12h] = useState(false);
     const [dateTimeValid, setDateTimeValid] = useState(true);
     const [reminders, setReminders] = useState<LeadReminder[]>([]);
     const [existing, setExisting] = useState<ReminderItem | null>(null);
@@ -194,6 +196,7 @@ export default function ItemEditScreen() {
     const applied = appliedOptionRows(optionSettings).filter((one) =>
         kindOptions.some((c) => c.id === one.id),
     );
+    const offsetChipsAsleep = timeWriteCodeOf(editKind) === 'ifTimeSet' && !timeSet;
 
     const goBack = () => {
         if (fromHelper) {
@@ -448,7 +451,7 @@ export default function ItemEditScreen() {
             <ScrollView style={styles.formScroll} contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">
                 <Text style={styles.inputLabel}>Name</Text>
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, editKind === 'daily' && styles.dailyNameInput]}
                     value={tempName}
                     onChangeText={setTempName}
                     placeholder={namePlaceholder}
@@ -471,18 +474,21 @@ export default function ItemEditScreen() {
                 )}
 
                 {editKind === 'daily' && pendingTime === null && (
+                    <View style={styles.dailyTimeSection}>
                     <TouchableOpacity
                         style={styles.recurBtn}
                         onPress={() => {
                             setPendingTime(new Date(new Date().setHours(12, 0, 0, 0)));
                             setTimeVia24h(false);
+                            setOpenDaily12h(true);
                         }}
                     >
                         <Text style={styles.recurBtnText}>Set time</Text>
                     </TouchableOpacity>
+                    </View>
                 )}
 
-                {(editKind === 'weekly' || (editKind === 'daily' && pendingTime !== null)) && (
+                {editKind === 'weekly' && (
                     <DateTimeControl
                         mode="time"
                         value={pendingTime || new Date(new Date().setHours(12, 0, 0, 0))}
@@ -492,13 +498,30 @@ export default function ItemEditScreen() {
                         }}
                         timeLabel="Time"
                         onValidityChange={setPendingTimeValid}
-                        optionalTime={editKind === 'daily'}
+                    />
+                )}
+
+                {editKind === 'daily' && pendingTime !== null && (
+                    <View style={styles.dailyTimeSection}>
+                    <DateTimeControl
+                        mode="time"
+                        value={pendingTime || new Date(new Date().setHours(12, 0, 0, 0))}
+                        onChange={(d, _half, timeVia) => {
+                            setPendingTime(d);
+                            applyTimeVia(timeVia, setTimeVia24h);
+                        }}
+                        timeLabel="Time"
+                        onValidityChange={setPendingTimeValid}
+                        optionalTime
                         timeSet
+                        startWith12h={openDaily12h}
                         onClearTime={() => {
                             setPendingTime(null);
                             setTimeVia24h(false);
+                            setOpenDaily12h(false);
                         }}
                     />
+                    </View>
                 )}
 
                 {(editKind === 'monthly' || editKind === 'quarterly' || editKind === 'yearly') && (
@@ -549,30 +572,36 @@ export default function ItemEditScreen() {
                                 if (half === 'time') setTimeSet(true);
                             }}
                             onValidityChange={setDateTimeValid}
+                            dateLabel={dateLabelTextOf(editKind)}
                             timeLabel="Time"
                             optionalTime
                             timeSet={timeSet}
                             onClearTime={() => {
                                 setTimeSet(false);
                                 setTimeVia24h(false);
+                                setReminders((list) => list.filter((one) => one.kind === 'clock'));
                             }}
                         />
                         <Text style={styles.inputLabel}>Reminders before</Text>
                         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
-                            {presets.map((p) => (
+                            {presets.map((p) => {
+                                const asleep = offsetChipsAsleep && p.kind === 'offset';
+                                return (
                                 <TouchableOpacity
                                     key={p.label}
-                                    style={[styles.recurBtn, isPresetSelected(p) && styles.recurBtnActive]}
+                                    disabled={asleep}
+                                    style={[styles.recurBtn, isPresetSelected(p) && styles.recurBtnActive, asleep && styles.chipAsleep]}
                                     onPress={() => togglePreset(p)}
                                 >
                                     <Text style={[styles.recurBtnText, isPresetSelected(p) && styles.recurBtnTextActive]}>{p.label}</Text>
                                 </TouchableOpacity>
-                            ))}
+                                );
+                            })}
                         </View>
                     </>
                 )}
 
-                <Text style={styles.inputLabel}>Note:</Text>
+                <Text style={[styles.inputLabel, editKind === 'daily' && styles.dailyNoteLabel]}>Note:</Text>
                 <TextInput
                     style={styles.input}
                     value={note}
@@ -664,6 +693,9 @@ const makeStyles = (t: Theme) =>
             color: t.bodyText,
             marginBottom: 4,
         },
+        dailyNameInput: { marginBottom: 12 },
+        dailyTimeSection: { paddingVertical: 36, marginVertical: 8 },
+        dailyNoteLabel: { marginTop: 28 },
         recurBtn: {
             paddingVertical: 6,
             paddingHorizontal: 12,
@@ -675,6 +707,7 @@ const makeStyles = (t: Theme) =>
         recurBtnActive: { backgroundColor: t.buttonPrimary, borderColor: t.buttonPrimary },
         recurBtnText: { fontSize: 13, color: t.cardTitle },
         recurBtnTextActive: { color: t.buttonPrimaryText },
+        chipAsleep: { opacity: 0.4 },
         modalBtns: {
             flexDirection: 'row',
             justifyContent: 'space-between',

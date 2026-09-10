@@ -19,11 +19,13 @@ import {
     shadedDaysForItem,
     type ReminderItem,
 } from '../modules/reminder-items';
+import { dayListLine, monthCellLine } from '../modules/birth-year';
 
-function dayRowLabel(item: ReminderItem): string {
+function dayRowLabel(item: ReminderItem, viewYear: number): string {
+    const name = dayListLine(item, viewYear);
     const { hour, minute } = hourMinuteOf(item);
-    if (hour == null || minute == null) return item.label;
-    return `${format12Hour(hour, minute)} ${item.label}`;
+    if (hour == null || minute == null) return name;
+    return `${format12Hour(hour, minute)} ${name}`;
 }
 
 function asNum(value: string | string[] | undefined): number | undefined {
@@ -181,7 +183,7 @@ export default function CalendarScreen() {
                     <TouchableOpacity onPress={() => shiftMonth(-1)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                         <Text style={styles.arrow}>‹</Text>
                     </TouchableOpacity>
-                    <Text style={styles.title} numberOfLines={2} adjustsFontSizeToFit>
+                    <Text style={styles.monthTitle} numberOfLines={2} adjustsFontSizeToFit>
                         {monthTitle}
                     </Text>
                     <TouchableOpacity onPress={() => shiftMonth(1)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
@@ -236,7 +238,7 @@ export default function CalendarScreen() {
                                             numberOfLines={1}
                                             ellipsizeMode="tail"
                                         >
-                                            {item.label}
+                                            {monthCellLine(item)}
                                         </Text>
                                     ))}
                                 </ScrollView>
@@ -256,7 +258,7 @@ export default function CalendarScreen() {
                     style={styles.dayRow}
                     onPress={() => selectedDay && openItem(item, selectedDay)}
                 >
-                    <Text style={styles.dayRowLabel}>{dayRowLabel(item)}</Text>
+                    <Text style={styles.dayRowLabel}>{dayRowLabel(item, selectedDay?.year ?? viewYear)}</Text>
                 </TouchableOpacity>
             ))}
         </ScrollView>
@@ -290,7 +292,16 @@ const makeStyles = (t: Theme) =>
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 8,
+            gap: 16,
+        },
+        monthTitle: {
+            fontSize: 24,
+            fontWeight: '500',
+            color: t.titleText,
+            fontStyle: 'italic',
+            fontFamily: 'Georgia',
+            textAlign: 'center',
+            flexShrink: 1,
         },
         title: {
             fontSize: 24,

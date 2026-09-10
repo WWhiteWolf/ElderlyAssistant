@@ -180,6 +180,56 @@ export function runAssembleFormTests(): void {
         );
     });
 
+    test('ifTimeSet with no time keeps clock chips and drops offset chips', () => {
+        const next = assembleFormItem(parts({
+            editKind: 'birthdays',
+            timeSet: false,
+            reminders: [
+                { id: 'r1', amount: 30, unit: 'minutes', kind: 'offset' },
+                { id: 'r2', amount: 0, unit: 'days', kind: 'clock', daysBefore: 0, timeOfDay: 'morning' },
+            ],
+        }));
+        assertSame(
+            next.reminders?.map((one) => one.id),
+            ['r2'],
+            'offset chips need a time; clock chips use the date',
+        );
+    });
+
+    test('A new Birthday writes the year of birth from the date', () => {
+        const next = assembleFormItem(parts({
+            editKind: 'birthdays',
+            existing: null,
+            pendingDate: new Date(1948, 5, 10, 12, 0, 0, 0),
+        }));
+        assertSame(next.birthYear, 1948, 'New keeps the year they were born');
+    });
+
+    test('Save on an existing Birthday does not move the year of birth', () => {
+        const next = assembleFormItem(parts({
+            editKind: 'birthdays',
+            existing: {
+                id: 'i1',
+                kind: 'birthdays',
+                label: 'Pat Smith',
+                year: 2026,
+                month: 5,
+                day: 10,
+                birthYear: 1948,
+            },
+            pendingDate: new Date(2026, 5, 10, 12, 0, 0, 0),
+        }));
+        assertSame(next.birthYear, 1948, 'Done already moved the next date; birth year stays');
+    });
+
+    test('Appointments do not keep a year of birth', () => {
+        const next = assembleFormItem(parts({
+            editKind: 'appointments',
+            pendingDate: new Date(1948, 5, 10, 12, 0, 0, 0),
+        }));
+        assert(!('birthYear' in next), 'Appointments have no birth year');
+    });
+
     test('Bucket List has no date, no time, and no reminders', () => {
         const next = assembleFormItem(parts({ editKind: 'bucketlist' }));
         assertSame(

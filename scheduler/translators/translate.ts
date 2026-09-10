@@ -93,8 +93,18 @@ export interface ScreenRules {
     dateWriteCode: DateWriteCode;
     /** What Save writes for hour and minute. */
     timeWriteCode: TimeWriteCode;
+    /**
+     * The date line on New and Edit. Left off, it is Due Date.
+     */
+    dateLabelText?: string;
     /** True when Save keeps the reminders-before chips. */
     keepsLeadChipsBit: boolean;
+    /**
+     * True when Save keeps a year of birth that Done does not move.
+     *
+     * Left off, this kind has none.
+     */
+    keepsBirthYearBit?: boolean;
     /**
      * Bits that work together, of which only one can be true.
      *
@@ -474,6 +484,8 @@ const birthdaysCadenceRules: ScreenRules = {
     dateWriteCode: 'required',
     timeWriteCode: 'ifTimeSet',
     keepsLeadChipsBit: true,
+    keepsBirthYearBit: true,
+    dateLabelText: 'Birthdate',
     standsForGroupBit: false,
     waitsUntilNearDays: 60,
     bannerButtonsCode: 'appointmentsok',
@@ -660,6 +672,16 @@ export function timeWriteCodeOf(kind: ReminderItem['kind']): TimeWriteCode {
 /** True when Save keeps the reminders-before chips. */
 export function keepsLeadChipsOf(kind: ReminderItem['kind']): boolean {
     return rulesByKind[kind].keepsLeadChipsBit;
+}
+
+/** True when Save keeps a year of birth that Done does not move. */
+export function keepsBirthYearOf(kind: ReminderItem['kind']): boolean {
+    return rulesByKind[kind].keepsBirthYearBit === true;
+}
+
+/** The date line on New and Edit, or Due Date when the table leaves it off. */
+export function dateLabelTextOf(kind: ReminderItem['kind']): string {
+    return rulesByKind[kind].dateLabelText ?? 'Due Date';
 }
 
 /** How many days ahead the date may be, from the translator's table. */

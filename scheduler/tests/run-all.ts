@@ -21,6 +21,7 @@ import { runArmDepthTests } from './armdepth.test.ts';
 import { runTranslatorCadenceTests } from './translatorcadence.test.ts';
 import { runAssembleFormTests } from './assembleform.test.ts';
 import { runAdvanceDatedTests } from './advancedated.test.ts';
+import { runBirthYearTests } from './birthyear.test.ts';
 import { runLeadMomentsTests } from './leadmoments.test.ts';
 import { runRemindersForTests } from './remindersfor.test.ts';
 import { runApplyTests } from './apply.test.ts';
@@ -56,6 +57,9 @@ runTranslatorCadenceTests();
 
 console.log('\nSave form');
 runAssembleFormTests();
+
+console.log('\nYear of birth');
+runBirthYearTests();
 
 console.log('\nDated Done');
 runAdvanceDatedTests();

@@ -8,6 +8,7 @@ import {
     exclusiveGroupBitsOf,
     hasQuarterlyStepOf,
     keepsLeadChipsOf,
+    keepsBirthYearOf,
     timeWriteCodeOf,
 } from '../scheduler/translators/translate.ts';
 import { quarterlyStepDaysOf } from '../scheduler/inputshape.ts';
@@ -139,7 +140,11 @@ export function assembleFormItem(parts: AssembleFormParts): ReminderItem {
     }
 
     if (keepsLeadChipsOf(kind)) {
-        next.reminders = parts.reminders;
+        if (timeCode === 'ifTimeSet' && !parts.timeSet) {
+            next.reminders = parts.reminders.filter((one) => one.kind === 'clock');
+        } else {
+            next.reminders = parts.reminders;
+        }
     } else {
         delete next.reminders;
     }
@@ -156,6 +161,23 @@ export function assembleFormItem(parts: AssembleFormParts): ReminderItem {
     } else {
         delete next.intervalMonths;
         delete next.intervalDays;
+    }
+
+    if (keepsBirthYearOf(kind)) {
+        if (typeof parts.existing?.birthYear === 'number') {
+            next.birthYear = parts.existing.birthYear;
+        } else if (!parts.existing) {
+            next.birthYear = parts.pendingDate.getFullYear();
+        } else if (
+            typeof parts.existing.year === 'number'
+            && parts.existing.year < new Date().getFullYear()
+        ) {
+            next.birthYear = parts.existing.year;
+        } else {
+            delete next.birthYear;
+        }
+    } else {
+        delete next.birthYear;
     }
 
     if (optionCasesForKind(kind).length > 0) {

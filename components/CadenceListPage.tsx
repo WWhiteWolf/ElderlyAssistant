@@ -15,6 +15,7 @@ import { Cover } from './Cover';
 import { ReminderItemRow } from './ReminderItemRow';
 import { PAGE_LABELS, pageLabelFor } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
+import { dayListLine } from '../modules/birth-year';
 import {
     dragKindTo,
     dragVisibleTo,
@@ -42,6 +43,9 @@ function dailyRowLabel(item: ReminderItem): string {
         typeof item.hour === 'number' && typeof item.minute === 'number'
             ? `${format12Hour(item.hour, item.minute)} `
             : '';
+    if (typeof item.birthYear === 'number') {
+        return `${time}${dayListLine(item, new Date().getFullYear())}`;
+    }
     const from =
         item.kind !== 'daily' && item.kind !== 'oneTime' && item.kind !== 'bucketlist'
             ? ` ${FROM_PAGE[item.kind]}`

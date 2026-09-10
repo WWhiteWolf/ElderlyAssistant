@@ -12,15 +12,19 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-Build **78** is on the phone. Scheduled Reminders is down to 14.
+Build **79** is on the phone. Scheduled Reminders is down to 14.
 How far ahead a waiting kind looks is a number on the table. Monthly
 is thirty days. Quarterly, Yearly, and Birthdays are sixty days, so a
 Month-before reminder can be armed. Several lead times on one item arm
 only the soonest still ahead. **#100-new** split the Home badges:
 Yearly keeps the telescope, Quarterly a fallen leaf, Monthly a
 first-quarter moon. A weekday monthly looks from the saved date, so
-Done takes it off Daily. That is in the project, not on 78. The designed
-implementation is the guide, and it is not finished yet.
+Done takes it off Daily. Last session was committed. The **#99-new**
+review is done (Patrick, #101-new). The designed implementation is the
+guide. Calendar month arrows sit by the month name. Daily every-day New
+has room between Name, time, and Note. **#102-new** is in the project,
+not on 79: time spinner Cancel and Done, muted offset chips, Birthday
+on Calendar and Daily, and Birthdate on the form.
 
 ## Standing rulings
 
@@ -174,12 +178,14 @@ These are Patrick's and they govern the work rather than describing it.
   in red. After Face ID or the passcode is accepted, it asks Are you
   sure? Cancel backs out. Then it wipes.
 
-## What is open in front of it
+- **There is no password to open the app** (Patrick, #101-new). The
+  phone being open is enough. Reset All Data already asks Face ID or
+  the passcode. Do not add another.
 
-**#99-new review.** Three lenses: bugs; whether Memory is coming out
-as one of the better reminder apps and one of the easier; leftover
-special rules on top of a kind, not the ordinary kind-per-page that
-software does. The designed implementation is not the last word.
+- **A Birthday keeps a year of birth that Done does not move**
+  (Patrick, #102-new).
+
+## What is open in front of it
 
 The guide is `docs/designed-implementation.md`. A sitting builds from
 it. The scheduler stays.
@@ -201,12 +207,11 @@ reorder of the visible list, and Done following the item — live
 on that shared page. The log is not on the list. `app/daily.tsx` is
 the same thin route as Weekly.
 
-Spec and testing file are Pending 1 and 2.
-The spec is `docs/designed-implementation.md`. What is not written: a
-Settings password (nice-to-have). The user's guide is a tile on
-Settings. The words are in. First load on Home shows the same words.
+The spec is `docs/designed-implementation.md`. The testing file is
+Pending 1. The user's guide is a tile on Settings. The words are in.
+First load on Home shows the same words.
 
-Testers are on TestFlight External. The phone load is **78**. The App
+Testers are on TestFlight External. The phone load is **79**. The App
 Store heading is Waiting for Review on **72**. He is not aiming to go
 live. Manual release. The journey is `docs/connect-submit.md`. What is
 already in App Store Connect stays there. There is no public website

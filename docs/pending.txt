@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-09 (#100-new)
+Last updated: 2026-09-10 (#102-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -27,30 +27,13 @@ WHAT'S NEXT
 1. DAY-ROLL LOCK still wants a night of all-green Daily on this
    load, then a morning open on a new load, to confirm the pop-up
    stays quiet.
-2. LAST REVIEW BEFORE THE APP STORE (#99-new). Three lenses: bugs;
-   whether it is coming out as one of the better reminder apps and
-   one of the easier; leftover special rules on top of a kind, not
-   the ordinary kind-per-page that software does. The designed
-   implementation is not the last word.
 
 
 PENDING
 ------------------------------------------------------------------
 Things waiting on something — mostly on a build.
 
-1. A THOROUGH DESIGN SPEC FOR THE APP (Patrick, #52-new). This
-    sitting treated One Time's missing notice at the set time as
-    a bug. He had decided it that way. A spec would have said so.
-    Changing the name of One Time to Appointments belongs in
-    that spec, and Extended to Bucket List. At #84-new the spec
-    is the designed implementation of the whole app: it is the
-    guide, and it replaces a separate layer of decisions and rules.
-    The first piece is docs/designed-implementation.md. This sitting
-    wrote the machinery, each kind, Daily on the shared list, and the
-    banner housing. Home, Help, Calendar, Settings, Backup, Scheduled
-    Reminders, Options, and Log are in that piece. A Settings password is
-    not.
-2. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
+1. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
    WILL COVER (Patrick, #52-new). The during-build tests are
    thrown away. The run is not kept.
 
@@ -140,6 +123,23 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+108. #102-new — Birthdays’ date line is Birthdate.
+
+107. #102-new — Birthday year of birth. Calendar month: B-day and the
+    first name. Day list and Daily: Birthday, first name, and age.
+    Birthdays page does not say Birthday. 359 tests. Not on the phone.
+
+106. #102-new — Offset before chips mute when there is no time. The
+    form reads ifTimeSet and offset, not Birthdays.
+
+105. #102-new — 12-hour and 24-hour time spinners are popups with
+    Cancel and Done. You stay on New or Edit.
+
+104. #101-new — Calendar month arrows sit by the month name. Daily
+    every-day New has room between Name, time, and Note.
+
+103. #101-new — Design guide filled from the app and the table.
 
 101. #100-new — A weekday monthly looks from the saved date, so Done
     takes it off Daily. 351 tests. Not on the phone.
@@ -568,8 +568,6 @@ NICE-TO-HAVE LATER
    installed. The phone gives it least to an unused app, and none
    if the app has been swiped away, so it can only ever sit on
    top of arming ahead, never underneath.
-4. Settings password protection — moved here at #88-new (was with
-   the #84-new Home ideas). Not being done now.
 
 
 PARKED ON PURPOSE

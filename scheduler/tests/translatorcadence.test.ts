@@ -11,6 +11,8 @@ import {
     timeWriteCodeOf,
     keepsLeadChipsOf,
     hasQuarterlyStepOf,
+    keepsBirthYearOf,
+    dateLabelTextOf,
     waitsUntilNearDaysOf,
     repeatUnitCodeOf,
 } from '../translators/translate.ts';
@@ -721,6 +723,25 @@ export function runTranslatorCadenceTests(): void {
             ],
             [true, false, false, false],
             'only Quarterly writes a Quarterly step',
+        );
+        assertSame(
+            [
+                keepsBirthYearOf('birthdays'),
+                keepsBirthYearOf('yearly'),
+                keepsBirthYearOf('appointments'),
+                keepsBirthYearOf('daily'),
+            ],
+            [true, false, false, false],
+            'only Birthdays keep a year of birth',
+        );
+        assertSame(
+            [
+                dateLabelTextOf('birthdays'),
+                dateLabelTextOf('appointments'),
+                dateLabelTextOf('monthly'),
+            ],
+            ['Birthdate', 'Due Date', 'Due Date'],
+            'Birthdays’ date line is Birthdate; others keep Due Date',
         );
     });
 }

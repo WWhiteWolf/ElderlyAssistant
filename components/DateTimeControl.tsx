@@ -22,12 +22,14 @@ import { Theme, useTheme } from '../constants/Themes';
 //   page's "by" date). The Orders form's start/end window is two
 //   mode='time' controls side by side — no pair machinery in here.
 // - #3-new: optionalTime — a page may declare the time optional. While no
-//   time is set (timeSet=false) the spinners sit dulled at 12:00 PM and
-//   the box sits empty with a "No time set" hint; tapping any arrow or
-//   the box wakes it (onChange fires as usual). After a time is set,
-//   No time is the way back (onClearTime fires). #97-new. The #59
-//   empty-box rule (empty repaints from the spinners) applies only
-//   when optionalTime is off.
+//   time is set (timeSet=false) the 12-hour time and the box sit dulled,
+//   the box empty with a "No time set" hint; tapping either wakes it
+//   (onChange fires as usual). After a time is set, No time is the way
+//   back (onClearTime fires). #97-new. The #59 empty-box rule (empty
+//   repaints from the spinners) applies only when optionalTime is off.
+// - #102-new: the 12-hour and 24-hour spinners are popups. Cancel puts
+//   the spinner away and restores the time from when it opened. Done
+//   keeps the time and puts the spinner away. You stay on the form.
 // - #27-new: optionalDate — the same again for the date half, and it
 //   behaves identically: dulled spinners, an empty box with a "No date
 //   set" hint, waking on any arrow or a typed date, and onClearDate when
@@ -47,6 +49,13 @@ export const formatDateMMDDYY = (d: Date) =>
     `${pad2(d.getMonth() + 1)}/${pad2(d.getDate())}/${pad2(d.getFullYear() % 100)}`;
 
 export const formatTime24 = (d: Date) => `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+
+const formatTime12 = (d: Date) => {
+    const h = d.getHours();
+    let h12 = h % 12;
+    if (h12 === 0) h12 = 12;
+    return `${pad2(h12)}:${pad2(d.getMinutes())} ${h < 12 ? 'AM' : 'PM'}`;
+};
 
 // Parse typed MM/DD/YY (also accepts single digits and a 4-digit year).
 // Returns null unless it is a real calendar date.
@@ -101,6 +110,9 @@ interface Props {
     optionalDate?: boolean;
     dateSet?: boolean;
     onClearDate?: () => void;
+    // #102-new: open the 12-hour spinner as soon as this control is shown.
+    // Daily’s Set time uses it so the spinner appears without a second tap.
+    startWith12h?: boolean;
 }
 
 export default function DateTimeControl({
@@ -116,6 +128,7 @@ export default function DateTimeControl({
     optionalDate = false,
     dateSet = true,
     onClearDate,
+    startWith12h = false,
 }: Props) {
     const theme = useTheme();
     const styles = makeStyles(theme);
@@ -130,12 +143,16 @@ export default function DateTimeControl({
     const [timeText, setTimeText] = useState(timeAsleep ? '' : formatTime24(value));
     const [dateBad, setDateBad] = useState(false);
     const [timeBad, setTimeBad] = useState(false);
-    const [showTimeSpinner, setShowTimeSpinner] = useState(false);
+    const [showTime12h, setShowTime12h] = useState(false);
+    const [showTime24h, setShowTime24h] = useState(false);
 
     // While a box is being typed in, spinner-driven rewrites of that box
     // are held off so we never fight the user's keystrokes.
     const dateFocused = useRef(false);
     const timeFocused = useRef(false);
+    const spinnerSnap = useRef<{ date: Date; wasAsleep: boolean } | null>(null);
+    const ignoreOpenUntil = useRef(0);
+    const didAutoOpen12h = useRef(false);
 
     // An EMPTY box means "never mind what I typed" (#59, Patrick's call): it
     // counts as valid — the spinners always hold a real value, and blur
@@ -241,17 +258,46 @@ export default function DateTimeControl({
         applyTime(hourNow, mTens * 10 + ((mOnes + dir + 10) % 10));
     };
 
-    const openTimeSpinner = () => {
-        if (timeAsleep) onChange(new Date(value), 'time');
-        setShowTimeSpinner(true);
+    const open12hSpinner = () => {
+        if (Date.now() < ignoreOpenUntil.current) return;
+        spinnerSnap.current = { date: new Date(value), wasAsleep: timeAsleep };
+        if (timeAsleep) onChange(new Date(value), 'time', '12h');
+        setShowTime12h(true);
+    };
+
+    const open24hSpinner = () => {
+        if (Date.now() < ignoreOpenUntil.current) return;
+        spinnerSnap.current = { date: new Date(value), wasAsleep: timeAsleep };
+        if (timeAsleep) onChange(new Date(value), 'time', '24h');
+        setShowTime24h(true);
+    };
+
+    const finishSpinner = (keep: boolean) => {
+        ignoreOpenUntil.current = Date.now() + 500;
+        if (!keep) {
+            const snap = spinnerSnap.current;
+            if (snap?.wasAsleep) onClearTime?.();
+            else if (snap) onChange(new Date(snap.date), 'time');
+        }
+        spinnerSnap.current = null;
+        setShowTime12h(false);
+        setShowTime24h(false);
     };
 
     const clearOptionalTime = () => {
         setTimeText('');
         setTimeBad(false);
-        setShowTimeSpinner(false);
+        setShowTime12h(false);
+        setShowTime24h(false);
         onClearTime?.();
     };
+
+    useEffect(() => {
+        if (!startWith12h || didAutoOpen12h.current) return;
+        didAutoOpen12h.current = true;
+        spinnerSnap.current = { date: new Date(value), wasAsleep: timeAsleep };
+        setShowTime12h(true);
+    }, [startWith12h, value, timeAsleep]);
 
     // ---- typed input ----
 
@@ -369,18 +415,17 @@ export default function DateTimeControl({
             {mode !== 'date' && (
                 <>
                     <Text style={styles.inputLabel}>{timeLabel}</Text>
-                    <View style={[styles.timeRow, timeAsleep && styles.rowAsleep]}>
-                        <Stepper display={pad2(h12)} caption="Hour"
-                            up={() => adjustHour('up')} down={() => adjustHour('down')} displayStyle={styles.timeDisplay} />
-                        <Text style={styles.timeDisplay}>:</Text>
-                        <Stepper display={pad2(value.getMinutes())} caption="Minute"
-                            up={() => adjustMinute(1)} down={() => adjustMinute(-1)} displayStyle={styles.timeDisplay} />
-                        <Stepper display={h < 12 ? 'AM' : 'PM'} caption="AM/PM"
-                            up={toggleAmPm} down={toggleAmPm} displayStyle={styles.ampmDisplay} />
-                    </View>
+                    <TouchableOpacity
+                        style={[styles.typeBox, timeAsleep && styles.rowAsleep]}
+                        onPress={open12hSpinner}
+                    >
+                        <Text style={[styles.typeBoxText, timeAsleep && styles.typeBoxPlaceholder]}>
+                            {formatTime12(value)}
+                        </Text>
+                    </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.typeBox, timeBad && styles.typeBoxBad]}
-                        onPress={openTimeSpinner}
+                        onPress={open24hSpinner}
                     >
                         <Text style={[styles.typeBoxText, timeText === '' && styles.typeBoxPlaceholder]}>
                             {timeText === '' ? 'HH:MM' : timeText}
@@ -388,60 +433,84 @@ export default function DateTimeControl({
                     </TouchableOpacity>
                     <Text style={styles.hint}>
                         {timeAsleep
-                            ? 'No time set — tap the arrows or the box to set one'
-                            : 'Tap the box to set the time (24-hour clock)'}
+                            ? 'No time set — tap the 12-hour time or the box to set one'
+                            : 'Tap the 12-hour time, or the box for the 24-hour clock'}
                     </Text>
                     {optionalTime && timeSet ? (
                         <TouchableOpacity style={styles.noTimeBtn} onPress={clearOptionalTime}>
                             <Text style={styles.noTimeBtnText}>No time</Text>
                         </TouchableOpacity>
                     ) : null}
-                    {showTimeSpinner && (
-                        <Cover visible={showTimeSpinner}>
-                            <View style={styles.modalOverlay}>
-                                <View style={styles.pickerModal}>
-                                    <Text style={styles.modalTitle}>{timeLabel}</Text>
-                                    <View style={styles.digitRow}>
-                                        <Stepper
-                                            display={String(hTens)}
-                                            caption=""
-                                            up={() => spinHTens(1)}
-                                            down={() => spinHTens(-1)}
-                                            displayStyle={styles.timeDisplay}
-                                        />
-                                        <Stepper
-                                            display={String(hOnes)}
-                                            caption=""
-                                            up={() => spinHOnes(1)}
-                                            down={() => spinHOnes(-1)}
-                                            displayStyle={styles.timeDisplay}
-                                        />
-                                        <Text style={styles.timeDisplay}>:</Text>
-                                        <Stepper
-                                            display={String(mTens)}
-                                            caption=""
-                                            up={() => spinMTens(1)}
-                                            down={() => spinMTens(-1)}
-                                            displayStyle={styles.timeDisplay}
-                                        />
-                                        <Stepper
-                                            display={String(mOnes)}
-                                            caption=""
-                                            up={() => spinMOnes(1)}
-                                            down={() => spinMOnes(-1)}
-                                            displayStyle={styles.timeDisplay}
-                                        />
-                                    </View>
-                                    <TouchableOpacity
-                                        style={styles.doneBtn}
-                                        onPress={() => setShowTimeSpinner(false)}
-                                    >
+                    <Cover visible={showTime12h}>
+                        <View style={styles.modalOverlay}>
+                            <View style={styles.pickerModal}>
+                                <Text style={styles.modalTitle}>{timeLabel}</Text>
+                                <View style={styles.timeRow}>
+                                    <Stepper display={pad2(h12)} caption="Hour"
+                                        up={() => adjustHour('up')} down={() => adjustHour('down')} displayStyle={styles.timeDisplay} />
+                                    <Text style={styles.timeDisplay}>:</Text>
+                                    <Stepper display={pad2(value.getMinutes())} caption="Minute"
+                                        up={() => adjustMinute(1)} down={() => adjustMinute(-1)} displayStyle={styles.timeDisplay} />
+                                    <Stepper display={h < 12 ? 'AM' : 'PM'} caption="AM/PM"
+                                        up={toggleAmPm} down={toggleAmPm} displayStyle={styles.ampmDisplay} />
+                                </View>
+                                <View style={styles.modalBtns}>
+                                    <TouchableOpacity style={styles.cancelBtn} onPress={() => finishSpinner(false)}>
+                                        <Text style={styles.cancelBtnText}>Cancel</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.doneBtn} onPress={() => finishSpinner(true)}>
                                         <Text style={styles.doneBtnText}>Done</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
-                        </Cover>
-                    )}
+                        </View>
+                    </Cover>
+                    <Cover visible={showTime24h}>
+                        <View style={styles.modalOverlay}>
+                            <View style={styles.pickerModal}>
+                                <Text style={styles.modalTitle}>{timeLabel}</Text>
+                                <View style={styles.digitRow}>
+                                    <Stepper
+                                        display={String(hTens)}
+                                        caption=""
+                                        up={() => spinHTens(1)}
+                                        down={() => spinHTens(-1)}
+                                        displayStyle={styles.timeDisplay}
+                                    />
+                                    <Stepper
+                                        display={String(hOnes)}
+                                        caption=""
+                                        up={() => spinHOnes(1)}
+                                        down={() => spinHOnes(-1)}
+                                        displayStyle={styles.timeDisplay}
+                                    />
+                                    <Text style={styles.timeDisplay}>:</Text>
+                                    <Stepper
+                                        display={String(mTens)}
+                                        caption=""
+                                        up={() => spinMTens(1)}
+                                        down={() => spinMTens(-1)}
+                                        displayStyle={styles.timeDisplay}
+                                    />
+                                    <Stepper
+                                        display={String(mOnes)}
+                                        caption=""
+                                        up={() => spinMOnes(1)}
+                                        down={() => spinMOnes(-1)}
+                                        displayStyle={styles.timeDisplay}
+                                    />
+                                </View>
+                                <View style={styles.modalBtns}>
+                                    <TouchableOpacity style={styles.cancelBtn} onPress={() => finishSpinner(false)}>
+                                        <Text style={styles.cancelBtnText}>Cancel</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.doneBtn} onPress={() => finishSpinner(true)}>
+                                        <Text style={styles.doneBtnText}>Done</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </Cover>
                 </>
             )}
         </View>
@@ -520,12 +589,28 @@ const makeStyles = (t: Theme) => StyleSheet.create({
         gap: 10,
         marginVertical: 8,
     },
+    modalBtns: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 8,
+    },
+    cancelBtn: {
+        backgroundColor: t.buttonNeutral,
+        borderWidth: 1,
+        borderColor: t.buttonNeutralBorder,
+        padding: 12,
+        borderRadius: 8,
+        flex: 1,
+        alignItems: 'center',
+        marginRight: 8,
+    },
+    cancelBtnText: { color: t.buttonNeutralText, fontWeight: '600' },
     doneBtn: {
         backgroundColor: t.buttonPrimary,
         padding: 12,
         borderRadius: 8,
+        flex: 1,
         alignItems: 'center',
-        marginTop: 8,
     },
     doneBtnText: { color: t.buttonPrimaryText, fontWeight: '600' },
 });

@@ -51,6 +51,7 @@ export function runAdvanceDatedTests(): void {
                 day: 10,
                 hour: 12,
                 minute: 0,
+                birthYear: 1948,
             },
             new Date(2026, 5, 10, 20, 0, 0, 0).getTime(),
         );
@@ -58,6 +59,11 @@ export function runAdvanceDatedTests(): void {
             [next.year, next.month, next.day],
             [2027, 5, 10],
             'Birthdays write year on the table, so Done steps a year',
+        );
+        assertSame(
+            next.birthYear,
+            1948,
+            'the year of birth stays put',
         );
     });
 }

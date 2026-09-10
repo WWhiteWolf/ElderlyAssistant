@@ -32,6 +32,9 @@ export interface ReminderItem {
     year?: number;
     month?: number;
     day?: number;
+    // Year of birth. Stays put when Done moves the next date. Left off
+    // when this kind does not keep a birth year.
+    birthYear?: number;
     intervalMonths?: number;
     // Quarterly Add chips: 30, 60, or 90 days from the entered date.
     // Left off means every three months, as before.

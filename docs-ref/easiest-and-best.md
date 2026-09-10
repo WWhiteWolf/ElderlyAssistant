@@ -81,5 +81,5 @@ on a named piece.
 ## Do not reopen
 
 The scheduler’s decisions. The later in-app Siri. The three
-nice-to-have reminder checks. A Settings password. The machine
-look from #95-new.
+nice-to-have reminder checks. There is no password to open the app
+(Patrick, #101-new). The machine look from #95-new.

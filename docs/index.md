@@ -23,13 +23,12 @@ just because it is listed.
 - **`check-docs.py`** — checks the record. Changes nothing. `python3 docs/check-docs.py`
 - **`Memory features.docx`** — the inventory of what the app is and does, not the sell. Home of the substance for the store description (#47-new).
 - **`rfc-eval.md`** — #52-new evaluation of the app against RFC 5545 and RFC 8984. Live for this sitting.
-- **`easiest-and-best.md`** — sitting brief for the next look: easiest to use, and the best reminder. Written at #95-new. Carries the aim, the machine-versus-ordinary-software distinction, and what to look at.
 - **`clock-places.md`** — #52-new. Where the live app still asks the real clock. Written for a different idea than dating items near today.
 
 ## Live design — in `docs`
 
 - **`reminder-shape.md`** — the live engine design. Wins where others disagree.
-- **`designed-implementation.md`** — the whole-app guide. A sitting builds from it and does not ask Patrick a design question. Home, Help, Calendar, Settings, Backup, Scheduled Reminders, Options, and Log are in it. #87-new: banner housing is built. Siri is out of sight. #98-new: User's Guide words are in; first load on Home shows the same words.
+- **`designed-implementation.md`** — the whole-app guide. A sitting builds from it and does not ask Patrick a design question. Filled at #101-new. Home, Help, Calendar, Settings, Backup, Scheduled Reminders, Options, and Log are in it. Banner housing is built. Siri is out of sight. User's Guide words are in; first load on Home shows the same words.
 - **`spec-pages.md`** — the live spec for the reminder pages.
 
 ## History still in `docs`
@@ -54,6 +53,7 @@ just because it is listed.
 
 ## Retired — in `docs-ref`
 
+- **`easiest-and-best.md`** — #95-new sitting brief for the #99-new look. Retired at #101-new. Not needed.
 - **`pending.rtf`** — old reading copy. Not kept current. Do not edit.
 - **`make-pending-rtf.py`** — made that rtf. Retired. Do not run.
 

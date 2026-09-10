@@ -14,8 +14,8 @@ It is the designed implementation of the whole app, not a layer of
 decisions and rules, and not a photograph of the current code. Design
 first, then make the changes from this file.
 
-Daily is on the shared list. The banner still writing by source is
-what a build replaces. That is not the destination. The job sheet is
+Daily is on the shared list. The banner finds the item by id. It does
+not write by source. The job sheet is history:
 `docs-ref/build-sheets/build-sheet-banner-housing.md`.
 
 The engine stays. "Not in the engine yet" means a named code is not yet
@@ -24,12 +24,12 @@ scheduler is unfinished or needs changing.
 
 What is written now is the reminder-pages piece: the three ways a
 difference is written, what already stands, what Done does, each kind,
-Daily on the shared list, and the banner housing. Daily is built. That
-is enough to build the banner, without asking Patrick those questions.
+Daily on the shared list, and the banner housing. Daily is built. The
+banner housing is built.
 
-What is not written: a Settings password. Pending 1 is still the
-thorough spec for the whole app. This file is the start of that, not
-the finish.
+This file is the guide. There is no password to open the app. The
+phone being open is enough (Patrick, #101-new). Reset All Data already
+asks Face ID or the passcode. Do not add another.
 
 The app is self-contained. A person's data stays on the phone. The
 app does not reach out to read or write from the outside world. What
@@ -102,16 +102,33 @@ them, or is left off when it does not belong. The live sets in
 - **What Done does** — thisCycle, advanceDate, endItem. This code is
   on the translator's table. The two-way bit is not enough, because
   there are three actions. The code replaces that bit.
+- **What Save writes for the date** — none, weekday, calendar, today,
+  required. This code is on the translator's table. none drops year,
+  month, and day. weekday writes the weekday number as day, and drops
+  year and month. calendar writes the pending date unless an exclusive
+  weekday bit is complete. today writes today’s date. required always
+  writes the pending date.
+- **What Save writes for the time** — none, ifPendingTime,
+  alwaysPendingTime, alwaysPendingDate, ifTimeSet. This code is on the
+  translator's table. none drops hour and minute. ifPendingTime writes
+  from the pending time when it is there. alwaysPendingTime always
+  writes from the pending time, noon if missing. alwaysPendingDate
+  always writes from the pending date’s time. ifTimeSet writes from
+  the pending date’s time when a time was set.
 - **A holiday move** — before, or after. Left off when unused.
 - **The form of a lead time** — offset from the due moment, or a clock
   time a number of days before. A lead time is one form, not half of
-  each.
+  each. When Save writes time only if a time was set, and no time is
+  set, offset chips sit muted and inactive. Clock chips stay. Save
+  drops the offset chips so they cannot stick.
 - **The unit of an offset lead** — minutes, hours, days.
 - **A named time of day** — morning, midday, evening.
 - **A Quarterly step** — none, days30, days60, days90. None means every
   three months. One chip at a time. A second tap clears it. The list
   tile still shows the date. This is a code on the translator's table.
   The saved item still holds the day-count the engine already steps.
+- **The date line on New and Edit** — left off, it is Due Date.
+  Birthdays write Birthdate. The form reads the table.
 
 A code word is the right shape when the thing is a choice of names.
 
@@ -128,6 +145,8 @@ option bits that remain are:
 
 - it can be marked done at all
 - it can be pushed back
+- Save keeps the reminders-before chips
+- Save keeps a year of birth that Done does not move
 
 **State bits say what has actually happened to this occurrence.** They
 change. Done right now is one of them. A pushed-back stamp and a
@@ -168,9 +187,18 @@ Keep these. A build does not replace them.
 - The date-and-time control, and the page chrome.
 - The engine, and the translator's table of kinds.
 
+Layout, colors, and wording come from the page chrome and the theme
+that already stand (`components/PageFrame.tsx`, `constants/Themes.ts`).
+A sitting reads those. They are not questions for Patrick.
+
 When a time or a date does not have to be picked, tapping a field to
 set one still leaves a way back to none. That way back is No time on
-the date-and-time control.
+the date-and-time control. The 12-hour and 24-hour spinners are popups.
+Cancel puts the spinner away and restores the time from when it opened.
+Done keeps the time and puts it away. You stay on the form. Daily Set
+time opens the 12-hour popup. Quiet popup on Save when the time was last
+set with the 12-hour spinner; no popup when it was last set with the
+24-hour box or the digit spinner.
 
 ## What Done does
 
@@ -186,7 +214,8 @@ Done is a code, `doneActionCode`. The three words are:
   tick comes off, and the saved date is the cycle that had been due, not
   the next one. It is not Done for the newly armed cycle. Monthly,
   Quarterly, Yearly, and Birthdays. Yearly and Birthdays write year on
-  the table. The date-advance reads that word.
+  the table. The date-advance reads that word. Birthdays also keep a
+  year of birth that this move does not touch.
 - **endItem** — the item is finished. It stays on its page. It no
   longer fires. Delete is how you get rid of it. Appointments and
   Bucket List. They are not the dated tick.
@@ -229,11 +258,12 @@ pushed back. Banner set routineactions, same words as Daily. The
 Reminders before chips are only 30 min., 1 hour, 2 hours, and Time of.
 Save does not ask again when none of them is on. Time is optional.
 After a time is set, there is a way back to none. The set time still
-speaks. It is not an Appointment.
+speaks. It is not an Appointment. 30 min., 1 hour, 2 hours, and Time of
+sit muted until a time is set.
 
-**weekly** — page Weekly. Repeats every week on its weekday. Done is
-thisCycle. It can be pushed back. Banner set routineactions. Speaks at
-the moment itself.
+**weekly** — page Weekly. Repeats every week on its weekday. Time is
+always written. Noon if missing. Done is thisCycle. It can be pushed
+back. Banner set routineactions. Speaks at the moment itself.
 
 **monthly** — page Monthly. Repeats every month. Date required. Done is
 advanceDate. A 31st stays the 31st. A month with no such day uses the
@@ -245,13 +275,15 @@ the same as a numbered day. Done moving the date takes it off Daily.
 
 **quarterly** — page Quarterly. Repeats every three months when the
 step is none, or every 30, 60, or 90 days when that chip is set. Done
-is advanceDate. It can be pushed back. Banner set cadenceactions. On
-Add, the chips are selectable. No chip stays every three months. A
-chip counts that many days from the date entered when it is set. One
-chip at a time. The list tile still shows the date.
+is advanceDate. It can be pushed back. Banner set cadenceactions. A
+missing day uses shifteddayactions: Then, Next Day. On Add, the chips
+are selectable. No chip stays every three months. A chip counts that
+many days from the date entered when it is set. One chip at a time.
+The list tile still shows the date.
 
 **yearly** — page Yearly. Repeats every year. Date required. Done is
-advanceDate. It can be pushed back. Banner set cadenceactions.
+advanceDate. It can be pushed back. Banner set cadenceactions. A
+missing day uses shifteddayactions: Then, Next Day.
 
 **appointments** — page Appointments. No repeat. Date required. The form
 does not offer to take the date off. Things with no date belong on
@@ -260,16 +292,24 @@ to none. Done is endItem. It cannot be pushed back. Banner set
 appointmentsok: OK only, which closes without opening the app. The form
 can have any and all Reminders before chips on at once. Save does not
 ask again when none of them is on. Morning of is not the set time. The
-phone holds only the soonest of those times still ahead.
+phone holds only the soonest of those times still ahead. 30 min., 1
+hour, and 2 hours sit muted until a time is set. Morning of and the
+day-before chips stay.
 
 **birthdays** — page Birthdays. Own kind. A copy of Appointments on the
-screen, and a yearly reminder on the one list. Date required. Time is
-optional. After a time is set, there is a way back to none. Done is
-advanceDate. It cannot be pushed back. Banner set appointmentsok. Same
-Reminders before chips as Appointments. The form can have any and all
-on at once. The phone holds only the soonest still ahead. Save does
-not ask again when none of them is on. An item on Birthdays is not
-also on Appointments or Yearly.
+screen, and a yearly reminder on the one list. Date required. The date
+line is Birthdate. Time is optional. After a time is set, there is a
+way back to none. Done is advanceDate. It cannot be pushed back. Banner
+set appointmentsok. Same Reminders before chips as Appointments. The
+form can have any and all on at once. The phone holds only the soonest
+still ahead. Save does not ask again when none of them is on. A missing
+day uses shifteddayactions: Then, Next Day. An item on Birthdays is not
+also on Appointments or Yearly. It keeps a year of birth that Done does
+not move. The Birthdays page does not say Birthday on the row. Calendar
+month cells say B-day and the first name. The day’s list, and a
+Birthday on Daily, say Birthday, that name, and the age they turn that
+day. The first name is the first word of Name. Age is the calendar year
+minus the year of birth.
 
 **bucketlist** — page Bucket List. No date and no time. Done is
 endItem. It cannot be pushed back. No banner to arm. It must never be
@@ -285,7 +325,8 @@ here, not invented on the page.
 **Visitors.** An item of another kind that falls today is shown on
 Daily, with a from-line naming its page. It still lives on that page. A
 tap to edit returns to Daily when that edit is finished. Showing it is
-a filter, not a second saved kind.
+a filter, not a second saved kind. A Birthday on Daily says Birthday,
+the first name, and the age, and does not add a from-line.
 
 **oneTime.** Daily's filter includes kind `oneTime`. That is not a
 visitor.
@@ -299,14 +340,27 @@ Daily.
 
 The log is one piece. Daily, the shared list, and the banner all write
 it. They do not each write their own. The list does not show it. Log in
-the header opens that page’s log only.
+the header opens that page’s log only. Daily’s list writes a visitor on
+Daily’s log. A banner Done writes the item’s own log. One Time uses
+Daily’s key. Cap 50.
 
 ## Log
 
 Log is not a Home page and not a kind of its own. The visible name is
 Log. Each reminder page carries Log in the header, beside + Add. That
 opens `app/log.tsx` for that page’s log only. There is not one log for
-everything. Back returns to the list.
+everything. Back returns to the list. Clear All is in the header when
+there are entries. Swipe deletes one entry. A tap opens a note on that
+entry.
+
+## New and Edit
+
+The one form is `app/item-edit.tsx`. Cancel and Save stay at the top
+while the form scrolls. Bucket List’s button says Done. Name, then the
+date-and-time control for that kind, then Note. The date line comes
+from the table. Birthdays say Birthdate. Options in the header
+opens the sheet. Applied options show on the form. Daily’s every-day
+New and Edit have plenty of room between Name, the time, and Note.
 
 ## Banner housing
 
@@ -352,10 +406,16 @@ The first time Home opens, a popup shows the User's Guide. Got it puts
 it away and it stays away. Reset All Data brings it back. The words are
 the same four paragraphs as the Settings page.
 
-Appointments is the check-mark. Bucket List is a rainbow. They do not
-share a picture. Yearly keeps the telescope. Quarterly is a fallen
-leaf. Monthly is a first-quarter moon. Those three do not share a
-picture.
+Appointments is the check-mark. Birthdays is a cake. Bucket List is a
+rainbow. They do not share a picture. Yearly keeps the telescope.
+Quarterly is a fallen leaf. Monthly is a first-quarter moon. Those
+three do not share a picture. Weekly is a calendar. Calendar is a
+month grid. Daily is a sun. Help is ?.
+
+On launch and on every return to the front, a popup speaks if a
+reminder did not reach you. It does not speak after a Save. OK takes it
+away. That tap silences those faults until the next day, and clears the
+misses it told.
 
 ## Help
 
@@ -387,10 +447,13 @@ Appointment and Bucket List. Cancel goes back one step.
 Calendar is a month view of the one list, not a kind of its own. The
 page is `app/calendar.tsx`. Home opens it as `/calendar`.
 
-Daily and Bucket List stay off the month. Other items sit on the days
-the engine already shades. The names in a day cell are not taps. The
-whole day is. A tap opens that day's list, time then name. The time is
-the same 12-hour clock as the other pages. A tap on a row opens the
+Daily every-day items and Bucket List stay off the month. One Time for
+today sits on the day. Other items sit on the days the engine already
+shades. The names in a day cell are not taps. The whole day is. A tap
+opens that day's list, time then name. The time is the same 12-hour
+clock as the other pages. A Birthday on the month says B-day and the
+first name. On the day’s list it says Birthday, that name, and the
+age. A tap on a row opens the
 one edit form, `app/item-edit.tsx`. After you make the
 edit, the save walk back brings you back to the item list. Hitting the
 Back button brings you back to the calendar.
@@ -399,8 +462,9 @@ There is no + Add. New items from Calendar go through Help, which sits
 in the month header, the same Help as from Home. Help only chooses
 the kind. The save-the-item popup, New, sits above it.
 
-Arrows change the month. Home is in the header. The month fills the
-screen.
+Arrows change the month. They sit next to the month name in the
+middle, not against Home and Help. Home is in the header. The month
+fills the screen.
 
 ## Settings
 
@@ -456,8 +520,9 @@ under the header, with how much room the phone has on the line beneath.
 Rows are grouped Today, Tomorrow, This Week, Later, and Time not known.
 A heading with nothing under it is left out. A tap opens a details
 popup: where it comes from, when it fires, last due, next due, the
-banner words, and its buttons. Close puts the popup away. A line at the
-foot names how many the phone is holding that this list does not show.
+banner words, and its buttons. The time is the same 12-hour clock as
+the other pages. Close puts the popup away. A line at the foot names
+how many the phone is holding that this list does not show.
 
 ## Options
 

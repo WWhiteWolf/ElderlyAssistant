@@ -17,6 +17,70 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #102-new (2026-09-10): time spinner Cancel; offset chips; Birthday lines
+
+**Time spinners.** The 12-hour and 24-hour spinners are popups. Cancel
+puts the spinner away and restores the time from when it opened. Done
+keeps the time and puts it away. You stay on New or Edit. Daily Set
+time opens the 12-hour popup. If the spinner opened from no time,
+Cancel goes back to none. The 12-hour arrows no longer sit on the
+form; you tap the 12-hour time to open them, same idea as the 24-hour
+box.
+
+**Offset chips.** When Save writes time only if a time was set, the
+chips that count back from that time sit muted like the sleeping clock
+and do nothing until a time is set. Morning of and the day-before chips
+stay, because they use the date. The form reads those two facts. It
+does not remember Birthdays. Appointments and One Time for today share
+the same words, so 30 min., 1 hour, 2 hours, and Time of mute there
+too. No time, and Save, drop the counted-back chips so they cannot
+stick.
+
+**Birthday lines.** A Birthday keeps a year of birth that stays put
+when Done moves the next date. Age is the year on the Calendar minus
+that year — the age they turn that day. The first name is the first
+word of Name. Month cells say B-day and that name. The day’s list, and
+a Birthday on Daily, say Birthday, that name, and the age. The
+Birthdays page does not say Birthday on the row. A new Birthday takes
+the year on the date as the year of birth. Birthdays already on the
+phone have no birth year yet.
+
+**Birthdate.** The date line on Birthdays’ New and Edit is Birthdate.
+The table holds that word. Appointments keep Due Date.
+
+Checked on the simulator for the spinners. 359 tests passed. In the
+project, not on 79.
+
+## #101-new (2026-09-10): guide filled; calendar arrows; Daily spacing
+
+**The #99-new review is done** (Patrick, #101-new). It comes off what
+is open. It had three looks: bugs, already taken care of; whether
+Memory comes out as one of the better reminder apps and one of the
+easier, which was not a sitting; leftover special rules on top of a
+kind. The designed implementation was not the last word.
+
+**The guide.** `docs/designed-implementation.md` was filled from the
+app and the table: Save’s date and time codes, the banner finds the
+item by id, Home badge pictures, the date-and-time control, Calendar
+and Scheduled Reminders clocks, Log, New and Edit, and the missed
+popup. Pending 1’s old spec dump came off. The guide is the build
+file. He does not review its marks.
+
+**No password to open the app** (Patrick, #101-new). The phone being
+open is enough. Reset All Data already asks Face ID or the passcode.
+Do not add another. Off nice-to-have.
+
+**Calendar arrows.** They sit next to the month name in the middle, not
+against Home and Help, so a tap does not hit the wrong control.
+
+**Daily every-day New.** Plenty of room between Name, the time, and
+Note. Undoing Set time without Cancel is a different operation and
+was not done in this sitting.
+
+**`easiest-and-best.md`** came off the live desk into `docs-ref`. Not
+needed. Layout, colors, and wording come from the chrome and the theme.
+A sitting reads those.
+
 ## #100-new (2026-09-09): year on the table; how near is a number
 
 **The rest of this sitting, after the badges and after Build 78.**
