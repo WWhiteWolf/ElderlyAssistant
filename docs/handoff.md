@@ -24,7 +24,10 @@ review is done (Patrick, #101-new). The designed implementation is the
 guide. Calendar month arrows sit by the month name. Daily every-day New
 has room between Name, time, and Note. **#102-new** is in the project,
 not on 79: time spinner Cancel and Done, muted offset chips, Birthday
-on Calendar and Daily, and Birthdate on the form.
+on Calendar and Daily, and Birthdate on the form. **#103-new** first-open
+has the fifth paragraph and no scroll. The longer User's Guide and the
+Help pop-up words are in `docs/user-guide.md`, almost complete, not in
+the app.
 
 ## Standing rulings
 
@@ -126,12 +129,18 @@ These are Patrick's and they govern the work rather than describing it.
   showing means un-check, not Done for the new cycle. Appointments and
   Bucket List stay as they are. Built at #83-new. The year word is
   #100-new.
-- **The Where? page is Help** (Patrick, #70-new; wording at #80-new).
-  The visible name is **Help**, not Where? The Home badge is **?**, not
-  🧭. The route may stay `where.tsx`. Step 1 choices are **Repeats** and
-  **Does not**. Step 2 asks how often, with no stray “every”, and includes
-  **Birthday**, which opens Birthdays’ New, not Yearly. Cancel on
-  steps 2 and 3 goes back one step; step 1 Cancel closes.
+- **The Where? page is Help** (Patrick, #70-new; wording at #80-new;
+  #103-new). The visible name is **Help**, not Where? The Home badge is
+  **?**, not 🧭. The route may stay `where.tsx`. Step 1 is: Does this
+  item repeat? **Yes** / **No**. Step 2 is: How often does this come
+  round? **Every day**, **Weekly**, **Monthly**, **Quarterly**,
+  **Yearly**, **For a birthday reminder**. Birthday still opens
+  Birthdays’ New, not Yearly. Does not asks: Is this for today? Yes is
+  One Time for today. No: If it has a date and time, like a doctor's
+  visit, that is Appointment. If it is something you want to do
+  someday, with no date, that is Bucket List. Cancel on steps 2 and 3
+  goes back one step; step 1 Cancel closes. Words are in
+  `docs/user-guide.md`. Not yet in the app.
 - **Yearly, Quarterly, and Monthly Home badges** (Patrick, #100-new).
   Yearly keeps the telescope. Quarterly is a fallen leaf. Monthly is a
   first-quarter moon. They had all three used the telescope. Checked on
@@ -163,9 +172,10 @@ These are Patrick's and they govern the work rather than describing it.
   Next Day are the missing-day banner, not an Options choice. Done
   and Save do not turn the reminder into a 28th.
 - **The user's guide is brief, in the app, and a tile on Settings**
-  (Patrick, #97-new). The same four paragraphs show as a first-load
-  popup on Home (Patrick, #98-new). Got it remembers. Reset All Data
-  brings it back. It does not go on a website. The app is
+  (Patrick, #97-new). A first-load popup on Home (Patrick, #98-new)
+  shows those four paragraphs, then a fifth that suggests opening
+  the User's Guide first (Patrick, #103-new). Got it remembers. Reset
+  All Data brings it back. It does not go on a website. The app is
   self-contained. A person's data stays on the phone. The app does
   not reach out to read or write from the outside world. What is
   already in App Store Connect stays there.
@@ -208,8 +218,12 @@ on that shared page. The log is not on the list. `app/daily.tsx` is
 the same thin route as Weekly.
 
 The spec is `docs/designed-implementation.md`. The testing file is
-Pending 1. The user's guide is a tile on Settings. The words are in.
-First load on Home shows the same words.
+Pending 1. The user's guide is a tile on Settings. That page still has
+the four paragraphs. First load on Home shows those four, then a fifth
+that suggests opening the User's Guide. The longer Guide, and the Help
+pop-up words, are in `docs/user-guide.md`. Put those in the app. The
+Guide page will need bullets for Help. Patrick said the Guide is
+almost complete.
 
 Testers are on TestFlight External. The phone load is **79**. The App
 Store heading is Waiting for Review on **72**. He is not aiming to go

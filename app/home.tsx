@@ -17,7 +17,7 @@ import { Cover } from '../components/Cover';
 import { HeaderButton, PageFrame, uprightInLandscape, useLandscape } from '../components/PageFrame';
 import { PAGE_LABELS } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
-import { USER_GUIDE_PARAGRAPHS, USER_GUIDE_SEEN_KEY } from '../constants/user-guide';
+import { FIRST_OPEN_PARAGRAPHS, USER_GUIDE_SEEN_KEY } from '../constants/user-guide';
 import {
     applySavedHomeOrder,
     HOME_BADGES,
@@ -300,14 +300,11 @@ export default function HomeScreen() {
                 <View style={styles.modalOverlay}>
                     <View style={styles.pickerModal}>
                         <Text style={styles.modalTitle}>{PAGE_LABELS.userGuide}</Text>
-                        <ScrollView
-                            style={styles.welcomeScroll}
-                            keyboardShouldPersistTaps="handled"
-                        >
-                            {USER_GUIDE_PARAGRAPHS.map((one) => (
+                        <View>
+                            {FIRST_OPEN_PARAGRAPHS.map((one) => (
                                 <Text key={one} style={styles.welcomeParagraph}>{one}</Text>
                             ))}
-                        </ScrollView>
+                        </View>
                         <View style={styles.modalBtns}>
                             <TouchableOpacity style={styles.gotItBtn} onPress={dismissWelcome}>
                                 <Text style={styles.choiceBtnText}>Got it</Text>
@@ -458,7 +455,6 @@ const makeStyles = (t: Theme) =>
             width: '100%',
         },
         modalTitle: { fontSize: 18, fontWeight: '600', color: t.cardTitle, marginBottom: 10 },
-        welcomeScroll: { maxHeight: 400 },
         welcomeParagraph: {
             fontSize: 16,
             color: t.bodyText,

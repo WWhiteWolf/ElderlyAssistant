@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-10 (#102-new)
+Last updated: 2026-09-10 (#103-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -27,6 +27,10 @@ WHAT'S NEXT
 1. DAY-ROLL LOCK still wants a night of all-green Daily on this
    load, then a morning open on a new load, to confirm the pop-up
    stays quiet.
+2. #103-new — put `docs/user-guide.md` on the Settings User's Guide
+   page (Help needs bullets), and the Help pop-up words into Help.
+   Almost complete. First-open fifth paragraph is already in the
+   project. Not on the phone.
 
 
 PENDING
@@ -123,6 +127,9 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+109. #103-new — first-open fifth paragraph, no scroll. Longer User's
+    Guide and Help words in docs/user-guide.md, not in the app.
 
 108. #102-new — Birthdays’ date line is Birthdate.
 

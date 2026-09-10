@@ -17,6 +17,27 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #103-new (2026-09-10): first-open; User's Guide and Help words
+
+**First-open.** The four short paragraphs stay. A fifth suggests
+opening the User's Guide: You should start with the User's Guide.
+Tap the gear at the top of Home to open Settings, then tap User's
+Guide at the bottom of that page. The popup is tall enough that
+those five sit without scrolling. In the project, not on 79.
+Checked on the simulator.
+
+**The longer Guide.** It no longer matches the first-open four. The
+words are in `docs/user-guide.md`. Repeating and not repeating, then
+Daily, then Help as a tree, then Reminders before. Almost complete.
+Not on the Settings page. That page still has the four paragraphs.
+Help on that page needs bullets.
+
+**Help pop-ups.** Same four steps. Yes / No on repeat. How often does
+this come round: Every day, Weekly, Monthly, Quarterly, Yearly, For
+a birthday reminder. Is this for today. Last step names Appointment
+and Bucket List. Words are in `docs/user-guide.md`. Not yet in
+`app/where.tsx`.
+
 ## #102-new (2026-09-10): time spinner Cancel; offset chips; Birthday lines
 
 **Time spinners.** The 12-hour and 24-hour spinners are popups. Cancel

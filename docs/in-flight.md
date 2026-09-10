@@ -4,24 +4,24 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-10, at #102-new.
+Last written: 2026-09-10, at #103-new.
 
 ## Read this first
 
 - Build **79** is on the phone. Scheduled Reminders is down to 14.
-- **#102-new** is in the project, not on 79: time spinner Cancel and Done,
-  muted offset chips, Birthday on Calendar and Daily, Birthdate on the form.
+- **#103-new** first-open fifth paragraph and no scroll are in the project,
+  not on 79. The longer User's Guide and Help pop-up words are in
+  `docs/user-guide.md`. Almost complete. Not in the app.
 - The designed implementation is the guide.
 
 ## What is in
 
-The guide is `docs/designed-implementation.md`. A sitting builds from it.
+Put `docs/user-guide.md` on the Settings User's Guide page, and the Help
+pop-up words into Help. The Guide page needs bullets for Help.
 
 ## What is next
 
-Day-roll lock still wants a night of all-green Daily. Help wants big
-improvements (Patrick, #102-new). He builds from the guide when he wants
-that sitting.
+Day-roll lock still wants a night of all-green Daily.
 
 ## Do not reopen
 

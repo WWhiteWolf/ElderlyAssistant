@@ -404,7 +404,9 @@ A tap still opens the page when you are not editing.
 
 The first time Home opens, a popup shows the User's Guide. Got it puts
 it away and it stays away. Reset All Data brings it back. The words are
-the same four paragraphs as the Settings page.
+the four paragraphs from the Settings page, then a fifth: You should
+start with the User's Guide. Tap the gear at the top of Home to open
+Settings, then tap User's Guide at the bottom of that page.
 
 Appointments is the check-mark. Birthdays is a cake. Bucket List is a
 rainbow. They do not share a picture. Yearly keeps the telescope.
@@ -428,19 +430,19 @@ Help does not save an item. It asks which kind, then opens
 comes back to Help. Save on the form pops Help as well, and opens the
 page where the item lives.
 
-The first question is: Does this item repeat? The choices are Repeats
-and Does not. Cancel closes.
+The first question is: Does this item repeat? The choices are Yes and
+No. Cancel closes.
 
-Repeats asks: How often does this item occur? The choices are Every day,
-Week, Month, Quarter, Year, and Birthday. Those words do not carry a
-stray “every”. Birthday opens Birthdays’ New, not Yearly. Cancel goes
-back one step.
+Yes asks: How often does this come round? The choices are Every day,
+Weekly, Monthly, Quarterly, Yearly, and For a birthday reminder.
+Birthday opens Birthdays’ New, not Yearly. Cancel goes back one step.
 
-Does not asks: Is that for today? Yes opens Daily’s one-shot,
-`oneTime`. No asks: Is this an occurrence that has a specific time
-and date, like an appointment? Or is it the rare item with no
-deadline or due date, like a Bucket List desire? The choices are
-Appointment and Bucket List. Cancel goes back one step.
+No asks: Is this for today? Yes opens Daily’s one-shot, `oneTime`.
+No says: If it has a date and time, like a doctor's visit, that is
+Appointment. If it is something you want to do someday, with no date,
+that is Bucket List. The choices are Appointment and Bucket List.
+Cancel goes back one step. Those words are in `docs/user-guide.md`.
+They are not yet in `app/where.tsx`.
 
 ## Calendar
 
@@ -480,8 +482,10 @@ date-and-time control as the rest of the app.
 
 Scheduled Reminders and Backup & Restore are doors off this page. They
 are not this page. User's Guide is a tile on this page. A tap opens a
-brief guide that lives in the app. The words are the same four
-paragraphs as the first-load popup on Home. It does not go to a website.
+brief guide that lives in the app. The page still has the four
+paragraphs. The longer words are in `docs/user-guide.md`, not yet on
+this page. The first-load popup on Home has those four and then a
+fifth that suggests opening this page. It does not go to a website.
 Feedback is its own tile on this page. It opens the same popup Mystery
 Clues Tracker uses. Send opens the phone's Mail. The person reaches
 out; the app does not send the mail. Reset All Data sits in the Settings
