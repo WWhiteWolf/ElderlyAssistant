@@ -17,6 +17,61 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #106-new (2026-09-11): User's Guide headings; Reset All Data out
+
+**Phone.** Build 80 is on the phone. #106-new Guide words are in the
+project, not on 80.
+
+**Delete.** Written with Patrick, one heading at a time. Swipe on the
+reminder pages. The app asks Remove this entry? It takes the reminder
+itself off, including when it is showing on Daily from another page.
+In `docs/user-guide.md` and in the app Guide.
+
+**Save.** On New and Edit, next to Cancel. Missing name, and a date or
+time that is not real, are separate lines. AM or PM check when the time
+was last set with the 12-hour spinner. In `docs/user-guide.md` and in
+the app Guide.
+
+**Done.** The list button says Done? then a tick. Daily and Weekly undo
+the same day; the morning takes the tick off. Monthly, Quarterly,
+Yearly, and Birthdays move the date. The next round is armed when it is
+close enough for the before-reminders: about a month for Monthly, about
+two months for Quarterly, Yearly, and Birthdays. Appointments and
+Bucket List stay on the page. Skip is not Done.
+
+**Snooze.** From the list popup and the banner delays. Daily and One
+Time: 15, 30, or 60 minutes. Weekly adds Delay 1 Day. Monthly,
+Quarterly, and Yearly: Delay 1 Day, 1 Week, or 1 Month. Appointments,
+Birthdays, and Bucket List cannot. Daily with no time has no Snooze.
+
+**Banners.** Buttons by kind. OK drops the notice. It does not drop this
+round, and it does not change what you have set. Skip drops this round
+and sets up the next. Tap the banner or a button opens the page, on the
+item that is reminding. Then and Next Day for a missing day.
+
+**Bucket List keep button.** Built at #106-new. It says Save, same as
+the other pages. The old Done on that button was not the tick. The
+Guide does not teach the old word.
+
+**Help sentences.** From Help, Cancel comes back to the questions.
+Save puts Help away as well, and opens the page where the item lives.
+In the Help heading of the Guide.
+
+**Log.** Written with Patrick. Each reminder page has its own log.
+Swipe deletes a log line only. Clear All asks first. Newest 50. A
+visitor marked Done on Daily writes on Daily's log, and also on that
+other page's log. Banner Done writes the item's own page log. One Time
+uses Daily's log.
+
+**Reset All Data.** Taken out at #106-new. It is not in Settings. To
+start with a clean copy, delete the app from the phone, then install
+it again. Export a Backup first if you want to keep what is entered.
+
+**Session close.** `handoff.md`, `handoff-history.md`, `pending.txt`,
+`in-flight.md`, `docs/index.md`, and `App-Docs/master-handoff.md`
+refreshed. `pending.docx` already matches. Patrick will commit and
+put a new load on the phone.
+
 ## #105-new (2026-09-11): issue fixes; Options Guide; Day after the set day
 
 **Phone.** Build 80 is on the phone. #104-new's User's Guide and Help

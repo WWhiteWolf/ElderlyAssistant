@@ -1,8 +1,9 @@
 # User's Guide — words for the app
 
-From #103-new. Settings section from #104-new. Options, Delete, Save,
-Done, Snooze, and Banners from #105-new. On the Settings User's Guide
-page. Help pop-up words are at the end, and in Help.
+From #103-new. Settings section from #104-new. Options from #105-new.
+Delete, Save, Done, Snooze, Banners, and Log from #106-new. On the
+Settings User's Guide page. Help pop-up words are at the end, and in
+Help.
 
 The first-open popup on Home already has the four short paragraphs
 plus a fifth that suggests opening this Guide. That popup is in the
@@ -105,6 +106,9 @@ Does this item repeat?
 Pick the one that applies. Or cancel and enter the item directly on a
 page if that is easier.
 
+From Help, Cancel comes back to the questions. Save puts Help away as
+well, and opens the page where the item lives.
+
 ## Reminders before
 
 The time of the appointment reminds you at the time you set, and also
@@ -144,7 +148,6 @@ Settings is reached by tapping the gear in the header of Home.
 - This User's Guide is here.
 - Feedback is for emailing the developer with comments, suggestions,
   or problems you want to pass on.
-- Reset All Data clears everything you have entered in this app.
 
 Each of these is explained below.
 
@@ -198,20 +201,9 @@ comments or a question if you care to, then tap the Send Feedback
 button. It uses the phone's Mail to open a pre-addressed email to
 the developer, and sends it.
 
-Reset All Data is in the header of Settings. You will see a red
-warning mark, then Reset, then All, all in red.
-
-If you tap it, you will be asked more than once, so it is hard to do
-by accident.
-
-- Cancel leaves everything as it is.
-- Continue goes on. The phone asks for Face ID or your passcode,
-  just to be sure it is you.
-- Then it asks Are you sure?
-- Reset All Data clears everything you have in this app, and takes
-  you Home.
-
-The welcome words come back the next time you open the app.
+There is no Reset All Data in the app. To start with a clean copy,
+delete the app from the phone, then install it again. Export a Backup
+first if you want to keep what you have entered.
 
 ## Options
 
@@ -256,6 +248,96 @@ When a choice is on, it shows on the form under Options. Tap it to change it.
 A Note is a field on New and Edit. It is not an Options choice.
 
 Then and Next Day are for when a month has no such day. They show on the banner, not in Options.
+
+## Delete
+
+Delete is how you take a reminder off its page. Swipe the row, and a Delete button comes out. Tap it, and the app asks Remove this entry? Cancel leaves everything as it is. Delete takes the reminder off.
+
+It really is gone then, not only hidden for today. If a reminder from another page is showing on Daily, deleting it there takes it off that other page too, because it is the same reminder.
+
+## Save
+
+Save is on New and Edit. It stays at the top while you scroll, next to Cancel. Save keeps the reminder as you set it, and takes you back to the page it belongs on. Cancel leaves everything as it was.
+
+If there is no name, Save asks you to enter one.
+
+If a date or time you typed is not a real one, that box is outlined in red, and Save asks you to fix it first.
+
+If you last set the time with the 12-hour spinner, Save asks you to check AM or PM, so the morning or evening is the one you mean. You can go back and change it, or Save from there. If you last set the time with the 24-hour box or the digit spinner, it does not ask.
+
+## Done
+
+Done is how you mark that you have taken care of a reminder. On the list the button says Done? Tap it, and it becomes a tick.
+
+On reminders that repeat, Done means this round is taken care of, and it will come round again.
+
+Daily and Weekly: a second tap the same day takes the tick off. The morning takes it off if you leave it.
+
+Monthly, Quarterly, Yearly, and Birthdays: Done moves the date to the next time. The tick stays so you can see this cycle was done. A second tap while the tick is showing means this cycle was not done. The app asks if you want to mark it as not done. Cancel leaves the tick. It is not Done for the new cycle.
+
+The next round is armed when it is close enough, so there is room for the before-reminders. Monthly looks about a month ahead. Quarterly, Yearly, and Birthdays look about two months ahead.
+
+On Appointments and Bucket List, Done means this one is finished. It stays on the page, and it will not remind you again. Delete is how you get rid of it.
+
+Some banners also have a Done button. Appointments and Birthdays do not; those banners only have OK. Bucket List has no banner.
+
+Skip is not Done. Skip drops this round and sets up the next. Appointments and Bucket List have no next round, so they have no Skip.
+
+## Snooze
+
+Snooze pushes a reminder back. On the list, tap Snooze. A popup titled Snooze Reminder asks you to remind me again in. Cancel leaves it as it is.
+
+The list then says Snoozed till and the new time. If that time is another day, it also names the weekday and the date, and the year when the year changes.
+
+Which delays you see depends on the kind.
+
+Daily, and One Time for today: 15, 30, or 60 minutes.
+
+Weekly: those three, and Delay 1 Day.
+
+Monthly, Quarterly, and Yearly: Delay 1 Day, Delay 1 Week, or Delay 1 Month.
+
+The banner uses the same delays. Those buttons say Delay.
+
+Appointments, Birthdays, and Bucket List cannot be snoozed. A Daily reminder with no time has no Snooze button, because there is nothing to push back.
+
+## Banners
+
+A banner is the notice the phone shows when a reminder is due. The buttons on it depend on the kind.
+
+Daily, and One Time for today: Done, OK, Skip, Delay 15 min, Delay 30 min, and Delay 60 min.
+
+Weekly: those, and Delay 1 Day.
+
+Monthly, Quarterly, and Yearly: Done, Delay 1 Day, Delay 1 Week, and Delay 1 Month.
+
+Appointments and Birthdays: OK.
+
+Bucket List has no banner.
+
+OK drops the notice. It does not drop this round, and it does not change what you have set.
+
+Skip drops this round and sets up the next.
+
+If you tap the banner, or a button, the app opens on that reminder's page, on the item that is reminding. A One Time for today opens Daily.
+
+When a month has no such day as the one you set, the banner offers Then and Next Day instead. Then keeps the last day that month has. Next Day moves this round by one day only. Those are not Options choices.
+
+## Log
+
+Log is not a Home page. Each reminder page has Log in the header, beside + Add. That opens that page’s log only. There is not one log for everything. The list itself does not show it. Back returns to the list.
+
+If there are no entries yet, it says No log entries yet.
+
+A tap on a line opens a note for that entry. Cancel leaves it. Save keeps the note.
+
+Swipe a line, then tap Delete. That deletes the log line only. It does not take the reminder off.
+
+Clear All is in the header when there are entries. It asks Delete all log entries? This cannot be undone. Cancel leaves them. Clear All takes them all off.
+
+The log keeps the newest 50 entries.
+
+A reminder showing on Daily from another page writes on Daily’s log, and also on that other page’s log. Done from a banner writes on that reminder’s own page log. One Time for today uses Daily’s log.
 
 ---
 

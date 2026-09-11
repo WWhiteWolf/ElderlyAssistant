@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-11 (#105-new)
+Last updated: 2026-09-11 (#106-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -24,11 +24,9 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. USER'S GUIDE HEADINGS still to write: Delete, Save, Done, Snooze,
-   and Banners. One heading at a time. Options is in.
-2. DAY AFTER THE SET DAY on Weekly's Options is in the project, not
+1. DAY AFTER THE SET DAY on Weekly's Options is in the project, not
    on 80 (Patrick, #105-new).
-3. DAY-ROLL LOCK still wants a night of all-green Daily on this
+2. DAY-ROLL LOCK still wants a night of all-green Daily on this
    load, then a morning open on a new load, to confirm the pop-up
    stays quiet.
 
@@ -131,6 +129,36 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+123. #106-new — Reset All Data taken out. To start clean, delete the
+    app from the phone. Not on 80.
+
+122. #106-new — Help in the Guide: from Help, Cancel comes back to the
+    questions; Save puts Help away and opens the item's page. Not on 80.
+
+121. #106-new — A visitor marked Done on Daily writes on Daily's log
+    and on that other page's log.
+
+120. #106-new — Log heading in the User's Guide, docs and app file.
+    Not on 80.
+
+119. #106-new — Banners heading in the User's Guide, docs and app file.
+    OK drops the notice. Not on 80.
+
+118. #106-new — Snooze heading in the User's Guide, docs and app file.
+    Not on 80.
+
+117. #106-new — Done heading in the User's Guide, docs and app file.
+    Not on 80.
+
+116. #106-new — Bucket List's keep button on New and Edit says Save,
+    same as the other pages. Not on 80.
+
+115. #106-new — Save heading in the User's Guide, docs and app file.
+    Not on 80.
+
+114. #106-new — Delete heading in the User's Guide, docs and app file.
+    Not on 80.
 
 113. #105-new — Weekly delay includes one day, on the banner and the
     tile popup. Daily keeps 15 / 30 / 60 minutes.

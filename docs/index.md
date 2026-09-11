@@ -16,7 +16,7 @@ just because it is listed.
 ## The desk — in `docs`
 
 - **`handoff.md`** — the opening read. Where the work stands and what is open.
-- **`user-guide.md`** — Settings User's Guide and Help pop-ups. On the Settings page and in Help. Options is in. Delete, Save, Done, Snooze, and Banners still to write.
+- **`user-guide.md`** — Settings User's Guide and Help pop-ups. On the Settings page and in Help. Options, Delete, Save, Done, Snooze, Banners, and Log are in. There is no Reset All Data.
 - **`in-flight.md`** — this session's desk. Replaced every time, never added to.
 - **`pending.txt`** — Patrick's list, and the source of the Word copy. Brought up to date at every update.
 - **`pending.docx`** — the copy Patrick reads. Generated from the txt, never hand-edited.

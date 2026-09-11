@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Cover } from '../components/Cover';
-import * as LocalAuthentication from 'expo-local-authentication';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -16,11 +15,9 @@ import {
     View,
 } from 'react-native';
 import DateTimeControl from '../components/DateTimeControl';
-import { HeaderButton, PageFrame, uprightInLandscape, useLandscape } from '../components/PageFrame';
-import { useLandscapeHeaderSide } from '../components/AppOrientation';
+import { HeaderButton, PageFrame } from '../components/PageFrame';
 import { Theme, useTheme, useThemeControls } from '../constants/Themes';
 import { applyReminderChange } from '../modules/reminder-items';
-import { runScheduler } from '../scheduler/scheduler';
 
 const FEEDBACK_MAIL = 'jojoMurphy@tuta.com';
 
@@ -28,8 +25,6 @@ type WorkedAnswer = 'Yes' | 'Mostly' | 'No' | '';
 
 export default function SettingsScreen() {
     const router = useRouter();
-    const landscape = useLandscape();
-    const headerSide = useLandscapeHeaderSide();
     const theme = useTheme();
     const styles = makeStyles(theme);
     const { themeName, setThemeName, popupStyle, setPopupStyle } = useThemeControls();
@@ -178,57 +173,6 @@ export default function SettingsScreen() {
         }
     };
 
-    const wipeAllData = async () => {
-        await AsyncStorage.clear();
-        // The wipe does not take reminders off the phone.
-        // The scheduler does that: an empty list means
-        // every owned reminder is cancelled.
-        await runScheduler();
-        router.replace('/home');
-    };
-
-    const resetApp = async () => {
-        Alert.alert(
-            'Reset All Data',
-            'This will permanently delete ALL your data. This cannot be undone.',
-            [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                    text: 'Continue', style: 'destructive', onPress: async () => {
-                        // Confirm identity with Face ID / passcode before wiping.
-                        const result = await LocalAuthentication.authenticateAsync({
-                            promptMessage: 'Authenticate to reset all data',
-                            fallbackLabel: 'Use Passcode',
-                            cancelLabel: 'Back',
-                        });
-                        if (result.success) {
-                            setTimeout(() => {
-                                Alert.alert(
-                                    'Are you sure?',
-                                    'This will permanently delete ALL your data. This cannot be undone.',
-                                    [
-                                        { text: 'Cancel', style: 'cancel' },
-                                        {
-                                            text: 'Reset All Data',
-                                            style: 'destructive',
-                                            onPress: () => { void wipeAllData(); },
-                                        },
-                                    ],
-                                );
-                            }, 300);
-                        } else if (
-                            result.error !== 'user_cancel'
-                            && result.error !== 'system_cancel'
-                            && result.error !== 'app_cancel'
-                        ) {
-                            Alert.alert('Reset Cancelled', 'Your data was not deleted.');
-                        }
-                    }
-                },
-            ]
-        );
-    };
-
     return (
         <View style={styles.container}>
             <PageFrame
@@ -239,15 +183,7 @@ export default function SettingsScreen() {
                             <Text style={styles.headerBtnText}>Home</Text>
                         </HeaderButton>
                         <Text style={styles.title}>Settings</Text>
-                        <TouchableOpacity
-                            onPress={resetApp}
-                            style={[styles.resetHeader, uprightInLandscape(landscape, headerSide)]}
-                            activeOpacity={0.7}
-                        >
-                            <Text style={styles.resetEmblem}>{'\u26A0'}</Text>
-                            <Text style={styles.resetWord}>Reset</Text>
-                            <Text style={styles.resetWord}>All</Text>
-                        </TouchableOpacity>
+                        <HeaderButton />
                     </View>
                 }
             >
@@ -514,23 +450,6 @@ const makeStyles = (t: Theme) =>
             flexDirection: 'row',
             alignItems: 'center',
             paddingBottom: 8,
-        },
-        resetHeader: {
-            width: 54,
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        resetEmblem: {
-            fontSize: 16,
-            color: t.buttonDelete,
-            lineHeight: 18,
-        },
-        resetWord: {
-            fontSize: 11,
-            fontWeight: '700',
-            color: t.buttonDelete,
-            lineHeight: 13,
-            textAlign: 'center',
         },
         title: {
             fontSize: 24,

@@ -218,6 +218,7 @@ export async function writeHistoryEntry(
 
 // Mark this item done the way the list already does, and write the log.
 // The history key is the caller's, so Daily still logs a visitor on Daily.
+// If the item lives on another page, that page's log is written as well.
 export async function markReminderDone(
     id: string,
     historyKey: string | null,
@@ -228,6 +229,10 @@ export async function markReminderDone(
     if (!item) return;
     if (historyKey) {
         await writeHistoryEntry(historyKey, clockTime, item.label);
+    }
+    const ownKey = historyKeyFor(item.kind);
+    if (ownKey && ownKey !== historyKey) {
+        await writeHistoryEntry(ownKey, clockTime, item.label);
     }
     await applyReminderChange((list) => list.map((one) => {
         if (one.id !== id) return one;

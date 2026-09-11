@@ -445,7 +445,7 @@ export default function ItemEditScreen() {
                         <Text style={styles.cancelBtnText}>Cancel</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.confirmBtn} onPress={save}>
-                        <Text style={styles.confirmBtnText}>{editKind === 'bucketlist' ? 'Done' : 'Save'}</Text>
+                        <Text style={styles.confirmBtnText}>Save</Text>
                     </TouchableOpacity>
                 </View>
             <ScrollView style={styles.formScroll} contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">

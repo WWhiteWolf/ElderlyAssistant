@@ -28,8 +28,7 @@ Daily on the shared list, and the banner housing. Daily is built. The
 banner housing is built.
 
 This file is the guide. There is no password to open the app. The
-phone being open is enough (Patrick, #101-new). Reset All Data already
-asks Face ID or the passcode. Do not add another.
+phone being open is enough (Patrick, #101-new). Do not add another.
 
 The app is self-contained. A person's data stays on the phone. The
 app does not reach out to read or write from the outside world. What
@@ -354,8 +353,8 @@ Daily.
 The log is one piece. Daily, the shared list, and the banner all write
 it. They do not each write their own. The list does not show it. Log in
 the header opens that page’s log only. Daily’s list writes a visitor on
-Daily’s log. A banner Done writes the item’s own log. One Time uses
-Daily’s key. Cap 50.
+Daily’s log, and also on that other page’s log. A banner Done writes
+the item’s own log. One Time uses Daily’s key. Cap 50.
 
 ## Log
 
@@ -369,7 +368,7 @@ entry.
 ## New and Edit
 
 The one form is `app/item-edit.tsx`. Cancel and Save stay at the top
-while the form scrolls. Bucket List’s button says Done. Name, then the
+while the form scrolls. Name, then the
 date-and-time control for that kind, then Note. The date line comes
 from the table. Birthdays say Birthdate. Options in the header
 opens the sheet. Applied options show on the form. Daily’s every-day
@@ -418,7 +417,8 @@ order is remembered the next time Home opens.
 A tap still opens the page when you are not editing.
 
 The first time Home opens, a popup shows the User's Guide. Got it puts
-it away and it stays away. Reset All Data brings it back. The words are
+it away and it stays away. Deleting the app and installing it again
+brings it back. The words are
 the four paragraphs from the Settings page, then a fifth: You should
 start with the User's Guide. Tap the gear at the top of Home to open
 Settings, then tap User's Guide at the bottom of that page.
@@ -502,12 +502,11 @@ Home has the four short paragraphs and then a fifth that suggests
 opening this page. It does not go to a website.
 Feedback is its own tile on this page. It opens the same popup Mystery
 Clues Tracker uses. Send opens the phone's Mail. The person reaches
-out; the app does not send the mail. Reset All Data sits in the Settings
-header, not among the tiles and not on Backup & Restore. It is not a
-round button. A red warning mark, then Reset, then All, all in red. It
-asks the phone to confirm who you are. After Face ID or the passcode
-is accepted, it asks Are you sure? Cancel backs out. Then it wipes
-everything and lands on Home.
+out; the app does not send the mail.
+
+There is no Reset All Data (Patrick, #106-new). To start with a clean
+copy, delete the app from the phone, then install it again. Export a
+Backup first if you want to keep what is entered.
 
 ## Backup
 

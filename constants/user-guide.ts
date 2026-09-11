@@ -127,6 +127,10 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
         type: 'paragraph',
         text: 'Pick the one that applies. Or cancel and enter the item directly on a page if that is easier.',
     },
+    {
+        type: 'paragraph',
+        text: 'From Help, Cancel comes back to the questions. Save puts Help away as well, and opens the page where the item lives.',
+    },
 
     { type: 'heading', text: 'Reminders before' },
     {
@@ -173,7 +177,6 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
             { text: 'Backup & Restore is for saving and retrieving your reminders.' },
             { text: "This User's Guide is here." },
             { text: 'Feedback is for emailing the developer with comments, suggestions, or problems you want to pass on.' },
-            { text: 'Reset All Data clears everything you have entered in this app.' },
         ],
     },
     { type: 'paragraph', text: 'Each of these is explained below.' },
@@ -242,24 +245,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Reset All Data is in the header of Settings. You will see a red warning mark, then Reset, then All, all in red.',
-    },
-    {
-        type: 'paragraph',
-        text: 'If you tap it, you will be asked more than once, so it is hard to do by accident.',
-    },
-    {
-        type: 'bullets',
-        items: [
-            { text: 'Cancel leaves everything as it is.' },
-            { text: 'Continue goes on. The phone asks for Face ID or your passcode, just to be sure it is you.' },
-            { text: 'Then it asks Are you sure?' },
-            { text: 'Reset All Data clears everything you have in this app, and takes you Home.' },
-        ],
-    },
-    {
-        type: 'paragraph',
-        text: 'The welcome words come back the next time you open the app.',
+        text: 'There is no Reset All Data in the app. To start with a clean copy, delete the app from the phone, then install it again. Export a Backup first if you want to keep what you have entered.',
     },
 
     { type: 'heading', text: 'Options' },
@@ -341,5 +327,173 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     {
         type: 'paragraph',
         text: 'Then and Next Day are for when a month has no such day. They show on the banner, not in Options.',
+    },
+
+    { type: 'heading', text: 'Delete' },
+    {
+        type: 'paragraph',
+        text: 'Delete is how you take a reminder off its page. Swipe the row, and a Delete button comes out. Tap it, and the app asks Remove this entry? Cancel leaves everything as it is. Delete takes the reminder off.',
+    },
+    {
+        type: 'paragraph',
+        text: 'It really is gone then, not only hidden for today. If a reminder from another page is showing on Daily, deleting it there takes it off that other page too, because it is the same reminder.',
+    },
+
+    { type: 'heading', text: 'Save' },
+    {
+        type: 'paragraph',
+        text: 'Save is on New and Edit. It stays at the top while you scroll, next to Cancel. Save keeps the reminder as you set it, and takes you back to the page it belongs on. Cancel leaves everything as it was.',
+    },
+    {
+        type: 'paragraph',
+        text: 'If there is no name, Save asks you to enter one.',
+    },
+    {
+        type: 'paragraph',
+        text: 'If a date or time you typed is not a real one, that box is outlined in red, and Save asks you to fix it first.',
+    },
+    {
+        type: 'paragraph',
+        text: 'If you last set the time with the 12-hour spinner, Save asks you to check AM or PM, so the morning or evening is the one you mean. You can go back and change it, or Save from there. If you last set the time with the 24-hour box or the digit spinner, it does not ask.',
+    },
+
+    { type: 'heading', text: 'Done' },
+    {
+        type: 'paragraph',
+        text: 'Done is how you mark that you have taken care of a reminder. On the list the button says Done? Tap it, and it becomes a tick.',
+    },
+    {
+        type: 'paragraph',
+        text: 'On reminders that repeat, Done means this round is taken care of, and it will come round again.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Daily and Weekly: a second tap the same day takes the tick off. The morning takes it off if you leave it.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Monthly, Quarterly, Yearly, and Birthdays: Done moves the date to the next time. The tick stays so you can see this cycle was done. A second tap while the tick is showing means this cycle was not done. The app asks if you want to mark it as not done. Cancel leaves the tick. It is not Done for the new cycle.',
+    },
+    {
+        type: 'paragraph',
+        text: 'The next round is armed when it is close enough, so there is room for the before-reminders. Monthly looks about a month ahead. Quarterly, Yearly, and Birthdays look about two months ahead.',
+    },
+    {
+        type: 'paragraph',
+        text: 'On Appointments and Bucket List, Done means this one is finished. It stays on the page, and it will not remind you again. Delete is how you get rid of it.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Some banners also have a Done button. Appointments and Birthdays do not; those banners only have OK. Bucket List has no banner.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Skip is not Done. Skip drops this round and sets up the next. Appointments and Bucket List have no next round, so they have no Skip.',
+    },
+
+    { type: 'heading', text: 'Snooze' },
+    {
+        type: 'paragraph',
+        text: 'Snooze pushes a reminder back. On the list, tap Snooze. A popup titled Snooze Reminder asks you to remind me again in. Cancel leaves it as it is.',
+    },
+    {
+        type: 'paragraph',
+        text: 'The list then says Snoozed till and the new time. If that time is another day, it also names the weekday and the date, and the year when the year changes.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Which delays you see depends on the kind.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Daily, and One Time for today: 15, 30, or 60 minutes.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Weekly: those three, and Delay 1 Day.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Monthly, Quarterly, and Yearly: Delay 1 Day, Delay 1 Week, or Delay 1 Month.',
+    },
+    {
+        type: 'paragraph',
+        text: 'The banner uses the same delays. Those buttons say Delay.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Appointments, Birthdays, and Bucket List cannot be snoozed. A Daily reminder with no time has no Snooze button, because there is nothing to push back.',
+    },
+
+    { type: 'heading', text: 'Banners' },
+    {
+        type: 'paragraph',
+        text: 'A banner is the notice the phone shows when a reminder is due. The buttons on it depend on the kind.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Daily, and One Time for today: Done, OK, Skip, Delay 15 min, Delay 30 min, and Delay 60 min.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Weekly: those, and Delay 1 Day.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Monthly, Quarterly, and Yearly: Done, Delay 1 Day, Delay 1 Week, and Delay 1 Month.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Appointments and Birthdays: OK.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Bucket List has no banner.',
+    },
+    {
+        type: 'paragraph',
+        text: 'OK drops the notice. It does not drop this round, and it does not change what you have set.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Skip drops this round and sets up the next.',
+    },
+    {
+        type: 'paragraph',
+        text: "If you tap the banner, or a button, the app opens on that reminder's page, on the item that is reminding. A One Time for today opens Daily.",
+    },
+    {
+        type: 'paragraph',
+        text: 'When a month has no such day as the one you set, the banner offers Then and Next Day instead. Then keeps the last day that month has. Next Day moves this round by one day only. Those are not Options choices.',
+    },
+
+    { type: 'heading', text: 'Log' },
+    {
+        type: 'paragraph',
+        text: "Log is not a Home page. Each reminder page has Log in the header, beside + Add. That opens that page's log only. There is not one log for everything. The list itself does not show it. Back returns to the list.",
+    },
+    {
+        type: 'paragraph',
+        text: 'If there are no entries yet, it says No log entries yet.',
+    },
+    {
+        type: 'paragraph',
+        text: 'A tap on a line opens a note for that entry. Cancel leaves it. Save keeps the note.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Swipe a line, then tap Delete. That deletes the log line only. It does not take the reminder off.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Clear All is in the header when there are entries. It asks Delete all log entries? This cannot be undone. Cancel leaves them. Clear All takes them all off.',
+    },
+    {
+        type: 'paragraph',
+        text: 'The log keeps the newest 50 entries.',
+    },
+    {
+        type: 'paragraph',
+        text: "A reminder showing on Daily from another page writes on Daily's log, and also on that other page's log. Done from a banner writes on that reminder's own page log. One Time for today uses Daily's log.",
     },
 ];

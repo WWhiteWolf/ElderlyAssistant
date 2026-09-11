@@ -25,6 +25,12 @@ date; Weekly's own set adds Delay 1 Day on the banner and the tile
 popup. The Options heading is in the Guide. Weekly's Day after the
 set day is in the Guide, the designed implementation, Weekly's Options,
 the translator, and the engine. It is in the project, not on 80.
+**#106-new** Delete, Save, Done, Snooze, Banners, and Log are in the
+Guide, in `docs/user-guide.md` and in the app Guide. Help has the Save
+sentences. Bucket List's keep button says Save. A visitor marked Done
+on Daily writes on Daily's log and on that other page's log. Reset All
+Data is out of the app. They are in the project, not on 80. Guide
+headings are one at a time.
 
 ## Standing rulings
 
@@ -190,8 +196,9 @@ These are Patrick's and they govern the work rather than describing it.
 - **The user's guide is in the app, and a tile on Settings**
   (Patrick, #97-new). A first-load popup on Home (Patrick, #98-new)
   shows those four paragraphs, then a fifth that suggests opening
-  the User's Guide first (Patrick, #103-new). Got it remembers. Reset
-  All Data brings it back. The Settings page has the longer Guide
+  the User's Guide first (Patrick, #103-new). Got it remembers.
+  Deleting the app and installing it again brings it back. The Settings
+  page has the longer Guide
   (#104-new). It does not go on a website. The app is self-contained.
   A person's data stays on the phone. The app does not reach out to
   read or write from the outside world. What is already in App Store
@@ -199,18 +206,20 @@ These are Patrick's and they govern the work rather than describing it.
 - **Feedback is its own tile on Settings** (Patrick, #97-new). It is
   the same popup Mystery Clues Tracker uses. Send opens the phone's
   Mail. The person reaches out; the app does not send the mail.
-- **Reset All Data sits in the Settings header** (Patrick, #97-new). It
-  is not a tile, not its own section, and not on Backup & Restore. It
-  is not a round button. A red warning mark, then Reset, then All, all
-  in red. After Face ID or the passcode is accepted, it asks Are you
-  sure? Cancel backs out. Then it wipes.
+- **There is no Reset All Data** (Patrick, #106-new). It is not in
+  Settings. To start with a clean copy, delete the app from the phone,
+  then install it again. Export a Backup first if you want to keep
+  what is entered. This reverses the #97-new header control.
 
 - **There is no password to open the app** (Patrick, #101-new). The
-  phone being open is enough. Reset All Data already asks Face ID or
-  the passcode. Do not add another.
+  phone being open is enough. Do not add another.
 
 - **A Birthday keeps a year of birth that Done does not move**
   (Patrick, #102-new).
+
+- **Bucket List's keep-the-item button says Save** (Patrick,
+  #106-new). Built at #106-new. The old Done on that button was not
+  the tick on the list. The Guide does not teach the old word.
 
 ## What is open in front of it
 
@@ -241,8 +250,9 @@ paragraphs, then a fifth that suggests opening the User's Guide. Help
 uses the new pop-up words. Words are in `docs/user-guide.md` and in
 the app.
 
-**Next sitting.** The User's Guide needs headings for Options, Delete,
-Save, Done, Snooze, and Banners. All six together (Patrick, #105-new).
+**Next sitting.** The User's Guide headings for this sitting are in.
+A new load for the #105-new and #106-new app work. Day-roll lock still
+wants a night of all-green Daily.
 
 Testers are on TestFlight External. The phone load is **80**. The App
 Store heading is Waiting for Review on **72**. He is not aiming to go
