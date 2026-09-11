@@ -55,9 +55,9 @@ export function runTranslatorCadenceTests(): void {
     test('A weekly item carries its weekday', () => {
         const shaped = shapeOf(item({ kind: 'weekly', day: 2, hour: 18, minute: 15 }));
         assertSame(
-            [shaped.sourceScreenCode, shaped.repeatUnitCode, shaped.repeatWeekdayList?.[0]?.weekdayNumber],
-            ['weekly', 'week', 2],
-            'a weekly item is a Weekly item on its day',
+            [shaped.sourceScreenCode, shaped.repeatUnitCode, shaped.repeatWeekdayList?.[0]?.weekdayNumber, shaped.bannerButtonsCode],
+            ['weekly', 'week', 2, 'weeklyactions'],
+            'a weekly item is a Weekly item on its day, with Weekly\'s own banner set',
         );
     });
 
@@ -241,6 +241,35 @@ export function runTranslatorCadenceTests(): void {
         );
     });
 
+    test('Day after the set day reaches the common shape as a bit', () => {
+        const shaped = shapeOf(item({
+            kind: 'weekly',
+            day: 4,
+            hour: 10,
+            minute: 0,
+            afterSetDay: true,
+        }));
+        assertSame(
+            shaped.afterSetDayBit,
+            true,
+            'the engine moves the occurrence; the page does not',
+        );
+    });
+
+    test('Day after the set day unused is left off the common shape', () => {
+        const shaped = shapeOf(item({
+            kind: 'weekly',
+            day: 4,
+            hour: 10,
+            minute: 0,
+        }));
+        assertSame(
+            shaped.afterSetDayBit,
+            undefined,
+            'absent means unused',
+        );
+    });
+
     test('A second Thursday becomes a complete weekday entry', () => {
         const shaped = shapeOf(item({
             kind: 'monthly',
@@ -409,6 +438,14 @@ export function runTranslatorCadenceTests(): void {
             optionCasesForKind('nope').map((one) => one.id),
             [],
             'every kind is named; nothing unknown inherits Weekly',
+        );
+    });
+
+    test('Weekly Options has Day after the set day', () => {
+        assertSame(
+            optionCasesForKind('weekly').map((one) => one.id),
+            ['holidays', 'afterSetDay', 'timezone'],
+            'Weekly has Holidays, Day after the set day, and Time zone',
         );
     });
 

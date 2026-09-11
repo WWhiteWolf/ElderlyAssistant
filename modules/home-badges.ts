@@ -21,7 +21,7 @@ export const HOME_BADGES: HomeBadge[] = [
     { id: 'weekly', label: PAGE_LABELS.weekly, icon: '🗓️' },
     { id: 'calendar', label: PAGE_LABELS.calendar, icon: '📅' },
     { id: 'daily', label: PAGE_LABELS.daily, icon: '☀️' },
-    { id: 'where', label: PAGE_LABELS.where, icon: '?' },
+    { id: 'where', label: PAGE_LABELS.where, icon: '🤔' },
 ];
 
 export function parseSavedHomeOrder(raw: string | null): string[] | null {

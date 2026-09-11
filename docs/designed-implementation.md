@@ -116,6 +116,14 @@ them, or is left off when it does not belong. The live sets in
   always writes from the pending date’s time. ifTimeSet writes from
   the pending date’s time when a time was set.
 - **A holiday move** — before, or after. Left off when unused.
+- **Day after the set day** — Weekly only. On or off. Off is the
+  default. On, a week that has a federal holiday moves the reminder
+  to the day after the set day, not to the day before or after the
+  holiday. That holiday move stays its own case. The translator writes
+  the bit from the saved Options field. The engine applies it as one
+  calendar block, the same place as a holiday move. Sunday through
+  Saturday is the week, the same weekday counting as Weekly's saved
+  day. Friday morning still sees Thursday's move.
 - **The form of a lead time** — offset from the due moment, or a clock
   time a number of days before. A lead time is one form, not half of
   each. When Save writes time only if a time was set, and no time is
@@ -215,7 +223,9 @@ Done is a code, `doneActionCode`. The three words are:
   the next one. It is not Done for the newly armed cycle. Monthly,
   Quarterly, Yearly, and Birthdays. Yearly and Birthdays write year on
   the table. The date-advance reads that word. Birthdays also keep a
-  year of birth that this move does not touch.
+  year of birth that this move does not touch. Yearly and Birthdays
+  look from the saved date, as a weekday monthly already does. The
+  next fire is not this year's still-ahead time.
 - **endItem** — the item is finished. It stays on its page. It no
   longer fires. Delete is how you get rid of it. Appointments and
   Bucket List. They are not the dated tick.
@@ -263,7 +273,10 @@ sit muted until a time is set.
 
 **weekly** — page Weekly. Repeats every week on its weekday. Time is
 always written. Noon if missing. Done is thisCycle. It can be pushed
-back. Banner set routineactions. Speaks at the moment itself.
+back. Banner set weeklyactions: Done, OK, Skip, Delay 15 / 30 / 60 min,
+and Delay 1 Day. Speaks at the moment itself. Day after the set day is
+an Options choice: in a week that has a federal holiday, the reminder
+moves to the day after the set day. It does not have to be on.
 
 **monthly** — page Monthly. Repeats every month. Date required. Done is
 advanceDate. A 31st stays the 31st. A month with no such day uses the
@@ -369,9 +382,11 @@ branch on which page the item came from. Done, Skip, Snooze, and the
 log go through the same door the pages use: `applyReminderChange`, and
 the one log.
 
-The four registered sets, and no others, are:
+The five registered sets, and no others, are:
 
 - **routineactions** — Done, OK, Skip, Delay 15 / 30 / 60 min.
+- **weeklyactions** — Done, OK, Skip, Delay 15 / 30 / 60 min, and
+  Delay 1 Day.
 - **cadenceactions** — Done, Delay 1 Day / 1 Week / 1 Month.
 - **appointmentsok** — OK, which closes without opening the app.
 - **shifteddayactions** — Then, Next Day. For a missing day of the
@@ -412,7 +427,7 @@ Appointments is the check-mark. Birthdays is a cake. Bucket List is a
 rainbow. They do not share a picture. Yearly keeps the telescope.
 Quarterly is a fallen leaf. Monthly is a first-quarter moon. Those
 three do not share a picture. Weekly is a calendar. Calendar is a
-month grid. Daily is a sun. Help is ?.
+month grid. Daily is a sun. Help is the thinking face.
 
 On launch and on every return to the front, a popup speaks if a
 reminder did not reach you. It does not speak after a Save. OK takes it
@@ -422,7 +437,7 @@ misses it told.
 ## Help
 
 Help is the helper from Home and from Calendar. The visible name is
-Help. The Home badge is ?. The route is `app/where.tsx`. It is a
+Help. The Home badge is the thinking face. The route is `app/where.tsx`. It is a
 transparent screen so New can sit above it.
 
 Help does not save an item. It asks which kind, then opens
@@ -538,16 +553,21 @@ Done keeps the cases. Back leaves a case, or closes the sheet. Notes
 live on New and Edit, not here. Calendar shading is not a case. The
 saved field stays.
 
-The cases are Holidays, Time zone, a second Thursday, and a Wednesday
-after the 6th. Holidays is Day before or Day after. Time zone is Float
-with phone or Keep this zone. When Keep this zone is on, the form line
-says Keep this zone and the zone name. Then and Next Day are the missing-day
-banner, not an Options case.
+The cases are Holidays, Time zone, Day after the set day, a second
+Thursday, and a Wednesday after the 6th. Holidays is Day before or
+Day after. That is the holiday's day, not the day after the set day.
+Day after the set day is Weekly only: a week that has a federal
+holiday moves the reminder to the day after the set day. It does not
+have to be on. Time zone is Float with phone or Keep this zone. When
+Keep this zone is on, the form line says Keep this zone and the zone
+name. Then and Next Day are the missing-day banner, not an Options
+case.
 
-Daily and One Time get Time zone only. Weekly, Appointments, and
-Birthdays get Holidays and Time zone. Monthly, Quarterly, and Yearly
-get Holidays, Time zone, a second Thursday, and a Wednesday after the
-6th. Bucket List gets none.
+Daily and One Time get Time zone only. Weekly gets Holidays, Time
+zone, and Day after the set day. Appointments and Birthdays get
+Holidays and Time zone. Monthly, Quarterly, and Yearly get Holidays,
+Time zone, a second Thursday, and a Wednesday after the 6th. Bucket
+List gets none.
 
 On Monthly, Quarterly, and Yearly, the last pattern you set stays —
 the date, a second Thursday, or a Wednesday after the 6th — and the

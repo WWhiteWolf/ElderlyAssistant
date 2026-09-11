@@ -193,16 +193,16 @@ export default function RootLayout() {
     return () => sub.remove();
   }, []);
 
-  // Register the four current banner categories once. Category ids have no
+  // Register the banner categories once. Category ids have no
   // ':' or '-' per Expo's rules.
   useEffect(() => {
     // Register the categories SEQUENTIALLY (await each). Expo registers a
-    // category via a read-modify-write of the whole category set; firing all
-    // four concurrently can race on a cold first-launch cache and drop some
+    // category via a read-modify-write of the whole category set; firing them
+    // concurrently can race on a cold first-launch cache and drop some
     // on the device. Awaiting each call makes every read-modify-write finish
     // before the next begins.
     (async () => {
-      // Daily and Weekly share one set: Done, OK, Skip, then the three delays.
+      // Daily: Done, OK, Skip, then the three short delays.
       await Notifications.setNotificationCategoryAsync('routineactions', [
         { identifier: 'done', buttonTitle: 'Done' },
         { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
@@ -210,6 +210,16 @@ export default function RootLayout() {
         { identifier: 'snooze15', buttonTitle: 'Delay 15 min' },
         { identifier: 'snooze30', buttonTitle: 'Delay 30 min' },
         { identifier: 'snooze60', buttonTitle: 'Delay 60 min' },
+      ]);
+      // Weekly: the Daily set, plus Delay 1 Day.
+      await Notifications.setNotificationCategoryAsync('weeklyactions', [
+        { identifier: 'done', buttonTitle: 'Done' },
+        { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
+        { identifier: 'skip', buttonTitle: 'Skip', options: { opensAppToForeground: false } },
+        { identifier: 'snooze15', buttonTitle: 'Delay 15 min' },
+        { identifier: 'snooze30', buttonTitle: 'Delay 30 min' },
+        { identifier: 'snooze60', buttonTitle: 'Delay 60 min' },
+        { identifier: 'delayday', buttonTitle: 'Delay 1 Day' },
       ]);
       // Monthly, Quarterly and Yearly share the dated-cadence actions.
       await Notifications.setNotificationCategoryAsync('cadenceactions', [
@@ -263,8 +273,8 @@ export default function RootLayout() {
     // Skip drops this cycle and arms the next. It is not Done, and it is not
     // only clearing a snooze. The stamp is this cycle's due moment; the engine
     // reads it and finds the next event. A standing snooze goes with the cycle
-    // it belonged to. Skip is registered on `routineactions` and on no other
-    // category. The item is found by id, not by the source tag.
+    // it belonged to. Skip is registered on `routineactions` and
+    // `weeklyactions`. The item is found by id, not by the source tag.
     if (action === 'skip') {
       const itemId = data?.itemId as string | undefined;
       if (!itemId) return;

@@ -275,7 +275,7 @@ export function runRemindersForTests(): void {
         const base = weekWanted(weekly()).find((r) => r.source === 'weekly')!;
         assertSame(
             [base.title, base.body, base.categoryIdentifier],
-            ['Weekly Chore', 'Time for Take the bins out!', 'routineactions'],
+            ['Weekly Chore', 'Time for Take the bins out!', 'weeklyactions'],
             'the one-list path must preserve the live banner',
         );
     });
@@ -418,6 +418,22 @@ export function runRemindersForTests(): void {
         }), near);
         assertSame(wanted.length, 1, 'from 10 September the 2 November birthday is inside two months');
         assertSame(wanted[0].source, 'birthdays', 'the birthday source stays in use');
+    });
+
+    test('A Birthday ticked Done before its time does not still fire today', () => {
+        const now = new Date(2026, 5, 10, 12, 0, 0, 0).getTime();
+        const wanted = wantedOf(reminderItem({
+            kind: 'birthdays',
+            id: 'b1',
+            label: 'Clara',
+            year: 2027,
+            month: 5,
+            day: 10,
+            hour: 14,
+            minute: 0,
+            completed: true,
+        }), now);
+        assertSame(wanted.length, 0, 'the date has moved a year, so today must not be armed again');
     });
 
     test('A Birthday Month-before is armed when the date is inside two months', () => {

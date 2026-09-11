@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-10 (#104-new)
+Last updated: 2026-09-11 (#105-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -24,7 +24,11 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. DAY-ROLL LOCK still wants a night of all-green Daily on this
+1. USER'S GUIDE HEADINGS still to write: Delete, Save, Done, Snooze,
+   and Banners. One heading at a time. Options is in.
+2. DAY AFTER THE SET DAY on Weekly's Options is in the project, not
+   on 80 (Patrick, #105-new).
+3. DAY-ROLL LOCK still wants a night of all-green Daily on this
    load, then a morning open on a new load, to confirm the pop-up
    stays quiet.
 
@@ -115,6 +119,10 @@ built. None of these is a job to do.
     item when it has come close enough. Several lead times on one item
     also use that depth: only the soonest still ahead is armed. When it
     has fired, the next run arms the next.
+18. EACH CLOSED-APP NOTICE HAS ITS OWN THREAD NAME (Patrick, #105-new).
+    The name is the reminder's key. This Expo does not yet hand that
+    name to the phone, so the listing-down-the-page will wait until
+    Expo is upgraded. The notification library was not poked.
 
 
 WHAT IS DONE, NEWEST FIRST
@@ -123,6 +131,15 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+113. #105-new — Weekly delay includes one day, on the banner and the
+    tile popup. Daily keeps 15 / 30 / 60 minutes.
+
+112. #105-new — Yearly and Birthdays look from the saved date. Done an
+    hour or two before the time no longer lets today's notice still fire.
+
+111. #105-new — Help Home badge is the thinking face, not the question
+    mark.
 
 110. #104-new — User's Guide on the Settings page, Help pop-up words
     in Help. Settings section of the Guide. Simulator. Not on 79.

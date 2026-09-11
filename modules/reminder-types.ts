@@ -53,9 +53,11 @@ export interface ReminderItem {
     skippedCycleStamp?: number;
     // Options written from + OPT (#37-new). Time zone, holidays, a second
     // Thursday and a Wednesday after the 6th are read by the translator.
-    // Extra tap is Then or Next Day on a shifted banner, not a field.
+    // Day after the set day is Weekly only. Extra tap is Then or Next Day
+    // on a shifted banner, not a field.
     // Float is not a row; last existing day is always the engine's rule.
     holidayMove?: 'before' | 'after';
+    afterSetDay?: boolean;
     floatsWithPhone?: boolean;
     dueTimeZoneText?: string;
     shadeCalendar?: boolean;

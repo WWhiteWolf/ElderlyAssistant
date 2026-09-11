@@ -359,7 +359,7 @@ const weeklyCadenceRules: ScreenRules = {
     keepsLeadChipsBit: false,
     standsForGroupBit: false,
     bannerTitleTextOf: () => 'Weekly Chore',
-    bannerButtonsCode: 'routineactions',
+    bannerButtonsCode: 'weeklyactions',
     idOf: (item) => item.id,
     nameOf: (item) => item.label,
     isDoneOf: (item) => !!item.completed,
@@ -580,7 +580,8 @@ export function translateReminderItems(items: ReminderItem[], now: number): Shap
  *
  * A named zone is written only as a complete pair. An incomplete pair is
  * rejected: the item keeps floating with the phone rather than silently
- * producing no reminder. Holidays are one code, absent when unused. A
+ * producing no reminder. Holidays are one code, absent when unused. Day
+ * after the set day is one bit, absent when unused. A
  * complete second Thursday or Wednesday after the 6th becomes the engine's
  * weekday entry; a half-entered pair is left off. Those two are one
  * exclusive group on the table: only one can be true. If both saved
@@ -600,6 +601,9 @@ function withSavedOptions(saved: ReminderItem, shaped: ShapedItem): ShapedItem {
     }
     if (saved.holidayMove === 'before' || saved.holidayMove === 'after') {
         out = { ...out, holidayMoveCode: saved.holidayMove };
+    }
+    if (saved.afterSetDay) {
+        out = { ...out, afterSetDayBit: true };
     }
     const repeatUnit = repeatUnitCodeOf(saved.kind);
     if (repeatUnit === 'month' || repeatUnit === 'year') {

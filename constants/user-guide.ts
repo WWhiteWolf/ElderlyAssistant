@@ -47,7 +47,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Help, the tile with the question mark, can help you decide which page to put a reminder on by asking you a few questions about what the reminder is for.',
+        text: 'Help, the tile with the thinking face, can help you decide which page to put a reminder on by asking you a few questions about what the reminder is for.',
     },
     {
         type: 'paragraph',
@@ -61,7 +61,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Weekly is for things that come round every week, on the same day of the week, and you pick the time.',
+        text: 'Weekly is for things that come round every week, on the same day of the week, and you pick the time. You can delay a reminder 15, 30, or 60 minutes, or one day.',
     },
     {
         type: 'paragraph',
@@ -260,5 +260,86 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     {
         type: 'paragraph',
         text: 'The welcome words come back the next time you open the app.',
+    },
+
+    { type: 'heading', text: 'Options' },
+    {
+        type: 'paragraph',
+        text: 'Options is on New and Edit. Tap Options in the header.',
+    },
+    {
+        type: 'paragraph',
+        text: 'It is extra choices for how this reminder comes round, beyond the date and time on the form. It is not a Home page.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Which choices you see depends on the kind of reminder.',
+    },
+    {
+        type: 'bullets',
+        items: [
+            { text: 'Time zone' },
+            { text: 'Holidays' },
+            { text: 'Day after the set day' },
+            { text: 'A second Thursday' },
+            { text: 'A Wednesday after the 6th' },
+        ],
+    },
+    { type: 'paragraph', text: 'Each of these is explained below.' },
+    {
+        type: 'paragraph',
+        text: 'Time zone is for when the reminder should fire. You can let the time follow the zone you and your phone are in, or keep the zone it was originally set for.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Holidays moves a reminder to the day before or the day after a holiday. You choose which. That is the day before or after the holiday, not the day after your set day.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Day after the set day is for Weekly. In a week that has a federal holiday, the reminder moves to the day after the set day. It is a choice you turn on. It does not have to be on. If it is off, the reminder stays on the set day, and you can still move it yourself.',
+    },
+    {
+        type: 'paragraph',
+        text: 'A second Thursday is for a numbered weekday, for example the second Thursday of the month. You pick the weekday and which one: 1st, 2nd, 3rd, 4th, or Last.',
+    },
+    {
+        type: 'paragraph',
+        text: 'A Wednesday after the 6th is the first of that weekday after a numbered day, for example the first Wednesday after the 6th which means \'Wednesday on the first full week of the month\'. You pick the weekday and the numbered day.',
+    },
+    {
+        type: 'paragraph',
+        text: 'You cannot have both a second Thursday and a Wednesday after the 6th on the same reminder. Setting one clears the other.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Daily and One Time for today have Time zone only.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Weekly has Time zone, Holidays, and Day after the set day.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Appointments and Birthdays have Time zone and Holidays.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Monthly, Quarterly, and Yearly have Time zone, Holidays, a second Thursday, and a Wednesday after the 6th.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Bucket List has no Options.',
+    },
+    {
+        type: 'paragraph',
+        text: 'When a choice is on, it shows on the form under Options. Tap it to change it.',
+    },
+    {
+        type: 'paragraph',
+        text: 'A Note is a field on New and Edit. It is not an Options choice.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Then and Next Day are for when a month has no such day. They show on the banner, not in Options.',
     },
 ];

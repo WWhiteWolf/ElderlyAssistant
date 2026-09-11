@@ -69,6 +69,7 @@ export type LeadNamedTimeCode = 'morning' | 'midday' | 'evening';
  */
 export type BannerButtonsCode =
     | 'routineactions'
+    | 'weeklyactions'
     | 'cadenceactions'
     | 'appointmentsok'
     | 'shifteddayactions';
@@ -313,6 +314,16 @@ export interface ShapedItem {
      * apply, so a shifted occurrence is left as it is.
      */
     holidayMoveCode?: 'before' | 'after';
+    /**
+     * Move a Weekly occurrence to the day after the set day when that
+     * week has a US federal holiday.
+     *
+     * Left off when unused. The translator writes the bit from the saved
+     * Options field. The engine applies it as one calendar block, the same
+     * place as a holiday move. It is not the holiday move of before or after
+     * the holiday.
+     */
+    afterSetDayBit?: boolean;
 
     // ---- capability bits: what this kind of item is allowed to do ----
 

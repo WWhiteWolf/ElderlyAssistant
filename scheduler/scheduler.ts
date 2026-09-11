@@ -437,7 +437,11 @@ export async function applyPlan(
                         },
                         ...(reminder.categoryIdentifier ? { categoryIdentifier: reminder.categoryIdentifier } : {}),
                         sound: 'default',
-                    },
+                        // Each notice is its own thread, named by the reminder
+                        // key, so the phone can list them separately. This Expo
+                        // does not yet hand the name to the phone.
+                        threadIdentifier: reminder.key,
+                    } as Notifications.NotificationContentInput,
                     trigger: triggerInput(reminder.trigger),
                 });
                 created++;

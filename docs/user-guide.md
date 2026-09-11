@@ -1,7 +1,8 @@
 # User's Guide — words for the app
 
-From #103-new. Settings section from #104-new. On the Settings
-User's Guide page. Help pop-up words are at the end, and in Help.
+From #103-new. Settings section from #104-new. Options, Delete, Save,
+Done, Snooze, and Banners from #105-new. On the Settings User's Guide
+page. Help pop-up words are at the end, and in Help.
 
 The first-open popup on Home already has the four short paragraphs
 plus a fifth that suggests opening this Guide. That popup is in the
@@ -26,7 +27,7 @@ combination, plus it does some of its own thing.
 Each page is also for entering a reminder. You open the page that
 fits, and add it there.
 
-Help, the tile with the question mark, can help you decide which page
+Help, the tile with the thinking face, can help you decide which page
 to put a reminder on by asking you a few questions about what the
 reminder is for.
 
@@ -40,7 +41,8 @@ arrive, the phone reminds you. Done means this round is taken care
 of, and it will come round again.
 
 Weekly is for things that come round every week, on the same day of
-the week, and you pick the time.
+the week, and you pick the time. You can delay a reminder 15, 30, or
+60 minutes, or one day.
 
 Monthly is for things that come round every month. You pick the date
 and a time. A 31st stays a 31st, and if a month has no 31st, it uses
@@ -210,6 +212,50 @@ by accident.
   you Home.
 
 The welcome words come back the next time you open the app.
+
+## Options
+
+Options is on New and Edit. Tap Options in the header.
+
+It is extra choices for how this reminder comes round, beyond the date and time on the form. It is not a Home page.
+
+Which choices you see depends on the kind of reminder.
+
+- Time zone
+- Holidays
+- Day after the set day
+- A second Thursday
+- A Wednesday after the 6th
+
+Each of these is explained below.
+
+Time zone is for when the reminder should fire. You can let the time follow the zone you and your phone are in, or keep the zone it was originally set for.
+
+Holidays moves a reminder to the day before or the day after a holiday. You choose which. That is the day before or after the holiday, not the day after your set day.
+
+Day after the set day is for Weekly. In a week that has a federal holiday, the reminder moves to the day after the set day. It is a choice you turn on. It does not have to be on. If it is off, the reminder stays on the set day, and you can still move it yourself.
+
+A second Thursday is for a numbered weekday, for example the second Thursday of the month. You pick the weekday and which one: 1st, 2nd, 3rd, 4th, or Last.
+
+A Wednesday after the 6th is the first of that weekday after a numbered day, for example the first Wednesday after the 6th which means 'Wednesday on the first full week of the month'. You pick the weekday and the numbered day.
+
+You cannot have both a second Thursday and a Wednesday after the 6th on the same reminder. Setting one clears the other.
+
+Daily and One Time for today have Time zone only.
+
+Weekly has Time zone, Holidays, and Day after the set day.
+
+Appointments and Birthdays have Time zone and Holidays.
+
+Monthly, Quarterly, and Yearly have Time zone, Holidays, a second Thursday, and a Wednesday after the 6th.
+
+Bucket List has no Options.
+
+When a choice is on, it shows on the form under Options. Tap it to change it.
+
+A Note is a field on New and Edit. It is not an Options choice.
+
+Then and Next Day are for when a month has no such day. They show on the banner, not in Options.
 
 ---
 

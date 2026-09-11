@@ -17,6 +17,43 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #105-new (2026-09-11): issue fixes; Options Guide; Day after the set day
+
+**Phone.** Build 80 is on the phone. #104-new's User's Guide and Help
+words are on that load. #105-new is in the project, not on 80.
+
+**Closed-app notices.** Each notice is given its own thread name, the
+reminder's key, so the phone can list them down the page. That is
+Expo's own door. This Expo does not yet hand the name to the phone.
+The notification library was not poked.
+
+**Help badge.** The Home badge is the thinking face, not the question
+mark.
+
+**Birthday Done.** Done an hour or two before the time was still
+arming today, because yearly looked from this year, not from the
+saved date. Yearly and Birthdays now look from the saved date, as a
+weekday monthly already did.
+
+**Weekly delay.** Weekly has its own button set: Delay 15 / 30 / 60
+min, and Delay 1 Day. The banner and the tile popup both read that
+set. Daily keeps the three shorts.
+
+**Options in the Guide.** Written with Patrick, one heading at a time.
+Options is last in the Guide, after Settings. Time zone, Holidays,
+Day after the set day, a second Thursday, and a Wednesday after the
+6th. Holidays is the day before or after the holiday. Day after the
+set day is Weekly only: a week that has a federal holiday moves to
+the day after the set day. It does not have to be on.
+
+**Day after the set day.** In the engine, not a page patch. The
+translator writes one bit. One calendar block moves the day, using
+the federal holiday list that was already there. Sunday through
+Saturday is the week. Friday morning still sees Thursday's move.
+371 checks passed.
+
+**Still to write.** Delete, Save, Done, Snooze, and Banners.
+
 ## #104-new (2026-09-10): User's Guide on Settings; Help words in Help
 
 **Settings in the Guide.** Written with Patrick, one piece at a time.

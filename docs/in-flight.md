@@ -4,26 +4,32 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-10, at #104-new.
+Last written: 2026-09-11, #105-new, after Options and Day after the set day.
 
 ## Read this first
 
-- Build **79** is on the phone. Scheduled Reminders is down to 14.
-- **#104-new** put the longer User's Guide on the Settings page, and the
-  Help pop-up words into Help. Checked on the simulator. He will build
-  it and test on the phone. Not on 79.
-- The designed implementation is the guide.
+- Build **80** is on the phone. Scheduled Reminders is down to 14.
+- **#105-new** is in the project, not on 80: thread names on notices,
+  Help thinking-face badge, Birthday Done from the saved date, Weekly
+  Delay 1 Day, Options heading in the Guide, Weekly Day after the set
+  day in the engine.
+- The designed implementation is the guide. Guide headings are one at
+  a time.
 
 ## What is in
 
-Patrick is building #104-new to the phone to test the User's Guide and Help.
+Options is in the Guide. Day after the set day is on Weekly's Options,
+in the translator and in the engine. 371 checks passed.
 
 ## What is next
 
-Day-roll lock still wants a night of all-green Daily.
+Delete, Save, Done, Snooze, and Banners, one heading at a time. A new
+load for the #105-new app work. Day-roll lock still wants a night of
+all-green Daily.
 
 ## Do not reopen
 
 Arm depth of one. Done, Skip, and Snooze. The later in-app Siri. The
 user's guide does not go on a website. There is no password to open the
-app.
+app. Do not poke the notification library to make the thread name work
+early. Day after the set day is machinery, not a page patch.

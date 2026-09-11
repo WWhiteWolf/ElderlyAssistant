@@ -68,6 +68,21 @@ export function snoozeChoicesOf(item: ReminderItem): SnoozeChoice[] {
             { label: '60 min', stampAt: (now) => now + 60 * 60 * 1000 },
         ];
     }
+    if (shaped?.bannerButtonsCode === 'weeklyactions') {
+        return [
+            { label: '15 min', stampAt: (now) => now + 15 * 60 * 1000 },
+            { label: '30 min', stampAt: (now) => now + 30 * 60 * 1000 },
+            { label: '60 min', stampAt: (now) => now + 60 * 60 * 1000 },
+            {
+                label: 'Delay 1 Day',
+                stampAt: (now) => {
+                    const target = new Date(now);
+                    target.setDate(target.getDate() + 1);
+                    return target.getTime();
+                },
+            },
+        ];
+    }
     if (shaped?.bannerButtonsCode === 'cadenceactions') {
         return [
             {

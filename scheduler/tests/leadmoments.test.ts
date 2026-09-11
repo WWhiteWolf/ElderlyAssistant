@@ -419,6 +419,44 @@ export function runLeadMomentsTests(): void {
         );
     });
 
+    test('A yearly item whose time is still ahead today uses today', () => {
+        assertSame(
+            momentsFor(
+                item({
+                    sourceScreenCode: 'birthdays',
+                    repeatUnitCode: 'year',
+                    repeatIntervalCount: 1,
+                    dueHour: 14,
+                    dueMinute: 0,
+                    dueMoment: at(2026, 5, 10, 14, 0),
+                }),
+                at(2026, 5, 10, 12, 0),
+                CLOCK,
+            ),
+            [at(2026, 5, 10, 14, 0)],
+            'the date has not moved, so two o\'clock today still stands',
+        );
+    });
+
+    test('A yearly item whose saved date is next year does not arm this year\'s still-ahead time', () => {
+        assertSame(
+            momentsFor(
+                item({
+                    sourceScreenCode: 'birthdays',
+                    repeatUnitCode: 'year',
+                    repeatIntervalCount: 1,
+                    dueHour: 14,
+                    dueMinute: 0,
+                    dueMoment: at(2027, 5, 10, 14, 0),
+                }),
+                at(2026, 5, 10, 12, 0),
+                CLOCK,
+            ),
+            [at(2027, 5, 10, 14, 0)],
+            'Done moved the date; today\'s still-ahead time is not a new occurrence',
+        );
+    });
+
     test('A 90-day quarterly item counts from the entered date, not from today', () => {
         assertSame(
             momentsFor(
@@ -587,6 +625,67 @@ export function runLeadMomentsTests(): void {
         );
     });
 
+    test('A Thursday weekly in Labor Day week 2026 moves to Friday', () => {
+        // Labor Day 2026 is Monday 7 September. Thursday the 10th is the
+        // set day. The week has a federal holiday, so it fires Friday.
+        assertSame(
+            momentsOf({
+                sourceScreenCode: 'weekly',
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 4 }],
+                dueHour: 10,
+                dueMinute: 0,
+                afterSetDayBit: true,
+            }, at(2026, 8, 10, 9, 0)),
+            [at(2026, 8, 11, 10, 0)],
+            'the week has a federal holiday, so it fires the day after the set day',
+        );
+    });
+
+    test('Friday morning in Labor Day week 2026 still sees Thursday\'s move', () => {
+        assertSame(
+            momentsOf({
+                sourceScreenCode: 'weekly',
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 4 }],
+                dueHour: 10,
+                dueMinute: 0,
+                afterSetDayBit: true,
+            }, at(2026, 8, 11, 9, 0)),
+            [at(2026, 8, 11, 10, 0)],
+            'the set day is already past; the moved Friday is still ahead',
+        );
+    });
+
+    test('A Thursday weekly in Labor Day week 2026 stays Thursday when the bit is off', () => {
+        assertSame(
+            momentsOf({
+                sourceScreenCode: 'weekly',
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 4 }],
+                dueHour: 10,
+                dueMinute: 0,
+            }, at(2026, 8, 10, 9, 0)),
+            [at(2026, 8, 10, 10, 0)],
+            'absent means unused',
+        );
+    });
+
+    test('A Thursday weekly in a week with no federal holiday stays Thursday', () => {
+        assertSame(
+            momentsOf({
+                sourceScreenCode: 'weekly',
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 4 }],
+                dueHour: 10,
+                dueMinute: 0,
+                afterSetDayBit: true,
+            }, at(2026, 5, 4, 9, 0)),
+            [at(2026, 5, 4, 10, 0)],
+            'June 2026\'s first Thursday is not in a federal-holiday week',
+        );
+    });
+
     test('A Friday weekly on the observed Independence Day 2026 moves to Saturday', () => {
         // 4 July 2026 is Saturday, so Friday the 3rd is the observed day.
         assertSame(
@@ -697,6 +796,21 @@ export function runLeadMomentsTests(): void {
             }), 2026, 6),
             [3, 11, 18, 25],
             'Independence Day is Saturday the 4th, so the visible day is Friday the 3rd',
+        );
+    });
+
+    test('A Thursday weekly in September 2026 with Day after the set day shades Friday the 11th', () => {
+        assertSame(
+            shadedDaysInMonth(item({
+                sourceScreenCode: 'weekly',
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 4 }],
+                dueHour: 10,
+                dueMinute: 0,
+                afterSetDayBit: true,
+            }), 2026, 8),
+            [3, 11, 17, 24],
+            'Labor Day is Monday the 7th, so Thursday the 10th shows as Friday the 11th',
         );
     });
 }

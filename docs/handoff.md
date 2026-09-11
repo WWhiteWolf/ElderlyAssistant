@@ -12,22 +12,19 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-Build **79** is on the phone. Scheduled Reminders is down to 14.
+Build **80** is on the phone. Scheduled Reminders is down to 14.
 How far ahead a waiting kind looks is a number on the table. Monthly
 is thirty days. Quarterly, Yearly, and Birthdays are sixty days, so a
 Month-before reminder can be armed. Several lead times on one item arm
-only the soonest still ahead. **#100-new** split the Home badges:
-Yearly keeps the telescope, Quarterly a fallen leaf, Monthly a
-first-quarter moon. A weekday monthly looks from the saved date, so
-Done takes it off Daily. The **#99-new** review is done (Patrick,
-#101-new). The designed implementation is the guide. Calendar month
-arrows sit by the month name. Daily every-day New has room between
-Name, time, and Note. **#102-new** is in the project, not on 79: time
-spinner Cancel and Done, muted offset chips, Birthday on Calendar and
-Daily, and Birthdate on the form. **#103-new** first-open has the fifth
-paragraph and no scroll. **#104-new** put the longer User's Guide on
-the Settings page, and the Help pop-up words into Help. Checked on the
-simulator. He will build it and test on the phone. Not on 79.
+only the soonest still ahead. The designed implementation is the
+guide. **#104-new** User's Guide and Help words are on 80.
+**#105-new** is in the project, not on 80: each closed-app notice has
+its own thread name (this Expo does not yet hand it on); the Help Home
+badge is the thinking face; Yearly and Birthdays look from the saved
+date; Weekly's own set adds Delay 1 Day on the banner and the tile
+popup. The Options heading is in the Guide. Weekly's Day after the
+set day is in the Guide, the designed implementation, Weekly's Options,
+the translator, and the engine. It is in the project, not on 80.
 
 ## Standing rulings
 
@@ -120,6 +117,16 @@ These are Patrick's and they govern the work rather than describing it.
   (Patrick, #70-new; built at #79-new). #41-new stopped that; he did
   not notice until then. Done moves the date on the item so the tile
   shows the next cycle armed — as it did before #41-new.
+- **Yearly and Birthdays look from the saved date** (Patrick, #105-new).
+  Done moves that date. The next fire is not this year's still-ahead
+  time. Monthly already did this; yearly did not.
+- **Weekly's Day after the set day** (Patrick, #105-new). In a week
+  that has a federal holiday, the reminder moves to the day after the
+  set day, not to the day before or after the holiday. That Holidays
+  case stays as it is. This choice is Weekly only, on Options, and
+  does not have to be on. It is in the Guide, the designed
+  implementation, Weekly's Options, the translator, and the engine.
+  It is in the project, not on 80.
 - **The Done tick on Monthly, Quarterly, Yearly, and Birthdays is the
   mark that this cycle was done** (Patrick, #83-new). It is not
   leftover. The date has already moved; the tick is how you see it.
@@ -130,8 +137,9 @@ These are Patrick's and they govern the work rather than describing it.
   Bucket List stay as they are. Built at #83-new. The year word is
   #100-new.
 - **The Where? page is Help** (Patrick, #70-new; wording at #80-new;
-  #103-new). The visible name is **Help**, not Where? The Home badge is
-  **?**, not 🧭. The route may stay `where.tsx`. Step 1 is: Does this
+  #103-new; badge at #105-new). The visible name is **Help**, not
+  Where? The Home badge is the thinking face, not the question mark.
+  The route may stay `where.tsx`. Step 1 is: Does this
   item repeat? **Yes** / **No**. Step 2 is: How often does this come
   round? **Every day**, **Weekly**, **Monthly**, **Quarterly**,
   **Yearly**, **For a birthday reminder**. Birthday still opens
@@ -157,10 +165,18 @@ These are Patrick's and they govern the work rather than describing it.
   Done and the engine follow the same step.
 - **Skip drops this cycle and arms the next** (Patrick, #74-new). It is
   not Done, and it is not only clearing a snooze.
+- **Each closed-app notice has its own thread name** (Patrick,
+  #105-new). The name is the reminder's key. That is Expo's own
+  door, the same one Messages uses, so the phone can list them
+  separately and one can be cleared without the rest. This Expo
+  does not yet hand that name to the phone. Do not poke the
+  notification library to make it work early.
 - **Banner buttons belong on the bit field** (Patrick, #83-new). Which
   buttons an item gets — Done, Skip, Snooze, OK — is a bit of the
   kind, the same as whether it can be done or pushed back. The row and
   the banner both read those bits. They do not remember the page.
+  Weekly's set is its own: the three short delays, plus Delay 1 Day
+  (Patrick, #105-new). Daily keeps the three shorts.
 - **Appointments remind at the set time** (Patrick, #74-new). This
   reverses #52-new. They act like the rest of the app. The before chips
   still stand.
@@ -223,9 +239,12 @@ Pending 1. The user's guide is a tile on Settings. That page has the
 longer Guide (#104-new). First load on Home shows the four short
 paragraphs, then a fifth that suggests opening the User's Guide. Help
 uses the new pop-up words. Words are in `docs/user-guide.md` and in
-the app. Checked on the simulator. He will build it to the phone.
+the app.
 
-Testers are on TestFlight External. The phone load is **79**. The App
+**Next sitting.** The User's Guide needs headings for Options, Delete,
+Save, Done, Snooze, and Banners. All six together (Patrick, #105-new).
+
+Testers are on TestFlight External. The phone load is **80**. The App
 Store heading is Waiting for Review on **72**. He is not aiming to go
 live. Manual release. The journey is `docs/connect-submit.md`. What is
 already in App Store Connect stays there. There is no public website

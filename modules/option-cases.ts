@@ -18,6 +18,7 @@ export type HolidayMove = 'before' | 'after';
 // an Options case.
 export type OptionSettings = {
     holidayMove?: HolidayMove;
+    afterSetDay: boolean;
     floatsWithPhone: boolean;
     dueTimeZoneText?: string;
     shadeCalendar: boolean;
@@ -33,6 +34,7 @@ export function phoneTimeZone(): string {
 
 export function emptyOptionSettings(): OptionSettings {
     return {
+        afterSetDay: false,
         floatsWithPhone: true,
         shadeCalendar: false,
         afterDayCount: 6,
@@ -45,6 +47,12 @@ export const OPTION_CASES: OptionCase[] = [
         icon: '🎉',
         name: 'Holidays',
         body: 'Move a reminder to the day before or after a holiday. The engine already knows this calendar thinking; this page is where that case lives.',
+    },
+    {
+        id: 'afterSetDay',
+        icon: '➡️',
+        name: 'Day after the set day',
+        body: 'In a week that has a federal holiday, this reminder moves to the day after the set day.',
     },
     {
         id: 'timezone',
@@ -67,6 +75,7 @@ export const OPTION_CASES: OptionCase[] = [
 ];
 
 const CONNECTED_IDS = ['holidays', 'timezone'];
+const WEEKLY_IDS = ['holidays', 'afterSetDay', 'timezone'];
 const TIMEZONE_IDS = ['timezone'];
 const MONTHLY_IDS = [
     ...CONNECTED_IDS,
@@ -83,7 +92,8 @@ function casesFor(ids: string[]): OptionCase[] {
 export function optionCasesForKind(kind: string): OptionCase[] {
     if (kind === 'daily' || kind === 'oneTime') return casesFor(TIMEZONE_IDS);
     if (kind === 'bucketlist') return [];
-    if (kind === 'weekly' || kind === 'appointments' || kind === 'birthdays') return casesFor(CONNECTED_IDS);
+    if (kind === 'weekly') return casesFor(WEEKLY_IDS);
+    if (kind === 'appointments' || kind === 'birthdays') return casesFor(CONNECTED_IDS);
     if (kind === 'monthly' || kind === 'quarterly' || kind === 'yearly') return casesFor(MONTHLY_IDS);
     return [];
 }
@@ -106,6 +116,17 @@ export function appliedOptionRows(settings: OptionSettings): AppliedOption[] {
                 icon: one.icon,
                 name: one.name,
                 value: settings.holidayMove === 'before' ? 'Day before' : 'Day after',
+            });
+        }
+    }
+    if (settings.afterSetDay) {
+        const one = named('afterSetDay');
+        if (one) {
+            rows.push({
+                id: one.id,
+                icon: one.icon,
+                name: one.name,
+                value: 'On',
             });
         }
     }
@@ -157,6 +178,7 @@ export function optionsFromItem(item: ReminderItem): OptionSettings {
     return {
         ...emptyOptionSettings(),
         holidayMove: item.holidayMove,
+        afterSetDay: !!item.afterSetDay,
         floatsWithPhone: item.floatsWithPhone !== false,
         dueTimeZoneText: item.dueTimeZoneText,
         shadeCalendar: !!item.shadeCalendar,
@@ -171,6 +193,8 @@ export function applyConnectedOptions(item: ReminderItem, settings: OptionSettin
     const out = { ...item };
     if (settings.holidayMove) out.holidayMove = settings.holidayMove;
     else delete out.holidayMove;
+    if (settings.afterSetDay) out.afterSetDay = true;
+    else delete out.afterSetDay;
     if (!settings.floatsWithPhone) {
         out.floatsWithPhone = false;
         out.dueTimeZoneText = settings.dueTimeZoneText;
@@ -320,6 +344,7 @@ export function keepOptionsForKind(item: ReminderItem, kind: string): ReminderIt
     delete out.floatDay;
     delete out.shiftedChoice;
     if (!ids.has('holidays')) delete out.holidayMove;
+    if (!ids.has('afterSetDay')) delete out.afterSetDay;
     // The calendar page replaced the shading row, but the saved field stays.
     if (!ids.has('secondThursday')) {
         delete out.weekdayOrdinal;

@@ -92,7 +92,8 @@ export function baseMoment(item: ShapedItem, now: number): BaseMoment | null {
     if (found === null) {
         return null;
     }
-    const moved = applyHolidayMove(found, item, calendar);
+    const afterSet = applyAfterSetDay(found, item, calendar, now);
+    const moved = applyHolidayMove(afterSet, item, calendar);
     if (item.repeatUntilMoment !== undefined && moved.moment > item.repeatUntilMoment) {
         return null;
     }
@@ -122,6 +123,39 @@ export function shadedDaysInMonth(item: ShapedItem, year: number, month: number)
         }
     }
     return days;
+}
+
+/**
+ * One calendar block: if this occurrence's week has a US federal holiday,
+ * move it to the day after the set day.
+ *
+ * The next set day after now may already be next week. This block also
+ * looks at the set day one week earlier, so Friday morning still sees
+ * Thursday's move from a Monday holiday.
+ */
+function applyAfterSetDay(
+    found: BaseMoment,
+    item: ShapedItem,
+    calendar: CivilCalendar,
+    now: number,
+): BaseMoment {
+    if (!item.afterSetDayBit) {
+        return found;
+    }
+    const previous = addCalendarDays(calendar, found.moment, -7);
+    if (weekHasUsFederalHoliday(calendar, previous)) {
+        const shiftedPrev = addCalendarDays(calendar, previous, 1);
+        if (shiftedPrev > now) {
+            return { moment: shiftedPrev, shiftedForMissingDayBit: false };
+        }
+    }
+    if (weekHasUsFederalHoliday(calendar, found.moment)) {
+        return {
+            moment: addCalendarDays(calendar, found.moment, 1),
+            shiftedForMissingDayBit: false,
+        };
+    }
+    return found;
 }
 
 /**
@@ -228,10 +262,12 @@ function nextWeekly(item: ShapedItem, now: number, calendar: CivilCalendar): Bas
  * Month or year, using the day of the month as the seed.
  *
  * The seed day comes from `dueMoment` when it is present, otherwise from
- * `now`'s date. Year also takes the month of the year from that same seed.
- * A several-month step (quarterly) takes that month too, then walks forward
- * by the step — walking from now's month would land on the wrong third of
- * the year.
+ * `now`'s date. Year also takes the month, and the year, from that same seed.
+ * Done moves that date; walking from now's year would still pick today's
+ * still-ahead time after the date had already moved. Monthly already starts
+ * from the saved date. A several-month step (quarterly) takes that month too,
+ * then walks forward by the step — walking from now's month would land on
+ * the wrong third of the year.
  * A day that does not exist in the target month uses the last day that does,
  * and that occurrence is marked shifted.
  */
@@ -248,9 +284,8 @@ function nextByMonthDay(
     const seedDay = item.dueMonthDay ?? seed.day;
     const seedMonth = seed.month;
     const step = intervalOf(item);
-    const start = calendar.partsOf(now);
     if (yearly) {
-        let year = start.year;
+        let year = seed.year;
         for (let n = 0; n < 8; n++) {
             const candidate = civilAt(calendar, year, seedMonth, seedDay, item.dueHour, item.dueMinute);
             if (candidate.moment > now) {
@@ -388,6 +423,24 @@ function isUsFederalHoliday(year: number, month: number, day: number): boolean {
     if (weekday === 1) {
         const prev = addUtcDays(year, month, day, -1);
         return isFixedDateUsFederalHoliday(prev.year, prev.month, prev.day);
+    }
+    return false;
+}
+
+/**
+ * Sunday through Saturday of this occurrence, the same weekday counting
+ * as Weekly's saved day. True when any day in that week is a US federal
+ * holiday, including an observed Friday or Monday.
+ */
+function weekHasUsFederalHoliday(calendar: CivilCalendar, moment: number): boolean {
+    const parts = calendar.partsOf(moment);
+    const start = addCalendarDays(calendar, moment, -parts.weekday);
+    for (let i = 0; i < 7; i++) {
+        const day = addCalendarDays(calendar, start, i);
+        const one = calendar.partsOf(day);
+        if (isUsFederalHoliday(one.year, one.month, one.day)) {
+            return true;
+        }
     }
     return false;
 }

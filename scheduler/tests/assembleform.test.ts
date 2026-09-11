@@ -239,4 +239,12 @@ export function runAssembleFormTests(): void {
         );
         assert(!('hour' in next) && !('reminders' in next), 'dropped fields are gone, not left empty');
     });
+
+    test('Weekly Save writes Day after the set day when that choice is on', () => {
+        const next = assembleFormItem(parts({
+            editKind: 'weekly',
+            optionSettings: { ...emptyOptionSettings(), afterSetDay: true },
+        }));
+        assertSame(next.afterSetDay, true, 'Save writes the bit; the page does not move the day');
+    });
 }
