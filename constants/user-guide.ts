@@ -77,7 +77,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Birthdays is that special list. You enter the birthdate, and the time you want to be reminded at. The year they were born stays as it is, so the app can show how old they turn. You can ask to be reminded ahead of time.',
+        text: 'Birthdays is that special list. You enter the birthdate, and the time you want to be reminded at. The birthdate stays with the name. The reminder tells you the age they turn. You can ask to be reminded ahead of time.',
     },
 
     { type: 'heading', text: 'Reminders that do not repeat' },

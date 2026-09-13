@@ -30,9 +30,11 @@ import {
     type QuarterlyStepCode,
 } from '../modules/reminder-items';
 import { assembleFormItem } from '../modules/assemble-form-item';
+import { birthYearOf } from '../modules/birth-year';
 import {
     allowedOptionCaseCodesOf,
     dateLabelTextOf,
+    keepsBirthYearOf,
     timeWriteCodeOf,
 } from '../scheduler/translators/translate';
 import {
@@ -246,8 +248,13 @@ export default function ItemEditScreen() {
                         setPendingTime(t);
                         setTimeSet(true);
                         if (found.kind !== 'weekly' && found.kind !== 'daily' && found.kind !== 'bucketlist') {
+                            const year =
+                                keepsBirthYearOf(found.kind)
+                                    ? (birthYearOf(found, t.getFullYear())
+                                        ?? (typeof found.year === 'number' ? found.year : t.getFullYear()))
+                                    : typeof found.year === 'number' ? found.year : t.getFullYear();
                             setPendingDate(civilDate(
-                                typeof found.year === 'number' ? found.year : t.getFullYear(),
+                                year,
                                 typeof found.month === 'number' ? found.month : t.getMonth(),
                                 typeof found.day === 'number' ? found.day : t.getDate(),
                                 found.hour,
@@ -258,7 +265,11 @@ export default function ItemEditScreen() {
                         found.kind === 'monthly' || found.kind === 'quarterly' || found.kind === 'yearly' || found.kind === 'appointments' || found.kind === 'birthdays' || found.kind === 'oneTime'
                     ) {
                         if (typeof found.year === 'number' && typeof found.month === 'number' && typeof found.day === 'number') {
-                            setPendingDate(civilDate(found.year, found.month, found.day, 12, 0));
+                            const year =
+                                keepsBirthYearOf(found.kind)
+                                    ? (birthYearOf(found, new Date().getFullYear()) ?? found.year)
+                                    : found.year;
+                            setPendingDate(civilDate(year, found.month, found.day, 12, 0));
                         }
                     }
                     if (found.kind === 'appointments' || found.kind === 'birthdays' || found.kind === 'oneTime') {

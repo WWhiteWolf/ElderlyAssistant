@@ -24,6 +24,7 @@ import {
     FROM_PAGE,
     applyReminderChange,
     historyKeyFor,
+    itemNameOf,
     loadReminderItems,
     markReminderDone,
     doneActionCodeOf,
@@ -287,7 +288,7 @@ export default function CadenceListPage({
                                 item={item}
                                 highlighted={highlightId === item.id}
                                 dragging={draggingId === item.id}
-                                label={kind === 'daily' ? dailyRowLabel(item) : item.label}
+                                label={kind === 'daily' ? dailyRowLabel(item) : itemNameOf(item)}
                                 subtitle={kind === 'daily' ? undefined : formatItemWhen(item)}
                                 onTap={() => {
                                     if (highlightId === item.id) {

@@ -13,9 +13,11 @@ import {
     translateReminderItems,
     doneActionCodeOf,
     exclusiveGroupBitsOf,
+    itemNameOf,
+    keepsBirthYearOf,
     usesWeeklyCycleStampOf,
 } from '../scheduler/translators/translate';
-export { doneActionCodeOf, exclusiveGroupBitsOf };
+export { doneActionCodeOf, exclusiveGroupBitsOf, itemNameOf, keepsBirthYearOf };
 import { shadedDaysInMonth } from '../scheduler/leadmoments';
 import { isDateOf, shownOnDate } from '../scheduler/shown-on-date';
 import type { ReminderItem, ReminderKind } from './reminder-types';

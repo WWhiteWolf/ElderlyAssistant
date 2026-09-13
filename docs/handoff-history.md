@@ -17,6 +17,35 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #110-new (2026-09-13): Birthday birthdate with the name
+
+**Phone.** Build 82 is on the phone. The designed-machine jobs from
+#108-new and #109-new are on that load and still need phone proof,
+including Job 3. #110-new is in the project, not on 82.
+
+**What was wrong.** After a restore, Done on Birthdays changed the
+date on the item to the next cycle. #102-new had added a year of
+birth that Done does not write, so Calendar and Daily could show the
+age. The Birthdays row and Edit still showed the next fire date as
+the birthdate. That sitting's own checks proved the visible date
+went to next year. Patrick had been told the year of birth stayed.
+
+**The shape.** The birthdate belongs with the name, not with the
+reminder setting. Done does not move it. The next fire date is
+derived from that birthdate. The Birthdays row shows the name and
+the birthdate. The reminder says the age they turn that day.
+
+**Through the table.** The year-of-birth bit on the translator row
+is that shape. The row name, the reminder body, Save, and Edit read
+it. The list does not remember the word Birthdays. A first plan that
+special-cased the page was stopped.
+
+**Proof.** 406 scheduler checks pass. The local TypeScript compiler
+was not on disk in this sitting, so that command was not run.
+
+**Session result.** The Birthday change is in the project, not on
+82. Job 1, Job 2, and Job 3 still need their phone checks on 82.
+
 ## #109-new (2026-09-13): Job 3 finishes the designed machine
 
 **Phone.** Build 81 is on the phone. All three Job 3 checkpoints are

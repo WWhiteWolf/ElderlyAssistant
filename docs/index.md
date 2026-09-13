@@ -29,7 +29,7 @@ just because it is listed.
 ## Live design — in `docs`
 
 - **`reminder-shape.md`** — the live engine design. Wins where others disagree.
-- **`designed-implementation.md`** — the whole-app guide. A sitting builds from it and does not ask Patrick a design question. Filled at #101-new. Home, Help, Calendar, Settings, Backup, Scheduled Reminders, Options, and Log are in it. Banner housing is built. Siri is out of sight. User's Guide words are in; first load on Home shows those four, then a fifth that suggests opening the Guide. The longer Guide is on the Settings page (#104-new). Help pop-up words are in Help.
+- **`designed-implementation.md`** — the whole-app guide. A sitting builds from it and does not ask Patrick a design question. Filled at #101-new. Home, Help, Calendar, Settings, Backup, Scheduled Reminders, Options, and Log are in it. Banner housing is built. Siri is out of sight. User's Guide words are in; first load on Home shows those four, then a fifth that suggests opening the Guide. The longer Guide is on the Settings page (#104-new). Help pop-up words are in Help. A Birthday's birthdate belongs with the name; the next fire is derived from it (#110-new).
 - **`spec-pages.md`** — the live spec for the reminder pages.
 
 ## History still in `docs`

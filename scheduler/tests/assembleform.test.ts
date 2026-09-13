@@ -194,12 +194,13 @@ export function runAssembleFormTests(): void {
     test('Birthdays always write a date', () => {
         const next = assembleFormItem(parts({
             editKind: 'birthdays',
-            pendingDate: new Date(2026, 5, 10, 12, 0, 0, 0),
+            pendingDate: new Date(1948, 5, 10, 12, 0, 0, 0),
+            nowMs: new Date(2026, 4, 1, 9, 0, 0, 0).getTime(),
         }));
         assertSame(
-            [next.year, next.month, next.day],
-            [2026, 5, 10],
-            'Birthdays require a date',
+            [next.year, next.month, next.day, next.birthYear],
+            [2026, 5, 10, 1948],
+            'Birthdays write the birthdate and derive the next fire',
         );
     });
 
@@ -251,8 +252,11 @@ export function runAssembleFormTests(): void {
             editKind: 'birthdays',
             existing: null,
             pendingDate: new Date(1948, 5, 10, 12, 0, 0, 0),
+            nowMs: new Date(2026, 8, 13, 18, 0, 0, 0).getTime(),
         }));
         assertSame(next.birthYear, 1948, 'New keeps the year they were born');
+        assertSame(next.year, 2027, 'the next fire is derived from the birthdate');
+        assertSame([next.month, next.day], [5, 10], 'month and day stay the birthdate');
     });
 
     test('Save on an existing Birthday does not move the year of birth', () => {
@@ -267,9 +271,11 @@ export function runAssembleFormTests(): void {
                 day: 10,
                 birthYear: 1948,
             },
-            pendingDate: new Date(2026, 5, 10, 12, 0, 0, 0),
+            pendingDate: new Date(1948, 5, 10, 12, 0, 0, 0),
+            nowMs: new Date(2026, 8, 13, 18, 0, 0, 0).getTime(),
         }));
-        assertSame(next.birthYear, 1948, 'Done already moved the next date; birth year stays');
+        assertSame(next.birthYear, 1948, 'the year of birth stays the birthdate');
+        assertSame(next.year, 2027, 'Save derives the next fire; it does not write the birth year as the setting');
     });
 
     test('Appointments do not keep a year of birth', () => {

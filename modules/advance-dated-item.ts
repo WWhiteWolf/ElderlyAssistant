@@ -4,7 +4,7 @@ import {
     quarterlyStepCodeOf,
     quarterlyStepDaysOf,
 } from '../scheduler/inputshape.ts';
-import { repeatUnitCodeOf } from '../scheduler/translators/translate.ts';
+import { keepsBirthYearOf, repeatUnitCodeOf } from '../scheduler/translators/translate.ts';
 import type { ReminderItem } from './reminder-types.ts';
 
 const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
@@ -38,10 +38,21 @@ export function advanceDatedItem(item: ReminderItem, nowMs: number = Date.now())
             d = civilClock(year, month, anchorDay);
         }
     } while (d <= now);
+    const recoveredBirthYear =
+        keepsBirthYearOf(item.kind)
+            ? (typeof item.birthYear === 'number'
+                ? item.birthYear
+                : (typeof item.year === 'number' && item.year < new Date(nowMs).getFullYear()
+                    ? item.year
+                    : undefined))
+            : undefined;
     const { snoozedUntil, ...rest } = item;
     void snoozedUntil;
-    if (dayStep > 0) {
-        return { ...rest, year: d.getFullYear(), month: d.getMonth(), day: d.getDate() };
+    const next = dayStep > 0
+        ? { ...rest, year: d.getFullYear(), month: d.getMonth(), day: d.getDate() }
+        : { ...rest, year: d.getFullYear(), month: d.getMonth(), day: anchorDay };
+    if (typeof recoveredBirthYear === 'number') {
+        return { ...next, birthYear: recoveredBirthYear };
     }
-    return { ...rest, year: d.getFullYear(), month: d.getMonth(), day: anchorDay };
+    return next;
 }

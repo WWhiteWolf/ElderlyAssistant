@@ -4,31 +4,28 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-13, #109-new, session close.
+Last written: 2026-09-13, #110-new, session close.
 
 ## Read this first
 
-- Build **81** is on the phone. Scheduled Reminders is down to 14.
-- **The designed-machine sheet is complete in the project, not on 81.**
-  #108-new built Jobs 1 and 2. #109-new built all three checkpoints of
-  Job 3. 402 Mac checks pass and TypeScript is clean.
-- The Job 1 and Job 2 iOS bundle completed. Their native phone proof
-  remains.
+- Build **82** is on the phone. Scheduled Reminders is down to 14.
+- The designed-machine jobs from #108-new and #109-new are on 82 and
+  still need phone proof, including Job 3.
+- **#110-new Birthday is in the project, not on 82.** The row shows
+  the name and the birthdate. The reminder says the age. The next fire
+  date is derived from the birthdate. 406 checks pass.
 
 ## What is in
 
-One typed catalog owns every banner action and delay. Opening now waits
-for rollover, scheduling, and the health notice before a banner body
-tap releases its item. Each kind's table row owns its allowed Options.
-Weekly's cycle stamp comes from the shared Done and repeat facts.
-Every saved-list change uses one physical transaction, and Backup Export
-waits for an active change before reading. The document and in-app
-User's Guide correctly say that One Time has no Skip.
+The translator row's year-of-birth bit is identity: the birthdate
+belongs with the name. Save derives the next fire date from it. Done
+does not move the birthdate. The list reads the table's name. It does
+not remember Birthdays.
 
 ## What is next
 
-The native build still needs the Job 1 button check and Job 2's
-banner-first day-boundary path. Day-roll lock still wants a night of
+Job 1, Job 2, and Job 3 phone checks on 82. The Birthday change needs
+a phone check on the next load. Day-roll lock still wants a night of
 all-green Daily.
 
 ## Do not reopen
@@ -38,4 +35,5 @@ a website. There is no password to open the app. Do not poke the
 notification library to make the thread name work early. Day after the
 set day is machinery, not a page patch. The Guide does not teach Bucket
 List's keep button as Done. There is no Reset All Data. One Time has no
-Skip. A save does not present the opening health notice.
+Skip. A save does not present the opening health notice. Do not
+special-case a kind on the page when the table already has the bit.

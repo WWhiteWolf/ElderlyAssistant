@@ -66,4 +66,26 @@ export function runAdvanceDatedTests(): void {
             'the year of birth stays put',
         );
     });
+
+    test('Done on a birthday with no year of birth yet keeps that year', () => {
+        const next = advanceDatedItem(
+            {
+                id: 'b1',
+                kind: 'birthdays',
+                label: 'Pat',
+                year: 1948,
+                month: 5,
+                day: 10,
+                hour: 12,
+                minute: 0,
+            },
+            new Date(2026, 8, 13, 18, 0, 0, 0).getTime(),
+        );
+        assertSame(next.birthYear, 1948, 'the stored date was the birthdate; Done keeps it');
+        assertSame(
+            [next.year, next.month, next.day],
+            [2027, 5, 10],
+            'the next fire is derived; month and day stay',
+        );
+    });
 }

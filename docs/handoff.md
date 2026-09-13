@@ -12,11 +12,10 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-Build **81** is on the phone. #108-new is committed.
-The #104-new, #105-new, and #106-new work is on that load. Scheduled
-Reminders is down to 14. All three jobs of the designed-machine sheet
-are built in the project, not on the phone. 402 Mac checks pass and
-TypeScript is clean. The Job 1 and Job 2 iOS bundle completed.
+Build **82** is on the phone. The designed-machine jobs from #108-new
+and #109-new are on that load and still need phone proof. **#110-new**
+Birthday row, reminder age, and derived next date are in the project,
+not on 82.
 
 ## Standing rulings
 
@@ -204,8 +203,12 @@ These are Patrick's and they govern the work rather than describing it.
 - **There is no password to open the app** (Patrick, #101-new). The
   phone being open is enough. Do not add another.
 
-- **A Birthday keeps a year of birth that Done does not move**
-  (Patrick, #102-new).
+- **A Birthday keeps a birthdate with the name** (Patrick, #102-new;
+  #110-new). It is not a reminder setting. Done does not move it. The
+  next fire date is derived from that birthdate. The Birthdays row
+  shows the name and the birthdate. The reminder says the age they
+  turn that day. Restore writes the year of birth onto an older
+  backup that never had that field.
 
 - **Bucket List's keep-the-item button says Save** (Patrick,
   #106-new). Built at #106-new. The old Done on that button was not
@@ -216,17 +219,19 @@ These are Patrick's and they govern the work rather than describing it.
 The guide remains `docs/designed-implementation.md`. The self-contained
 designed-machine build sheet is complete in the project.
 
-**Phone proof still open.** Job 1's banner and list-popup choices need
-a native build check. Job 2 needs Patrick's banner-first day-boundary
-path: the missed-reminder popup first, the highlighted item after OK,
-no repeat on the later foreground return, and the all-green Daily path
-quiet.
+**Phone proof still open.** Job 1's banner and list-popup choices, Job
+2's banner-first day-boundary path, and Job 3's Options, Weekly Done,
+and export-after-change need a check on 82.
 
-Testers are on TestFlight External. The phone load is **81**. The App
+Testers are on TestFlight External. The phone load is **82**. The App
 Store heading is Waiting for Review on **72**. He is not aiming to go
 live. Manual release. The journey is `docs/connect-submit.md`. What is
 already in App Store Connect stays there. There is no public website
 for the user's guide.
+
+**#110-new Birthday** is in the project, not on 82. The row shows the
+name and the birthdate. The reminder says the age. The next fire is
+derived from the birthdate.
 
 **Day-roll lock** still needs a night of all-green Daily, then a morning
 open on a new load, to confirm the pop-up stays quiet.

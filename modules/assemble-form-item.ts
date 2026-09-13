@@ -14,6 +14,7 @@ import {
 } from '../scheduler/translators/translate.ts';
 import { quarterlyStepDaysOf } from '../scheduler/inputshape.ts';
 import type { QuarterlyStepCode } from '../scheduler/inputshape.ts';
+import { nextBirthdayYear } from './birth-year.ts';
 import {
     applyConnectedOptions,
     applyExclusiveGroupToItem,
@@ -64,6 +65,7 @@ export type AssembleFormParts = {
     quarterlyStep: QuarterlyStepCode;
     optionSettings: OptionSettings;
     note: string;
+    nowMs?: number;
 };
 
 export function assembleFormItem(parts: AssembleFormParts): ReminderItem {
@@ -163,17 +165,16 @@ export function assembleFormItem(parts: AssembleFormParts): ReminderItem {
     }
 
     if (keepsBirthYearOf(kind)) {
-        if (typeof parts.existing?.birthYear === 'number') {
-            next.birthYear = parts.existing.birthYear;
-        } else if (!parts.existing) {
-            next.birthYear = parts.pendingDate.getFullYear();
-        } else if (
-            typeof parts.existing.year === 'number'
-            && parts.existing.year < new Date().getFullYear()
-        ) {
-            next.birthYear = parts.existing.year;
-        } else {
-            delete next.birthYear;
+        next.birthYear = parts.pendingDate.getFullYear();
+        if (typeof next.month === 'number' && typeof next.day === 'number') {
+            next.year = nextBirthdayYear(
+                next.month,
+                next.day,
+                next.hour ?? 12,
+                next.minute ?? 0,
+                parts.nowMs ?? Date.now(),
+                !!parts.existing?.completed,
+            );
         }
     } else {
         delete next.birthYear;

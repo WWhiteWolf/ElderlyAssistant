@@ -14,6 +14,7 @@ import {
     hasQuarterlyStepOf,
     keepsBirthYearOf,
     dateLabelTextOf,
+    itemNameOf,
     waitsUntilNearDaysOf,
     repeatUnitCodeOf,
     sanitizeCurrentReminderItems,
@@ -552,6 +553,42 @@ export function runTranslatorCadenceTests(): void {
         );
     });
 
+    test('Restore writes the year of birth onto an older Birthday', () => {
+        const restored = sanitizeCurrentReminderItems([
+            item({
+                kind: 'birthdays',
+                label: 'Pat Smith',
+                year: 1948,
+                month: 5,
+                day: 10,
+                hour: 12,
+                minute: 0,
+            }),
+        ], NOW);
+        const saved = restored?.[0];
+        assertSame(
+            [saved?.birthYear, saved?.year, saved?.month, saved?.day],
+            [1948, 2026, 5, 10],
+            'the birthdate stays; the next fire is derived',
+        );
+    });
+
+    test('Restore does not invent a year of birth on Yearly', () => {
+        const restored = sanitizeCurrentReminderItems([
+            item({
+                kind: 'yearly',
+                year: 1948,
+                month: 5,
+                day: 10,
+            }),
+        ], NOW);
+        assertSame(
+            restored?.[0]?.birthYear,
+            undefined,
+            'only the year-of-birth bit writes that field',
+        );
+    });
+
     test('Weekly Options has Day after the set day', () => {
         assertSame(
             optionCaseIdsFor('weekly'),
@@ -919,6 +956,35 @@ export function runTranslatorCadenceTests(): void {
             ],
             ['Birthdate', 'Due Date', 'Due Date'],
             'Birthdays’ date line is Birthdate; others keep Due Date',
+        );
+        assertSame(
+            itemNameOf({
+                id: 'b1',
+                kind: 'birthdays',
+                label: 'Pat Smith',
+                year: 2027,
+                month: 5,
+                day: 10,
+                birthYear: 1948,
+            }),
+            'Pat Smith · Jun 10, 1948',
+            'the table’s name for Birthdays is the person and the birthdate',
+        );
+        const reminded = translateReminderItems([{
+            id: 'b1',
+            kind: 'birthdays',
+            label: 'Pat Smith',
+            year: 2026,
+            month: 5,
+            day: 10,
+            hour: 12,
+            minute: 0,
+            birthYear: 1948,
+        }], new Date(2026, 8, 13, 18, 0, 0, 0).getTime())[0];
+        assertSame(
+            reminded?.bannerBodyText,
+            'Birthday Pat 78',
+            'the table’s reminder names the age they turn',
         );
     });
 }

@@ -168,7 +168,8 @@ option bits that remain are:
 - it can be marked done at all
 - it can be pushed back
 - Save keeps the reminders-before chips
-- Save keeps a year of birth that Done does not move
+- Save keeps a year of birth that Done does not move. That birthdate
+  belongs with the name. The next fire date is derived from it.
 
 **State bits say what has actually happened to this occurrence.** They
 change. Done right now is one of them. A pushed-back stamp and a
@@ -256,10 +257,11 @@ Done is a code, `doneActionCode`. The three words are:
   tick comes off, and the saved date is the cycle that had been due, not
   the next one. It is not Done for the newly armed cycle. Monthly,
   Quarterly, Yearly, and Birthdays. Yearly and Birthdays write year on
-  the table. The date-advance reads that word. Birthdays also keep a
-  year of birth that this move does not touch. Yearly and Birthdays
-  look from the saved date, as a weekday monthly already does. The
-  next fire is not this year's still-ahead time.
+  the table. The date-advance reads that word. Birthdays keep the
+  birthdate with the name. Done moves the derived next fire date, not
+  the birthdate. Yearly and Birthdays look from the saved date, as a
+  weekday monthly already does. The next fire is not this year's
+  still-ahead time.
 - **endItem** — the item is finished. It stays on its page. It no
   longer fires. Delete is how you get rid of it. Appointments and
   Bucket List. They are not the dated tick.
@@ -363,8 +365,10 @@ set appointmentsok. Same Reminders before chips as Appointments. The
 form can have any and all on at once. The phone holds only the soonest
 still ahead. Save does not ask again when none of them is on. A missing
 day uses shifteddayactions: Then, Next Day. An item on Birthdays is not
-also on Appointments or Yearly. It keeps a year of birth that Done does
-not move. The Birthdays page does not say Birthday on the row. Calendar
+also on Appointments or Yearly. The birthdate belongs with the name, not
+with the reminder setting. Done does not move it. The next fire date is
+derived from that birthdate. The Birthdays row shows the name and the
+birthdate. The reminder says the age they turn that day. Calendar
 month cells say B-day and the first name. The day’s list, and a
 Birthday on Daily, say Birthday, that name, and the age they turn that
 day. The first name is the first word of Name. Age is the calendar year
@@ -606,7 +610,9 @@ here when it has the same identity the app wrote into the backup file.
 Settings and page logs stay on the phone. The backup does not carry
 them. Before confirmation, Replace and Merge validate the whole saved
 list against the current kind table and strip live Options fields that
-the kind's row does not allow. One unknown kind rejects the whole file
+the kind's row does not allow. When that row keeps a birthdate, they
+write the year of birth and derive the next fire date from it, so an
+older backup still keeps the birthdate. One unknown kind rejects the whole file
 and changes nothing. After Replace or Merge, OK lands on Home.
 
 ## Scheduled Reminders

@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-13 (#109-new)
+Last updated: 2026-09-13 (#110-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -32,6 +32,15 @@ WHAT'S NEXT
 2. DAY-ROLL LOCK still wants a night of all-green Daily on this
    load, then a morning open on a new load, to confirm the pop-up
    stays quiet.
+3. JOB 3 ON BUILD 82. Options by kind, Weekly Done, and an export
+   after a change. This load has that work; it has not been checked
+   on the phone.
+4. BIRTHDAY ROW AND REMINDER (Patrick, #110-new). In the project, not
+   on 82. The row shows the name and the birthdate. The reminder says
+   the age. The next fire is derived from the birthdate. Restore writes
+   the year of birth onto an older backup. Needs a phone check on the
+   next load. Replace brings the backup copy back; Merge keeps what is
+   already in the app.
 
 
 PENDING

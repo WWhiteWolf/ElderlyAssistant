@@ -57,8 +57,8 @@ Yearly is for things that come round every year. You pick the date
 and a time.
 
 Birthdays is that special list. You enter the birthdate, and the time
-you want to be reminded at. The year they were born stays as it is,
-so the app can show how old they turn. You can ask to be reminded
+you want to be reminded at. The birthdate stays with the name. The
+reminder tells you the age they turn. You can ask to be reminded
 ahead of time.
 
 ## Reminders that do not repeat

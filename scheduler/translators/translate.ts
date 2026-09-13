@@ -39,6 +39,12 @@ import { MONTHLY_WEEKDAY_EXCLUSIVE_GROUP, quarterlyStepCodeOf, quarterlyStepDays
 import type { ReminderListSourceCode } from '../sources.ts';
 import type { ReminderItem } from '../../modules/reminder-types.ts';
 import {
+    birthdayReminderLine,
+    birthdayRowName,
+    nextBirthdayYear,
+    withDerivedBirthdaySetting,
+} from '../../modules/birth-year.ts';
+import {
     applyExclusiveGroupToItem,
     keepOptionsForCodes,
     optionsFromItem,
@@ -109,7 +115,8 @@ export interface ScreenRules {
     /** True when Save keeps the reminders-before chips. */
     keepsLeadChipsBit: boolean;
     /**
-     * True when Save keeps a year of birth that Done does not move.
+     * True when the birthdate is identity: it belongs with the name, Done
+     * does not move it, and the next fire date is derived from it.
      *
      * Left off, this kind has none.
      */
@@ -152,7 +159,7 @@ export interface ScreenRules {
     nameOf: (saved: ReminderItem) => string;
     isDoneOf: (saved: ReminderItem) => boolean;
     pushedBackStampOf: (saved: ReminderItem) => number | undefined;
-    dueOf: (saved: ReminderItem) => DueFields;
+    dueOf: (saved: ReminderItem, now: number) => DueFields;
     leadTimesOf: (saved: ReminderItem) => LeadTime[];
     bannerTitleTextOf: (saved: ReminderItem) => string;
     bannerBodyTextOf: (saved: ReminderItem) => string;
@@ -165,8 +172,8 @@ export interface ScreenRules {
 /**
  * Turn one saved reminder into the common shape the engine reads.
  */
-function translateOne(rules: ScreenRules, saved: ReminderItem): ShapedItem {
-    const due = rules.dueOf(saved);
+function translateOne(rules: ScreenRules, saved: ReminderItem, now: number): ShapedItem {
+    const due = rules.dueOf(saved, now);
     const pushedBackToStamp = rules.pushedBackStampOf(saved);
     const weekdayNumber = rules.weekdayNumberOf?.(saved);
     // The weekday list is written only when the weekly item has a complete
@@ -354,7 +361,7 @@ const dailyCadenceRules: ScreenRules = {
     nameOf: (item) => item.label,
     isDoneOf: (item) => !!item.completed,
     pushedBackStampOf: (item) => item.snoozedUntil,
-    dueOf: (item) =>
+    dueOf: (item, _now) =>
         typeof item.hour === 'number' && typeof item.minute === 'number'
             ? { hasDueTimeBit: true, dueHour: item.hour, dueMinute: item.minute }
             : { hasDueTimeBit: false },
@@ -382,7 +389,7 @@ const weeklyCadenceRules: ScreenRules = {
     pushedBackStampOf: (item) => item.snoozedUntil,
     weekdayNumberOf: (item) =>
         typeof item.day === 'number' ? item.day : undefined,
-    dueOf: (item) =>
+    dueOf: (item, _now) =>
         typeof item.day === 'number'
             && typeof item.hour === 'number'
             && typeof item.minute === 'number'
@@ -417,7 +424,7 @@ const datedCadenceRules: ScreenRules = {
     nameOf: (item) => item.label,
     isDoneOf: (item) => !!item.completed,
     pushedBackStampOf: (item) => item.snoozedUntil,
-    dueOf: (item) => {
+    dueOf: (item, _now) => {
         const hour = typeof item.hour === 'number' ? item.hour : undefined;
         const minute = typeof item.minute === 'number' ? item.minute : undefined;
         return datedDueOf(item, hour, minute);
@@ -457,7 +464,7 @@ const appointmentsCadenceRules: ScreenRules = {
     nameOf: (item) => item.label,
     isDoneOf: (item) => !!item.completed,
     pushedBackStampOf: () => undefined,
-    dueOf: (item) => {
+    dueOf: (item, _now) => {
         if (typeof item.year === 'number'
             && typeof item.month === 'number'
             && typeof item.day === 'number') {
@@ -513,35 +520,27 @@ const birthdaysCadenceRules: ScreenRules = {
     bannerButtonsCode: 'appointmentsok',
     shiftedBannerButtonsCode: 'shifteddayactions',
     idOf: (item) => item.id,
-    nameOf: (item) => item.label,
+    nameOf: (item) => birthdayRowName(item, new Date().getFullYear()),
     isDoneOf: (item) => !!item.completed,
     pushedBackStampOf: () => undefined,
-    dueOf: (item) => {
-        if (typeof item.year !== 'number'
-            || typeof item.month !== 'number'
-            || typeof item.day !== 'number') {
+    dueOf: (item, now) => {
+        if (typeof item.month !== 'number' || typeof item.day !== 'number') {
             return { hasDueTimeBit: false };
         }
-        return datedDueOf(item, item.hour ?? 12, item.minute ?? 0);
+        const hour = item.hour ?? 12;
+        const minute = item.minute ?? 0;
+        const nowYear = new Date(now).getFullYear();
+        const year =
+            typeof item.year === 'number' && item.year >= nowYear
+                ? item.year
+                : nextBirthdayYear(item.month, item.day, hour, minute, now, !!item.completed);
+        return datedDueOf({ ...item, year }, hour, minute);
     },
     // The set time itself, then any reminders-before chips. An empty chip
     // list still speaks at the birthday.
     leadTimesOf: (item) => [...atTheMomentItself, ...leadTimesFromReminders(item)],
     bannerTitleTextOf: (item) => `📋 Reminder: ${item.label}`,
-    bannerBodyTextOf: (item) => {
-        if (typeof item.year !== 'number'
-            || typeof item.month !== 'number'
-            || typeof item.day !== 'number') {
-            return '';
-        }
-        return dueSentence(
-            item.year,
-            item.month,
-            item.day,
-            item.hour ?? 12,
-            item.minute ?? 0,
-        );
-    },
+    bannerBodyTextOf: (item) => birthdayReminderLine(item, new Date().getFullYear()),
 };
 
 const oneTimeCadenceRules: ScreenRules = {
@@ -598,9 +597,13 @@ export function isCurrentSavedKind(value: unknown): value is ReminderItem['kind'
 
 /**
  * Validate one stored item against the current kind table and sanitize its
- * Options fields from that same row.
+ * Options fields from that same row. When the row keeps a birthdate, Restore
+ * writes the year of birth and derives the next fire date from it.
  */
-export function sanitizeCurrentReminderItem(value: unknown): ReminderItem | null {
+export function sanitizeCurrentReminderItem(
+    value: unknown,
+    nowMs: number = Date.now(),
+): ReminderItem | null {
     if (!value || typeof value !== 'object') return null;
     const candidate = value as { id?: unknown; kind?: unknown };
     if (typeof candidate.id !== 'string' || !isCurrentSavedKind(candidate.kind)) {
@@ -612,15 +615,21 @@ export function sanitizeCurrentReminderItem(value: unknown): ReminderItem | null
     if (rules.exclusiveGroupBits) {
         out = applyExclusiveGroupToItem(out, optionsFromItem(out));
     }
+    if (rules.keepsBirthYearBit) {
+        out = withDerivedBirthdaySetting(out, nowMs);
+    }
     return out;
 }
 
 /** Validate and sanitize a whole current saved list, or reject it whole. */
-export function sanitizeCurrentReminderItems(value: unknown): ReminderItem[] | null {
+export function sanitizeCurrentReminderItems(
+    value: unknown,
+    nowMs: number = Date.now(),
+): ReminderItem[] | null {
     if (!Array.isArray(value)) return null;
     const out: ReminderItem[] = [];
     for (const one of value) {
-        const sanitized = sanitizeCurrentReminderItem(one);
+        const sanitized = sanitizeCurrentReminderItem(one, nowMs);
         if (!sanitized) return null;
         out.push(sanitized);
     }
@@ -629,11 +638,10 @@ export function sanitizeCurrentReminderItems(value: unknown): ReminderItem[] | n
 
 /** Turn the one saved list into shaped items, in the order given. */
 export function translateReminderItems(items: ReminderItem[], now: number): ShapedItem[] {
-    void now;
     const shaped: ShapedItem[] = [];
     for (const one of items) {
         const rules = rulesByKind[one.kind];
-        shaped.push(withSavedOptions(rules, one, translateOne(rules, one)));
+        shaped.push(withSavedOptions(rules, one, translateOne(rules, one, now)));
     }
     return shaped;
 }
@@ -768,9 +776,14 @@ export function keepsLeadChipsOf(kind: ReminderItem['kind']): boolean {
     return rulesByKind[kind].keepsLeadChipsBit;
 }
 
-/** True when Save keeps a year of birth that Done does not move. */
+/** True when the birthdate is identity and the next fire is derived from it. */
 export function keepsBirthYearOf(kind: ReminderItem['kind']): boolean {
     return rulesByKind[kind].keepsBirthYearBit === true;
+}
+
+/** The visible name from the translator's table. */
+export function itemNameOf(item: ReminderItem): string {
+    return rulesByKind[item.kind].nameOf(item);
 }
 
 /** The date line on New and Edit, or Due Date when the table leaves it off. */
