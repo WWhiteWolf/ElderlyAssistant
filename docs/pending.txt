@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-13 (#108-new)
+Last updated: 2026-09-13 (#109-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -24,17 +24,12 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. FINISH THE DESIGNED MACHINE from
-   docs-ref/build-sheets/build-sheet-designed-machine.md. Jobs 1 and
-   2 are built. Job 3 puts the remaining Options, Weekly Done, and
-   saved-list changes into their machinery. Its checkpoints 3A, 3B,
-   and 3C each need their own Go and report.
-2. PHONE PROOF FOR JOBS 1 AND 2. On a native build, check Job 1's
+1. PHONE PROOF FOR JOBS 1 AND 2. On a native build, check Job 1's
    banner and list-popup choices. For Job 2, leave a timed Daily item
    undone, cross the day boundary, and make the first opening a banner
    body tap. The missed-reminder popup comes first; after OK, the
    correct item is highlighted; a later return does not repeat it.
-3. DAY-ROLL LOCK still wants a night of all-green Daily on this
+2. DAY-ROLL LOCK still wants a night of all-green Daily on this
    load, then a morning open on a new load, to confirm the pop-up
    stays quiet.
 
@@ -143,6 +138,25 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+130. #109-new — The User's Guide now correctly says One Time for
+    today has Done, OK, and the three delays, but no Skip. The app
+    copy and working document agree. Not on the phone.
+
+129. #109-new — Job 3 checkpoint 3C. One physical transaction now
+    protects every saved-list change, and Backup Export waits for an
+    active change before reading. 402 Mac checks. TypeScript clean.
+    The designed-machine sheet is complete. Not on the phone.
+
+128. #109-new — Job 3 checkpoint 3B. Weekly Done writes and clears
+    its cycle time from the table facts “this cycle” and “week.”
+    Daily does not gain that time, and the three meanings of Done
+    stay unchanged. 398 Mac checks. TypeScript clean. Not on the phone.
+
+127. #109-new — Job 3 checkpoint 3A. Each reminder kind now carries
+    its allowed Options on the one table. Save and Restore strip
+    Options that do not belong; an unknown backup kind changes
+    nothing. 397 Mac checks. TypeScript clean. Not on the phone.
 
 126. #108-new — Jobs 1 and 2: 391 Mac checks, TypeScript clean, and
     the iOS bundle complete. Native phone proof remains.

@@ -23,11 +23,18 @@ import type { Miss, MissableItem, RunFault, RunRecord } from './health.ts';
 import { clearStartingOccurrenceTicks, missablesDueOnDays, unprocessedDays } from './miss-candidates.ts';
 import type { WantedReminder, WantedTrigger } from './types.ts';
 
-import { translateReminderItems } from './translators/translate.ts';
+import {
+    translateReminderItems,
+    usesWeeklyCycleStampOf,
+} from './translators/translate.ts';
 import { remindersFor } from './remindersfor.ts';
 import { DEFAULT_CLOCK_TIMES } from './clocktimes.ts';
 import type { ClockTimes, TimeOfDay } from './leadmoments.ts';
 import type { ReminderItem } from '../modules/reminder-types.ts';
+import {
+    changeSavedReminderItems,
+    readSavedReminderItems,
+} from '../modules/reminder-list-storage.ts';
 import { applyOpsFor } from './apply.ts';
 import { oneSchedulerRun } from './rungate.ts';
 import { oneDailyReset } from './resetgate.ts';
@@ -95,27 +102,25 @@ async function rollTheDayOver(): Promise<RunFault[]> {
         const savedDate = await AsyncStorage.getItem('reminder_last_date');
         if (!isNewDay(savedDate, today)) return [];
 
-        const saved = await readList<ReminderItem>('reminder_items');
-        if (saved.failed) return [{ kind: 'reset', listKey: 'reminder_items' }];
+        await changeSavedReminderItems(async (items) => {
+            // Daily, Weekly, Monthly, Quarterly, Yearly and One Time: anything
+            // that fell on an unprocessed day is written as a miss from this
+            // same pre-clear snapshot. Extended has no day and is not in this
+            // set.
+            if (savedDate) {
+                const days = unprocessedDays(savedDate, now);
+                await recordMisses(missablesDueOnDays(items, days), 'reminder_items', savedDate);
+            }
 
-        // Daily, Weekly, Monthly, Quarterly, Yearly and One Time: anything that
-        // fell on an unprocessed day is written as a miss before the ticks that
-        // say so are cleared. Extended has no day and is not in this set.
-        if (savedDate) {
-            const days = unprocessedDays(savedDate, now);
-            await recordMisses(missablesDueOnDays(saved.items, days), 'reminder_items', savedDate);
-        }
-
-        if (saved.items.length > 0) {
-            const daily = saved.items.filter((one) => one.kind === 'daily');
+            if (items.length === 0) return items;
+            const daily = items.filter((one) => one.kind === 'daily');
             const resetDaily = resetForNewDay(daily);
             const byId = new Map(resetDaily.map((one) => [one.id, one]));
-            const next = clearStartingOccurrenceTicks(
-                saved.items.map((one) => byId.get(one.id) ?? one),
+            return clearStartingOccurrenceTicks(
+                items.map((one) => byId.get(one.id) ?? one),
                 now,
             );
-            await AsyncStorage.setItem('reminder_items', JSON.stringify(next));
-        }
+        });
         await AsyncStorage.setItem('reminder_last_date', today);
     } catch {
         faults.push({ kind: 'reset', listKey: 'reminder_items' });
@@ -133,33 +138,35 @@ async function rollTheDayOver(): Promise<RunFault[]> {
  * occurrence. That is why there is no saved date here and no guard like
  * `isNewDay` — the items themselves carry when they were done.
  *
- * It is safe to call at any time. When nothing has come round it reads the
- * list and writes nothing.
+ * It is safe to call at any time. When nothing has come round the transaction
+ * leaves the list unchanged.
  *
  * It answers with whatever went wrong, which is nothing on an ordinary run.
  */
 export async function runWeeklyReset(): Promise<RunFault[]> {
     try {
-        const saved = await readList<ReminderItem>('reminder_items');
-        if (saved.failed) return [{ kind: 'reset', listKey: 'weekly' }];
-        const weekly = saved.items.filter((one) => one.kind === 'weekly');
-        if (weekly.length === 0) return [];
+        await changeSavedReminderItems((items) => {
+            const resettable = items.filter((one) =>
+                usesWeeklyCycleStampOf(one.kind)
+            );
+            if (resettable.length === 0) return items;
 
-        const asChores: ResettableChore[] = weekly.map((one) => ({
-            id: one.id,
-            day: one.day ?? 0,
-            hour: typeof one.hour === 'number' ? one.hour : 12,
-            minute: typeof one.minute === 'number' ? one.minute : 0,
-            completed: !!one.completed,
-            ...(typeof one.doneAt === 'number' ? { doneAt: one.doneAt } : {}),
-            ...(typeof one.snoozedUntil === 'number' ? { postponedTo: one.snoozedUntil } : {}),
-        }));
-        const rolled = resetForNewCycle(asChores, Date.now());
-        const changed = rolled.some((chore, index) => chore !== asChores[index]);
-        if (changed) {
+            const asChores: ResettableChore[] = resettable.map((one) => ({
+                id: one.id,
+                day: one.day ?? 0,
+                hour: typeof one.hour === 'number' ? one.hour : 12,
+                minute: typeof one.minute === 'number' ? one.minute : 0,
+                completed: !!one.completed,
+                ...(typeof one.doneAt === 'number' ? { doneAt: one.doneAt } : {}),
+                ...(typeof one.snoozedUntil === 'number' ? { postponedTo: one.snoozedUntil } : {}),
+            }));
+            const rolled = resetForNewCycle(asChores, Date.now());
+            const changed = rolled.some((chore, index) => chore !== asChores[index]);
+            if (!changed) return items;
+
             const byId = new Map(rolled.map((one) => [one.id, one]));
-            const next = saved.items.map((one) => {
-                if (one.kind !== 'weekly') return one;
+            return items.map((one) => {
+                if (!usesWeeklyCycleStampOf(one.kind)) return one;
                 const chore = byId.get(one.id);
                 if (!chore) return one;
                 const { snoozedUntil: _dropSnooze, doneAt: _dropDone, ...rest } = one;
@@ -172,8 +179,7 @@ export async function runWeeklyReset(): Promise<RunFault[]> {
                     ...(chore.postponedTo != null ? { snoozedUntil: chore.postponedTo } : {}),
                 };
             });
-            await AsyncStorage.setItem('reminder_items', JSON.stringify(next));
-        }
+        });
         return [];
     } catch {
         return [{ kind: 'reset', listKey: 'weekly' }];
@@ -259,27 +265,6 @@ export async function sweepStaleBanners(): Promise<RunFault[]> {
     }
 }
 
-/**
- * Read one saved list.
- *
- * A key that has never been written is not a fault — that is simply a screen
- * with nothing on it yet. A key holding something that cannot be read is, and
- * it is the worst kind: the list is unknown, not empty. Held reminders from
- * that source stay on the phone, the fault is reported, and the next run
- * tries again.
- */
-async function readList<T>(key: string): Promise<{ items: T[]; failed: boolean }> {
-    try {
-        const raw = await AsyncStorage.getItem(key);
-        if (!raw) return { items: [], failed: false };
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed)) return { items: [], failed: true };
-        return { items: parsed as T[], failed: false };
-    } catch {
-        return { items: [], failed: true };
-    }
-}
-
 /** Turn a saved "HH:MM" into an hour and a minute. */
 function parseTime(raw: string | null, fallback: TimeOfDay): TimeOfDay {
     if (!raw) return fallback;
@@ -313,7 +298,7 @@ export async function gatherWanted(
     now: number,
 ): Promise<{ wanted: WantedReminder[]; faults: RunFault[]; unreadSources: string[] }> {
     const [saved, times] = await Promise.all([
-        readList<ReminderItem>('reminder_items'),
+        readSavedReminderItems(),
         readClockTimes(),
     ]);
 

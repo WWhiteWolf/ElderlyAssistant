@@ -4,27 +4,30 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-13, #108-new, session close.
+Last written: 2026-09-13, #109-new, session close.
 
 ## Read this first
 
 - Build **81** is on the phone. Scheduled Reminders is down to 14.
-- **#108-new Jobs 1 and 2** are in the project, not on 81. 391 Mac
-  checks pass. TypeScript and the iOS bundle are clean.
-- Job 3 is untouched. Its three checkpoints each need their own Go and
-  report.
+- **The designed-machine sheet is complete in the project, not on 81.**
+  #108-new built Jobs 1 and 2. #109-new built all three checkpoints of
+  Job 3. 402 Mac checks pass and TypeScript is clean.
+- The Job 1 and Job 2 iOS bundle completed. Their native phone proof
+  remains.
 
 ## What is in
 
-One typed catalog owns every banner action and delay. One Time has no
-Skip, and its delayed reminder now reaches the phone road. Opening and
-foreground return now await rollover, scheduling, and the health notice
-before a banner body tap releases its highlighted item.
+One typed catalog owns every banner action and delay. Opening now waits
+for rollover, scheduling, and the health notice before a banner body
+tap releases its item. Each kind's table row owns its allowed Options.
+Weekly's cycle stamp comes from the shared Done and repeat facts.
+Every saved-list change uses one physical transaction, and Backup Export
+waits for an active change before reading. The document and in-app
+User's Guide correctly say that One Time has no Skip.
 
 ## What is next
 
-Checkpoint 3A puts each kind's allowed Options on its table row. The
-native build still needs the Job 1 button check and Job 2's
+The native build still needs the Job 1 button check and Job 2's
 banner-first day-boundary path. Day-roll lock still wants a night of
 all-green Daily.
 

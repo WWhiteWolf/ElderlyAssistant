@@ -14,18 +14,13 @@ import {
 import { HeaderButton, PageFrame } from '../components/PageFrame';
 import { Theme, useTheme } from '../constants/Themes';
 import { applyReminderChange, type ReminderItem } from '../modules/reminder-items';
+import { readSavedReminderItems } from '../modules/reminder-list-storage';
 import { HEALTH_KEY, MISSES_KEY, NOTICE_SEEN_KEY } from '../scheduler/health.ts';
+import { sanitizeCurrentReminderItems } from '../scheduler/translators/translate.ts';
 
 // Format the backup file. Bump VERSION only if the shape changes,
 // so a future Import can tell how to read an older file.
 const BACKUP_VERSION = 3;
-
-// What travels in the backup. Settings and page logs stay on the phone
-// and are not written here (#77-new).
-const BACKUP_KEYS = [
-    'reminder_items',
-    'reminder_last_date',
-];
 
 // Old page lists. Taken off the backup at #35-new. A restore still
 // removes them so they cannot linger on the phone. The old log keys
@@ -52,17 +47,18 @@ const RETIRED_KEYS = [
 
 const HEALTH_KEYS = [HEALTH_KEY, MISSES_KEY, NOTICE_SEEN_KEY];
 
-function itemsFromBackup(raw: string | null | undefined): ReminderItem[] {
-    if (typeof raw !== 'string' || !raw) return [];
+type RestoredBackup = {
+    data: Record<string, string | null>;
+    reminderItems: ReminderItem[];
+};
+
+function itemsFromBackup(raw: string | null | undefined): ReminderItem[] | null {
+    if (raw == null) return [];
+    if (typeof raw !== 'string' || !raw) return null;
     try {
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed)) return [];
-        return parsed.filter(
-            (one): one is ReminderItem =>
-                !!one && typeof one === 'object' && typeof one.id === 'string',
-        );
+        return sanitizeCurrentReminderItems(JSON.parse(raw));
     } catch {
-        return [];
+        return null;
     }
 }
 
@@ -126,11 +122,19 @@ export default function BackupScreen() {
 
     const handleExport = async () => {
         try {
-            const pairs = await AsyncStorage.multiGet(BACKUP_KEYS);
-            const data: Record<string, string | null> = {};
-            pairs.forEach(([key, value]) => {
-                data[key] = value;
-            });
+            const [saved, lastDate] = await Promise.all([
+                readSavedReminderItems(),
+                AsyncStorage.getItem('reminder_last_date'),
+            ]);
+            if (saved.failed) {
+                throw new Error('The saved reminder list could not be read.');
+            }
+            // Settings and page logs stay on the phone and are not written
+            // here (#77-new). Keep the existing two-key backup shape.
+            const data: Record<string, string | null> = {
+                reminder_items: saved.raw,
+                reminder_last_date: lastDate,
+            };
             await finishExport(data);
         } catch {
             Alert.alert(
@@ -140,9 +144,10 @@ export default function BackupScreen() {
         }
     };
 
-    const applyReplace = async (data: Record<string, string | null>) => {
+    const applyReplace = async (backup: RestoredBackup) => {
         try {
-            await applyReminderChange(() => itemsFromBackup(data.reminder_items));
+            await applyReminderChange(() => backup.reminderItems);
+            const { data } = backup;
             if (typeof data.reminder_last_date === 'string') {
                 await AsyncStorage.setItem('reminder_last_date', data.reminder_last_date);
             } else {
@@ -161,10 +166,12 @@ export default function BackupScreen() {
         }
     };
 
-    const applyMerge = async (data: Record<string, string | null>) => {
+    const applyMerge = async (backup: RestoredBackup) => {
         try {
-            const incoming = itemsFromBackup(data.reminder_items);
-            await applyReminderChange((current) => mergeReminderLists(current, incoming));
+            await applyReminderChange((current) =>
+                mergeReminderLists(current, backup.reminderItems)
+            );
+            const { data } = backup;
             const existingDate = await AsyncStorage.getItem('reminder_last_date');
             if (existingDate == null && typeof data.reminder_last_date === 'string') {
                 await AsyncStorage.setItem('reminder_last_date', data.reminder_last_date);
@@ -182,7 +189,7 @@ export default function BackupScreen() {
         }
     };
 
-    const pickBackupFile = async (): Promise<Record<string, string | null> | null> => {
+    const pickBackupFile = async (): Promise<RestoredBackup | null> => {
         try {
             const result = await DocumentPicker.getDocumentAsync({
                 type: 'application/json',
@@ -218,7 +225,16 @@ export default function BackupScreen() {
                 return null;
             }
 
-            return parsed.data as Record<string, string | null>;
+            const data = parsed.data as Record<string, string | null>;
+            const reminderItems = itemsFromBackup(data.reminder_items);
+            if (reminderItems === null) {
+                Alert.alert(
+                    'Not a current backup',
+                    'That file contains reminders this version of A Place To Remember does not recognize. Nothing was changed.',
+                );
+                return null;
+            }
+            return { data, reminderItems };
         } catch {
             Alert.alert(
                 'Import failed',
@@ -229,8 +245,8 @@ export default function BackupScreen() {
     };
 
     const handleReplace = async () => {
-        const data = await pickBackupFile();
-        if (!data) return;
+        const backup = await pickBackupFile();
+        if (!backup) return;
         Alert.alert(
             'Replace reminders?',
             'This will replace the reminders currently in the app with the contents of this backup. Settings and page logs on the phone stay. The notes about missed reminders and whether reminders ran will come off. This cannot be undone.',
@@ -239,15 +255,15 @@ export default function BackupScreen() {
                 {
                     text: 'Replace',
                     style: 'destructive',
-                    onPress: () => applyReplace(data),
+                    onPress: () => applyReplace(backup),
                 },
             ],
         );
     };
 
     const handleMerge = async () => {
-        const data = await pickBackupFile();
-        if (!data) return;
+        const backup = await pickBackupFile();
+        if (!backup) return;
         Alert.alert(
             'Merge reminders?',
             'This will keep the reminders already in the app, and add from the backup only those that are not already here. Settings, page logs, and the notes about missed reminders stay. This cannot be undone.',
@@ -255,7 +271,7 @@ export default function BackupScreen() {
                 { text: 'Cancel', style: 'cancel' },
                 {
                     text: 'Merge',
-                    onPress: () => applyMerge(data),
+                    onPress: () => applyMerge(backup),
                 },
             ],
         );

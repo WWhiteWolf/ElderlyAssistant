@@ -388,7 +388,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Skip is not Done. Skip drops this round and sets up the next. Appointments and Bucket List have no next round, so they have no Skip.',
+        text: 'Skip is not Done. Skip drops this round and sets up the next. One Time for today, Appointments, and Bucket List have no next round, so they have no Skip.',
     },
 
     { type: 'heading', text: 'Snooze' },
@@ -432,11 +432,15 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Daily, and One Time for today: Done, OK, Skip, Delay 15 min, Delay 30 min, and Delay 60 min.',
+        text: 'Daily: Done, OK, Skip, Delay 15 min, Delay 30 min, and Delay 60 min.',
     },
     {
         type: 'paragraph',
-        text: 'Weekly: those, and Delay 1 Day.',
+        text: 'One Time for today: Done, OK, Delay 15 min, Delay 30 min, and Delay 60 min.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Weekly: Done, OK, Skip, Delay 15 min, Delay 30 min, Delay 60 min, and Delay 1 Day.',
     },
     {
         type: 'paragraph',

@@ -12,11 +12,11 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-Build **81** is on the phone. #107-new is committed.
+Build **81** is on the phone. #108-new is committed.
 The #104-new, #105-new, and #106-new work is on that load. Scheduled
-Reminders is down to 14. Jobs 1 and 2 of the designed-machine sheet are
-built in the project, not on the phone. 391 Mac checks pass, TypeScript
-is clean, and the iOS bundle completes. Job 3 is untouched.
+Reminders is down to 14. All three jobs of the designed-machine sheet
+are built in the project, not on the phone. 402 Mac checks pass and
+TypeScript is clean. The Job 1 and Job 2 iOS bundle completed.
 
 ## Standing rulings
 
@@ -214,13 +214,7 @@ These are Patrick's and they govern the work rather than describing it.
 ## What is open in front of it
 
 The guide remains `docs/designed-implementation.md`. The self-contained
-road for the open machine work is
-`docs-ref/build-sheets/build-sheet-designed-machine.md`. Each named
-stop needs its own Go.
-
-**Next sitting.** Job 3 begins with checkpoint 3A: allowed Options live
-on the kind row. Checkpoints 3B and 3C each wait for their own Go and
-their own report.
+designed-machine build sheet is complete in the project.
 
 **Phone proof still open.** Job 1's banner and list-popup choices need
 a native build check. Job 2 needs Patrick's banner-first day-boundary

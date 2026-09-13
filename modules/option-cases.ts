@@ -1,9 +1,10 @@
 import type { ReminderItem } from './reminder-types';
+import type { OptionCaseCode } from '../scheduler/inputshape.ts';
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export type OptionCase = {
-    id: string;
+    id: OptionCaseCode;
     icon: string;
     name: string;
     body: string;
@@ -74,32 +75,19 @@ export const OPTION_CASES: OptionCase[] = [
     },
 ];
 
-const CONNECTED_IDS = ['holidays', 'timezone'];
-const WEEKLY_IDS = ['holidays', 'afterSetDay', 'timezone'];
-const TIMEZONE_IDS = ['timezone'];
-const MONTHLY_IDS = [
-    ...CONNECTED_IDS,
-    'secondThursday',
-    'wednesdayAfter',
-];
-
-function casesFor(ids: string[]): OptionCase[] {
+function casesFor(ids: readonly OptionCaseCode[]): OptionCase[] {
     return ids.map((id) => OPTION_CASES.find((one) => one.id === id)).filter(
         (one): one is OptionCase => one != null,
     );
 }
 
-export function optionCasesForKind(kind: string): OptionCase[] {
-    if (kind === 'daily' || kind === 'oneTime') return casesFor(TIMEZONE_IDS);
-    if (kind === 'bucketlist') return [];
-    if (kind === 'weekly') return casesFor(WEEKLY_IDS);
-    if (kind === 'appointments' || kind === 'birthdays') return casesFor(CONNECTED_IDS);
-    if (kind === 'monthly' || kind === 'quarterly' || kind === 'yearly') return casesFor(MONTHLY_IDS);
-    return [];
+/** Turn the kind table's allowed codes into their visible Options rows. */
+export function optionCasesForCodes(codes: readonly OptionCaseCode[]): OptionCase[] {
+    return casesFor(codes);
 }
 
 export type AppliedOption = {
-    id: string;
+    id: OptionCaseCode;
     icon: string;
     name: string;
     value: string;
@@ -107,7 +95,7 @@ export type AppliedOption = {
 
 export function appliedOptionRows(settings: OptionSettings): AppliedOption[] {
     const rows: AppliedOption[] = [];
-    const named = (id: string) => OPTION_CASES.find((one) => one.id === id);
+    const named = (id: OptionCaseCode) => OPTION_CASES.find((one) => one.id === id);
     if (settings.holidayMove) {
         const one = named('holidays');
         if (one) {
@@ -202,8 +190,6 @@ export function applyConnectedOptions(item: ReminderItem, settings: OptionSettin
         delete out.floatsWithPhone;
         delete out.dueTimeZoneText;
     }
-    if (settings.shadeCalendar) out.shadeCalendar = true;
-    else delete out.shadeCalendar;
     delete out.floatDay;
     delete out.shiftedChoice;
     if (settings.weekdayOrdinal != null && settings.ordinalWeekday != null) {
@@ -243,13 +229,13 @@ export function weekdayPatternComplete(s: {
     return secondThursdayComplete(s) || wednesdayAfterComplete(s);
 }
 
-function namedBitComplete(settings: OptionSettings, name: string): boolean {
+function namedBitComplete(settings: OptionSettings, name: OptionCaseCode): boolean {
     if (name === 'secondThursday') return secondThursdayComplete(settings);
     if (name === 'wednesdayAfter') return wednesdayAfterComplete(settings);
     return false;
 }
 
-function namedBitChanged(prev: OptionSettings, next: OptionSettings, name: string): boolean {
+function namedBitChanged(prev: OptionSettings, next: OptionSettings, name: OptionCaseCode): boolean {
     if (name === 'secondThursday') {
         return next.weekdayOrdinal !== prev.weekdayOrdinal
             || next.ordinalWeekday !== prev.ordinalWeekday;
@@ -261,7 +247,7 @@ function namedBitChanged(prev: OptionSettings, next: OptionSettings, name: strin
     return false;
 }
 
-function clearNamedBit(settings: OptionSettings, name: string): OptionSettings {
+function clearNamedBit(settings: OptionSettings, name: OptionCaseCode): OptionSettings {
     if (name === 'secondThursday') {
         return { ...settings, weekdayOrdinal: undefined, ordinalWeekday: undefined };
     }
@@ -289,7 +275,7 @@ export function clearExclusiveGroupFields(settings: OptionSettings): OptionSetti
 export function withExclusiveGroup(
     prev: OptionSettings,
     next: OptionSettings,
-    group: readonly string[] | undefined,
+    group: readonly OptionCaseCode[] | undefined,
 ): OptionSettings {
     if (!group || group.length === 0) return next;
     let out = next;
@@ -338,13 +324,33 @@ export function applyExclusiveGroupToItem(
     return out;
 }
 
-export function keepOptionsForKind(item: ReminderItem, kind: string): ReminderItem {
-    const ids = new Set(optionCasesForKind(kind).map((c) => c.id));
+/** Strip every live Options field the kind table does not allow. */
+export function keepOptionsForCodes(
+    item: ReminderItem,
+    allowedCodes: readonly OptionCaseCode[],
+): ReminderItem {
+    const ids = new Set<OptionCaseCode>(allowedCodes);
     const out = { ...item };
     delete out.floatDay;
     delete out.shiftedChoice;
-    if (!ids.has('holidays')) delete out.holidayMove;
-    if (!ids.has('afterSetDay')) delete out.afterSetDay;
+    if (
+        !ids.has('holidays')
+        || (out.holidayMove !== 'before' && out.holidayMove !== 'after')
+    ) {
+        delete out.holidayMove;
+    }
+    if (!ids.has('afterSetDay') || out.afterSetDay !== true) {
+        delete out.afterSetDay;
+    }
+    if (
+        !ids.has('timezone')
+        || out.floatsWithPhone !== false
+        || typeof out.dueTimeZoneText !== 'string'
+        || out.dueTimeZoneText.length === 0
+    ) {
+        delete out.floatsWithPhone;
+        delete out.dueTimeZoneText;
+    }
     // The calendar page replaced the shading row, but the saved field stays.
     if (!ids.has('secondThursday')) {
         delete out.weekdayOrdinal;

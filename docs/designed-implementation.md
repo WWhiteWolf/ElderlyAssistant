@@ -67,11 +67,11 @@ The shared page does Daily's extras. They are:
 - **Done follows the item**, not the page. A visitor on Daily uses that
   item's Done action.
 
-Keep `ReminderItemRow` and `applyReminderChange`. Do not change
-`armdepth.ts` or the scheduler core. Done's three words are on the
-translator's table in `scheduler/translators/translate.ts`. The Done
-door reads them. stillwanted still answers two ways: the item is
-finished, or this occurrence is done.
+Keep `ReminderItemRow` and `applyReminderChange`. Done's three words
+are on the translator's table in
+`scheduler/translators/translate.ts`. The Done door reads them.
+stillwanted still answers two ways: the item is finished, or this
+occurrence is done.
 
 The design answers are in this file. A sitting that still has to ask
 Patrick a design question is not using it.
@@ -147,6 +147,10 @@ translator and banner boundaries are:
   The saved item still holds the day-count the engine already steps.
 - **The date line on New and Edit** — left off, it is Due Date.
   Birthdays write Birthdate. The form reads the table.
+- **Which Options cases a kind may carry** — holidays, afterSetDay,
+  timezone, secondThursday, and wednesdayAfter. Every kind's translator
+  row carries its allowed list. The form and the saved-item translator
+  read that row; the Options metadata does not keep another kind switch.
 
 A code word is the right shape when the thing is a choice of names.
 
@@ -195,7 +199,8 @@ writes at most one.
 
 Keep these. A build does not replace them.
 
-- One saved list. A page is a filter. An item has one kind.
+- One saved list. A page is a filter. An item has one kind. Its physical
+  read-and-change path is `modules/reminder-list-storage.ts`.
 - One save door: `applyReminderChange`.
 - The shared list page: `components/CadenceListPage.tsx`. A route only
   names its kind.
@@ -208,6 +213,25 @@ Keep these. A build does not replace them.
 Layout, colors, and wording come from the page chrome and the theme
 that already stand (`components/PageFrame.tsx`, `constants/Themes.ts`).
 A sitting reads those. They are not questions for Patrick.
+
+## Saved-list boundary
+
+`reminder_items` has one neutral storage module and one queued physical
+transaction. A change waits its turn, reads the latest list, applies one
+change, and writes that result before the next change starts. A read
+waits for every transaction already in the queue, then returns the
+finished list.
+
+`applyReminderChange` completes the day and week rollovers first. It
+then puts the person's change through that transaction. Publishing the
+Daily names and running the scheduler happen after the transaction has
+released the queue. The daily rollover and weekly reset also make their
+saved-list changes through this same transaction, with their calculation
+inside it against the latest list.
+
+Backup Export reads the saved list through the queued reader, so an
+export requested during a list change receives the finished result.
+The backup shape and `reminder_last_date` stay unchanged.
 
 When a time or a date does not have to be picked, tapping a field to
 set one still leaves a way back to none. That way back is No time on
@@ -239,6 +263,12 @@ Done is a code, `doneActionCode`. The three words are:
 - **endItem** — the item is finished. It stays on its page. It no
   longer fires. Delete is how you get rid of it. Appointments and
   Bucket List. They are not the dated tick.
+
+Weekly's cycle stamp is not a private check for the saved kind. The
+shared answer is the existing field group: Done is thisCycle and the
+repeat unit is week. The Done door uses that answer to write `doneAt`,
+and the weekly rollover uses the same answer to choose and clear its
+items. Daily does not gain a cycle stamp.
 
 Skip is not Done. Skip drops this cycle and arms the next. A one-off
 has no next cycle, so Skip does not apply.
@@ -574,8 +604,10 @@ off the missed-reminder notes. Merge keeps what is here and adds from
 the backup only what is not already here. A backup reminder is already
 here when it has the same identity the app wrote into the backup file.
 Settings and page logs stay on the phone. The backup does not carry
-them. A file that is not a current backup from this app changes
-nothing. After Replace or Merge, OK lands on Home.
+them. Before confirmation, Replace and Merge validate the whole saved
+list against the current kind table and strip live Options fields that
+the kind's row does not allow. One unknown kind rejects the whole file
+and changes nothing. After Replace or Merge, OK lands on Home.
 
 ## Scheduled Reminders
 
@@ -597,11 +629,15 @@ how many the phone is holding that this list does not show.
 Options is not a Home page and not a kind of its own. The visible name
 is Options. `app/item-edit.tsx` carries Options. That opens
 `ScreenOptionsSheet` for the cases that belong to that item's kind.
-That is the only place Options is reached from.
+That is the only place Options is reached from. The kind's translator
+row owns the allowed case codes; the Options metadata owns the words
+and controls for those codes.
 
 Done keeps the cases. Back leaves a case, or closes the sheet. Notes
 live on New and Edit, not here. Calendar shading is not a case. The
-saved field stays.
+saved field stays as inert history. `floatDay` remains disconnected.
+Save strips every live Options field that the kind's row does not
+allow.
 
 The cases are Holidays, Time zone, Day after the set day, a second
 Thursday, and a Wednesday after the 6th. Holidays is Day before or

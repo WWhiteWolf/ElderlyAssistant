@@ -281,7 +281,7 @@ On Appointments and Bucket List, Done means this one is finished. It stays on th
 
 Some banners also have a Done button. Appointments and Birthdays do not; those banners only have OK. Bucket List has no banner.
 
-Skip is not Done. Skip drops this round and sets up the next. Appointments and Bucket List have no next round, so they have no Skip.
+Skip is not Done. Skip drops this round and sets up the next. One Time for today, Appointments, and Bucket List have no next round, so they have no Skip.
 
 ## Snooze
 
@@ -305,9 +305,11 @@ Appointments, Birthdays, and Bucket List cannot be snoozed. A Daily reminder wit
 
 A banner is the notice the phone shows when a reminder is due. The buttons on it depend on the kind.
 
-Daily, and One Time for today: Done, OK, Skip, Delay 15 min, Delay 30 min, and Delay 60 min.
+Daily: Done, OK, Skip, Delay 15 min, Delay 30 min, and Delay 60 min.
 
-Weekly: those, and Delay 1 Day.
+One Time for today: Done, OK, Delay 15 min, Delay 30 min, and Delay 60 min.
+
+Weekly: Done, OK, Skip, Delay 15 min, Delay 30 min, Delay 60 min, and Delay 1 Day.
 
 Monthly, Quarterly, and Yearly: Done, Delay 1 Day, Delay 1 Week, and Delay 1 Month.
 

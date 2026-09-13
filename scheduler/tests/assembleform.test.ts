@@ -118,6 +118,29 @@ export function runAssembleFormTests(): void {
         );
     });
 
+    test('Monthly Save never writes both exclusive weekday patterns', () => {
+        const next = assembleFormItem(parts({
+            editKind: 'monthly',
+            optionSettings: {
+                ...emptyOptionSettings(),
+                weekdayOrdinal: 2,
+                ordinalWeekday: 4,
+                afterWeekday: 3,
+                afterDayCount: 6,
+            },
+        }));
+        assertSame(
+            [
+                next.weekdayOrdinal,
+                next.ordinalWeekday,
+                next.afterWeekday,
+                next.afterDayCount,
+            ],
+            [undefined, undefined, undefined, undefined],
+            'both complete is not an allowed saved case',
+        );
+    });
+
     test('Quarterly none writes intervalMonths 3 and no intervalDays', () => {
         const next = assembleFormItem(parts({
             editKind: 'quarterly',
@@ -180,6 +203,33 @@ export function runAssembleFormTests(): void {
         );
     });
 
+    test('Birthdays Save stays outside the monthly weekday group', () => {
+        const next = assembleFormItem(parts({
+            editKind: 'birthdays',
+            optionSettings: {
+                ...emptyOptionSettings(),
+                holidayMove: 'after',
+                afterSetDay: true,
+                weekdayOrdinal: 2,
+                ordinalWeekday: 4,
+                afterWeekday: 3,
+                afterDayCount: 6,
+            },
+        }));
+        assertSame(
+            [
+                next.holidayMove,
+                next.afterSetDay,
+                next.weekdayOrdinal,
+                next.ordinalWeekday,
+                next.afterWeekday,
+                next.afterDayCount,
+            ],
+            ['after', undefined, undefined, undefined, undefined, undefined],
+            'Birthdays keep Holidays but do not enter the dated cadence exclusive group',
+        );
+    });
+
     test('ifTimeSet with no time keeps clock chips and drops offset chips', () => {
         const next = assembleFormItem(parts({
             editKind: 'birthdays',
@@ -231,13 +281,78 @@ export function runAssembleFormTests(): void {
     });
 
     test('Bucket List has no date, no time, and no reminders', () => {
-        const next = assembleFormItem(parts({ editKind: 'bucketlist' }));
+        const next = assembleFormItem(parts({
+            editKind: 'bucketlist',
+            existing: {
+                id: 'i1',
+                kind: 'bucketlist',
+                label: 'Call Pat',
+                shadeCalendar: true,
+            },
+            optionSettings: {
+                ...emptyOptionSettings(),
+                holidayMove: 'before',
+                afterSetDay: true,
+                floatsWithPhone: false,
+                dueTimeZoneText: 'America/New_York',
+                weekdayOrdinal: 2,
+                ordinalWeekday: 4,
+                afterWeekday: 3,
+                afterDayCount: 6,
+            },
+        }));
         assertSame(
             [next.year, next.month, next.day, next.hour, next.minute, next.reminders],
             [undefined, undefined, undefined, undefined, undefined, undefined],
             'Bucket List keeps name and Done only',
         );
+        assertSame(
+            [
+                next.holidayMove,
+                next.afterSetDay,
+                next.floatsWithPhone,
+                next.dueTimeZoneText,
+                next.weekdayOrdinal,
+                next.ordinalWeekday,
+                next.afterWeekday,
+                next.afterDayCount,
+                next.shadeCalendar,
+            ],
+            [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true],
+            'Save strips every disallowed Options field and leaves inert shade history alone',
+        );
         assert(!('hour' in next) && !('reminders' in next), 'dropped fields are gone, not left empty');
+    });
+
+    test('Daily Save keeps its allowed time zone and strips other Options', () => {
+        const next = assembleFormItem(parts({
+            editKind: 'daily',
+            optionSettings: {
+                ...emptyOptionSettings(),
+                holidayMove: 'before',
+                afterSetDay: true,
+                floatsWithPhone: false,
+                dueTimeZoneText: 'America/New_York',
+                weekdayOrdinal: 2,
+                ordinalWeekday: 4,
+                afterWeekday: 3,
+                afterDayCount: 6,
+            },
+        }));
+        assertSame(
+            [
+                next.holidayMove,
+                next.afterSetDay,
+                next.floatsWithPhone,
+                next.dueTimeZoneText,
+                next.weekdayOrdinal,
+                next.ordinalWeekday,
+                next.afterWeekday,
+                next.afterDayCount,
+            ],
+            [undefined, undefined, false, 'America/New_York', undefined, undefined, undefined, undefined],
+            'Save reads Daily’s allowed-code list from the table',
+        );
     });
 
     test('Weekly Save writes Day after the set day when that choice is on', () => {

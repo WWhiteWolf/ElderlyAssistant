@@ -4,6 +4,7 @@
 // decides which saved fields belong. It does not import React.
 
 import {
+    allowedOptionCaseCodesOf,
     dateWriteCodeOf,
     exclusiveGroupBitsOf,
     hasQuarterlyStepOf,
@@ -16,9 +17,7 @@ import type { QuarterlyStepCode } from '../scheduler/inputshape.ts';
 import {
     applyConnectedOptions,
     applyExclusiveGroupToItem,
-    emptyOptionSettings,
-    keepOptionsForKind,
-    optionCasesForKind,
+    keepOptionsForCodes,
     weekdayPatternComplete,
     type OptionSettings,
 } from './option-cases.ts';
@@ -180,19 +179,12 @@ export function assembleFormItem(parts: AssembleFormParts): ReminderItem {
         delete next.birthYear;
     }
 
-    if (optionCasesForKind(kind).length > 0) {
-        next = keepOptionsForKind(
-            applyConnectedOptions(next, parts.optionSettings),
-            kind,
-        );
-        if (exclusiveGroupBitsOf(kind)) {
-            next = applyExclusiveGroupToItem(next, parts.optionSettings);
-        }
-    } else {
-        next = keepOptionsForKind(
-            applyConnectedOptions(next, emptyOptionSettings()),
-            kind,
-        );
+    next = keepOptionsForCodes(
+        applyConnectedOptions(next, parts.optionSettings),
+        allowedOptionCaseCodesOf(kind),
+    );
+    if (exclusiveGroupBitsOf(kind)) {
+        next = applyExclusiveGroupToItem(next, parts.optionSettings);
     }
 
     const trimmedNote = parts.note.trim();

@@ -30,9 +30,13 @@ import {
     type QuarterlyStepCode,
 } from '../modules/reminder-items';
 import { assembleFormItem } from '../modules/assemble-form-item';
-import { dateLabelTextOf, timeWriteCodeOf } from '../scheduler/translators/translate';
 import {
-    optionCasesForKind,
+    allowedOptionCaseCodesOf,
+    dateLabelTextOf,
+    timeWriteCodeOf,
+} from '../scheduler/translators/translate';
+import {
+    optionCasesForCodes,
     emptyOptionSettings,
     appliedOptionRows,
     optionsFromItem,
@@ -192,7 +196,8 @@ export default function ItemEditScreen() {
     optionSettingsRef.current = optionSettings;
     const noteRef = useRef(note);
     noteRef.current = note;
-    const kindOptions = optionCasesForKind(editKind);
+    const allowedOptionCaseCodes = allowedOptionCaseCodesOf(editKind);
+    const kindOptions = optionCasesForCodes(allowedOptionCaseCodes);
     const applied = appliedOptionRows(optionSettings).filter((one) =>
         kindOptions.some((c) => c.id === one.id),
     );
@@ -641,10 +646,6 @@ export default function ItemEditScreen() {
                 cases={kindOptions}
                 settings={optionSettings}
                 onChange={(next) => {
-                    if (editKind !== 'monthly' && editKind !== 'quarterly' && editKind !== 'yearly') {
-                        setOptionSettings(next);
-                        return;
-                    }
                     setOptionSettings(withExclusiveGroup(
                         optionSettings,
                         next,

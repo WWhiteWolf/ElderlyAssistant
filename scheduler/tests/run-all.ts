@@ -29,6 +29,7 @@ import { runRunGateTests } from './rungate.test.ts';
 import { runResetGateTests } from './resetgate.test.ts';
 import { runBannerActionTests } from './banneractions.test.ts';
 import { runOpeningTests } from './opening.test.ts';
+import { runSavedListStorageTests } from './savedliststorage.test.ts';
 
 async function runAll(): Promise<void> {
     console.log('\nReconcile');
@@ -78,6 +79,9 @@ async function runAll(): Promise<void> {
 
     console.log('\nApply order');
     runApplyTests();
+
+    console.log('\nSaved-list transactions');
+    await runSavedListStorageTests();
 
     console.log('\nRun gate');
     await runRunGateTests();

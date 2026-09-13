@@ -29,6 +29,7 @@ import type {
     DateWriteCode,
     DoneActionCode,
     LeadTime,
+    OptionCaseCode,
     QuarterlyStepCode,
     RepeatUnitCode,
     ShapedItem,
@@ -38,6 +39,9 @@ import { MONTHLY_WEEKDAY_EXCLUSIVE_GROUP, quarterlyStepCodeOf, quarterlyStepDays
 import type { ReminderListSourceCode } from '../sources.ts';
 import type { ReminderItem } from '../../modules/reminder-types.ts';
 import {
+    applyExclusiveGroupToItem,
+    keepOptionsForCodes,
+    optionsFromItem,
     secondThursdayComplete,
     wednesdayAfterComplete,
 } from '../../modules/option-cases.ts';
@@ -96,6 +100,8 @@ export interface ScreenRules {
     dateWriteCode: DateWriteCode;
     /** What Save writes for hour and minute. */
     timeWriteCode: TimeWriteCode;
+    /** The Options cases this kind is allowed to carry. */
+    allowedOptionCaseCodes: readonly OptionCaseCode[];
     /**
      * The date line on New and Edit. Left off, it is Due Date.
      */
@@ -114,7 +120,7 @@ export interface ScreenRules {
      * Left off when the kind has no exclusive group. The monthly weekday
      * group is second Thursday and Wednesday after the 6th.
      */
-    exclusiveGroupBits?: readonly string[];
+    exclusiveGroupBits?: readonly OptionCaseCode[];
     /** The reminder stands for a group rather than one item. */
     standsForGroupBit: boolean;
     /**
@@ -339,6 +345,7 @@ const dailyCadenceRules: ScreenRules = {
     doneActionCode: 'thisCycle',
     dateWriteCode: 'none',
     timeWriteCode: 'ifPendingTime',
+    allowedOptionCaseCodes: ['timezone'],
     keepsLeadChipsBit: false,
     standsForGroupBit: false,
     bannerTitleTextOf: () => 'Daily Routine',
@@ -364,6 +371,7 @@ const weeklyCadenceRules: ScreenRules = {
     doneActionCode: 'thisCycle',
     dateWriteCode: 'weekday',
     timeWriteCode: 'alwaysPendingTime',
+    allowedOptionCaseCodes: ['holidays', 'afterSetDay', 'timezone'],
     keepsLeadChipsBit: false,
     standsForGroupBit: false,
     bannerTitleTextOf: () => 'Weekly Chore',
@@ -397,6 +405,7 @@ const datedCadenceRules: ScreenRules = {
     doneActionCode: 'advanceDate',
     dateWriteCode: 'calendar',
     timeWriteCode: 'alwaysPendingDate',
+    allowedOptionCaseCodes: ['holidays', 'timezone', 'secondThursday', 'wednesdayAfter'],
     keepsLeadChipsBit: false,
     exclusiveGroupBits: MONTHLY_WEEKDAY_EXCLUSIVE_GROUP,
     standsForGroupBit: false,
@@ -440,6 +449,7 @@ const appointmentsCadenceRules: ScreenRules = {
     doneActionCode: 'endItem',
     dateWriteCode: 'required',
     timeWriteCode: 'ifTimeSet',
+    allowedOptionCaseCodes: ['holidays', 'timezone'],
     keepsLeadChipsBit: true,
     standsForGroupBit: false,
     bannerButtonsCode: 'appointmentsok',
@@ -494,6 +504,7 @@ const birthdaysCadenceRules: ScreenRules = {
     doneActionCode: 'advanceDate',
     dateWriteCode: 'required',
     timeWriteCode: 'ifTimeSet',
+    allowedOptionCaseCodes: ['holidays', 'timezone'],
     keepsLeadChipsBit: true,
     keepsBirthYearBit: true,
     dateLabelText: 'Birthdate',
@@ -541,6 +552,7 @@ const oneTimeCadenceRules: ScreenRules = {
     doneActionCode: 'thisCycle',
     dateWriteCode: 'today',
     timeWriteCode: 'ifTimeSet',
+    allowedOptionCaseCodes: ['timezone'],
     keepsLeadChipsBit: true,
     pushedBackStampOf: (item) => item.snoozedUntil,
     bannerTitleTextOf: () => 'Daily Routine',
@@ -553,6 +565,7 @@ const bucketlistCadenceRules: ScreenRules = {
     doneActionCode: 'endItem',
     dateWriteCode: 'none',
     timeWriteCode: 'none',
+    allowedOptionCaseCodes: [],
     keepsLeadChipsBit: false,
     standsForGroupBit: false,
     idOf: (item) => item.id,
@@ -577,12 +590,50 @@ const rulesByKind: Record<ReminderItem['kind'], ScreenRules> = {
     bucketlist: bucketlistCadenceRules,
 };
 
+/** True when a value names one row in the current saved-kind table. */
+export function isCurrentSavedKind(value: unknown): value is ReminderItem['kind'] {
+    return typeof value === 'string'
+        && Object.prototype.hasOwnProperty.call(rulesByKind, value);
+}
+
+/**
+ * Validate one stored item against the current kind table and sanitize its
+ * Options fields from that same row.
+ */
+export function sanitizeCurrentReminderItem(value: unknown): ReminderItem | null {
+    if (!value || typeof value !== 'object') return null;
+    const candidate = value as { id?: unknown; kind?: unknown };
+    if (typeof candidate.id !== 'string' || !isCurrentSavedKind(candidate.kind)) {
+        return null;
+    }
+    const saved = value as ReminderItem;
+    const rules = rulesByKind[candidate.kind];
+    let out = keepOptionsForCodes(saved, rules.allowedOptionCaseCodes);
+    if (rules.exclusiveGroupBits) {
+        out = applyExclusiveGroupToItem(out, optionsFromItem(out));
+    }
+    return out;
+}
+
+/** Validate and sanitize a whole current saved list, or reject it whole. */
+export function sanitizeCurrentReminderItems(value: unknown): ReminderItem[] | null {
+    if (!Array.isArray(value)) return null;
+    const out: ReminderItem[] = [];
+    for (const one of value) {
+        const sanitized = sanitizeCurrentReminderItem(one);
+        if (!sanitized) return null;
+        out.push(sanitized);
+    }
+    return out;
+}
+
 /** Turn the one saved list into shaped items, in the order given. */
 export function translateReminderItems(items: ReminderItem[], now: number): ShapedItem[] {
     void now;
     const shaped: ShapedItem[] = [];
     for (const one of items) {
-        shaped.push(withSavedOptions(one, translateOne(rulesByKind[one.kind], one)));
+        const rules = rulesByKind[one.kind];
+        shaped.push(withSavedOptions(rules, one, translateOne(rules, one)));
     }
     return shaped;
 }
@@ -590,10 +641,11 @@ export function translateReminderItems(items: ReminderItem[], now: number): Shap
 /**
  * Carry the Options fields the engine already knows how to read.
  *
- * A named zone is written only as a complete pair. An incomplete pair is
- * rejected: the item keeps floating with the phone rather than silently
- * producing no reminder. Holidays are one code, absent when unused. Day
- * after the set day is one bit, absent when unused. A
+ * The kind's row decides which fields are allowed. A named zone is written
+ * only as a complete pair. An incomplete pair is rejected: the item keeps
+ * floating with the phone rather than silently producing no reminder.
+ * Holidays are one code, absent when unused. Day after the set day is one
+ * bit, absent when unused. A
  * complete second Thursday or Wednesday after the 6th becomes the engine's
  * weekday entry; a half-entered pair is left off. Those two are one
  * exclusive group on the table: only one can be true. If both saved
@@ -602,41 +654,56 @@ export function translateReminderItems(items: ReminderItem[], now: number): Shap
  * occurrence after that day. Then or Next Day is the table's missing-day
  * button set, not a saved preference.
  */
-function withSavedOptions(saved: ReminderItem, shaped: ShapedItem): ShapedItem {
+function withSavedOptions(
+    rules: ScreenRules,
+    saved: ReminderItem,
+    shaped: ShapedItem,
+): ShapedItem {
     let out = shaped;
-    if (saved.floatsWithPhone === false && saved.dueTimeZoneText) {
+    const allowed = new Set<OptionCaseCode>(rules.allowedOptionCaseCodes);
+    if (
+        allowed.has('timezone')
+        && saved.floatsWithPhone === false
+        && saved.dueTimeZoneText
+    ) {
         out = {
             ...out,
             floatsWithPhoneBit: false,
             dueTimeZoneText: saved.dueTimeZoneText,
         };
     }
-    if (saved.holidayMove === 'before' || saved.holidayMove === 'after') {
+    if (
+        allowed.has('holidays')
+        && (saved.holidayMove === 'before' || saved.holidayMove === 'after')
+    ) {
         out = { ...out, holidayMoveCode: saved.holidayMove };
     }
-    if (saved.afterSetDay) {
+    if (allowed.has('afterSetDay') && saved.afterSetDay) {
         out = { ...out, afterSetDayBit: true };
     }
-    const repeatUnit = repeatUnitCodeOf(saved.kind);
-    if (repeatUnit === 'month' || repeatUnit === 'year') {
-        out = withMonthlyRepeat(saved, out);
+    if (rules.exclusiveGroupBits && rules.exclusiveGroupBits.length > 0) {
+        out = withMonthlyRepeat(rules, saved, out);
     }
     return out;
 }
 
-function withMonthlyRepeat(saved: ReminderItem, shaped: ShapedItem): ShapedItem {
+function withMonthlyRepeat(
+    rules: ScreenRules,
+    saved: ReminderItem,
+    shaped: ShapedItem,
+): ShapedItem {
     if (
         shaped.quarterlyStepCode !== undefined
         && quarterlyStepDaysOf(shaped.quarterlyStepCode) !== undefined
     ) {
         return shaped;
     }
-    const group = exclusiveGroupBitsOf(saved.kind) ?? [];
+    const group = rules.exclusiveGroupBits ?? [];
     const thursday = group.includes('secondThursday') && secondThursdayComplete(saved);
     const wednesday = group.includes('wednesdayAfter') && wednesdayAfterComplete(saved);
-    const unit = repeatUnitCodeOf(saved.kind);
+    const unit = rules.repeatUnitCode;
     const interval =
-        unit === 'year' || saved.kind === 'monthly' ? 1
+        unit === 'year' || rules.quarterlyStepOf === undefined ? 1
         : (typeof saved.intervalMonths === 'number' ? saved.intervalMonths : 3);
     if (thursday && wednesday) {
         // Both complete is not a case the group allows. Write neither.
@@ -675,6 +742,17 @@ export function doneActionCodeOf(kind: ReminderItem['kind']): DoneActionCode {
     return rulesByKind[kind].doneActionCode;
 }
 
+/**
+ * True when Done is for this cycle and that cycle repeats by week.
+ *
+ * This is derived from the two existing table facts. It is not another
+ * Weekly capability bit.
+ */
+export function usesWeeklyCycleStampOf(kind: ReminderItem['kind']): boolean {
+    return doneActionCodeOf(kind) === 'thisCycle'
+        && repeatUnitCodeOf(kind) === 'week';
+}
+
 /** What Save writes for year, month, and day, from the translator's table. */
 export function dateWriteCodeOf(kind: ReminderItem['kind']): DateWriteCode {
     return rulesByKind[kind].dateWriteCode;
@@ -710,7 +788,16 @@ export function hasQuarterlyStepOf(kind: ReminderItem['kind']): boolean {
     return rulesByKind[kind].quarterlyStepOf !== undefined;
 }
 
+/** The Options cases allowed by this saved kind's table row. */
+export function allowedOptionCaseCodesOf(
+    kind: ReminderItem['kind'],
+): readonly OptionCaseCode[] {
+    return rulesByKind[kind].allowedOptionCaseCodes;
+}
+
 /** The exclusive group for this saved kind, if it has one. */
-export function exclusiveGroupBitsOf(kind: ReminderItem['kind']): readonly string[] | undefined {
+export function exclusiveGroupBitsOf(
+    kind: ReminderItem['kind'],
+): readonly OptionCaseCode[] | undefined {
     return rulesByKind[kind].exclusiveGroupBits;
 }

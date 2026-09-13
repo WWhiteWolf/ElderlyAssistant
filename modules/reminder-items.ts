@@ -9,12 +9,21 @@ import {
     quarterlyStepCodeOf,
     quarterlyStepDaysOf,
 } from '../scheduler/inputshape';
-import { translateReminderItems, doneActionCodeOf, exclusiveGroupBitsOf } from '../scheduler/translators/translate';
+import {
+    translateReminderItems,
+    doneActionCodeOf,
+    exclusiveGroupBitsOf,
+    usesWeeklyCycleStampOf,
+} from '../scheduler/translators/translate';
 export { doneActionCodeOf, exclusiveGroupBitsOf };
 import { shadedDaysInMonth } from '../scheduler/leadmoments';
 import { isDateOf, shownOnDate } from '../scheduler/shown-on-date';
 import type { ReminderItem, ReminderKind } from './reminder-types';
 import { advanceDatedItem } from './advance-dated-item';
+import {
+    changeSavedReminderItems,
+    readSavedReminderItems,
+} from './reminder-list-storage';
 export { advanceDatedItem };
 
 const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
@@ -26,8 +35,6 @@ export {
     QUARTERLY_STEP_CHIPS,
 } from '../scheduler/inputshape';
 export type { QuarterlyStepCode } from '../scheduler/inputshape';
-
-const STORAGE_KEY = 'reminder_items';
 
 export const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 export const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -99,40 +106,29 @@ export function thisCycleDueStamp(item: ReminderItem, now: number = Date.now()):
 export async function loadReminderItems(): Promise<ReminderItem[]> {
     await runDailyReset();
     await runWeeklyReset();
-    const raw = await AsyncStorage.getItem(STORAGE_KEY);
-    const parsed: ReminderItem[] = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
+    const saved = await readSavedReminderItems();
+    return saved.failed ? [] : saved.items;
 }
 
-// Write the one list and run the scheduler. Siri's voice list is the daily
-// items on this same list.
-async function saveReminderItems(items: ReminderItem[]): Promise<void> {
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+// Publish the app-facing side effects after the physical list transaction has
+// released its queue. Siri's voice list is the daily items on this same list.
+async function publishReminderItems(items: ReminderItem[]): Promise<void> {
     const daily = items.filter((one) => one.kind === 'daily');
     AppGroup.setDailyItems(daily.map((one) => ({ id: one.id, label: one.label })));
     warnIfFull(await runScheduler());
 }
 
-// One door for every change of the saved list: read it as it is now, apply
-// this patch, then save. A page must not write a list it was holding, because
-// a banner or Siri Done that landed in between would be overwritten.
-//
-// Each patch waits for the previous one to finish. Unlike the scheduler's run
-// gate, a later patch is never dropped — each change is different and each
-// must run.
-let writeTail: Promise<void> = Promise.resolve();
-
+// One app-facing door for every change. Finish any rollover first, apply the
+// patch to the latest list inside the neutral storage queue, release that
+// queue, and only then publish Daily names and run the scheduler.
 export async function applyReminderChange(
     patch: (items: ReminderItem[]) => ReminderItem[],
 ): Promise<ReminderItem[]> {
-    const run = writeTail.then(async () => {
-        const current = await loadReminderItems();
-        const next = patch(current);
-        await saveReminderItems(next);
-        return next;
-    });
-    writeTail = run.then(() => undefined, () => undefined);
-    return run;
+    await runDailyReset();
+    await runWeeklyReset();
+    const next = await changeSavedReminderItems(patch);
+    await publishReminderItems(next);
+    return next;
 }
 
 // Which log this kind writes. One Time uses Daily's key.
@@ -198,7 +194,8 @@ export async function markReminderDone(
     }
     await applyReminderChange((list) => list.map((one) => {
         if (one.id !== id) return one;
-        if (doneActionCodeOf(one.kind) === 'advanceDate') {
+        const doneActionCode = doneActionCodeOf(one.kind);
+        if (doneActionCode === 'advanceDate') {
             const prior =
                 typeof one.year === 'number'
                 && typeof one.month === 'number'
@@ -208,7 +205,7 @@ export async function markReminderDone(
             return { ...advanceDatedItem({ ...one, ...prior }), completed: true };
         }
         const { snoozedUntil, ...rest } = one;
-        if (one.kind === 'weekly') {
+        if (usesWeeklyCycleStampOf(one.kind)) {
             return { ...rest, completed: true, doneAt: Date.now() };
         }
         return { ...rest, completed: true };

@@ -32,6 +32,14 @@ export type SourceScreenCode =
     | 'birthdays'
     | 'bucketlist';
 
+/** The named cases an Options sheet can offer. */
+export type OptionCaseCode =
+    | 'holidays'
+    | 'afterSetDay'
+    | 'timezone'
+    | 'secondThursday'
+    | 'wednesdayAfter';
+
 /**
  * The unit a repeating item counts in.
  *

@@ -17,6 +17,66 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #109-new (2026-09-13): Job 3 finishes the designed machine
+
+**Phone.** Build 81 is on the phone. All three Job 3 checkpoints are
+in the project and have not had a phone load.
+
+**Allowed Options.** The five Options cases are one typed set. Every
+saved kind's translator row now carries its own allowed list. The
+form asks that table for the codes and turns them into the visible
+Options rows; the Options metadata no longer keeps a second kind
+switch.
+
+**Engine boundary.** The saved-options translator receives the kind's
+whole row. It carries Holidays, Day after the set day, a complete
+named time zone, and the monthly weekday patterns only when that row
+allows them. The exclusive weekday group still prevents both patterns
+from reaching the engine. Birthdays stay outside that group.
+
+**Save and Restore.** Save strips live Options fields that its kind row
+does not allow. The retired calendar-shading field remains inert saved
+history, and `floatDay` remains disconnected. Replace and Merge both
+validate and sanitize the incoming list before confirmation; one
+unknown saved kind rejects the whole current backup and changes
+nothing.
+
+**Weekly Done.** The test for Weekly's cycle time is now the existing
+table group: Done means `thisCycle` and the repeat unit is `week`.
+`markReminderDone` uses that answer to write `doneAt`, and the weekly
+rollover uses the same answer to select and update its items. Daily
+does not gain a cycle time. Dated items still advance their date;
+Appointments and Bucket List still end the item.
+
+**One saved-list transaction.** One neutral module now owns every
+physical read and change of `reminder_items`. Each change waits, reads
+the latest list, applies its calculation, and writes before the next
+one starts. A person's change and the Daily and Weekly rollovers all
+use that queue, so neither side can overwrite the other's result.
+
+**Order and Backup.** `applyReminderChange` completes the rollovers
+before the person's transaction. Daily-name publishing and scheduling
+follow after that transaction releases the queue. Backup Export reads
+the reminder list through the queued reader, so an export requested
+during a change waits and receives its finished result. The backup
+shape, `reminder_last_date`, Replace, Merge, and the screen stay as
+they were.
+
+**User's Guide.** The stale banner list in the document and in-app
+Guide now says that One Time for today has Done, OK, and its three
+delays, but no Skip.
+
+**Proof.** 402 scheduler checks pass, including both arrival orders
+between a person change and a rollover, ordinary queue order, and a
+read waiting for an active transaction. The Microsoft TypeScript
+command with the project file named explicitly exited 0 with no
+TypeScript diagnostics; its only output was npm's existing `devdir`
+warning. No dependency was added or saved.
+
+**Session result.** Job 3 and
+`docs-ref/build-sheets/build-sheet-designed-machine.md` are complete
+in the project. The Job 1 and Job 2 native phone proof remains.
+
 ## #108-new (2026-09-13): banner-action machine and awaited opening
 
 **Phone.** Build 81 is on the phone. The #108-new work is in the

@@ -4,6 +4,7 @@
 // kind reaches the same common facts the old per-screen rules already proved.
 
 import {
+    allowedOptionCaseCodesOf,
     translateReminderItems,
     doneActionCodeOf,
     exclusiveGroupBitsOf,
@@ -15,13 +16,15 @@ import {
     dateLabelTextOf,
     waitsUntilNearDaysOf,
     repeatUnitCodeOf,
+    sanitizeCurrentReminderItems,
+    usesWeeklyCycleStampOf,
 } from '../translators/translate.ts';
 import { MONTHLY_WEEKDAY_EXCLUSIVE_GROUP, QUARTERLY_STEP_CODES } from '../inputshape.ts';
 import { momentsFor } from '../leadmoments.ts';
 import type { ReminderItem } from '../../modules/reminder-types.ts';
 import {
     emptyOptionSettings,
-    optionCasesForKind,
+    optionCasesForCodes,
     withExclusiveGroup,
     clearExclusiveGroupFields,
 } from '../../modules/option-cases.ts';
@@ -39,6 +42,10 @@ function item(changes: Partial<ReminderItem> & Pick<ReminderItem, 'kind'>): Remi
 
 function shapeOf(saved: ReminderItem) {
     return translateReminderItems([saved], NOW)[0];
+}
+
+function optionCaseIdsFor(kind: ReminderItem['kind']) {
+    return optionCasesForCodes(allowedOptionCaseCodesOf(kind)).map((one) => one.id);
 }
 
 export function runTranslatorCadenceTests(): void {
@@ -298,6 +305,49 @@ export function runTranslatorCadenceTests(): void {
         );
     });
 
+    test('Wrong-kind Options fields never reach the common shape', () => {
+        const daily = shapeOf(item({
+            kind: 'daily',
+            hour: 8,
+            minute: 0,
+            holidayMove: 'before',
+            afterSetDay: true,
+            weekdayOrdinal: 2,
+            ordinalWeekday: 4,
+            afterWeekday: 3,
+            afterDayCount: 6,
+        }));
+        const appointment = shapeOf(item({
+            kind: 'appointments',
+            year: 2026,
+            month: 5,
+            day: 10,
+            afterSetDay: true,
+            weekdayOrdinal: 2,
+            ordinalWeekday: 4,
+        }));
+        const bucket = shapeOf(item({
+            kind: 'bucketlist',
+            holidayMove: 'after',
+            floatsWithPhone: false,
+            dueTimeZoneText: 'America/New_York',
+        }));
+        assertSame(
+            [
+                daily.holidayMoveCode,
+                daily.afterSetDayBit,
+                daily.repeatWeekdayList,
+                appointment.afterSetDayBit,
+                appointment.repeatWeekdayList,
+                bucket.holidayMoveCode,
+                bucket.dueTimeZoneText,
+                bucket.floatsWithPhoneBit,
+            ],
+            [undefined, undefined, undefined, undefined, undefined, undefined, undefined, true],
+            'each Options field reaches the engine only when the kind row allows its case',
+        );
+    });
+
     test('A second Thursday becomes a complete weekday entry', () => {
         const shaped = shapeOf(item({
             kind: 'monthly',
@@ -455,23 +505,56 @@ export function runTranslatorCadenceTests(): void {
 
     test('Bucket List has no Options cases', () => {
         assertSame(
-            optionCasesForKind('bucketlist').map((one) => one.id),
+            optionCaseIdsFor('bucketlist'),
             [],
             'Bucket List is the name, an optional note, and Done',
         );
     });
 
-    test('An unknown kind does not get the Weekly Options set', () => {
+    test('A restore list with an unknown kind is rejected whole', () => {
         assertSame(
-            optionCasesForKind('nope').map((one) => one.id),
-            [],
-            'every kind is named; nothing unknown inherits Weekly',
+            sanitizeCurrentReminderItems([
+                item({ kind: 'daily' }),
+                { id: 'bad', label: 'Unknown', kind: 'nope' },
+            ]),
+            null,
+            'an unknown saved kind makes the current backup invalid',
+        );
+    });
+
+    test('A restore sanitizes Options from the current kind row', () => {
+        const restored = sanitizeCurrentReminderItems([
+            item({
+                kind: 'daily',
+                holidayMove: 'before',
+                afterSetDay: true,
+                floatsWithPhone: false,
+                dueTimeZoneText: 'America/New_York',
+                shadeCalendar: true,
+                weekdayOrdinal: 2,
+                ordinalWeekday: 4,
+            }),
+        ]);
+        assert(restored !== null, 'a known kind is a current backup item');
+        const saved = restored?.[0];
+        assertSame(
+            [
+                saved?.holidayMove,
+                saved?.afterSetDay,
+                saved?.floatsWithPhone,
+                saved?.dueTimeZoneText,
+                saved?.shadeCalendar,
+                saved?.weekdayOrdinal,
+                saved?.ordinalWeekday,
+            ],
+            [undefined, undefined, false, 'America/New_York', true, undefined, undefined],
+            'restore keeps Daily time zone and inert shade history, and strips wrong-kind fields',
         );
     });
 
     test('Weekly Options has Day after the set day', () => {
         assertSame(
-            optionCasesForKind('weekly').map((one) => one.id),
+            optionCaseIdsFor('weekly'),
             ['holidays', 'afterSetDay', 'timezone'],
             'Weekly has Holidays, Day after the set day, and Time zone',
         );
@@ -479,7 +562,7 @@ export function runTranslatorCadenceTests(): void {
 
     test('Daily has only time zone', () => {
         assertSame(
-            optionCasesForKind('daily').map((one) => one.id),
+            optionCaseIdsFor('daily'),
             ['timezone'],
             'Daily New and Edit get only time zone',
         );
@@ -487,7 +570,7 @@ export function runTranslatorCadenceTests(): void {
 
     test('One Time for today from Daily has only time zone', () => {
         assertSame(
-            optionCasesForKind('oneTime').map((one) => one.id),
+            optionCaseIdsFor('oneTime'),
             ['timezone'],
             'Daily\'s One Time for today is time zone only',
         );
@@ -495,7 +578,7 @@ export function runTranslatorCadenceTests(): void {
 
     test('Appointments from its own page keeps holidays and time zone', () => {
         assertSame(
-            optionCasesForKind('appointments').map((one) => one.id),
+            optionCaseIdsFor('appointments'),
             ['holidays', 'timezone'],
             'Appointments on its own page keeps Weekly\'s holidays and time zone',
         );
@@ -503,7 +586,7 @@ export function runTranslatorCadenceTests(): void {
 
     test('Birthdays keep the same Options as Appointments', () => {
         assertSame(
-            optionCasesForKind('birthdays').map((one) => one.id),
+            optionCaseIdsFor('birthdays'),
             ['holidays', 'timezone'],
             'Birthdays copy Appointments’ holidays and time zone, not Yearly’s extra cases',
         );
@@ -511,9 +594,20 @@ export function runTranslatorCadenceTests(): void {
 
     test('Monthly Options has no extra tap', () => {
         assertSame(
-            optionCasesForKind('monthly').map((one) => one.id),
+            optionCaseIdsFor('monthly'),
             ['holidays', 'timezone', 'secondThursday', 'wednesdayAfter'],
             'Then and Next Day are the missing-day banner, not an Options case',
+        );
+    });
+
+    test('Quarterly and Yearly use the dated Options list from their rows', () => {
+        assertSame(
+            [optionCaseIdsFor('quarterly'), optionCaseIdsFor('yearly')],
+            [
+                ['holidays', 'timezone', 'secondThursday', 'wednesdayAfter'],
+                ['holidays', 'timezone', 'secondThursday', 'wednesdayAfter'],
+            ],
+            'all three dated cadence rows carry the same allowed Options codes',
         );
     });
 
@@ -583,6 +677,24 @@ export function runTranslatorCadenceTests(): void {
                 'endItem',
             ],
             'each kind names what Done does, so the pages do not remember the kind',
+        );
+    });
+
+    test('Weekly alone writes and clears a cycle stamp from the existing field group', () => {
+        assertSame(
+            [
+                usesWeeklyCycleStampOf('daily'),
+                usesWeeklyCycleStampOf('oneTime'),
+                usesWeeklyCycleStampOf('weekly'),
+                usesWeeklyCycleStampOf('monthly'),
+                usesWeeklyCycleStampOf('quarterly'),
+                usesWeeklyCycleStampOf('yearly'),
+                usesWeeklyCycleStampOf('birthdays'),
+                usesWeeklyCycleStampOf('appointments'),
+                usesWeeklyCycleStampOf('bucketlist'),
+            ],
+            [false, false, true, false, false, false, false, false, false],
+            'thisCycle together with week is the shared answer; Daily does not gain a stamp',
         );
     });
 
