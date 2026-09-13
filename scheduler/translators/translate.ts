@@ -35,6 +35,7 @@ import type {
     TimeWriteCode,
 } from '../inputshape.ts';
 import { MONTHLY_WEEKDAY_EXCLUSIVE_GROUP, quarterlyStepCodeOf, quarterlyStepDaysOf } from '../inputshape.ts';
+import type { ReminderListSourceCode } from '../sources.ts';
 import type { ReminderItem } from '../../modules/reminder-types.ts';
 import {
     secondThursdayComplete,
@@ -87,6 +88,8 @@ export interface ScreenRules {
     canBeDoneBit: boolean;
     /** They can be snoozed, postponed or delayed. */
     canBePushedBackBit: boolean;
+    /** The source used for a pushed-back reminder, when this kind allows one. */
+    pushBackSourceCode?: ReminderListSourceCode;
     /** What Done does for this kind. */
     doneActionCode: DoneActionCode;
     /** What Save writes for year, month, and day. */
@@ -206,6 +209,9 @@ function translateOne(rules: ScreenRules, saved: ReminderItem): ShapedItem {
 
         canBeDoneBit: rules.canBeDoneBit,
         canBePushedBackBit: rules.canBePushedBackBit,
+        ...(rules.pushBackSourceCode !== undefined
+            ? { pushBackSourceCode: rules.pushBackSourceCode }
+            : {}),
         doneActionCode: rules.doneActionCode,
         standsForGroupBit: rules.standsForGroupBit,
         ...(rules.waitsUntilNearDays !== undefined
@@ -329,6 +335,7 @@ const dailyCadenceRules: ScreenRules = {
     repeatIntervalCount: 1,
     canBeDoneBit: true,
     canBePushedBackBit: true,
+    pushBackSourceCode: 'dailysnooze',
     doneActionCode: 'thisCycle',
     dateWriteCode: 'none',
     timeWriteCode: 'ifPendingTime',
@@ -353,6 +360,7 @@ const weeklyCadenceRules: ScreenRules = {
     repeatIntervalCount: 1,
     canBeDoneBit: true,
     canBePushedBackBit: true,
+    pushBackSourceCode: 'weeklysnooze',
     doneActionCode: 'thisCycle',
     dateWriteCode: 'weekday',
     timeWriteCode: 'alwaysPendingTime',
@@ -385,6 +393,7 @@ const datedCadenceRules: ScreenRules = {
     repeatIntervalCount: 1,
     canBeDoneBit: true,
     canBePushedBackBit: true,
+    pushBackSourceCode: 'monthlydelay',
     doneActionCode: 'advanceDate',
     dateWriteCode: 'calendar',
     timeWriteCode: 'alwaysPendingDate',
@@ -410,6 +419,7 @@ const datedCadenceRules: ScreenRules = {
 
 const quarterlyCadenceRules: ScreenRules = {
     ...datedCadenceRules,
+    pushBackSourceCode: 'quarterlydelay',
     waitsUntilNearDays: 60,
     bannerTitleTextOf: () => 'Quarterly',
     quarterlyStepOf: (item) => quarterlyStepCodeOf(item.intervalDays),
@@ -419,6 +429,7 @@ const yearlyCadenceRules: ScreenRules = {
     ...datedCadenceRules,
     repeatUnitCode: 'year',
     repeatIntervalCount: 1,
+    pushBackSourceCode: 'yearlydelay',
     waitsUntilNearDays: 60,
     bannerTitleTextOf: () => 'Yearly',
 };
@@ -524,8 +535,9 @@ const birthdaysCadenceRules: ScreenRules = {
 
 const oneTimeCadenceRules: ScreenRules = {
     ...appointmentsCadenceRules,
-    bannerButtonsCode: 'routineactions',
+    bannerButtonsCode: 'onetimeactions',
     canBePushedBackBit: true,
+    pushBackSourceCode: 'oneTimesnooze',
     doneActionCode: 'thisCycle',
     dateWriteCode: 'today',
     timeWriteCode: 'ifTimeSet',

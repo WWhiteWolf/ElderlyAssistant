@@ -10,6 +10,7 @@
 
 import { sameTrigger } from './types.ts';
 import type { WantedReminder, WantedTrigger } from './types.ts';
+import { REMINDER_LIST_SOURCE_CODES } from './sources.ts';
 
 /** One reminder the phone is holding, described plainly. */
 export interface QueueEntry {
@@ -70,21 +71,7 @@ export const ROOM_FOR_OTHERS = 8;
  * When that list cannot be read, held reminders from these sources stay
  * on the phone. They are unknown, not empty.
  */
-export const REMINDER_ITEM_SOURCES = [
-    'daily',
-    'dailysnooze',
-    'weekly',
-    'weeklysnooze',
-    'monthly',
-    'monthlydelay',
-    'quarterly',
-    'quarterlydelay',
-    'yearly',
-    'yearlydelay',
-    'appointments',
-    'birthdays',
-    'oneTime',
-];
+export const REMINDER_ITEM_SOURCES = REMINDER_LIST_SOURCE_CODES;
 
 /** Sources whose held reminders must be left untouched after a failed read. */
 export function unreadSourcesFor(failedListKeys: string[]): string[] {

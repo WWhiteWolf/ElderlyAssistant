@@ -18,7 +18,7 @@ import { isStillWanted } from './stillwanted.ts';
 import { baseMoment, momentsFor } from './leadmoments.ts';
 import type { ClockTimes } from './leadmoments.ts';
 import { armDepthFor } from './armdepth.ts';
-import type { ShapedItem, SourceScreenCode } from './inputshape.ts';
+import type { ShapedItem } from './inputshape.ts';
 import { makeKey } from './types.ts';
 import type { WantedReminder } from './types.ts';
 import { dayStamp, sameDay } from './readers/occurrences.ts';
@@ -54,10 +54,7 @@ export function remindersFor(
         // A push-back first, as every old reader did, so a promised snooze is
         // not lost behind a missing due time.
         if (answer.pushedBackToMoment != null) {
-            const reminder = pushBackReminder(item, answer.pushedBackToMoment);
-            if (reminder !== null) {
-                wanted.push(reminder);
-            }
+            wanted.push(pushBackReminder(item, answer.pushedBackToMoment));
         }
 
         const skippedThisCycle = answer.skippedThisCycleBit;
@@ -129,31 +126,10 @@ function startOfNextLocalDay(now: number): number {
     return new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1, 0, 0, 0, 0).getTime();
 }
 
-/** The current source for a possible push-back, or null when it cannot happen. */
-function pushBackSource(screen: SourceScreenCode): string | null {
-    switch (screen) {
-        case 'daily':
-            return 'dailysnooze';
-        case 'weekly':
-            return 'weeklysnooze';
-        case 'monthly':
-            return 'monthlydelay';
-        case 'quarterly':
-            return 'quarterlydelay';
-        case 'yearly':
-            return 'yearlydelay';
-        case 'oneTime':
-        case 'appointments':
-        case 'birthdays':
-        case 'bucketlist':
-            return null;
-    }
-}
-
-function pushBackReminder(item: ShapedItem, at: number): WantedReminder | null {
-    const source = pushBackSource(item.sourceScreenCode);
-    if (source === null) {
-        return null;
+function pushBackReminder(item: ShapedItem, at: number): WantedReminder {
+    const source = item.pushBackSourceCode;
+    if (source === undefined) {
+        throw new Error('A pushed-back item must name its reminder source');
     }
     return {
         key: makeKey(source, item.itemIdText, 'base'),

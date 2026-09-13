@@ -12,12 +12,11 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-Build **81** is on the phone. The previous sitting is committed.
+Build **81** is on the phone. #107-new is committed.
 The #104-new, #105-new, and #106-new work is on that load. Scheduled
-Reminders is down to 14. The designed implementation remains the guide.
-The open machine work is in
-`docs-ref/build-sheets/build-sheet-designed-machine.md`. Nothing from
-that sheet is built.
+Reminders is down to 14. Jobs 1 and 2 of the designed-machine sheet are
+built in the project, not on the phone. 391 Mac checks pass, TypeScript
+is clean, and the iOS bundle completes. Job 3 is untouched.
 
 ## Standing rulings
 
@@ -219,20 +218,15 @@ road for the open machine work is
 `docs-ref/build-sheets/build-sheet-designed-machine.md`. Each named
 stop needs its own Go.
 
-**One Time Delay is presently broken end to end.** The row and banner
-offer it and write a future stamp, but `remindersfor.ts` returns no
-push-back source for `oneTime`. The #93-new Done line that says both
-One Time snoozes fire does not describe the current live road.
+**Next sitting.** Job 3 begins with checkpoint 3A: allowed Options live
+on the kind row. Checkpoints 3B and 3C each wait for their own Go and
+their own report.
 
-**Banner-first opening can lose yesterday's miss notice.** Patrick
-left only Daily items undone. The day's first opening was a tap on the
-banner body. Memory opened the item's own page and highlighted it, but
-the missed-reminder popup did not appear then or on the later return.
-The build sheet puts rollover, scheduling, the notice, and the saved
-banner destination into one awaited opening sequence.
-
-**Next sitting.** Job 1 of the new sheet is the banner-action machine.
-Do not begin Job 2 on the same Go.
+**Phone proof still open.** Job 1's banner and list-popup choices need
+a native build check. Job 2 needs Patrick's banner-first day-boundary
+path: the missed-reminder popup first, the highlighted item after OK,
+no repeat on the later foreground return, and the all-green Daily path
+quiet.
 
 Testers are on TestFlight External. The phone load is **81**. The App
 Store heading is Waiting for Review on **72**. He is not aiming to go

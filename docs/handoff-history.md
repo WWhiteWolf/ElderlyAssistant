@@ -17,6 +17,51 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #108-new (2026-09-13): banner-action machine and awaited opening
+
+**Phone.** Build 81 is on the phone. The #108-new work is in the
+project and has not had its phone proof.
+
+**Job 1 — one banner-action machine.** One typed catalog now owns all
+six banner sets, every visible button title, whether an action leaves
+Memory closed, its effect, and its named push-back calculation. Expo
+registers the catalog sequentially. The response handler accepts an
+action only from the category carried by that notification, and the
+list popup reads the same push-back entries. One Time has its own set:
+Done, OK, and Delay 15 / 30 / 60 min, with no Skip.
+
+**One Time Delay.** The kind row now carries `oneTimesnooze` as its
+push-back source. The delayed reminder reaches the scheduler with the
+stable key `oneTimesnooze:<item id>:base` and category
+`onetimeactions`. One canonical source list now supplies scheduling,
+unread-list protection, reconciliation, and the Scheduled Reminders
+name.
+
+**Job 2 — one awaited opening.** The root housing waits for saved
+appearance, navigation, and launch preparation. Opening and every
+foreground return complete rollover and scheduling, then await the
+health and missed-reminder notice. A banner body destination is
+released only after that notice has found nothing to say or OK has
+been tapped. The persisted notification-and-action check still
+prevents a cold launch from replaying an old response.
+
+**Shared waits.** A scheduler caller arriving during a run receives
+the same promise and waits for the active run and its queued rerun.
+Notice callers likewise share one presentation promise; it clears
+after success or failure. A save still runs scheduling without
+presenting the opening notice.
+
+**Proof.** 391 Mac checks pass. TypeScript is clean, and the iOS
+bundle completed. Job 1's simulator view could not run in Expo Go
+because Memory uses the native App Group module. Job 2's required
+banner-first day-boundary path still needs the iPhone; the phone was
+offline during this sitting.
+
+**Session result.** Jobs 1 and 2 of
+`docs-ref/build-sheets/build-sheet-designed-machine.md` are built.
+Job 3 is untouched. It begins with checkpoint 3A and still follows
+the sheet's separate-Go, separate-report stops.
+
 ## #107-new (2026-09-13): designed-machine evaluation and build sheet
 
 **Phone.** Build 81 is on the phone. The previous sitting is committed.

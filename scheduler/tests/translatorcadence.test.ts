@@ -106,8 +106,36 @@ export function runTranslatorCadenceTests(): void {
         }));
         assertSame(
             [shaped.sourceScreenCode, shaped.doneActionCode, shaped.leadTimeList.length, shaped.bannerButtonsCode, shaped.bannerTitleText],
-            ['oneTime', 'thisCycle', 2, 'routineactions', 'Daily Routine'],
+            ['oneTime', 'thisCycle', 2, 'onetimeactions', 'Daily Routine'],
             'a Daily one-shot is a one-off that still belongs to Daily',
+        );
+    });
+
+    test('Every kind that allows push-back names its source on the table', () => {
+        assertSame(
+            [
+                shapeOf(item({ kind: 'daily' })).pushBackSourceCode,
+                shapeOf(item({ kind: 'oneTime' })).pushBackSourceCode,
+                shapeOf(item({ kind: 'weekly' })).pushBackSourceCode,
+                shapeOf(item({ kind: 'monthly' })).pushBackSourceCode,
+                shapeOf(item({ kind: 'quarterly' })).pushBackSourceCode,
+                shapeOf(item({ kind: 'yearly' })).pushBackSourceCode,
+                shapeOf(item({ kind: 'appointments' })).pushBackSourceCode,
+                shapeOf(item({ kind: 'birthdays' })).pushBackSourceCode,
+                shapeOf(item({ kind: 'bucketlist' })).pushBackSourceCode,
+            ],
+            [
+                'dailysnooze',
+                'oneTimesnooze',
+                'weeklysnooze',
+                'monthlydelay',
+                'quarterlydelay',
+                'yearlydelay',
+                undefined,
+                undefined,
+                undefined,
+            ],
+            'the join reads table data and never reconstructs a source from kind',
         );
     });
 

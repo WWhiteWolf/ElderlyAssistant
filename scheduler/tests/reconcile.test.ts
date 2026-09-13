@@ -6,26 +6,13 @@
 import { CEILING, ROOM_FOR_OTHERS, nextFireTime, reconcile, unreadSourcesFor } from '../reconcile.ts';
 import type { QueueEntry } from '../reconcile.ts';
 import type { WantedReminder, WantedTrigger } from '../types.ts';
+import { REMINDER_LIST_SOURCE_CODES } from '../sources.ts';
 import { assert, assertSame, test } from './runner.ts';
 
 // Monday the first of June 2026, at nine in the morning.
 const NOW = new Date(2026, 5, 1, 9, 0, 0, 0).getTime();
 
-const OWNED = [
-    'daily',
-    'dailysnooze',
-    'weekly',
-    'weeklysnooze',
-    'monthly',
-    'monthlydelay',
-    'quarterly',
-    'quarterlydelay',
-    'yearly',
-    'yearlydelay',
-    'appointments',
-    'birthdays',
-    'oneTime',
-];
+const OWNED = REMINDER_LIST_SOURCE_CODES.slice();
 
 function want(key: string, trigger: WantedTrigger, source = 'daily'): WantedReminder {
     return {
@@ -227,10 +214,11 @@ export function runReconcileTests(): void {
 
     test('A failed reminder list names the reminder sources as unread', () => {
         const unread = unreadSourcesFor(['reminder_items']);
-        assert(unread.includes('daily'), 'Daily’s held reminders must be kept');
-        assert(unread.includes('appointments'), 'Appointments’ held reminders must be kept');
-        assert(unread.includes('birthdays'), 'Birthdays’ held reminders must be kept');
-        assert(unread.includes('oneTime'), 'Daily one-shot held reminders must be kept');
+        assertSame(
+            unread,
+            REMINDER_LIST_SOURCE_CODES,
+            'every held source from the unread reminder list must be kept',
+        );
     });
 
     test('Changing only the visible words replaces the held reminder', () => {

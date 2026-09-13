@@ -18,6 +18,8 @@
 // This file touches no storage, no phone, no React Native and no Expo. It is
 // plain data, so Node can read it in a fraction of a second.
 
+import type { ReminderListSourceCode } from './sources.ts';
+
 /** The current source carried from a saved kind into notification data. */
 export type SourceScreenCode =
     | 'daily'
@@ -69,6 +71,7 @@ export type LeadNamedTimeCode = 'morning' | 'midday' | 'evening';
  */
 export type BannerButtonsCode =
     | 'routineactions'
+    | 'onetimeactions'
     | 'weeklyactions'
     | 'cadenceactions'
     | 'appointmentsok'
@@ -331,6 +334,13 @@ export interface ShapedItem {
     canBeDoneBit: boolean;
     /** It can be snoozed, postponed or delayed. */
     canBePushedBackBit: boolean;
+    /**
+     * The notification source for that pushed-back moment.
+     *
+     * Left off when this kind cannot be pushed back. The translator carries
+     * the source from the kind's one row so the join never names kinds.
+     */
+    pushBackSourceCode?: ReminderListSourceCode;
     /**
      * What Done does for this kind.
      *

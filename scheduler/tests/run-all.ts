@@ -27,56 +27,68 @@ import { runRemindersForTests } from './remindersfor.test.ts';
 import { runApplyTests } from './apply.test.ts';
 import { runRunGateTests } from './rungate.test.ts';
 import { runResetGateTests } from './resetgate.test.ts';
+import { runBannerActionTests } from './banneractions.test.ts';
+import { runOpeningTests } from './opening.test.ts';
 
-console.log('\nReconcile');
-runReconcileTests();
+async function runAll(): Promise<void> {
+    console.log('\nReconcile');
+    runReconcileTests();
 
-console.log('\nDaily reset');
-runDailyResetTests();
+    console.log('\nDaily reset');
+    runDailyResetTests();
 
-console.log('\nWeekly reset');
-runWeeklyResetTests();
+    console.log('\nWeekly reset');
+    runWeeklyResetTests();
 
-console.log('\nQueue view');
-runQueueViewTests();
+    console.log('\nQueue view');
+    runQueueViewTests();
 
-console.log('\nRun health');
-runHealthTests();
+    console.log('\nBanner actions');
+    runBannerActionTests();
 
-console.log('\nMiss candidates');
-runMissCandidateTests();
+    console.log('\nRun health');
+    runHealthTests();
 
-console.log('\nIs this still wanted?');
-runStillWantedTests();
+    console.log('\nMiss candidates');
+    runMissCandidateTests();
 
-console.log('\nHow far ahead do we arm?');
-runArmDepthTests();
+    console.log('\nIs this still wanted?');
+    runStillWantedTests();
 
-console.log('\nOne-list translator');
-runTranslatorCadenceTests();
+    console.log('\nHow far ahead do we arm?');
+    runArmDepthTests();
 
-console.log('\nSave form');
-runAssembleFormTests();
+    console.log('\nOne-list translator');
+    runTranslatorCadenceTests();
 
-console.log('\nYear of birth');
-runBirthYearTests();
+    console.log('\nSave form');
+    runAssembleFormTests();
 
-console.log('\nDated Done');
-runAdvanceDatedTests();
+    console.log('\nYear of birth');
+    runBirthYearTests();
 
-console.log('\nLead moments');
-runLeadMomentsTests();
+    console.log('\nDated Done');
+    runAdvanceDatedTests();
 
-console.log('\nReminders for a shaped item');
-runRemindersForTests();
+    console.log('\nLead moments');
+    runLeadMomentsTests();
 
-console.log('\nApply order');
-runApplyTests();
+    console.log('\nReminders for a shaped item');
+    runRemindersForTests();
 
-console.log('\nRun gate');
-runRunGateTests();
+    console.log('\nApply order');
+    runApplyTests();
 
-console.log('\nDay-roll gate');
-runResetGateTests();
+    console.log('\nRun gate');
+    await runRunGateTests();
 
-report();
+    console.log('\nDay-roll gate');
+    runResetGateTests();
+
+    console.log('\nOpening sequence');
+    await runOpeningTests();
+
+    report();
+}
+
+void runAll();

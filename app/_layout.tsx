@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-import { Stack, useRouter, type Href } from 'expo-router';
-import { useEffect, useRef } from 'react';
+import { Stack, useRootNavigationState, useRouter, type Href } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
 import { AppState, Alert } from 'react-native';
 import { ThemeProvider, useThemeControls } from '../constants/Themes';
 import { AppOrientationProvider } from '../components/AppOrientation';
@@ -13,10 +13,25 @@ import {
     loadReminderItems,
     markReminderDone,
     thisCycleDueStamp,
+    type ReminderItem,
     type ReminderKind,
 } from '../modules/reminder-items';
+import {
+  bannerActionOf,
+  bannerActionsOf,
+  bannerButtonsCodeOf,
+  bannerButtonsCodes,
+  pushBackStampOf,
+} from '../scheduler/banneractions';
+import type { BannerButtonsCode } from '../scheduler/inputshape';
 import { showHealthNotice } from '../scheduler/notice';
+import {
+  persistedResponseChecker,
+  responseWaitsForOpening,
+  rootOpeningCycle,
+} from '../scheduler/opening';
 import { runScheduler } from '../scheduler/scheduler';
+import { translateReminderItems } from '../scheduler/translators/translate';
 
 const LAST_BANNER_TAP_KEY = 'last_banner_tap';
 
@@ -30,6 +45,16 @@ function pageForKind(kind: ReminderKind): string | null {
   if (kind === 'birthdays') return '/birthdays';
   if (kind === 'bucketlist') return '/bucketlist';
   return null;
+}
+
+/** True when this item can currently carry this notification category. */
+function itemCarriesBannerCategory(
+  item: ReminderItem,
+  categoryCode: BannerButtonsCode,
+): boolean {
+  const shaped = translateReminderItems([item], Date.now())[0];
+  return shaped?.bannerButtonsCode === categoryCode
+    || shaped?.shiftedBannerButtonsCode === categoryCode;
 }
 
 const LEFT_PAGE_KEYS = [
@@ -58,51 +83,6 @@ async function dropLeftPages() {
   );
 }
 
-/** Runs the scheduler and health notice once preferences are loaded. */
-function SchedulerHost() {
-  const { preferencesReady } = useThemeControls();
-  const appStateRef = useRef(AppState.currentState);
-
-  useEffect(() => {
-    if (!preferencesReady) return;
-
-    let cancelled = false;
-    (async () => {
-      try {
-        await dropLeftPages();
-      } catch {
-        // The four pages' keys may linger; reminders still need to arm.
-      }
-      if (cancelled) return;
-      const { status } = await Notifications.requestPermissionsAsync();
-      if (cancelled) return;
-      if (status !== 'granted') {
-        Alert.alert('Permission Needed', 'Please enable notifications in settings.');
-      }
-      await runScheduler();
-      if (cancelled) return;
-      if (status === 'granted') await showHealthNotice();
-    })();
-
-    const sub = AppState.addEventListener('change', (next) => {
-      if (
-        appStateRef.current.match(/inactive|background/)
-        && next === 'active'
-      ) {
-        runScheduler().then(showHealthNotice);
-      }
-      appStateRef.current = next;
-    });
-
-    return () => {
-      cancelled = true;
-      sub.remove();
-    };
-  }, [preferencesReady]);
-
-  return null;
-}
-
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -113,11 +93,93 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export default function RootLayout() {
+function RootHousing() {
   const router = useRouter();
+  const rootNavigationState = useRootNavigationState();
+  const { preferencesReady } = useThemeControls();
+  const housingReady = preferencesReady && rootNavigationState?.key != null;
+  const [openingReady, setOpeningReady] = useState(false);
   const response = Notifications.useLastNotificationResponse();
-  const handledId = useRef<string | null>(null);
+  const appStateRef = useRef(AppState.currentState);
   const applyingNote = useRef(false);
+  const firstNoticeEnabledRef = useRef(true);
+  const initialOpeningStartedRef = useRef(false);
+  const openingCycleRef = useRef<ReturnType<typeof rootOpeningCycle> | null>(null);
+  const responseCheckerRef = useRef<((key: string) => Promise<boolean>) | null>(null);
+  if (!openingCycleRef.current) {
+    openingCycleRef.current = rootOpeningCycle();
+  }
+  if (!responseCheckerRef.current) {
+    responseCheckerRef.current = persistedResponseChecker(
+      () => AsyncStorage.getItem(LAST_BANNER_TAP_KEY),
+      (key) => AsyncStorage.setItem(LAST_BANNER_TAP_KEY, key),
+    );
+  }
+  const openingCycle = openingCycleRef.current;
+  const shouldHandleResponse = responseCheckerRef.current;
+
+  // Finish the one-time launch preparation before either the ordinary opening
+  // or a banner body tap can begin the shared sequence.
+  useEffect(() => {
+    if (!housingReady) return;
+
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        await dropLeftPages();
+      } catch {
+        // The four pages' keys may linger; reminders still need to arm.
+      }
+      if (cancelled) return;
+
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (cancelled) return;
+      if (status !== 'granted') {
+        Alert.alert('Permission Needed', 'Please enable notifications in settings.');
+      }
+      firstNoticeEnabledRef.current = status === 'granted';
+      setOpeningReady(true);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [housingReady]);
+
+  // The root housing owns one ordered opening path. It starts only after the
+  // saved appearance, root navigator and launch preparation are ready, and it
+  // runs again on every genuine return from the background.
+  useEffect(() => {
+    if (!openingReady) return;
+
+    appStateRef.current = AppState.currentState;
+    const sub = AppState.addEventListener('change', (next) => {
+      if (next.match(/inactive|background/)) {
+        openingCycle.prepareForNext();
+      }
+      if (
+        appStateRef.current.match(/inactive|background/)
+        && next === 'active'
+      ) {
+        void openingCycle.begin({ runScheduler, showHealthNotice });
+      }
+      appStateRef.current = next;
+    });
+
+    if (!initialOpeningStartedRef.current) {
+      initialOpeningStartedRef.current = true;
+      void openingCycle.begin({
+        runScheduler,
+        // The existing permission alert already speaks on a denied first launch.
+        showHealthNotice: firstNoticeEnabledRef.current ? showHealthNotice : async () => {},
+      });
+    }
+
+    return () => {
+      sub.remove();
+    };
+  }, [openingCycle, openingReady]);
 
   // Siri "mark item done" (Approach B). The Swift App Intent drops a tiny note
   // into the shared App Group box and wakes the app; here we read that note,
@@ -202,42 +264,16 @@ export default function RootLayout() {
     // on the device. Awaiting each call makes every read-modify-write finish
     // before the next begins.
     (async () => {
-      // Daily: Done, OK, Skip, then the three short delays.
-      await Notifications.setNotificationCategoryAsync('routineactions', [
-        { identifier: 'done', buttonTitle: 'Done' },
-        { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
-        { identifier: 'skip', buttonTitle: 'Skip', options: { opensAppToForeground: false } },
-        { identifier: 'snooze15', buttonTitle: 'Delay 15 min' },
-        { identifier: 'snooze30', buttonTitle: 'Delay 30 min' },
-        { identifier: 'snooze60', buttonTitle: 'Delay 60 min' },
-      ]);
-      // Weekly: the Daily set, plus Delay 1 Day.
-      await Notifications.setNotificationCategoryAsync('weeklyactions', [
-        { identifier: 'done', buttonTitle: 'Done' },
-        { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
-        { identifier: 'skip', buttonTitle: 'Skip', options: { opensAppToForeground: false } },
-        { identifier: 'snooze15', buttonTitle: 'Delay 15 min' },
-        { identifier: 'snooze30', buttonTitle: 'Delay 30 min' },
-        { identifier: 'snooze60', buttonTitle: 'Delay 60 min' },
-        { identifier: 'delayday', buttonTitle: 'Delay 1 Day' },
-      ]);
-      // Monthly, Quarterly and Yearly share the dated-cadence actions.
-      await Notifications.setNotificationCategoryAsync('cadenceactions', [
-        { identifier: 'done', buttonTitle: 'Done' },
-        { identifier: 'delayday', buttonTitle: 'Delay 1 Day' },
-        { identifier: 'delayweek', buttonTitle: 'Delay 1 Week' },
-        { identifier: 'delaymonth', buttonTitle: 'Delay 1 Month' },
-      ]);
-      // Appointments have only OK, which closes the banner without opening.
-      await Notifications.setNotificationCategoryAsync('appointmentsok', [
-        { identifier: 'ok', buttonTitle: 'OK', options: { opensAppToForeground: false } },
-      ]);
-      // A missing day: the last day that exists was used. Then keeps that
-      // day; Next Day is a one-day push-back for this occurrence only.
-      await Notifications.setNotificationCategoryAsync('shifteddayactions', [
-        { identifier: 'then', buttonTitle: 'Then' },
-        { identifier: 'nextday', buttonTitle: 'Next Day' },
-      ]);
+      for (const categoryCode of bannerButtonsCodes()) {
+        const actions = bannerActionsOf(categoryCode).map((actionDefinition) => ({
+          identifier: actionDefinition.actionCode,
+          buttonTitle: actionDefinition.buttonTitle,
+          ...(actionDefinition.leavesAppClosedBit
+            ? { options: { opensAppToForeground: false } }
+            : {}),
+        }));
+        await Notifications.setNotificationCategoryAsync(categoryCode, actions);
+      }
     })();
   }, []);
 
@@ -245,159 +281,121 @@ export default function RootLayout() {
     if (!response) return;
 
     const action = response.actionIdentifier;
+    const bodyTap = action === Notifications.DEFAULT_ACTION_IDENTIFIER;
+    const categoryCode = bodyTap
+      ? undefined
+      : bannerButtonsCodeOf(response.notification.request.content.categoryIdentifier);
+    const actionDefinition = categoryCode
+      ? bannerActionOf(categoryCode, action)
+      : undefined;
+    if (!bodyTap && !actionDefinition) return;
+
+    // A body tap and every action that opens Memory wait until the root can
+    // safely house them. OK and Skip keep their closed-app behavior.
+    const opensMemory = responseWaitsForOpening(
+      bodyTap,
+      actionDefinition?.leavesAppClosedBit,
+    );
+    if (opensMemory && !openingReady) return;
+
     const notifId = response.notification.request.identifier;
     // Dedupe per (notification, action) so we don't re-handle on every re-render.
-    // Expo can still hand back the last tap after the app has died; the in-memory
-    // mark is gone then, so the last tap is also written down.
+    // Expo can still hand back the last tap after the app has died, so the last
+    // tap is also written down.
     const handledKey = `${notifId}:${action}`;
-    if (handledId.current === handledKey) return;
 
-    let cancelled = false;
-    (async () => {
-      const previous = await AsyncStorage.getItem(LAST_BANNER_TAP_KEY);
-      if (cancelled) return;
-      if (previous === handledKey) {
-        handledId.current = handledKey;
-        return;
-      }
-      handledId.current = handledKey;
-      await AsyncStorage.setItem(LAST_BANNER_TAP_KEY, handledKey);
-      if (cancelled) return;
+    void (async () => {
+      if (!(await shouldHandleResponse(handledKey))) return;
 
       const data = response.notification.request.content.data;
 
-    // "OK" action: just acknowledge this one alert. iOS already clears the
-    // tapped notification; we do nothing else (no done, no snooze, no routing).
-    if (action === 'ok') return;
-
-    // Skip drops this cycle and arms the next. It is not Done, and it is not
-    // only clearing a snooze. The stamp is this cycle's due moment; the engine
-    // reads it and finds the next event. A standing snooze goes with the cycle
-    // it belonged to. Skip is registered on `routineactions` and
-    // `weeklyactions`. The item is found by id, not by the source tag.
-    if (action === 'skip') {
-      const itemId = data?.itemId as string | undefined;
-      if (!itemId) return;
-      await applyReminderChange((items) => items.map((it) => {
-        if (it.id !== itemId) return it;
-        const { snoozedUntil: _cleared, ...rest } = it;
-        void _cleared;
-        const stamp = thisCycleDueStamp(it);
-        return stamp !== undefined ? { ...rest, skippedCycleStamp: stamp } : rest;
-      }));
-      return;
-    }
-
-    // Delay buttons write the delay on the item instead of arming it here.
-    //
-    // Nothing is scheduled. The stamp on the item IS the delay: the module
-    // reads it back and puts the reminder on the phone, so a delay made from
-    // a banner and one made on the page are the same act written the same
-    // way. A prior stamp needs no cancelling — one stamp per item means one
-    // wanted reminder under one name, which the module moves rather than
-    // duplicates. The item's base repeat is left alone, as it always was;
-    // iOS clears the shown banner itself when an action is tapped.
-    //
-    // One `snoozedUntil` stamp means a second delay moves the first instead
-    // of leaving another reminder behind. The item is found by id, not by
-    // the source tag.
-    if (action === 'snooze15' || action === 'snooze30' || action === 'snooze60') {
-      const minutes = action === 'snooze15' ? 15 : action === 'snooze30' ? 30 : 60;
-      const itemId = data?.itemId as string | undefined;
-      if (!itemId) return;
-      const target = Date.now() + minutes * 60 * 1000;
-      await applyReminderChange((items) => items.map((i) =>
-        i.id === itemId ? { ...i, snoozedUntil: target } : i
-      ));
-      return;
-    }
-
-    // Dated-cadence "Delay" buttons push just THIS reminder out by a day, week
-    // or month from now. There is no log and no change to the real due date.
-    if (action === 'delayday' || action === 'delayweek' || action === 'delaymonth') {
-      const itemId = data?.itemId as string | undefined;
-      if (!itemId) return;
-      const target = new Date();
-      if (action === 'delayday') target.setDate(target.getDate() + 1);
-      else if (action === 'delayweek') target.setDate(target.getDate() + 7);
-      else target.setMonth(target.getMonth() + 1);
-      await applyReminderChange((items) => items.map((i) =>
-        i.id === itemId ? { ...i, snoozedUntil: target.getTime() } : i
-      ));
-      return;
-    }
-
-    // Then: this is the day. The last existing day stands. The series does not
-    // move. iOS clears the banner; nothing is written.
-    if (action === 'then') {
-      return;
-    }
-
-    // Next Day: one-day push-back for this occurrence only. The recipe stays.
-    if (action === 'nextday') {
-      const itemId = data?.itemId as string | undefined;
-      if (!itemId) return;
-      (async () => {
-        await applyReminderChange((items) => {
-          const item = items.find((i) => i.id === itemId);
-          if (!item) return items;
-          const target = new Date();
-          target.setDate(target.getDate() + 1);
-          target.setHours(
-            typeof item.hour === 'number' ? item.hour : 12,
-            typeof item.minute === 'number' ? item.minute : 0,
-            0,
-            0,
-          );
-          return items.map((i) =>
-            i.id === itemId ? { ...i, snoozedUntil: target.getTime() } : i
-          );
+      // A plain body tap joins the root opening sequence. Its item is not read
+      // or shown until rollover, scheduling and the notice have all finished.
+      if (bodyTap) {
+        const itemId = data?.itemId as string | undefined;
+        if (!itemId) return;
+        await openingCycle.releaseAfterCurrent(async () => {
+          const items = await loadReminderItems();
+          const item = items.find((one) => one.id === itemId);
+          if (!item) return;
+          const pathname = pageForKind(item.kind);
+          if (!pathname) return;
+          router.push({ pathname, params: { highlight: itemId } } as Href);
         });
-      })();
-      return;
-    }
+        return;
+      }
 
-    // Done calls the same door the list uses. The history key is the item's
-    // kind. The clock time is the fire time. Dated Done therefore moves the
-    // date, as the list already does.
-    if (action === 'done') {
+      if (!categoryCode || !actionDefinition) return;
+
+      // OK only acknowledges. Then accepts the shifted last day. Neither
+      // action changes the saved item.
+      if (
+        actionDefinition.effectCode === 'acknowledge'
+        || actionDefinition.effectCode === 'keepShiftedDay'
+      ) {
+        return;
+      }
+
+      // A changing action first proves that its item still exists and still
+      // carries the notification's actual category. An old or impossible
+      // category/action pair therefore changes nothing.
       const itemId = data?.itemId as string | undefined;
       if (!itemId) return;
       const items = await loadReminderItems();
       const item = items.find((one) => one.id === itemId);
-      if (!item) return;
-      const fired = new Date(response.notification.date * 1000);
-      const clockTime = fired.toLocaleTimeString([], {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: false,
+      if (!item || !itemCarriesBannerCategory(item, categoryCode)) return;
+
+      if (actionDefinition.effectCode === 'done') {
+        const fired = new Date(response.notification.date * 1000);
+        const clockTime = fired.toLocaleTimeString([], {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: false,
+        });
+        await markReminderDone(itemId, historyKeyFor(item.kind), clockTime);
+        return;
+      }
+
+      if (actionDefinition.effectCode === 'skip') {
+        await applyReminderChange((currentItems) => currentItems.map((current) => {
+          if (
+            current.id !== itemId
+            || !itemCarriesBannerCategory(current, categoryCode)
+          ) {
+            return current;
+          }
+          const stamp = thisCycleDueStamp(current);
+          if (stamp === undefined) return current;
+          const { snoozedUntil: _cleared, ...rest } = current;
+          void _cleared;
+          return { ...rest, skippedCycleStamp: stamp };
+        }));
+        return;
+      }
+
+      const calculationCode = actionDefinition.pushBackCalculationCode;
+      if (!calculationCode) return;
+      const startedAt = Date.now();
+      await applyReminderChange((currentItems) => {
+        const current = currentItems.find((one) => one.id === itemId);
+        if (!current || !itemCarriesBannerCategory(current, categoryCode)) {
+          return currentItems;
+        }
+        const target = pushBackStampOf(
+          calculationCode,
+          startedAt,
+          current,
+        );
+        return currentItems.map((one) =>
+          one.id === itemId ? { ...one, snoozedUntil: target } : one
+        );
       });
-      await markReminderDone(itemId, historyKeyFor(item.kind), clockTime);
-      return;
-    }
-
-    // Only navigate on a plain tap of the notification body, not action buttons.
-    if (action !== Notifications.DEFAULT_ACTION_IDENTIFIER) return;
-
-    // The tap opens the item's own page from the saved kind. One Time opens
-    // Daily. If there is no item, do nothing. The source tag is not used.
-    const itemId = data?.itemId as string | undefined;
-    if (!itemId) return;
-    const items = await loadReminderItems();
-    const item = items.find((one) => one.id === itemId);
-    if (!item) return;
-    const params = { highlight: itemId };
-    const pathname = pageForKind(item.kind);
-    if (!pathname) return;
-    router.push({ pathname, params } as Href);
-    })();
-    return () => { cancelled = true; };
-  }, [response]);
+    })().catch(() => {
+      // A response failure must not take down the root housing.
+    });
+  }, [openingCycle, openingReady, response, router, shouldHandleResponse]);
 
   return (
-    <AppOrientationProvider>
-    <ThemeProvider>
-    <SchedulerHost />
     <CoverRoot>
     <Stack screenOptions={{ orientation: 'default' }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -428,6 +426,14 @@ export default function RootLayout() {
       <Stack.Screen name="log" options={{ headerShown: false }} />
     </Stack>
     </CoverRoot>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <AppOrientationProvider>
+    <ThemeProvider>
+    <RootHousing />
     </ThemeProvider>
     </AppOrientationProvider>
   );

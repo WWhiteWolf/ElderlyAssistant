@@ -16,6 +16,8 @@ import { PAGE_LABELS } from '../constants/page-names.ts';
 import { nextFireTime } from './reconcile.ts';
 import type { QueueEntry } from './reconcile.ts';
 import type { WantedTrigger } from './types.ts';
+import { isReminderListSourceCode } from './sources.ts';
+import type { ReminderListSourceCode } from './sources.ts';
 
 /**
  * What each page is called on screen.
@@ -28,9 +30,11 @@ import type { WantedTrigger } from './types.ts';
  * Every cadence has its own source. A snoozed or delayed source is named
  * separately so it does not look like a second copy of the base reminder.
  */
-export const PAGE_NAMES: Record<string, string> = {
+export const PAGE_NAMES: Record<ReminderListSourceCode, string> = {
     daily: PAGE_LABELS.daily,
     dailysnooze: `${PAGE_LABELS.daily} — snoozed`,
+    oneTime: PAGE_LABELS.daily,
+    oneTimesnooze: `${PAGE_LABELS.daily} — snoozed`,
     weekly: PAGE_LABELS.weekly,
     weeklysnooze: `${PAGE_LABELS.weekly} — snoozed`,
     monthly: PAGE_LABELS.monthly,
@@ -41,12 +45,11 @@ export const PAGE_NAMES: Record<string, string> = {
     yearlydelay: `${PAGE_LABELS.yearly} — delayed`,
     appointments: PAGE_LABELS.appointments,
     birthdays: PAGE_LABELS.birthdays,
-    oneTime: PAGE_LABELS.daily,
 };
 
 /** The page name a queue row should show. */
 function pageNameOf(entry: QueueEntry): string | undefined {
-    if (!entry.source) return undefined;
+    if (!isReminderListSourceCode(entry.source)) return undefined;
     return PAGE_NAMES[entry.source];
 }
 

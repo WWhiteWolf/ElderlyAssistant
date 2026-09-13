@@ -88,8 +88,8 @@ A code word is one word from a named set of allowed words. Only one of
 the set is in force. An impossible word cannot be written down at all.
 
 The set is declared as a named list of words. A field holds one of
-them, or is left off when it does not belong. The live sets in
-`scheduler/inputshape.ts` are:
+them, or is left off when it does not belong. The live sets at the
+translator and banner boundaries are:
 
 - **Which kind the item is** — daily, oneTime, weekly, monthly,
   quarterly, yearly, appointments, birthdays, bucketlist.
@@ -97,7 +97,18 @@ them, or is left off when it does not belong. The live sets in
   one-off. Yearly and Birthdays write year on the translator's table.
   The date-advance reads that word.
 - **Which banner button set it carries** — routineactions,
-  cadenceactions, appointmentsok, shifteddayactions.
+  onetimeactions, weeklyactions, cadenceactions, appointmentsok,
+  shifteddayactions.
+- **What a banner action does** — acknowledge, Done, Skip, push back,
+  keep the shifted day, or move the shifted occurrence to the next
+  day.
+- **How a push-back target is calculated** — 15, 30, or 60 elapsed
+  minutes; 1 or 7 calendar days; 1 calendar month; or the next
+  calendar day at the item's saved hour and minute.
+- **Which source carries a pushed-back reminder** — dailysnooze,
+  oneTimesnooze, weeklysnooze, monthlydelay, quarterlydelay, or
+  yearlydelay. The kind row leaves this off when push-back is not
+  allowed.
 - **What Done does** — thisCycle, advanceDate, endItem. This code is
   on the translator's table. The two-way bit is not enough, because
   there are three actions. The code replaces that bit.
@@ -258,24 +269,27 @@ to none. With a time, it speaks at that moment. With no time, it does
 not speak. It is there so you can mark it done when you have already
 done it. Done is thisCycle. It can be pushed back. Banner set
 routineactions: Done, OK, Skip, Delay 15 / 30 / 60 min. Daily also
-shows other kinds that fall today; those items are not this kind.
+shows other kinds that fall today; those items are not this kind. Its
+pushed-back source is dailysnooze.
 
 **oneTime** — Daily's one-shot for today. No page of its own. Saved
 kind `oneTime`. Daily shows it. Appointments does not. A banner tap
 opens Daily. Save comes back on Daily. Done is thisCycle. It can be
-pushed back. Banner set routineactions, same words as Daily. The
-Reminders before chips are only 30 min., 1 hour, 2 hours, and Time of.
-Save does not ask again when none of them is on. Time is optional.
-After a time is set, there is a way back to none. The set time still
-speaks. It is not an Appointment. 30 min., 1 hour, 2 hours, and Time of
-sit muted until a time is set.
+pushed back. Banner set onetimeactions: Done, OK, Delay 15 / 30 / 60
+min. It has no Skip because it has no next cycle. Its pushed-back
+source is oneTimesnooze. The Reminders before chips are only 30 min.,
+1 hour, 2 hours, and Time of. Save does not ask again when none of
+them is on. Time is optional. After a time is set, there is a way back
+to none. The set time still speaks. It is not an Appointment. 30 min.,
+1 hour, 2 hours, and Time of sit muted until a time is set.
 
 **weekly** — page Weekly. Repeats every week on its weekday. Time is
 always written. Noon if missing. Done is thisCycle. It can be pushed
 back. Banner set weeklyactions: Done, OK, Skip, Delay 15 / 30 / 60 min,
 and Delay 1 Day. Speaks at the moment itself. Day after the set day is
 an Options choice: in a week that has a federal holiday, the reminder
-moves to the day after the set day. It does not have to be on.
+moves to the day after the set day. It does not have to be on. Its
+pushed-back source is weeklysnooze.
 
 **monthly** — page Monthly. Repeats every month. Date required. Done is
 advanceDate. A 31st stays the 31st. A month with no such day uses the
@@ -284,6 +298,7 @@ set cadenceactions: Done, Delay 1 Day / 1 Week / 1 Month. A missing day
 uses shifteddayactions: Then, Next Day. Speaks at the moment itself. A
 second Thursday or Wednesday after the 6th looks from the saved date,
 the same as a numbered day. Done moving the date takes it off Daily.
+Its pushed-back source is monthlydelay.
 
 **quarterly** — page Quarterly. Repeats every three months when the
 step is none, or every 30, 60, or 90 days when that chip is set. Done
@@ -291,11 +306,13 @@ is advanceDate. It can be pushed back. Banner set cadenceactions. A
 missing day uses shifteddayactions: Then, Next Day. On Add, the chips
 are selectable. No chip stays every three months. A chip counts that
 many days from the date entered when it is set. One chip at a time.
-The list tile still shows the date.
+The list tile still shows the date. Its pushed-back source is
+quarterlydelay.
 
 **yearly** — page Yearly. Repeats every year. Date required. Done is
 advanceDate. It can be pushed back. Banner set cadenceactions. A
-missing day uses shifteddayactions: Then, Next Day.
+missing day uses shifteddayactions: Then, Next Day. Its pushed-back
+source is yearlydelay.
 
 **appointments** — page Appointments. No repeat. Date required. The form
 does not offer to take the date off. Things with no date belong on
@@ -376,14 +393,17 @@ New and Edit have plenty of room between Name, the time, and Note.
 
 ## Banner housing
 
-The housing reads `bannerButtonsCode` and the option bits. It does not
-branch on which page the item came from. Done, Skip, Snooze, and the
-log go through the same door the pages use: `applyReminderChange`, and
-the one log.
+One plain typed catalog is the only definition of the allowed action
+codes, visible button titles, whether the action leaves Memory closed,
+the effect, and the named push-back calculation. The housing and the
+list popup do not keep copies. Expo registers every catalog row
+sequentially; concurrent category writes can lose a row on a cold
+first launch.
 
-The five registered sets, and no others, are:
+The six registered sets, and no others, are:
 
 - **routineactions** — Done, OK, Skip, Delay 15 / 30 / 60 min.
+- **onetimeactions** — Done, OK, Delay 15 / 30 / 60 min. No Skip.
 - **weeklyactions** — Done, OK, Skip, Delay 15 / 30 / 60 min, and
   Delay 1 Day.
 - **cadenceactions** — Done, Delay 1 Day / 1 Week / 1 Month.
@@ -393,9 +413,40 @@ The five registered sets, and no others, are:
   push-back for this occurrence only. Dated rows name this set for
   that occurrence. It is not an Options choice.
 
+A response is looked up in the category carried by that notification.
+Before an effect changes anything, the housing loads the item by id
+and confirms that its current row can carry that category. An old or
+impossible action changes nothing. Done, Skip, push-back, and the log
+go through the same change door the pages use. OK acknowledges. Then
+keeps the shifted last day. Next Day moves that occurrence to tomorrow
+at the item's saved clock time. The list popup takes its push-back
+choices and words from this same catalog.
+
 A banner naming a set the phone does not know shows no buttons at all.
 That has bitten this app before. New sets are added to the named list
 and registered; they are not invented at the housing.
+
+## Opening sequence
+
+The root housing owns one opening sequence for launch and every return
+to the foreground. It waits until the saved appearance, root
+navigation, and launch preparation are ready. It then awaits the
+scheduler, which completes the day and week rollover before bringing
+the phone reminders up to date.
+
+One scheduler run has one shared promise. A caller arriving during the
+run requests one final rerun and waits for the active run and that
+rerun. After scheduling, the opening awaits the health and
+missed-reminder notice. Notice callers share one presentation. No
+notice resolves at once; a real notice resolves only after OK and its
+acknowledgement writes have been attempted.
+
+A banner body destination is released only after that sequence. With
+nothing to say, its item opens without another stop. With a notice,
+the correct page and highlighted item wait behind OK. The persisted
+notification-id and action pair prevents an old response from replaying
+after a cold launch. Banner action buttons still perform their catalog
+effect. A save runs scheduling but does not present the opening notice.
 
 ## Home
 

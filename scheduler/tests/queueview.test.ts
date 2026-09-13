@@ -133,6 +133,11 @@ export function runQueueViewTests(): void {
         assertSame(row?.page, 'Daily — snoozed', 'expected the snooze named');
     });
 
+    test('A One Time snooze is named on Daily', () => {
+        const row = toPending(entry({ source: 'oneTimesnooze' }), NOW);
+        assertSame(row?.page, 'Daily — snoozed', 'expected the One Time delay named');
+    });
+
     test('A reminder with no name of its own still makes a readable row', () => {
         const row = toPending(entry({ label: '  ' }), NOW);
         assertSame(row?.label, 'Unnamed reminder', 'expected the fallback');

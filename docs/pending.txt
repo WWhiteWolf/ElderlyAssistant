@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-13 (#107-new)
+Last updated: 2026-09-13 (#108-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -25,13 +25,16 @@ own.
 WHAT'S NEXT
 ------------------------------------------------------------------
 1. FINISH THE DESIGNED MACHINE from
-   docs-ref/build-sheets/build-sheet-designed-machine.md. Job 1 is
-   the banner-action catalog, One Time with no Skip, and a One Time
-   Delay that reaches the phone. Job 2 is one awaited opening sequence
-   for the missed-reminder popup and banner landing. Job 3 puts the
-   remaining Options, Weekly Done, and saved-list differences into
-   their machinery. Written at #107-new. No code built.
-2. DAY-ROLL LOCK still wants a night of all-green Daily on this
+   docs-ref/build-sheets/build-sheet-designed-machine.md. Jobs 1 and
+   2 are built. Job 3 puts the remaining Options, Weekly Done, and
+   saved-list changes into their machinery. Its checkpoints 3A, 3B,
+   and 3C each need their own Go and report.
+2. PHONE PROOF FOR JOBS 1 AND 2. On a native build, check Job 1's
+   banner and list-popup choices. For Job 2, leave a timed Daily item
+   undone, cross the day boundary, and make the first opening a banner
+   body tap. The missed-reminder popup comes first; after OK, the
+   correct item is highlighted; a later return does not repeat it.
+3. DAY-ROLL LOCK still wants a night of all-green Daily on this
    load, then a morning open on a new load, to confirm the pop-up
    stays quiet.
 
@@ -126,12 +129,12 @@ built. None of these is a job to do.
     The name is the reminder's key. This Expo does not yet hand that
     name to the phone, so the listing-down-the-page will wait until
     Expo is upgraded. The notification library was not poked.
-19. ONE TIME DOES NOT SKIP (Patrick, #107-new). It has no next cycle.
-    Its own banner set has Done, OK, and Delay 15 / 30 / 60 min.
-20. OPENING THROUGH A BANNER IS STILL AN OPENING. The day roll and
-    missed-reminder telling finish before the item's page is handed
-    over. A banner route must not cover the popup or make the app
-    believe a popup it lost is still showing (#107-new).
+19. ONE TIME DOES NOT SKIP (Patrick, #107-new; built #108-new). It has
+    no next cycle. Its own banner set has Done, OK, and Delay 15 / 30 /
+    60 min. A delay has its own source and reaches the phone road.
+20. OPENING THROUGH A BANNER IS STILL AN OPENING (#107-new; built
+    #108-new). The day roll, scheduling, and missed-reminder telling
+    finish before the item's page is handed over.
 
 
 WHAT IS DONE, NEWEST FIRST
@@ -140,6 +143,15 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+126. #108-new — Jobs 1 and 2: 391 Mac checks, TypeScript clean, and
+    the iOS bundle complete. Native phone proof remains.
+
+125. #108-new — one awaited opening through rollover, scheduling, the
+    health notice, and then a banner body destination.
+
+124. #108-new — one typed banner-action catalog. One Time has no Skip,
+    and its delayed reminder now reaches the phone road.
 
 123. #106-new — Reset All Data taken out. To start clean, delete the
     app from the phone. Not on 80.

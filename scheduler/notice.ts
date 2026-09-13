@@ -13,6 +13,7 @@ import { Alert } from 'react-native';
 
 import { HEALTH_KEY, MISSES_KEY, NOTICE_SEEN_KEY, markSeen, noticeFor } from './health.ts';
 import type { Miss, NoticeSeen, RunRecord } from './health.ts';
+import { sharePresentation } from './opening.ts';
 
 /** The last run the module wrote down, or nothing if it has never run. */
 async function readLatestRun(): Promise<RunRecord | null> {
@@ -38,9 +39,6 @@ async function readMisses(): Promise<Miss[]> {
     return Array.isArray(parsed) ? (parsed as Miss[]) : [];
 }
 
-/** True while an alert is on screen — blocks a second call stacking on open. */
-let noticeShowing = false;
-
 /** Yesterday, written the way the phone writes a date. */
 function yesterdaysDate(): string {
     const when = new Date();
@@ -55,8 +53,7 @@ function yesterdaysDate(): string {
  * clears the misses for good — a fault is a state that may still be true
  * tomorrow, a miss is something he has now been told about.
  */
-export async function showHealthNotice(): Promise<void> {
-    if (noticeShowing) return;
+async function presentHealthNotice(): Promise<void> {
     try {
         const today = new Date().toLocaleDateString();
         const seen = await readSeen();
@@ -66,33 +63,45 @@ export async function showHealthNotice(): Promise<void> {
 
         const message = [...notice.lines, notice.footer].join('\n\n');
 
-        noticeShowing = true;
-        Alert.alert(notice.title, message, [
-            {
-                text: 'OK',
-                onPress: () => {
-                    noticeShowing = false;
-                    // Written down after the tap, so a pop-up dismissed by
-                    // something else — the app being closed on it — comes back.
-                    // If either write fails the thing is simply said again,
-                    // which is the safe way round.
-                    AsyncStorage.setItem(
-                        NOTICE_SEEN_KEY,
-                        JSON.stringify(markSeen(seen, notice.signatures, today)),
-                    ).catch(() => {});
+        await new Promise<void>((resolve) => {
+            Alert.alert(notice.title, message, [
+                {
+                    text: 'OK',
+                    onPress: () => {
+                        // Written down after the tap, so a pop-up dismissed by
+                        // something else — the app being closed on it — comes back.
+                        // If either write fails the thing is simply said again,
+                        // which is the safe way round.
+                        const writes = [
+                            AsyncStorage.setItem(
+                                NOTICE_SEEN_KEY,
+                                JSON.stringify(markSeen(seen, notice.signatures, today)),
+                            ),
+                        ];
 
-                    if (notice.missIds.length > 0) {
-                        const told = new Set(notice.missIds);
-                        const left = misses.filter(
-                            (miss) => !told.has(`${miss.listKey}:${miss.itemId}`),
+                        if (notice.missIds.length > 0) {
+                            const told = new Set(notice.missIds);
+                            const left = misses.filter(
+                                (miss) => !told.has(`${miss.listKey}:${miss.itemId}`),
+                            );
+                            writes.push(AsyncStorage.setItem(MISSES_KEY, JSON.stringify(left)));
+                        }
+
+                        Promise.all(writes).then(
+                            () => resolve(),
+                            () => resolve(),
                         );
-                        AsyncStorage.setItem(MISSES_KEY, JSON.stringify(left)).catch(() => {});
-                    }
+                    },
                 },
-            },
-        ]);
+            ]);
+        });
     } catch {
-        noticeShowing = false;
         // The notice failing is not worth a notice of its own.
     }
 }
+
+/**
+ * Show one shared pop-up and resolve only when it has nothing to say or OK has
+ * been tapped.
+ */
+export const showHealthNotice = sharePresentation(presentHealthNotice);

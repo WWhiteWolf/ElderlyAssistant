@@ -211,6 +211,68 @@ export function runRemindersForTests(): void {
         );
     });
 
+    // ---- One Time, whose promised delay has its own source and buttons ----
+
+    function oneTime(changes: Partial<ReminderItem> = {}): ReminderItem {
+        return reminderItem({
+            kind: 'oneTime',
+            id: 'o1',
+            label: 'Call the pharmacy',
+            year: 2026,
+            month: 7,
+            day: 25,
+            hour: 8,
+            minute: 0,
+            reminders: [],
+            completed: false,
+            ...changes,
+        });
+    }
+
+    test('A future One Time delay reaches the phone', () => {
+        const at = NOW + 30 * MINUTE;
+        const delayed = wantedOf(oneTime({ snoozedUntil: at }))
+            .find((reminder) => reminder.source === 'oneTimesnooze');
+        assert(delayed != null, 'the promised One Time delay must not be dropped');
+        assertSame(
+            {
+                key: delayed!.key,
+                source: delayed!.source,
+                trigger: delayed!.trigger,
+                categoryIdentifier: delayed!.categoryIdentifier,
+            },
+            {
+                key: 'oneTimesnooze:o1:base',
+                source: 'oneTimesnooze',
+                trigger: { kind: 'date', at },
+                categoryIdentifier: 'onetimeactions',
+            },
+            'One Time has one stable delayed reminder with its own no-Skip set',
+        );
+    });
+
+    test('Changing a One Time delay moves one stable key', () => {
+        const firstAt = NOW + 15 * MINUTE;
+        const movedAt = NOW + 60 * MINUTE;
+        const first = wantedOf(oneTime({ snoozedUntil: firstAt }))
+            .filter((reminder) => reminder.source === 'oneTimesnooze');
+        const moved = wantedOf(oneTime({ snoozedUntil: movedAt }))
+            .filter((reminder) => reminder.source === 'oneTimesnooze');
+        assertSame(
+            [
+                first.map((reminder) => reminder.key),
+                moved.map((reminder) => reminder.key),
+                moved.map((reminder) => reminder.trigger),
+            ],
+            [
+                ['oneTimesnooze:o1:base'],
+                ['oneTimesnooze:o1:base'],
+                [{ kind: 'date', at: movedAt }],
+            ],
+            'a second delay moves the existing reminder instead of piling up',
+        );
+    });
+
     // ---- Weekly, and the tick can skip this week ----
 
     function weekly(changes: Partial<ReminderItem> = {}): ReminderItem {

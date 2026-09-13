@@ -29,8 +29,9 @@ import { DEFAULT_CLOCK_TIMES } from './clocktimes.ts';
 import type { ClockTimes, TimeOfDay } from './leadmoments.ts';
 import type { ReminderItem } from '../modules/reminder-types.ts';
 import { applyOpsFor } from './apply.ts';
-import { beginRun, consumePending, endRun } from './rungate.ts';
+import { oneSchedulerRun } from './rungate.ts';
 import { oneDailyReset } from './resetgate.ts';
+import { REMINDER_LIST_SOURCE_CODES } from './sources.ts';
 
 /**
  * The current notification sources the scheduler answers for.
@@ -39,10 +40,10 @@ import { oneDailyReset } from './resetgate.ts';
  * cancelled and never re-created. It is simply left where it is and counted
  * against the room the phone has.
  *
- * Daily and Weekly each have a base source and a snoozed source. Monthly,
- * Quarterly and Yearly each have a base source and a delayed source. Every
- * source names its current page directly, so the same word travels through
- * translation, reconciliation, the phone and a banner return.
+ * Daily, One Time and Weekly each have a base source and a snoozed source.
+ * Monthly, Quarterly and Yearly each have a base source and a delayed source.
+ * Every source names its current page directly, so the same word travels
+ * through translation, reconciliation, the phone and a banner return.
  *
  * Those pushed-back moments are written on the saved item itself. The
  * scheduler can therefore answer for them like any other reminder and can
@@ -56,21 +57,7 @@ import { oneDailyReset } from './resetgate.ts';
  * This set is also the boundary used by reconciliation: anything outside it
  * is left untouched.
  */
-export const OWNED_SOURCES = [
-    'daily',
-    'dailysnooze',
-    'weekly',
-    'weeklysnooze',
-    'monthly',
-    'monthlydelay',
-    'quarterly',
-    'quarterlydelay',
-    'yearly',
-    'yearlydelay',
-    'appointments',
-    'birthdays',
-    'oneTime',
-];
+export const OWNED_SOURCES = REMINDER_LIST_SOURCE_CODES.slice();
 
 /**
  * Roll the day over, if it has not been rolled yet.
@@ -512,23 +499,13 @@ async function recordRun(record: RunRecord): Promise<void> {
  * went missing for any reason comes back on the next run.
  *
  * It returns what it did, which is what the queue screen will show later, or
- * null when it did nothing at all.
+ * null when it did nothing at all. A caller arriving during a run receives
+ * the same promise and waits for the active run and its queued rerun.
  *
  * Every run also writes down how it went, so a failure is no longer invisible.
- * A run that was skipped because another is already going writes nothing: the
- * queued rerun will write for both.
  */
-export async function runScheduler(): Promise<Plan | null> {
-    if (!beginRun()) return null;
-    try {
-        let last: Plan | null = null;
-        do {
-            last = await runOnce();
-        } while (consumePending());
-        return last;
-    } finally {
-        endRun();
-    }
+export function runScheduler(): Promise<Plan | null> {
+    return oneSchedulerRun(runOnce);
 }
 
 async function runOnce(): Promise<Plan | null> {

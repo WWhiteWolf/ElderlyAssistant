@@ -34,6 +34,19 @@ export function test(name: string, check: () => void): void {
     }
 }
 
+/** Run one asynchronous check and record how it went. */
+export async function asyncTest(name: string, check: () => Promise<void>): Promise<void> {
+    try {
+        await check();
+        passed++;
+        console.log(`PASS  ${name}`);
+    } catch (problem) {
+        failed++;
+        console.log(`FAIL  ${name}`);
+        console.log(`      ${(problem as Error).message}`);
+    }
+}
+
 /** Print the count. A failure sets the exit code so a script can see it. */
 export function report(): void {
     console.log(`\n${passed} passed, ${failed} failed, ${passed + failed} in all.`);

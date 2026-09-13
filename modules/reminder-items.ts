@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as AppGroup from './app-group';
 import { runDailyReset, runScheduler, runWeeklyReset } from '../scheduler/scheduler';
 import { lastOccurrence } from '../scheduler/weeklyreset';
+import { pushBackChoicesOf } from '../scheduler/banneractions';
 import { warnIfFull } from '../scheduler/warn';
 import {
     quarterlyStepCodeOf,
@@ -61,72 +62,33 @@ export type SnoozeChoice = {
 /** Snooze distances from the banner set the table already gave this item. */
 export function snoozeChoicesOf(item: ReminderItem): SnoozeChoice[] {
     const shaped = translateReminderItems([item], Date.now())[0];
-    if (shaped?.bannerButtonsCode === 'routineactions') {
-        return [
-            { label: '15 min', stampAt: (now) => now + 15 * 60 * 1000 },
-            { label: '30 min', stampAt: (now) => now + 30 * 60 * 1000 },
-            { label: '60 min', stampAt: (now) => now + 60 * 60 * 1000 },
-        ];
-    }
-    if (shaped?.bannerButtonsCode === 'weeklyactions') {
-        return [
-            { label: '15 min', stampAt: (now) => now + 15 * 60 * 1000 },
-            { label: '30 min', stampAt: (now) => now + 30 * 60 * 1000 },
-            { label: '60 min', stampAt: (now) => now + 60 * 60 * 1000 },
-            {
-                label: 'Delay 1 Day',
-                stampAt: (now) => {
-                    const target = new Date(now);
-                    target.setDate(target.getDate() + 1);
-                    return target.getTime();
-                },
-            },
-        ];
-    }
-    if (shaped?.bannerButtonsCode === 'cadenceactions') {
-        return [
-            {
-                label: 'Delay 1 Day',
-                stampAt: (now) => {
-                    const target = new Date(now);
-                    target.setDate(target.getDate() + 1);
-                    return target.getTime();
-                },
-            },
-            {
-                label: 'Delay 1 Week',
-                stampAt: (now) => {
-                    const target = new Date(now);
-                    target.setDate(target.getDate() + 7);
-                    return target.getTime();
-                },
-            },
-            {
-                label: 'Delay 1 Month',
-                stampAt: (now) => {
-                    const target = new Date(now);
-                    target.setMonth(target.getMonth() + 1);
-                    return target.getTime();
-                },
-            },
-        ];
-    }
-    return [];
+    if (!shaped?.bannerButtonsCode) return [];
+    return pushBackChoicesOf(shaped.bannerButtonsCode, item).map((choice) => ({
+        label: choice.buttonTitle,
+        stampAt: choice.stampAt,
+    }));
 }
 
 /** The due moment of this cycle, which Skip stamps so the engine arms the next. */
 export function thisCycleDueStamp(item: ReminderItem, now: number = Date.now()): number | undefined {
     const shaped = translateReminderItems([item], now)[0];
     if (!shaped?.repeatUnitCode) return undefined;
-    if (item.kind === 'daily') {
-        if (typeof item.hour !== 'number' || typeof item.minute !== 'number') return undefined;
+    if (shaped.repeatUnitCode === 'day') {
+        if (typeof shaped.dueHour !== 'number' || typeof shaped.dueMinute !== 'number') return undefined;
         const due = new Date(now);
-        due.setHours(item.hour, item.minute, 0, 0);
+        due.setHours(shaped.dueHour, shaped.dueMinute, 0, 0);
         return due.getTime();
     }
-    if (item.kind === 'weekly' && typeof item.day === 'number') {
-        if (typeof item.hour !== 'number' || typeof item.minute !== 'number') return undefined;
-        return lastOccurrence(item.day, item.hour, item.minute, now);
+    if (shaped.repeatUnitCode === 'week') {
+        const weekday = shaped.repeatWeekdayList?.[0]?.weekdayNumber;
+        if (
+            typeof weekday !== 'number'
+            || typeof shaped.dueHour !== 'number'
+            || typeof shaped.dueMinute !== 'number'
+        ) {
+            return undefined;
+        }
+        return lastOccurrence(weekday, shaped.dueHour, shaped.dueMinute, now);
     }
     if (typeof shaped.dueMoment === 'number') return shaped.dueMoment;
     return undefined;
