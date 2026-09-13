@@ -87,6 +87,7 @@ History, not the road. Record of what was built and why.
 - **`build-sheet-banner-housing.md`** — #85-new. Banner housing onto the bits. Two pieces. Built at #87-new.
 - **`build-sheet-table-doors.md`** — #91-new. Four sittings: Done as the three-word code, exclusive groups as one group, the Quarterly step on the table, then the row and banner read the button set. All four pieces built at #91-new. Not on the phone.
 - **`build-sheet-save-form.md`** — #92-new. The save form writes from the table. Two pieces. Both built at #92-new. Not on the phone.
+- **`build-sheet-designed-machine.md`** — #107-new. Three jobs: one banner-action machine and One Time Delay; one opening sequence for the missed-reminder popup; then the remaining Options, Weekly Done, and saved-list boundaries. Written, not built.
 
 ## Not here any more
 

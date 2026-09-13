@@ -12,25 +12,12 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-Build **80** is on the phone. Scheduled Reminders is down to 14.
-How far ahead a waiting kind looks is a number on the table. Monthly
-is thirty days. Quarterly, Yearly, and Birthdays are sixty days, so a
-Month-before reminder can be armed. Several lead times on one item arm
-only the soonest still ahead. The designed implementation is the
-guide. **#104-new** User's Guide and Help words are on 80.
-**#105-new** is in the project, not on 80: each closed-app notice has
-its own thread name (this Expo does not yet hand it on); the Help Home
-badge is the thinking face; Yearly and Birthdays look from the saved
-date; Weekly's own set adds Delay 1 Day on the banner and the tile
-popup. The Options heading is in the Guide. Weekly's Day after the
-set day is in the Guide, the designed implementation, Weekly's Options,
-the translator, and the engine. It is in the project, not on 80.
-**#106-new** Delete, Save, Done, Snooze, Banners, and Log are in the
-Guide, in `docs/user-guide.md` and in the app Guide. Help has the Save
-sentences. Bucket List's keep button says Save. A visitor marked Done
-on Daily writes on Daily's log and on that other page's log. Reset All
-Data is out of the app. They are in the project, not on 80. Guide
-headings are one at a time.
+Build **81** is on the phone. The previous sitting is committed.
+The #104-new, #105-new, and #106-new work is on that load. Scheduled
+Reminders is down to 14. The designed implementation remains the guide.
+The open machine work is in
+`docs-ref/build-sheets/build-sheet-designed-machine.md`. Nothing from
+that sheet is built.
 
 ## Standing rulings
 
@@ -132,7 +119,7 @@ These are Patrick's and they govern the work rather than describing it.
   case stays as it is. This choice is Weekly only, on Options, and
   does not have to be on. It is in the Guide, the designed
   implementation, Weekly's Options, the translator, and the engine.
-  It is in the project, not on 80.
+  It is on 81.
 - **The Done tick on Monthly, Quarterly, Yearly, and Birthdays is the
   mark that this cycle was done** (Patrick, #83-new). It is not
   leftover. The date has already moved; the tick is how you see it.
@@ -183,6 +170,10 @@ These are Patrick's and they govern the work rather than describing it.
   the banner both read those bits. They do not remember the page.
   Weekly's set is its own: the three short delays, plus Delay 1 Day
   (Patrick, #105-new). Daily keeps the three shorts.
+- **One Time does not Skip** (Patrick, #107-new). It has no next cycle.
+  Its own banner set has Done, OK, and Delay 15 / 30 / 60 min. It does
+  not inherit Daily's Skip button. Delay remains part of One Time and
+  must reach the phone.
 - **Appointments remind at the set time** (Patrick, #74-new). This
   reverses #52-new. They act like the rest of the app. The before chips
   still stand.
@@ -223,38 +214,27 @@ These are Patrick's and they govern the work rather than describing it.
 
 ## What is open in front of it
 
-The guide is `docs/designed-implementation.md`. A sitting builds from
-it. The scheduler stays.
+The guide remains `docs/designed-implementation.md`. The self-contained
+road for the open machine work is
+`docs-ref/build-sheets/build-sheet-designed-machine.md`. Each named
+stop needs its own Go.
 
-Treat the pages the way the engine was treated. A page has a few jobs.
-Every reminder page fits those pieces. Rebuild what does not fit.
-Keep what already fits. Highest purpose: reminders smooth and consistent.
-Do not rebuild Home, Help, Calendar, Settings, Backup, or Scheduled
-Reminders. Do not change the scheduler's decisions.
+**One Time Delay is presently broken end to end.** The row and banner
+offer it and write a future stamp, but `remindersfor.ts` returns no
+push-back source for `oneTime`. The #93-new Done line that says both
+One Time snoozes fire does not describe the current live road.
 
-What already fits: the engine, the one list, the one save door, the
-shared list page (`components/CadenceListPage.tsx` — Daily through
-Bucket List, each route only names its kind), the one edit form
-(`app/item-edit.tsx`), the one row (`components/ReminderItemRow.tsx`),
-the date-and-time control, the page chrome, banner housing on the
-bits, and the log page (`app/log.tsx`). Daily's extras — visitors,
-One Time for today, Daily's own add, the time-and-from row label,
-reorder of the visible list, and Done following the item — live
-on that shared page. The log is not on the list. `app/daily.tsx` is
-the same thin route as Weekly.
+**Banner-first opening can lose yesterday's miss notice.** Patrick
+left only Daily items undone. The day's first opening was a tap on the
+banner body. Memory opened the item's own page and highlighted it, but
+the missed-reminder popup did not appear then or on the later return.
+The build sheet puts rollover, scheduling, the notice, and the saved
+banner destination into one awaited opening sequence.
 
-The spec is `docs/designed-implementation.md`. The testing file is
-Pending 1. The user's guide is a tile on Settings. That page has the
-longer Guide (#104-new). First load on Home shows the four short
-paragraphs, then a fifth that suggests opening the User's Guide. Help
-uses the new pop-up words. Words are in `docs/user-guide.md` and in
-the app.
+**Next sitting.** Job 1 of the new sheet is the banner-action machine.
+Do not begin Job 2 on the same Go.
 
-**Next sitting.** The User's Guide headings for this sitting are in.
-A new load for the #105-new and #106-new app work. Day-roll lock still
-wants a night of all-green Daily.
-
-Testers are on TestFlight External. The phone load is **80**. The App
+Testers are on TestFlight External. The phone load is **81**. The App
 Store heading is Waiting for Review on **72**. He is not aiming to go
 live. Manual release. The journey is `docs/connect-submit.md`. What is
 already in App Store Connect stays there. There is no public website

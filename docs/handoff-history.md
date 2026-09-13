@@ -17,6 +17,58 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #107-new (2026-09-13): designed-machine evaluation and build sheet
+
+**Phone.** Build 81 is on the phone. The previous sitting is committed.
+Scheduled Reminders is down to 14.
+
+**The evaluation.** The live app was read against
+`docs/designed-implementation.md`, the translator's kind table, the
+shared app machinery, and the scheduler road. No code was run or
+changed. The design machine is the app's real backbone: all nine saved
+kinds have one typed translator row; Save reads table codes; the
+engine reads one shaped item; and the reminder pages share one list
+page, one edit form, one row, and one log page.
+
+**The remaining remembered rules.** Banner action names, words, and
+delay arithmetic are copied between Expo registration, the response
+handler, and the list popup. Which Options belong to a kind is kept in
+a second kind list. Weekly Done writes its cycle time through a private
+kind check. Daily and Weekly rollover write the saved list outside the
+one change queue. Those are boundaries still relying on remembering
+rather than the machine.
+
+**One Time.** Its table row and its banner allow push-back and write a
+future stamp, but the reminder join has no push-back source for
+`oneTime`, so the promised delayed reminder does not reach the phone.
+That end-to-end trace contradicts the #93-new Done line that says both
+One Time snoozes fire. Patrick ruled that One Time does not Skip. It
+has no next cycle. Its own banner set has Done, OK, and Delay 15 / 30 /
+60 min.
+
+**Banner-first opening.** Patrick found this on build 81. Only Daily
+items had been left undone. The first opening of the day was a tap on
+the body of a banner. Memory opened the item's own page and highlighted
+it, but the missed-reminder popup did not appear then or on the later
+return. The day roll records the misses before clearing Daily. The
+fault is in the housing: Alert presentation and banner routing are
+independent, and the notice can be marked as showing before the route
+change loses it.
+
+**The build sheet.**
+`docs-ref/build-sheets/build-sheet-designed-machine.md` is
+self-contained. Job 1 is one typed banner-action catalog, One Time
+without Skip, and a One Time Delay that reaches the phone. Job 2 is
+one awaited opening sequence through rollover, scheduling, the notice,
+and the banner landing. Job 3 puts allowed Options on the kind row,
+makes Weekly Done read the existing table fields, and gives rollover
+and person changes one physical saved-list transaction. Every named
+stop waits for its own Go.
+
+**Session result.** The evaluation and build sheet are complete. No app
+code was changed and nothing from the sheet was built. The open work
+now lives in the handoff and Pending; this completed record lives here.
+
 ## #106-new (2026-09-11): User's Guide headings; Reset All Data out
 
 **Phone.** Build 80 is on the phone. #106-new Guide words are in the

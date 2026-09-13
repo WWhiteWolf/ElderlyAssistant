@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-11 (#106-new)
+Last updated: 2026-09-13 (#107-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -24,8 +24,13 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. DAY AFTER THE SET DAY on Weekly's Options is in the project, not
-   on 80 (Patrick, #105-new).
+1. FINISH THE DESIGNED MACHINE from
+   docs-ref/build-sheets/build-sheet-designed-machine.md. Job 1 is
+   the banner-action catalog, One Time with no Skip, and a One Time
+   Delay that reaches the phone. Job 2 is one awaited opening sequence
+   for the missed-reminder popup and banner landing. Job 3 puts the
+   remaining Options, Weekly Done, and saved-list differences into
+   their machinery. Written at #107-new. No code built.
 2. DAY-ROLL LOCK still wants a night of all-green Daily on this
    load, then a morning open on a new load, to confirm the pop-up
    stays quiet.
@@ -121,6 +126,12 @@ built. None of these is a job to do.
     The name is the reminder's key. This Expo does not yet hand that
     name to the phone, so the listing-down-the-page will wait until
     Expo is upgraded. The notification library was not poked.
+19. ONE TIME DOES NOT SKIP (Patrick, #107-new). It has no next cycle.
+    Its own banner set has Done, OK, and Delay 15 / 30 / 60 min.
+20. OPENING THROUGH A BANNER IS STILL AN OPENING. The day roll and
+    missed-reminder telling finish before the item's page is handed
+    over. A banner route must not cover the popup or make the app
+    believe a popup it lost is still showing (#107-new).
 
 
 WHAT IS DONE, NEWEST FIRST
