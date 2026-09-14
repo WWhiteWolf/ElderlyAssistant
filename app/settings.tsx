@@ -23,11 +23,54 @@ const FEEDBACK_MAIL = 'jojoMurphy@tuta.com';
 
 type WorkedAnswer = 'Yes' | 'Mostly' | 'No' | '';
 
+function lookShiftLabel(n: number): string {
+    if (n === 0) return 'Middle';
+    if (n === -1) return 'A bit lighter';
+    if (n <= -2) return 'Lighter';
+    if (n === 1) return 'A bit darker';
+    return 'Darker';
+}
+
+function LookStepper({
+    label,
+    value,
+    onChange,
+    styles,
+}: {
+    label: string;
+    value: number;
+    onChange: (n: number) => void;
+    styles: ReturnType<typeof makeStyles>;
+}) {
+    return (
+        <View style={[styles.settingRow, styles.settingRowBorder]}>
+            <Text style={[styles.settingLabel, styles.choiceLabel]}>{label}</Text>
+            <View style={styles.lookStepRow}>
+                <TouchableOpacity
+                    style={[styles.ratingStep, value <= -3 && styles.lookStepDim]}
+                    onPress={() => onChange(value - 1)}
+                    disabled={value <= -3}
+                >
+                    <Text style={styles.ratingStepText}>−</Text>
+                </TouchableOpacity>
+                <Text style={styles.lookStepValue}>{lookShiftLabel(value)}</Text>
+                <TouchableOpacity
+                    style={[styles.ratingStep, value >= 3 && styles.lookStepDim]}
+                    onPress={() => onChange(value + 1)}
+                    disabled={value >= 3}
+                >
+                    <Text style={styles.ratingStepText}>+</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+    );
+}
+
 export default function SettingsScreen() {
     const router = useRouter();
     const theme = useTheme();
     const styles = makeStyles(theme);
-    const { themeName, setThemeName, popupStyle, setPopupStyle } = useThemeControls();
+    const { themeName, setThemeName, popupStyle, setPopupStyle, letteringShift, setLetteringShift, pageShift, setPageShift } = useThemeControls();
     const [userName, setUserName] = useState('');
     const [newUserName, setNewUserName] = useState('');
     const [biometricAvailable, setBiometricAvailable] = useState(false);
@@ -222,6 +265,18 @@ export default function SettingsScreen() {
                                 <Text style={[styles.choiceText, popupStyle === 'phone' && styles.choiceTextActive]}>Follow iPhone</Text>
                             </TouchableOpacity>
                         </View>
+                        <LookStepper
+                            label="Letters"
+                            value={letteringShift}
+                            onChange={setLetteringShift}
+                            styles={styles}
+                        />
+                        <LookStepper
+                            label="Page"
+                            value={pageShift}
+                            onChange={setPageShift}
+                            styles={styles}
+                        />
                     </View>
 
                     <Text style={styles.sectionHeader}>Profile</Text>
@@ -611,6 +666,15 @@ const makeStyles = (t: Theme) =>
         },
         ratingStepText: { color: t.buttonPrimaryText, fontSize: 16, fontWeight: '600' },
         ratingValue: { fontSize: 18, fontWeight: '600', color: t.cardTitle, minWidth: 56, textAlign: 'center' },
+        lookStepRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1 },
+        lookStepValue: {
+            fontSize: 15,
+            fontWeight: '600',
+            color: t.settingValue,
+            minWidth: 104,
+            textAlign: 'center',
+        },
+        lookStepDim: { opacity: 0.35 },
         feedbackThanks: {
             fontSize: 15,
             fontWeight: '700',

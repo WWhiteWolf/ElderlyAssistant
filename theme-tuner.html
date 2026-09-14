@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Theme Tuner — A Place To Remember</title>
+<style>
+/* ═══ TUNER CHROME — the page around the sample; not app colors ═══ */
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Georgia,serif;background:#efeae2;color:#33291a;padding:16px;}
+.tuner-head{max-width:900px;margin:0 auto 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.tuner-head h1{font-size:1.2rem;flex:1;}
+.tuner-btn{font-family:Georgia,serif;font-size:0.85rem;padding:7px 14px;border-radius:5px;border:1.5px solid #8b6a38;background:#fff;color:#5a4420;cursor:pointer;}
+.tuner-btn:active{background:#f0e4c8;}
+.tuner-note{max-width:900px;margin:0 auto 14px;font-size:0.85rem;font-style:italic;color:#6a5a40;}
+.tuner-cols{max-width:900px;margin:0 auto;display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;}
+.sample-col{flex:0 0 390px;position:sticky;top:10px;}
+.picker-col{flex:1;min-width:300px;}
+.group-hdr{font-size:0.95rem;color:#5a4420;border-bottom:1.5px solid #b09868;padding:14px 0 4px;margin-bottom:8px;}
+.pick-row{display:flex;align-items:center;gap:10px;padding:4px 0;}
+.pick-row input[type=color]{width:44px;height:30px;border:1px solid #999;border-radius:4px;padding:0;background:none;cursor:pointer;flex-shrink:0;}
+.pick-lbl{font-size:0.85rem;flex:1;}
+.pick-where{font-size:0.72rem;color:#7a6a4a;font-style:italic;}
+.pick-hex{font-size:0.75rem;color:#7a6a4a;width:78px;text-align:right;}
+.out-wrap{max-width:900px;margin:20px auto;}
+.out-wrap textarea{width:100%;height:220px;font-family:monospace;font-size:0.75rem;padding:10px;border:1.5px solid #8b6a38;border-radius:5px;background:#fffdf6;color:#33291a;}
+.tuner-secs{max-width:900px;margin:0 auto 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.tuner-secs .lbl{font-size:0.8rem;font-style:italic;color:#6a5a40;margin-right:2px;}
+.sec-btn.on{background:#8b6a38;border-color:#8b6a38;color:#fff;font-weight:600;}
+</style>
+<style>
+/* ═══ THE APP SAMPLE — one flat color per area ═══ */
+#app{
+  max-width:390px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--pageBackground);color:var(--bodyText);
+  border:1px solid #999;border-radius:6px;overflow:hidden;user-select:none;
+}
+#app .slice{border-top:1px solid rgba(0,0,0,0.12);}
+#app .slice:first-child{border-top:none;}
+/* Header */
+#app .app-header{background:var(--header);padding:10px 16px 12px;}
+#app .app-header.rowish{display:flex;align-items:center;padding:16px 16px 10px;gap:6px;}
+#app .home-title{
+  font-family:Georgia,serif;font-style:italic;font-size:28px;font-weight:500;
+  color:var(--titleText);text-align:center;
+}
+#app .list-title{
+  font-family:Georgia,serif;font-style:italic;font-size:24px;font-weight:500;
+  color:var(--titleText);text-align:center;flex:1;
+}
+#app .subtitle-row{display:flex;align-items:center;margin-top:4px;}
+#app .home-sub{
+  font-family:Georgia,serif;font-style:italic;font-size:21px;font-weight:400;
+  color:var(--subtitleText);text-align:center;flex:1;
+}
+#app .hbtn{
+  width:54px;height:54px;border-radius:27px;border:1px solid var(--headerButton);
+  color:var(--headerButton);background:transparent;font-size:13px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+#app .gear{font-size:28px;color:var(--settingsGear);width:70px;text-align:right;line-height:1;}
+#app .side-slot{width:70px;flex-shrink:0;}
+/* Bridge — page, bridge, page, bridge */
+#app .bridge span{display:block;}
+#app .bridge .g{height:3px;background:var(--pageBackground);}
+#app .bridge .b{height:4px;background:var(--bridge);}
+/* Home tiles */
+#app .grid{display:flex;flex-wrap:wrap;padding:16px;gap:12px;justify-content:space-between;}
+#app .tile{width:47%;text-align:center;padding:12px 0;}
+#app .icon-circle{
+  width:48px;height:48px;border-radius:24px;margin:0 auto 8px;
+  background:var(--tileCircle);border:var(--tileCircleBorderWidth) solid var(--tileCircleBorder);
+  display:flex;align-items:center;justify-content:center;font-size:24px;
+  box-shadow:0 0 var(--tileHaloRadius) var(--tileHalo);
+}
+#app .tile-label{
+  font-family:Georgia,serif;font-size:20px;font-weight:600;color:var(--tileLabel);
+}
+#app.dark-icons .tile-icon{text-shadow:0 1px 3px rgba(0,0,0,0.5);}
+/* List card */
+#app .section{
+  background:var(--card);border-radius:12px;padding:10px;margin:12px;
+  border:0.5px solid var(--cardBorder);
+}
+#app .hint{font-size:11px;color:var(--mutedText);margin:2px 0 8px;}
+#app .item-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:2px 4px;margin-bottom:4px;border:2px solid transparent;
+}
+#app .item-row.hi{border-radius:8px;border-color:var(--rowReminderBorder);}
+#app .item-row.sel{background:var(--rowSelected);border-radius:8px;}
+#app .item-label{font-size:16px;color:var(--bodyText);font-weight:500;}
+#app .item-sub{font-size:13px;color:var(--mutedText);margin-top:1px;}
+#app .snooze-note{font-size:12px;color:var(--delay);font-weight:600;margin-top:1px;}
+#app .snooze-btn{
+  background:var(--delay);color:var(--delayText);font-size:13px;font-weight:600;
+  padding:5px 8px;border-radius:8px;margin-right:6px;border:none;
+}
+#app .done-btn{
+  background:var(--buttonPrimary);color:var(--buttonPrimaryText);font-size:13px;font-weight:600;
+  padding:5px 10px;border-radius:8px;border:none;
+}
+#app .done-btn.on{background:var(--buttonDone);color:var(--buttonDoneText);}
+#app .row-with-del{display:flex;align-items:stretch;margin-bottom:4px;}
+#app .swipe-del{
+  background:var(--buttonDelete);color:var(--buttonDeleteText);font-weight:600;font-size:15px;
+  width:80px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+}
+#app .log-line{padding:8px 4px;border-bottom:1px solid var(--progressTrack);font-size:14px;color:var(--bodyText);}
+/* Settings */
+#app .sec-label{
+  font-size:13px;font-weight:600;color:var(--pill);padding:10px 16px 4px;
+  text-transform:uppercase;letter-spacing:1px;
+}
+#app .setting-card{
+  background:var(--card);border-radius:12px;margin:0 12px 12px;
+  border:0.5px solid var(--cardBorder);
+}
+#app .setting-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 12px;
+}
+#app .setting-row + .setting-row{border-top:0.5px solid var(--cardBorder);}
+#app .setting-label{font-size:16px;color:var(--cardTitle);font-weight:500;}
+#app .setting-val{font-size:16px;color:var(--settingValue);}
+#app .setting-arrow{font-size:22px;color:var(--settingArrow);margin-left:6px;}
+#app .choice-row{display:flex;align-items:center;gap:8px;padding:10px 12px;}
+#app .choice-btn{
+  flex:1;padding:6px 0;border-radius:16px;border:1.5px solid var(--cardTitle);
+  background:var(--chip);color:var(--cardTitle);font-weight:500;font-size:13px;text-align:center;
+}
+#app .choice-btn.on{background:var(--buttonPrimary);border-color:var(--buttonPrimary);color:var(--buttonPrimaryText);}
+#app .quiet{font-size:12px;color:var(--mutedText);padding:0 12px 10px;}
+/* Popup */
+#app .backdrop{background:rgba(0,0,0,0.4);padding:20px;}
+#app .modal{
+  background:var(--card);border-radius:12px;padding:16px;
+  border:0.5px solid var(--cardBorder);
+}
+#app .modal-title{font-size:18px;font-weight:600;color:var(--cardTitle);margin-bottom:10px;}
+#app .modal-p{font-size:16px;color:var(--bodyText);line-height:22px;margin-bottom:12px;}
+#app .modal-btns{display:flex;gap:8px;margin-top:6px;}
+#app .btn-primary{
+  flex:1;background:var(--buttonPrimary);color:var(--buttonPrimaryText);font-weight:600;
+  padding:12px;border-radius:8px;border:1.5px solid var(--buttonPrimary);text-align:center;
+}
+#app .btn-quiet{
+  flex:1;background:var(--buttonNeutral);color:var(--buttonNeutralText);font-weight:600;
+  padding:12px;border-radius:8px;border:1.5px solid var(--buttonNeutralBorder);text-align:center;
+}
+</style>
+</head>
+<body>
+
+<div class="tuner-head">
+  <h1>Theme Tuner</h1>
+  <button class="tuner-btn" id="themeToggle">Tuning: LIGHT — switch to dark</button>
+  <button class="tuner-btn" id="resetBtn">Back to starting values</button>
+</div>
+<div class="tuner-secs" id="secRow">
+  <span class="lbl">Working on:</span>
+  <button class="tuner-btn sec-btn on" data-sec="all">Everything</button>
+  <button class="tuner-btn sec-btn" data-sec="home">Home</button>
+  <button class="tuner-btn sec-btn" data-sec="list">List</button>
+  <button class="tuner-btn sec-btn" data-sec="settings">Settings</button>
+  <button class="tuner-btn sec-btn" data-sec="popups">Popups</button>
+</div>
+<div class="tuner-note">
+  The sample below uses Memory’s live theme names. Change a picker and the
+  piece wearing that color changes at once. Both themes are tunable — the
+  button above says which one the pickers are shaping — and each theme’s
+  choices are saved in this browser on their own. The finished block at the
+  bottom is the color lines for Themes.ts, ready to copy. Page-wide colors
+  stay in view with every section, since they show on every screen.
+</div>
+
+<div class="tuner-cols">
+  <div class="sample-col" id="sampleCol"></div>
+  <div class="picker-col" id="pickerCol"></div>
+</div>
+
+<div class="out-wrap">
+  <div class="group-hdr">The finished palettes — light and dark</div>
+  <textarea id="outBlock" readonly></textarea>
+  <p style="margin-top:8px"><button class="tuner-btn" id="copyBtn">Copy theme block</button>
+  <button class="tuner-btn" id="downloadBtn">Download palettes</button>
+  <span id="copyMsg" style="font-size:0.8rem;color:#4a7a3a;"></span></p>
+</div>
+
+<script>
+'use strict';
+
+// ════════════════════════════════════════════════════════════
+// THE PALETTE — one row per named color in Themes.ts
+// name is the Themes.ts key. Starting values are the file as it
+// stands now. Keys with no live screen are not pickers; they
+// ride along in the copy block at their starting values.
+// ════════════════════════════════════════════════════════════
+const PALETTE = [
+ { group:'The page' },
+ { name:'pageBackground', lbl:'Page ground', where:'the shared background of every page', light:'#e8f4f8', dark:'#3a3024' },
+ { name:'bridge',         lbl:'Bridge',      where:'the two colored bands under the header', light:'#2d9e8f', dark:'#c9622e' },
+ { name:'bodyText',       lbl:'Body lettering', where:'paragraphs and list names on the page', light:'#1a6e8a', dark:'#fff6de' },
+ { name:'mutedText',      lbl:'Quiet lettering', where:'hints, times, and secondary lines', light:'#888888', dark:'#e9dcba' },
+ { name:'card',           lbl:'Card',        where:'list cards, settings cards, and popups', light:'#ffffff', dark:'#4a3e30' },
+ { name:'cardBorder',     lbl:'Card edge',   where:'the thin edge of those cards', light:'#a8d4e0', dark:'#a3481f' },
+ { name:'cardTitle',      lbl:'Card title',  where:'headings on a card', light:'#1a6e8a', dark:'#f0a83a' },
+
+ { group:'The header' },
+ { name:'header',        lbl:'Header',            where:'the title strip on every page', light:'#1a6e8a', dark:'#f0a83a' },
+ { name:'titleText',     lbl:'Title lettering',   where:'A Place To Remember, Daily, Settings', light:'#ffffff', dark:'#4a1f0c' },
+ { name:'subtitleText',  lbl:'Subtitle',          where:'Good to see you', light:'#a8d4e0', dark:'#6b3418' },
+ { name:'headerButton',  lbl:'Header button',     where:'the round Home, Log, and + Add rings', light:'#ffffff', dark:'#4a1f0c' },
+ { name:'settingsGear',  lbl:'Settings gear',     where:'the gear on Home', light:'#4caba1', dark:'#c9622e' },
+
+ { group:'Home tiles' },
+ { name:'tileCircle',       lbl:'Tile circle',  where:'the round badge behind each Home icon', light:'#4caba1', dark:'#c9622e' },
+ { name:'tileCircleBorder', lbl:'Tile outline', where:'the ring on that circle', light:'#1a6e8a', dark:'#f0a83a' },
+ { name:'tileLabel',        lbl:'Tile label',   where:'Appointments, Daily, and the rest', light:'#1a6e8a', dark:'#f0a83a' },
+ { name:'tileHalo',         lbl:'Tile halo',    where:'the glow behind a circle — off until its strength is restored in code', light:'#1a6e8a', dark:'#f0a83a' },
+
+ { group:'List rows' },
+ { name:'rowSelected',        lbl:'Selected row',     where:'a row being dragged', light:'#d6eef8', dark:'#5c5044' },
+ { name:'rowReminderBorder',  lbl:'Reminder outline', where:'the ring on the row a banner belonged to', light:'#6dc6e3', dark:'#f0a83a' },
+ { name:'delay',              lbl:'Delay',            where:'Snooze and the delayed line', light:'#FF9500', dark:'#FF9500' },
+ { name:'delayText',          lbl:'Delay lettering',  where:'the word on a Snooze button', light:'#ffffff', dark:'#4a1f0c' },
+ { name:'buttonDone',         lbl:'Done tick',        where:'the green Done once it is checked', light:'#27ae60', dark:'#27ae60' },
+ { name:'buttonDoneText',     lbl:'Done lettering',   where:'the tick on that button', light:'#ffffff', dark:'#ffffff' },
+ { name:'buttonDelete',       lbl:'Delete',           where:'the swipe-delete fill', light:'#e74c3c', dark:'#e74c3c' },
+ { name:'buttonDeleteText',   lbl:'Delete lettering', where:'the word Delete', light:'#ffffff', dark:'#ffffff' },
+ { name:'progressTrack',      lbl:'Rule line',        where:'the line under a log row', light:'#e0e0e0', dark:'#5c5044' },
+
+ { group:'Buttons' },
+ { name:'buttonPrimary',       lbl:'Primary button',     where:'Done?, Got it, Save, and the active chip', light:'#1a6e8a', dark:'#c9622e' },
+ { name:'buttonPrimaryText',   lbl:'Primary lettering',  where:'the words on those buttons', light:'#ffffff', dark:'#fff6de' },
+ { name:'buttonNeutral',       lbl:'Quiet button',       where:'Cancel', light:'#cccccc', dark:'#4a3e30' },
+ { name:'buttonNeutralBorder', lbl:'Quiet edge',         where:'Cancel’s outline', light:'#cccccc', dark:'#f0a83a' },
+ { name:'buttonNeutralText',   lbl:'Quiet lettering',    where:'the word Cancel', light:'#333333', dark:'#f0a83a' },
+
+ { group:'Settings' },
+ { name:'pill',          lbl:'Section label',    where:'the small uppercase headings on Settings', light:'#2d9e8f', dark:'#f0a83a' },
+ { name:'chip',          lbl:'Chip',             where:'an unselected choice, such as Dark when Light is on', light:'#ffffff', dark:'#3a3024' },
+ { name:'settingValue',  lbl:'Setting value',    where:'the name and times on a Settings row', light:'#2d9e8f', dark:'#fff6de' },
+ { name:'settingArrow',  lbl:'Chevron',          where:'the › on a Settings row', light:'#a8d4e0', dark:'#e9dcba' }
+];
+
+const PICKERLESS = {
+  light: {
+    cartIcon:'#d8dde3', stockedButton:'#2d9e8f', stockedButtonBorder:'#2d9e8f', stockedButtonText:'#ffffff',
+    rowSelectedBorder:'#1a6e8a', pillSelected:'#2d9e8f', switchTrackOn:'#1a6e8a', switchTrackOff:'#cccccc',
+    switchThumb:'#ffffff', countdown:'#2d9e8f', counterMinus:'#ffcc00', counterMinusText:'#ffffff',
+    timeStepper:'#1a6e8a', timeStepperBorder:'#1a6e8a', timeStepperText:'#ffffff'
+  },
+  dark: {
+    cartIcon:'#d8dde3', stockedButton:'#3a3024', stockedButtonBorder:'#f0a83a', stockedButtonText:'#f0a83a',
+    rowSelectedBorder:'#f0a83a', pillSelected:'#c9622e', switchTrackOn:'#c9622e', switchTrackOff:'#5c5044',
+    switchThumb:'#fff6de', countdown:'#fff6de', counterMinus:'#ffcc00', counterMinusText:'#4a1f0c',
+    timeStepper:'#4a3e30', timeStepperBorder:'#f0a83a', timeStepperText:'#f0a83a'
+  }
+};
+
+const STORE_KEYS = { light:'memoryTunerLight', dark:'memoryTunerDark' };
+
+const items = PALETTE.filter(p => p.name);
+function startValues(theme){ const o={}; items.forEach(p=>o[p.name]=p[theme]); return o; }
+function loadTheme(theme){
+  try { return Object.assign(startValues(theme),
+        JSON.parse(localStorage.getItem(STORE_KEYS[theme])) || {}); }
+  catch(e){ return startValues(theme); }
+}
+const palettes = { light: loadTheme('light'), dark: loadTheme('dark') };
+let tuning = 'light';
+
+const GROUP_SEC = {
+  'The page':'page',
+  'The header':'page',
+  'Home tiles':'home',
+  'List rows':'list',
+  'Buttons':'page',
+  'Settings':'settings'
+};
+let section = 'all';
+function inSection(sec){ return section === 'all' || sec === section || sec === 'page'; }
+
+function applyPalette(){
+  const app = document.getElementById('app');
+  items.forEach(p => app.style.setProperty('--' + p.name, palettes[tuning][p.name]));
+  app.style.setProperty('--tileCircleBorderWidth', tuning === 'dark' ? '3px' : '2px');
+  app.style.setProperty('--tileHaloRadius', '0px');
+  app.classList.toggle('dark-icons', tuning === 'dark');
+  const chips = app.querySelectorAll('.choice-btn');
+  if (chips.length === 2) {
+    chips[0].classList.toggle('on', tuning === 'light');
+    chips[1].classList.toggle('on', tuning === 'dark');
+  }
+}
+
+function saveNow(){
+  try { localStorage.setItem(STORE_KEYS[tuning], JSON.stringify(palettes[tuning])); } catch(e){}
+}
+
+function buildSample(){
+  let h = '<div id="app">';
+
+  h += '<div class="slice" data-sec="home">';
+  h += '<div class="app-header"><div class="home-title">A Place To Remember</div>';
+  h += '<div class="subtitle-row"><span class="side-slot"></span>';
+  h += '<div class="home-sub">Good to see you!</div>';
+  h += '<div class="gear">⚙</div></div></div>';
+  h += '<div class="bridge"><span class="g"></span><span class="b"></span><span class="g"></span><span class="b"></span></div>';
+  h += '<div class="grid">';
+  [['✅','Appointments'],['🎂','Birthdays'],['☀️','Daily'],['🤔','Help']].forEach(t=>{
+    h += `<div class="tile"><div class="icon-circle"><span class="tile-icon">${t[0]}</span></div><div class="tile-label">${t[1]}</div></div>`;
+  });
+  h += '</div></div>';
+
+  h += '<div class="slice" data-sec="list">';
+  h += '<div class="app-header rowish"><div class="hbtn">Home</div><div class="list-title">Daily</div>';
+  h += '<div class="hbtn">Log</div><div class="hbtn">+ Add</div></div>';
+  h += '<div class="bridge"><span class="g"></span><span class="b"></span><span class="g"></span><span class="b"></span></div>';
+  h += '<div class="section"><div class="hint">Hold and slide to reorder · Tap to edit · Swipe to delete</div>';
+  h += '<div class="item-row hi"><div><div class="item-label">Take pills</div><div class="item-sub">8:00 AM</div></div>';
+  h += '<button class="done-btn">Done?</button></div>';
+  h += '<div class="item-row"><div><div class="item-label">Water the plants</div><div class="snooze-note">Delayed 15 min</div></div>';
+  h += '<button class="snooze-btn">Snooze</button><button class="done-btn">Done?</button></div>';
+  h += '<div class="item-row sel"><div><div class="item-label">Call the dentist</div><div class="item-sub">2:30 PM</div></div>';
+  h += '<button class="done-btn on">✓</button></div>';
+  h += '<div class="row-with-del"><div class="item-row" style="flex:1;margin:0"><div class="item-label">Walk</div></div>';
+  h += '<div class="swipe-del">Delete</div></div>';
+  h += '<div class="log-line">Take pills — done this morning</div>';
+  h += '</div></div>';
+
+  h += '<div class="slice" data-sec="settings">';
+  h += '<div class="app-header rowish"><div class="hbtn">Home</div><div class="list-title">Settings</div><div class="hbtn" style="opacity:0">Home</div></div>';
+  h += '<div class="bridge"><span class="g"></span><span class="b"></span><span class="g"></span><span class="b"></span></div>';
+  h += '<div class="sec-label">Appearance</div>';
+  h += '<div class="setting-card">';
+  h += '<div class="choice-row"><span class="setting-label" style="width:100px">App colors</span>';
+  h += '<div class="choice-btn on">Light</div><div class="choice-btn">Dark</div></div>';
+  h += '<div class="setting-row"><div class="setting-label">Your name</div><div><span class="setting-val">Pat</span><span class="setting-arrow">›</span></div></div>';
+  h += '<div class="quiet">The quiet line under a setting.</div>';
+  h += '</div></div>';
+
+  h += '<div class="slice" data-sec="popups">';
+  h += '<div class="backdrop"><div class="modal">';
+  h += '<div class="modal-title">User\'s Guide</div>';
+  h += '<p class="modal-p">A popup sits on the dimmed page. The card, the words, Got it and Cancel all take their colors from the theme.</p>';
+  h += '<div class="modal-btns"><div class="btn-quiet">Cancel</div><div class="btn-primary">Got it</div></div>';
+  h += '</div></div></div>';
+
+  h += '</div>';
+  document.getElementById('sampleCol').innerHTML = h;
+}
+
+function buildPickers(){
+  let h = '';
+  let currentGroup = '';
+  PALETTE.forEach(p=>{
+    if (p.group){
+      currentGroup = p.group;
+      if (inSection(GROUP_SEC[currentGroup]))
+        h += `<div class="group-hdr">${p.group}</div>`;
+      return;
+    }
+    if (!inSection(GROUP_SEC[currentGroup])) return;
+    const v = palettes[tuning][p.name];
+    h += `<div class="pick-row"><input type="color" data-name="${p.name}" value="${v}">`;
+    h += `<span class="pick-lbl">${p.lbl}<br><span class="pick-where">${p.where}</span></span>`;
+    h += `<span class="pick-hex" id="hex-${p.name}">${v}</span></div>`;
+  });
+  document.getElementById('pickerCol').innerHTML = h;
+  document.querySelectorAll('#pickerCol input[type=color]').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      palettes[tuning][inp.dataset.name] = inp.value;
+      document.getElementById('hex-'+inp.dataset.name).textContent = inp.value;
+      document.getElementById('app').style.setProperty('--'+inp.dataset.name, inp.value);
+      saveNow(); buildOutput();
+    });
+  });
+}
+
+function buildOutput(){
+  let out = '/* Color lines for constants/Themes.ts — tuned in theme-tuner.html */\n';
+  ['light','dark'].forEach(theme=>{
+    out += theme + ': {\n';
+    items.forEach(p=>{
+      out += `    ${p.name}: '${palettes[theme][p.name]}',\n`;
+    });
+    Object.entries(PICKERLESS[theme]).forEach(([n,v])=>{
+      out += `    ${n}: '${v}',\n`;
+    });
+    out += '},\n\n';
+  });
+  document.getElementById('outBlock').value = out;
+}
+
+document.getElementById('themeToggle').addEventListener('click', ()=>{
+  tuning = tuning === 'light' ? 'dark' : 'light';
+  document.getElementById('themeToggle').textContent = tuning === 'light'
+    ? 'Tuning: LIGHT — switch to dark'
+    : 'Tuning: DARK — switch to light';
+  applyPalette(); buildPickers();
+});
+function applySection(){
+  document.querySelectorAll('#app [data-sec]').forEach(el=>{
+    el.style.display = inSection(el.dataset.sec) ? '' : 'none';
+  });
+  document.querySelectorAll('.sec-btn').forEach(b=>
+    b.classList.toggle('on', b.dataset.sec === section));
+  buildPickers();
+}
+document.getElementById('secRow').addEventListener('click', e=>{
+  const b = e.target.closest('.sec-btn');
+  if (!b) return;
+  section = b.dataset.sec;
+  applySection();
+});
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  const what = tuning === 'light'
+    ? 'Throw away your tuned LIGHT values and return to the starting colors?'
+    : 'Throw away your tuned DARK values and return to the starting colors?';
+  if (!confirm(what)) return;
+  palettes[tuning] = startValues(tuning); saveNow();
+  buildPickers(); applyPalette(); buildOutput();
+});
+document.getElementById('downloadBtn').addEventListener('click', ()=>{
+  const blob = new Blob([document.getElementById('outBlock').value], { type:'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'themes-tuned.txt';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(a.href);
+  document.getElementById('copyMsg').textContent = 'Saved to your Downloads folder.';
+  setTimeout(()=>document.getElementById('copyMsg').textContent='', 3000);
+});
+document.getElementById('copyBtn').addEventListener('click', ()=>{
+  const ta = document.getElementById('outBlock');
+  ta.select(); document.execCommand('copy');
+  document.getElementById('copyMsg').textContent = 'Copied.';
+  setTimeout(()=>document.getElementById('copyMsg').textContent='', 2000);
+});
+
+buildSample();
+applyPalette();
+applySection();
+buildOutput();
+</script>
+</body>
+</html>

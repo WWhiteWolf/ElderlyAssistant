@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createContext, createElement, ReactNode, useContext, useEffect, useState } from 'react';
+import { createContext, createElement, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { Appearance } from 'react-native';
 
 // Shared two-theme foundation (session #45).
@@ -248,12 +248,72 @@ export type PopupStyle = 'match' | 'phone';
 
 const THEME_STORAGE_KEY = 'app_theme';    // 'light' | 'dark'
 const POPUP_STORAGE_KEY = 'popup_style';  // 'match' | 'phone'
+const LETTERING_STORAGE_KEY = 'look_lettering';
+const PAGE_STORAGE_KEY = 'look_page';
+
+/** −3 (much lighter) through 0 (shipped) to +3 (much darker). */
+export type LookShift = number;
+
+function clampLookShift(n: number): LookShift {
+    if (!Number.isFinite(n)) return 0;
+    return Math.max(-3, Math.min(3, Math.round(n)));
+}
+
+function parseLookShift(raw: string | null): LookShift {
+    if (raw == null || raw === '') return 0;
+    return clampLookShift(Number(raw));
+}
+
+// Mix a hex color toward black (plus / more) or white (minus / less).
+// Each step is a modest move so three steps stay in the same look.
+function shiftHex(hex: string, steps: LookShift): string {
+    if (steps === 0 || hex[0] !== '#' || (hex.length !== 7)) return hex;
+    const amount = Math.abs(steps) * 0.12;
+    const n = parseInt(hex.slice(1), 16);
+    if (Number.isNaN(n)) return hex;
+    let r = (n >> 16) & 255;
+    let g = (n >> 8) & 255;
+    let b = n & 255;
+    if (steps > 0) {
+        const k = 1 - amount;
+        r = Math.round(r * k);
+        g = Math.round(g * k);
+        b = Math.round(b * k);
+    } else {
+        r = Math.round(r + (255 - r) * amount);
+        g = Math.round(g + (255 - g) * amount);
+        b = Math.round(b + (255 - b) * amount);
+    }
+    const toHex = (c: number) => Math.max(0, Math.min(255, c)).toString(16).padStart(2, '0');
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+function applyLookShifts(theme: Theme, lettering: LookShift, page: LookShift): Theme {
+    if (lettering === 0 && page === 0) return theme;
+    const next = { ...theme };
+    if (page !== 0) {
+        next.pageBackground = shiftHex(theme.pageBackground, page);
+    }
+    if (lettering !== 0) {
+        next.bodyText = shiftHex(theme.bodyText, lettering);
+        next.mutedText = shiftHex(theme.mutedText, lettering);
+        next.tileLabel = shiftHex(theme.tileLabel, lettering);
+        next.cardTitle = shiftHex(theme.cardTitle, lettering);
+        next.settingValue = shiftHex(theme.settingValue, lettering);
+        next.pill = shiftHex(theme.pill, lettering);
+    }
+    return next;
+}
 
 interface ThemeControls {
     themeName: ThemeName;
     setThemeName: (name: ThemeName) => void;
     popupStyle: PopupStyle;
     setPopupStyle: (style: PopupStyle) => void;
+    letteringShift: LookShift;
+    setLetteringShift: (n: LookShift) => void;
+    pageShift: LookShift;
+    setPageShift: (n: LookShift) => void;
     /** False until the saved theme and popup-style choices have been read. */
     preferencesReady: boolean;
 }
@@ -265,6 +325,8 @@ const ThemeContext = createContext<ThemeControls | null>(null);
 export function ThemeProvider({ children }: { children: ReactNode }) {
     const [themeName, setThemeNameState] = useState<ThemeName>(DEFAULT_THEME);
     const [popupStyle, setPopupStyleState] = useState<PopupStyle>('match');
+    const [letteringShift, setLetteringShiftState] = useState<LookShift>(0);
+    const [pageShift, setPageShiftState] = useState<LookShift>(0);
     const [preferencesReady, setPreferencesReady] = useState(false);
 
     // Load the saved choices once at startup. Until they arrive the app
@@ -279,8 +341,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
                 if (t === 'light' || t === 'dark') loadedTheme = t;
                 const p = await AsyncStorage.getItem(POPUP_STORAGE_KEY);
                 if (p === 'match' || p === 'phone') loadedPopup = p;
+                const letters = parseLookShift(await AsyncStorage.getItem(LETTERING_STORAGE_KEY));
+                const page = parseLookShift(await AsyncStorage.getItem(PAGE_STORAGE_KEY));
                 setThemeNameState(loadedTheme);
                 setPopupStyleState(loadedPopup);
+                setLetteringShiftState(letters);
+                setPageShiftState(page);
             } catch (e) {
                 console.error(e);
             } finally {
@@ -306,10 +372,32 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         setPopupStyleState(style);
         AsyncStorage.setItem(POPUP_STORAGE_KEY, style).catch(console.error);
     };
+    const setLetteringShift = (n: LookShift) => {
+        const next = clampLookShift(n);
+        setLetteringShiftState(next);
+        AsyncStorage.setItem(LETTERING_STORAGE_KEY, String(next)).catch(console.error);
+    };
+    const setPageShift = (n: LookShift) => {
+        const next = clampLookShift(n);
+        setPageShiftState(next);
+        AsyncStorage.setItem(PAGE_STORAGE_KEY, String(next)).catch(console.error);
+    };
 
     return createElement(
         ThemeContext.Provider,
-        { value: { themeName, setThemeName, popupStyle, setPopupStyle, preferencesReady } },
+        {
+            value: {
+                themeName,
+                setThemeName,
+                popupStyle,
+                setPopupStyle,
+                letteringShift,
+                setLetteringShift,
+                pageShift,
+                setPageShift,
+                preferencesReady,
+            },
+        },
         children,
     );
 }
@@ -318,7 +406,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 // changes. Falls back to DEFAULT_THEME if the provider isn't mounted.
 export function useTheme(): Theme {
     const ctx = useContext(ThemeContext);
-    return Themes[ctx ? ctx.themeName : DEFAULT_THEME];
+    const name = ctx ? ctx.themeName : DEFAULT_THEME;
+    const lettering = ctx ? ctx.letteringShift : 0;
+    const page = ctx ? ctx.pageShift : 0;
+    return useMemo(
+        () => applyLookShifts(Themes[name], lettering, page),
+        [name, lettering, page],
+    );
 }
 
 // Settings' Appearance section uses this to read AND change the choices.
