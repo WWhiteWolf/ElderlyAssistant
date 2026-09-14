@@ -15,7 +15,9 @@ who decides. It is not a claim that the files were refreshed.
 Build **82** is on the phone. The designed-machine jobs from #108-new
 and #109-new are on that load and still need phone proof. **#110-new**
 Birthday row, reminder age, and derived next date are in the project,
-not on 82.
+not on 82. **#111-new** Letters and Page are on Settings, under
+Appearance. Middle is the original look. Plus is more (darker). Minus
+is less (lighter). He is trying them on the phone.
 
 ## Standing rulings
 

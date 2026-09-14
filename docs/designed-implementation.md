@@ -575,7 +575,12 @@ opens it from the gear in the header. The gear is not a badge. Help is
 not on this page. Home is in the header.
 
 It holds the person's name, Light or Dark, and popup colors — Match App
-or Follow iPhone. It holds the three named times of day: morning,
+or Follow iPhone. Letters and Page sit under Appearance. Middle is the
+look the app ships with. Plus is more — darker letters, a darker page.
+Minus is less — lighter. Both Light and Dark use them. They stay on the
+phone. Built at #111-new.
+
+It holds the three named times of day: morning,
 midday, and evening. Those times are the clock for Morning of, Day
 Before, and Night Before. A tap opens the time with the same
 date-and-time control as the rest of the app.
