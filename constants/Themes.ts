@@ -239,10 +239,10 @@ export const DEFAULT_THEME: ThemeName = 'light';
 
 export type PopupStyle = 'match' | 'phone';
 
-const THEME_STORAGE_KEY = 'app_theme';    // 'light' | 'dark'
-const POPUP_STORAGE_KEY = 'popup_style';  // 'match' | 'phone'
-const LETTERING_STORAGE_KEY = 'look_lettering';
-const PAGE_STORAGE_KEY = 'look_page';
+export const THEME_STORAGE_KEY = 'app_theme';    // 'light' | 'dark'
+export const POPUP_STORAGE_KEY = 'popup_style';  // 'match' | 'phone'
+export const LETTERING_STORAGE_KEY = 'look_lettering';
+export const PAGE_STORAGE_KEY = 'look_page';
 
 /** −3 (much lighter) through 0 (shipped) to +3 (much darker). */
 export type LookShift = number;
@@ -307,6 +307,8 @@ interface ThemeControls {
     setLetteringShift: (n: LookShift) => void;
     pageShift: LookShift;
     setPageShift: (n: LookShift) => void;
+    /** Read the saved look again after a full restore. */
+    reloadPreferences: () => Promise<void>;
     /** False until the saved theme and popup-style choices have been read. */
     preferencesReady: boolean;
 }
@@ -376,6 +378,26 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         AsyncStorage.setItem(PAGE_STORAGE_KEY, String(next)).catch(console.error);
     };
 
+    const reloadPreferences = async () => {
+        let loadedTheme: ThemeName = DEFAULT_THEME;
+        let loadedPopup: PopupStyle = 'match';
+        try {
+            const t = await AsyncStorage.getItem(THEME_STORAGE_KEY);
+            if (t === 'light' || t === 'dark') loadedTheme = t;
+            const p = await AsyncStorage.getItem(POPUP_STORAGE_KEY);
+            if (p === 'match' || p === 'phone') loadedPopup = p;
+            const letters = parseLookShift(await AsyncStorage.getItem(LETTERING_STORAGE_KEY));
+            const page = parseLookShift(await AsyncStorage.getItem(PAGE_STORAGE_KEY));
+            setThemeNameState(loadedTheme);
+            setPopupStyleState(loadedPopup);
+            setLetteringShiftState(letters);
+            setPageShiftState(page);
+        } catch (e) {
+            console.error(e);
+        }
+        Appearance.setColorScheme(loadedPopup === 'match' ? loadedTheme : null);
+    };
+
     return createElement(
         ThemeContext.Provider,
         {
@@ -388,6 +410,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
                 setLetteringShift,
                 pageShift,
                 setPageShift,
+                reloadPreferences,
                 preferencesReady,
             },
         },

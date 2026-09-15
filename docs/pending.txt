@@ -163,13 +163,18 @@ A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
 
+145. #116-new — Export saves the name, the app theme, the popup
+    colors, Letters, Page, and the morning, midday, and evening
+    times as one Settings list. Replace writes that list. Merge
+    does not take it. Not checked on the phone.
+
 144. #116-new — The User's Guide marks page names in Reminders that
     repeat and Reminders that do not repeat. The working document and
     the in-app copy agree. Not on the phone.
 
-143. #116-new — Reminder lists no longer slide left for a back-swipe.
-    The last row has room above the bottom of the phone. Not on the
-    phone.
+143. #116-new — Reminder lists: the layout switch did not stop the
+    iPhone back-drag. The list page now turns that drag off when it
+    opens. Extra room under the last row. Not checked on the phone.
 
 142. #116-new — One Time with no clock does not fire and does not
     offer Snooze. No clock means no reminder. 418 Mac checks.

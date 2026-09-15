@@ -1,4 +1,4 @@
-import { useFocusEffect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter, type Href } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Alert,
@@ -63,6 +63,7 @@ export default function CadenceListPage({
     returnTo: string;
 }) {
     const router = useRouter();
+    const navigation = useNavigation();
     const theme = useTheme();
     const styles = makeStyles(theme);
     const insets = useSafeAreaInsets();
@@ -102,11 +103,26 @@ export default function CadenceListPage({
     useFocusEffect(
         useCallback(() => {
             void refreshFromStorage();
+            const dragOff = { gestureEnabled: false, fullScreenGestureEnabled: false };
+            navigation.setOptions(dragOff);
+            let parent = navigation.getParent();
+            while (parent) {
+                parent.setOptions(dragOff);
+                parent = parent.getParent();
+            }
             const sub = AppState.addEventListener('change', (state) => {
                 if (state === 'active') void refreshFromStorage();
             });
-            return () => sub.remove();
-        }, [refreshFromStorage]),
+            return () => {
+                sub.remove();
+                const dragOn = { gestureEnabled: true, fullScreenGestureEnabled: true };
+                let ancestor = navigation.getParent();
+                while (ancestor) {
+                    ancestor.setOptions(dragOn);
+                    ancestor = ancestor.getParent();
+                }
+            };
+        }, [navigation, refreshFromStorage]),
     );
 
     const writeItems = (patch: (list: ReminderItem[]) => ReminderItem[]) => {

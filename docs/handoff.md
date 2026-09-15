@@ -17,15 +17,17 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-Build **90** is on the phone. **#115-new** is committed (Patrick,
-#116-new). **#116-new** is in the project, not on that load. 418 Mac
-checks; TypeScript clean. It needs a phone check on a native load
-after 90. Home make-room is in pending. The designed-machine jobs
-from #108-new and #109-new still need phone proof. **#110-new**
-Birthday still needs a phone check. **#111-new** Letters and Page
-are on Settings; he is trying them on the phone. **#112-new** Home
-badges, Helper, and the person's name on backup are in the project,
-not on 86.
+A new load is on the phone. **#115-new** is committed (Patrick,
+#116-new). The Guide page names and the 30, 60, and 90 day chips
+are working on that load. The page still slid left. The list page
+now turns the iPhone back-drag off when it opens. Export saves the
+name, the app look, and the reminder times. Replace writes them.
+Merge leaves them. Those need a phone check. Home make-room is in
+pending. The designed-machine jobs from #108-new and #109-new still
+need phone proof. **#110-new** Birthday still needs a phone check.
+**#111-new** Letters and Page are on Settings; he is trying them
+on the phone. **#112-new** Home badges, Helper, and the person's
+name on backup still need a look on the phone.
 
 ## Standing rulings
 
@@ -34,6 +36,11 @@ finished task.
 
 - **Restore with Merge is done.** Do not treat Merge as dropped. The
   designed implementation holds how Replace and Merge work.
+- **These Settings go in the backup** (Patrick, #116-new): the name,
+  the app theme, the popup colors, Letters, Page, and the morning,
+  midday, and evening reminder times. Export saves them. Replace
+  writes them from the file. Merge does not take them. The name is
+  not a special case.
 - **Timer Alerts, Vault, Shopping List, and Memory Test have left
   Memory.** Copies remain in `Projects/stray apps`. Do not treat them
   as Memory engine work. The shopping list will have a backup of its
@@ -87,7 +94,8 @@ designed-machine build sheet is complete in the project.
 2's banner-first day-boundary path, and Job 3's Options, Weekly Done,
 and export-after-change need a check on 90.
 
-Testers are on TestFlight External. The phone load is **90**. The App
+Testers are on TestFlight External. The phone has a new load after
+**90**. The App
 Store heading is Waiting for Review on **72**. He is not aiming to go
 live. Manual release. The journey is `docs/connect-submit.md`. What is
 already in App Store Connect stays there. There is no public website
@@ -103,8 +111,11 @@ the space they have. Bucket List is a smiling face. Quarterly is a maple
 leaf. The Help tile is named Helper. The person's name is in the backup.
 Needs a look on the next load, upright and turned.
 
-**#116-new** is in the project, not on 90. It needs a phone check on
-a native load after 90.
+**#116-new** Guide names and the 30, 60, and 90 day chips are working
+on the new load. The page still slid left. The list page now turns
+the back-drag off when it opens. Export saves the name, the app look,
+and the reminder times. Replace writes them. Merge leaves them.
+Those need a phone check.
 
 **Day-roll lock** still needs a night of all-green Daily, then a morning
 open on a new load, to confirm the pop-up stays quiet.

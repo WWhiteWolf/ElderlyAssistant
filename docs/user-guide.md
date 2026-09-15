@@ -148,7 +148,8 @@ Settings is reached by tapping the gear in the header of Home.
   Reminder Time.
 - Scheduled Reminders, when tapped, shows the reminders currently
   armed on your phone.
-- Backup & Restore is for saving and retrieving your reminders.
+- Backup & Restore is for saving and retrieving your reminders, the
+  name, the app look, and the reminder times.
 - This User's Guide is here.
 - Feedback is for emailing the developer with comments, suggestions,
   or problems you want to pass on.
@@ -163,8 +164,7 @@ phone.
 
 Letters and Page sit under Appearance. Middle is the look the app
 ships with. Plus makes the letters or the page darker. Minus makes
-them lighter. Light and Dark both use them. They stay on this
-phone.
+them lighter. Light and Dark both use them.
 
 You enter your name. Tap to set it, type it, and Save. Home will
 greet you by name.
@@ -198,9 +198,10 @@ a file you can keep.
 - Merge from Backup keeps what is here and adds from the backup only
   what is not already here.
 
-The person's name is saved and restored. The rest of the Settings
-choices stay as they are on this phone. The app asks you to confirm
-before it changes anything.
+The person's name, the app look, and the reminder times are saved
+in the backup. Replace writes them when the file has them. Merge
+leaves Settings as they are on this phone. The app asks you to
+confirm before it changes anything.
 
 User's Guide is this Guide. Tap it, and it will help you to
 understand this app.

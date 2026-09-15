@@ -649,13 +649,13 @@ Replace puts the backup's reminders in place of what is here, and takes
 off the missed-reminder notes. Merge keeps what is here and adds from
 the backup only what is not already here. A backup reminder is already
 here when it has the same identity the app wrote into the backup file.
-The person's name is saved and restored. Replace writes the name from
-the file when the file has one. Merge keeps the name already on the
-phone, and takes the backup's only when the phone has none. The rest of
-Settings and page logs stay on the phone. The backup does not carry
-those. Before confirmation, Replace and Merge validate the whole saved
-list against the current kind table and strip live Options fields that
-the kind's row does not allow. When that row keeps a birthdate, they
+The person's name, the app theme, the popup colors, Letters, Page,
+and the morning, midday, and evening reminder times are saved. Replace
+writes those from the file when the file has them. Merge does not take
+them. The name is not a special case. Before confirmation, Replace and Merge
+validate the whole saved list against the current kind table and strip
+live Options fields that the kind's row does not allow. When that row
+keeps a birthdate, they
 write the year of birth and derive the next fire date from it, so an
 older backup still keeps the birthdate. One unknown kind rejects the whole file
 and changes nothing. After Replace or Merge, OK lands on Home.

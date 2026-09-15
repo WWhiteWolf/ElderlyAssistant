@@ -12,7 +12,11 @@ import {
     View,
 } from 'react-native';
 import { HeaderButton, PageFrame } from '../components/PageFrame';
-import { Theme, useTheme } from '../constants/Themes';
+import { Theme, useTheme, useThemeControls } from '../constants/Themes';
+import {
+    readBackupSettings,
+    writeReplacedBackupSettings,
+} from '../modules/backup-settings';
 import { applyReminderChange, type ReminderItem } from '../modules/reminder-items';
 import { readSavedReminderItems } from '../modules/reminder-list-storage';
 import { HEALTH_KEY, MISSES_KEY, NOTICE_SEEN_KEY } from '../scheduler/health.ts';
@@ -48,6 +52,7 @@ function mergeReminderLists(current: ReminderItem[], incoming: ReminderItem[]): 
 export default function BackupScreen() {
     const router = useRouter();
     const theme = useTheme();
+    const { reloadPreferences } = useThemeControls();
     const styles = makeStyles(theme);
 
     const finishExport = async (data: Record<string, string | null>) => {
@@ -99,20 +104,18 @@ export default function BackupScreen() {
 
     const handleExport = async () => {
         try {
-            const [saved, lastDate, userName] = await Promise.all([
+            const [saved, lastDate, settings] = await Promise.all([
                 readSavedReminderItems(),
                 AsyncStorage.getItem('reminder_last_date'),
-                AsyncStorage.getItem('user_name'),
+                readBackupSettings(AsyncStorage),
             ]);
             if (saved.failed) {
                 throw new Error('The saved reminder list could not be read.');
             }
-            // The person's name is in the backup (#112-new). The rest of
-            // Settings and page logs stay on the phone.
             const data: Record<string, string | null> = {
                 reminder_items: saved.raw,
                 reminder_last_date: lastDate,
-                user_name: userName,
+                ...settings,
             };
             await finishExport(data);
         } catch {
@@ -132,13 +135,8 @@ export default function BackupScreen() {
             } else {
                 await AsyncStorage.removeItem('reminder_last_date');
             }
-            if ('user_name' in data) {
-                if (typeof data.user_name === 'string' && data.user_name !== '') {
-                    await AsyncStorage.setItem('user_name', data.user_name);
-                } else {
-                    await AsyncStorage.removeItem('user_name');
-                }
-            }
+            await writeReplacedBackupSettings(AsyncStorage, data);
+            await reloadPreferences();
             await AsyncStorage.multiRemove(HEALTH_KEYS);
 
             Alert.alert('Replace complete', 'Your backup has been restored.', [
@@ -161,14 +159,6 @@ export default function BackupScreen() {
             const existingDate = await AsyncStorage.getItem('reminder_last_date');
             if (existingDate == null && typeof data.reminder_last_date === 'string') {
                 await AsyncStorage.setItem('reminder_last_date', data.reminder_last_date);
-            }
-            const existingName = await AsyncStorage.getItem('user_name');
-            if (
-                (existingName == null || existingName === '')
-                && typeof data.user_name === 'string'
-                && data.user_name !== ''
-            ) {
-                await AsyncStorage.setItem('user_name', data.user_name);
             }
             Alert.alert('Merge complete', 'Your backup has been merged.', [
                 { text: 'OK', onPress: () => router.replace('/home') },
@@ -241,7 +231,7 @@ export default function BackupScreen() {
         if (!backup) return;
         Alert.alert(
             'Replace reminders?',
-            'This will replace the reminders currently in the app with the contents of this backup. Your name comes from the backup when the file has one. The rest of Settings and page logs on the phone stay. The notes about missed reminders and whether reminders ran will come off. This cannot be undone.',
+            'This will replace the reminders currently in the app with the contents of this backup. The name, the app look, and the reminder times come from the backup when the file has them. The notes about missed reminders and whether reminders ran will come off. This cannot be undone.',
             [
                 { text: 'Cancel', style: 'cancel' },
                 {
@@ -258,7 +248,7 @@ export default function BackupScreen() {
         if (!backup) return;
         Alert.alert(
             'Merge reminders?',
-            'This will keep the reminders already in the app, and add from the backup only those that are not already here. Your name stays if this phone already has one. The rest of Settings, page logs, and the notes about missed reminders stay. This cannot be undone.',
+            'This will keep the reminders already in the app, and add from the backup only those that are not already here. Settings on this phone stay. The notes about missed reminders stay. This cannot be undone.',
             [
                 { text: 'Cancel', style: 'cancel' },
                 {
@@ -288,9 +278,11 @@ export default function BackupScreen() {
                 <Text style={styles.intro}>
                     Save your reminders to a file you can keep in Files, iCloud, or Google
                     Drive. Choose, replace, or merge to pick a file. Replace puts
-                    the backup's reminders in place of what is here. Merge keeps what is
-                    here and adds from the backup only what is not already here. Settings
-                    and page logs stay on the phone.
+                    the backup's reminders in place of what is here, and writes the
+                    name, the app look, and the reminder times when the file has
+                    them. Merge keeps what is here and adds from the backup only
+                    what is not already here. Merge leaves Settings as they are
+                    on this phone.
                 </Text>
 
                 <TouchableOpacity style={styles.bigBtn} onPress={handleExport}>
