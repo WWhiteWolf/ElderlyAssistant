@@ -15,9 +15,9 @@ just because it is listed.
 
 ## The desk — in `docs`
 
-- **`handoff.md`** — the opening read. Where the work stands and what is open. Phone load 90. #113-new closed. Next session starts with Quarterly.
+- **`handoff.md`** — the opening read. Where the work stands and what is open. Phone load 90. #114-new closed. Next session starts with weekday Save and Done.
 - **`user-guide.md`** — Settings User's Guide and Helper pop-ups. On the Settings page and in Helper. Options, Delete, Save, Done, Snooze, Banners, and Log are in. There is no Reset All Data.
-- **`in-flight.md`** — this session's desk. Replaced every time, never added to. Last written #113-new, session close.
+- **`in-flight.md`** — this session's desk. Replaced every time, never added to. Last written #114-new, session close.
 - **`pending.txt`** — Patrick's list, and the source of the Word copy. Brought up to date at every update.
 - **`pending.docx`** — the copy Patrick reads. Generated from the txt, never hand-edited.
 - **`make-pending-docx.py`** — makes the Word copy. `python3 docs/make-pending-docx.py`

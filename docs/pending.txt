@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-14 (#113-new)
+Last updated: 2026-09-14 (#114-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -52,11 +52,23 @@ WHAT'S NEXT
    Daily shows a Weekly item on its saved weekday even when the
    engine has moved that occurrence, holiday or day after the set
    day. Next to be fixed.
-7. MONTHLY WEEKDAY PATTERN AND DONE (Patrick, #113-new). When a
-   second Thursday or a Wednesday after is on, Save takes the date
-   off. Done then treats a missing month as January and walks
-   forward from there, instead of looking from the date that was
-   due. Next to be fixed.
+7. MONTHLY, QUARTERLY, AND YEARLY WEEKDAY PATTERN AND DONE (Patrick,
+   #113-new, #114-new). When a second Thursday or a Wednesday after
+   is on, Save takes the date off. Done then treats a missing month
+   as January and walks forward from there, instead of looking from
+   the date that was due. Next to be fixed.
+8. QUARTERLY DAY CHIP WITH A WEEKDAY PATTERN (Patrick, #114-new).
+   A 30, 60, or 90 day chip can sit on with a second Thursday or a
+   Wednesday after. The engine follows the chip and ignores the
+   weekday. The list still names the weekday. Done walks from
+   January by that many days. Next to be fixed.
+9. USER'S GUIDE LETTERS AND PAGE (Patrick, #114-new). Letters and
+   Page are on Settings. They are new. The Guide’s Settings section
+   does not mention them. The Guide needs to be updated.
+10. SCHEDULED REMINDERS STILL NAMES THE TIMER (Patrick, #114-new).
+    Timer Alerts have left Memory. The foot of Scheduled Reminders
+    still says the hidden reminders were set by the Timer. Next to
+    be fixed.
 
 
 PENDING

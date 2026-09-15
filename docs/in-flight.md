@@ -4,31 +4,30 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-14, #113-new, session close.
+Last written: 2026-09-14, #114-new, session close.
 
 ## Read this first
 
 - Build **90** is on the phone.
-- **#113-new** Evaluations 7 bug hunt closed. Documents only. He will
-  commit. Next session starts with Quarterly.
-- Home make-room is to be decided. One Time with no time is to be done
-  and decided on. Weekly visitor and Monthly weekday Done are next to
-  be fixed.
+- **#114-new** Evaluations 7 bug hunt closed. Documents only. Next
+  session starts with weekday Save and Done, across Monthly,
+  Quarterly, and Yearly.
+- The Quarterly day chip, the Guide's Letters and Page, and the Timer
+  line on Scheduled Reminders are next to be fixed. Home make-room is
+  to be decided. One Time with no time is to be done and decided on.
+  Weekly visitor is next to be fixed.
 - Designed-machine jobs still need phone proof on 90.
 - **#110-new Birthday** still needs a phone check. **#112-new** is in
   the project, not on 86.
 
 ## What is in
 
-The sitting closed. The history is `#113-new` in
-`docs/handoff-history.md`. The spec now says a second Done tap asks
-first.
+The sitting closed. The history is `#114-new` in
+`docs/handoff-history.md`.
 
 ## What is next
 
-Quarterly, same hunt: design against code. Then Yearly, Birthdays,
-Appointments, Bucket List, Helper, Calendar, Settings, Backup, and
-Scheduled Reminders, as load allows.
+Weekday Save and Done on Monthly, Quarterly, and Yearly.
 
 ## Do not reopen
 

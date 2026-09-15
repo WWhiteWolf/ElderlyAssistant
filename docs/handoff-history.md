@@ -17,6 +17,26 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #114-new (2026-09-14): Evaluations 7 bug hunt, Quarterly through Scheduled Reminders
+
+**Phone.** Build 90 is on the phone. This sitting changed documents
+only.
+
+**The hunt.** Design against code, page by page. Quarterly, Yearly,
+Birthdays, Appointments, Bucket List, Helper, Calendar, Settings,
+Backup, and Scheduled Reminders.
+
+**What was found.** Weekday Save and Done on Quarterly and Yearly is
+the same as Monthly. A Quarterly day chip can sit on with that
+weekday. The Birthdays row still shows the next fire date on the
+second line. An Appointment with no clock still speaks at noon, the
+same as One Time. The User's Guide does not mention Letters and Page.
+Scheduled Reminders still names the Timer. Bucket List, Helper,
+Calendar, Backup, and the rest of those pages matched.
+
+**Session result.** Findings are in pending. Next session starts with
+weekday Save and Done, across Monthly, Quarterly, and Yearly.
+
 ## #113-new (2026-09-14): Evaluations 7 bug hunt, Home through Monthly
 
 **Phone.** Build 90 is on the phone. This sitting changed documents

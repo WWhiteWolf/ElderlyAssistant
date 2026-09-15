@@ -12,11 +12,12 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-Build **90** is on the phone. **#113-new** Evaluations 7 bug hunt
-closed, documents only. He will commit. Next session starts with
-Quarterly. The second Done tap asks first; the spec matches the
-code. Home make-room, One Time with no time, the Weekly visitor on
-Daily, and Monthly weekday Done walking from January are in pending.
+Build **90** is on the phone. **#114-new** Evaluations 7 bug hunt
+closed, documents only. Next session starts with weekday Save and
+Done, across Monthly, Quarterly, and Yearly. The Quarterly day chip,
+the Guide's Letters and Page, and the Timer line on Scheduled
+Reminders are next to be fixed. Home make-room, One Time with no
+time, and the Weekly visitor on Daily are in pending.
 The designed-machine jobs from #108-new and #109-new still need phone
 proof. **#110-new** Birthday still needs a phone check. **#111-new**
 Letters and Page are on Settings; he is trying them on the phone.
@@ -251,8 +252,8 @@ the space they have. Bucket List is a smiling face. Quarterly is a maple
 leaf. The Help tile is named Helper. The person's name is in the backup.
 Needs a look on the next load, upright and turned.
 
-**#113-new next session** starts with Quarterly. The four hunt findings
-are in pending.
+**#114-new** closed. Next session starts with weekday Save and Done,
+across Monthly, Quarterly, and Yearly.
 
 **Day-roll lock** still needs a night of all-green Daily, then a morning
 open on a new load, to confirm the pop-up stays quiet.
