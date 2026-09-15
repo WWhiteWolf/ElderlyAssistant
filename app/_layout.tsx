@@ -57,7 +57,7 @@ function itemCarriesBannerCategory(
     || shaped?.shiftedBannerButtonsCode === categoryCode;
 }
 
-const LIST_PAGE = { headerShown: false, gestureEnabled: false } as const;
+const LIST_PAGE = { headerShown: false, gestureEnabled: false, fullScreenGestureEnabled: false } as const;
 
 const LEFT_PAGE_KEYS = [
   'shopping_items',
@@ -399,7 +399,7 @@ function RootHousing() {
 
   return (
     <CoverRoot>
-    <Stack screenOptions={{ orientation: 'default' }}>
+    <Stack screenOptions={{ orientation: 'default', gestureEnabled: false, fullScreenGestureEnabled: false }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="home" options={{ headerShown: false }} />
       <Stack.Screen name="settings" options={{ headerShown: false }} />

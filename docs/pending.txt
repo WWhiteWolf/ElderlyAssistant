@@ -172,9 +172,10 @@ docs/handoff-history.md.
     repeat and Reminders that do not repeat. The working document and
     the in-app copy agree. Not on the phone.
 
-143. #116-new — Reminder lists: the layout switch did not stop the
-    iPhone back-drag. The list page now turns that drag off when it
-    opens. Extra room under the last row. Not checked on the phone.
+143. #116-new — Reminder lists: the layout switch and the list-page
+    walk did not stop the iPhone back-drag. The whole screen stack
+    now keeps that drag off. Extra room under the last row. Not
+    checked on the phone.
 
 142. #116-new — One Time with no clock does not fire and does not
     offer Snooze. No clock means no reminder. 418 Mac checks.

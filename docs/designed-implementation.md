@@ -55,8 +55,8 @@ route. `app/weekly.tsx` is the pattern:
 `app/daily.tsx` is that same kind of route, with kind `daily` and
 returnTo `daily`. Daily's jobs — list, row, Done, Snooze, log — live
 in `components/CadenceListPage.tsx`. They do not stay as a second copy
-in `app/daily.tsx`. The shared list pages do not slide left for a
-back-swipe. Home is the way back. Extra room under the last row keeps
+in `app/daily.tsx`. The screen stack does not slide left for a
+back-swipe. Home or Back is the way back. Extra room under the last row keeps
 a Delete swipe away from the bottom of the phone.
 
 The shared page does Daily's extras. They are:

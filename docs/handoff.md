@@ -19,8 +19,8 @@ who decides. It is not a claim that the files were refreshed.
 
 A new load is on the phone. **#115-new** is committed (Patrick,
 #116-new). The Guide page names and the 30, 60, and 90 day chips
-are working on that load. The page still slid left. The list page
-now turns the iPhone back-drag off when it opens. Export saves the
+are working on that load. The page still slid left on 92. The whole
+screen stack now keeps the iPhone back-drag off. Export saves the
 name, the app look, and the reminder times. Replace writes them.
 Merge leaves them. Those need a phone check. Home make-room is in
 pending. The designed-machine jobs from #108-new and #109-new still
@@ -112,8 +112,8 @@ leaf. The Help tile is named Helper. The person's name is in the backup.
 Needs a look on the next load, upright and turned.
 
 **#116-new** Guide names and the 30, 60, and 90 day chips are working
-on the new load. The page still slid left. The list page now turns
-the back-drag off when it opens. Export saves the name, the app look,
+on the new load. The page still slid left on 92. The whole screen
+stack now keeps the back-drag off. Export saves the name, the app look,
 and the reminder times. Replace writes them. Merge leaves them.
 Those need a phone check.
 
