@@ -4,30 +4,31 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-14, #112-new, session close.
+Last written: 2026-09-14, #113-new, session close.
 
 ## Read this first
 
-- Build **86** is on the phone.
-- **#112-new** is in the project, not on 86. Home badges keep five rows
-  of two and turn with the phone. Pictures a comfortable size. Bucket
-  List smiling face. Quarterly maple leaf. Helper. The person's name
-  is in the backup.
-- Designed-machine jobs still need phone proof on 86.
-- **#110-new Birthday** still needs a phone check.
+- Build **90** is on the phone.
+- **#113-new** Evaluations 7 bug hunt closed. Documents only. He will
+  commit. Next session starts with Quarterly.
+- Home make-room is to be decided. One Time with no time is to be done
+  and decided on. Weekly visitor and Monthly weekday Done are next to
+  be fixed.
+- Designed-machine jobs still need phone proof on 90.
+- **#110-new Birthday** still needs a phone check. **#112-new** is in
+  the project, not on 86.
 
 ## What is in
 
-The sitting closed. The design is in `docs/designed-implementation.md`
-under Home, Helper, and Backup. The history is `#112-new` in
-`docs/handoff-history.md`.
+The sitting closed. The history is `#113-new` in
+`docs/handoff-history.md`. The spec now says a second Done tap asks
+first.
 
 ## What is next
 
-Look at Home on the next load, upright and both turns. Export a backup
-and check the name on Replace and Merge. Job 1, Job 2, and Job 3 phone
-checks. Birthday on the next load. Day-roll lock still wants a night
-of all-green Daily.
+Quarterly, same hunt: design against code. Then Yearly, Birthdays,
+Appointments, Bucket List, Helper, Calendar, Settings, Backup, and
+Scheduled Reminders, as load allows.
 
 ## Do not reopen
 
@@ -40,3 +41,4 @@ Skip. A save does not present the opening health notice. Do not
 special-case a kind on the page when the table already has the bit.
 Home badges do not shuffle into a new arrangement when the phone turns.
 The rest of Settings stay on the phone. The backup does not carry those.
+A second Done tap on Daily and Weekly asks first.

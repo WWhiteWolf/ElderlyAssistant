@@ -248,8 +248,9 @@ set with the 12-hour spinner; no popup when it was last set with the
 Done is a code, `doneActionCode`. The three words are:
 
 - **thisCycle** — this occurrence is done. The item comes round again.
-  A second tap the same day is undo. The morning roll takes the tick
-  off. Daily and Weekly.
+  A second tap the same day asks whether to mark it not done. Cancel
+  leaves the tick. Mark not done takes the tick off. The morning roll
+  takes the tick off. Daily and Weekly.
 - **advanceDate** — this cycle is done, and the saved date moves to the
   next occurrence. The tick stays until the morning of the next due
   date, then comes off in the same morning roll as Daily. A second tap
@@ -399,7 +400,8 @@ today. It does not ask which page the item belongs on. That question
 is only on Options, from + Screen. Save on either choice comes back on
 Daily.
 
-**Same-day undo.** Done is thisCycle. A second tap undoes.
+**Same-day undo.** Done is thisCycle. A second tap asks whether to
+mark it not done.
 
 The log is one piece. Daily, the shared list, and the banner all write
 it. They do not each write their own. The list does not show it. Log in

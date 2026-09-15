@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-14 (#112-new)
+Last updated: 2026-09-14 (#113-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -48,6 +48,15 @@ WHAT'S NEXT
    smiling face. Quarterly is a maple leaf. The Help tile is named
    Helper. The person's name is in the backup. Needs a look on the next
    load, upright and turned.
+6. WEEKLY VISITOR FOLLOWS THE SAVED WEEKDAY (Patrick, #113-new).
+   Daily shows a Weekly item on its saved weekday even when the
+   engine has moved that occurrence, holiday or day after the set
+   day. Next to be fixed.
+7. MONTHLY WEEKDAY PATTERN AND DONE (Patrick, #113-new). When a
+   second Thursday or a Wednesday after is on, Save takes the date
+   off. Done then treats a missing month as January and walks
+   forward from there, instead of looking from the date that was
+   due. Next to be fixed.
 
 
 PENDING
@@ -57,6 +66,10 @@ Things waiting on something — mostly on a build.
 1. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
    WILL COVER (Patrick, #52-new). The during-build tests are
    thrown away. The run is not kept.
+2. ONE TIME WITH NO TIME STILL SPEAKS (Patrick, #113-new). Saving
+   One Time for today with no clock still gets a due moment at noon,
+   so it can speak and can show Snooze. Daily itself does not do
+   that. To be done and decided on.
 
 
 FACTS THAT APPLY TO THE ONGOING WORK
@@ -655,6 +668,9 @@ docs/handoff-history.md.
 DECISIONS TO MAKE WHEN YOU'RE READY
 ------------------------------------------------------------------
 1. The dark startup flash (moved here from Parked, #1-new).
+2. HOME BADGE MAKE-ROOM (Patrick, #113-new). While you slide a badge,
+   the others do not make room. They only move when you drop it. The
+   design is that they make room as you slide. To be decided.
 
 
 NICE-TO-HAVE LATER

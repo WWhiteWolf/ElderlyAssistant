@@ -12,11 +12,14 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-Build **86** is on the phone. The last session’s work is committed. The
-designed-machine jobs from #108-new and #109-new are on that load and
-still need phone proof. **#110-new** Birthday row, reminder age, and
-derived next date still need a phone check. **#111-new** Letters and
-Page are on Settings, under Appearance. He is trying them on the phone.
+Build **90** is on the phone. **#113-new** Evaluations 7 bug hunt
+closed, documents only. He will commit. Next session starts with
+Quarterly. The second Done tap asks first; the spec matches the
+code. Home make-room, One Time with no time, the Weekly visitor on
+Daily, and Monthly weekday Done walking from January are in pending.
+The designed-machine jobs from #108-new and #109-new still need phone
+proof. **#110-new** Birthday still needs a phone check. **#111-new**
+Letters and Page are on Settings; he is trying them on the phone.
 **#112-new** Home badges, Helper, and the person's name on backup are
 in the project, not on 86.
 
@@ -124,6 +127,9 @@ These are Patrick's and they govern the work rather than describing it.
   does not have to be on. It is in the Guide, the designed
   implementation, Weekly's Options, the translator, and the engine.
   It is on 81.
+- **A second Done tap on Daily and Weekly asks first** (Patrick,
+  #113-new). Cancel leaves the tick. Mark not done takes it off. The
+  spec matches the code.
 - **The Done tick on Monthly, Quarterly, Yearly, and Birthdays is the
   mark that this cycle was done** (Patrick, #83-new). It is not
   leftover. The date has already moved; the tick is how you see it.
@@ -227,9 +233,9 @@ designed-machine build sheet is complete in the project.
 
 **Phone proof still open.** Job 1's banner and list-popup choices, Job
 2's banner-first day-boundary path, and Job 3's Options, Weekly Done,
-and export-after-change need a check on 86.
+and export-after-change need a check on 90.
 
-Testers are on TestFlight External. The phone load is **86**. The App
+Testers are on TestFlight External. The phone load is **90**. The App
 Store heading is Waiting for Review on **72**. He is not aiming to go
 live. Manual release. The journey is `docs/connect-submit.md`. What is
 already in App Store Connect stays there. There is no public website
@@ -244,6 +250,9 @@ places and turn with the phone. The pictures take a comfortable size in
 the space they have. Bucket List is a smiling face. Quarterly is a maple
 leaf. The Help tile is named Helper. The person's name is in the backup.
 Needs a look on the next load, upright and turned.
+
+**#113-new next session** starts with Quarterly. The four hunt findings
+are in pending.
 
 **Day-roll lock** still needs a night of all-green Daily, then a morning
 open on a new load, to confirm the pop-up stays quiet.

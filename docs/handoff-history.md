@@ -17,6 +17,28 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #113-new (2026-09-14): Evaluations 7 bug hunt, Home through Monthly
+
+**Phone.** Build 90 is on the phone. This sitting changed documents
+only. He will commit.
+
+**The hunt.** Design against code, page by page. Home, Daily, Weekly,
+and Monthly. Quarterly waits for the next session.
+
+**What was found.** While you slide a Home badge, the others do not
+make room. That is to be decided. One Time for today with no clock
+still speaks at noon. That is to be done and decided on. A Weekly
+visitor on Daily follows the saved weekday, not the day the engine
+moved. A Monthly second Thursday or Wednesday after drops the date
+on Save, and Done then walks from January. Those two are next to be
+fixed.
+
+**The spec.** A second Done tap on Daily and Weekly asks first. The
+designed implementation now matches the code.
+
+**Session result.** The findings are in pending. Next session starts
+with Quarterly.
+
 ## #112-new (2026-09-14): Home badges, Helper, and the name on backup
 
 **Phone.** Build 86 is on the phone. This sitting’s work is in the
