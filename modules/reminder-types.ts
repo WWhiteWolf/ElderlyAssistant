@@ -29,6 +29,8 @@ export interface ReminderItem {
     label: string;
     hour?: number;
     minute?: number;
+    // Calendar anchor for a dated cadence. Weekday patterns keep it so Done
+    // can move the cycle from the date that was due.
     year?: number;
     month?: number;
     day?: number;

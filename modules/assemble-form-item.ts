@@ -19,7 +19,6 @@ import {
     applyConnectedOptions,
     applyExclusiveGroupToItem,
     keepOptionsForCodes,
-    weekdayPatternComplete,
     type OptionSettings,
 } from './option-cases.ts';
 import type { LeadReminder, ReminderItem, ReminderKind } from './reminder-types.ts';
@@ -87,13 +86,7 @@ export function assembleFormItem(parts: AssembleFormParts): ReminderItem {
         delete next.year;
         delete next.month;
     } else if (dateCode === 'calendar') {
-        if (!weekdayPatternComplete(parts.optionSettings)) {
-            writePendingDate(next, parts.pendingDate, parts.existing?.day);
-        } else {
-            delete next.year;
-            delete next.month;
-            delete next.day;
-        }
+        writePendingDate(next, parts.pendingDate, parts.existing?.day);
     } else if (dateCode === 'today') {
         const now = new Date();
         next.year = now.getFullYear();

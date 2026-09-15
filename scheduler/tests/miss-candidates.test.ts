@@ -42,6 +42,34 @@ export function runMissCandidateTests(): void {
         assert(!shownOnDate(weekly, THURSDAY), 'expected Weekly off on Thursday');
     });
 
+    test('A Weekly holiday move follows the moved day on Daily', () => {
+        const friday = new Date(2026, 6, 3, 9, 0, 0, 0);
+        const saturday = new Date(2026, 6, 4, 9, 0, 0, 0);
+        const weekly = item({
+            kind: 'weekly',
+            day: saturday.getDay(),
+            hour: 10,
+            minute: 0,
+            holidayMove: 'before',
+        });
+        assert(shownOnDate(weekly, friday), 'expected Weekly on the Friday it moved to');
+        assert(!shownOnDate(weekly, saturday), 'expected Weekly off its saved Saturday');
+    });
+
+    test('A Weekly day-after move follows the moved day on Daily', () => {
+        const thursday = new Date(2026, 8, 10, 9, 0, 0, 0);
+        const friday = new Date(2026, 8, 11, 9, 0, 0, 0);
+        const weekly = item({
+            kind: 'weekly',
+            day: thursday.getDay(),
+            hour: 10,
+            minute: 0,
+            afterSetDay: true,
+        });
+        assert(!shownOnDate(weekly, thursday), 'expected Weekly off its saved Thursday');
+        assert(shownOnDate(weekly, friday), 'expected Weekly on the Friday it moved to');
+    });
+
     test('A Daily one-shot is due on its saved date and not the next day', () => {
         const oneTime = item({
             kind: 'oneTime',

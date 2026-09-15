@@ -101,20 +101,51 @@ export function runAssembleFormTests(): void {
         );
     });
 
-    test('Monthly with a complete second Thursday drops the calendar date', () => {
-        const next = assembleFormItem(parts({
-            editKind: 'monthly',
+    test('Dated cadence Save keeps its calendar anchor under a second Thursday', () => {
+        const kinds = ['monthly', 'quarterly', 'yearly'] as const;
+        const saved = kinds.map((editKind) => assembleFormItem(parts({
+            editKind,
             pendingDate: new Date(2026, 5, 10, 9, 30, 0, 0),
             optionSettings: {
                 ...emptyOptionSettings(),
                 weekdayOrdinal: 2,
                 ordinalWeekday: 4,
             },
-        }));
+        })));
         assertSame(
-            [next.year, next.month, next.day, next.weekdayOrdinal, next.ordinalWeekday],
-            [undefined, undefined, undefined, 2, 4],
-            'a complete second Thursday is the date',
+            saved.map((next) => [
+                next.year,
+                next.month,
+                next.day,
+                next.weekdayOrdinal,
+                next.ordinalWeekday,
+            ]),
+            kinds.map(() => [2026, 5, 10, 2, 4]),
+            'the weekday pattern and the date it advances from are both saved',
+        );
+    });
+
+    test('Dated cadence Save keeps its calendar anchor under a Wednesday after', () => {
+        const kinds = ['monthly', 'quarterly', 'yearly'] as const;
+        const saved = kinds.map((editKind) => assembleFormItem(parts({
+            editKind,
+            pendingDate: new Date(2026, 5, 10, 9, 30, 0, 0),
+            optionSettings: {
+                ...emptyOptionSettings(),
+                afterWeekday: 3,
+                afterDayCount: 6,
+            },
+        })));
+        assertSame(
+            saved.map((next) => [
+                next.year,
+                next.month,
+                next.day,
+                next.afterWeekday,
+                next.afterDayCount,
+            ]),
+            kinds.map(() => [2026, 5, 10, 3, 6]),
+            'the weekday-after pattern and the date it advances from are both saved',
         );
     });
 
@@ -131,13 +162,16 @@ export function runAssembleFormTests(): void {
         }));
         assertSame(
             [
+                next.year,
+                next.month,
+                next.day,
                 next.weekdayOrdinal,
                 next.ordinalWeekday,
                 next.afterWeekday,
                 next.afterDayCount,
             ],
-            [undefined, undefined, undefined, undefined],
-            'both complete is not an allowed saved case',
+            [2026, 5, 10, undefined, undefined, undefined, undefined],
+            'both complete is not an allowed saved case; the calendar anchor remains',
         );
     });
 

@@ -12,12 +12,20 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-Build **90** is on the phone. **#114-new** Evaluations 7 bug hunt
-closed, documents only. Next session starts with weekday Save and
-Done, across Monthly, Quarterly, and Yearly. The Quarterly day chip,
+Build **90** is on the phone. **#114-new** is committed (Patrick,
+#115-new). **#115-new** confirmed and fixed weekday Save and Done
+through the shared machinery across Monthly, Quarterly, and Yearly.
+The saved calendar anchor stays under either weekday pattern, and
+Done advances from it. 410 Mac checks; TypeScript clean; not on the
+phone. The working and in-app Guides now match the current second
+Done tap on Daily and Weekly. The retired backup cleanup list and
+unused counter theme colours are gone; live source now says Bucket
+List. Weekly visitors on Daily now follow the occurrence the engine
+moved, including a holiday move and Day after the set day. 412 Mac
+checks; TypeScript clean; not on the phone. The Quarterly day chip,
 the Guide's Letters and Page, and the Timer line on Scheduled
-Reminders are next to be fixed. Home make-room, One Time with no
-time, and the Weekly visitor on Daily are in pending.
+Reminders are next to be fixed. Home make-room and One Time with no
+time are in pending.
 The designed-machine jobs from #108-new and #109-new still need phone
 proof. **#110-new** Birthday still needs a phone check. **#111-new**
 Letters and Page are on Settings; he is trying them on the phone.
@@ -59,8 +67,8 @@ These are Patrick's and they govern the work rather than describing it.
 - **The old-page scrub preserves nothing for backward compatibility**
   (Patrick, #61-new). An old-named identifier still used by the current
   build is changed through its whole live path rather than kept for old
-  state. Backup’s retired strip-keys `onetime_history` and
-  `extended_history` stay, so a restore can still clear the old logs.
+  state. There is no old page data to clean up, so Backup has no retired
+  strip-key list (Patrick, #115-new).
 - **Reminders being rock solid is the top goal — but not the only one,
   and consistency is another high priority** (#16-new, corrected at
   #17-new).
@@ -118,6 +126,11 @@ These are Patrick's and they govern the work rather than describing it.
   (Patrick, #70-new; built at #79-new). #41-new stopped that; he did
   not notice until then. Done moves the date on the item so the tile
   shows the next cycle armed — as it did before #41-new.
+- **A weekday pattern keeps the saved calendar anchor** (Patrick,
+  #115-new). A second Thursday and a Wednesday after are exclusive
+  with each other, not with the date. Save's calendar code writes
+  the anchor for Monthly, Quarterly, and Yearly. Done advances from
+  that anchor. No page remembers the case.
 - **Yearly and Birthdays look from the saved date** (Patrick, #105-new).
   Done moves that date. The next fire is not this year's still-ahead
   time. Monthly already did this; yearly did not.
@@ -128,9 +141,15 @@ These are Patrick's and they govern the work rather than describing it.
   does not have to be on. It is in the Guide, the designed
   implementation, Weekly's Options, the translator, and the engine.
   It is on 81.
+- **A Weekly visitor on Daily follows the engine's occurrence**
+  (Patrick, #113-new; built #115-new). The shared date question uses
+  the translated repeat and the same occurrence calculation as the
+  scheduler. Holiday moves and Day after the set day appear only on
+  the moved day. Miss-telling reads that same answer. No page compares
+  the saved weekday.
 - **A second Done tap on Daily and Weekly asks first** (Patrick,
   #113-new). Cancel leaves the tick. Mark not done takes it off. The
-  spec matches the code.
+  design, working Guide, and in-app Guide match the code (#115-new).
 - **The Done tick on Monthly, Quarterly, Yearly, and Birthdays is the
   mark that this cycle was done** (Patrick, #83-new). It is not
   leftover. The date has already moved; the tick is how you see it.
@@ -252,8 +271,12 @@ the space they have. Bucket List is a smiling face. Quarterly is a maple
 leaf. The Help tile is named Helper. The person's name is in the backup.
 Needs a look on the next load, upright and turned.
 
-**#114-new** closed. Next session starts with weekday Save and Done,
-across Monthly, Quarterly, and Yearly.
+**#115-new weekday Save and Done and the Weekly visitor** are fixed
+in the project, not on the phone. The shared calendar write keeps the
+date under either weekday pattern, and Done advances it. A Weekly
+visitor on Daily follows the occurrence the engine moved. The
+Quarterly day-chip and weekday-pattern conflict is the next
+Evaluations 7 fault.
 
 **Day-roll lock** still needs a night of all-green Daily, then a morning
 open on a new load, to confirm the pop-up stays quiet.
@@ -279,12 +302,12 @@ carrying the answers themselves rather than pointing at other documents.
 midnight before #27-new is stored in the wrong half of the day and needs
 re-setting.
 
-**A background task and a daily tick are opposites and must never be
-merged.** A Bucket List item says a thing is *not yet done* and must
+**A Bucket List item and a Daily Done tick are opposites and must never
+be merged.** A Bucket List item says a thing is *not yet done* and must
 survive the rollover, so those items must never be handed to
-`runDailyReset`. The coffee-and-water kind says a thing *was done*, is
-meaningless the morning after, and is cleared by the rollover on purpose.
-The full reasoning is in `docs/reminder-shape.md`.
+`runDailyReset`. A Daily Done tick says today's occurrence *was done*
+and is cleared by the rollover on purpose. The full reasoning is in
+`docs/reminder-shape.md`.
 
 **`elyfont-home/index.html` in THIS project is the SOURCE of the live
 elyfont.com home page.** If it is ever edited, the live copy must be

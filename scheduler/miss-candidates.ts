@@ -4,7 +4,7 @@
 // those items. Daily items are due every day, so the old loop could hand the
 // whole Daily slice to `missesForRollover`. Weekly, Monthly, Quarterly, Yearly
 // and One Time are due only on the day they fall, so the same loop has to pick
-// the ones that actually fell. Extended never falls; it has no day.
+// the ones that actually fell. Bucket List never falls; it has no day.
 //
 // The last reset day is a locale date string, the same form `isNewDay` already
 // compares, and is not parsed. The unprocessed days are walked back from
@@ -37,7 +37,7 @@ export function unprocessedDays(savedDate: string, today: Date, maxDays = 366): 
     return days;
 }
 
-/** Items that fell on any of those days, other than Extended. */
+/** Items that fell on any of those days, other than Bucket List. */
 export function dueOnDays(items: ReminderItem[], days: Date[]): ReminderItem[] {
     return items.filter((item) => {
         if (item.kind === 'bucketlist') return false;

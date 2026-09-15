@@ -88,4 +88,50 @@ export function runAdvanceDatedTests(): void {
             'the next fire is derived; month and day stay',
         );
     });
+
+    test('Done advances every weekday cadence from its saved calendar anchor', () => {
+        const now = new Date(2026, 5, 11, 20, 0, 0, 0).getTime();
+        const items: ReminderItem[] = [
+            monthly31({
+                month: 5,
+                day: 10,
+                weekdayOrdinal: 2,
+                ordinalWeekday: 4,
+            }),
+            monthly31({
+                kind: 'quarterly',
+                month: 5,
+                day: 10,
+                intervalMonths: 3,
+                afterWeekday: 3,
+                afterDayCount: 6,
+            }),
+            monthly31({
+                kind: 'yearly',
+                month: 5,
+                day: 10,
+                weekdayOrdinal: 2,
+                ordinalWeekday: 4,
+            }),
+        ];
+        const next = items.map((item) => advanceDatedItem(item, now));
+        assertSame(
+            next.map((item) => [item.year, item.month, item.day]),
+            [
+                [2026, 6, 10],
+                [2026, 8, 10],
+                [2027, 5, 10],
+            ],
+            'Monthly, Quarterly, and Yearly each advance from June, not January',
+        );
+        assertSame(
+            [
+                [next[0].weekdayOrdinal, next[0].ordinalWeekday],
+                [next[1].afterWeekday, next[1].afterDayCount],
+                [next[2].weekdayOrdinal, next[2].ordinalWeekday],
+            ],
+            [[2, 4], [3, 6], [2, 4]],
+            'Done keeps the weekday pattern while moving its calendar anchor',
+        );
+    });
 }

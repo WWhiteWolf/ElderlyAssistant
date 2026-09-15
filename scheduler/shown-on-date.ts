@@ -19,28 +19,26 @@ export function isDateOf(item: ReminderItem, when: Date): boolean {
 /**
  * True when this item belongs on Daily on `when`.
  *
- * Daily items belong every day. Weekly items belong on their weekday. A
- * Daily one-shot and an Appointment belong only on the saved date. Monthly,
- * Quarterly and Yearly belong on the saved date, or on the day the engine's
- * next occurrence lands — first Thursday and Wednesday after the 6th have no
- * saved date that matches. Extended never belongs; it has no day.
+ * Daily items belong every day. A Daily one-shot and an Appointment belong
+ * only on the saved date. Every repeating visitor uses the same occurrence
+ * calculation as the scheduler, so Weekly holiday moves and day-after moves
+ * land on the day the engine chose. Dated cadences also keep their saved
+ * calendar anchor. Bucket List never belongs; it has no day.
  */
 export function shownOnDate(item: ReminderItem, when: Date): boolean {
     if (item.kind === 'daily') return true;
-    if (item.kind === 'weekly') return item.day === when.getDay();
-    if (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly' || item.kind === 'appointments' || item.kind === 'oneTime' || item.kind === 'birthdays') {
-        if (isDateOf(item, when)) return true;
-        if (item.kind === 'appointments' || item.kind === 'oneTime') return false;
-        const shaped = translateReminderItems([item], when.getTime())[0];
-        if (!shaped) return false;
-        const start = new Date(when);
-        start.setHours(0, 0, 0, 0);
-        const base = baseMoment(shaped, start.getTime() - 1);
-        if (base === null) return false;
-        const occurs = new Date(base.moment);
-        return occurs.getFullYear() === when.getFullYear()
-            && occurs.getMonth() === when.getMonth()
-            && occurs.getDate() === when.getDate();
+    if (item.kind === 'appointments' || item.kind === 'oneTime') {
+        return isDateOf(item, when);
     }
-    return false;
+    const shaped = translateReminderItems([item], when.getTime())[0];
+    if (!shaped?.repeatUnitCode) return false;
+    if (isDateOf(item, when)) return true;
+    const start = new Date(when);
+    start.setHours(0, 0, 0, 0);
+    const base = baseMoment(shaped, start.getTime() - 1);
+    if (base === null) return false;
+    const occurs = new Date(base.moment);
+    return occurs.getFullYear() === when.getFullYear()
+        && occurs.getMonth() === when.getMonth()
+        && occurs.getDate() === when.getDate();
 }

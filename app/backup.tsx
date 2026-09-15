@@ -22,29 +22,6 @@ import { sanitizeCurrentReminderItems } from '../scheduler/translators/translate
 // so a future Import can tell how to read an older file.
 const BACKUP_VERSION = 3;
 
-// Old page lists. Taken off the backup at #35-new. A restore still
-// removes them so they cannot linger on the phone. The old log keys
-// left the backup at #63-new; a restore strips them. Shopping, Vault,
-// and Memory Test left at #76-new; a restore strips those too.
-const RETIRED_KEYS = [
-    'my_routine', 'my_last_date', 'my_coffee', 'my_water',
-    'week_routine',
-    'pets_feeds', 'pets_history', 'pets_last_date', 'pets_treats',
-    'todo_tasks', 'todo_log',
-    'planner_projects', 'planner_log',
-    'lookahead_items',
-    'lookahead_history',
-    'my_history',
-    'week_history',
-    'onetime_history',
-    'extended_history',
-    'watchlist_movies', 'watchlist_shows',
-    'orders_items', 'orders_history',
-    'shopping_items',
-    'memtest_session', 'memtest_history',
-    'vault_items', 'vault_categories', 'vault_pin_enabled',
-];
-
 const HEALTH_KEYS = [HEALTH_KEY, MISSES_KEY, NOTICE_SEEN_KEY];
 
 type RestoredBackup = {
@@ -162,7 +139,7 @@ export default function BackupScreen() {
                     await AsyncStorage.removeItem('user_name');
                 }
             }
-            await AsyncStorage.multiRemove([...RETIRED_KEYS, ...HEALTH_KEYS]);
+            await AsyncStorage.multiRemove(HEALTH_KEYS);
 
             Alert.alert('Replace complete', 'Your backup has been restored.', [
                 { text: 'OK', onPress: () => router.replace('/home') },
@@ -193,8 +170,6 @@ export default function BackupScreen() {
             ) {
                 await AsyncStorage.setItem('user_name', data.user_name);
             }
-            await AsyncStorage.multiRemove(RETIRED_KEYS);
-
             Alert.alert('Merge complete', 'Your backup has been merged.', [
                 { text: 'OK', onPress: () => router.replace('/home') },
             ]);

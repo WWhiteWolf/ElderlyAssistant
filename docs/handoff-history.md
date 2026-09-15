@@ -17,6 +17,46 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #115-new (2026-09-15): Weekday Save, Done, and Daily visitors through the machinery
+
+**Phone.** Build 90 is on the phone. This sitting's work is in the
+project and has not been checked there. Patrick confirmed that
+#114-new was committed.
+
+**Weekday Save and Done.** The #113-new and #114-new fault was
+confirmed across Monthly, Quarterly, and Yearly. Save dropped the
+calendar date whenever either weekday pattern was complete, so Done
+had no anchor and walked from January. The shared calendar write now
+keeps the saved date under either pattern, and Done advances from
+that anchor. No page remembers the case.
+
+**The Guide.** The code already asked before a second Done tap took
+the tick off Daily or Weekly. The working and in-app Guides now say
+the same thing.
+
+**Retired names.** Patrick said there is no old data for Restore to
+clean up. The retired-key list and both restore cleanups came out.
+Unused counter colours came out of both theme files. Current source
+and live records now say Bucket List and Daily Done tick rather than
+the retired counter and Extended names. Historical records were left
+unchanged.
+
+**Weekly visitor.** The #113-new fault was confirmed. Daily compared
+a Weekly item's saved weekday directly even after the engine moved
+the occurrence for a holiday or Day after the set day. The shared
+date question now reads the translated repeat and the same
+occurrence calculation as the scheduler. Daily and miss-telling
+therefore follow the moved day together.
+
+**Proof.** The two Weekly movement proofs failed before the fix and
+passed after it. The full Mac suite is 412 of 412. TypeScript is
+clean. None of this sitting's work is on the phone.
+
+**Next.** The Quarterly day-chip and weekday-pattern conflict is the
+next Evaluations 7 fault. The Guide's Letters and Page omission and
+the old Timer line on Scheduled Reminders remain behind it. One Time
+with no time remains pending.
+
 ## #114-new (2026-09-14): Evaluations 7 bug hunt, Quarterly through Scheduled Reminders
 
 **Phone.** Build 90 is on the phone. This sitting changed documents

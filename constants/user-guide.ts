@@ -368,7 +368,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Daily and Weekly: a second tap the same day takes the tick off. The morning takes it off if you leave it.',
+        text: 'Daily and Weekly: a second tap the same day asks if you want to mark it as not done. Cancel leaves the tick. Mark not done takes it off. The morning takes it off if you leave it.',
     },
     {
         type: 'paragraph',

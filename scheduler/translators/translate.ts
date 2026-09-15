@@ -247,7 +247,7 @@ function translateOne(rules: ScreenRules, saved: ReminderItem, now: number): Sha
 
         // Each kind states its own lead times. An empty list means nothing to
         // say. The recurring kinds speak at the moment itself. One Time uses
-        // the reminders the person set, and Extended has none.
+        // the reminders the person set, and Bucket List has none.
         leadTimeList: rules.leadTimesOf(saved),
 
         // ---- the banner's words ----

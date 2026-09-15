@@ -115,9 +115,9 @@ translator and banner boundaries are:
 - **What Save writes for the date** — none, weekday, calendar, today,
   required. This code is on the translator's table. none drops year,
   month, and day. weekday writes the weekday number as day, and drops
-  year and month. calendar writes the pending date unless an exclusive
-  weekday bit is complete. today writes today’s date. required always
-  writes the pending date.
+  year and month. calendar always writes the pending date as the cycle
+  anchor. A weekday pattern is written beside it and uses that anchor.
+  today writes today’s date. required always writes the pending date.
 - **What Save writes for the time** — none, ifPendingTime,
   alwaysPendingTime, alwaysPendingDate, ifTimeSet. This code is on the
   translator's table. none drops hour and minute. ifPendingTime writes
@@ -194,7 +194,8 @@ code word is the right shape when the thing is a choice of names.
 **A second Thursday and a Wednesday after the 6th cannot both be true.**
 That is one exclusive group, on the translator's table. The Options
 sheet turns the others off when you set the last pattern. The translator
-writes at most one.
+writes at most one. The saved calendar date is not one of those bits. It
+remains the cycle anchor whichever weekday bit is on.
 
 ## What already stands
 
@@ -679,7 +680,8 @@ Holidays and Time zone. Monthly, Quarterly, and Yearly get Holidays,
 Time zone, a second Thursday, and a Wednesday after the 6th. Bucket
 List gets none.
 
-On Monthly, Quarterly, and Yearly, the last pattern you set stays —
-the date, a second Thursday, or a Wednesday after the 6th — and the
-other comes off. That is how turning one on turns the others off, on
-the sheet.
+On Monthly, Quarterly, and Yearly, a second Thursday and a Wednesday
+after the 6th are exclusive. Setting one turns the other off. With
+neither on, the item uses its numbered date. In all three cases, the
+saved date remains the cycle anchor: Save writes it and Done advances
+from it.

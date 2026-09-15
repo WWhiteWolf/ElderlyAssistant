@@ -105,7 +105,7 @@ async function rollTheDayOver(): Promise<RunFault[]> {
         await changeSavedReminderItems(async (items) => {
             // Daily, Weekly, Monthly, Quarterly, Yearly and One Time: anything
             // that fell on an unprocessed day is written as a miss from this
-            // same pre-clear snapshot. Extended has no day and is not in this
+            // same pre-clear snapshot. Bucket List has no day and is not in this
             // set.
             if (savedDate) {
                 const days = unprocessedDays(savedDate, now);

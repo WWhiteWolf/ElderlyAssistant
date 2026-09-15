@@ -257,7 +257,7 @@ function clearNamedBit(settings: OptionSettings, name: OptionCaseCode): OptionSe
     return settings;
 }
 
-/** Turn the exclusive group off. Choosing a date is this, not a third bit. */
+/** Turn the weekday-pattern group off. */
 export function clearExclusiveGroupFields(settings: OptionSettings): OptionSettings {
     return {
         ...settings,
@@ -292,7 +292,7 @@ export function withExclusiveGroup(
 
 /**
  * Write only the one complete exclusive bit. Both complete is neither.
- * Neither complete keeps the date and drops the weekday fields.
+ * The calendar date is the cycle anchor and is independent of this group.
  */
 export function applyExclusiveGroupToItem(
     item: ReminderItem,
@@ -304,17 +304,11 @@ export function applyExclusiveGroupToItem(
     if (thursday && !wednesday) {
         delete out.afterWeekday;
         delete out.afterDayCount;
-        delete out.year;
-        delete out.month;
-        delete out.day;
         return out;
     }
     if (wednesday && !thursday) {
         delete out.weekdayOrdinal;
         delete out.ordinalWeekday;
-        delete out.year;
-        delete out.month;
-        delete out.day;
         return out;
     }
     delete out.weekdayOrdinal;

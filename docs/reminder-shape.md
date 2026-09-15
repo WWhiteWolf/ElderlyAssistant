@@ -430,59 +430,32 @@ at #13-new rather than from a reading of the housing.
 With this bit, all five screens go through the one shape and none is left
 outside it.
 
-### What a background task is for, settled at Super-2-new
+### Why Bucket List and a Daily Done tick stay separate
 
-**Patrick's own words, and they are written here because Claude got this
-backwards inside one conversation and would have written the mistake into
-the code.**
+**A Bucket List item says something is not done yet.** It has no due day.
+Its `completed` value is the lasting answer to "is this finished", not a
+mark about today.
 
-**A To-Do background task is a long-range reminder that something is not
-done yet.** It has no appointment, so nothing says when — but it is still
-outstanding, and the eight o'clock banner exists to say so. That is the
-banner working correctly, not nagging.
-
-**Two consequences, and the second is a trap.**
-
-- **A background task persists until it is done.** Its `completed` is the
-  real and lasting answer to "is this finished", not a mark about today.
-- **It must never be added to `runDailyReset`.** That loop used to name
-  `my_routine` and `pets_feeds` and deliberately not `todo_tasks`. After
-  #39-new it rolls only every-day items on `reminder_items`. Extended
-  items must never join that loop. `resetForNewDay` clears `completed`
-  on everything it is handed. Sweeping a background task with it would
-  un-finish work already done. **The absence is correct. Do not "fix" it.**
-
-### The other thing, which only looks the same
-
-**There is a second kind of record in the app and it is the opposite of the
-first**, near enough in shape that the two invite being merged. They must
-not be.
-
-**It is a short-range record that something WAS done**, kept for recall
-rather than for prompting. Patrick's own example: whether he has had a
-second coffee today. Too routine to remember, and by six in the evening
-genuinely unrecoverable without somewhere to have written it down. It wants
-a box that goes green, a log beneath it, and nothing beyond that page — no
-reminder, no banner, no report anywhere else.
+**A Daily Done tick says today's occurrence was done.** It keeps that
+occurrence from speaking again and is cleared when the next day begins.
 
 **The two differ in every way that matters:**
 
-- **Direction.** One says a thing is not yet done. The other says a thing
-  was done.
-- **Range.** One is long — it stands until finished. The other is one day
-  and is meaningless the morning after.
-- **Lifetime.** One must survive the rollover. The other must be wiped by
-  it, or it answers today's question with yesterday's tick.
-- **Reach.** One speaks to the phone. The other never leaves its page.
+- **Direction.** The Bucket List item says a thing is not yet done. The
+  Daily tick says today's occurrence was done.
+- **Range.** The Bucket List item stands until it is finished. The Daily
+  tick belongs to one day.
+- **Lifetime.** The Bucket List item must survive the rollover. The Daily
+  tick must be cleared by it.
 
-**Where the second one appears to live already**, though only its storage
-keys were read at Super-2-new and not the screens: `runDailyReset` clears
-`my_coffee` and `my_water` on My Day, and `pets_treats` on Pets, setting
-each to zero on every new day. That is the right lifetime for this kind.
+**The current machinery keeps that distinction in one place.**
+`runDailyReset` gives `resetForNewDay` only every-day Daily items, then
+puts those changed items back into the shared list. Bucket List items never
+enter that reset.
 
-**The rule that falls out.** The two are told apart by what they are for,
-never by their shape. Anything that would give the first a daily clear, or
-the second a banner, has confused them.
+**The rule that falls out.** Anything that gives a Bucket List item a
+daily clear, or lets a Daily Done tick carry into another day, has confused
+them.
 
 ### What the reading corrected
 

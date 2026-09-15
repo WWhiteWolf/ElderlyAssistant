@@ -272,7 +272,9 @@ Done is how you mark that you have taken care of a reminder. On the list the but
 
 On reminders that repeat, Done means this round is taken care of, and it will come round again.
 
-Daily and Weekly: a second tap the same day takes the tick off. The morning takes it off if you leave it.
+Daily and Weekly: a second tap the same day asks if you want to mark
+it as not done. Cancel leaves the tick. Mark not done takes it off.
+The morning takes it off if you leave it.
 
 Monthly, Quarterly, Yearly, and Birthdays: Done moves the date to the next time. The tick stays so you can see this cycle was done. A second tap while the tick is showing means this cycle was not done. The app asks if you want to mark it as not done. Cancel leaves the tick. It is not Done for the new cycle.
 

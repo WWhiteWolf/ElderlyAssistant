@@ -99,7 +99,8 @@ export type DoneActionCode = 'thisCycle' | 'advanceDate' | 'endItem';
  *
  * none — drop them.
  * weekday — day is the weekday number; drop year and month.
- * calendar — write the pending date unless an exclusive weekday bit is complete.
+ * calendar — write the pending date as the cycle anchor. A weekday pattern
+ * may use that anchor as well.
  * today — write today’s date.
  * required — always write the pending date.
  */
