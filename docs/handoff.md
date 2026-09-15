@@ -12,12 +12,13 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-Build **82** is on the phone. The designed-machine jobs from #108-new
-and #109-new are on that load and still need phone proof. **#110-new**
-Birthday row, reminder age, and derived next date are in the project,
-not on 82. **#111-new** Letters and Page are on Settings, under
-Appearance. Middle is the original look. Plus is more (darker). Minus
-is less (lighter). He is trying them on the phone.
+Build **86** is on the phone. The last session’s work is committed. The
+designed-machine jobs from #108-new and #109-new are on that load and
+still need phone proof. **#110-new** Birthday row, reminder age, and
+derived next date still need a phone check. **#111-new** Letters and
+Page are on Settings, under Appearance. He is trying them on the phone.
+**#112-new** Home badges, Helper, and the person's name on backup are
+in the project, not on 86.
 
 ## Standing rulings
 
@@ -31,10 +32,13 @@ These are Patrick's and they govern the work rather than describing it.
   the backup file. People choose Merge or Replace before they pick a
   file. After they pick the file, the app still asks them to confirm
   before it changes anything. Replace takes off the old health, miss,
-  and already-told notes. Merge leaves them. Settings and page logs do
-  not need to be saved or restored. The backup does not carry them.
-  There are no existing backup files. We are not keeping an older backup
-  shape.
+  and already-told notes. Merge leaves them. The person's name is saved
+  and restored (Patrick, #112-new). Replace writes the name from the
+  file when the file has one. Merge keeps the name already on the phone,
+  and takes the backup's only when the phone has none. The rest of
+  Settings and page logs stay on the phone. The backup does not carry
+  those. There are no existing backup files. We are not keeping an older
+  backup shape.
 - **Timer Alerts, Vault, Shopping List, and Memory Test have left
   Memory** (Patrick, #75-new; taken out at #76-new). Copies remain in
   `Projects/stray apps`. Timer Alerts and Memory Test are simple one-time
@@ -129,10 +133,10 @@ These are Patrick's and they govern the work rather than describing it.
   showing means un-check, not Done for the new cycle. Appointments and
   Bucket List stay as they are. Built at #83-new. The year word is
   #100-new.
-- **The Where? page is Help** (Patrick, #70-new; wording at #80-new;
-  #103-new; badge at #105-new). The visible name is **Help**, not
-  Where? The Home badge is the thinking face, not the question mark.
-  The route may stay `where.tsx`. Step 1 is: Does this
+- **The Where? page is Helper** (Patrick, #70-new; wording at #80-new;
+  #103-new; badge at #105-new; name #112-new). The visible name is
+  **Helper**, not Where? The Home badge is the thinking face, not the
+  question mark. The route may stay `where.tsx`. Step 1 is: Does this
   item repeat? **Yes** / **No**. Step 2 is: How often does this come
   round? **Every day**, **Weekly**, **Monthly**, **Quarterly**,
   **Yearly**, **For a birthday reminder**. Birthday still opens
@@ -141,11 +145,11 @@ These are Patrick's and they govern the work rather than describing it.
   visit, that is Appointment. If it is something you want to do
   someday, with no date, that is Bucket List. Cancel on steps 2 and 3
   goes back one step; step 1 Cancel closes. Words are in
-  `docs/user-guide.md` and in Help (#104-new).
-- **Yearly, Quarterly, and Monthly Home badges** (Patrick, #100-new).
-  Yearly keeps the telescope. Quarterly is a fallen leaf. Monthly is a
-  first-quarter moon. They had all three used the telescope. Checked on
-  the simulator.
+  `docs/user-guide.md` and in Helper (#104-new).
+- **Yearly, Quarterly, and Monthly Home badges** (Patrick, #100-new;
+  Quarterly #112-new). Yearly keeps the telescope. Quarterly is a maple
+  leaf. Monthly is a first-quarter moon. They had all three used the
+  telescope. Bucket List is a smiling face (#112-new).
 - **Birthdays is a copy of Appointments on the screen, and a yearly
   reminder on the one list** (Patrick, #81-new). Own saved kind
   `birthdays`. Date required. Same reminder chips as Appointments,
@@ -223,17 +227,23 @@ designed-machine build sheet is complete in the project.
 
 **Phone proof still open.** Job 1's banner and list-popup choices, Job
 2's banner-first day-boundary path, and Job 3's Options, Weekly Done,
-and export-after-change need a check on 82.
+and export-after-change need a check on 86.
 
-Testers are on TestFlight External. The phone load is **82**. The App
+Testers are on TestFlight External. The phone load is **86**. The App
 Store heading is Waiting for Review on **72**. He is not aiming to go
 live. Manual release. The journey is `docs/connect-submit.md`. What is
 already in App Store Connect stays there. There is no public website
 for the user's guide.
 
-**#110-new Birthday** is in the project, not on 82. The row shows the
+**#110-new Birthday** still needs a phone check. The row shows the
 name and the birthdate. The reminder says the age. The next fire is
 derived from the birthdate.
+
+**#112-new Home badges** are in the project, not on 86. They keep their
+places and turn with the phone. The pictures take a comfortable size in
+the space they have. Bucket List is a smiling face. Quarterly is a maple
+leaf. The Help tile is named Helper. The person's name is in the backup.
+Needs a look on the next load, upright and turned.
 
 **Day-roll lock** still needs a night of all-green Daily, then a morning
 open on a new load, to confirm the pop-up stays quiet.

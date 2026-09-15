@@ -488,6 +488,14 @@ The Home grid in `app/home.tsx` is the badges for the pages a person
 opens from Home. Options is not on that grid. There is no Options page.
 The gear in the header stays where it is. It is not a badge.
 
+The ten sit in five rows of two when the phone is upright. When the
+phone turns, that same group turns with it, so you see two rows of
+five. Each badge stays where it is on the phone, next to the same
+neighbors. They do not shuffle into a new arrangement. The pictures
+take a comfortable size in the space they have. That size is not how
+the places are kept. The turn is the same fill-and-rotate as the
+landscape header (`components/PageFrame.tsx`). Built at #112-new.
+
 Options lives on the individual item form. `app/item-edit.tsx` carries
 Options. That opens `ScreenOptionsSheet` for the cases that belong to
 that item's kind. That is the only place Options needs to be reached
@@ -509,25 +517,25 @@ start with the User's Guide. Tap the gear at the top of Home to open
 Settings, then tap User's Guide at the bottom of that page.
 
 Appointments is the check-mark. Birthdays is a cake. Bucket List is a
-rainbow. They do not share a picture. Yearly keeps the telescope.
-Quarterly is a fallen leaf. Monthly is a first-quarter moon. Those
+smiling face. They do not share a picture. Yearly keeps the telescope.
+Quarterly is a maple leaf. Monthly is a first-quarter moon. Those
 three do not share a picture. Weekly is a calendar. Calendar is a
-month grid. Daily is a sun. Help is the thinking face.
+month grid. Daily is a sun. Helper is the thinking face.
 
 On launch and on every return to the front, a popup speaks if a
 reminder did not reach you. It does not speak after a Save. OK takes it
 away. That tap silences those faults until the next day, and clears the
 misses it told.
 
-## Help
+## Helper
 
-Help is the helper from Home and from Calendar. The visible name is
-Help. The Home badge is the thinking face. The route is `app/where.tsx`. It is a
+Helper is from Home and from Calendar. The visible name is Helper.
+The Home badge is the thinking face. The route is `app/where.tsx`. It is a
 transparent screen so New can sit above it.
 
-Help does not save an item. It asks which kind, then opens
+Helper does not save an item. It asks which kind, then opens
 `app/item-edit.tsx` with that kind and `viaHelper`. Cancel on the form
-comes back to Help. Save on the form pops Help as well, and opens the
+comes back to Helper. Save on the form pops Helper as well, and opens the
 page where the item lives.
 
 The first question is: Does this item repeat? The choices are Yes and
@@ -560,18 +568,18 @@ one edit form, `app/item-edit.tsx`. After you make the
 edit, the save walk back brings you back to the item list. Hitting the
 Back button brings you back to the calendar.
 
-There is no + Add. New items from Calendar go through Help, which sits
-in the month header, the same Help as from Home. Help only chooses
+There is no + Add. New items from Calendar go through Helper, which sits
+in the month header, the same Helper as from Home. Helper only chooses
 the kind. The save-the-item popup, New, sits above it.
 
 Arrows change the month. They sit next to the month name in the
-middle, not against Home and Help. Home is in the header. The month
+middle, not against Home and Helper. Home is in the header. The month
 fills the screen.
 
 ## Settings
 
 Settings is not a kind of its own. The page is `app/settings.tsx`. Home
-opens it from the gear in the header. The gear is not a badge. Help is
+opens it from the gear in the header. The gear is not a badge. Helper is
 not on this page. Home is in the header.
 
 It holds the person's name, Light or Dark, and popup colors — Match App
@@ -602,7 +610,7 @@ Backup first if you want to keep what is entered.
 
 Backup is not a kind of its own. The visible name is Backup & Restore.
 The page is `app/backup.tsx`. Settings opens it. Back is in the header.
-Help is not on this page.
+Helper is not on this page.
 
 There are three acts: Export Backup, Replace from Backup, and Merge
 from Backup. You choose Replace or Merge first, then pick a file, then
@@ -612,8 +620,11 @@ Replace puts the backup's reminders in place of what is here, and takes
 off the missed-reminder notes. Merge keeps what is here and adds from
 the backup only what is not already here. A backup reminder is already
 here when it has the same identity the app wrote into the backup file.
+The person's name is saved and restored. Replace writes the name from
+the file when the file has one. Merge keeps the name already on the
+phone, and takes the backup's only when the phone has none. The rest of
 Settings and page logs stay on the phone. The backup does not carry
-them. Before confirmation, Replace and Merge validate the whole saved
+those. Before confirmation, Replace and Merge validate the whole saved
 list against the current kind table and strip live Options fields that
 the kind's row does not allow. When that row keeps a birthdate, they
 write the year of birth and derive the next fire date from it, so an
@@ -623,7 +634,7 @@ and changes nothing. After Replace or Merge, OK lands on Home.
 ## Scheduled Reminders
 
 Scheduled Reminders is not a kind of its own. The page is
-`app/reminders.tsx`. Settings opens it. Back is in the header. Help is
+`app/reminders.tsx`. Settings opens it. Back is in the header. Helper is
 not on this page.
 
 It shows what the phone is holding, not the saved list. The count sits

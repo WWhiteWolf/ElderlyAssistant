@@ -11,7 +11,7 @@ import { Theme, useTheme } from '../constants/Themes';
 
 type Stage = 'repeat' | 'every' | 'today' | 'kind';
 
-/** The Help helper — a transparent route so New can sit above it on the stack. */
+/** Helper — a transparent route so New can sit above it on the stack. */
 export default function WhereScreen() {
     const router = useRouter();
     const theme = useTheme();

@@ -6,7 +6,7 @@ export const USER_GUIDE_SEEN_KEY = 'user_guide_seen';
 
 export const USER_GUIDE_PARAGRAPHS = [
     "Welcome. Keep the things you want to remember here, and the app will remind you when it's time.",
-    "Home is a set of tiles. Tap the one that fits what you have in mind. If you're not sure, tap Help. It asks a couple of questions and opens the right page.",
+    "Home is a set of tiles. Tap the one that fits what you have in mind. If you're not sure, tap Helper. It asks a couple of questions and opens the right page.",
     'On a page, tap + Add, fill in what you need, and Save. When the time comes, the phone shows a banner. You can tap Done, Skip, or Snooze. The same buttons sit on the row in the list.',
     'The gear on Home is Settings. Backup is there. Everything you enter stays on this phone.',
 ] as const;
@@ -47,7 +47,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Help, the tile with the thinking face, can help you decide which page to put a reminder on by asking you a few questions about what the reminder is for.',
+        text: 'Helper, the tile with the thinking face, can help you decide which page to put a reminder on by asking you a few questions about what the reminder is for.',
     },
     {
         type: 'paragraph',
@@ -100,23 +100,23 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
         text: 'Daily is a bit of both. It holds the things you do every day, and it also holds things that are only for today. Those are called One Time for today, and they are not appointments. Anything from another page that falls today shows here too, with a note saying where it comes from. When you add something on Daily, you choose every day, or One Time for today.',
     },
 
-    { type: 'heading', text: 'Help' },
+    { type: 'heading', text: 'Helper' },
     {
         type: 'paragraph',
-        text: 'Help asks a few questions so it can open the right page.',
+        text: 'Helper asks a few questions so it can open the right page.',
     },
     { type: 'paragraph', text: 'Does this item repeat?' },
     {
         type: 'bullets',
         items: [
-            { text: 'Yes — Help asks how often this comes round:' },
+            { text: 'Yes — Helper asks how often this comes round:' },
             { text: 'Every day', level: 1 },
             { text: 'Weekly', level: 1 },
             { text: 'Monthly', level: 1 },
             { text: 'Quarterly', level: 1 },
             { text: 'Yearly', level: 1 },
             { text: 'For a birthday reminder', level: 1 },
-            { text: 'No — Help asks if this is for today:' },
+            { text: 'No — Helper asks if this is for today:' },
             { text: 'Yes — that is a One Time for today, only for this day', level: 1 },
             { text: 'No — then it is either', level: 1 },
             { text: "Appointment, when there is a date and time, like a doctor's visit", level: 2 },
@@ -129,7 +129,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'From Help, Cancel comes back to the questions. Save puts Help away as well, and opens the page where the item lives.',
+        text: 'From Helper, Cancel comes back to the questions. Save puts Helper away as well, and opens the page where the item lives.',
     },
 
     { type: 'heading', text: 'Reminders before' },
@@ -233,7 +233,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'The Settings choices stay as they are on this phone. The app asks you to confirm before it changes anything.',
+        text: "The person's name is saved and restored. The rest of the Settings choices stay as they are on this phone. The app asks you to confirm before it changes anything.",
     },
     {
         type: 'paragraph',

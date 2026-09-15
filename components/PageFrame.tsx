@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState, type ReactNode } from 'react';
-import { StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, useWindowDimensions, View, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../constants/Themes';
 import { useLandscapeHeaderSide, type LandscapeHeaderSide } from './AppOrientation';
@@ -18,6 +18,25 @@ export function uprightInLandscape(
     if (!landscape) return null;
     return {
         transform: [{ rotate: headerSide === 'right' ? ('-90deg' as const) : ('90deg' as const) }],
+    };
+}
+
+/** Lay out a child at swapped size, then turn it to fill the parent. Same move as the landscape header band. */
+export function rotateToFillStyle(
+    parentWidth: number,
+    parentHeight: number,
+    headerSide: LandscapeHeaderSide | null,
+): ViewStyle {
+    if (parentWidth <= 0 || parentHeight <= 0) return { flex: 1 };
+    const rotate = headerSide === 'right' ? ('90deg' as const) : ('-90deg' as const);
+    return {
+        width: parentHeight,
+        height: parentWidth,
+        transform: [
+            { translateX: (parentWidth - parentHeight) / 2 },
+            { translateY: (parentHeight - parentWidth) / 2 },
+            { rotate },
+        ],
     };
 }
 

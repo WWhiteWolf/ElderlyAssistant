@@ -4,7 +4,6 @@ import { useFocusEffect, useRouter, type Href } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import {
     Image,
-    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -12,9 +11,9 @@ import {
 } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { useLandscapeHeaderSide } from '../components/AppOrientation';
+import { useLandscapeHeaderSide, type LandscapeHeaderSide } from '../components/AppOrientation';
 import { Cover } from '../components/Cover';
-import { HeaderButton, PageFrame, uprightInLandscape, useLandscape } from '../components/PageFrame';
+import { HeaderButton, PageFrame, rotateToFillStyle, uprightInLandscape, useLandscape } from '../components/PageFrame';
 import { PAGE_LABELS } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
 import { FIRST_OPEN_PARAGRAPHS, USER_GUIDE_SEEN_KEY } from '../constants/user-guide';
@@ -27,9 +26,29 @@ import {
     type HomeBadge,
 } from '../modules/home-badges';
 
+const HOME_COLUMNS = 2;
+const GRID_INSET = 12;
+
+function rowsOfTwo(list: HomeBadge[]): HomeBadge[][] {
+    const rows: HomeBadge[][] = [];
+    for (let i = 0; i < list.length; i += HOME_COLUMNS) {
+        rows.push(list.slice(i, i + HOME_COLUMNS));
+    }
+    return rows;
+}
+
+function comfortablePicture(cellWidth: number, cellHeight: number, labelSize: number) {
+    const labelBlock = labelSize * 1.25 + 8;
+    const room = Math.max(0, Math.min(cellWidth - 12, cellHeight - 12 - labelBlock));
+    const circle = Math.round(room * 0.72 * 0.95 * 0.95);
+    if (circle < 1) return { circle: 48, icon: 24 };
+    return { circle, icon: Math.round(circle * 0.5) };
+}
+
 function HomeBadgeTile({
     badge,
     landscape,
+    headerSide,
     editing,
     dragging,
     styles,
@@ -38,10 +57,11 @@ function HomeBadgeTile({
     onDragStart,
     onDragMove,
     onDragEnd,
-    onLayout,
+    onSlot,
 }: {
     badge: HomeBadge;
     landscape: boolean;
+    headerSide: LandscapeHeaderSide | null;
     editing: boolean;
     dragging: boolean;
     styles: ReturnType<typeof makeStyles>;
@@ -50,7 +70,7 @@ function HomeBadgeTile({
     onDragStart: (id: string, x: number, y: number) => void;
     onDragMove: (x: number, y: number) => void;
     onDragEnd: () => void;
-    onLayout: (id: string, x: number, y: number, w: number, h: number) => void;
+    onSlot: (id: string, x: number, y: number, w: number, h: number) => void;
 }) {
     const onOpenRef = useRef(onOpen);
     onOpenRef.current = onOpen;
@@ -72,6 +92,11 @@ function HomeBadgeTile({
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
     const lifted = useSharedValue(0);
+    const startAbsX = useSharedValue(0);
+    const startAbsY = useSharedValue(0);
+    const turn = landscape ? (headerSide === 'right' ? 2 : 1) : 0;
+
+    const tileRef = useRef<View>(null);
 
     const gesture = useMemo(() => {
         if (editing) {
@@ -81,11 +106,23 @@ function HomeBadgeTile({
                     lifted.value = 1;
                     translateX.value = 0;
                     translateY.value = 0;
+                    startAbsX.value = e.absoluteX;
+                    startAbsY.value = e.absoluteY;
                     runOnJS(startJS)(badge.id, e.absoluteX, e.absoluteY);
                 })
                 .onUpdate((e) => {
-                    translateX.value = e.translationX;
-                    translateY.value = e.translationY;
+                    const dx = e.absoluteX - startAbsX.value;
+                    const dy = e.absoluteY - startAbsY.value;
+                    if (turn === 2) {
+                        translateX.value = dy;
+                        translateY.value = -dx;
+                    } else if (turn === 1) {
+                        translateX.value = -dy;
+                        translateY.value = dx;
+                    } else {
+                        translateX.value = dx;
+                        translateY.value = dy;
+                    }
                     runOnJS(moveJS)(e.absoluteX, e.absoluteY);
                 })
                 .onFinalize(() => {
@@ -102,7 +139,7 @@ function HomeBadgeTile({
             runOnJS(tapJS)();
         });
         return Gesture.Exclusive(hold, tap);
-    }, [editing, badge.id, startJS, moveJS, endJS, holdJS, tapJS, translateX, translateY, lifted]);
+    }, [editing, badge.id, startJS, moveJS, endJS, holdJS, tapJS, translateX, translateY, lifted, startAbsX, startAbsY, turn]);
 
     const liftedStyle = useAnimatedStyle(() => ({
         transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
@@ -112,18 +149,23 @@ function HomeBadgeTile({
 
     return (
         <Animated.View
-            style={[styles.tile, landscape && styles.tileLandscape, liftedStyle, dragging && styles.tileDragging]}
-            onLayout={(e) => {
-                const { x, y, width, height } = e.nativeEvent.layout;
-                onLayout(badge.id, x, y, width, height);
+            ref={tileRef}
+            collapsable={false}
+            style={[styles.tile, liftedStyle, dragging && styles.tileDragging]}
+            onLayout={() => {
+                tileRef.current?.measureInWindow((x, y, w, h) => {
+                    onSlot(badge.id, x, y, w, h);
+                });
             }}
         >
             <GestureDetector gesture={gesture}>
-                <View style={styles.tileInner}>
-                    <View style={styles.iconCircle}>
-                        <Text style={styles.tileIcon}>{badge.icon}</Text>
+                <View style={styles.tileHit}>
+                    <View style={[styles.tileInner, uprightInLandscape(landscape, headerSide)]}>
+                        <View style={styles.iconCircle}>
+                            <Text style={styles.tileIcon}>{badge.icon}</Text>
+                        </View>
+                        <Text style={styles.tileLabel}>{badge.label}</Text>
                     </View>
-                    <Text style={styles.tileLabel}>{badge.label}</Text>
                 </View>
             </GestureDetector>
         </Animated.View>
@@ -133,7 +175,6 @@ function HomeBadgeTile({
 export default function HomeScreen() {
     const router = useRouter();
     const theme = useTheme();
-    const styles = makeStyles(theme);
     const landscape = useLandscape();
     const headerSide = useLandscapeHeaderSide();
 
@@ -143,11 +184,23 @@ export default function HomeScreen() {
     const [holdBadge, setHoldBadge] = useState<HomeBadge | null>(null);
     const [draggingId, setDraggingId] = useState<string | null>(null);
     const [showWelcome, setShowWelcome] = useState(false);
+    const [bodySize, setBodySize] = useState({ width: 0, height: 0 });
+
+    const picture = useMemo(() => {
+        const { width, height } = bodySize;
+        if (width <= 0 || height <= 0) return { circle: 48, icon: 24 };
+        const localW = landscape ? height : width;
+        const localH = landscape ? width : height;
+        const rows = Math.ceil(HOME_BADGES.length / HOME_COLUMNS);
+        const cellW = (localW - GRID_INSET * 2) / HOME_COLUMNS;
+        const cellH = (localH - GRID_INSET * 2) / rows;
+        return comfortablePicture(cellW, cellH, theme.tileLabelSize);
+    }, [bodySize, landscape, theme.tileLabelSize]);
+
+    const styles = makeStyles(theme, picture);
 
     const badgesRef = useRef(badges);
     badgesRef.current = badges;
-    const gridRef = useRef<View>(null);
-    const gridOrigin = useRef({ x: 0, y: 0 });
     const slots = useRef<Record<string, { x: number; y: number; w: number; h: number }>>({});
     const dragMeta = useRef<{ id: string } | null>(null);
     const dragToIndex = useRef(0);
@@ -175,9 +228,6 @@ export default function HomeScreen() {
     };
 
     const beginDrag = useCallback((id: string, _x: number, _y: number) => {
-        gridRef.current?.measureInWindow((gx, gy) => {
-            gridOrigin.current = { x: gx, y: gy };
-        });
         dragMeta.current = { id };
         dragToIndex.current = badgesRef.current.findIndex((one) => one.id === id);
         setDraggingId(id);
@@ -186,9 +236,6 @@ export default function HomeScreen() {
     const moveDrag = useCallback((absX: number, absY: number) => {
         const meta = dragMeta.current;
         if (!meta) return;
-        const origin = gridOrigin.current;
-        const x = absX - origin.x;
-        const y = absY - origin.y;
         const list = badgesRef.current;
         let best = 0;
         let bestD = Infinity;
@@ -197,7 +244,7 @@ export default function HomeScreen() {
             if (!slot) return;
             const cx = slot.x + slot.w / 2;
             const cy = slot.y + slot.h / 2;
-            const d = (cx - x) ** 2 + (cy - y) ** 2;
+            const d = (cx - absX) ** 2 + (cy - absY) ** 2;
             if (d < bestD) {
                 bestD = d;
                 best = i;
@@ -227,6 +274,11 @@ export default function HomeScreen() {
         setShowWelcome(false);
         void AsyncStorage.setItem(USER_GUIDE_SEEN_KEY, 'true');
     }, []);
+
+    const ready = !landscape || bodySize.width > 0;
+    const gridStyle = landscape
+        ? rotateToFillStyle(bodySize.width, bodySize.height, headerSide)
+        : styles.gridFill;
 
     return (
         <GestureHandlerRootView style={styles.container}>
@@ -262,39 +314,45 @@ export default function HomeScreen() {
                     </View>
                 }
             >
-            <ScrollView
-                contentContainerStyle={styles.gridScroll}
-                scrollEnabled={draggingId == null}
+            <View
+                style={styles.body}
+                onLayout={(e) => {
+                    const { width, height } = e.nativeEvent.layout;
+                    setBodySize((prev) => (
+                        prev.width === width && prev.height === height ? prev : { width, height }
+                    ));
+                }}
             >
-                <View
-                    ref={gridRef}
-                    style={styles.grid}
-                    onLayout={() => {
-                        gridRef.current?.measureInWindow((x, y) => {
-                            gridOrigin.current = { x, y };
-                        });
-                    }}
-                >
-                    {badges.map((badge) => (
-                        <HomeBadgeTile
-                            key={badge.id}
-                            badge={badge}
-                            landscape={landscape}
-                            editing={editing}
-                            dragging={draggingId === badge.id}
-                            styles={styles}
-                            onOpen={() => openBadge(badge.id)}
-                            onHold={() => setHoldBadge(badge)}
-                            onDragStart={beginDrag}
-                            onDragMove={moveDrag}
-                            onDragEnd={endDrag}
-                            onLayout={(id, x, y, w, h) => {
-                                slots.current[id] = { x, y, w, h };
-                            }}
-                        />
-                    ))}
-                </View>
-            </ScrollView>
+                {ready ? (
+                    <View style={gridStyle}>
+                        <View style={styles.grid}>
+                            {rowsOfTwo(badges).map((row) => (
+                                <View key={row.map((one) => one.id).join('-')} style={styles.gridRow}>
+                                    {row.map((badge) => (
+                                        <HomeBadgeTile
+                                            key={badge.id}
+                                            badge={badge}
+                                            landscape={landscape}
+                                            headerSide={headerSide}
+                                            editing={editing}
+                                            dragging={draggingId === badge.id}
+                                            styles={styles}
+                                            onOpen={() => openBadge(badge.id)}
+                                            onHold={() => setHoldBadge(badge)}
+                                            onDragStart={beginDrag}
+                                            onDragMove={moveDrag}
+                                            onDragEnd={endDrag}
+                                            onSlot={(id, x, y, w, h) => {
+                                                slots.current[id] = { x, y, w, h };
+                                            }}
+                                        />
+                                    ))}
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+                ) : null}
+            </View>
             </PageFrame>
             <Cover visible={showWelcome}>
                 <View style={styles.modalOverlay}>
@@ -338,7 +396,7 @@ export default function HomeScreen() {
     );
 }
 
-const makeStyles = (t: Theme) =>
+const makeStyles = (t: Theme, picture: { circle: number; icon: number }) =>
     StyleSheet.create({
         container: {
             flex: 1,
@@ -383,23 +441,28 @@ const makeStyles = (t: Theme) =>
             fontFamily: 'Georgia',
             marginTop: 4,
         },
-        gridScroll: {
-            flexGrow: 1,
+        body: {
+            flex: 1,
+            overflow: 'hidden',
+        },
+        gridFill: {
+            flex: 1,
         },
         grid: {
+            flex: 1,
+            padding: GRID_INSET,
+        },
+        gridRow: {
+            flex: 1,
             flexDirection: 'row',
-            flexWrap: 'wrap',
-            padding: 16,
-            gap: 12,
-            justifyContent: 'space-between',
         },
         tile: {
-            width: '47%',
-            alignItems: 'center',
-            paddingVertical: 12,
+            flex: 1,
         },
-        tileLandscape: {
-            width: '22%',
+        tileHit: {
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
         },
         tileDragging: {
             opacity: 0.92,
@@ -408,9 +471,9 @@ const makeStyles = (t: Theme) =>
             alignItems: 'center',
         },
         iconCircle: {
-            width: 48,
-            height: 48,
-            borderRadius: 24,
+            width: picture.circle,
+            height: picture.circle,
+            borderRadius: picture.circle / 2,
             backgroundColor: t.tileCircle,
             borderWidth: t.tileCircleBorderWidth,
             borderColor: t.tileCircleBorder,
@@ -423,7 +486,7 @@ const makeStyles = (t: Theme) =>
             shadowRadius: t.tileHaloRadius,
         },
         tileIcon: {
-            fontSize: 24,
+            fontSize: picture.icon,
             ...(t.iconShadow
                 ? {
                       textShadowColor: 'rgba(0,0,0,0.5)',

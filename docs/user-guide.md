@@ -2,12 +2,12 @@
 
 From #103-new. Settings section from #104-new. Options from #105-new.
 Delete, Save, Done, Snooze, Banners, and Log from #106-new. On the
-Settings User's Guide page. Help pop-up words are at the end, and in
-Help.
+Settings User's Guide page. Helper pop-up words are at the end, and in
+Helper.
 
 The first-open popup on Home already has the four short paragraphs
 plus a fifth that suggests opening this Guide. That popup is in the
-app. This file is the longer Guide, and the Help pop-ups.
+app. This file is the longer Guide, and the Helper pop-ups.
 
 ---
 
@@ -28,7 +28,7 @@ combination, plus it does some of its own thing.
 Each page is also for entering a reminder. You open the page that
 fits, and add it there.
 
-Help, the tile with the thinking face, can help you decide which page
+Helper, the tile with the thinking face, can help you decide which page
 to put a reminder on by asking you a few questions about what the
 reminder is for.
 
@@ -84,20 +84,20 @@ that falls today shows here too, with a note saying where it comes
 from. When you add something on Daily, you choose every day, or One
 Time for today.
 
-## Help
+## Helper
 
-Help asks a few questions so it can open the right page.
+Helper asks a few questions so it can open the right page.
 
 Does this item repeat?
 
-- Yes — Help asks how often this comes round:
+- Yes — Helper asks how often this comes round:
   - Every day
   - Weekly
   - Monthly
   - Quarterly
   - Yearly
   - For a birthday reminder
-- No — Help asks if this is for today:
+- No — Helper asks if this is for today:
   - Yes — that is a One Time for today, only for this day
   - No — then it is either
     - Appointment, when there is a date and time, like a doctor's visit
@@ -106,7 +106,7 @@ Does this item repeat?
 Pick the one that applies. Or cancel and enter the item directly on a
 page if that is easier.
 
-From Help, Cancel comes back to the questions. Save puts Help away as
+From Helper, Cancel comes back to the questions. Save puts Helper away as
 well, and opens the page where the item lives.
 
 ## Reminders before
@@ -189,8 +189,9 @@ a file you can keep.
 - Merge from Backup keeps what is here and adds from the backup only
   what is not already here.
 
-The Settings choices stay as they are on this phone. The app asks
-you to confirm before it changes anything.
+The person's name is saved and restored. The rest of the Settings
+choices stay as they are on this phone. The app asks you to confirm
+before it changes anything.
 
 User's Guide is this Guide. Tap it, and it will help you to
 understand this app.
@@ -343,7 +344,7 @@ A reminder showing on Daily from another page writes on Daily’s log, and also 
 
 ---
 
-## Help pop-ups
+## Helper pop-ups
 
 In `app/where.tsx`. Same four steps. Words:
 

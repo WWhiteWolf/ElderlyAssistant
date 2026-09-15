@@ -122,18 +122,20 @@ export default function BackupScreen() {
 
     const handleExport = async () => {
         try {
-            const [saved, lastDate] = await Promise.all([
+            const [saved, lastDate, userName] = await Promise.all([
                 readSavedReminderItems(),
                 AsyncStorage.getItem('reminder_last_date'),
+                AsyncStorage.getItem('user_name'),
             ]);
             if (saved.failed) {
                 throw new Error('The saved reminder list could not be read.');
             }
-            // Settings and page logs stay on the phone and are not written
-            // here (#77-new). Keep the existing two-key backup shape.
+            // The person's name is in the backup (#112-new). The rest of
+            // Settings and page logs stay on the phone.
             const data: Record<string, string | null> = {
                 reminder_items: saved.raw,
                 reminder_last_date: lastDate,
+                user_name: userName,
             };
             await finishExport(data);
         } catch {
@@ -152,6 +154,13 @@ export default function BackupScreen() {
                 await AsyncStorage.setItem('reminder_last_date', data.reminder_last_date);
             } else {
                 await AsyncStorage.removeItem('reminder_last_date');
+            }
+            if ('user_name' in data) {
+                if (typeof data.user_name === 'string' && data.user_name !== '') {
+                    await AsyncStorage.setItem('user_name', data.user_name);
+                } else {
+                    await AsyncStorage.removeItem('user_name');
+                }
             }
             await AsyncStorage.multiRemove([...RETIRED_KEYS, ...HEALTH_KEYS]);
 
@@ -175,6 +184,14 @@ export default function BackupScreen() {
             const existingDate = await AsyncStorage.getItem('reminder_last_date');
             if (existingDate == null && typeof data.reminder_last_date === 'string') {
                 await AsyncStorage.setItem('reminder_last_date', data.reminder_last_date);
+            }
+            const existingName = await AsyncStorage.getItem('user_name');
+            if (
+                (existingName == null || existingName === '')
+                && typeof data.user_name === 'string'
+                && data.user_name !== ''
+            ) {
+                await AsyncStorage.setItem('user_name', data.user_name);
             }
             await AsyncStorage.multiRemove(RETIRED_KEYS);
 
@@ -249,7 +266,7 @@ export default function BackupScreen() {
         if (!backup) return;
         Alert.alert(
             'Replace reminders?',
-            'This will replace the reminders currently in the app with the contents of this backup. Settings and page logs on the phone stay. The notes about missed reminders and whether reminders ran will come off. This cannot be undone.',
+            'This will replace the reminders currently in the app with the contents of this backup. Your name comes from the backup when the file has one. The rest of Settings and page logs on the phone stay. The notes about missed reminders and whether reminders ran will come off. This cannot be undone.',
             [
                 { text: 'Cancel', style: 'cancel' },
                 {
@@ -266,7 +283,7 @@ export default function BackupScreen() {
         if (!backup) return;
         Alert.alert(
             'Merge reminders?',
-            'This will keep the reminders already in the app, and add from the backup only those that are not already here. Settings, page logs, and the notes about missed reminders stay. This cannot be undone.',
+            'This will keep the reminders already in the app, and add from the backup only those that are not already here. Your name stays if this phone already has one. The rest of Settings, page logs, and the notes about missed reminders stay. This cannot be undone.',
             [
                 { text: 'Cancel', style: 'cancel' },
                 {

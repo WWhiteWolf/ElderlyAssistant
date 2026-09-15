@@ -17,6 +17,41 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #112-new (2026-09-14): Home badges, Helper, and the name on backup
+
+**Phone.** Build 86 is on the phone. This sitting’s work is in the
+project, not on 86.
+
+**Home badges.** The ten keep five rows of two. When the phone turns,
+that group turns with it. Neighbors stay neighbors. They do not
+shuffle into a new arrangement. The pictures take a comfortable size
+in the space they have. That size is not how the places are kept. The
+turn is the same fill-and-rotate as the landscape header. Two 5% cuts
+brought the pictures to a size he liked in the simulator.
+
+**Pictures and name.** Bucket List is a smiling face. Quarterly is a
+maple leaf. The Help tile is named Helper. The Guide and the first-load
+popup say Helper too. The route is still `where.tsx`.
+
+**The name on backup.** The person's name is saved and restored. Replace
+writes the name from the file when the file has one. Merge keeps the
+name already on the phone, and takes the backup’s only when the phone
+has none. The rest of Settings stay on the phone. An older backup with
+no name is still accepted.
+
+**Session result.** Home, Helper, and the name on backup are in the
+project, not on 86. Job 1, Job 2, and Job 3 still need their phone
+checks. Birthday still needs a phone check on the next load.
+
+## #111-new (2026-09-14): Letters and Page on Settings Appearance
+
+**Phone.** Letters and Page went onto Settings under Appearance.
+Middle is the original look. Plus is more (darker). Minus is less
+(lighter). He was trying them on the phone.
+
+**Session result.** That sitting closed with Letters and Page on the
+phone, being tried. The designed-machine jobs still needed phone proof.
+
 ## #110-new (2026-09-13): Birthday birthdate with the name
 
 **Phone.** Build 82 is on the phone. The designed-machine jobs from
