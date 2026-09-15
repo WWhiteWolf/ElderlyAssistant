@@ -1,250 +1,82 @@
 # Session hand-off — A Place To Remember (Memory, iPhone)
 
-This file carries the continuity and nothing else: where the work stands
-and what is open in front of it. Finished work and build decisions go to
-`handoff-history.md`, opened only when something needs tracing.
+This file is for the next sitting. It says what was done and what
+still needs to be done. It is not the whole history. History lives
+in `handoff-history.md` and is opened when something needs tracing.
+Design lives in `docs/designed-implementation.md`. Standing rulings
+here are common work that still governs, not specific tasks that
+are already done.
 
-**A decision is written in here the moment it is made, in that turn — not
-saved up for the end of a session.** That rule and the conditions around
-it are `CLAUDE.md` rule 4, and `docs/check-docs.py` reports the three that
+**A decision is written the moment it is made, in that turn — not
+saved up for the end of a session.** Common work that still governs
+goes here. Design goes to the designed implementation. The sitting
+goes to history at close. That rule and the conditions around it are
+`CLAUDE.md` rule 4, and `docs/check-docs.py` reports the three that
 can be machine-checked. A failing condition is put in front of Patrick,
 who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-Build **90** is on the phone. **#114-new** is committed (Patrick,
-#115-new). **#115-new** confirmed and fixed weekday Save and Done
-through the shared machinery across Monthly, Quarterly, and Yearly.
-The saved calendar anchor stays under either weekday pattern, and
-Done advances from it. 410 Mac checks; TypeScript clean; not on the
-phone. The working and in-app Guides now match the current second
-Done tap on Daily and Weekly. The retired backup cleanup list and
-unused counter theme colours are gone; live source now says Bucket
-List. Weekly visitors on Daily now follow the occurrence the engine
-moved, including a holiday move and Day after the set day. 412 Mac
-checks; TypeScript clean; not on the phone. The Quarterly day chip,
-the Guide's Letters and Page, and the Timer line on Scheduled
-Reminders are next to be fixed. Home make-room and One Time with no
-time are in pending.
-The designed-machine jobs from #108-new and #109-new still need phone
-proof. **#110-new** Birthday still needs a phone check. **#111-new**
-Letters and Page are on Settings; he is trying them on the phone.
-**#112-new** Home badges, Helper, and the person's name on backup are
-in the project, not on 86.
+Build **90** is on the phone. **#115-new** is committed (Patrick,
+#116-new). **#116-new** is in the project, not on that load. 418 Mac
+checks; TypeScript clean. It needs a phone check on a native load
+after 90. Home make-room is in pending. The designed-machine jobs
+from #108-new and #109-new still need phone proof. **#110-new**
+Birthday still needs a phone check. **#111-new** Letters and Page
+are on Settings; he is trying them on the phone. **#112-new** Home
+badges, Helper, and the person's name on backup are in the project,
+not on 86.
 
 ## Standing rulings
 
-These are Patrick's and they govern the work rather than describing it.
+These are common work that still governs. They are not the design of a
+finished task.
 
-- **Restore with Merge is done** (Patrick, #77-new). This reverses
-  the parked drop from #67-new and #75-new. The collected store is
-  pending's Restore Merge. Merge keeps what is already in the app, and
-  adds from the backup only what is not already there. A backup reminder
-  is already in the app when it has the same identity the app wrote into
-  the backup file. People choose Merge or Replace before they pick a
-  file. After they pick the file, the app still asks them to confirm
-  before it changes anything. Replace takes off the old health, miss,
-  and already-told notes. Merge leaves them. The person's name is saved
-  and restored (Patrick, #112-new). Replace writes the name from the
-  file when the file has one. Merge keeps the name already on the phone,
-  and takes the backup's only when the phone has none. The rest of
-  Settings and page logs stay on the phone. The backup does not carry
-  those. There are no existing backup files. We are not keeping an older
-  backup shape.
+- **Restore with Merge is done.** Do not treat Merge as dropped. The
+  designed implementation holds how Replace and Merge work.
 - **Timer Alerts, Vault, Shopping List, and Memory Test have left
-  Memory** (Patrick, #75-new; taken out at #76-new). Copies remain in
-  `Projects/stray apps`. Timer Alerts and Memory Test are simple one-time
-  alerts — a reminder within the hour — and do not take the reminder
-  engine with them. Do not treat them as Memory engine work. The
-  shopping list will have a backup of its own when it exists again.
-  How those four become apps is a later decision; do not raise it.
-
+  Memory.** Copies remain in `Projects/stray apps`. Do not treat them
+  as Memory engine work. The shopping list will have a backup of its
+  own when it exists again. How those four become apps is a later
+  decision; do not raise it.
 - **The run record on Scheduled Reminders, Check My Reminders, and
-  the background task that tops the queue are nice-to-have**
-  (Patrick, #67-new). They live in pending's Nice-to-have. He is
+  the background task that tops the queue are nice-to-have.** He is
   not doing them now. Do not raise them in reports.
-
-- **The old-page scrub preserves nothing for backward compatibility**
-  (Patrick, #61-new). An old-named identifier still used by the current
-  build is changed through its whole live path rather than kept for old
-  state. There is no old page data to clean up, so Backup has no retired
-  strip-key list (Patrick, #115-new).
+- **The old-page scrub preserves nothing for backward compatibility.**
+  An old-named identifier still used by the current build is changed
+  through its whole live path. There is no old page data to clean up.
 - **Reminders being rock solid is the top goal — but not the only one,
-  and consistency is another high priority** (#16-new, corrected at
-  #17-new).
-- **"Rock solid is for when you use it"** (#22-new).
+  and consistency is another high priority.**
+- **"Rock solid is for when you use it."**
 - **When something has to give, the old reminder is thrown away and the
   new one kept.**
 - **The reminders should follow established practice** rather than a
   private arrangement that happens to work.
-- **A rule that has to be remembered at every place that might need it is
-  the wrong shape.** Build it into the machinery instead.
-- **Dated items wait about a month** (Patrick, 2026-09-09). That wait is
-  a bit on the table. Monthly, Quarterly, Yearly, and Birthdays have it
-  on. Daily, Weekly, Appointments, and the rest have it off. The join
-  reads the bit. Depth stays one. Opening the app arms a waiting item
-  when it has come close enough. Several lead times on one item also
-  use that depth: only the soonest still ahead is armed. When it has
-  fired, the next run arms the next.
-- **Engine facts belong in the one description of each kind. What the
-  add screen shows stays on the form** (Patrick, #95-new). That is
-  ordinary software, not a hole. A special extra rule for one type of
-  item is the other thing.
-- **The design description of the app is the designed implementation**
-  (Patrick, #84-new). It is the guide for the whole app, not only the
-  leftover page work. You look at how the thing is built — code words,
-  the options bit field as it is now, and groups of bits that work
-  together where only one of them can be true at once — instead of
-  keeping a separate layer of decisions and rules to remember and
-  apply. That is the same move as putting behaviour into the machinery,
-  now for the description of the app itself.
-- **Exclusive groups cannot both be true** (Patrick, #90-new). An
-  exclusive group is bits that work together. Only one can be true.
-  Turning one on turns the others off. There is no both-true case for
-  the translator to handle. It does not need a branch that finds both
-  and then refuses them.
+- **A rule that has to be remembered at every place that might need it
+  is the wrong shape.** Build it into the machinery instead.
+- **Engine facts belong in the one description of each kind.** What the
+  add screen shows stays on the form. A special extra rule for one type
+  of item is the other thing.
+- **The design description of the app is the designed implementation.**
+  A specific task that is already done belongs there, or in history,
+  not in this live handoff.
+- **Exclusive groups cannot both be true.** Turning one on turns the
+  others off. There is no both-true case for the translator to handle.
 - **Landscape is an optional view.** The allowed turns are 0°, 90°
-  counter-clockwise, and 270° counter-clockwise; 180° upside-down is out
-  (Patrick, #60-new).
-- **Siri is out of sight** (Patrick, #83-new; built at #87-new). The
-  Shortcuts and Siri phrases are offered no more. Keep in the back of
-  the design a later Siri that can go into the app and do the work.
-  The page pieces and the bit field are that structure; we do not yet
-  know Apple's shape. Research where Apple is headed is later. Do not
-  raise the later Siri.
-- **Daily's "One Time for today" is not the Appointments page**
-  (Patrick, #65-new; own kind at #78-new). Those words are not an old
-  name to change. It is saved as `oneTime`, a one-shot that belongs to
-  today. Daily shows it. Appointments does not. A banner tap opens Daily.
-- **The 12-hour spinners with AM/PM stay** (Patrick, #59-new). Quiet
-  popup on Save when the time was last set with the 12-hour row; no
-  popup when it was last set with the 24-hour box or digit spinner.
-- **The 24-hour digit spinner stays** (#36-new) — tap the type-in box.
-- **Do not connect `floatDay`.** An incomplete zone currently floats
-  with the phone; leave that unless Patrick says otherwise (#41-new).
-- **Monthly, Quarterly, and Yearly Done advances the saved date**
-  (Patrick, #70-new; built at #79-new). #41-new stopped that; he did
-  not notice until then. Done moves the date on the item so the tile
-  shows the next cycle armed — as it did before #41-new.
-- **A weekday pattern keeps the saved calendar anchor** (Patrick,
-  #115-new). A second Thursday and a Wednesday after are exclusive
-  with each other, not with the date. Save's calendar code writes
-  the anchor for Monthly, Quarterly, and Yearly. Done advances from
-  that anchor. No page remembers the case.
-- **Yearly and Birthdays look from the saved date** (Patrick, #105-new).
-  Done moves that date. The next fire is not this year's still-ahead
-  time. Monthly already did this; yearly did not.
-- **Weekly's Day after the set day** (Patrick, #105-new). In a week
-  that has a federal holiday, the reminder moves to the day after the
-  set day, not to the day before or after the holiday. That Holidays
-  case stays as it is. This choice is Weekly only, on Options, and
-  does not have to be on. It is in the Guide, the designed
-  implementation, Weekly's Options, the translator, and the engine.
-  It is on 81.
-- **A Weekly visitor on Daily follows the engine's occurrence**
-  (Patrick, #113-new; built #115-new). The shared date question uses
-  the translated repeat and the same occurrence calculation as the
-  scheduler. Holiday moves and Day after the set day appear only on
-  the moved day. Miss-telling reads that same answer. No page compares
-  the saved weekday.
-- **A second Done tap on Daily and Weekly asks first** (Patrick,
-  #113-new). Cancel leaves the tick. Mark not done takes it off. The
-  design, working Guide, and in-app Guide match the code (#115-new).
-- **The Done tick on Monthly, Quarterly, Yearly, and Birthdays is the
-  mark that this cycle was done** (Patrick, #83-new). It is not
-  leftover. The date has already moved; the tick is how you see it.
-  It stays until the morning of the next due date, then comes off in
-  the same morning roll as Daily. Yearly and Birthdays write year on
-  the table; the date-advance reads that word. A second tap while it is
-  showing means un-check, not Done for the new cycle. Appointments and
-  Bucket List stay as they are. Built at #83-new. The year word is
-  #100-new.
-- **The Where? page is Helper** (Patrick, #70-new; wording at #80-new;
-  #103-new; badge at #105-new; name #112-new). The visible name is
-  **Helper**, not Where? The Home badge is the thinking face, not the
-  question mark. The route may stay `where.tsx`. Step 1 is: Does this
-  item repeat? **Yes** / **No**. Step 2 is: How often does this come
-  round? **Every day**, **Weekly**, **Monthly**, **Quarterly**,
-  **Yearly**, **For a birthday reminder**. Birthday still opens
-  Birthdays’ New, not Yearly. No asks: Is this for today? Yes is
-  One Time for today. No: If it has a date and time, like a doctor's
-  visit, that is Appointment. If it is something you want to do
-  someday, with no date, that is Bucket List. Cancel on steps 2 and 3
-  goes back one step; step 1 Cancel closes. Words are in
-  `docs/user-guide.md` and in Helper (#104-new).
-- **Yearly, Quarterly, and Monthly Home badges** (Patrick, #100-new;
-  Quarterly #112-new). Yearly keeps the telescope. Quarterly is a maple
-  leaf. Monthly is a first-quarter moon. They had all three used the
-  telescope. Bucket List is a smiling face (#112-new).
-- **Birthdays is a copy of Appointments on the screen, and a yearly
-  reminder on the one list** (Patrick, #81-new). Own saved kind
-  `birthdays`. Date required. Same reminder chips as Appointments,
-  any and all on at once. Done advances the year. An item on Birthdays
-  is not also on Appointments or Yearly.
-- **Quarterly 30, 60, and 90 day chips** (Patrick, #82-new). On Add,
-  selectable chips. No chip stays every three months. A chip counts
-  that many days from the date entered when it is set. One chip at a
-  time; a second tap clears it. The list tile still shows the date.
-  Done and the engine follow the same step.
-- **Skip drops this cycle and arms the next** (Patrick, #74-new). It is
-  not Done, and it is not only clearing a snooze.
-- **Each closed-app notice has its own thread name** (Patrick,
-  #105-new). The name is the reminder's key. That is Expo's own
-  door, the same one Messages uses, so the phone can list them
-  separately and one can be cleared without the rest. This Expo
-  does not yet hand that name to the phone. Do not poke the
-  notification library to make it work early.
-- **Banner buttons belong on the bit field** (Patrick, #83-new). Which
-  buttons an item gets — Done, Skip, Snooze, OK — is a bit of the
-  kind, the same as whether it can be done or pushed back. The row and
-  the banner both read those bits. They do not remember the page.
-  Weekly's set is its own: the three short delays, plus Delay 1 Day
-  (Patrick, #105-new). Daily keeps the three shorts.
-- **One Time does not Skip** (Patrick, #107-new). It has no next cycle.
-  Its own banner set has Done, OK, and Delay 15 / 30 / 60 min. It does
-  not inherit Daily's Skip button. Delay remains part of One Time and
-  must reach the phone.
-- **Appointments remind at the set time** (Patrick, #74-new). This
-  reverses #52-new. They act like the rest of the app. The before chips
-  still stand.
-- **Morning of is not the set time** (Patrick, #74-new). A clock-style
-  lead may float with the phone even when the appointment has a named
-  zone.
-- **A 31st stays the 31st** (Patrick, #94-new). A month with no such
-  day still uses the last day that exists for that month. Then and
-  Next Day are the missing-day banner, not an Options choice. Done
-  and Save do not turn the reminder into a 28th.
-- **The user's guide is in the app, and a tile on Settings**
-  (Patrick, #97-new). A first-load popup on Home (Patrick, #98-new)
-  shows those four paragraphs, then a fifth that suggests opening
-  the User's Guide first (Patrick, #103-new). Got it remembers.
-  Deleting the app and installing it again brings it back. The Settings
-  page has the longer Guide
-  (#104-new). It does not go on a website. The app is self-contained.
-  A person's data stays on the phone. The app does not reach out to
-  read or write from the outside world. What is already in App Store
-  Connect stays there.
-- **Feedback is its own tile on Settings** (Patrick, #97-new). It is
-  the same popup Mystery Clues Tracker uses. Send opens the phone's
-  Mail. The person reaches out; the app does not send the mail.
-- **There is no Reset All Data** (Patrick, #106-new). It is not in
-  Settings. To start with a clean copy, delete the app from the phone,
-  then install it again. Export a Backup first if you want to keep
-  what is entered. This reverses the #97-new header control.
-
-- **There is no password to open the app** (Patrick, #101-new). The
-  phone being open is enough. Do not add another.
-
-- **A Birthday keeps a birthdate with the name** (Patrick, #102-new;
-  #110-new). It is not a reminder setting. Done does not move it. The
-  next fire date is derived from that birthdate. The Birthdays row
-  shows the name and the birthdate. The reminder says the age they
-  turn that day. Restore writes the year of birth onto an older
-  backup that never had that field.
-
-- **Bucket List's keep-the-item button says Save** (Patrick,
-  #106-new). Built at #106-new. The old Done on that button was not
-  the tick on the list. The Guide does not teach the old word.
+  counter-clockwise, and 270° counter-clockwise. 180° upside-down is
+  out.
+- **Siri is out of sight.** Do not raise the later Siri.
+- **Do not connect `floatDay`** unless Patrick says otherwise.
+- **Each closed-app notice has its own thread name.** This Expo does
+  not yet hand that name to the phone. Do not poke the notification
+  library to make it work early.
+- **There is no password to open the app.** The phone being open is
+  enough. Do not add another.
+- **There is no Reset All Data.** Do not add it.
+- **The user's guide does not go on a website.** The app is
+  self-contained. A person's data stays on the phone. The app does not
+  reach out to read or write from the outside world. What is already
+  in App Store Connect stays there.
 
 ## What is open in front of it
 
@@ -271,12 +103,8 @@ the space they have. Bucket List is a smiling face. Quarterly is a maple
 leaf. The Help tile is named Helper. The person's name is in the backup.
 Needs a look on the next load, upright and turned.
 
-**#115-new weekday Save and Done and the Weekly visitor** are fixed
-in the project, not on the phone. The shared calendar write keeps the
-date under either weekday pattern, and Done advances it. A Weekly
-visitor on Daily follows the occurrence the engine moved. The
-Quarterly day-chip and weekday-pattern conflict is the next
-Evaluations 7 fault.
+**#116-new** is in the project, not on 90. It needs a phone check on
+a native load after 90.
 
 **Day-roll lock** still needs a night of all-green Daily, then a morning
 open on a new load, to confirm the pop-up stays quiet.
@@ -284,7 +112,7 @@ open on a new load, to confirm the pop-up stays quiet.
 **Still open from before:**
 
 **Display tiles** (Scheduled Reminders sentences, `formatClock`, and the rest)
-are not part of the 12-hour spinner ruling. What remains is `settings.tsx` and
+are not part of the 12-hour spinner. What remains is `settings.tsx` and
 `formatClock` in `scheduler/queueview.ts`.
 
 **`docs-ref/build-sheets/build-sheet.md` has not been brought level with the

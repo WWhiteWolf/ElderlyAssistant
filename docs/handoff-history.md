@@ -17,6 +17,40 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #116-new (2026-09-15): Evaluations 7 through the machinery and the Guide
+
+**Phone.** Build 90 is on the phone. This sitting's work is in the
+project and has not been checked there. Patrick confirmed that
+#115-new was committed.
+
+**Quarterly day chip.** A 30, 60, or 90 day item gets Holidays and
+Time zone only. A second Thursday and a Wednesday after are not
+offered. Every three months still has those weekday choices. The
+second Options list is on the translator row. The form and Save
+read it.
+
+**The Guide.** Letters and Page are named on Settings. The first two
+headed sections mark the page names. The working document and the
+in-app copy agree.
+
+**Scheduled Reminders.** The foot no longer names the Timer. It says
+how many more reminders on the phone are not shown here.
+
+**One Time with no clock.** It does not fire and does not offer
+Snooze. One Time has its own due answer and does not inherit
+Appointments' noon fill. Daily already does this.
+
+**List pages.** Reminder lists no longer slide left for a back-swipe.
+Home remains the way back. Extra room under the last row keeps a
+Delete swipe away from the bottom of the phone.
+
+**Proof.** 418 Mac checks. TypeScript is clean. None of this sitting's
+work is on the phone.
+
+**Next.** Phone proof of this sitting on a native load after 90.
+Designed-machine jobs, Birthday, Home badges, and day-roll lock
+still need phone checks. Home make-room is in pending.
+
 ## #115-new (2026-09-15): Weekday Save, Done, and Daily visitors through the machinery
 
 **Phone.** Build 90 is on the phone. This sitting's work is in the

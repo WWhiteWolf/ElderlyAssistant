@@ -175,9 +175,9 @@ export function assembleFormItem(parts: AssembleFormParts): ReminderItem {
 
     next = keepOptionsForCodes(
         applyConnectedOptions(next, parts.optionSettings),
-        allowedOptionCaseCodesOf(kind),
+        allowedOptionCaseCodesOf(kind, parts.quarterlyStep),
     );
-    if (exclusiveGroupBitsOf(kind)) {
+    if (exclusiveGroupBitsOf(kind, parts.quarterlyStep)) {
         next = applyExclusiveGroupToItem(next, parts.optionSettings);
     }
 

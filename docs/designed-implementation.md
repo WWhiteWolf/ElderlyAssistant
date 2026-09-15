@@ -28,12 +28,19 @@ Daily on the shared list, and the banner housing. Daily is built. The
 banner housing is built.
 
 This file is the guide. There is no password to open the app. The
-phone being open is enough (Patrick, #101-new). Do not add another.
+phone being open is enough. Do not add another.
 
 The app is self-contained. A person's data stays on the phone. The
 app does not reach out to read or write from the outside world. What
 is already in App Store Connect stays there. There is no public
 website for the user's guide.
+
+Siri is out of sight. The Shortcuts and Siri phrases are offered no
+more. Keep in the back of the design a later Siri that can go into
+the app and do the work. Do not raise it.
+
+The allowed turns are 0°, 90° counter-clockwise, and 270°
+counter-clockwise. 180° upside-down is out.
 
 ## How to implement Daily (`app/daily.tsx`)
 
@@ -48,7 +55,9 @@ route. `app/weekly.tsx` is the pattern:
 `app/daily.tsx` is that same kind of route, with kind `daily` and
 returnTo `daily`. Daily's jobs — list, row, Done, Snooze, log — live
 in `components/CadenceListPage.tsx`. They do not stay as a second copy
-in `app/daily.tsx`.
+in `app/daily.tsx`. The shared list pages do not slide left for a
+back-swipe. Home is the way back. Extra room under the last row keeps
+a Delete swipe away from the bottom of the phone.
 
 The shared page does Daily's extras. They are:
 
@@ -149,8 +158,10 @@ translator and banner boundaries are:
   Birthdays write Birthdate. The form reads the table.
 - **Which Options cases a kind may carry** — holidays, afterSetDay,
   timezone, secondThursday, and wednesdayAfter. Every kind's translator
-  row carries its allowed list. The form and the saved-item translator
-  read that row; the Options metadata does not keep another kind switch.
+  row carries its allowed list. A Quarterly row also names the shorter
+  list used when a 30, 60, or 90 day chip is on. The form and the
+  saved-item translator read that row; the Options metadata does not
+  keep another kind switch.
 
 A code word is the right shape when the thing is a choice of names.
 
@@ -314,7 +325,9 @@ min. It has no Skip because it has no next cycle. Its pushed-back
 source is oneTimesnooze. The Reminders before chips are only 30 min.,
 1 hour, 2 hours, and Time of. Save does not ask again when none of
 them is on. Time is optional. After a time is set, there is a way back
-to none. The set time still speaks. It is not an Appointment. 30 min.,
+to none. The set time still speaks. With no time, it does not speak,
+and Snooze is not offered. That is the point of not setting the clock.
+It is not an Appointment. 30 min.,
 1 hour, 2 hours, and Time of sit muted until a time is set.
 
 **weekly** — page Weekly. Repeats every week on its weekday. Time is
@@ -340,8 +353,9 @@ is advanceDate. It can be pushed back. Banner set cadenceactions. A
 missing day uses shifteddayactions: Then, Next Day. On Add, the chips
 are selectable. No chip stays every three months. A chip counts that
 many days from the date entered when it is set. One chip at a time.
-The list tile still shows the date. Its pushed-back source is
-quarterlydelay.
+The list tile still shows the date. A 30, 60, or 90 day item gets
+Holidays and Time zone only. A second Thursday and a Wednesday after
+are not offered. Its pushed-back source is quarterlydelay.
 
 **yearly** — page Yearly. Repeats every year. Date required. Done is
 advanceDate. It can be pushed back. Banner set cadenceactions. A
@@ -354,7 +368,9 @@ Bucket List. Time is optional. After a time is set, there is a way back
 to none. Done is endItem. It cannot be pushed back. Banner set
 appointmentsok: OK only, which closes without opening the app. The form
 can have any and all Reminders before chips on at once. Save does not
-ask again when none of them is on. Morning of is not the set time. The
+ask again when none of them is on. They remind at the set time, like
+the rest of the app. The before chips still stand. Morning of is not
+the set time. The
 phone holds only the soonest of those times still ahead. 30 min., 1
 hour, and 2 hours sit muted until a time is set. Morning of and the
 day-before chips stay.
@@ -379,7 +395,8 @@ minus the year of birth.
 **bucketlist** — page Bucket List. No date and no time. Done is
 endItem. It cannot be pushed back. No banner to arm. It must never be
 handed to the morning roll that clears a Daily tick. It says a thing
-is not yet done, and it must survive the night.
+is not yet done, and it must survive the night. The keep-the-item
+button says Save. It is not the Done tick on the list.
 
 ## Daily on the shared list
 
@@ -390,8 +407,11 @@ here, not invented on the page.
 **Visitors.** An item of another kind that falls today is shown on
 Daily, with a from-line naming its page. It still lives on that page. A
 tap to edit returns to Daily when that edit is finished. Showing it is
-a filter, not a second saved kind. A Birthday on Daily says Birthday,
-the first name, and the age, and does not add a from-line.
+a filter, not a second saved kind. A Weekly visitor follows the
+occurrence the engine moved, including a holiday move and Day after
+the set day. Miss-telling uses that same answer. A Birthday on Daily
+says Birthday, the first name, and the age, and does not add a
+from-line.
 
 **oneTime.** Daily's filter includes kind `oneTime`. That is not a
 visitor.
@@ -462,6 +482,10 @@ choices and words from this same catalog.
 A banner naming a set the phone does not know shows no buttons at all.
 That has bitten this app before. New sets are added to the named list
 and registered; they are not invented at the housing.
+
+Each closed-app notice has its own thread name, the reminder's key.
+This Expo does not yet hand that name to the phone. Do not poke the
+notification library to make it work early.
 
 ## Opening sequence
 
@@ -598,7 +622,9 @@ date-and-time control as the rest of the app.
 
 Scheduled Reminders and Backup & Restore are doors off this page. They
 are not this page. User's Guide is a tile on this page. A tap opens the
-longer Guide that lives in the app (#104-new). The first-load popup on
+longer Guide that lives in the app (#104-new). The first two headed
+sections mark the page names so it is easy to see which page is being
+discussed. The first-load popup on
 Home has the four short paragraphs and then a fifth that suggests
 opening this page. It does not go to a website.
 Feedback is its own tile on this page. It opens the same popup Mystery
@@ -676,12 +702,13 @@ case.
 
 Daily and One Time get Time zone only. Weekly gets Holidays, Time
 zone, and Day after the set day. Appointments and Birthdays get
-Holidays and Time zone. Monthly, Quarterly, and Yearly get Holidays,
-Time zone, a second Thursday, and a Wednesday after the 6th. Bucket
-List gets none.
+Holidays and Time zone. Monthly and Yearly get Holidays, Time zone,
+a second Thursday, and a Wednesday after the 6th. Quarterly with no
+chip gets those four as well. A 30, 60, or 90 day Quarterly item
+gets Holidays and Time zone only. Bucket List gets none.
 
-On Monthly, Quarterly, and Yearly, a second Thursday and a Wednesday
-after the 6th are exclusive. Setting one turns the other off. With
-neither on, the item uses its numbered date. In all three cases, the
-saved date remains the cycle anchor: Save writes it and Done advances
-from it.
+On Monthly, Yearly, and Quarterly with no chip, a second Thursday
+and a Wednesday after the 6th are exclusive. Setting one turns the
+other off. With neither on, the item uses its numbered date. In all
+those cases, the saved date remains the cycle anchor: Save writes it
+and Done advances from it.

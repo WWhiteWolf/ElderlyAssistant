@@ -24,8 +24,8 @@ import type { ReminderListSourceCode } from './sources.ts';
  *
  * The key is the current source the app tags a reminder with, which is also
  * how a tapped banner finds its way back to the right page. A source that is
- * not here belongs to something the screen cannot name — the Timer above all
- * — and those are counted but never listed (Patrick, #12-new).
+ * not here belongs to something the screen cannot name, and those are counted
+ * but never listed.
  *
  * Every cadence has its own source. A snoozed or delayed source is named
  * separately so it does not look like a second copy of the base reminder.
@@ -110,8 +110,8 @@ export function lastDueTime(trigger: WantedTrigger, now: number): number | null 
 /**
  * Turn one entry from the phone's queue into a row a person can read.
  *
- * Returns null when the source is one the screen cannot name, which is how the
- * Timer's alerts stay off the list.
+ * Returns null when the source is one the screen cannot name, which is how
+ * those stay off the list.
  */
 export function toPending(entry: QueueEntry, now: number): PendingReminder | null {
     if (!entry.source) return null;
@@ -284,12 +284,11 @@ export function describeHowFull(held: number, ceiling: number): string {
  * What the list is not showing, in plain words, or null when it shows
  * everything.
  *
- * The Timer's alerts are the usual answer. They take up room on the phone, so
- * they are counted, but they are short-lived things you set and then hear from
- * within the hour, so listing them here would be noise (Patrick, #12-new).
+ * They take up room on the phone, so they are counted. This list only
+ * shows reminders this app can name.
  */
 export function describeWhatIsNotShown(hidden: number): string | null {
     if (hidden <= 0) return null;
-    const word = hidden === 1 ? 'reminder is' : 'reminders are';
-    return `${hidden} more ${word} set by the Timer and not shown here.`;
+    const word = hidden === 1 ? 'reminder on the phone is' : 'reminders on the phone are';
+    return `${hidden} more ${word} not shown here.`;
 }

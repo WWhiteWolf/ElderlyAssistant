@@ -76,30 +76,37 @@
    **A failing condition is not an instruction to act** — it is
    something to put in front of Patrick, who decides.
 
-   - **A decision is written into `docs/handoff.md` the moment it
-     is made, in that turn.** Not saved for the end. Writing at
-     the end is what loses things: a conversation gets compressed
-     to its conclusion, so the headline survives and the reasoning
-     and the open questions behind it do not. Patrick cannot be
-     expected to remember at the end of a day what he decided at
-     the start of it, and neither can a session.
-   - **`handoff.md` holds live work and open questions only, and
-     stays under 400 lines.** Over that it stops being read whole
-     and starts being skimmed, and what is being carried there is
-     finished work.
+   - **A decision is written the moment it is made, in that turn.**
+     Not saved for the end. Writing at the end is what loses things:
+     a conversation gets compressed to its conclusion, so the
+     headline survives and the reasoning and the open questions
+     behind it do not. Patrick cannot be expected to remember at
+     the end of a day what he decided at the start of it, and
+     neither can a session. **Common work that still governs goes
+     into `docs/handoff.md` standing rulings. Design of the app goes
+     into `docs/designed-implementation.md`. A specific task that is
+     already done does not stay in the live handoff** (Patrick,
+     #116-new).
+   - **`handoff.md` holds live work, open questions, and common work
+     that still governs, and stays under 400 lines.** Over that it
+     stops being read whole and starts being skimmed, and what is
+     being carried there is finished work.
    - **Nothing is deleted from `handoff.md` until it exists in
-     `docs/handoff-history.md`.** At #31-new a prune done on trust
-     would have destroyed five whole sessions, none of which had
-     ever been written into the history.
+     `docs/handoff-history.md` or in `docs/designed-implementation.md`,
+     as the case requires.** At #31-new a prune done on trust would
+     have destroyed five whole sessions, none of which had ever been
+     written into the history.
    - **Every session has an entry in `handoff-history.md`**, written
      at its close, **newest on top**. The new section goes above the
      rest, never under them and never above the Appendix. That is
      the one write the end of a session still owes, because the
      handoff is already current.
-   - **The test for a block being pruned**: finished, so it goes to
-     `handoff-history.md`; still decides something, so it goes to the
-     handoff's standing rulings; undone or unanswered, so it
-     stays. A block answering none of the three is already gone.
+   - **The test for a block being pruned**: a specific task already
+     done goes to history for the sitting and to the designed
+     implementation for the design; common work that still governs
+     stays in the handoff's standing rulings; undone or unanswered
+     stays in where things stand and what is open. A block answering
+     none of those is already gone.
    - **Write the condition, not the ceremony.** A rule that says
      what to perform does the work whether or not it is needed and
      fails silently the once it is skipped. A rule that says what

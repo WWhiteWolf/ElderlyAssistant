@@ -57,6 +57,8 @@ function itemCarriesBannerCategory(
     || shaped?.shiftedBannerButtonsCode === categoryCode;
 }
 
+const LIST_PAGE = { headerShown: false, gestureEnabled: false } as const;
+
 const LEFT_PAGE_KEYS = [
   'shopping_items',
   'memtest_session',
@@ -414,15 +416,15 @@ function RootHousing() {
           animation: 'fade',
         }}
       />
-      <Stack.Screen name="daily" options={{ headerShown: false }} />
+      <Stack.Screen name="daily" options={LIST_PAGE} />
       <Stack.Screen name="item-edit" options={{ headerShown: false }} />
-      <Stack.Screen name="weekly" options={{ headerShown: false }} />
-      <Stack.Screen name="monthly" options={{ headerShown: false }} />
-      <Stack.Screen name="quarterly" options={{ headerShown: false }} />
-      <Stack.Screen name="yearly" options={{ headerShown: false }} />
-      <Stack.Screen name="appointments" options={{ headerShown: false }} />
-      <Stack.Screen name="birthdays" options={{ headerShown: false }} />
-      <Stack.Screen name="bucketlist" options={{ headerShown: false }} />
+      <Stack.Screen name="weekly" options={LIST_PAGE} />
+      <Stack.Screen name="monthly" options={LIST_PAGE} />
+      <Stack.Screen name="quarterly" options={LIST_PAGE} />
+      <Stack.Screen name="yearly" options={LIST_PAGE} />
+      <Stack.Screen name="appointments" options={LIST_PAGE} />
+      <Stack.Screen name="birthdays" options={LIST_PAGE} />
+      <Stack.Screen name="bucketlist" options={LIST_PAGE} />
       <Stack.Screen name="log" options={{ headerShown: false }} />
     </Stack>
     </CoverRoot>

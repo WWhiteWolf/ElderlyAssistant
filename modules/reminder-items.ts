@@ -309,27 +309,30 @@ export function formatItemWhen(item: ReminderItem): string {
     if (item.kind === 'weekly' && typeof item.day === 'number') {
         return time ? `${DAY_NAMES[item.day]} ${time}` : DAY_NAMES[item.day];
     }
+    const shaped = translateReminderItems([item], Date.now())[0];
+    const weekday = shaped?.repeatWeekdayList?.[0];
     if (
         (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly')
-        && typeof item.weekdayOrdinal === 'number'
-        && typeof item.ordinalWeekday === 'number'
+        && weekday
+        && typeof weekday.weekdayOrdinalCount === 'number'
     ) {
         const ordinal =
-            item.weekdayOrdinal === -1 ? 'Last'
-            : item.weekdayOrdinal === 1 ? '1st'
-            : item.weekdayOrdinal === 2 ? '2nd'
-            : item.weekdayOrdinal === 3 ? '3rd'
-            : item.weekdayOrdinal === 4 ? '4th'
-            : String(item.weekdayOrdinal);
-        const day = DAY_NAMES[item.ordinalWeekday] ?? '';
+            weekday.weekdayOrdinalCount === -1 ? 'Last'
+            : weekday.weekdayOrdinalCount === 1 ? '1st'
+            : weekday.weekdayOrdinalCount === 2 ? '2nd'
+            : weekday.weekdayOrdinalCount === 3 ? '3rd'
+            : weekday.weekdayOrdinalCount === 4 ? '4th'
+            : String(weekday.weekdayOrdinalCount);
+        const day = DAY_NAMES[weekday.weekdayNumber] ?? '';
         return time ? `${ordinal} ${day} · ${time}` : `${ordinal} ${day}`;
     }
     if (
         (item.kind === 'monthly' || item.kind === 'quarterly' || item.kind === 'yearly')
-        && typeof item.afterWeekday === 'number'
+        && weekday
+        && typeof shaped.repeatAfterDayCount === 'number'
     ) {
-        const day = DAY_NAMES[item.afterWeekday] ?? '';
-        const after = typeof item.afterDayCount === 'number' ? item.afterDayCount : 6;
+        const day = DAY_NAMES[weekday.weekdayNumber] ?? '';
+        const after = shaped.repeatAfterDayCount;
         return time ? `${day} after ${after} · ${time}` : `${day} after ${after}`;
     }
     if (

@@ -200,6 +200,33 @@ export function runAssembleFormTests(): void {
         );
     });
 
+    test('Quarterly 90 Save drops both weekday patterns', () => {
+        const next = assembleFormItem(parts({
+            editKind: 'quarterly',
+            quarterlyStep: 'days90',
+            optionSettings: {
+                ...emptyOptionSettings(),
+                holidayMove: 'after',
+                weekdayOrdinal: 2,
+                ordinalWeekday: 4,
+                afterWeekday: 3,
+                afterDayCount: 6,
+            },
+        }));
+        assertSame(
+            [
+                next.intervalDays,
+                next.holidayMove,
+                next.weekdayOrdinal,
+                next.ordinalWeekday,
+                next.afterWeekday,
+                next.afterDayCount,
+            ],
+            [90, 'after', undefined, undefined, undefined, undefined],
+            'a day chip keeps Holidays and does not save a weekday pattern',
+        );
+    });
+
     test('One Time writes today’s date', () => {
         const next = assembleFormItem(parts({
             editKind: 'oneTime',

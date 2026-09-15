@@ -45,6 +45,7 @@ import {
     weekdayPatternComplete,
     withExclusiveGroup,
     clearExclusiveGroupFields,
+    keepOptionSettingsForCodes,
     type OptionSettings,
 } from '../modules/option-cases';
 
@@ -198,7 +199,7 @@ export default function ItemEditScreen() {
     optionSettingsRef.current = optionSettings;
     const noteRef = useRef(note);
     noteRef.current = note;
-    const allowedOptionCaseCodes = allowedOptionCaseCodesOf(editKind);
+    const allowedOptionCaseCodes = allowedOptionCaseCodesOf(editKind, quarterlyStep);
     const kindOptions = optionCasesForCodes(allowedOptionCaseCodes);
     const applied = appliedOptionRows(optionSettings).filter((one) =>
         kindOptions.some((c) => c.id === one.id),
@@ -241,7 +242,12 @@ export default function ItemEditScreen() {
                     setEditKind(found.kind);
                     setTempName(found.label);
                     if (typeof found.intervalMonths === 'number') setIntervalMonths(found.intervalMonths);
-                    setQuarterlyStep(quarterlyStepCodeOf(found.intervalDays));
+                    const foundStep = quarterlyStepCodeOf(found.intervalDays);
+                    setQuarterlyStep(foundStep);
+                    setOptionSettings(keepOptionSettingsForCodes(
+                        optionsFromItem(found),
+                        allowedOptionCaseCodesOf(found.kind, foundStep),
+                    ));
                     if (typeof found.day === 'number' && found.kind === 'weekly') setPendingDay(found.day);
                     if (typeof found.hour === 'number' && typeof found.minute === 'number') {
                         const t = new Date(new Date().setHours(found.hour, found.minute, 0, 0));
@@ -278,7 +284,6 @@ export default function ItemEditScreen() {
                     if (found.kind === 'bucketlist' || found.kind === 'daily' || found.kind === 'weekly') {
                         setTimeSet(typeof found.hour === 'number');
                     }
-                    setOptionSettings(optionsFromItem(found));
                     setNote(found.notes ?? '');
                 }
             } else {
@@ -567,7 +572,14 @@ export default function ItemEditScreen() {
                             <TouchableOpacity
                                 key={step}
                                 style={[styles.recurBtn, quarterlyStep === step && styles.recurBtnActive]}
-                                onPress={() => setQuarterlyStep(quarterlyStep === step ? 'none' : step)}
+                                onPress={() => {
+                                    const nextStep = quarterlyStep === step ? 'none' : step;
+                                    setQuarterlyStep(nextStep);
+                                    setOptionSettings((current) => keepOptionSettingsForCodes(
+                                        current,
+                                        allowedOptionCaseCodesOf(editKind, nextStep),
+                                    ));
+                                }}
                             >
                                 <Text style={[styles.recurBtnText, quarterlyStep === step && styles.recurBtnTextActive]}>
                                     {quarterlyStepDaysOf(step)} days
@@ -660,7 +672,7 @@ export default function ItemEditScreen() {
                     setOptionSettings(withExclusiveGroup(
                         optionSettings,
                         next,
-                        exclusiveGroupBitsOf(editKind),
+                        exclusiveGroupBitsOf(editKind, quarterlyStep),
                     ));
                 }}
                 startId={optionsStartId}

@@ -61,23 +61,23 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Weekly is for things that come round every week, on the same day of the week, and you pick the time. You can delay a reminder 15, 30, or 60 minutes, or one day.',
+        text: '**Weekly** is for things that come round every week, on the same day of the week, and you pick the time. You can delay a reminder 15, 30, or 60 minutes, or one day.',
     },
     {
         type: 'paragraph',
-        text: 'Monthly is for things that come round every month. You pick the date and a time. A 31st stays a 31st, and if a month has no 31st, it uses the last day of that month.',
+        text: '**Monthly** is for things that come round every month. You pick the date and a time. A 31st stays a 31st, and if a month has no 31st, it uses the last day of that month.',
     },
     {
         type: 'paragraph',
-        text: 'Quarterly is for things that come round every three months. You pick the date and a time, and you can choose 30, 60, or 90 days from that date instead of every three months.',
+        text: '**Quarterly** is for things that come round every three months. You pick the date and a time, and you can choose 30, 60, or 90 days from that date instead of every three months.',
     },
     {
         type: 'paragraph',
-        text: 'Yearly is for things that come round every year. You pick the date and a time.',
+        text: '**Yearly** is for things that come round every year. You pick the date and a time.',
     },
     {
         type: 'paragraph',
-        text: 'Birthdays is that special list. You enter the birthdate, and the time you want to be reminded at. The birthdate stays with the name. The reminder tells you the age they turn. You can ask to be reminded ahead of time.',
+        text: '**Birthdays** is that special list. You enter the birthdate, and the time you want to be reminded at. The birthdate stays with the name. The reminder tells you the age they turn. You can ask to be reminded ahead of time.',
     },
 
     { type: 'heading', text: 'Reminders that do not repeat' },
@@ -87,11 +87,11 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: "Appointments is for things like a doctor's visit. You pick the date and the time of the appointment. The choices for how to be reminded are explained below.",
+        text: "**Appointments** is for things like a doctor's visit. You pick the date and the time of the appointment. The choices for how to be reminded are explained below.",
     },
     {
         type: 'paragraph',
-        text: 'Bucket List is for things you want to do someday, with no date or time they are due. They stay on the list until you mark them done. The phone does not send a reminder for these.',
+        text: '**Bucket List** is for things you want to do someday, with no date or time they are due. They stay on the list until you mark them done. The phone does not send a reminder for these.',
     },
 
     { type: 'heading', text: 'Daily' },
@@ -171,6 +171,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
         type: 'bullets',
         items: [
             { text: 'Settings is where you choose Light or Dark for the app, and whether the colors match the phone or not.' },
+            { text: 'Letters and Page let you make the writing and the page darker or lighter.' },
             { text: 'You enter your name.' },
             { text: 'You set Morning Reminder Time, Midday Reminder Time, and Evening Reminder Time.' },
             { text: 'Scheduled Reminders, when tapped, shows the reminders currently armed on your phone.' },
@@ -187,6 +188,10 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     {
         type: 'paragraph',
         text: 'The pop-ups can follow that same choice, or they can follow the phone.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Letters and Page sit under Appearance. Middle is the look the app ships with. Plus makes the letters or the page darker. Minus makes them lighter. Light and Dark both use them. They stay on this phone.',
     },
     {
         type: 'paragraph',
@@ -422,7 +427,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Appointments, Birthdays, and Bucket List cannot be snoozed. A Daily reminder with no time has no Snooze button, because there is nothing to push back.',
+        text: 'Appointments, Birthdays, and Bucket List cannot be snoozed. A Daily reminder with no time has no Snooze button, because there is nothing to push back. A One Time for today with no time has no Snooze button either. That is the point of not setting the clock.',
     },
 
     { type: 'heading', text: 'Banners' },

@@ -1,9 +1,28 @@
 import { useRouter } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, type TextStyle } from 'react-native';
 import { HeaderButton, PageFrame } from '../components/PageFrame';
 import { PAGE_LABELS } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
 import { USER_GUIDE_BLOCKS } from '../constants/user-guide';
+
+/** Draw **this** as heavier type. The working Guide and the in-app copy use the same marks. */
+function GuideMarkedText({ text, style }: { text: string; style: TextStyle }) {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    return (
+        <Text style={style}>
+            {parts.map((part, index) => {
+                if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+                    return (
+                        <Text key={index} style={{ fontWeight: '700' }}>
+                            {part.slice(2, -2)}
+                        </Text>
+                    );
+                }
+                return <Text key={index}>{part}</Text>;
+            })}
+        </Text>
+    );
+}
 
 export default function UserGuideScreen() {
     const router = useRouter();
@@ -33,14 +52,14 @@ export default function UserGuideScreen() {
                         }
                         if (block.type === 'paragraph') {
                             return (
-                                <Text key={index} style={styles.paragraph}>{block.text}</Text>
+                                <GuideMarkedText key={index} text={block.text} style={styles.paragraph} />
                             );
                         }
                         if (block.type === 'lines') {
                             return (
                                 <View key={index} style={styles.lines}>
                                     {block.items.map((one) => (
-                                        <Text key={one} style={styles.line}>{one}</Text>
+                                        <GuideMarkedText key={one} text={one} style={styles.line} />
                                     ))}
                                 </View>
                             );
@@ -56,7 +75,7 @@ export default function UserGuideScreen() {
                                         ]}
                                     >
                                         <Text style={styles.bulletMark}>•</Text>
-                                        <Text style={styles.bulletText}>{one.text}</Text>
+                                        <GuideMarkedText text={one.text} style={styles.bulletText} />
                                     </View>
                                 ))}
                             </View>

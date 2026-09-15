@@ -45,8 +45,11 @@ function shapeOf(saved: ReminderItem) {
     return translateReminderItems([saved], NOW)[0];
 }
 
-function optionCaseIdsFor(kind: ReminderItem['kind']) {
-    return optionCasesForCodes(allowedOptionCaseCodesOf(kind)).map((one) => one.id);
+function optionCaseIdsFor(
+    kind: ReminderItem['kind'],
+    quarterlyStep?: 'none' | 'days30' | 'days60' | 'days90',
+) {
+    return optionCasesForCodes(allowedOptionCaseCodesOf(kind, quarterlyStep)).map((one) => one.id);
 }
 
 export function runTranslatorCadenceTests(): void {
@@ -116,6 +119,20 @@ export function runTranslatorCadenceTests(): void {
             [shaped.sourceScreenCode, shaped.doneActionCode, shaped.leadTimeList.length, shaped.bannerButtonsCode, shaped.bannerTitleText],
             ['oneTime', 'thisCycle', 2, 'onetimeactions', 'Daily Routine'],
             'a Daily one-shot is a one-off that still belongs to Daily',
+        );
+    });
+
+    test('A Daily one-shot with no clock has no due time', () => {
+        const shaped = shapeOf(item({
+            kind: 'oneTime',
+            year: 2026,
+            month: 5,
+            day: 10,
+        }));
+        assertSame(
+            [shaped.hasDueTimeBit, shaped.dueMoment],
+            [false, undefined],
+            'no clock means no firing, which is the point of not setting the clock',
         );
     });
 
@@ -553,6 +570,37 @@ export function runTranslatorCadenceTests(): void {
         );
     });
 
+    test('Restore strips a weekday pattern from a Quarterly day-count item', () => {
+        const restored = sanitizeCurrentReminderItems([
+            item({
+                kind: 'quarterly',
+                year: 2026,
+                month: 0,
+                day: 15,
+                hour: 10,
+                minute: 0,
+                intervalDays: 90,
+                holidayMove: 'before',
+                weekdayOrdinal: 2,
+                ordinalWeekday: 4,
+                afterWeekday: 3,
+                afterDayCount: 6,
+            }),
+        ]);
+        const saved = restored?.[0];
+        assertSame(
+            [
+                saved?.holidayMove,
+                saved?.weekdayOrdinal,
+                saved?.ordinalWeekday,
+                saved?.afterWeekday,
+                saved?.afterDayCount,
+            ],
+            ['before', undefined, undefined, undefined, undefined],
+            'a 90 day item keeps Holidays and drops both weekday patterns',
+        );
+    });
+
     test('Restore writes the year of birth onto an older Birthday', () => {
         const restored = sanitizeCurrentReminderItems([
             item({
@@ -644,7 +692,25 @@ export function runTranslatorCadenceTests(): void {
                 ['holidays', 'timezone', 'secondThursday', 'wednesdayAfter'],
                 ['holidays', 'timezone', 'secondThursday', 'wednesdayAfter'],
             ],
-            'all three dated cadence rows carry the same allowed Options codes',
+            'no-chip Quarterly and Yearly carry the same allowed Options codes as Monthly',
+        );
+    });
+
+    test('A Quarterly day-count chip has Holidays and Time zone only', () => {
+        assertSame(
+            [
+                optionCaseIdsFor('quarterly', 'days30'),
+                optionCaseIdsFor('quarterly', 'days60'),
+                optionCaseIdsFor('quarterly', 'days90'),
+                exclusiveGroupBitsOf('quarterly', 'days90'),
+            ],
+            [
+                ['holidays', 'timezone'],
+                ['holidays', 'timezone'],
+                ['holidays', 'timezone'],
+                undefined,
+            ],
+            'a 30, 60, or 90 day item does not offer a weekday pattern',
         );
     });
 
@@ -863,6 +929,27 @@ export function runTranslatorCadenceTests(): void {
             [shaped.repeatUnitCode, shaped.repeatIntervalCount, shaped.quarterlyStepCode],
             ['day', 90, 'days90'],
             'the chip writes a day count the engine already steps',
+        );
+    });
+
+    test('A Quarterly day-count chip does not carry a leftover weekday pattern', () => {
+        const shaped = shapeOf(item({
+            kind: 'quarterly',
+            year: 2026,
+            month: 0,
+            day: 15,
+            hour: 10,
+            minute: 0,
+            intervalDays: 90,
+            weekdayOrdinal: 2,
+            ordinalWeekday: 4,
+            afterWeekday: 3,
+            afterDayCount: 6,
+        }));
+        assertSame(
+            [shaped.repeatUnitCode, shaped.repeatIntervalCount, shaped.repeatWeekdayList, shaped.repeatAfterDayCount],
+            ['day', 90, undefined, undefined],
+            'the chip is the step; a leftover weekday is not in force',
         );
     });
 

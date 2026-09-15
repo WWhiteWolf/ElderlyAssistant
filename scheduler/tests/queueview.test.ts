@@ -120,7 +120,7 @@ export function runQueueViewTests(): void {
         );
     });
 
-    test('A Timer alert is left off the list', () => {
+    test('A reminder with no source is left off the list', () => {
         assertSame(toPending(entry({ source: undefined }), NOW), null, 'expected nothing');
     });
 
@@ -399,7 +399,7 @@ export function runQueueViewTests(): void {
     test('One hidden reminder is named in the singular', () => {
         assertSame(
             describeWhatIsNotShown(1),
-            '1 more reminder is set by the Timer and not shown here.',
+            '1 more reminder on the phone is not shown here.',
             'expected the singular',
         );
     });
@@ -407,7 +407,7 @@ export function runQueueViewTests(): void {
     test('Several hidden reminders are named in the plural', () => {
         assertSame(
             describeWhatIsNotShown(3),
-            '3 more reminders are set by the Timer and not shown here.',
+            '3 more reminders on the phone are not shown here.',
             'expected the plural',
         );
     });

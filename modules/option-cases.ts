@@ -356,3 +356,12 @@ export function keepOptionsForCodes(
     }
     return out;
 }
+
+/** The same strip, for the Options sheet's settings rather than a saved item. */
+export function keepOptionSettingsForCodes(
+    settings: OptionSettings,
+    allowedCodes: readonly OptionCaseCode[],
+): OptionSettings {
+    const stub: ReminderItem = { id: '', kind: 'quarterly', label: '' };
+    return optionsFromItem(keepOptionsForCodes(applyConnectedOptions(stub, settings), allowedCodes));
+}

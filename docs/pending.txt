@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-15 (#115-new)
+Last updated: 2026-09-15 (#116-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -48,17 +48,6 @@ WHAT'S NEXT
    smiling face. Quarterly is a maple leaf. The Help tile is named
    Helper. The person's name is in the backup. Needs a look on the next
    load, upright and turned.
-6. QUARTERLY DAY CHIP WITH A WEEKDAY PATTERN (Patrick, #114-new).
-   A 30, 60, or 90 day chip can sit on with a second Thursday or a
-   Wednesday after. The engine follows the chip and ignores the
-   weekday. The list still names the weekday. Next to be fixed.
-7. USER'S GUIDE LETTERS AND PAGE (Patrick, #114-new). Letters and
-   Page are on Settings. They are new. The Guide’s Settings section
-   does not mention them. The Guide needs to be updated.
-8. SCHEDULED REMINDERS STILL NAMES THE TIMER (Patrick, #114-new).
-    Timer Alerts have left Memory. The foot of Scheduled Reminders
-    still says the hidden reminders were set by the Timer. Next to
-    be fixed.
 
 
 PENDING
@@ -68,10 +57,6 @@ Things waiting on something — mostly on a build.
 1. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
    WILL COVER (Patrick, #52-new). The during-build tests are
    thrown away. The run is not kept.
-2. ONE TIME WITH NO TIME STILL SPEAKS (Patrick, #113-new). Saving
-   One Time for today with no clock still gets a due moment at noon,
-   so it can speak and can show Snooze. Daily itself does not do
-   that. To be done and decided on.
 
 
 FACTS THAT APPLY TO THE ONGOING WORK
@@ -177,6 +162,32 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+144. #116-new — The User's Guide marks page names in Reminders that
+    repeat and Reminders that do not repeat. The working document and
+    the in-app copy agree. Not on the phone.
+
+143. #116-new — Reminder lists no longer slide left for a back-swipe.
+    The last row has room above the bottom of the phone. Not on the
+    phone.
+
+142. #116-new — One Time with no clock does not fire and does not
+    offer Snooze. No clock means no reminder. 418 Mac checks.
+    TypeScript clean. Not on the phone.
+
+141. #116-new — Scheduled Reminders no longer names the Timer. The
+    foot says how many more reminders on the phone are not shown
+    here. 416 Mac checks. TypeScript clean. Not on the phone.
+
+140. #116-new — The User's Guide now names Letters and Page on
+    Settings. Middle is the look the app ships with. Plus is darker.
+    Minus is lighter. Light and Dark both use them. The working
+    document and the in-app copy agree. Not on the phone.
+
+139. #116-new — A Quarterly 30, 60, or 90 day item gets Holidays and
+    Time zone only. A second Thursday and a Wednesday after are not
+    offered. Every three months still has those weekday choices.
+    416 Mac checks. TypeScript clean. Not on the phone.
 
 138. #115-new — Weekly visitors on Daily now follow the occurrence
     the engine moved, including a holiday move and Day after the set

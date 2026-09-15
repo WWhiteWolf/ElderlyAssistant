@@ -10,6 +10,7 @@ import {
     View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HeaderButton, PageFrame } from './PageFrame';
 import { Cover } from './Cover';
 import { ReminderItemRow } from './ReminderItemRow';
@@ -64,6 +65,7 @@ export default function CadenceListPage({
     const router = useRouter();
     const theme = useTheme();
     const styles = makeStyles(theme);
+    const insets = useSafeAreaInsets();
     const [items, setItems] = useState<ReminderItem[]>([]);
     const [showAddPopup, setShowAddPopup] = useState(false);
     const [highlightId, setHighlightId] = useState<string | null>(null);
@@ -270,7 +272,7 @@ export default function CadenceListPage({
             >
             <ScrollView
                 style={styles.scroll}
-                contentContainerStyle={{ paddingBottom: 40 }}
+                contentContainerStyle={{ paddingBottom: insets.bottom + 56 }}
                 scrollEnabled={!draggingId}
                 scrollEventThrottle={16}
                 directionalLockEnabled

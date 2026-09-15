@@ -109,6 +109,13 @@ export interface ScreenRules {
     /** The Options cases this kind is allowed to carry. */
     allowedOptionCaseCodes: readonly OptionCaseCode[];
     /**
+     * Options this kind may carry when a Quarterly day-count chip is on.
+     *
+     * Left off, the kind has one Options list. A 30, 60, or 90 day chip
+     * uses this list instead of allowedOptionCaseCodes.
+     */
+    allowedOptionCaseCodesWhenDayStep?: readonly OptionCaseCode[];
+    /**
      * The date line on New and Edit. Left off, it is Due Date.
      */
     dateLabelText?: string;
@@ -439,6 +446,7 @@ const quarterlyCadenceRules: ScreenRules = {
     waitsUntilNearDays: 60,
     bannerTitleTextOf: () => 'Quarterly',
     quarterlyStepOf: (item) => quarterlyStepCodeOf(item.intervalDays),
+    allowedOptionCaseCodesWhenDayStep: ['holidays', 'timezone'],
 };
 
 const yearlyCadenceRules: ScreenRules = {
@@ -554,6 +562,27 @@ const oneTimeCadenceRules: ScreenRules = {
     allowedOptionCaseCodes: ['timezone'],
     keepsLeadChipsBit: true,
     pushedBackStampOf: (item) => item.snoozedUntil,
+    dueOf: (item, _now) => {
+        if (typeof item.year !== 'number'
+            || typeof item.month !== 'number'
+            || typeof item.day !== 'number'
+            || typeof item.hour !== 'number'
+            || typeof item.minute !== 'number') {
+            return { hasDueTimeBit: false };
+        }
+        return {
+            hasDueTimeBit: true,
+            dueMoment: new Date(
+                item.year,
+                item.month,
+                item.day,
+                item.hour,
+                item.minute,
+                0,
+                0,
+            ).getTime(),
+        };
+    },
     bannerTitleTextOf: () => 'Daily Routine',
     bannerBodyTextOf: (item) => `Time for ${item.label}!`,
 };
@@ -611,8 +640,9 @@ export function sanitizeCurrentReminderItem(
     }
     const saved = value as ReminderItem;
     const rules = rulesByKind[candidate.kind];
-    let out = keepOptionsForCodes(saved, rules.allowedOptionCaseCodes);
-    if (rules.exclusiveGroupBits) {
+    const step = rules.quarterlyStepOf?.(saved) ?? 'none';
+    let out = keepOptionsForCodes(saved, allowedOptionCaseCodesOf(candidate.kind, step));
+    if (exclusiveGroupBitsOf(candidate.kind, step)) {
         out = applyExclusiveGroupToItem(out, optionsFromItem(out));
     }
     if (rules.keepsBirthYearBit) {
@@ -804,13 +834,26 @@ export function hasQuarterlyStepOf(kind: ReminderItem['kind']): boolean {
 /** The Options cases allowed by this saved kind's table row. */
 export function allowedOptionCaseCodesOf(
     kind: ReminderItem['kind'],
+    quarterlyStep: QuarterlyStepCode = 'none',
 ): readonly OptionCaseCode[] {
-    return rulesByKind[kind].allowedOptionCaseCodes;
+    const rules = rulesByKind[kind];
+    if (
+        rules.allowedOptionCaseCodesWhenDayStep !== undefined
+        && quarterlyStepDaysOf(quarterlyStep) !== undefined
+    ) {
+        return rules.allowedOptionCaseCodesWhenDayStep;
+    }
+    return rules.allowedOptionCaseCodes;
 }
 
 /** The exclusive group for this saved kind, if it has one. */
 export function exclusiveGroupBitsOf(
     kind: ReminderItem['kind'],
+    quarterlyStep: QuarterlyStepCode = 'none',
 ): readonly OptionCaseCode[] | undefined {
-    return rulesByKind[kind].exclusiveGroupBits;
+    const group = rulesByKind[kind].exclusiveGroupBits;
+    if (!group || group.length === 0) return undefined;
+    const allowed = new Set(allowedOptionCaseCodesOf(kind, quarterlyStep));
+    const live = group.filter((code) => allowed.has(code));
+    return live.length > 0 ? live : undefined;
 }

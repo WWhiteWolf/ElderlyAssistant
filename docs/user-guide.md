@@ -1,6 +1,8 @@
 # User's Guide — words for the app
 
-From #103-new. Settings section from #104-new. Options from #105-new.
+From #103-new. Settings section from #104-new. Letters and Page in
+Settings from #116-new. Page names marked in the first two sections
+from #116-new. Options from #105-new.
 Delete, Save, Done, Snooze, Banners, and Log from #106-new. On the
 Settings User's Guide page. Helper pop-up words are at the end, and in
 Helper.
@@ -41,22 +43,22 @@ These are the reminders that come round again. When the day and time
 arrive, the phone reminds you. Done means this round is taken care
 of, and it will come round again.
 
-Weekly is for things that come round every week, on the same day of
+**Weekly** is for things that come round every week, on the same day of
 the week, and you pick the time. You can delay a reminder 15, 30, or
 60 minutes, or one day.
 
-Monthly is for things that come round every month. You pick the date
+**Monthly** is for things that come round every month. You pick the date
 and a time. A 31st stays a 31st, and if a month has no 31st, it uses
 the last day of that month.
 
-Quarterly is for things that come round every three months. You pick
+**Quarterly** is for things that come round every three months. You pick
 the date and a time, and you can choose 30, 60, or 90 days from that
 date instead of every three months.
 
-Yearly is for things that come round every year. You pick the date
+**Yearly** is for things that come round every year. You pick the date
 and a time.
 
-Birthdays is that special list. You enter the birthdate, and the time
+**Birthdays** is that special list. You enter the birthdate, and the time
 you want to be reminded at. The birthdate stays with the name. The
 reminder tells you the age they turn. You can ask to be reminded
 ahead of time.
@@ -67,11 +69,11 @@ These are for one occasion, or for something you want to keep on a
 list with no date. They do not come round again. Done means this one
 is finished. It stays on the page, and it will not remind you again.
 
-Appointments is for things like a doctor's visit. You pick the date
+**Appointments** is for things like a doctor's visit. You pick the date
 and the time of the appointment. The choices for how to be reminded
 are explained below.
 
-Bucket List is for things you want to do someday, with no date or
+**Bucket List** is for things you want to do someday, with no date or
 time they are due. They stay on the list until you mark them done.
 The phone does not send a reminder for these.
 
@@ -139,6 +141,8 @@ Settings is reached by tapping the gear in the header of Home.
 
 - Settings is where you choose Light or Dark for the app, and whether
   the colors match the phone or not.
+- Letters and Page let you make the writing and the page darker or
+  lighter.
 - You enter your name.
 - You set Morning Reminder Time, Midday Reminder Time, and Evening
   Reminder Time.
@@ -155,6 +159,11 @@ You choose Light or Dark for the app, whichever is easier on your
 eyes.
 
 The pop-ups can follow that same choice, or they can follow the
+phone.
+
+Letters and Page sit under Appearance. Middle is the look the app
+ships with. Plus makes the letters or the page darker. Minus makes
+them lighter. Light and Dark both use them. They stay on this
 phone.
 
 You enter your name. Tap to set it, type it, and Save. Home will
@@ -302,7 +311,7 @@ Monthly, Quarterly, and Yearly: Delay 1 Day, Delay 1 Week, or Delay 1 Month.
 
 The banner uses the same delays. Those buttons say Delay.
 
-Appointments, Birthdays, and Bucket List cannot be snoozed. A Daily reminder with no time has no Snooze button, because there is nothing to push back.
+Appointments, Birthdays, and Bucket List cannot be snoozed. A Daily reminder with no time has no Snooze button, because there is nothing to push back. A One Time for today with no time has no Snooze button either. That is the point of not setting the clock.
 
 ## Banners
 

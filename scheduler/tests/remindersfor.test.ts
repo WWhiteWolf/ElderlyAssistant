@@ -273,6 +273,14 @@ export function runRemindersForTests(): void {
         );
     });
 
+    test('A One Time with no clock gets no reminder at all', () => {
+        assertSame(
+            wantedOf(oneTime({ hour: undefined, minute: undefined })).length,
+            0,
+            'no clock means no firing',
+        );
+    });
+
     // ---- Weekly, and the tick can skip this week ----
 
     function weekly(changes: Partial<ReminderItem> = {}): ReminderItem {

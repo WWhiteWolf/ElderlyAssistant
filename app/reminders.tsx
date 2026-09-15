@@ -42,8 +42,7 @@ export default function RemindersScreen() {
     const styles = makeStyles(theme);
 
     const [groups, setGroups] = useState<Group[]>([]);
-    // Everything the phone is holding, and how much of it this list leaves out
-    // — the Timer's alerts, which take up room but are not shown.
+    // Everything the phone is holding, and how much of it this list leaves out.
     const [held, setHeld] = useState(0);
     const [hidden, setHidden] = useState(0);
     const [loaded, setLoaded] = useState(false);
