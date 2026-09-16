@@ -104,7 +104,7 @@ export const Themes: Record<ThemeName, Theme> = {
         header: '#1a6e8a',
         titleText: '#ffffff',
         subtitleText: '#a8d4e0',
-        pageBackground: '#e8f4f8',
+        pageBackground: '#b6c1c5', // #117-new: Middle sits three even steps below the old page so every lighter tap still moves
         bridge: '#2d9e8f',
         tileCircle: '#4caba1',
         tileCircleBorder: '#1a6e8a', // #64: crisp header-teal outline (was #43a297 — near-identical to the fill)
@@ -178,8 +178,8 @@ export const Themes: Record<ThemeName, Theme> = {
         card: '#4a3e30',
         cardBorder: '#a3481f',
         cardTitle: '#f0a83a',
-        bodyText: '#fff6de',
-        mutedText: '#e9dcba',
+        bodyText: '#ccc3ac', // #117-new: Middle sits three even steps below the old cream so every lighter tap still moves
+        mutedText: '#d8cbaa', // #117-new: Middle sits one even step below the old muted cream so every lighter tap still moves
         headerButton: '#4a1f0c',
         buttonPrimary: '#c9622e',
         buttonPrimaryText: '#fff6de',
@@ -205,7 +205,7 @@ export const Themes: Record<ThemeName, Theme> = {
         buttonDone: '#27ae60',
         buttonDoneText: '#ffffff',
         countdown: '#fff6de',
-        settingValue: '#fff6de',
+        settingValue: '#ccc3ac', // #117-new: same Letters Middle as bodyText
         settingArrow: '#e9dcba',
         progressTrack: '#5c5044',
         delay: '#FF9500',
@@ -241,11 +241,23 @@ export type PopupStyle = 'match' | 'phone';
 
 export const THEME_STORAGE_KEY = 'app_theme';    // 'light' | 'dark'
 export const POPUP_STORAGE_KEY = 'popup_style';  // 'match' | 'phone'
-export const LETTERING_STORAGE_KEY = 'look_lettering';
-export const PAGE_STORAGE_KEY = 'look_page';
+
+// Each theme keeps its own Letters and Page (#117-new).
+const LETTERING_STORAGE_KEYS: Record<ThemeName, string> = {
+    light: 'look_lettering_light',
+    dark: 'look_lettering_dark',
+};
+const PAGE_STORAGE_KEYS: Record<ThemeName, string> = {
+    light: 'look_page_light',
+    dark: 'look_page_dark',
+};
 
 /** −3 (much lighter) through 0 (shipped) to +3 (much darker). */
 export type LookShift = number;
+
+type LookByTheme = Record<ThemeName, LookShift>;
+
+const MIDDLE_LOOK: LookByTheme = { light: 0, dark: 0 };
 
 function clampLookShift(n: number): LookShift {
     if (!Number.isFinite(n)) return 0;
@@ -257,28 +269,86 @@ function parseLookShift(raw: string | null): LookShift {
     return clampLookShift(Number(raw));
 }
 
-// Mix a hex color toward black (plus / more) or white (minus / less).
-// Each step is a modest move so three steps stay in the same look.
-function shiftHex(hex: string, steps: LookShift): string {
-    if (steps === 0 || hex[0] !== '#' || (hex.length !== 7)) return hex;
-    const amount = Math.abs(steps) * 0.12;
+async function readLookByTheme(keys: Record<ThemeName, string>): Promise<LookByTheme> {
+    return {
+        light: parseLookShift(await AsyncStorage.getItem(keys.light)),
+        dark: parseLookShift(await AsyncStorage.getItem(keys.dark)),
+    };
+}
+
+// Each plus or minus step moves perceived lightness by the same amount,
+// so a step toward darker and a step toward lighter look even.
+const LOOK_STEP_LIGHTNESS = 6;
+
+function srgbChannelToLinear(c: number): number {
+    const s = c / 255;
+    return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+}
+
+function linearChannelToSrgb(c: number): number {
+    const s = c <= 0.0031308 ? 12.92 * c : 1.055 * (c ** (1 / 2.4)) - 0.055;
+    return Math.max(0, Math.min(255, Math.round(s * 255)));
+}
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+    if (hex[0] !== '#' || hex.length !== 7) return null;
     const n = parseInt(hex.slice(1), 16);
-    if (Number.isNaN(n)) return hex;
-    let r = (n >> 16) & 255;
-    let g = (n >> 8) & 255;
-    let b = n & 255;
-    if (steps > 0) {
-        const k = 1 - amount;
-        r = Math.round(r * k);
-        g = Math.round(g * k);
-        b = Math.round(b * k);
-    } else {
-        r = Math.round(r + (255 - r) * amount);
-        g = Math.round(g + (255 - g) * amount);
-        b = Math.round(b + (255 - b) * amount);
-    }
-    const toHex = (c: number) => Math.max(0, Math.min(255, c)).toString(16).padStart(2, '0');
+    if (Number.isNaN(n)) return null;
+    return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
+
+function rgbToHex(r: number, g: number, b: number): string {
+    const toHex = (c: number) => c.toString(16).padStart(2, '0');
     return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+function labF(t: number): number {
+    return t > 216 / 24389 ? Math.cbrt(t) : ((24389 / 27) * t + 16) / 116;
+}
+
+function labFInv(t: number): number {
+    const t3 = t * t * t;
+    return t3 > 216 / 24389 ? t3 : (116 * t - 16) / (24389 / 27);
+}
+
+function rgbToLab(r: number, g: number, b: number): { L: number; a: number; bLab: number } {
+    const R = srgbChannelToLinear(r);
+    const G = srgbChannelToLinear(g);
+    const B = srgbChannelToLinear(b);
+    const x = 0.4124564 * R + 0.3575761 * G + 0.1804375 * B;
+    const y = 0.2126729 * R + 0.7151522 * G + 0.0721750 * B;
+    const z = 0.0193339 * R + 0.1191920 * G + 0.9503041 * B;
+    const fx = labF(x / 0.95047);
+    const fy = labF(y);
+    const fz = labF(z / 1.08883);
+    return { L: 116 * fy - 16, a: 500 * (fx - fy), bLab: 200 * (fy - fz) };
+}
+
+function labToRgb(L: number, a: number, bLab: number): { r: number; g: number; b: number } {
+    const fy = (L + 16) / 116;
+    const fx = a / 500 + fy;
+    const fz = fy - bLab / 200;
+    const x = 0.95047 * labFInv(fx);
+    const y = labFInv(fy);
+    const z = 1.08883 * labFInv(fz);
+    const R = 3.2404542 * x - 1.5371385 * y - 0.4985314 * z;
+    const G = -0.9692660 * x + 1.8760108 * y + 0.0415560 * z;
+    const B = 0.0556434 * x - 0.2040259 * y + 1.0572252 * z;
+    return {
+        r: linearChannelToSrgb(R),
+        g: linearChannelToSrgb(G),
+        b: linearChannelToSrgb(B),
+    };
+}
+
+function shiftHex(hex: string, steps: LookShift): string {
+    if (steps === 0) return hex;
+    const rgb = hexToRgb(hex);
+    if (!rgb) return hex;
+    const lab = rgbToLab(rgb.r, rgb.g, rgb.b);
+    const nextL = Math.max(0, Math.min(100, lab.L - steps * LOOK_STEP_LIGHTNESS));
+    const next = labToRgb(nextL, lab.a, lab.bLab);
+    return rgbToHex(next.r, next.g, next.b);
 }
 
 function applyLookShifts(theme: Theme, lettering: LookShift, page: LookShift): Theme {
@@ -320,9 +390,12 @@ const ThemeContext = createContext<ThemeControls | null>(null);
 export function ThemeProvider({ children }: { children: ReactNode }) {
     const [themeName, setThemeNameState] = useState<ThemeName>(DEFAULT_THEME);
     const [popupStyle, setPopupStyleState] = useState<PopupStyle>('match');
-    const [letteringShift, setLetteringShiftState] = useState<LookShift>(0);
-    const [pageShift, setPageShiftState] = useState<LookShift>(0);
+    const [letteringByTheme, setLetteringByTheme] = useState<LookByTheme>(MIDDLE_LOOK);
+    const [pageByTheme, setPageByTheme] = useState<LookByTheme>(MIDDLE_LOOK);
     const [preferencesReady, setPreferencesReady] = useState(false);
+
+    const letteringShift = letteringByTheme[themeName];
+    const pageShift = pageByTheme[themeName];
 
     // Load the saved choices once at startup. Until they arrive the app
     // shows DEFAULT_THEME, so a dark-theme user may see a brief light
@@ -336,12 +409,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
                 if (t === 'light' || t === 'dark') loadedTheme = t;
                 const p = await AsyncStorage.getItem(POPUP_STORAGE_KEY);
                 if (p === 'match' || p === 'phone') loadedPopup = p;
-                const letters = parseLookShift(await AsyncStorage.getItem(LETTERING_STORAGE_KEY));
-                const page = parseLookShift(await AsyncStorage.getItem(PAGE_STORAGE_KEY));
+                const letters = await readLookByTheme(LETTERING_STORAGE_KEYS);
+                const page = await readLookByTheme(PAGE_STORAGE_KEYS);
                 setThemeNameState(loadedTheme);
                 setPopupStyleState(loadedPopup);
-                setLetteringShiftState(letters);
-                setPageShiftState(page);
+                setLetteringByTheme(letters);
+                setPageByTheme(page);
             } catch (e) {
                 console.error(e);
             } finally {
@@ -369,13 +442,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     };
     const setLetteringShift = (n: LookShift) => {
         const next = clampLookShift(n);
-        setLetteringShiftState(next);
-        AsyncStorage.setItem(LETTERING_STORAGE_KEY, String(next)).catch(console.error);
+        setLetteringByTheme((prev) => ({ ...prev, [themeName]: next }));
+        AsyncStorage.setItem(LETTERING_STORAGE_KEYS[themeName], String(next)).catch(console.error);
     };
     const setPageShift = (n: LookShift) => {
         const next = clampLookShift(n);
-        setPageShiftState(next);
-        AsyncStorage.setItem(PAGE_STORAGE_KEY, String(next)).catch(console.error);
+        setPageByTheme((prev) => ({ ...prev, [themeName]: next }));
+        AsyncStorage.setItem(PAGE_STORAGE_KEYS[themeName], String(next)).catch(console.error);
     };
 
     const reloadPreferences = async () => {
@@ -386,12 +459,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             if (t === 'light' || t === 'dark') loadedTheme = t;
             const p = await AsyncStorage.getItem(POPUP_STORAGE_KEY);
             if (p === 'match' || p === 'phone') loadedPopup = p;
-            const letters = parseLookShift(await AsyncStorage.getItem(LETTERING_STORAGE_KEY));
-            const page = parseLookShift(await AsyncStorage.getItem(PAGE_STORAGE_KEY));
+            const letters = await readLookByTheme(LETTERING_STORAGE_KEYS);
+            const page = await readLookByTheme(PAGE_STORAGE_KEYS);
             setThemeNameState(loadedTheme);
             setPopupStyleState(loadedPopup);
-            setLetteringShiftState(letters);
-            setPageShiftState(page);
+            setLetteringByTheme(letters);
+            setPageByTheme(page);
         } catch (e) {
             console.error(e);
         }

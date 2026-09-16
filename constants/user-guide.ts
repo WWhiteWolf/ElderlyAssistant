@@ -183,27 +183,27 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     { type: 'paragraph', text: 'Each of these is explained below.' },
     {
         type: 'paragraph',
-        text: 'You choose Light or Dark for the app, whichever is easier on your eyes.',
+        text: '**App Colors.** You choose Light or Dark for the app, whichever is easier on your eyes.',
     },
     {
         type: 'paragraph',
-        text: 'The pop-ups can follow that same choice, or they can follow the phone.',
+        text: '**Popup Colors.** The pop-ups can follow that same choice, or they can follow the phone.',
     },
     {
         type: 'paragraph',
-        text: 'Letters and Page sit under Appearance. Middle is the look the app ships with. Plus makes the letters or the page darker. Minus makes them lighter. Light and Dark both use them.',
+        text: '**Letters and Page** sit under Appearance. Middle is the look the app ships with. Plus makes the letters or the page darker. Minus makes them lighter. Each of Light and Dark keeps its own Letters and Page.',
     },
     {
         type: 'paragraph',
-        text: 'You enter your name. Tap to set it, type it, and Save. Home will greet you by name.',
+        text: '**Your Name.** You enter your name. Tap to set it, type it, and Save. Home will greet you by name.',
     },
     { type: 'paragraph', text: 'You set three times:' },
     {
         type: 'lines',
         items: [
-            'Morning Reminder Time',
-            'Midday Reminder Time',
-            'Evening Reminder Time',
+            '**Morning Reminder Time**',
+            '**Midday Reminder Time**',
+            '**Evening Reminder Time**',
         ],
     },
     {
@@ -212,7 +212,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Scheduled Reminders is a list of what is currently armed on your phone. Tap it to see that list.',
+        text: '**Scheduled Reminders** is a list of what is currently armed on your phone. Tap it to see that list.',
     },
     {
         type: 'bullets',
@@ -227,7 +227,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Backup & Restore is for saving a copy of the reminders from your phone, and for putting them back on your phone. Export Backup saves a file you can keep.',
+        text: '**Backup & Restore** is for saving a copy of the reminders from your phone, and for putting them back on your phone. Export Backup saves a file you can keep.',
     },
     {
         type: 'bullets',
@@ -242,11 +242,11 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: "User's Guide is this Guide. Tap it, and it will help you to understand this app.",
+        text: "**User's Guide** is this Guide. Tap it, and it will help you to understand this app.",
     },
     {
         type: 'paragraph',
-        text: 'Feedback is for comments, suggestions, or problems you want to pass on to the developer. Tap it, answer a few questions, and add comments or a question if you care to, then tap the Send Feedback button. It uses the phone\'s Mail to open a pre-addressed email to the developer, and sends it.',
+        text: '**Feedback** is for comments, suggestions, or problems you want to pass on to the developer. Tap it, answer a few questions, and add comments or a question if you care to, then tap the Send Feedback button. It uses the phone\'s Mail to open a pre-addressed email to the developer, and sends it.',
     },
     {
         type: 'paragraph',

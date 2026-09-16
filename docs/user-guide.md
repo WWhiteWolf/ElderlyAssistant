@@ -1,7 +1,8 @@
 # User's Guide — words for the app
 
 From #103-new. Settings section from #104-new. Letters and Page in
-Settings from #116-new. Page names marked in the first two sections
+Settings from #116-new. Settings tile names marked like the page names
+from #117-new. Page names marked in the first two sections
 from #116-new. Options from #105-new.
 Delete, Save, Done, Snooze, Banners, and Log from #106-new. On the
 Settings User's Guide page. Helper pop-up words are at the end, and in
@@ -156,31 +157,31 @@ Settings is reached by tapping the gear in the header of Home.
 
 Each of these is explained below.
 
-You choose Light or Dark for the app, whichever is easier on your
+**App Colors.** You choose Light or Dark for the app, whichever is easier on your
 eyes.
 
-The pop-ups can follow that same choice, or they can follow the
+**Popup Colors.** The pop-ups can follow that same choice, or they can follow the
 phone.
 
-Letters and Page sit under Appearance. Middle is the look the app
+**Letters and Page** sit under Appearance. Middle is the look the app
 ships with. Plus makes the letters or the page darker. Minus makes
-them lighter. Light and Dark both use them.
+them lighter. Each of Light and Dark keeps its own Letters and Page.
 
-You enter your name. Tap to set it, type it, and Save. Home will
+**Your Name.** You enter your name. Tap to set it, type it, and Save. Home will
 greet you by name.
 
 You set three times:
 
-Morning Reminder Time
+**Morning Reminder Time**
 
-Midday Reminder Time
+**Midday Reminder Time**
 
-Evening Reminder Time
+**Evening Reminder Time**
 
 Tap one to change it. Reminders that come before an appointment use
 these clocks. That is explained earlier in this Guide.
 
-Scheduled Reminders is a list of what is currently armed on your
+**Scheduled Reminders** is a list of what is currently armed on your
 phone. Tap it to see that list.
 
 - The phone can hold 64 reminders.
@@ -189,7 +190,7 @@ phone. Tap it to see that list.
 You can use it to help keep the number of your reminders within that
 maximum, so that none will be dropped.
 
-Backup & Restore is for saving a copy of the reminders from your
+**Backup & Restore** is for saving a copy of the reminders from your
 phone, and for putting them back on your phone. Export Backup saves
 a file you can keep.
 
@@ -203,10 +204,10 @@ in the backup. Replace writes them when the file has them. Merge
 leaves Settings as they are on this phone. The app asks you to
 confirm before it changes anything.
 
-User's Guide is this Guide. Tap it, and it will help you to
+**User's Guide** is this Guide. Tap it, and it will help you to
 understand this app.
 
-Feedback is for comments, suggestions, or problems you want to pass
+**Feedback** is for comments, suggestions, or problems you want to pass
 on to the developer. Tap it, answer a few questions, and add
 comments or a question if you care to, then tap the Send Feedback
 button. It uses the phone's Mail to open a pre-addressed email to

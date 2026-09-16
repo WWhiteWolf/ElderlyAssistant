@@ -17,6 +17,40 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #117-new (2026-09-15): Letters and Page per theme, and even steps
+
+**Phone.** A load after 90 is on the phone. This sitting's work is in
+the project and has not been checked there. Patrick confirmed that
+#116-new was committed.
+
+**Per theme.** Light keeps its own Letters and Page, and Dark keeps
+its own. They are set individually. There were no old shared settings
+to carry forward. Each theme starts at Middle until it is set.
+Settings still uses the same steppers; they change the theme that is
+on. Backup Export and Replace carry Letters and Page for Light and
+for Dark. Merge still leaves them.
+
+**Even steps.** Each plus or minus tap moves how light or dark it
+looks by the same amount, both ways. Letters use that same mix. The
+old mix took a slice of the room left to white or to black, so the
+long way jumped.
+
+**Middles.** Middle sits far enough from white and from black that
+every tap still changes the look. Light's page Middle was lowered
+three steps so the lightest Page setting is the old page. Dark's page
+already moved on every tap. Dark's cream writing Middle was lowered
+three steps, and the quieter cream one step, so the lightest Letters
+setting is the old cream. None of this was a one-off exception.
+
+**The Guide.** It already named Letters and Page. The one sentence
+that still said Light and Dark both use them now says each keeps its
+own. Patrick did not want a further Guide change for the even steps
+or the Middles.
+
+**Next.** Phone proof of this sitting on a native load. Designed-machine
+jobs, Birthday, Home badges, day-roll lock, and the #116-new backup
+and back-drag checks still need the phone.
+
 ## #116-new (2026-09-15): Evaluations 7 through the machinery and the Guide
 
 **Phone.** Build 90 is on the phone. This sitting's work is in the

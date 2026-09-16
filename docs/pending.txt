@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-15 (#116-new)
+Last updated: 2026-09-15 (#117-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -146,9 +146,12 @@ built. None of these is a job to do.
 20. OPENING THROUGH A BANNER IS STILL AN OPENING (#107-new; built
     #108-new). The day roll, scheduling, and missed-reminder telling
     finish before the item's page is handed over.
-21. LETTERS AND PAGE ON SETTINGS (Patrick, #111-new). Under Appearance.
-    Middle is the look the app ships with. Plus is more — darker.
-    Minus is less — lighter. They stay on the phone.
+21. LETTERS AND PAGE ON SETTINGS (Patrick, #111-new, #117-new). Under
+    Appearance. Each of Light and Dark keeps its own. Middle is the
+    look the app ships with, far enough from white and from black that
+    every tap still changes the look. Plus is more — darker. Minus is
+    less — lighter. Each step is the same size both ways. They stay on
+    the phone. Backup saves Letters and Page for Light and for Dark.
 22. HOME BADGES, HELPER, AND THE NAME ON BACKUP (Patrick, #112-new).
     Five rows of two; that group turns with the phone. Bucket List is
     a smiling face. Quarterly is a maple leaf. The visible name is
@@ -162,6 +165,23 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+149. #117-new — Dark's cream writing Middle was lowered three steps,
+    and the quieter cream one step, so every Letters tap still moves.
+    The lightest setting is the old cream. Not checked on the phone.
+
+148. #117-new — Light's page Middle was lowered three steps so every
+    Page tap still moves. The lightest setting is the old page. Dark's
+    page already moved on every tap. Not checked on the phone.
+
+147. #117-new — Each Letters and Page tap is an even step in how light
+    or dark it looks, the same size toward lighter and toward darker.
+    Letters use that same mix. Not checked on the phone.
+
+146. #117-new — Letters and Page are kept separately for Light and for
+    Dark. Settings changes the theme that is on. Backup Export and
+    Replace carry both pairs. Merge leaves them. Not checked on the
+    phone.
 
 145. #116-new — Export saves the name, the app theme, the popup
     colors, Letters, Page, and the morning, midday, and evening

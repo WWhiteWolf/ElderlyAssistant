@@ -32,8 +32,10 @@ export async function runBackupSettingsTests(): Promise<void> {
             user_name: 'Pat',
             app_theme: 'dark',
             popup_style: 'phone',
-            look_lettering: '1',
-            look_page: '-1',
+            look_lettering_light: '1',
+            look_lettering_dark: '2',
+            look_page_light: '-1',
+            look_page_dark: '0',
             reminder_morning_time: '07:30',
             reminder_midday_time: '12:15',
             reminder_evening_time: '18:00',
@@ -42,7 +44,8 @@ export async function runBackupSettingsTests(): Promise<void> {
         assertSame(Object.keys(got), [...BACKUP_SETTING_KEYS], 'the read uses the one Settings list');
         assertSame(got.user_name, 'Pat', 'the name is in the read');
         assertSame(got.app_theme, 'dark', 'the theme is in the read');
-        assertSame(got.look_lettering, '1', 'Letters is in the read');
+        assertSame(got.look_lettering_light, '1', 'Light Letters is in the read');
+        assertSame(got.look_lettering_dark, '2', 'Dark Letters is in the read');
         assertSame(got.reminder_evening_time, '18:00', 'the evening time is in the read');
     });
 

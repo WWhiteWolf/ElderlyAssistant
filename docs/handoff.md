@@ -18,15 +18,15 @@ who decides. It is not a claim that the files were refreshed.
 ## Where things stand
 
 A new load is on the phone. **#115-new** is committed (Patrick,
-#116-new). The Guide page names and the 30, 60, and 90 day chips
+#116-new). **#116-new** is committed (Patrick, #117-new). The Guide page names and the 30, 60, and 90 day chips
 are working on that load. The page still slid left on 92. The whole
 screen stack now keeps the iPhone back-drag off. Export saves the
 name, the app look, and the reminder times. Replace writes them.
 Merge leaves them. Those need a phone check. Home make-room is in
 pending. The designed-machine jobs from #108-new and #109-new still
 need phone proof. **#110-new** Birthday still needs a phone check.
-**#111-new** Letters and Page are on Settings; he is trying them
-on the phone. **#112-new** Home badges, Helper, and the person's
+**#117-new** Letters and Page are per theme, with even steps, in the
+project. They still need a look on the phone. **#112-new** Home badges, Helper, and the person's
 name on backup still need a look on the phone.
 
 ## Standing rulings
@@ -37,7 +37,7 @@ finished task.
 - **Restore with Merge is done.** Do not treat Merge as dropped. The
   designed implementation holds how Replace and Merge work.
 - **These Settings go in the backup** (Patrick, #116-new): the name,
-  the app theme, the popup colors, Letters, Page, and the morning,
+  the app theme, the popup colors, Letters and Page for Light and for Dark, and the morning,
   midday, and evening reminder times. Export saves them. Replace
   writes them from the file. Merge does not take them. The name is
   not a special case.
@@ -110,6 +110,11 @@ places and turn with the phone. The pictures take a comfortable size in
 the space they have. Bucket List is a smiling face. Quarterly is a maple
 leaf. The Help tile is named Helper. The person's name is in the backup.
 Needs a look on the next load, upright and turned.
+
+**#117-new Letters and Page** are per theme. Each tap is an even
+step. Light's page Middle and Dark's cream writing Middle were
+lowered so every tap still moves. Backup saves Letters and Page for
+Light and for Dark. In the project, not checked on the phone.
 
 **#116-new** Guide names and the 30, 60, and 90 day chips are working
 on the new load. The page still slid left on 92. The whole screen

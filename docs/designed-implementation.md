@@ -55,8 +55,7 @@ route. `app/weekly.tsx` is the pattern:
 `app/daily.tsx` is that same kind of route, with kind `daily` and
 returnTo `daily`. Daily's jobs — list, row, Done, Snooze, log — live
 in `components/CadenceListPage.tsx`. They do not stay as a second copy
-in `app/daily.tsx`. The screen stack does not slide left for a
-back-swipe. Home or Back is the way back. Extra room under the last row keeps
+in `app/daily.tsx`. Extra room under the last row keeps
 a Delete swipe away from the bottom of the phone.
 
 The shared page does Daily's extras. They are:
@@ -226,6 +225,14 @@ Keep these. A build does not replace them.
 Layout, colors, and wording come from the page chrome and the theme
 that already stand (`components/PageFrame.tsx`, `constants/Themes.ts`).
 A sitting reads those. They are not questions for Patrick.
+
+## How you leave a page
+
+You do not slide a page away to go back. That was never part of the
+design. Home takes you to Home. Back takes you to the page you came
+from. The screen stack keeps that slide off.
+
+The iPhone sliding the whole app away is the phone, not this app.
 
 ## Saved-list boundary
 
@@ -611,9 +618,14 @@ not on this page. Home is in the header.
 
 It holds the person's name, Light or Dark, and popup colors — Match App
 or Follow iPhone. Letters and Page sit under Appearance. Middle is the
-look the app ships with. Plus is more — darker letters, a darker page.
-Minus is less — lighter. Both Light and Dark use them. They stay on the
-phone. Built at #111-new.
+look the app ships with. Middle sits far enough from white and from black
+that every plus and minus tap still changes the look. Light's page Middle
+was lowered so the lightest Page setting is the old page. Dark's cream
+writing was lowered so the lightest Letters setting is the old cream.
+Plus is more — darker letters, a darker page.
+Minus is less — lighter. Each step is a smooth, even move in how light or
+dark it looks, the same size toward lighter and toward darker. Each of Light and Dark keeps its own Letters and Page. They stay on the
+phone. Built at #111-new and #117-new.
 
 It holds the three named times of day: morning,
 midday, and evening. Those times are the clock for Morning of, Day
@@ -649,7 +661,7 @@ Replace puts the backup's reminders in place of what is here, and takes
 off the missed-reminder notes. Merge keeps what is here and adds from
 the backup only what is not already here. A backup reminder is already
 here when it has the same identity the app wrote into the backup file.
-The person's name, the app theme, the popup colors, Letters, Page,
+The person's name, the app theme, the popup colors, Letters and Page for Light and for Dark,
 and the morning, midday, and evening reminder times are saved. Replace
 writes those from the file when the file has them. Merge does not take
 them. The name is not a special case. Before confirmation, Replace and Merge
