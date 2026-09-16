@@ -15,9 +15,9 @@ just because it is listed.
 
 ## The desk — in `docs`
 
-- **`handoff.md`** — the opening read. Where the work stands and what is open. Phone load 90. #116-new closed. Phone proof of that sitting is next.
-- **`user-guide.md`** — Settings User's Guide and Helper pop-ups. On the Settings page and in Helper. Options, Delete, Save, Done, Snooze, Banners, and Log are in. Letters and Page are in Settings. Page names are marked in the first two sections. There is no Reset All Data.
-- **`in-flight.md`** — this session's desk. Replaced every time, never added to. Last written #116-new, session close.
+- **`handoff.md`** — the opening read. Where the work stands and what is open. Phone load after 90. #117-new closed. Phone proof of that sitting is next.
+- **`user-guide.md`** — Settings User's Guide and Helper pop-ups. On the Settings page and in Helper. Options, Delete, Save, Done, Snooze, Banners, and Log are in. Letters and Page are in Settings. Page names are marked in the first two sections. Settings tile names are marked the same way. There is no Reset All Data.
+- **`in-flight.md`** — this session's desk. Replaced every time, never added to. Last written #117-new, session close.
 - **`pending.txt`** — Patrick's list, and the source of the Word copy. Brought up to date at every update.
 - **`pending.docx`** — the copy Patrick reads. Generated from the txt, never hand-edited.
 - **`make-pending-docx.py`** — makes the Word copy. `python3 docs/make-pending-docx.py`
@@ -29,7 +29,7 @@ just because it is listed.
 ## Live design — in `docs`
 
 - **`reminder-shape.md`** — the live engine design. Wins where others disagree.
-- **`designed-implementation.md`** — the whole-app guide. A sitting builds from it and does not ask Patrick a design question. Filled at #101-new. Home, Helper, Calendar, Settings, Backup, Scheduled Reminders, Options, and Log are in it. Banner housing is built. Siri is out of sight. User's Guide words are in; first load on Home shows those four, then a fifth that suggests opening the Guide. The longer Guide is on the Settings page (#104-new). Helper pop-up words are in Helper. A Birthday's birthdate belongs with the name; the next fire is derived from it (#110-new). Settings Appearance has Letters and Page; plus is more, minus is less (#111-new). Home badges sit in five rows of two, turn with the phone, and take a comfortable picture size in the space they have. Bucket List is a smiling face. Quarterly is a maple leaf. The Help tile is named Helper (#112-new). A second Done tap on Daily and Weekly asks first (#113-new). A Quarterly day chip gets Holidays and Time zone only (#116-new). Reminder lists do not slide left for a back-swipe. The first two Guide sections mark the page names.
+- **`designed-implementation.md`** — the whole-app guide. A sitting builds from it and does not ask Patrick a design question. Filled at #101-new. Home, Helper, Calendar, Settings, Backup, Scheduled Reminders, Options, and Log are in it. Banner housing is built. Siri is out of sight. User's Guide words are in; first load on Home shows those four, then a fifth that suggests opening the Guide. The longer Guide is on the Settings page (#104-new). Helper pop-up words are in Helper. A Birthday's birthdate belongs with the name; the next fire is derived from it (#110-new). Settings Appearance has Letters and Page; plus is more, minus is less (#111-new). Home badges sit in five rows of two, turn with the phone, and take a comfortable picture size in the space they have. Bucket List is a smiling face. Quarterly is a maple leaf. The Help tile is named Helper (#112-new). A second Done tap on Daily and Weekly asks first (#113-new). A Quarterly day chip gets Holidays and Time zone only (#116-new). Letters and Page are per theme, with even steps (#117-new). Reminder lists do not slide left for a back-swipe. The first two Guide sections mark the page names. Settings Guide tile names are marked the same way.
 - **`spec-pages.md`** — the live spec for the reminder pages.
 
 ## History still in `docs`

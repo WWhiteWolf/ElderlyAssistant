@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-15 (#117-new)
+Last updated: 2026-09-16 (#117-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -64,20 +64,10 @@ FACTS THAT APPLY TO THE ONGOING WORK
 Settled things worth having in front of you while the pages are
 built. None of these is a job to do.
 
-1. THE PAGES ARE NOT A REPLACEMENT FOR THE INPUT PAGE. The Input
-   page goes away and nothing replaces it — and the + Add popup in
-   particular is not its replacement. This is your own reminder
-   pages being reshaped by how often a thing comes round.
-2. + ADD ON A PAGE GOES TO THAT PAGE'S OWN NEW. Where does it
+1. + ADD ON A PAGE GOES TO THAT PAGE'S OWN NEW. Where does it
    belong? is only on Options, from + Screen. You do not set
    another page from a different page (#36-new).
-3. APPOINTMENTS CARRIES THE REMINDERS BEFORE CHIPS — 30 min., 1
-   hour, 2 hours, Morning of, Day Before, Night Before, 2 Days
-   Before, Week, Month — and any and all of them can be on at once.
-   They also remind at the set time, like the rest of the app
-   (Patrick, #74-new; reverses #52-new). The page
-   is called Appointments (#56-new; saved kind appointments, #65-new).
-4. DAILY'S OWN ADD IS ONLY ABOUT TODAY. Two kinds: an every-day
+2. DAILY'S OWN ADD IS ONLY ABOUT TODAY. Two kinds: an every-day
    item, or a One Time for today. On One Time for today the
    Reminders before chips are only 30 min., 1 hour, 2 hours, and
    Time of (the item's own time). Save on that kind comes back on
@@ -86,77 +76,59 @@ built. None of these is a job to do.
    Appointments, and still lives on Appointments. The other pages keep their
    own adds, because on those the page is the whole meaning of Repeat.
    (#78-new)
-5. ONE REMINDER PER ITEM, NOT TWO, and the app puts itself right
+3. ONE REMINDER PER ITEM, NOT TWO, and the app puts itself right
    when you open it: it tells you what you missed, then sets the
    reminders again. That is your own reasoning and it replaced the
    old two-days-ahead rule. A Daily item still arms for tomorrow
    after Done; that is still one reminder, not two (Patrick, #44-new).
-6. ROCK SOLID IS THE TOP GOAL BUT NOT THE ONLY ONE. Consistency
+4. ROCK SOLID IS THE TOP GOAL BUT NOT THE ONLY ONE. Consistency
    stands beside it. That correction is yours, from #17-new.
-7. ROCK SOLID IS FOR WHEN YOU USE IT. An app that is not being
+5. ROCK SOLID IS FOR WHEN YOU USE IT. An app that is not being
    opened is not being used, and what the old second copy protected
    was one day and no more.
-8. A BUCKET LIST ITEM AND A DAILY DONE TICK ARE OPPOSITES. A Bucket
-   List item (saved kind bucketlist) says a thing is not yet done and
-   must survive the night. A Daily Done tick says today's occurrence
-   was done and is cleared when the day rolls over. They must never
-   be merged.
-9. TIMES SET BY SPINNING THROUGH NOON OR MIDNIGHT BEFORE #27-new
-    are stored in the wrong half of the day and want re-setting.
-10. TASKS SAVED BEFORE THE DATE FIX carry a date they were given
+6. TASKS SAVED BEFORE THE DATE FIX carry a date they were given
     rather than one you chose.
-11. A BIG PIECE GETS A BUILD SHEET FIRST — self-contained, carrying
+7. A BIG PIECE GETS A BUILD SHEET FIRST — self-contained, carrying
     every answer, so whoever builds it never has to ask you a
     design question.
-12. BARE SESSION NUMBERS mean the old shared chain. This project's
+8. BARE SESSION NUMBERS mean the old shared chain. This project's
     own chain is written #1-new, #2-new, and so on.
-13. WORKING DOCUMENTS LIVE IN docs. History lives in docs-ref, and
+9. WORKING DOCUMENTS LIVE IN docs. History lives in docs-ref, and
     the build sheets are in docs-ref/build-sheets. The index
     says which file is the home. He calls them working documents;
     live desk means the same thing. (App-Docs, 2026-08-31)
-14. THE CALENDAR PAGE SHOWS DATED ITEMS. No every-day Daily items,
+10. THE CALENDAR PAGE SHOWS DATED ITEMS. No every-day Daily items,
     no Bucket List. No Done or Snooze on the month or the day’s list.
     Names in a day box are one line and scroll vertically.
     Landscape is an optional view: 0°, 90° counter-clockwise, and
     270° counter-clockwise; 180° upside-down is out. Headers stay
     at the physical top of the phone, all pages. The calendar month
     grid was not rebuilt.
-15. HAVING A GOOD IDEA LEADS TO OVERREACHING (Patrick, #52-new).
+11. HAVING A GOOD IDEA LEADS TO OVERREACHING (Patrick, #52-new).
     The feedback he needs is the trim: what part is worth it,
     and what is more than is there.
-16. THE DESIGN DESCRIPTION IS THE DESIGNED IMPLEMENTATION
+12. THE DESIGN DESCRIPTION IS THE DESIGNED IMPLEMENTATION
     (Patrick, #84-new). It is the guide for the whole app. A sitting
     builds from docs/designed-implementation.md and does not ask
     Patrick a design question. Home, Helper, Calendar, Settings, Backup,
     Scheduled Reminders, Options, and Log are in that file.
-17. DATED ITEMS WAIT ABOUT A MONTH (Patrick, 2026-09-09). That wait is
+13. DATED ITEMS WAIT ABOUT A MONTH (Patrick, 2026-09-09). That wait is
     a bit on the table. Monthly, Quarterly, Yearly, and Birthdays have
     it on. Daily, Weekly, Appointments, and the rest have it off. The
     join reads the bit. Depth stays one. Opening the app arms a waiting
     item when it has come close enough. Several lead times on one item
     also use that depth: only the soonest still ahead is armed. When it
     has fired, the next run arms the next.
-18. EACH CLOSED-APP NOTICE HAS ITS OWN THREAD NAME (Patrick, #105-new).
+14. EACH CLOSED-APP NOTICE HAS ITS OWN THREAD NAME (Patrick, #105-new).
     The name is the reminder's key. This Expo does not yet hand that
     name to the phone, so the listing-down-the-page will wait until
     Expo is upgraded. The notification library was not poked.
-19. ONE TIME DOES NOT SKIP (Patrick, #107-new; built #108-new). It has
+15. ONE TIME DOES NOT SKIP (Patrick, #107-new; built #108-new). It has
     no next cycle. Its own banner set has Done, OK, and Delay 15 / 30 /
     60 min. A delay has its own source and reaches the phone road.
-20. OPENING THROUGH A BANNER IS STILL AN OPENING (#107-new; built
+16. OPENING THROUGH A BANNER IS STILL AN OPENING (#107-new; built
     #108-new). The day roll, scheduling, and missed-reminder telling
     finish before the item's page is handed over.
-21. LETTERS AND PAGE ON SETTINGS (Patrick, #111-new, #117-new). Under
-    Appearance. Each of Light and Dark keeps its own. Middle is the
-    look the app ships with, far enough from white and from black that
-    every tap still changes the look. Plus is more — darker. Minus is
-    less — lighter. Each step is the same size both ways. They stay on
-    the phone. Backup saves Letters and Page for Light and for Dark.
-22. HOME BADGES, HELPER, AND THE NAME ON BACKUP (Patrick, #112-new).
-    Five rows of two; that group turns with the phone. Bucket List is
-    a smiling face. Quarterly is a maple leaf. The visible name is
-    Helper. The person's name is saved and restored. The rest of
-    Settings stay on the phone.
 
 
 WHAT IS DONE, NEWEST FIRST
@@ -165,6 +137,38 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+157. #117-new — Split Letters and Page are on the phone and working.
+    He likes how they are now.
+
+156. #112-new — Home badges sit in five rows of two and turn with the
+    phone. Bucket List is a smiling face. Quarterly is a maple leaf.
+    The visible name is Helper. The person's name is saved and
+    restored.
+
+155. #111-new, #117-new — Letters and Page on Settings. Each of Light
+    and Dark keeps its own. Middle sits far enough from white and
+    black that every tap still moves. Backup saves both pairs.
+
+154. #27-new — Times set by spinning through noon or midnight before
+    that sitting are stored in the wrong half of the day and want
+    re-setting.
+
+153. A Bucket List item and a Daily Done tick are opposites and must
+    never be merged. Bucket List must survive the night. A Daily tick
+    is cleared when the day rolls over.
+
+152. #74-new — Appointments carries the Reminders before chips, any
+    and all on at once, and they also remind at the set time. The
+    page is called Appointments (#56-new; saved kind appointments,
+    #65-new).
+
+151. The reminder pages are not a replacement for the Input page.
+    The Input page goes away. The + Add popup is not its replacement.
+
+150. #117-new — Settings Guide tile names in the explanations below
+    are marked bold, the same way the page names are. The working
+    document and the in-app copy agree. Not checked on the phone.
 
 149. #117-new — Dark's cream writing Middle was lowered three steps,
     and the quieter cream one step, so every Letters tap still moves.

@@ -17,17 +17,16 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-A new load is on the phone. **#115-new** is committed (Patrick,
-#116-new). **#116-new** is committed (Patrick, #117-new). The Guide page names and the 30, 60, and 90 day chips
-are working on that load. The page still slid left on 92. The whole
+A new load is on the phone. **#116-new** is committed (Patrick,
+#117-new). **#117-new** closed. Letters and Page per theme are on the
+phone and working; he likes how they are. Settings Guide tile names
+are in the project. The Guide page names and the 30, 60, and 90 day chips
+are working on that load. The whole
 screen stack now keeps the iPhone back-drag off. Export saves the
 name, the app look, and the reminder times. Replace writes them.
 Merge leaves them. Those need a phone check. Home make-room is in
 pending. The designed-machine jobs from #108-new and #109-new still
 need phone proof. **#110-new** Birthday still needs a phone check.
-**#117-new** Letters and Page are per theme, with even steps, in the
-project. They still need a look on the phone. **#112-new** Home badges, Helper, and the person's
-name on backup still need a look on the phone.
 
 ## Standing rulings
 
@@ -67,6 +66,9 @@ finished task.
 - **The design description of the app is the designed implementation.**
   A specific task that is already done belongs there, or in history,
   not in this live handoff.
+- **The build sheets are the pattern for a new page** — each
+  self-contained, carrying the answers themselves rather than pointing
+  at other documents.
 - **Exclusive groups cannot both be true.** Turning one on turns the
   others off. There is no both-true case for the translator to handle.
 - **Landscape is an optional view.** The allowed turns are 0°, 90°
@@ -92,7 +94,7 @@ designed-machine build sheet is complete in the project.
 
 **Phone proof still open.** Job 1's banner and list-popup choices, Job
 2's banner-first day-boundary path, and Job 3's Options, Weekly Done,
-and export-after-change need a check on 90.
+and export-after-change still need a phone check.
 
 Testers are on TestFlight External. The phone has a new load after
 **90**. The App
@@ -105,22 +107,10 @@ for the user's guide.
 name and the birthdate. The reminder says the age. The next fire is
 derived from the birthdate.
 
-**#112-new Home badges** are in the project, not on 86. They keep their
-places and turn with the phone. The pictures take a comfortable size in
-the space they have. Bucket List is a smiling face. Quarterly is a maple
-leaf. The Help tile is named Helper. The person's name is in the backup.
-Needs a look on the next load, upright and turned.
-
-**#117-new Letters and Page** are per theme. Each tap is an even
-step. Light's page Middle and Dark's cream writing Middle were
-lowered so every tap still moves. Backup saves Letters and Page for
-Light and for Dark. In the project, not checked on the phone.
-
 **#116-new** Guide names and the 30, 60, and 90 day chips are working
-on the new load. The page still slid left on 92. The whole screen
-stack now keeps the back-drag off. Export saves the name, the app look,
-and the reminder times. Replace writes them. Merge leaves them.
-Those need a phone check.
+on the new load. The whole screen stack now keeps the back-drag off.
+Export saves the name, the app look, and the reminder times. Replace
+writes them. Merge leaves them. Those need a phone check.
 
 **Day-roll lock** still needs a night of all-green Daily, then a morning
 open on a new load, to confirm the pop-up stays quiet.
@@ -136,9 +126,6 @@ reorder** (#24-new).
 
 **One claim still unchecked**: that a repeating alarm cannot be told to skip a
 single instance.
-
-**The build sheets are the pattern for a new page** — each self-contained,
-carrying the answers themselves rather than pointing at other documents.
 
 ## Facts worth carrying
 
