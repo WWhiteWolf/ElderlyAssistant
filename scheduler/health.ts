@@ -31,9 +31,10 @@ export const RUNS_KEPT = 10;
 /**
  * One thing that went wrong in a run.
  *
- * Five kinds speak to Patrick. Sweep stays quiet because it only leaves old
- * banners on screen; reset speaks because a failed rollover can cancel a
- * reminder for something never done (#56-new).
+ * Six kinds speak to Patrick. Sweep stays quiet because it only leaves old
+ * banners on screen; a failed cancellation speaks because a reminder that
+ * should have stopped may still arrive. Reset speaks because a failed rollover
+ * can cancel a reminder for something never done (#56-new).
  */
 export type RunFault =
     // The phone is not letting the app show reminders at all. Nothing was
@@ -41,6 +42,9 @@ export type RunFault =
     | { kind: 'permission' }
     // Some reminders could not be put onto the phone. They do not exist.
     | { kind: 'create'; count: number }
+    // Some reminders the saved state no longer wants could not be taken off.
+    // They may still arrive, so this is as loud as a failed create.
+    | { kind: 'cancel'; count: number }
     // A saved list could not be read. Held reminders from that source are
     // left on the phone, the fault is reported, and the next run tries again.
     | { kind: 'list'; listKey: string }
@@ -107,6 +111,7 @@ export interface Notice {
 }
 
 export const NOTICE_TITLE = 'Some reminders did not reach you';
+export const NOTICE_ATTENTION_TITLE = 'Some reminders need attention';
 
 export const NOTICE_FOOTER =
     'Settings › Scheduled Reminders shows what your phone is holding.';
@@ -126,12 +131,13 @@ export function screenName(listKey: string): string {
 /**
  * Whether a fault is put in front of Patrick or only written down.
  *
- * The rule is his: the pop-up speaks when a reminder he is expecting will not
- * arrive, and stays quiet about anything else.
+ * The pop-up speaks when a reminder he expects will not arrive, or when one he
+ * stopped may still arrive. Display-only cleanup stays quiet.
  */
 export function faultSpeaks(fault: RunFault): boolean {
     return fault.kind === 'permission'
         || fault.kind === 'create'
+        || fault.kind === 'cancel'
         || fault.kind === 'list'
         || fault.kind === 'stopped'
         || fault.kind === 'reset';
@@ -140,10 +146,10 @@ export function faultSpeaks(fault: RunFault): boolean {
 /**
  * What names one fault, for the purpose of not saying it twice in a day.
  *
- * The count is deliberately left out of a 'create' signature: two reminders
- * failing this morning and three failing this afternoon are the same trouble,
- * and a pop-up that came back for the second would be the kind you learn to tap
- * away without reading.
+ * The count is deliberately left out of create and cancel signatures: two
+ * reminders failing this morning and three failing this afternoon are the same
+ * trouble, and a pop-up that came back for the second would be the kind you
+ * learn to tap away without reading.
  */
 export function faultSignature(fault: RunFault): string {
     if (fault.kind === 'list' || fault.kind === 'reset') return `${fault.kind}:${fault.listKey}`;
@@ -163,6 +169,13 @@ export function faultSentence(fault: RunFault): string {
                 + 'not arrive.'
             : `${fault.count} reminders could not be set on your phone. They are not `
                 + 'there and will not arrive.';
+    }
+    if (fault.kind === 'cancel') {
+        return fault.count === 1
+            ? '1 reminder that should have stopped could not be taken off your phone. '
+                + 'It may still arrive.'
+            : `${fault.count} reminders that should have stopped could not be taken `
+                + 'off your phone. They may still arrive.';
     }
     if (fault.kind === 'list') {
         return `The app could not read your ${screenName(fault.listKey)} list, so the `
@@ -258,7 +271,7 @@ export function mergeMisses(existing: Miss[], fresh: Miss[]): Miss[] {
 // Permission first, because it stops everything and it is the one Patrick can
 // put right himself in a few taps. Then the reminders that are missing, then
 // the run that did not finish.
-const SPEAKING_ORDER = ['permission', 'create', 'list', 'reset', 'stopped'];
+const SPEAKING_ORDER = ['permission', 'create', 'cancel', 'list', 'reset', 'stopped'];
 
 /** Add a run to the record, keeping only the last several. */
 export function addRun(records: RunRecord[], record: RunRecord): RunRecord[] {
@@ -299,7 +312,9 @@ export function noticeFor(
     toSay.sort((a, b) => SPEAKING_ORDER.indexOf(a.kind) - SPEAKING_ORDER.indexOf(b.kind));
 
     return {
-        title: NOTICE_TITLE,
+        title: toSay.some((fault) => fault.kind === 'cancel')
+            ? NOTICE_ATTENTION_TITLE
+            : NOTICE_TITLE,
         lines: [
             ...toSay.map(faultSentence),
             ...misses.map((miss) => missSentence(miss, yesterday)),

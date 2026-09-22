@@ -31,6 +31,7 @@ import { runBannerActionTests } from './banneractions.test.ts';
 import { runOpeningTests } from './opening.test.ts';
 import { runSavedListStorageTests } from './savedliststorage.test.ts';
 import { runBackupSettingsTests } from './backupsettings.test.ts';
+import { runPresentedTests } from './presented.test.ts';
 
 async function runAll(): Promise<void> {
     console.log('\nReconcile');
@@ -80,6 +81,9 @@ async function runAll(): Promise<void> {
 
     console.log('\nApply order');
     runApplyTests();
+
+    console.log('\nDelivered banners');
+    runPresentedTests();
 
     console.log('\nSaved-list transactions');
     await runSavedListStorageTests();

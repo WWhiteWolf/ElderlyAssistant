@@ -1,6 +1,7 @@
 // Tests for the record of how a run went, and for what the pop-up says.
 
 import {
+    NOTICE_ATTENTION_TITLE,
     NOTICE_FOOTER,
     NOTICE_TITLE,
     RUNS_KEPT,
@@ -35,6 +36,10 @@ export function runHealthTests(): void {
 
     test('A reminder that could not be set speaks', () => {
         assert(faultSpeaks({ kind: 'create', count: 1 }), 'expected it to speak');
+    });
+
+    test('A reminder that could not be stopped speaks', () => {
+        assert(faultSpeaks({ kind: 'cancel', count: 1 }), 'expected it to speak');
     });
 
     test('Permission being off speaks', () => {
@@ -83,6 +88,12 @@ export function runHealthTests(): void {
         assert(said.includes('They are not there'), said);
     });
 
+    test('A failed removal says that the reminder may still arrive', () => {
+        const said = faultSentence({ kind: 'cancel', count: 1 });
+        assert(said.startsWith('1 reminder that should have stopped'), said);
+        assert(said.includes('may still arrive'), said);
+    });
+
     test('An unreadable list names the page, never the storage key', () => {
         const said = faultSentence({ kind: 'list', listKey: 'weekly' });
         assert(said.includes('Weekly'), said);
@@ -101,6 +112,13 @@ export function runHealthTests(): void {
     test('The count is left out of what names a failed create', () => {
         assert(
             faultSignature({ kind: 'create', count: 2 }) === faultSignature({ kind: 'create', count: 5 }),
+            'expected two counts to name the same trouble',
+        );
+    });
+
+    test('The count is left out of what names a failed removal', () => {
+        assert(
+            faultSignature({ kind: 'cancel', count: 2 }) === faultSignature({ kind: 'cancel', count: 5 }),
             'expected two counts to name the same trouble',
         );
     });
@@ -173,20 +191,32 @@ export function runHealthTests(): void {
         assert(notice!.footer === NOTICE_FOOTER, notice!.footer);
     });
 
+    test('A reminder that may still arrive gets the truthful heading', () => {
+        const notice = noticeFor(run([{ kind: 'cancel', count: 1 }]), null, TODAY);
+        assert(notice !== null, 'expected a notice');
+        assert(notice!.title === NOTICE_ATTENTION_TITLE, notice!.title);
+    });
+
     test('A quiet fault is left out of a notice raised by a loud one', () => {
         const notice = noticeFor(run([{ kind: 'sweep' }, { kind: 'stopped' }]), null, TODAY);
         assert(notice!.lines.length === 1, `expected one line, got ${notice!.lines.length}`);
     });
 
-    test('Permission is said first, then the missing reminders, then the run', () => {
+    test('Permission is said first, then missing and unstopped reminders, then the run', () => {
         const notice = noticeFor(
-            run([{ kind: 'stopped' }, { kind: 'list', listKey: 'reminder_items' }, { kind: 'create', count: 1 }, { kind: 'permission' }]),
+            run([
+                { kind: 'stopped' },
+                { kind: 'list', listKey: 'reminder_items' },
+                { kind: 'cancel', count: 1 },
+                { kind: 'create', count: 1 },
+                { kind: 'permission' },
+            ]),
             null,
             TODAY,
         );
         assertSame(
             notice!.signatures,
-            ['permission', 'create', 'list:reminder_items', 'stopped'],
+            ['permission', 'create', 'cancel', 'list:reminder_items', 'stopped'],
             'the wrong order',
         );
     });

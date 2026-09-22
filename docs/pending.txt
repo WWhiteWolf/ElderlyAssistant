@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-16 (#117-new)
+Last updated: 2026-09-22 (#118-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -24,30 +24,25 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. PHONE PROOF FOR JOBS 1 AND 2. On a native build, check Job 1's
+1. DONE ALERT CLEANUP (#118-new). On a native load, let an alert
+   arrive and mark its item Done. Every old base, delayed, duplicate,
+   and already-delivered alert copy for that item should stay gone.
+   A repeating item's next real cycle should remain.
+2. PHONE PROOF FOR JOBS 1 AND 2. On a native build, check Job 1's
    banner and list-popup choices. For Job 2, leave a timed Daily item
    undone, cross the day boundary, and make the first opening a banner
    body tap. The missed-reminder popup comes first; after OK, the
    correct item is highlighted; a later return does not repeat it.
-2. DAY-ROLL LOCK still wants a night of all-green Daily on this
+3. DAY-ROLL LOCK still wants a night of all-green Daily on this
    load, then a morning open on a new load, to confirm the pop-up
    stays quiet.
-3. JOB 3 ON BUILD 82. Options by kind, Weekly Done, and an export
-   after a change. This load has that work; it has not been checked
-   on the phone.
-4. BIRTHDAY ROW AND REMINDER (Patrick, #110-new). In the project, not
-   on 82. The row shows the name and the birthdate. The reminder says
-   the age. The next fire is derived from the birthdate. Restore writes
-   the year of birth onto an older backup. Needs a phone check on the
-   next load. Replace brings the backup copy back; Merge keeps what is
-   already in the app.
-
-
-5. HOME BADGES (Patrick, #112-new). In the project, not on 86. Five
-   rows of two, and that group turns with the phone. Bucket List is a
-   smiling face. Quarterly is a maple leaf. The Help tile is named
-   Helper. The person's name is in the backup. Needs a look on the next
-   load, upright and turned.
+4. JOB 3 ON THE CURRENT NATIVE LOAD. Options by kind, Weekly Done,
+   and an export after a change have not been checked on the phone.
+5. BIRTHDAY ROW AND REMINDER (Patrick, #110-new). The row shows the
+   name and the birthdate. The reminder says the age. The next fire is
+   derived from the birthdate. Restore writes the year of birth onto
+   an older backup. It needs a phone check. Replace brings the backup
+   copy back; Merge keeps what is already in the app.
 
 
 PENDING
@@ -129,6 +124,16 @@ built. None of these is a job to do.
 16. OPENING THROUGH A BANNER IS STILL AN OPENING (#107-new; built
     #108-new). The day roll, scheduling, and missed-reminder telling
     finish before the item's page is handed over.
+17. DONE'S SAVED STATE STOPS ITS OLD ALERT COPIES (#118-new). The
+    engine removes every queued base, delay, duplicate, or
+    retired-source copy carrying that item id, and dismisses banners
+    already delivered. It keeps the next legitimate cycle. The phone
+    is read back and a failed removal speaks instead of disappearing
+    silently.
+18. MEMORY'S OWN DOCUMENTS ARE THE LIVE ENGINE DESIGN. The separate
+    Reminder Engine folder remains the historical shared baseline at
+    Reminder Engine 4. Students-Assistant is going away, so that folder
+    is not brought current as a second copy (#118-new).
 
 
 WHAT IS DONE, NEWEST FIRST
@@ -137,6 +142,17 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+159. #118-new — The separate Reminder Engine folder is retired as the
+    historical shared baseline at Reminder Engine 4. Memory's own
+    documents are the live truth; the stale folder is not brought
+    current before retirement.
+
+158. #118-new — Saved Done state now removes every old queued and
+    delivered alert copy for that item, while keeping the next
+    legitimate cycle. Removal is read back, retried, and reported if
+    the phone still holds it. 432 Mac checks. TypeScript clean. Not on
+    the phone.
 
 157. #117-new — Split Letters and Page are on the phone and working.
     He likes how they are now.

@@ -81,6 +81,69 @@ export function runReconcileTests(): void {
         assertSame(plan.others, 1, 'but it does take up room');
     });
 
+    test('Done takes ownership of every queued copy carrying that item identity', () => {
+        const queue: QueueEntry[] = [{
+            identifier: 'retired1',
+            key: 'mydaysnooze:a:base',
+            source: 'mydaysnooze',
+            itemId: 'a',
+            trigger: { kind: 'date', at: NOW + 60000 },
+        }];
+        const plan = reconcile([], queue, OWNED, NOW, [], ['a']);
+        assertSame(plan.cancel, ['retired1'], 'a retired delay must not survive Done');
+        assertSame(plan.others, 0, 'the Done item is ours even under a retired source');
+    });
+
+    test('Done removes stale copies and keeps the next legitimate cycle', () => {
+        const nextTrigger: WantedTrigger = { kind: 'date', at: NOW + 24 * 60 * 60 * 1000 };
+        const next = { ...want('daily:a:20260602', nextTrigger), itemId: 'a' };
+        const queue: QueueEntry[] = [
+            { ...held('next1', next.key, nextTrigger), itemId: 'a' },
+            {
+                identifier: 'base1',
+                key: 'daily:a:20260601',
+                source: 'daily',
+                itemId: 'a',
+                trigger: { kind: 'date', at: NOW + 60000 },
+            },
+            {
+                identifier: 'delay1',
+                key: 'dailysnooze:a:base',
+                source: 'dailysnooze',
+                itemId: 'a',
+                trigger: { kind: 'date', at: NOW + 120000 },
+            },
+            {
+                identifier: 'retired1',
+                key: 'mydaysnooze:a:base',
+                source: 'mydaysnooze',
+                itemId: 'a',
+                trigger: { kind: 'date', at: NOW + 180000 },
+            },
+        ];
+        const plan = reconcile([next], queue, OWNED, NOW, [], ['a']);
+        assertSame(
+            plan.cancel,
+            ['base1', 'delay1', 'retired1'],
+            'the old base, delay and retired copy should all go',
+        );
+        assertSame(plan.create, [], 'the next cycle is already standing');
+        assertSame(plan.keep, 1, 'the next legitimate cycle must remain');
+    });
+
+    test('An unknown source for another item remains untouched', () => {
+        const queue: QueueEntry[] = [{
+            identifier: 'other1',
+            key: 'other:b:base',
+            source: 'other',
+            itemId: 'b',
+            trigger: { kind: 'date', at: NOW + 60000 },
+        }];
+        const plan = reconcile([], queue, OWNED, NOW, [], ['a']);
+        assertSame(plan.cancel, [], 'Done for one item must not take another item’s reminder');
+        assertSame(plan.others, 1, 'the unrelated reminder remains outside the scheduler');
+    });
+
     test('One of ours with no name is a leftover and is cancelled', () => {
         const queue: QueueEntry[] = [{ identifier: 'old1', source: 'daily', trigger: { kind: 'daily', hour: 8, minute: 0 } }];
         const plan = reconcile([], queue, OWNED, NOW);

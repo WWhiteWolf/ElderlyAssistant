@@ -82,4 +82,16 @@ export function runApplyTests(): void {
         });
         assertSame(cancelled, ['gone1'], 'an unwanted reminder still goes');
     });
+
+    test('A request that could not be cancelled is counted as a fault', () => {
+        const plan = emptyPlan({ cancel: ['stuck1'] });
+        const said = runApplyOps(applyOpsFor(plan), {
+            create: () => true,
+            cancel: () => {
+                throw new Error('still held');
+            },
+        });
+        assertSame(said.cancelled, 0, 'nothing was taken off');
+        assertSame(said.failedToCancel, 1, 'the failed removal must not disappear');
+    });
 }

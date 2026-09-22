@@ -116,7 +116,10 @@ export function nextFireTime(trigger: WantedTrigger, now: number): number {
  * and building it again.
  *
  * `ownedSources` says which sources the scheduler answers for. A reminder from
- * anywhere else is never cancelled and never counted as ours.
+ * anywhere else is normally never cancelled and never counted as ours.
+ * `doneItemIds` is stronger than an old source name: every request carrying
+ * one of those item identities is brought into line, so a stale base, delay or
+ * duplicate cannot survive Done merely because its source word is retired.
  */
 export function reconcile(
     wanted: WantedReminder[],
@@ -124,8 +127,13 @@ export function reconcile(
     ownedSources: string[],
     now: number,
     unreadSources: string[] = [],
+    doneItemIds: string[] = [],
 ): Plan {
-    const owned = queue.filter((entry) => entry.source != null && ownedSources.includes(entry.source));
+    const done = new Set(doneItemIds);
+    const owned = queue.filter((entry) =>
+        (entry.source != null && ownedSources.includes(entry.source))
+        || (entry.itemId != null && done.has(entry.itemId))
+    );
     const others = queue.length - owned.length;
 
     // Trim to what the phone can actually hold, furthest away first.

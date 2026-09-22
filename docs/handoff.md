@@ -17,16 +17,17 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-A new load is on the phone. **#116-new** is committed (Patrick,
-#117-new). **#117-new** closed. Letters and Page per theme are on the
-phone and working; he likes how they are. Settings Guide tile names
-are in the project. The Guide page names and the 30, 60, and 90 day chips
-are working on that load. The whole
-screen stack now keeps the iPhone back-drag off. Export saves the
-name, the app look, and the reminder times. Replace writes them.
-Merge leaves them. Those need a phone check. Home make-room is in
-pending. The designed-machine jobs from #108-new and #109-new still
-need phone proof. **#110-new** Birthday still needs a phone check.
+A load after 90 is on the phone. **#117-new** closed. Letters and Page
+per theme are on the phone and working; he likes how they are.
+**#118-new** is in the project and not on the phone. Saved Done state
+now removes every old queued and delivered alert copy for that item,
+keeps the next legitimate cycle, and reports a removal the phone
+cannot confirm. 432 Mac checks pass and TypeScript is clean.
+
+Settings Guide tile names, #116-new backup and back-drag, the
+designed-machine jobs from #108-new and #109-new, **#110-new**
+Birthday, and #118-new Done cleanup still need phone proof. Home
+make-room is in pending.
 
 ## Standing rulings
 
@@ -63,6 +64,10 @@ finished task.
 - **Engine facts belong in the one description of each kind.** What the
   add screen shows stays on the form. A special extra rule for one type
   of item is the other thing.
+- **The separate Reminder Engine folder is history at Reminder Engine
+  4.** Students-Assistant is going away, so Memory's own documents are
+  the one live engine design. Do not maintain a second current copy in
+  that folder.
 - **The design description of the app is the designed implementation.**
   A specific task that is already done belongs there, or in history,
   not in this live handoff.
@@ -91,6 +96,11 @@ finished task.
 
 The guide remains `docs/designed-implementation.md`. The self-contained
 designed-machine build sheet is complete in the project.
+
+**#118-new Done alert cleanup** needs a native phone check. After Done,
+every old base, delayed, duplicate, and already-delivered alert copy
+for that item should stay gone. A recurring item's next legitimate
+cycle should remain.
 
 **Phone proof still open.** Job 1's banner and list-popup choices, Job
 2's banner-first day-boundary path, and Job 3's Options, Weekly Done,

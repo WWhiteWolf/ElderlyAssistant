@@ -77,6 +77,23 @@ enough. Several lead times on one item also use that depth: only the
 soonest still ahead is armed. When it has fired, the next run arms the
 next.
 
+### Done reaches the phone through the loop
+
+The saved Done state is an input to reconciliation. The scheduler gathers
+the ids of the items that are Done and treats every queued copy carrying
+one of those ids as its own, even when the copy is a base, a push-back, a
+duplicate, or carries a retired source word. It removes every copy that is
+not in the newly wanted set. A matching reminder for the next legitimate
+cycle is kept, so cleanup does not throw away the future occurrence.
+
+The same state reaches banners that have already been delivered. Every
+presented banner carrying the Done item id is dismissed. Scheduled
+cancellations and delivered-banner dismissals are read back from the
+phone and tried once more when they are still there. A scheduled request
+that remains becomes a spoken cancellation fault; it is not silently
+claimed gone. This is the store feeding the decision block, not a Done
+exception remembered separately by each page or banner button.
+
 ## What each store holds
 
 **The input store holds an item, a rule for when it comes due, and how
@@ -785,13 +802,16 @@ the queue rebuilt. **Two acts on opening and nothing more** — no screen to
 design, no flow, no history to keep. His own words: *that's all there is that
 needs to be done.*
 
-## What is not decided
+## What was not decided at #19-new
 
-None of the following was settled at #19-new, and none of it should be
-treated as settled by a later session:
+None of the following was settled at #19-new. Later outcomes are recorded
+here rather than left looking open:
 
-- How the arrow from the store to the decision block is actually made,
-  so that a write cannot fail to turn the loop.
+- The arrow from the store to the decision block is built. One save door
+  writes the change and runs the scheduler. #118-new completed the Done
+  path at the phone boundary: saved Done ids govern queued and delivered
+  cleanup, and the phone's read-back decides whether a cancellation
+  succeeded.
 - Nothing about recovery on opening. Both halves are settled and both are
   built; the only work left on it is extending the telling from My Day and Pets
   to the other three screens, which is building rather than deciding.

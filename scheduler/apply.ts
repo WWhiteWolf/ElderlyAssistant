@@ -41,10 +41,11 @@ export function runApplyOps(
         create: (reminder: WantedReminder) => boolean;
         cancel: (identifier: string) => void;
     },
-): { cancelled: number; created: number; failedToCreate: number } {
+): { cancelled: number; created: number; failedToCreate: number; failedToCancel: number } {
     let cancelled = 0;
     let created = 0;
     let failedToCreate = 0;
+    let failedToCancel = 0;
     for (const op of ops) {
         if (op.kind === 'create') {
             let ok = false;
@@ -63,8 +64,7 @@ export function runApplyOps(
                     perform.cancel(op.thenCancel);
                     cancelled++;
                 } catch {
-                    // A reminder that has already fired or gone is nothing to
-                    // worry about; the next run will see the truth either way.
+                    failedToCancel++;
                 }
             }
         } else {
@@ -72,9 +72,9 @@ export function runApplyOps(
                 perform.cancel(op.identifier);
                 cancelled++;
             } catch {
-                // Same as above.
+                failedToCancel++;
             }
         }
     }
-    return { cancelled, created, failedToCreate };
+    return { cancelled, created, failedToCreate, failedToCancel };
 }

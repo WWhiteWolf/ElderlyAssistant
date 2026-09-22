@@ -39,6 +39,10 @@ import { applyOpsFor } from './apply.ts';
 import { oneSchedulerRun } from './rungate.ts';
 import { oneDailyReset } from './resetgate.ts';
 import { REMINDER_LIST_SOURCE_CODES } from './sources.ts';
+import {
+    doneItemIdsOf,
+    presentedIdentifiersToDismiss,
+} from './presented.ts';
 
 /**
  * The current notification sources the scheduler answers for.
@@ -231,35 +235,59 @@ async function recordMisses(
 }
 
 /**
- * Take down any banner delivered before today.
+ * Take down delivered banners that have finished their work.
  *
  * A thing not done on time is of no use as a reminder (Patrick), so yesterday's
- * untapped banner is not left sitting in Notification Center to be tapped
- * today. Only delivered banners are touched; nothing still waiting to fire is
- * affected.
+ * untapped banner does not stay in Notification Center. Done is stronger: every
+ * delivered copy carrying that item's identity goes, including a base banner
+ * and a delay that had both arrived before the tap.
  *
- * The honest limit: this can only happen while the app is running or as it
- * comes to the front. A phone left unopened for two days keeps those banners
- * until it is opened.
+ * The saved Done state is handed in by `gatherWanted`, so pages, banner actions
+ * and Siri all reach this same cleanup without remembering it themselves.
  *
- * It answers with whatever went wrong. A banner that has already gone is still
- * nothing to worry about, and this is one of the two quiet faults — no reminder
- * is lost by it — but it is written down rather than swallowed.
+ * The phone is read back after dismissal and any remainder is tried once more.
+ * A banner that still cannot be removed is a quiet sweep fault — it has already
+ * fired, so no expected reminder is being lost.
  */
-export async function sweepStaleBanners(): Promise<RunFault[]> {
-    try {
-        const startOfToday = new Date();
-        startOfToday.setHours(0, 0, 0, 0);
+export async function sweepPresentedBanners(doneItemIds: string[]): Promise<RunFault[]> {
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
 
+    const removable = async (): Promise<string[]> => {
         const presented = await Notifications.getPresentedNotificationsAsync();
-        for (const banner of presented) {
-            // iOS reports the moment in seconds since 1970.
-            const deliveredAt = banner.date * 1000;
-            if (deliveredAt < startOfToday.getTime()) {
-                await Notifications.dismissNotificationAsync(banner.request.identifier);
+        return presentedIdentifiersToDismiss(
+            presented.map((banner) => {
+                const data = (banner.request.content.data ?? {}) as Record<string, unknown>;
+                return {
+                    identifier: banner.request.identifier,
+                    // iOS reports the moment in seconds since 1970.
+                    deliveredAt: banner.date * 1000,
+                    itemId: typeof data.itemId === 'string' ? data.itemId : undefined,
+                };
+            }),
+            startOfToday.getTime(),
+            doneItemIds,
+        );
+    };
+
+    const dismiss = async (identifiers: string[]): Promise<void> => {
+        for (const identifier of identifiers) {
+            try {
+                await Notifications.dismissNotificationAsync(identifier);
+            } catch {
+                // The read-back below decides whether it is really still there.
             }
         }
-        return [];
+    };
+
+    try {
+        await dismiss(await removable());
+        let remaining = await removable();
+        if (remaining.length > 0) {
+            await dismiss(remaining);
+            remaining = await removable();
+        }
+        return remaining.length === 0 ? [] : [{ kind: 'sweep' }];
     } catch {
         return [{ kind: 'sweep' }];
     }
@@ -296,7 +324,12 @@ async function readClockTimes(): Promise<ClockTimes> {
  */
 export async function gatherWanted(
     now: number,
-): Promise<{ wanted: WantedReminder[]; faults: RunFault[]; unreadSources: string[] }> {
+): Promise<{
+    wanted: WantedReminder[];
+    faults: RunFault[];
+    unreadSources: string[];
+    doneItemIds: string[];
+}> {
     const [saved, times] = await Promise.all([
         readSavedReminderItems(),
         readClockTimes(),
@@ -317,6 +350,7 @@ export async function gatherWanted(
         wanted: fromList,
         faults,
         unreadSources: unreadSourcesFor(failedKeys),
+        doneItemIds: saved.failed ? [] : doneItemIdsOf(saved.items),
     };
 }
 
@@ -378,15 +412,30 @@ function triggerInput(trigger: WantedTrigger): Notifications.NotificationTrigger
  * that succeeds. If creation fails, the old reminder remains.
  *
  * It answers with what it managed. One reminder failing must still not stop the
- * rest — but a reminder that could not be created simply does not exist, and
- * that is the fault that matters most, so it is counted and handed back.
+ * rest. A failed create is missing; a failed cancellation may still arrive.
+ * Both are counted and handed back.
  */
 export async function applyPlan(
     plan: Plan,
-): Promise<{ cancelled: number; created: number; failedToCreate: number }> {
-    let cancelled = 0;
+): Promise<{
+    cancelled: number;
+    created: number;
+    failedToCreate: number;
+    failedToCancel: number;
+}> {
     let created = 0;
     let failedToCreate = 0;
+    const cancellationTargets = new Set<string>();
+
+    const tryCancel = async (identifier: string): Promise<void> => {
+        cancellationTargets.add(identifier);
+        try {
+            await Notifications.cancelScheduledNotificationAsync(identifier);
+        } catch {
+            // A request that has already fired is already absent. The read-back
+            // below tells that case from a request that is still standing.
+        }
+    };
 
     for (const op of applyOpsFor(plan)) {
         if (op.kind === 'create') {
@@ -418,29 +467,59 @@ export async function applyPlan(
                 });
                 created++;
                 if (op.thenCancel !== undefined) {
-                    try {
-                        await Notifications.cancelScheduledNotificationAsync(op.thenCancel);
-                        cancelled++;
-                    } catch {
-                        // A reminder that has already fired or gone is nothing to
-                        // worry about; the next run will see the truth either way.
-                    }
+                    await tryCancel(op.thenCancel);
                 }
             } catch {
                 failedToCreate++;
             }
         } else {
-            try {
-                await Notifications.cancelScheduledNotificationAsync(op.identifier);
-                cancelled++;
-            } catch {
-                // A reminder that has already fired or gone is nothing to worry
-                // about; the next run will see the truth either way.
-            }
+            await tryCancel(op.identifier);
         }
     }
 
-    return { cancelled, created, failedToCreate };
+    const targets = [...cancellationTargets];
+    if (targets.length === 0) {
+        return {
+            cancelled: 0,
+            created,
+            failedToCreate,
+            failedToCancel: 0,
+        };
+    }
+
+    let remaining: string[];
+    try {
+        const held = new Set(
+            (await Notifications.getAllScheduledNotificationsAsync())
+                .map((request) => request.identifier),
+        );
+        remaining = targets.filter((identifier) => held.has(identifier));
+    } catch {
+        remaining = targets;
+    }
+
+    if (remaining.length > 0) {
+        for (const identifier of remaining) {
+            try {
+                await Notifications.cancelScheduledNotificationAsync(identifier);
+            } catch {
+                // The final read-back is the answer.
+            }
+        }
+        try {
+            const held = new Set(
+                (await Notifications.getAllScheduledNotificationsAsync())
+                    .map((request) => request.identifier),
+            );
+            remaining = remaining.filter((identifier) => held.has(identifier));
+        } catch {
+            // None can be claimed gone when the phone cannot confirm the queue.
+        }
+    }
+
+    const failedToCancel = remaining.length;
+    const cancelled = targets.length - failedToCancel;
+    return { cancelled, created, failedToCreate, failedToCancel };
 }
 
 /**
@@ -509,23 +588,32 @@ async function runOnce(): Promise<Plan | null> {
 
         const faults: RunFault[] = [];
 
-        // The clean slate comes first, in both its halves. The reset has to
-        // happen before the lists are read, or a snooze made yesterday would be
-        // armed for today; the sweep is independent and simply belongs here.
+        // The reset has to happen before the list is read, or a snooze made
+        // yesterday would be armed for today.
         faults.push(...(await runDailyReset()));
         faults.push(...(await runWeeklyReset()));
-        faults.push(...(await sweepStaleBanners()));
 
         const now = Date.now();
         const gathered = await gatherWanted(now);
         faults.push(...gathered.faults);
 
         const queue = await readQueue();
-        const plan = reconcile(gathered.wanted, queue, OWNED_SOURCES, now, gathered.unreadSources);
+        const plan = reconcile(
+            gathered.wanted,
+            queue,
+            OWNED_SOURCES,
+            now,
+            gathered.unreadSources,
+            gathered.doneItemIds,
+        );
         const applied = await applyPlan(plan);
         if (applied.failedToCreate > 0) {
             faults.push({ kind: 'create', count: applied.failedToCreate });
         }
+        if (applied.failedToCancel > 0) {
+            faults.push({ kind: 'cancel', count: applied.failedToCancel });
+        }
+        faults.push(...(await sweepPresentedBanners(gathered.doneItemIds)));
 
         await recordRun({
             at: now,

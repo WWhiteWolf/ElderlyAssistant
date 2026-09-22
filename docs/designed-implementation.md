@@ -295,6 +295,20 @@ items. Daily does not gain a cycle stamp.
 Skip is not Done. Skip drops this cycle and arms the next. A one-off
 has no next cycle, so Skip does not apply.
 
+Done's saved state owns the phone cleanup. The scheduler takes the ids
+of every item that is Done into the same reconciliation that already
+compares the saved list with the phone. Every queued copy carrying one
+of those ids is brought into line, including an old base, a push-back,
+a duplicate, or a copy carrying a retired source word. The next
+legitimate cycle is still kept or created. This is one engine answer,
+not another job for the page, banner housing, or Siri to remember.
+
+Every already-delivered banner carrying that item id is taken down as
+well. A cancellation is read back from the phone. Anything still there
+is tried once more. If it remains, the run records a cancellation
+fault and the notice says under **Some reminders need attention** that
+the reminder may still arrive. Failure is not swallowed.
+
 ## How far ahead to arm
 
 Depth is one. How far ahead a waiting kind looks is a number on the

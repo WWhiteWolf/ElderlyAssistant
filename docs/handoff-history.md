@@ -17,6 +17,41 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #118-new (2026-09-22): Done reaches every alert copy
+
+**The report.** More than one reminder continued to arrive after
+Patrick had tapped Done. Tapping a returning banner opened the right
+item, and the item was already marked Done.
+
+**The repair.** The saved Done state now reaches the phone boundary.
+The scheduler gathers the Done item ids and takes ownership of every
+queued copy carrying one, including an old base, a delay, a duplicate,
+or a copy carrying a retired source word. Reconciliation removes those
+old copies while preserving the next legitimate cycle. Every delivered
+banner for the Done item is dismissed as well. This is part of the
+common machinery, not a page or banner patch.
+
+**Cancellation has an answer.** Scheduled removals and delivered-banner
+dismissals are read back and tried once more when they remain. A
+scheduled reminder that still cannot be removed becomes a spoken
+cancellation fault under **Some reminders need attention** and says it
+may still arrive. The app no longer silently claims that request is
+gone.
+
+**Proof.** 432 Mac checks pass. TypeScript is clean. The work is in the
+project and not on the phone.
+
+**The separate Reminder Engine folder.** The check back found that its
+live record stops at Reminder Engine 4, 2026-08-28. No later Memory
+engine change was fed back. #44-new and #45-new had explicitly kept
+their two fixes in Memory. Students-Assistant is going away, so the
+separate folder has no remaining live purpose. It stays as the
+historical shared baseline at Reminder Engine 4 and is not brought
+current before retirement. Memory's own design is the live truth.
+
+**Next.** Put this work on a native load and prove that Done takes down
+every old alert copy while the next real cycle remains.
+
 ## #117-new (2026-09-15): Letters and Page per theme, and even steps
 
 **Phone.** A load after 90 is on the phone. Patrick confirmed that
