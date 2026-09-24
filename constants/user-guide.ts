@@ -271,7 +271,6 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
         items: [
             { text: 'Time zone' },
             { text: 'Holidays' },
-            { text: 'Day after the set day' },
             { text: 'A second Thursday' },
             { text: 'A Wednesday after the 6th' },
         ],
@@ -283,11 +282,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Holidays moves a reminder to the day before or the day after a holiday. You choose which. That is the day before or after the holiday, not the day after your set day.',
-    },
-    {
-        type: 'paragraph',
-        text: 'Day after the set day is for Weekly. In a week that has a federal holiday, the reminder moves to the day after the set day. It is a choice you turn on. It does not have to be on. If it is off, the reminder stays on the set day, and you can still move it yourself.',
+        text: 'Holidays moves a reminder to the day before or the day after a holiday. You choose which.',
     },
     {
         type: 'paragraph',
@@ -307,7 +302,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Weekly has Time zone, Holidays, and Day after the set day.',
+        text: 'Weekly has Time zone and Holidays.',
     },
     {
         type: 'paragraph',

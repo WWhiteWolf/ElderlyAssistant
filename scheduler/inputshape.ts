@@ -35,7 +35,6 @@ export type SourceScreenCode =
 /** The named cases an Options sheet can offer. */
 export type OptionCaseCode =
     | 'holidays'
-    | 'afterSetDay'
     | 'timezone'
     | 'secondThursday'
     | 'wednesdayAfter';
@@ -326,16 +325,6 @@ export interface ShapedItem {
      * apply, so a shifted occurrence is left as it is.
      */
     holidayMoveCode?: 'before' | 'after';
-    /**
-     * Move a Weekly occurrence to the day after the set day when that
-     * week has a US federal holiday.
-     *
-     * Left off when unused. The translator writes the bit from the saved
-     * Options field. The engine applies it as one calendar block, the same
-     * place as a holiday move. It is not the holiday move of before or after
-     * the holiday.
-     */
-    afterSetDayBit?: boolean;
 
     // ---- capability bits: what this kind of item is allowed to do ----
 
@@ -394,6 +383,14 @@ export interface ShapedItem {
      * saved item when Skip has written it.
      */
     skippedCycleStamp?: number;
+    /**
+     * When a Weekly Done was pressed, or nothing.
+     *
+     * The join reads this the way it reads a skip stamp. Which speaking
+     * time the mark applies to is worked from this moment. It is not a
+     * second saved time.
+     */
+    doneAtStamp?: number;
 
     // ---- how far ahead to speak ----
 

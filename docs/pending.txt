@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-23 (#118-new)
+Last updated: 2026-09-24 (#119-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -123,6 +123,23 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+168. #119-new — Home badges make room while one is sliding. The order
+    changes then, and it is saved when you let go. Not on the phone.
+
+167. #119-new — The same-week move is dropped. A holiday in the week no
+    longer pushes the set day onto the next day. The move that fires
+    when the reminder itself lands on the holiday stays. 428 Mac
+    checks. TypeScript clean. Not on the phone.
+
+166. #119-new — Day after a holiday stays on that next day. A Thursday
+    that falls on Thanksgiving shows the Friday, on the calendar and
+    as the speaking time, once the Thursday time has passed. 438 Mac
+    checks. TypeScript clean. Not on the phone.
+
+165. #119-new — Weekly Done puts the next real speaking time on the
+    phone, holiday move included, and the mark comes off when that
+    time arrives. 436 Mac checks. TypeScript clean. Not on the phone.
 
 164. #118-new — Build 97 is on the phone. App Store version 1.0 (72)
     is Pending Developer Release, with manual release. Three stale
@@ -756,9 +773,6 @@ docs/handoff-history.md.
 DECISIONS TO MAKE WHEN YOU'RE READY
 ------------------------------------------------------------------
 1. The dark startup flash (moved here from Parked, #1-new).
-2. HOME BADGE MAKE-ROOM (Patrick, #113-new). While you slide a badge,
-   the others do not make room. They only move when you drop it. The
-   design is that they make room as you slide. To be decided.
 
 
 NICE-TO-HAVE LATER

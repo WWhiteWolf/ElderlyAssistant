@@ -15,7 +15,7 @@
 // writes nothing, and knows nothing about the phone, so Node can check it.
 
 import { isStillWanted } from './stillwanted.ts';
-import { baseMoment, momentsFor } from './leadmoments.ts';
+import { baseMoment, momentsFor, weeklyDoneHoldsUntil } from './leadmoments.ts';
 import type { ClockTimes } from './leadmoments.ts';
 import { armDepthFor } from './armdepth.ts';
 import type { ShapedItem } from './inputshape.ts';
@@ -59,9 +59,15 @@ export function remindersFor(
 
         const skippedThisCycle = answer.skippedThisCycleBit;
 
-        // A weekly item that is done arms nothing further. Skip must not take
-        // that path: it arms the next event on this run.
+        // Weekly Done keeps the next real fire on the phone while the mark
+        // is on. Skip must not take that path: it has its own stamp.
         if (answer.dropsThisOccurrenceBit && item.repeatUnitCode === 'week' && !skippedThisCycle) {
+            const hold = typeof item.doneAtStamp === 'number'
+                ? weeklyDoneHoldsUntil(item, item.doneAtStamp)
+                : null;
+            if (hold !== null && hold > now) {
+                wanted.push(baseReminder(item, hold));
+            }
             continue;
         }
 

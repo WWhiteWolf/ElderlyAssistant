@@ -1,6 +1,6 @@
 // Tests for the piece that turns a lead time into a moment on the clock.
 
-import { momentsFor, shadedDaysInMonth } from '../leadmoments.ts';
+import { momentsFor, shadedDaysInMonth, weeklyDoneCovers, weeklyDoneHoldsUntil } from '../leadmoments.ts';
 import type { ClockTimes } from '../leadmoments.ts';
 import type { LeadTime, ShapedItem } from '../inputshape.ts';
 import { assertSame, test } from './runner.ts';
@@ -625,39 +625,9 @@ export function runLeadMomentsTests(): void {
         );
     });
 
-    test('A Thursday weekly in Labor Day week 2026 moves to Friday', () => {
-        // Labor Day 2026 is Monday 7 September. Thursday the 10th is the
-        // set day. The week has a federal holiday, so it fires Friday.
-        assertSame(
-            momentsOf({
-                sourceScreenCode: 'weekly',
-                repeatUnitCode: 'week',
-                repeatWeekdayList: [{ weekdayNumber: 4 }],
-                dueHour: 10,
-                dueMinute: 0,
-                afterSetDayBit: true,
-            }, at(2026, 8, 10, 9, 0)),
-            [at(2026, 8, 11, 10, 0)],
-            'the week has a federal holiday, so it fires the day after the set day',
-        );
-    });
-
-    test('Friday morning in Labor Day week 2026 still sees Thursday\'s move', () => {
-        assertSame(
-            momentsOf({
-                sourceScreenCode: 'weekly',
-                repeatUnitCode: 'week',
-                repeatWeekdayList: [{ weekdayNumber: 4 }],
-                dueHour: 10,
-                dueMinute: 0,
-                afterSetDayBit: true,
-            }, at(2026, 8, 11, 9, 0)),
-            [at(2026, 8, 11, 10, 0)],
-            'the set day is already past; the moved Friday is still ahead',
-        );
-    });
-
-    test('A Thursday weekly in Labor Day week 2026 stays Thursday when the bit is off', () => {
+    test('A Thursday in Labor Day week 2026 stays Thursday', () => {
+        // Labor Day 2026 is Monday 7 September. A holiday earlier in the
+        // week does not move the Thursday.
         assertSame(
             momentsOf({
                 sourceScreenCode: 'weekly',
@@ -667,22 +637,7 @@ export function runLeadMomentsTests(): void {
                 dueMinute: 0,
             }, at(2026, 8, 10, 9, 0)),
             [at(2026, 8, 10, 10, 0)],
-            'absent means unused',
-        );
-    });
-
-    test('A Thursday weekly in a week with no federal holiday stays Thursday', () => {
-        assertSame(
-            momentsOf({
-                sourceScreenCode: 'weekly',
-                repeatUnitCode: 'week',
-                repeatWeekdayList: [{ weekdayNumber: 4 }],
-                dueHour: 10,
-                dueMinute: 0,
-                afterSetDayBit: true,
-            }, at(2026, 5, 4, 9, 0)),
-            [at(2026, 5, 4, 10, 0)],
-            'June 2026\'s first Thursday is not in a federal-holiday week',
+            'the Monday holiday leaves the Thursday where it was set',
         );
     });
 
@@ -784,6 +739,36 @@ export function runLeadMomentsTests(): void {
         );
     });
 
+    test('A Thursday weekly in November 2026 with holidays after shades the 27th instead of the 26th', () => {
+        assertSame(
+            shadedDaysInMonth(item({
+                sourceScreenCode: 'weekly',
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 4 }],
+                dueHour: 12,
+                dueMinute: 0,
+                holidayMoveCode: 'after',
+            }), 2026, 10),
+            [5, 12, 19, 27],
+            'Thanksgiving is Thursday the 26th, so that week shows Friday the 27th',
+        );
+    });
+
+    test('Thursday afternoon of Thanksgiving still wants Friday, not the Thursday after', () => {
+        assertSame(
+            momentsOf({
+                sourceScreenCode: 'weekly',
+                repeatUnitCode: 'week',
+                repeatWeekdayList: [{ weekdayNumber: 4 }],
+                dueHour: 12,
+                dueMinute: 0,
+                holidayMoveCode: 'after',
+            }, at(2026, 10, 26, 13, 0)),
+            [at(2026, 10, 27, 12, 0)],
+            'the set time has passed, and the moved speech on Friday has not',
+        );
+    });
+
     test('A Saturday weekly in July 2026 with holidays before shades the 3rd instead of the 4th', () => {
         assertSame(
             shadedDaysInMonth(item({
@@ -799,18 +784,29 @@ export function runLeadMomentsTests(): void {
         );
     });
 
-    test('A Thursday weekly in September 2026 with Day after the set day shades Friday the 11th', () => {
+    test('Done after a holiday move holds until the next real fire, not the set weekday', () => {
+        // Thanksgiving 2026 is Thursday 26 November. Day after moves it
+        // to Friday the 27th. Done that Friday. The next week has no
+        // holiday, so the mark holds until Thursday 3 December.
+        const weekly = item({
+            sourceScreenCode: 'weekly',
+            repeatUnitCode: 'week',
+            repeatWeekdayList: [{ weekdayNumber: 4 }],
+            dueHour: 10,
+            dueMinute: 0,
+            holidayMoveCode: 'after',
+            dueMoment: undefined,
+        });
+        const doneAt = at(2026, 10, 27, 11, 0);
         assertSame(
-            shadedDaysInMonth(item({
-                sourceScreenCode: 'weekly',
-                repeatUnitCode: 'week',
-                repeatWeekdayList: [{ weekdayNumber: 4 }],
-                dueHour: 10,
-                dueMinute: 0,
-                afterSetDayBit: true,
-            }), 2026, 8),
-            [3, 11, 17, 24],
-            'Labor Day is Monday the 7th, so Thursday the 10th shows as Friday the 11th',
+            weeklyDoneCovers(weekly, doneAt),
+            at(2026, 10, 27, 10, 0),
+            'the Friday it spoke is the one marked',
+        );
+        assertSame(
+            weeklyDoneHoldsUntil(weekly, doneAt),
+            at(2026, 11, 3, 10, 0),
+            'the mark stays until the next real fire',
         );
     });
 }

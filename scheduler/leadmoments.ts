@@ -92,12 +92,15 @@ export function baseMoment(item: ShapedItem, now: number): BaseMoment | null {
     if (found === null) {
         return null;
     }
-    const afterSet = applyAfterSetDay(found, item, calendar, now);
-    const moved = applyHolidayMove(afterSet, item, calendar);
-    if (item.repeatUntilMoment !== undefined && moved.moment > item.repeatUntilMoment) {
+    const carried = carriedHolidayFire(item, found.moment, now, calendar);
+    const moved = applyHolidayMove(found, item, calendar);
+    const chosen = carried !== null && carried.moment > now && carried.moment < moved.moment
+        ? carried
+        : moved;
+    if (item.repeatUntilMoment !== undefined && chosen.moment > item.repeatUntilMoment) {
         return null;
     }
-    return moved;
+    return chosen;
 }
 
 /**
@@ -126,39 +129,6 @@ export function shadedDaysInMonth(item: ShapedItem, year: number, month: number)
 }
 
 /**
- * One calendar block: if this occurrence's week has a US federal holiday,
- * move it to the day after the set day.
- *
- * The next set day after now may already be next week. This block also
- * looks at the set day one week earlier, so Friday morning still sees
- * Thursday's move from a Monday holiday.
- */
-function applyAfterSetDay(
-    found: BaseMoment,
-    item: ShapedItem,
-    calendar: CivilCalendar,
-    now: number,
-): BaseMoment {
-    if (!item.afterSetDayBit) {
-        return found;
-    }
-    const previous = addCalendarDays(calendar, found.moment, -7);
-    if (weekHasUsFederalHoliday(calendar, previous)) {
-        const shiftedPrev = addCalendarDays(calendar, previous, 1);
-        if (shiftedPrev > now) {
-            return { moment: shiftedPrev, shiftedForMissingDayBit: false };
-        }
-    }
-    if (weekHasUsFederalHoliday(calendar, found.moment)) {
-        return {
-            moment: addCalendarDays(calendar, found.moment, 1),
-            shiftedForMissingDayBit: false,
-        };
-    }
-    return found;
-}
-
-/**
  * One calendar block: if this occurrence falls on a US federal holiday,
  * move it one day before or after. A missing-day shift is left as it is.
  */
@@ -182,6 +152,191 @@ function applyHolidayMove(
         moment: addCalendarDays(calendar, found.moment, step),
         shiftedForMissingDayBit: false,
     };
+}
+
+/**
+ * The day-after fire that is still ahead, after its set time has passed.
+ *
+ * Day after puts the speech on the next day. Once the set clock has
+ * passed, the following occurrence is a week or a month ahead, and
+ * the moved day would be left out. The occurrence just stepped over
+ * is asked again here. When that one fell on a holiday and its moved
+ * speech is still ahead, that speech is the one to keep.
+ */
+function carriedHolidayFire(
+    item: ShapedItem,
+    upcomingSet: number,
+    now: number,
+    calendar: CivilCalendar,
+): BaseMoment | null {
+    if (item.holidayMoveCode !== 'after' || item.repeatUnitCode === undefined) {
+        return null;
+    }
+    const previous = previousSet(item, upcomingSet, calendar);
+    if (previous === null || previous.moment > now) {
+        return null;
+    }
+    const moved = applyHolidayMove(previous, item, calendar);
+    if (moved.moment > now && moved.moment !== previous.moment) {
+        return moved;
+    }
+    return null;
+}
+
+/** The occurrence immediately before `upcoming`, in this item's own step. */
+function previousSet(
+    item: ShapedItem,
+    upcoming: number,
+    calendar: CivilCalendar,
+): BaseMoment | null {
+    const step = intervalOf(item);
+    const parts = calendar.partsOf(upcoming);
+    switch (item.repeatUnitCode) {
+        case 'day':
+            return {
+                moment: addCalendarDays(calendar, upcoming, -step),
+                shiftedForMissingDayBit: false,
+            };
+        case 'week':
+            return {
+                moment: addCalendarDays(calendar, upcoming, -7 * step),
+                shiftedForMissingDayBit: false,
+            };
+        case 'year': {
+            const seedDay = item.dueMonthDay ?? parts.day;
+            return civilAt(
+                calendar,
+                parts.year - step,
+                parts.month,
+                seedDay,
+                parts.hour,
+                parts.minute,
+            );
+        }
+        case 'month':
+            return previousMonthSet(item, upcoming, parts, step, calendar);
+        default:
+            return null;
+    }
+}
+
+function previousMonthSet(
+    item: ShapedItem,
+    upcoming: number,
+    parts: CivilParts,
+    step: number,
+    calendar: CivilCalendar,
+): BaseMoment | null {
+    if (item.repeatWeekdayList !== undefined && item.repeatWeekdayList.length > 0) {
+        const sameMonth = weekdayMomentsInMonth(item, parts.year, parts.month, calendar)
+            .filter((one) => one.moment < upcoming);
+        const prev = addMonths(parts.year, parts.month, -step);
+        const earlier = weekdayMomentsInMonth(item, prev.year, prev.month, calendar);
+        const pool = [...sameMonth, ...earlier];
+        if (pool.length === 0) {
+            return null;
+        }
+        pool.sort((a, b) => b.moment - a.moment);
+        return pool[0];
+    }
+    const seedDay = item.dueMonthDay ?? parts.day;
+    const prev = addMonths(parts.year, parts.month, -step);
+    return civilAt(calendar, prev.year, prev.month, seedDay, parts.hour, parts.minute);
+}
+
+/**
+ * The speaking time a Weekly Done applies to.
+ *
+ * That is the real fire nearest the moment Done was pressed, holiday
+ * move included. Pressed before a coming speech, that speech is the
+ * one marked. Pressed after a speech, that speech is the one marked.
+ */
+export function weeklyDoneCovers(item: ShapedItem, doneAt: number): number | null {
+    const calendar = calendarFor(item);
+    if (calendar === null) {
+        return null;
+    }
+    const latest = realFireAtOrBefore(item, doneAt, calendar);
+    const upcoming = baseMoment(item, doneAt);
+    if (latest === null) {
+        return upcoming === null ? null : upcoming.moment;
+    }
+    if (upcoming === null) {
+        return latest;
+    }
+    const sinceSpoke = doneAt - latest;
+    const untilNext = upcoming.moment - doneAt;
+    if (untilNext < sinceSpoke) {
+        return upcoming.moment;
+    }
+    return latest;
+}
+
+/**
+ * When a Weekly Done mark comes off: the real fire after the one it covers.
+ *
+ * The phone holds that fire while the mark is on. The mark comes off
+ * when that fire arrives.
+ */
+export function weeklyDoneHoldsUntil(item: ShapedItem, doneAt: number): number | null {
+    const covered = weeklyDoneCovers(item, doneAt);
+    if (covered === null) {
+        return null;
+    }
+    const next = baseMoment(item, covered);
+    return next === null ? null : next.moment;
+}
+
+/** The latest real fire at or before `now`, holiday move included. */
+function realFireAtOrBefore(
+    item: ShapedItem,
+    now: number,
+    calendar: CivilCalendar,
+): number | null {
+    const set = setMomentAtOrBefore(item, now, calendar);
+    if (set === null) {
+        return null;
+    }
+    const fire = fireOfSetMoment(item, set, calendar);
+    if (fire <= now) {
+        return fire;
+    }
+    return fireOfSetMoment(item, addCalendarDays(calendar, set, -7), calendar);
+}
+
+/** The set weekday at its clock time, on or before `now`. */
+function setMomentAtOrBefore(
+    item: ShapedItem,
+    now: number,
+    calendar: CivilCalendar,
+): number | null {
+    const weekday = item.repeatWeekdayList?.[0]?.weekdayNumber;
+    if (weekday === undefined
+        || item.dueHour === undefined
+        || item.dueMinute === undefined) {
+        return null;
+    }
+    const start = calendar.partsOf(now);
+    let moment = calendar.at(start.year, start.month, start.day, item.dueHour, item.dueMinute);
+    let guard = 0;
+    while (calendar.partsOf(moment).weekday !== weekday && guard < 7) {
+        moment = addCalendarDays(calendar, moment, -1);
+        guard++;
+    }
+    if (moment > now) {
+        moment = addCalendarDays(calendar, moment, -7);
+    }
+    return moment;
+}
+
+/** The real fire of one known set-day moment, holiday move included. */
+function fireOfSetMoment(
+    item: ShapedItem,
+    setMoment: number,
+    calendar: CivilCalendar,
+): number {
+    const found = { moment: setMoment, shiftedForMissingDayBit: false };
+    return applyHolidayMove(found, item, calendar).moment;
 }
 
 /** How many units between occurrences, 1 when the count is left off. */
@@ -318,7 +473,6 @@ function nextMonthlyByWeekday(
         || item.repeatWeekdayList === undefined) {
         return null;
     }
-    const list = item.repeatWeekdayList;
     const step = intervalOf(item);
     // The saved date is the seed, the same as a numbered-day monthly. Done
     // moves that date, so the next occurrence is next month's weekday, not
@@ -327,24 +481,7 @@ function nextMonthlyByWeekday(
     let year = seed.year;
     let month = seed.month;
     for (let n = 0; n < 48; n++) {
-        const candidates: BaseMoment[] = [];
-        for (const weekday of list) {
-            let days = daysMatching(year, month, weekday);
-            if (item.repeatAfterDayCount !== undefined) {
-                // Only the first weekday after the numbered day is the occurrence.
-                const afterDay = item.repeatAfterDayCount;
-                days = days.filter((day) => day > afterDay);
-                if (days.length > 0) {
-                    days = [days[0]];
-                }
-            }
-            for (const day of days) {
-                candidates.push({
-                    moment: calendar.at(year, month, day, item.dueHour, item.dueMinute),
-                    shiftedForMissingDayBit: false,
-                });
-            }
-        }
+        const candidates = weekdayMomentsInMonth(item, year, month, calendar);
         const later = candidates.filter((one) => one.moment > now);
         if (later.length > 0) {
             later.sort((a, b) => a.moment - b.moment);
@@ -355,6 +492,38 @@ function nextMonthlyByWeekday(
         month = next.month;
     }
     return null;
+}
+
+function weekdayMomentsInMonth(
+    item: ShapedItem,
+    year: number,
+    month: number,
+    calendar: CivilCalendar,
+): BaseMoment[] {
+    if (item.dueHour === undefined
+        || item.dueMinute === undefined
+        || item.repeatWeekdayList === undefined) {
+        return [];
+    }
+    const candidates: BaseMoment[] = [];
+    for (const weekday of item.repeatWeekdayList) {
+        let days = daysMatching(year, month, weekday);
+        if (item.repeatAfterDayCount !== undefined) {
+            // Only the first weekday after the numbered day is the occurrence.
+            const afterDay = item.repeatAfterDayCount;
+            days = days.filter((day) => day > afterDay);
+            if (days.length > 0) {
+                days = [days[0]];
+            }
+        }
+        for (const day of days) {
+            candidates.push({
+                moment: calendar.at(year, month, day, item.dueHour, item.dueMinute),
+                shiftedForMissingDayBit: false,
+            });
+        }
+    }
+    return candidates;
 }
 
 function daysMatching(year: number, month: number, weekday: RepeatWeekday): number[] {
@@ -423,24 +592,6 @@ function isUsFederalHoliday(year: number, month: number, day: number): boolean {
     if (weekday === 1) {
         const prev = addUtcDays(year, month, day, -1);
         return isFixedDateUsFederalHoliday(prev.year, prev.month, prev.day);
-    }
-    return false;
-}
-
-/**
- * Sunday through Saturday of this occurrence, the same weekday counting
- * as Weekly's saved day. True when any day in that week is a US federal
- * holiday, including an observed Friday or Monday.
- */
-function weekHasUsFederalHoliday(calendar: CivilCalendar, moment: number): boolean {
-    const parts = calendar.partsOf(moment);
-    const start = addCalendarDays(calendar, moment, -parts.weekday);
-    for (let i = 0; i < 7; i++) {
-        const day = addCalendarDays(calendar, start, i);
-        const one = calendar.partsOf(day);
-        if (isUsFederalHoliday(one.year, one.month, one.day)) {
-            return true;
-        }
     }
     return false;
 }

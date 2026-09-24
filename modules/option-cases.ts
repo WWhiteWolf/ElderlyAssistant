@@ -19,7 +19,6 @@ export type HolidayMove = 'before' | 'after';
 // an Options case.
 export type OptionSettings = {
     holidayMove?: HolidayMove;
-    afterSetDay: boolean;
     floatsWithPhone: boolean;
     dueTimeZoneText?: string;
     shadeCalendar: boolean;
@@ -35,7 +34,6 @@ export function phoneTimeZone(): string {
 
 export function emptyOptionSettings(): OptionSettings {
     return {
-        afterSetDay: false,
         floatsWithPhone: true,
         shadeCalendar: false,
         afterDayCount: 6,
@@ -48,12 +46,6 @@ export const OPTION_CASES: OptionCase[] = [
         icon: '🎉',
         name: 'Holidays',
         body: 'Move a reminder to the day before or after a holiday. The engine already knows this calendar thinking; this page is where that case lives.',
-    },
-    {
-        id: 'afterSetDay',
-        icon: '➡️',
-        name: 'Day after the set day',
-        body: 'In a week that has a federal holiday, this reminder moves to the day after the set day.',
     },
     {
         id: 'timezone',
@@ -107,17 +99,6 @@ export function appliedOptionRows(settings: OptionSettings): AppliedOption[] {
             });
         }
     }
-    if (settings.afterSetDay) {
-        const one = named('afterSetDay');
-        if (one) {
-            rows.push({
-                id: one.id,
-                icon: one.icon,
-                name: one.name,
-                value: 'On',
-            });
-        }
-    }
     if (!settings.floatsWithPhone) {
         const one = named('timezone');
         if (one) {
@@ -166,7 +147,6 @@ export function optionsFromItem(item: ReminderItem): OptionSettings {
     return {
         ...emptyOptionSettings(),
         holidayMove: item.holidayMove,
-        afterSetDay: !!item.afterSetDay,
         floatsWithPhone: item.floatsWithPhone !== false,
         dueTimeZoneText: item.dueTimeZoneText,
         shadeCalendar: !!item.shadeCalendar,
@@ -181,8 +161,7 @@ export function applyConnectedOptions(item: ReminderItem, settings: OptionSettin
     const out = { ...item };
     if (settings.holidayMove) out.holidayMove = settings.holidayMove;
     else delete out.holidayMove;
-    if (settings.afterSetDay) out.afterSetDay = true;
-    else delete out.afterSetDay;
+    delete (out as { afterSetDay?: boolean }).afterSetDay;
     if (!settings.floatsWithPhone) {
         out.floatsWithPhone = false;
         out.dueTimeZoneText = settings.dueTimeZoneText;
@@ -333,9 +312,7 @@ export function keepOptionsForCodes(
     ) {
         delete out.holidayMove;
     }
-    if (!ids.has('afterSetDay') || out.afterSetDay !== true) {
-        delete out.afterSetDay;
-    }
+    delete (out as { afterSetDay?: boolean }).afterSetDay;
     if (
         !ids.has('timezone')
         || out.floatsWithPhone !== false

@@ -271,7 +271,6 @@ export function runAssembleFormTests(): void {
             optionSettings: {
                 ...emptyOptionSettings(),
                 holidayMove: 'after',
-                afterSetDay: true,
                 weekdayOrdinal: 2,
                 ordinalWeekday: 4,
                 afterWeekday: 3,
@@ -281,13 +280,12 @@ export function runAssembleFormTests(): void {
         assertSame(
             [
                 next.holidayMove,
-                next.afterSetDay,
                 next.weekdayOrdinal,
                 next.ordinalWeekday,
                 next.afterWeekday,
                 next.afterDayCount,
             ],
-            ['after', undefined, undefined, undefined, undefined, undefined],
+            ['after', undefined, undefined, undefined, undefined],
             'Birthdays keep Holidays but do not enter the dated cadence exclusive group',
         );
     });
@@ -359,7 +357,6 @@ export function runAssembleFormTests(): void {
             optionSettings: {
                 ...emptyOptionSettings(),
                 holidayMove: 'before',
-                afterSetDay: true,
                 floatsWithPhone: false,
                 dueTimeZoneText: 'America/New_York',
                 weekdayOrdinal: 2,
@@ -376,7 +373,6 @@ export function runAssembleFormTests(): void {
         assertSame(
             [
                 next.holidayMove,
-                next.afterSetDay,
                 next.floatsWithPhone,
                 next.dueTimeZoneText,
                 next.weekdayOrdinal,
@@ -385,7 +381,7 @@ export function runAssembleFormTests(): void {
                 next.afterDayCount,
                 next.shadeCalendar,
             ],
-            [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true],
+            [undefined, undefined, undefined, undefined, undefined, undefined, undefined, true],
             'Save strips every disallowed Options field and leaves inert shade history alone',
         );
         assert(!('hour' in next) && !('reminders' in next), 'dropped fields are gone, not left empty');
@@ -397,7 +393,6 @@ export function runAssembleFormTests(): void {
             optionSettings: {
                 ...emptyOptionSettings(),
                 holidayMove: 'before',
-                afterSetDay: true,
                 floatsWithPhone: false,
                 dueTimeZoneText: 'America/New_York',
                 weekdayOrdinal: 2,
@@ -409,7 +404,6 @@ export function runAssembleFormTests(): void {
         assertSame(
             [
                 next.holidayMove,
-                next.afterSetDay,
                 next.floatsWithPhone,
                 next.dueTimeZoneText,
                 next.weekdayOrdinal,
@@ -417,16 +411,9 @@ export function runAssembleFormTests(): void {
                 next.afterWeekday,
                 next.afterDayCount,
             ],
-            [undefined, undefined, false, 'America/New_York', undefined, undefined, undefined, undefined],
+            [undefined, false, 'America/New_York', undefined, undefined, undefined, undefined],
             'Save reads Daily’s allowed-code list from the table',
         );
     });
 
-    test('Weekly Save writes Day after the set day when that choice is on', () => {
-        const next = assembleFormItem(parts({
-            editKind: 'weekly',
-            optionSettings: { ...emptyOptionSettings(), afterSetDay: true },
-        }));
-        assertSame(next.afterSetDay, true, 'Save writes the bit; the page does not move the day');
-    });
 }

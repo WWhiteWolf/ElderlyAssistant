@@ -294,42 +294,12 @@ export function runTranslatorCadenceTests(): void {
         );
     });
 
-    test('Day after the set day reaches the common shape as a bit', () => {
-        const shaped = shapeOf(item({
-            kind: 'weekly',
-            day: 4,
-            hour: 10,
-            minute: 0,
-            afterSetDay: true,
-        }));
-        assertSame(
-            shaped.afterSetDayBit,
-            true,
-            'the engine moves the occurrence; the page does not',
-        );
-    });
-
-    test('Day after the set day unused is left off the common shape', () => {
-        const shaped = shapeOf(item({
-            kind: 'weekly',
-            day: 4,
-            hour: 10,
-            minute: 0,
-        }));
-        assertSame(
-            shaped.afterSetDayBit,
-            undefined,
-            'absent means unused',
-        );
-    });
-
     test('Wrong-kind Options fields never reach the common shape', () => {
         const daily = shapeOf(item({
             kind: 'daily',
             hour: 8,
             minute: 0,
             holidayMove: 'before',
-            afterSetDay: true,
             weekdayOrdinal: 2,
             ordinalWeekday: 4,
             afterWeekday: 3,
@@ -340,7 +310,6 @@ export function runTranslatorCadenceTests(): void {
             year: 2026,
             month: 5,
             day: 10,
-            afterSetDay: true,
             weekdayOrdinal: 2,
             ordinalWeekday: 4,
         }));
@@ -353,15 +322,13 @@ export function runTranslatorCadenceTests(): void {
         assertSame(
             [
                 daily.holidayMoveCode,
-                daily.afterSetDayBit,
                 daily.repeatWeekdayList,
-                appointment.afterSetDayBit,
                 appointment.repeatWeekdayList,
                 bucket.holidayMoveCode,
                 bucket.dueTimeZoneText,
                 bucket.floatsWithPhoneBit,
             ],
-            [undefined, undefined, undefined, undefined, undefined, undefined, undefined, true],
+            [undefined, undefined, undefined, undefined, undefined, true],
             'each Options field reaches the engine only when the kind row allows its case',
         );
     });
@@ -545,7 +512,6 @@ export function runTranslatorCadenceTests(): void {
             item({
                 kind: 'daily',
                 holidayMove: 'before',
-                afterSetDay: true,
                 floatsWithPhone: false,
                 dueTimeZoneText: 'America/New_York',
                 shadeCalendar: true,
@@ -558,14 +524,13 @@ export function runTranslatorCadenceTests(): void {
         assertSame(
             [
                 saved?.holidayMove,
-                saved?.afterSetDay,
                 saved?.floatsWithPhone,
                 saved?.dueTimeZoneText,
                 saved?.shadeCalendar,
                 saved?.weekdayOrdinal,
                 saved?.ordinalWeekday,
             ],
-            [undefined, undefined, false, 'America/New_York', true, undefined, undefined],
+            [undefined, false, 'America/New_York', true, undefined, undefined],
             'restore keeps Daily time zone and inert shade history, and strips wrong-kind fields',
         );
     });
@@ -637,11 +602,11 @@ export function runTranslatorCadenceTests(): void {
         );
     });
 
-    test('Weekly Options has Day after the set day', () => {
+    test('Weekly Options has Holidays and Time zone', () => {
         assertSame(
             optionCaseIdsFor('weekly'),
-            ['holidays', 'afterSetDay', 'timezone'],
-            'Weekly has Holidays, Day after the set day, and Time zone',
+            ['holidays', 'timezone'],
+            'Weekly has Holidays and Time zone',
         );
     });
 

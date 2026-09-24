@@ -60,6 +60,21 @@ export function runWeeklyResetTests(): void {
         assert(after[0].doneAt === undefined, 'expected doneAt gone');
     });
 
+    test('A mark with a real next fire stays until that fire and then comes off', () => {
+        const holds = at(2026, 5, 8, 8, 0);
+        const before = resetForNewCycle(
+            [chore({ completed: true, doneAt: at(2026, 5, 1, 8, 5), doneHoldsUntil: holds })],
+            at(2026, 5, 8, 7, 59),
+        );
+        assert(before[0].completed === true, 'expected the mark kept until the real fire');
+        const after = resetForNewCycle(
+            [chore({ completed: true, doneAt: at(2026, 5, 1, 8, 5), doneHoldsUntil: holds })],
+            holds,
+        );
+        assert(after[0].completed === false, 'expected the mark off when that fire arrives');
+        assert(after[0].doneAt === undefined, 'expected the moment cleared with the mark');
+    });
+
     test('A tick made since the cycle came round is kept', () => {
         const after = resetForNewCycle([chore({ completed: true, doneAt: at(2026, 5, 1, 8, 5) })], NOW);
         assert(after[0].completed === true, 'expected the checkmark kept');

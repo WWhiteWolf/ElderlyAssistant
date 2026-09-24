@@ -22,13 +22,22 @@ marked Done fired again. The one reminder that did arrive was for
 something actually missing; the app otherwise acted normally.
 Saved Done state removes every old queued and delivered alert copy for
 that item, keeps the next legitimate cycle, and reports a removal the
-phone cannot confirm. 432 Mac checks pass and TypeScript is clean.
+phone cannot confirm.
+
+#119-new is in the project, not on that phone load. Weekly Done puts
+the next real speaking time on the phone, holiday move included, and
+the mark comes off when that time arrives. A reminder that lands on a
+holiday stays on the moved day, including on the calendar. The
+same-week move is dropped: a holiday elsewhere in the week no longer
+pushes the set day. He saw both of those on the simulator. Home badges
+change order while one is sliding. That part is written and not yet
+seen. 428 Mac checks pass and TypeScript is clean.
 
 Birthday and its attached backup, day-roll lock, #116-new Settings
 backup and back-drag, and the Settings Guide tile names are all
 verified on the phone. The designed-machine jobs from #108-new and
 #109-new are verified too. All phone proof carried in this record is
-complete. Home make-room is in pending.
+complete.
 
 ## Standing rulings
 

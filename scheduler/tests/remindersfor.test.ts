@@ -325,19 +325,27 @@ export function runRemindersForTests(): void {
     });
 
     test('A completed Weekly item is not armed for this week', () => {
-        const wanted = weekWanted(weekly({ completed: true }));
-        assert(
-            wanted.every((r) => r.source !== 'weekly'),
-            'a tick must skip this week — that is the fault the repeat could not cure',
+        // Tuesday morning, before Tuesday evening. This evening is the one
+        // marked. The phone holds the Tuesday after.
+        const wanted = weekWanted(weekly({ completed: true, doneAt: NOW }));
+        const base = wanted.filter((r) => r.source === 'weekly');
+        assertSame(base.length, 1, 'the following fire is put on the phone');
+        assertSame(
+            readable((base[0].trigger as { at: number }).at),
+            '2026-9-1 18:00',
+            'this Tuesday evening stays marked, so the next Tuesday is the one armed',
         );
     });
 
-    test('A completed Weekly item later in the week is not armed either', () => {
-        // Thursday is 4. Same-day filtering would have left Thursday standing.
-        const wanted = weekWanted(weekly({ day: 4, completed: true }));
-        assert(
-            wanted.every((r) => r.source !== 'weekly'),
-            'this occurrence is this week, not merely today',
+    test('A completed Weekly item later in the week is not armed for that day either', () => {
+        // Thursday is 4. The tick is Tuesday morning, before Thursday speaks.
+        const wanted = weekWanted(weekly({ day: 4, completed: true, doneAt: NOW }));
+        const base = wanted.filter((r) => r.source === 'weekly');
+        assertSame(base.length, 1, 'the following Thursday is put on the phone');
+        assertSame(
+            readable((base[0].trigger as { at: number }).at),
+            '2026-9-3 18:00',
+            'this Thursday is the one marked, not merely today',
         );
     });
 
@@ -796,9 +804,8 @@ export function runRemindersForTests(): void {
         assertSame(wanted[0].key, 'monthly:l1:base', 'named as a one-off, not as a skipped cycle');
     });
 
-    test('Done still wins over a skip stamp, so the next event is not armed', () => {
-        const tuesday = new Date(2026, 5, 2, 18, 0, 0, 0).getTime();
-        const monday = new Date(2026, 5, 1, 9, 0, 0, 0).getTime();
+    test('Done still wins over a skip stamp, and arms the fire after the one it covers', () => {
+        const afterTuesday = new Date(2026, 5, 2, 19, 0, 0, 0).getTime();
         const wanted = remindersFor(
             [shaped({
                 sourceScreenCode: 'weekly',
@@ -808,15 +815,18 @@ export function runRemindersForTests(): void {
                 dueHour: 18,
                 dueMinute: 0,
                 isDoneBit: true,
-                skippedCycleStamp: tuesday,
+                doneAtStamp: afterTuesday,
+                skippedCycleStamp: new Date(2026, 5, 9, 18, 0, 0, 0).getTime(),
             })],
-            monday,
+            afterTuesday,
             CLOCK,
         );
+        const base = wanted.filter((r) => r.source === 'weekly');
+        assertSame(base.length, 1, 'the next fire stays on the phone while the mark is on');
         assertSame(
-            wanted.filter((r) => r.source === 'weekly').length,
-            0,
-            'done keeps the weekly path that arms nothing further',
+            readable((base[0].trigger as { at: number }).at),
+            '2026-6-9 18:00',
+            'the Tuesday just marked, not the week the skip stamp would have jumped to',
         );
     });
 

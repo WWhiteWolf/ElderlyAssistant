@@ -23,6 +23,10 @@ export interface ResettableChore {
     completed: boolean;
     // The moment the chore was last marked done.
     doneAt?: number;
+    // The real next fire. The mark comes off when this moment arrives.
+    // Left off, the set weekday is used, which is the same fire when
+    // nothing has moved it.
+    doneHoldsUntil?: number;
     // The moment a postponed chore was pushed to, for this cycle only.
     postponedTo?: number;
 }
@@ -70,7 +74,11 @@ export function resetForNewCycle<T extends ResettableChore>(chores: T[], now: nu
         let next = chore;
         const last = lastOccurrence(chore.day, chore.hour, chore.minute, now);
 
-        if (next.completed && next.doneAt != null && next.doneAt < last) {
+        const holdsUntil = next.doneHoldsUntil;
+        const spent = next.completed && next.doneAt != null && (
+            holdsUntil != null ? now >= holdsUntil : next.doneAt < last
+        );
+        if (spent) {
             next = { ...next, completed: false, doneAt: undefined };
         }
         if (next.postponedTo != null && next.postponedTo < last) {

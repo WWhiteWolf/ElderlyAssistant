@@ -227,7 +227,6 @@ Which choices you see depends on the kind of reminder.
 
 - Time zone
 - Holidays
-- Day after the set day
 - A second Thursday
 - A Wednesday after the 6th
 
@@ -235,9 +234,7 @@ Each of these is explained below.
 
 Time zone is for when the reminder should fire. You can let the time follow the zone you and your phone are in, or keep the zone it was originally set for.
 
-Holidays moves a reminder to the day before or the day after a holiday. You choose which. That is the day before or after the holiday, not the day after your set day.
-
-Day after the set day is for Weekly. In a week that has a federal holiday, the reminder moves to the day after the set day. It is a choice you turn on. It does not have to be on. If it is off, the reminder stays on the set day, and you can still move it yourself.
+Holidays moves a reminder to the day before or the day after a holiday. You choose which.
 
 A second Thursday is for a numbered weekday, for example the second Thursday of the month. You pick the weekday and which one: 1st, 2nd, 3rd, 4th, or Last.
 
@@ -247,7 +244,7 @@ You cannot have both a second Thursday and a Wednesday after the 6th on the same
 
 Daily and One Time for today have Time zone only.
 
-Weekly has Time zone, Holidays, and Day after the set day.
+Weekly has Time zone and Holidays.
 
 Appointments and Birthdays have Time zone and Holidays.
 

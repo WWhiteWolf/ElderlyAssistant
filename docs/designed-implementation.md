@@ -134,14 +134,9 @@ translator and banner boundaries are:
   always writes from the pending date’s time. ifTimeSet writes from
   the pending date’s time when a time was set.
 - **A holiday move** — before, or after. Left off when unused.
-- **Day after the set day** — Weekly only. On or off. Off is the
-  default. On, a week that has a federal holiday moves the reminder
-  to the day after the set day, not to the day before or after the
-  holiday. That holiday move stays its own case. The translator writes
-  the bit from the saved Options field. The engine applies it as one
-  calendar block, the same place as a holiday move. Sunday through
-  Saturday is the week, the same weekday counting as Weekly's saved
-  day. Friday morning still sees Thursday's move.
+- **Day after the set day** — dropped (#119-new). A holiday in the
+  same week no longer pushes the set day onto the next day. The
+  holiday move, before or after the holiday itself, stays.
 - **The form of a lead time** — offset from the due moment, or a clock
   time a number of days before. A lead time is one form, not half of
   each. When Save writes time only if a time was set, and no time is
@@ -155,8 +150,8 @@ translator and banner boundaries are:
   The saved item still holds the day-count the engine already steps.
 - **The date line on New and Edit** — left off, it is Due Date.
   Birthdays write Birthdate. The form reads the table.
-- **Which Options cases a kind may carry** — holidays, afterSetDay,
-  timezone, secondThursday, and wednesdayAfter. Every kind's translator
+- **Which Options cases a kind may carry** — holidays, timezone,
+  secondThursday, and wednesdayAfter. Every kind's translator
   row carries its allowed list. A Quarterly row also names the shorter
   list used when a 30, 60, or 90 day chip is on. The form and the
   saved-item translator read that row; the Options metadata does not
@@ -352,11 +347,13 @@ It is not an Appointment. 30 min.,
 1 hour, 2 hours, and Time of sit muted until a time is set.
 
 **weekly** — page Weekly. Repeats every week on its weekday. Time is
-always written. Noon if missing. Done is thisCycle. It can be pushed
+always written. Noon if missing. Done is thisCycle. The mark applies
+to the speaking time nearest the moment it is pressed. The next
+speaking time is put on the phone then, holiday move included, and
+stays while the mark is on. The mark comes off when that next
+speaking time arrives. It can be pushed
 back. Banner set weeklyactions: Done, OK, Skip, Delay 15 / 30 / 60 min,
-and Delay 1 Day. Speaks at the moment itself. Day after the set day is
-an Options choice: in a week that has a federal holiday, the reminder
-moves to the day after the set day. It does not have to be on. Its
+and Delay 1 Day. Speaks at the moment itself. Its
 pushed-back source is weeklysnooze.
 
 **monthly** — page Monthly. Repeats every month. Date required. Done is
@@ -716,18 +713,15 @@ saved field stays as inert history. `floatDay` remains disconnected.
 Save strips every live Options field that the kind's row does not
 allow.
 
-The cases are Holidays, Time zone, Day after the set day, a second
-Thursday, and a Wednesday after the 6th. Holidays is Day before or
-Day after. That is the holiday's day, not the day after the set day.
-Day after the set day is Weekly only: a week that has a federal
-holiday moves the reminder to the day after the set day. It does not
-have to be on. Time zone is Float with phone or Keep this zone. When
-Keep this zone is on, the form line says Keep this zone and the zone
-name. Then and Next Day are the missing-day banner, not an Options
-case.
+The cases are Holidays, Time zone, a second Thursday, and a Wednesday
+after the 6th. Holidays is Day before or Day after. That is the
+holiday's own day. The same-week move was dropped (#119-new). Time
+zone is Float with phone or Keep this zone. When Keep this zone is
+on, the form line says Keep this zone and the zone name. Then and
+Next Day are the missing-day banner, not an Options case.
 
-Daily and One Time get Time zone only. Weekly gets Holidays, Time
-zone, and Day after the set day. Appointments and Birthdays get
+Daily and One Time get Time zone only. Weekly gets Holidays and Time
+zone. Appointments and Birthdays get
 Holidays and Time zone. Monthly and Yearly get Holidays, Time zone,
 a second Thursday, and a Wednesday after the 6th. Quarterly with no
 chip gets those four as well. A 30, 60, or 90 day Quarterly item

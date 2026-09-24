@@ -29,6 +29,7 @@ import {
 } from './translators/translate.ts';
 import { remindersFor } from './remindersfor.ts';
 import { DEFAULT_CLOCK_TIMES } from './clocktimes.ts';
+import { weeklyDoneHoldsUntil } from './leadmoments.ts';
 import type { ClockTimes, TimeOfDay } from './leadmoments.ts';
 import type { ReminderItem } from '../modules/reminder-types.ts';
 import {
@@ -155,16 +156,24 @@ export async function runWeeklyReset(): Promise<RunFault[]> {
             );
             if (resettable.length === 0) return items;
 
-            const asChores: ResettableChore[] = resettable.map((one) => ({
-                id: one.id,
-                day: one.day ?? 0,
-                hour: typeof one.hour === 'number' ? one.hour : 12,
-                minute: typeof one.minute === 'number' ? one.minute : 0,
-                completed: !!one.completed,
-                ...(typeof one.doneAt === 'number' ? { doneAt: one.doneAt } : {}),
-                ...(typeof one.snoozedUntil === 'number' ? { postponedTo: one.snoozedUntil } : {}),
-            }));
-            const rolled = resetForNewCycle(asChores, Date.now());
+            const now = Date.now();
+            const asChores: ResettableChore[] = resettable.map((one) => {
+                const shaped = translateReminderItems([one], now)[0];
+                const holds = shaped !== undefined && typeof one.doneAt === 'number'
+                    ? weeklyDoneHoldsUntil(shaped, one.doneAt)
+                    : null;
+                return {
+                    id: one.id,
+                    day: one.day ?? 0,
+                    hour: typeof one.hour === 'number' ? one.hour : 12,
+                    minute: typeof one.minute === 'number' ? one.minute : 0,
+                    completed: !!one.completed,
+                    ...(typeof one.doneAt === 'number' ? { doneAt: one.doneAt } : {}),
+                    ...(holds !== null ? { doneHoldsUntil: holds } : {}),
+                    ...(typeof one.snoozedUntil === 'number' ? { postponedTo: one.snoozedUntil } : {}),
+                };
+            });
+            const rolled = resetForNewCycle(asChores, now);
             const changed = rolled.some((chore, index) => chore !== asChores[index]);
             if (!changed) return items;
 

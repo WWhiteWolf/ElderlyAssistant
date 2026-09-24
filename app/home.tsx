@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useRouter, type Href } from 'expo-router';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     Image,
     StyleSheet,
@@ -29,14 +29,6 @@ import {
 const HOME_COLUMNS = 2;
 const GRID_INSET = 12;
 
-function rowsOfTwo(list: HomeBadge[]): HomeBadge[][] {
-    const rows: HomeBadge[][] = [];
-    for (let i = 0; i < list.length; i += HOME_COLUMNS) {
-        rows.push(list.slice(i, i + HOME_COLUMNS));
-    }
-    return rows;
-}
-
 function comfortablePicture(cellWidth: number, cellHeight: number, labelSize: number) {
     const labelBlock = labelSize * 1.25 + 8;
     const room = Math.max(0, Math.min(cellWidth - 12, cellHeight - 12 - labelBlock));
@@ -58,6 +50,7 @@ function HomeBadgeTile({
     onDragMove,
     onDragEnd,
     onSlot,
+    onBindRebase,
 }: {
     badge: HomeBadge;
     landscape: boolean;
@@ -71,6 +64,7 @@ function HomeBadgeTile({
     onDragMove: (x: number, y: number) => void;
     onDragEnd: () => void;
     onSlot: (id: string, x: number, y: number, w: number, h: number) => void;
+    onBindRebase: (rebase: ((sx: number, sy: number) => void) | null) => void;
 }) {
     const onOpenRef = useRef(onOpen);
     onOpenRef.current = onOpen;
@@ -94,9 +88,38 @@ function HomeBadgeTile({
     const lifted = useSharedValue(0);
     const startAbsX = useSharedValue(0);
     const startAbsY = useSharedValue(0);
+    const fingerX = useSharedValue(0);
+    const fingerY = useSharedValue(0);
     const turn = landscape ? (headerSide === 'right' ? 2 : 1) : 0;
 
+    const placeAtFinger = (absX: number, absY: number) => {
+        const dx = absX - startAbsX.value;
+        const dy = absY - startAbsY.value;
+        if (turn === 2) {
+            translateX.value = dy;
+            translateY.value = -dx;
+        } else if (turn === 1) {
+            translateX.value = -dy;
+            translateY.value = dx;
+        } else {
+            translateX.value = dx;
+            translateY.value = dy;
+        }
+    };
+
     const tileRef = useRef<View>(null);
+    const rebase = useCallback((sx: number, sy: number) => {
+        startAbsX.value += sx;
+        startAbsY.value += sy;
+        placeAtFinger(fingerX.value, fingerY.value);
+    }, [startAbsX, startAbsY, fingerX, fingerY, turn]);
+    const rebaseHolder = useRef(rebase);
+    rebaseHolder.current = rebase;
+    const onBindRebaseRef = useRef(onBindRebase);
+    onBindRebaseRef.current = onBindRebase;
+    const bindLatest = useCallback(() => {
+        onBindRebaseRef.current(rebaseHolder.current);
+    }, []);
 
     const gesture = useMemo(() => {
         if (editing) {
@@ -108,9 +131,14 @@ function HomeBadgeTile({
                     translateY.value = 0;
                     startAbsX.value = e.absoluteX;
                     startAbsY.value = e.absoluteY;
+                    fingerX.value = e.absoluteX;
+                    fingerY.value = e.absoluteY;
+                    runOnJS(bindLatest)();
                     runOnJS(startJS)(badge.id, e.absoluteX, e.absoluteY);
                 })
                 .onUpdate((e) => {
+                    fingerX.value = e.absoluteX;
+                    fingerY.value = e.absoluteY;
                     const dx = e.absoluteX - startAbsX.value;
                     const dy = e.absoluteY - startAbsY.value;
                     if (turn === 2) {
@@ -139,7 +167,13 @@ function HomeBadgeTile({
             runOnJS(tapJS)();
         });
         return Gesture.Exclusive(hold, tap);
-    }, [editing, badge.id, startJS, moveJS, endJS, holdJS, tapJS, translateX, translateY, lifted, startAbsX, startAbsY, turn]);
+    }, [editing, badge.id, startJS, moveJS, endJS, holdJS, tapJS, bindLatest, translateX, translateY, lifted, startAbsX, startAbsY, fingerX, fingerY, turn]);
+
+    useEffect(() => {
+        if (!dragging) return;
+        onBindRebaseRef.current(rebase);
+        return () => onBindRebaseRef.current(null);
+    }, [dragging, rebase]);
 
     const liftedStyle = useAnimatedStyle(() => ({
         transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
@@ -148,27 +182,29 @@ function HomeBadgeTile({
     }));
 
     return (
-        <Animated.View
+        <View
             ref={tileRef}
             collapsable={false}
-            style={[styles.tile, liftedStyle, dragging && styles.tileDragging]}
+            style={[styles.tile, dragging && styles.tileFront]}
             onLayout={() => {
                 tileRef.current?.measureInWindow((x, y, w, h) => {
                     onSlot(badge.id, x, y, w, h);
                 });
             }}
         >
-            <GestureDetector gesture={gesture}>
-                <View style={styles.tileHit}>
-                    <View style={[styles.tileInner, uprightInLandscape(landscape, headerSide)]}>
-                        <View style={styles.iconCircle}>
-                            <Text style={styles.tileIcon}>{badge.icon}</Text>
+            <Animated.View style={[styles.tileLift, liftedStyle, dragging && styles.tileDragging]}>
+                <GestureDetector gesture={gesture}>
+                    <View style={styles.tileHit}>
+                        <View style={[styles.tileInner, uprightInLandscape(landscape, headerSide)]}>
+                            <View style={styles.iconCircle}>
+                                <Text style={styles.tileIcon}>{badge.icon}</Text>
+                            </View>
+                            <Text style={styles.tileLabel}>{badge.label}</Text>
                         </View>
-                        <Text style={styles.tileLabel}>{badge.label}</Text>
                     </View>
-                </View>
-            </GestureDetector>
-        </Animated.View>
+                </GestureDetector>
+            </Animated.View>
+        </View>
     );
 }
 
@@ -204,6 +240,8 @@ export default function HomeScreen() {
     const slots = useRef<Record<string, { x: number; y: number; w: number; h: number }>>({});
     const dragMeta = useRef<{ id: string } | null>(null);
     const dragToIndex = useRef(0);
+    const dragCells = useRef<{ x: number; y: number; w: number; h: number }[] | null>(null);
+    const rebaseDrag = useRef<((sx: number, sy: number) => void) | null>(null);
 
     const saveOrder = useCallback(async (list: HomeBadge[]) => {
         await AsyncStorage.setItem(HOME_BADGE_ORDER_KEY, JSON.stringify(list.map((one) => one.id)));
@@ -228,20 +266,23 @@ export default function HomeScreen() {
     };
 
     const beginDrag = useCallback((id: string, _x: number, _y: number) => {
+        const list = badgesRef.current;
         dragMeta.current = { id };
-        dragToIndex.current = badgesRef.current.findIndex((one) => one.id === id);
+        dragToIndex.current = list.findIndex((one) => one.id === id);
+        dragCells.current = list.map((one) => slots.current[one.id]).filter(
+            (slot): slot is { x: number; y: number; w: number; h: number } => slot != null,
+        );
+        if (dragCells.current.length !== list.length) dragCells.current = null;
         setDraggingId(id);
     }, []);
 
     const moveDrag = useCallback((absX: number, absY: number) => {
         const meta = dragMeta.current;
-        if (!meta) return;
-        const list = badgesRef.current;
+        const cells = dragCells.current;
+        if (!meta || !cells) return;
         let best = 0;
         let bestD = Infinity;
-        list.forEach((one, i) => {
-            const slot = slots.current[one.id];
-            if (!slot) return;
+        cells.forEach((slot, i) => {
             const cx = slot.x + slot.w / 2;
             const cy = slot.y + slot.h / 2;
             const d = (cx - absX) ** 2 + (cy - absY) ** 2;
@@ -251,6 +292,14 @@ export default function HomeScreen() {
             }
         });
         dragToIndex.current = best;
+        const from = badgesRef.current.findIndex((one) => one.id === meta.id);
+        if (from < 0 || from === best) return;
+        const sx = cells[best].x - cells[from].x;
+        const sy = cells[best].y - cells[from].y;
+        rebaseDrag.current?.(sx, sy);
+        const next = moveHomeBadge(badgesRef.current, meta.id, best);
+        badgesRef.current = next;
+        setBadges(next);
     }, []);
 
     const endDrag = useCallback(() => {
@@ -262,6 +311,7 @@ export default function HomeScreen() {
             void saveOrder(next);
         }
         dragMeta.current = null;
+        dragCells.current = null;
         setDraggingId(null);
     }, [saveOrder]);
 
@@ -325,30 +375,31 @@ export default function HomeScreen() {
             >
                 {ready ? (
                     <View style={gridStyle}>
+                        <View style={styles.gridPad}>
                         <View style={styles.grid}>
-                            {rowsOfTwo(badges).map((row) => (
-                                <View key={row.map((one) => one.id).join('-')} style={styles.gridRow}>
-                                    {row.map((badge) => (
-                                        <HomeBadgeTile
-                                            key={badge.id}
-                                            badge={badge}
-                                            landscape={landscape}
-                                            headerSide={headerSide}
-                                            editing={editing}
-                                            dragging={draggingId === badge.id}
-                                            styles={styles}
-                                            onOpen={() => openBadge(badge.id)}
-                                            onHold={() => setHoldBadge(badge)}
-                                            onDragStart={beginDrag}
-                                            onDragMove={moveDrag}
-                                            onDragEnd={endDrag}
-                                            onSlot={(id, x, y, w, h) => {
-                                                slots.current[id] = { x, y, w, h };
-                                            }}
-                                        />
-                                    ))}
-                                </View>
+                            {badges.map((badge) => (
+                                <HomeBadgeTile
+                                    key={badge.id}
+                                    badge={badge}
+                                    landscape={landscape}
+                                    headerSide={headerSide}
+                                    editing={editing}
+                                    dragging={draggingId === badge.id}
+                                    styles={styles}
+                                    onOpen={() => openBadge(badge.id)}
+                                    onHold={() => setHoldBadge(badge)}
+                                    onDragStart={beginDrag}
+                                    onDragMove={moveDrag}
+                                    onDragEnd={endDrag}
+                                    onSlot={(id, x, y, w, h) => {
+                                        slots.current[id] = { x, y, w, h };
+                                    }}
+                                    onBindRebase={(rebase) => {
+                                        rebaseDrag.current = rebase;
+                                    }}
+                                />
                             ))}
+                        </View>
                         </View>
                     </View>
                 ) : null}
@@ -448,16 +499,24 @@ const makeStyles = (t: Theme, picture: { circle: number; icon: number }) =>
         gridFill: {
             flex: 1,
         },
-        grid: {
+        gridPad: {
             flex: 1,
             padding: GRID_INSET,
         },
-        gridRow: {
+        grid: {
             flex: 1,
             flexDirection: 'row',
+            flexWrap: 'wrap',
         },
         tile: {
+            width: '50%',
+            height: `${100 / Math.ceil(HOME_BADGES.length / HOME_COLUMNS)}%`,
+        },
+        tileLift: {
             flex: 1,
+        },
+        tileFront: {
+            zIndex: 20,
         },
         tileHit: {
             flex: 1,

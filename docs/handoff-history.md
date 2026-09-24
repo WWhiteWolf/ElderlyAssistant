@@ -17,6 +17,43 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #119-new (2026-09-24): holiday day stays; same-week move dropped; badges make room
+
+**Cursor Projects.** Patrick asked for a look at Cursor's beta
+Projects. They do not suit how he works. No project was created.
+
+**Weekly Done.** The mark applies to the speaking time nearest the
+press. The next real speaking time goes on the phone then, holiday
+move included, and stays while the mark is on. The mark comes off
+when that time arrives. This is in the calculation that finds the
+speaking time. It is not on the phone.
+
+**A holiday that is the set day.** Day after was taking the name off
+the holiday and never placing it on the next day. Thanksgiving 2026
+is Thursday 26 November, so that week now shows Friday the 27th.
+Patrick saw the move on the simulator. Build 97 on the phone still
+shows the 26th.
+
+**The same-week move is dropped.** A holiday anywhere in the week
+will no longer push the set day onto the next day. He had seen that
+push work for Labor Day, and for other months, before this last
+phone load. Working out a weekend holiday — Monday observance
+moving every day of the week, Friday observance moving only Friday —
+was more trouble than it was worth. The choice is off Weekly's
+options, out of the calculation, and out of the guide. The other
+move stays: when the reminder itself lands on the holiday, it can
+still move to the day before or the day after. He saw that on the
+simulator. A Monday holiday leaves a Thursday where it was set. It
+is not on the phone.
+
+**Home badges.** While a badge is sliding, the others take their new
+places in the order. Letting go saves that order. It is written. He
+has not looked at it yet.
+
+**Proof.** 428 Mac checks pass. TypeScript is clean. Nothing from
+this sitting is on the phone. Build 97 remains that load. App Store
+version 1.0 (72) is Pending Developer Release; release is manual.
+
 ## #118-new (2026-09-22): Done reaches every alert copy
 
 **The report.** More than one reminder continued to arrive after

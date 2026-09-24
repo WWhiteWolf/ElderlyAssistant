@@ -249,6 +249,9 @@ function translateOne(rules: ScreenRules, saved: ReminderItem, now: number): Sha
         ...(typeof saved.skippedCycleStamp === 'number'
             ? { skippedCycleStamp: saved.skippedCycleStamp }
             : {}),
+        ...(typeof saved.doneAt === 'number'
+            ? { doneAtStamp: saved.doneAt }
+            : {}),
 
         // ---- how far ahead to speak ----
 
@@ -385,7 +388,7 @@ const weeklyCadenceRules: ScreenRules = {
     doneActionCode: 'thisCycle',
     dateWriteCode: 'weekday',
     timeWriteCode: 'alwaysPendingTime',
-    allowedOptionCaseCodes: ['holidays', 'afterSetDay', 'timezone'],
+    allowedOptionCaseCodes: ['holidays', 'timezone'],
     keepsLeadChipsBit: false,
     standsForGroupBit: false,
     bannerTitleTextOf: () => 'Weekly Chore',
@@ -682,8 +685,7 @@ export function translateReminderItems(items: ReminderItem[], now: number): Shap
  * The kind's row decides which fields are allowed. A named zone is written
  * only as a complete pair. An incomplete pair is rejected: the item keeps
  * floating with the phone rather than silently producing no reminder.
- * Holidays are one code, absent when unused. Day after the set day is one
- * bit, absent when unused. A
+ * Holidays are one code, absent when unused. A
  * complete second Thursday or Wednesday after the 6th becomes the engine's
  * weekday entry; a half-entered pair is left off. Those two are one
  * exclusive group on the table: only one can be true. If both saved
@@ -715,9 +717,6 @@ function withSavedOptions(
         && (saved.holidayMove === 'before' || saved.holidayMove === 'after')
     ) {
         out = { ...out, holidayMoveCode: saved.holidayMove };
-    }
-    if (allowed.has('afterSetDay') && saved.afterSetDay) {
-        out = { ...out, afterSetDayBit: true };
     }
     if (rules.exclusiveGroupBits && rules.exclusiveGroupBits.length > 0) {
         out = withMonthlyRepeat(rules, saved, out);

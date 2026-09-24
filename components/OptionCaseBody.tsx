@@ -44,19 +44,6 @@ export default function OptionCaseBody({
                         onChange={(holidayMove) => set({ holidayMove })}
                     />
                 )}
-                {openCase.id === 'afterSetDay' && (
-                    <ChipRow
-                        styles={styles}
-                        options={[
-                            { id: 'off', label: 'Off' },
-                            { id: 'on', label: 'On' },
-                        ]}
-                        value={settings.afterSetDay ? 'on' : 'off'}
-                        onChange={(id) => {
-                            set({ afterSetDay: id === 'on' });
-                        }}
-                    />
-                )}
                 {openCase.id === 'timezone' && (
                     <>
                         <ChipRow
