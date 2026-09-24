@@ -4,20 +4,23 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-09-22, #118-new, waiting on phone proof.
+Last written: 2026-09-23, #118-new, phone proof passed.
 
 ## Read this first
 
-- A load after **90** is on the phone.
-- **#118-new** is in the project: 432 Mac checks pass and TypeScript is
-  clean. Patrick is putting a new native build on his phone and will
-  report back to this session in the coming days.
-- The phone proof is that Done removes every old base, delayed,
-  duplicate, and already-delivered alert copy for that item, while a
-  repeating item's next legitimate cycle remains.
-- Other phone proof still open: designed-machine jobs, Birthday,
-  day-roll lock, #116-new backup and back-drag, and Settings Guide
-  tile names.
+- Build **97** is on the phone. After 24 hours, no reminder already
+  marked Done fired again. The one reminder that did arrive was for
+  something actually missing; the app acted normally.
+- App Store version **1.0 (72)** is **Pending Developer Release**.
+  Release is manual.
+- 432 Mac checks pass and TypeScript is clean. The #118-new phone goal
+  passed.
+- Birthday and its attached Replace and Merge backup checks are working
+  correctly on the phone. That older proof is closed.
+- Day-roll lock, #116-new Settings backup and back-drag, and the
+  Settings Guide tile names are all verified on the phone.
+- The designed-machine Jobs 1, 2, and 3 are verified on the phone.
+  No phone proof remains open.
 - Home make-room is in pending.
 - Students-Assistant is going away. The separate Reminder Engine
   folder remains history at Reminder Engine 4; Memory's own documents
@@ -29,12 +32,13 @@ Saved Done state now drives phone cleanup. Reconciliation takes every
 queued copy carrying the Done item id into account, even under a retired
 source, removes stale copies, and keeps the next legitimate cycle.
 Delivered banners are dismissed. Removal is read back, retried, and
-reported when the phone still holds it.
+reported when the phone still holds it. The 24-hour native check found
+no return of the reported failure while a legitimate reminder still
+arrived.
 
 ## What is next
 
-Wait for Patrick's report from the new native build. Do not mark
-#118-new phone proof complete before that report.
+Nothing has been chosen. `WHAT'S NEXT` is empty.
 
 ## Do not reopen
 

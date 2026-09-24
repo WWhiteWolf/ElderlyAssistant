@@ -15,9 +15,9 @@ just because it is listed.
 
 ## The desk — in `docs`
 
-- **`handoff.md`** — the opening read. Where the work stands and what is open. #118-new is in the project and awaits Patrick's report from a new native load. The separate Reminder Engine folder is history; Memory's own documents are the live engine design.
+- **`handoff.md`** — the opening read. Where the work stands and what is open. Build 97 is on the phone. App Store version 1.0 (72) is Pending Developer Release. #118-new's 24-hour phone check and every older phone check passed; What's Next is empty. The separate Reminder Engine folder is history; Memory's own documents are the live engine design.
 - **`user-guide.md`** — Settings User's Guide and Helper pop-ups. On the Settings page and in Helper. Options, Delete, Save, Done, Snooze, Banners, and Log are in. Letters and Page are in Settings. Page names are marked in the first two sections. Settings tile names are marked the same way. There is no Reset All Data.
-- **`in-flight.md`** — this session's desk. Replaced every time, never added to. Last written #118-new, waiting on phone proof.
+- **`in-flight.md`** — this session's desk. Replaced every time, never added to. Last written #118-new, all phone proof complete and nothing chosen next.
 - **`pending.txt`** — Patrick's list, and the source of the Word copy. Brought up to date at every update.
 - **`pending.docx`** — the copy Patrick reads. Generated from the txt, never hand-edited.
 - **`make-pending-docx.py`** — makes the Word copy. `python3 docs/make-pending-docx.py`

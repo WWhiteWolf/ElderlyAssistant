@@ -628,10 +628,11 @@ back to repeats, which brings back the fault Patrick reported in the first
 place. **Depth was later settled at one for every kind. The second copy's work
 is recovery on opening.**
 
-**One honest limit on that.** The claim that a repeating alarm cannot skip a
-single instance is general knowledge of the phone, not a reading of the
-notification package installed here. It was offered to Patrick for checking and
-he did not take it up, so nothing should rest on it until it is checked.
+**One historical limit on that reasoning.** The installed notification
+package was never checked for whether a repeating alarm can skip one
+instance. That is not open work now. The live engine produces single date
+moments only, and its tests pin that shape. The package question would matter
+only if the engine were deliberately redesigned to use repeating alarms again.
 
 ### Patrick's real question, and the plain fact under it
 
@@ -815,9 +816,9 @@ here rather than left looking open:
 - Nothing about recovery on opening. Both halves are settled and both are
   built; the only work left on it is extending the telling from My Day and Pets
   to the other three screens, which is building rather than deciding.
-- Whether a repeating alarm can be told to skip one instance, which the whole
-  case for arming ahead rests on. Not checked in the installed notification
-  package.
+- The installed package was never checked for whether a repeating alarm can
+  skip one instance. The live engine produces single date moments only, and
+  tests pin that shape, so this is no longer an open question.
 - Whether any screen is ever brought round to save in the common shape,
   rather than being translated at the boundary for good.
 - What the Timer's own handling turns out to be. It is outside the

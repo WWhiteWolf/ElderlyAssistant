@@ -45,10 +45,11 @@ DOCS = Path(__file__).resolve().parent
 # is not.
 HANDOFF_LINE_LIMIT = 400
 
-# #14-new and #15-new have no entry and never will unless somebody writes
-# them. Both are accounted for in `reminder-rebuild.md` and the gap is
-# recorded in `handoff-history.md` itself, so they are not reported again.
-KNOWN_GAPS = {14, 15}
+# #14-new and #15-new are accounted for in `reminder-rebuild.md`.
+# #86-new and #99-new turned out to be of no value, changed no code,
+# grew thin, and were not committed. All four gaps are recorded in
+# `handoff-history.md`, so they are not reported again.
+KNOWN_GAPS = {14, 15, 86, 99}
 
 
 def handoff_size() -> tuple[bool, str]:

@@ -38,8 +38,46 @@ cancellation fault under **Some reminders need attention** and says it
 may still arrive. The app no longer silently claims that request is
 gone.
 
-**Proof.** 432 Mac checks pass. TypeScript is clean. The work is in the
-project and not on the phone.
+**Proof.** 432 Mac checks pass. TypeScript is clean. On 2026-09-23,
+after the new load had been on the phone for 24 hours, Patrick had seen
+no reminder fire for an item already marked Done. The one reminder that
+did arrive was for something actually missing. The app acted normally.
+
+**Birthday and backup proof.** Patrick has seen the #110-new Birthday
+row show the name and birthdate, the reminder say the age, and the next
+fire follow the birthdate, all working correctly on the phone. The
+attached Replace and Merge backup behavior is there and working
+correctly as well. Those older phone checks are closed.
+
+**More phone proof.** Day-roll lock stayed quiet after an all-green
+Daily night. The #116-new Settings backup exports and replaces the
+name, appearance, popup colors, both themes' Letters and Page settings,
+and the three reminder times; Merge leaves the phone's settings. The
+whole screen stack keeps the iPhone back-drag off. The Settings Guide
+tile names are marked correctly. Patrick has verified all of it on the
+phone.
+
+**Designed-machine proof.** Patrick clarified that Jobs 1, 2, and 3
+were done too. The banner and list-popup choices, banner-first
+day-boundary opening, Options by kind, Weekly Done, and export after a
+change have all been verified on the phone. No phone proof remains
+open.
+
+**Two deliberate gaps.** #86-new and #99-new have no sections.
+Patrick said both turned out to be of no value, changed no code, grew
+thin, and were not committed. They are intentional gaps rather than
+missing history.
+
+**Current load and store.** Build 97 is on the phone. App Store version
+1.0 (72) is Pending Developer Release; release is manual.
+
+**Three stale open lines came out of the handoff.** The current design
+and code deliberately show the Settings and Scheduled Reminders clocks
+in twelve-hour form, so there is no separate display-tile job. The
+#22-new build sheet is historical instructions, not a document to keep
+level with the live app. The scheduler produces single date moments and
+the tests pin that shape, so checking whether a repeating alarm can skip
+one instance no longer blocks anything.
 
 **The separate Reminder Engine folder.** The check back found that its
 live record stops at Reminder Engine 4, 2026-08-28. No later Memory
@@ -49,8 +87,9 @@ separate folder has no remaining live purpose. It stays as the
 historical shared baseline at Reminder Engine 4 and is not brought
 current before retirement. Memory's own design is the live truth.
 
-**Next.** Put this work on a native load and prove that Done takes down
-every old alert copy while the next real cycle remains.
+**Result.** The reported Done-after-alert failure did not return during
+the 24-hour phone check, and a legitimate outstanding reminder still
+arrived. #118-new's phone goal passed.
 
 ## #117-new (2026-09-15): Letters and Page per theme, and even steps
 

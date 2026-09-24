@@ -17,17 +17,18 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-A load after 90 is on the phone. **#117-new** closed. Letters and Page
-per theme are on the phone and working; he likes how they are.
-**#118-new** is in the project and not on the phone. Saved Done state
-now removes every old queued and delivered alert copy for that item,
-keeps the next legitimate cycle, and reports a removal the phone
-cannot confirm. 432 Mac checks pass and TypeScript is clean.
+Build **97** is on the phone. After 24 hours, no reminder already
+marked Done fired again. The one reminder that did arrive was for
+something actually missing; the app otherwise acted normally.
+Saved Done state removes every old queued and delivered alert copy for
+that item, keeps the next legitimate cycle, and reports a removal the
+phone cannot confirm. 432 Mac checks pass and TypeScript is clean.
 
-Settings Guide tile names, #116-new backup and back-drag, the
-designed-machine jobs from #108-new and #109-new, **#110-new**
-Birthday, and #118-new Done cleanup still need phone proof. Home
-make-room is in pending.
+Birthday and its attached backup, day-roll lock, #116-new Settings
+backup and back-drag, and the Settings Guide tile names are all
+verified on the phone. The designed-machine jobs from #108-new and
+#109-new are verified too. All phone proof carried in this record is
+complete. Home make-room is in pending.
 
 ## Standing rulings
 
@@ -95,47 +96,13 @@ finished task.
 ## What is open in front of it
 
 The guide remains `docs/designed-implementation.md`. The self-contained
-designed-machine build sheet is complete in the project.
+designed-machine build sheet and its phone proof are complete.
 
-**#118-new Done alert cleanup** needs a native phone check. After Done,
-every old base, delayed, duplicate, and already-delivered alert copy
-for that item should stay gone. A recurring item's next legitimate
-cycle should remain.
-
-**Phone proof still open.** Job 1's banner and list-popup choices, Job
-2's banner-first day-boundary path, and Job 3's Options, Weekly Done,
-and export-after-change still need a phone check.
-
-Testers are on TestFlight External. The phone has a new load after
-**90**. The App
-Store heading is Waiting for Review on **72**. He is not aiming to go
-live. Manual release. The journey is `docs/connect-submit.md`. What is
+Testers are on TestFlight External. The phone is on build **97**.
+App Store version **1.0 (72)** is **Pending Developer Release**.
+Release is manual. The journey is `docs/connect-submit.md`. What is
 already in App Store Connect stays there. There is no public website
 for the user's guide.
-
-**#110-new Birthday** still needs a phone check. The row shows the
-name and the birthdate. The reminder says the age. The next fire is
-derived from the birthdate.
-
-**#116-new** Guide names and the 30, 60, and 90 day chips are working
-on the new load. The whole screen stack now keeps the back-drag off.
-Export saves the name, the app look, and the reminder times. Replace
-writes them. Merge leaves them. Those need a phone check.
-
-**Day-roll lock** still needs a night of all-green Daily, then a morning
-open on a new load, to confirm the pop-up stays quiet.
-
-**Still open from before:**
-
-**Display tiles** (Scheduled Reminders sentences, `formatClock`, and the rest)
-are not part of the 12-hour spinner. What remains is `settings.tsx` and
-`formatClock` in `scheduler/queueview.ts`.
-
-**`docs-ref/build-sheets/build-sheet.md` has not been brought level with the
-reorder** (#24-new).
-
-**One claim still unchecked**: that a repeating alarm cannot be told to skip a
-single instance.
 
 ## Facts worth carrying
 

@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-22 (#118-new)
+Last updated: 2026-09-23 (#118-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -24,25 +24,6 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. DONE ALERT CLEANUP (#118-new). On a native load, let an alert
-   arrive and mark its item Done. Every old base, delayed, duplicate,
-   and already-delivered alert copy for that item should stay gone.
-   A repeating item's next real cycle should remain.
-2. PHONE PROOF FOR JOBS 1 AND 2. On a native build, check Job 1's
-   banner and list-popup choices. For Job 2, leave a timed Daily item
-   undone, cross the day boundary, and make the first opening a banner
-   body tap. The missed-reminder popup comes first; after OK, the
-   correct item is highlighted; a later return does not repeat it.
-3. DAY-ROLL LOCK still wants a night of all-green Daily on this
-   load, then a morning open on a new load, to confirm the pop-up
-   stays quiet.
-4. JOB 3 ON THE CURRENT NATIVE LOAD. Options by kind, Weekly Done,
-   and an export after a change have not been checked on the phone.
-5. BIRTHDAY ROW AND REMINDER (Patrick, #110-new). The row shows the
-   name and the birthdate. The reminder says the age. The next fire is
-   derived from the birthdate. Restore writes the year of birth onto
-   an older backup. It needs a phone check. Replace brings the backup
-   copy back; Merge keeps what is already in the app.
 
 
 PENDING
@@ -142,6 +123,34 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+164. #118-new — Build 97 is on the phone. App Store version 1.0 (72)
+    is Pending Developer Release, with manual release. Three stale
+    handoff lines came out: a separate clock-display job, keeping an
+    old build sheet current, and a repeating-alarm package check that
+    no longer blocks the single-moment engine.
+
+163. #118-new — The designed-machine Jobs 1, 2, and 3 are all
+    verified on the phone: banner and list-popup choices, the
+    banner-first day-boundary opening, Options by kind, Weekly Done,
+    and export after a change. No phone proof remains open. What's
+    Next is empty.
+
+162. #118-new — Day-roll lock, #116-new Settings backup and back-drag,
+    and the Settings Guide tile names are all verified on the phone.
+    Export, Replace, and Merge handle Settings correctly; the screen
+    stack keeps the back-drag off; the Guide names look right.
+
+161. #118-new — Birthday and its attached backup checks are working
+    correctly on the phone. The row shows the name and birthdate, the
+    reminder says the age, and the next fire follows the birthdate.
+    Replace brings the backup copy back; Merge keeps what is already
+    in the app.
+
+160. #118-new — After 24 hours on the new phone load, no reminder
+    already marked Done had fired again. The one reminder that did
+    arrive was for something actually missing. The app acted normally.
+    The phone goal passed.
 
 159. #118-new — The separate Reminder Engine folder is retired as the
     historical shared baseline at Reminder Engine 4. Memory's own
