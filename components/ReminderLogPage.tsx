@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Cover } from './Cover';
 import { HeaderButton, PageFrame } from './PageFrame';
 import { PAGE_LABELS } from '../constants/page-names';
@@ -35,6 +36,7 @@ export default function ReminderLogPage({
     returnTo: string;
 }) {
     const router = useRouter();
+    const insets = useSafeAreaInsets();
     const theme = useTheme();
     const styles = makeStyles(theme);
     const [history, setHistory] = useState<HistoryEntry[]>([]);
@@ -105,7 +107,10 @@ export default function ReminderLogPage({
                     </View>
                 }
             >
-                <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
+                <ScrollView
+                    style={[styles.scroll, { marginBottom: insets.bottom }]}
+                    contentContainerStyle={{ paddingBottom: 40 }}
+                >
                     {history.length === 0 ? (
                         <Text style={styles.empty}>No log entries yet.</Text>
                     ) : (

@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-24 (#119-new)
+Last updated: 2026-09-26 (#120-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent.
@@ -124,22 +124,28 @@ A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
 
+170. #120-new — Build 98 fixed the bug from 97. A holiday set day
+    stayed on the holiday. Thanksgiving still showed the 26th. It
+    now shows Friday the 27th.
+
+169. #120-new — Build 98n is on the phone.
+
 168. #119-new — Home badges make room while one is sliding. The order
-    changes then, and it is saved when you let go. Not on the phone.
+    changes then, and it is saved when you let go. On the phone, and it verifies.
 
 167. #119-new — The same-week move is dropped. A holiday in the week no
     longer pushes the set day onto the next day. The move that fires
     when the reminder itself lands on the holiday stays. 428 Mac
-    checks. TypeScript clean. Not on the phone.
+    checks. TypeScript clean. On the phone, and it verifies.
 
 166. #119-new — Day after a holiday stays on that next day. A Thursday
     that falls on Thanksgiving shows the Friday, on the calendar and
     as the speaking time, once the Thursday time has passed. 438 Mac
-    checks. TypeScript clean. Not on the phone.
+    checks. TypeScript clean. On the phone, and it verifies.
 
 165. #119-new — Weekly Done puts the next real speaking time on the
     phone, holiday move included, and the mark comes off when that
-    time arrives. 436 Mac checks. TypeScript clean. Not on the phone.
+    time arrives. 436 Mac checks. TypeScript clean. On the phone, and it verifies.
 
 164. #118-new — Build 97 is on the phone. App Store version 1.0 (72)
     is Pending Developer Release, with manual release. Three stale

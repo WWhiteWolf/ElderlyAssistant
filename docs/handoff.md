@@ -17,21 +17,26 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-Build **97** is on the phone. After 24 hours, no reminder already
+Build **98n** is on his phone.
+
+Build **98** fixed the bug still on build **97**. A reminder whose
+set day is a holiday stayed on the holiday. Thanksgiving 2026 still
+showed Thursday 26 November. It now shows Friday the 27th.
+
+Build **97** showed, after 24 hours, that no reminder already
 marked Done fired again. The one reminder that did arrive was for
 something actually missing; the app otherwise acted normally.
 Saved Done state removes every old queued and delivered alert copy for
 that item, keeps the next legitimate cycle, and reports a removal the
 phone cannot confirm.
 
-#119-new is in the project, not on that phone load. Weekly Done puts
-the next real speaking time on the phone, holiday move included, and
+#119-new is committed and verifies working on this load. Weekly Done
+puts the next real speaking time on the phone, holiday move included, and
 the mark comes off when that time arrives. A reminder that lands on a
 holiday stays on the moved day, including on the calendar. The
 same-week move is dropped: a holiday elsewhere in the week no longer
-pushes the set day. He saw both of those on the simulator. Home badges
-change order while one is sliding. That part is written and not yet
-seen. 428 Mac checks pass and TypeScript is clean.
+pushes the set day. Home badges change order while one is sliding.
+428 Mac checks pass and TypeScript is clean.
 
 Birthday and its attached backup, day-roll lock, #116-new Settings
 backup and back-drag, and the Settings Guide tile names are all
@@ -107,7 +112,7 @@ finished task.
 The guide remains `docs/designed-implementation.md`. The self-contained
 designed-machine build sheet and its phone proof are complete.
 
-Testers are on TestFlight External. The phone is on build **97**.
+Testers are on TestFlight External. His phone is on build **98n**.
 App Store version **1.0 (72)** is **Pending Developer Release**.
 Release is manual. The journey is `docs/connect-submit.md`. What is
 already in App Store Connect stays there. There is no public website

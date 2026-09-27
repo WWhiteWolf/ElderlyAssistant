@@ -271,8 +271,8 @@ export default function CadenceListPage({
                 }
             >
             <ScrollView
-                style={styles.scroll}
-                contentContainerStyle={{ paddingBottom: insets.bottom + 56 }}
+                style={[styles.scroll, { marginBottom: insets.bottom }]}
+                contentContainerStyle={{ paddingBottom: 56 }}
                 scrollEnabled={!draggingId}
                 scrollEventThrottle={16}
                 directionalLockEnabled
