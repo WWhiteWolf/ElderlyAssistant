@@ -45,12 +45,10 @@ verified on the phone. The designed-machine jobs from #108-new and
 #109-new are verified too. All phone proof carried in this record is
 complete.
 
-#121-new is packaging Memory for Android phones. The path is Google
+#121-new is committed. It is packaging Memory for Android phones. The path is Google
 Play, the same kind of road as the iPhone App Store (Patrick,
-2026-10-01). He knows six to nine people with Android devices. He
-will ask other people to help make up twelve. The public listing
-waits until twelve have stayed opted in for 14 days. The US$25 and
-the government ID are not issues. The Android name is
+2026-10-01). The Play Console account was submitted on 2026-10-01.
+Google said they would let him know. The Android name is
 `com.molliedog.ElderlyAssistant`, the same id as the iPhone, and it
 is in `app.json`.
 
@@ -60,9 +58,9 @@ This Mac has an ios folder and no android folder. The Siri plugin
 only changes the iPhone project. The App Group module, which the app
 loads at startup, already has an Android file that does nothing, so
 the app can load. `docs/publishing.md` is not in the docs folder.
-The build steps the project rules point at were not there. The next
-sitting builds the file Google Play can take. The store profile can
-move a build number, so the iPhone number has to stay put.
+The build steps the project rules point at were not there. The store
+file waits until Google says the account can take an app. The store
+profile can move a build number, so the iPhone number has to stay put.
 
 Google's own pages, read 2026-09-30. A Play Console account is US$25
 once, with no yearly charge. The same US$25 opens a full account for
@@ -88,8 +86,8 @@ site is published. A file added through the GitHub website can be no
 larger than 25 MB. A file sent by git is blocked over 100 MB. Git
 LFS does not work with GitHub Pages. He then chose Google Play.
 The publishing strategy (App-Docs, 2026-07-10) puts Android after
-the iPhone build. App Store version 1.0 (72) remains Pending
-Developer Release.
+the iPhone build. App Store build **100** is **Waiting for Review**.
+Release is manual. He releases it himself when Apple approves.
 
 ## Standing rulings
 
@@ -141,6 +139,8 @@ finished task.
 - **Landscape is an optional view.** The allowed turns are 0°, 90°
   counter-clockwise, and 270° counter-clockwise. 180° upside-down is
   out.
+- **Android stays upright** (Patrick, #122-new). The phone does not
+  turn. The landscape ruling above is the iPhone.
 - **Siri is out of sight.** Do not raise the later Siri.
 - **Do not connect `floatDay`** unless Patrick says otherwise.
 - **Each closed-app notice has its own thread name.** This Expo does
@@ -155,11 +155,10 @@ finished task.
   in App Store Connect stays there.
 - **The Android name is `com.molliedog.ElderlyAssistant`.** It is the
   same id as the iPhone (Patrick, #121-new).
-- **The Android path is Google Play** (Patrick, 2026-10-01). He will
-  ask other people to help make up twelve. He knows six to nine
-  people with Android devices. The public listing waits until twelve
-  have stayed opted in for 14 days. The US$25 and the government ID
-  are not issues.
+- **The Android path is Google Play** (Patrick, 2026-10-01). The
+  account was submitted on 2026-10-01. Google said they would let
+  him know.
+- **Do not raise the closed-test count** (Patrick, #122-new).
 
 ## What is open in front of it
 
@@ -168,21 +167,22 @@ designed-machine build sheet and its phone proof are complete.
 
 Testers are on TestFlight External. His phone has that list change,
 and it verifies.
-App Store version **1.0 (72)** is **Pending Developer Release**.
-Release is manual. The journey is `docs/connect-submit.md`. What is
-already in App Store Connect stays there. There is no public website
-for the user's guide.
+App Store build **100** is **Waiting for Review**. Release is manual.
+He releases it himself when Apple approves. The journey is
+`docs/connect-submit.md`. What is already in App Store Connect stays
+there. There is no public website for the user's guide.
 
-The preview file is installed on his Galaxy. Every page on that phone
-stops short of the bottom of the screen. Android uses that bottom. He
-will debug it in the next session. It is on every page, so it is not
-the list-only stop from #120-new.
+The preview file on his Galaxy still stops short of the bottom. Android
+uses that bottom half inch, and everything on that phone draws a bit
+bigger. The sizes stay as the phone draws them. #122-new keeps the page
+body above that strip, and Android stays upright. The Galaxy copy does
+not change until a new install file is built. It is on every page, so
+it is not the list-only stop from #120-new.
 
-The next sitting also builds the file Google Play can take. The 110 MB
-file at `dist/Memory-1.0.0-preview.apk` is not that file. Do not
-build another website download. He is asking other people to help
-make up twelve. The public listing waits until those twelve have
-stayed opted in for 14 days.
+The Play Console account was submitted on 2026-10-01. Google said
+they would let him know. The store file waits until that account can
+take an app. The 110 MB file at `dist/Memory-1.0.0-preview.apk` is
+not that file. Do not build another website download.
 
 ## Facts worth carrying
 

@@ -3,6 +3,7 @@ import { useFocusEffect, useRouter, type Href } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
     Alert,
+    Platform,
     ScrollView,
     StyleSheet,
     Text,
@@ -108,7 +109,7 @@ export default function ReminderLogPage({
                 }
             >
                 <ScrollView
-                    style={[styles.scroll, { marginBottom: insets.bottom }]}
+                    style={[styles.scroll, Platform.OS === 'android' ? null : { marginBottom: insets.bottom }]}
                     contentContainerStyle={{ paddingBottom: 40 }}
                 >
                     {history.length === 0 ? (

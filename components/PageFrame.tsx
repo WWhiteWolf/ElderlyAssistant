@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState, type ReactNode } from 'react';
-import { StyleSheet, TouchableOpacity, useWindowDimensions, View, type ViewStyle } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Platform, StyleSheet, TouchableOpacity, useWindowDimensions, View, type ViewStyle } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../constants/Themes';
 import { useLandscapeHeaderSide, type LandscapeHeaderSide } from './AppOrientation';
 import Bridge from './Bridge';
@@ -83,6 +83,7 @@ export function PageFrame({
     const theme = useTheme();
     const landscape = useLandscape();
     const headerSide = useLandscapeHeaderSide();
+    const insets = useSafeAreaInsets();
     const { height } = useWindowDimensions();
     const [thickness, setThickness] = useState(0);
     const statusBarStyle = landscape ? theme.statusBarOnPage : theme.statusBarOnHeader;
@@ -101,7 +102,14 @@ export function PageFrame({
 
     if (!landscape) {
         return (
-            <View style={styles.frame}>
+            <View
+                style={[
+                    styles.frame,
+                    Platform.OS === 'android'
+                        ? { paddingBottom: insets.bottom, backgroundColor: theme.pageBackground }
+                        : null,
+                ]}
+            >
                 <StatusBar style={statusBarStyle} />
                 <SafeAreaView style={{ backgroundColor: headerColor }} edges={['top']}>
                     {header}

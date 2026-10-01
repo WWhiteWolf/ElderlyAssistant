@@ -1,5 +1,6 @@
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { Platform } from 'react-native';
 
 export type LandscapeHeaderSide = 'left' | 'right';
 
@@ -27,6 +28,9 @@ export function AppOrientationProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         let mounted = true;
+        if (Platform.OS === 'android') {
+            void ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+        }
         const apply = (orientation: ScreenOrientation.Orientation) => {
             const side = headerSideFor(orientation);
             if (mounted && side !== undefined) setHeaderSide(side);

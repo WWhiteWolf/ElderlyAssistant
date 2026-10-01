@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { Stack, useRootNavigationState, useRouter, type Href } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { AppState, Alert } from 'react-native';
+import { AppState, Alert, Platform } from 'react-native';
 import { ThemeProvider, useThemeControls } from '../constants/Themes';
 import { AppOrientationProvider } from '../components/AppOrientation';
 import { CoverRoot } from '../components/Cover';
@@ -399,7 +399,7 @@ function RootHousing() {
 
   return (
     <CoverRoot>
-    <Stack screenOptions={{ orientation: 'default', gestureEnabled: false, fullScreenGestureEnabled: false }}>
+    <Stack screenOptions={{ orientation: Platform.OS === 'android' ? 'portrait_up' : 'default', gestureEnabled: false, fullScreenGestureEnabled: false }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="home" options={{ headerShown: false }} />
       <Stack.Screen name="settings" options={{ headerShown: false }} />

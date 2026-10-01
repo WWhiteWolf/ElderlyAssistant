@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Alert,
     AppState,
+    Platform,
     ScrollView,
     StyleSheet,
     Text,
@@ -271,7 +272,7 @@ export default function CadenceListPage({
                 }
             >
             <ScrollView
-                style={[styles.scroll, { marginBottom: insets.bottom }]}
+                style={[styles.scroll, Platform.OS === 'android' ? null : { marginBottom: insets.bottom }]}
                 contentContainerStyle={{ paddingBottom: 56 }}
                 scrollEnabled={!draggingId}
                 scrollEventThrottle={16}
