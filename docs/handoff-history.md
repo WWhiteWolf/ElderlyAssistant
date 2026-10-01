@@ -17,6 +17,78 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #121-new (2026-10-01): Android path is Google Play; the website file is not the one to use
+
+**The goal.** Package Memory for Android phones.
+
+**How it is built.** The app is an Expo project and EAS makes the phone
+package. The generated ios and android folders are left out of the
+project. The Siri plugin only changes the iPhone project. The App
+Group module already has an Android file that does nothing, so the
+app can load. `docs/publishing.md` is not in the docs folder. The
+Android name is `com.molliedog.ElderlyAssistant`, the same id as the
+iPhone, and it is in `app.json`.
+
+**The website file.** A download on elyfont.com was the first path.
+A preview build on the night of 2026-09-30 produced
+`dist/Memory-1.0.0-preview.apk`. It is 110 MB. Expo created the
+Android signing key on its servers, and the Android version count
+there started at 1. GitHub will not take a file that size the way
+the site is published: a browser upload stops at 25 MB, git blocks a
+file over 100 MB, and Git LFS does not work with GitHub Pages. The
+build was the wrong order. The site should have been checked before
+the file was made. That file is not the one to use.
+
+**Google Play.** He chose the same kind of road as the iPhone App
+Store. The US$25 and the government ID are not issues. He knows six
+to nine people with Android devices and will ask other people to
+help make up twelve. The public listing waits until twelve have
+stayed opted in for 14 days. Fewer than twelve can have the app.
+Those days do not count. Each of the twelve joins through Google
+Play on an Android device. It does not have to be a phone. An
+iPhone cannot take the test. Google does not charge for the testers.
+Sellers were asking about $9 to about $40, once, to supply the
+twelve. He will ask people he knows.
+
+**The pending list.** It speaks to him as you. He is the only reader.
+
+**On the Galaxy.** He installed that preview file on his Android phone,
+a Galaxy. The phone showed 115 MB, which is the same file. Every page
+stops short of the bottom of the screen. Android uses that bottom.
+He will debug this in the next session. It was seen on every page, so
+it is not to be treated as the list-only stop from #120-new.
+
+**Next sitting.** Debug the bottom of every page on the Galaxy. Also
+build the file Google Play can take. Do not build another website
+file. The 110 MB preview file is not that Play build. The store
+profile can move a build number, so the iPhone number has to stay put.
+
+## #120-new (2026-09-26): lists stop above the bottom; build 98 on the phone
+
+**#119 on the phone.** He said #119-new is committed, on his phone, and
+verifies working. The record had said it was in the project and not on
+that phone load.
+
+**Build 98n.** That is the load on his phone. Build 97 stays the load
+that showed the 24-hour Done result.
+
+**Build 98 and the holiday.** Build 98 fixed the bug still on build 97.
+A reminder whose set day is a holiday stayed on the holiday.
+Thanksgiving 2026 still showed Thursday 26 November. It now shows
+Friday the 27th. The move was already described. This sitting wrote
+that the phone load has the fix.
+
+**The lists.** Daily, Weekly, Monthly, Quarterly, Yearly, Birthdays,
+Appointments, Bucket List, and the Log. The list ran to the bottom
+edge, so a swipe to delete moved the page. The strip the phone keeps
+at the bottom now sits below the list. The blank room under the last
+item stays: 56 points on the reminder lists, and 40 on the Log. He
+did not give this later load a number. It is committed, on his phone,
+and verified working.
+
+**The Word list.** He asked for the Word pending copy. It was generated
+from the plain list, and the two matched.
+
 ## #119-new (2026-09-24): holiday day stays; same-week move dropped; badges make room
 
 **Cursor Projects.** Patrick asked for a look at Cursor's beta

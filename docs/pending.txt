@@ -1,8 +1,8 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-09-26 (#120-new)
+Last updated: 2026-10-01 (#121-new)
 
 This is the "what's still left" list in everyday words. Nothing here
-is urgent.
+is urgent. You are the only reader, so this list says you.
 
 The items under each heading are numbered so you can point at one —
 "Pending 4", "Facts 9" — and both of us know which you mean. The
@@ -24,6 +24,15 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
+1. THE BOTTOM OF EVERY PAGE on your Galaxy stops short of the bottom
+   of the screen. Android uses that bottom. You will debug this in
+   the next session (2026-10-01).
+2. THE PLAY STORE BUILD. The next sitting builds the file Google Play
+   can take. The 110 MB file on this Mac is not that file. Do not
+   build another website download. You know six to nine people with
+   Android devices. You will ask other people to help make up twelve.
+   The public listing waits until twelve have stayed opted in for 14
+   days. The $25 and the ID are not issues (Patrick, 2026-10-01).
 
 
 PENDING
@@ -71,7 +80,7 @@ built. None of these is a job to do.
     own chain is written #1-new, #2-new, and so on.
 9. WORKING DOCUMENTS LIVE IN docs. History lives in docs-ref, and
     the build sheets are in docs-ref/build-sheets. The index
-    says which file is the home. He calls them working documents;
+    says which file is the home. You call them working documents;
     live desk means the same thing. (App-Docs, 2026-08-31)
 10. THE CALENDAR PAGE SHOWS DATED ITEMS. No every-day Daily items,
     no Bucket List. No Done or Snooze on the month or the day’s list.
@@ -81,7 +90,7 @@ built. None of these is a job to do.
     at the physical top of the phone, all pages. The calendar month
     grid was not rebuilt.
 11. HAVING A GOOD IDEA LEADS TO OVERREACHING (Patrick, #52-new).
-    The feedback he needs is the trim: what part is worth it,
+    The feedback you need is the trim: what part is worth it,
     and what is more than is there.
 12. THE DESIGN DESCRIPTION IS THE DESIGNED IMPLEMENTATION
     (Patrick, #84-new). It is the guide for the whole app. A sitting
@@ -115,6 +124,26 @@ built. None of these is a job to do.
     Reminder Engine folder remains the historical shared baseline at
     Reminder Engine 4. Students-Assistant is going away, so that folder
     is not brought current as a second copy (#118-new).
+19. THE ANDROID NAME IS com.molliedog.ElderlyAssistant (Patrick,
+    #121-new). The same id as the iPhone.
+20. THE ANDROID PATH IS GOOGLE PLAY (Patrick, 2026-10-01). The same
+    kind of road as the iPhone App Store. You know six to nine people
+    with Android devices. You will ask other people to help make up
+    twelve. The public listing waits until twelve have stayed opted
+    in for 14 days. The $25 and the ID are not issues. Fewer than
+    twelve can have the app. Those days do not count.
+21. GOOGLE, LOOKED UP 2026-09-30. Play is US$25 once, with no yearly
+    charge. A personal Play account opened after November 13, 2023,
+    needs 12 people opted in for 14 days, then an application. Each
+    of the twelve joins through Google Play, and the app is installed
+    on an Android device. It does not have to be a phone. An iPhone
+    cannot take the test. Sellers were asking about $9 to about $40,
+    once, to supply the twelve. Asking people you know costs nothing.
+22. THE WEBSITE INSTALL FILE IS 110 MB (2026-09-30). It is on this
+    Mac at dist/Memory-1.0.0-preview.apk. A file added through the
+    GitHub website can be no larger than 25 MB. A file sent by git
+    is blocked over 100 MB. That file is not how Memory goes on
+    Android.
 
 
 WHAT IS DONE, NEWEST FIRST
@@ -123,6 +152,19 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+174. #121-new — Remember is installed on your Galaxy. Every page stops
+    short of the bottom of the screen. You will debug that next session.
+
+173. #121-new — A preview Android install file was built. It is 110 MB,
+    on this Mac. It cannot go on elyfont.com the way the site is
+    published. The path is Google Play.
+
+172. #121-new — The Android name com.molliedog.ElderlyAssistant is in
+    app.json, the same id as the iPhone. No install file yet.
+
+171. #120-new — The lists end above the bottom of the screen, so a swipe
+    to delete does not move the page. Committed, on the phone, and verified.
 
 170. #120-new — Build 98 fixed the bug from 97. A holiday set day
     stayed on the holiday. Thanksgiving still showed the 26th. It
@@ -187,7 +229,7 @@ docs/handoff-history.md.
     the phone.
 
 157. #117-new — Split Letters and Page are on the phone and working.
-    He likes how they are now.
+    You like how they are now.
 
 156. #112-new — Home badges sit in five rows of two and turn with the
     phone. Bucket List is a smiling face. Quarterly is a maple leaf.
@@ -617,11 +659,11 @@ docs/handoff-history.md.
    sheet written. 🧭 badge after Daily, calendar button, and the
    Cancel and Save journey decided. No code.
 44. #56-new — Appointments and Bucket List on every live screen;
-   failed daily clear-out now spoken (Pending 2). Mac 489. He said
+   failed daily clear-out now spoken (Pending 2). Mac 489. You said
    very good. Committed (Patrick, #57-new). Not on the phone.
 43. #55-new — missed-firing notice for Weekly, Monthly, Quarterly,
    Yearly, and One Time as well as Daily; day-roll writes the miss.
-   Mac 487. He said the work is good. Committed (Patrick, #56-new).
+   Mac 487. You said the work is good. Committed (Patrick, #56-new).
    Not on the phone.
 42. #53-new (2026-09-02) — Scheduled Reminders names Daily, Weekly,
    Monthly, Quarterly, Yearly, and One Time; Monthly, Quarterly,
@@ -633,7 +675,7 @@ docs/handoff-history.md.
    at #56-new. Committed.
 39. #52-new — landscape 90° counter-clockwise, headers on the left,
    on the phone. Sit set: seven banners Wednesday on sim and phone.
-   No 9:20 by his decision. RFC eval written. Paperwork named:
+   No 9:20 by your decision. RFC eval written. Paperwork named:
    spec, User Guide, website, Feedback, testing file, helper for
    where.
 38. #51-new — display features: header buttons and the Home badge
@@ -645,7 +687,7 @@ docs/handoff-history.md.
 37. #50-new — the other pages in landscape. Optional view, 0 and 90
    only. Header stays the portrait row, Bridge with it, at the top
    of the phone. Covers turn with the page. Calendar month grid not
-   rebuilt. Simulator still held leftover sitting items; he deleted
+   rebuilt. Simulator still held leftover sitting items; you deleted
    the Memory app there.    Goal accomplished. Phone not touched.
 36. #49-new — calendar page built from the sheet. Options Calendar
    shading row out; the saved field stays. Names in a day box scroll
@@ -657,7 +699,7 @@ docs/handoff-history.md.
    file is the inventory. Comparables from what the app is, not
    elderly apps: repeating reminders and personal tasks. Apple
    Reminders is the free default; TickTick, Todoist, Things, and
-   Due exist because it is not enough. He opened Reminders: this
+   Due exist because it is not enough. You opened Reminders: this
    one does more, easier. No code.
 33. #46-new — selling description begun, publishing picture written.
    The session dropped. The wrong-shelf comparables were corrected
@@ -671,7 +713,7 @@ docs/handoff-history.md.
    files not touched. The morning after, the automated load, the two
    type-check nits, and the reminder pages stretch, marked done
    (Patrick). A banner while Memory is on screen was silent; the app
-   now asks to show it, same as Timer. He will verify that in the code
+   now asks to show it, same as Timer. You will verify that in the code
    without the test load. The four pieces, the screen, and the Home
    tile came out of the app after that run.
 30. #44-new — the automated load built, and the simulator sitting
@@ -709,7 +751,7 @@ docs/handoff-history.md.
    absent old stores are recorded. No code changed.
 23. #37-new — Options connecting: + OPT writes the cases that apply,
    Note is on New and Edit, Skip is off Options. Per-kind sets are
-   in. Engine does not read the fields yet. He is loading the phone.
+   in. Engine does not read the fields yet. You are loading the phone.
 22. #36-new — logs on Weekly, Monthly, Quarterly, Yearly, One Time,
    and Extended. Weekly uses My Week's list; Monthly, Quarterly,
    and Yearly share Look Ahead's; One Time and Extended each have

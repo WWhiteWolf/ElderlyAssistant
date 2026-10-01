@@ -17,7 +17,8 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-Build **98n** is on his phone.
+The lists end above the bottom of the screen, so a swipe to delete does
+not move the page. That is committed, on his phone, and verified working.
 
 Build **98** fixed the bug still on build **97**. A reminder whose
 set day is a holiday stayed on the holiday. Thanksgiving 2026 still
@@ -43,6 +44,52 @@ backup and back-drag, and the Settings Guide tile names are all
 verified on the phone. The designed-machine jobs from #108-new and
 #109-new are verified too. All phone proof carried in this record is
 complete.
+
+#121-new is packaging Memory for Android phones. The path is Google
+Play, the same kind of road as the iPhone App Store (Patrick,
+2026-10-01). He knows six to nine people with Android devices. He
+will ask other people to help make up twelve. The public listing
+waits until twelve have stayed opted in for 14 days. The US$25 and
+the government ID are not issues. The Android name is
+`com.molliedog.ElderlyAssistant`, the same id as the iPhone, and it
+is in `app.json`.
+
+The app is an Expo project and the phone package is produced by EAS.
+The generated ios and android folders are left out of the project.
+This Mac has an ios folder and no android folder. The Siri plugin
+only changes the iPhone project. The App Group module, which the app
+loads at startup, already has an Android file that does nothing, so
+the app can load. `docs/publishing.md` is not in the docs folder.
+The build steps the project rules point at were not there. The next
+sitting builds the file Google Play can take. The store profile can
+move a build number, so the iPhone number has to stay put.
+
+Google's own pages, read 2026-09-30. A Play Console account is US$25
+once, with no yearly charge. The same US$25 opens a full account for
+copies that never go through Play. A limited account is free, stops
+at 20 phones, and asks for no government ID. That account stays a
+20-phone account. A wider reach later means a new account and moving
+the Android name. A personal Play account opened after November 13,
+2023, has to run a closed test with 12 people opted in for 14 days
+straight, then apply. Google usually reviews that in seven days or
+less, and a new personal account also confirms an Android phone
+through the Play Console app. Starting 2026-09-30, in Brazil,
+Indonesia, Singapore, and Thailand, an install from the big stores
+on a certified phone has to come from a verified developer. In 2027
+that spreads to all apps on certified phones, including a file
+downloaded from a website.
+
+A website download was the first path considered. A preview build
+finished on 2026-09-30 and the install file is on this Mac at
+`dist/Memory-1.0.0-preview.apk`. It is 110 MB. Expo created the
+Android signing key on its servers, and the Android version count
+there started at 1. That file cannot go on elyfont.com the way the
+site is published. A file added through the GitHub website can be no
+larger than 25 MB. A file sent by git is blocked over 100 MB. Git
+LFS does not work with GitHub Pages. He then chose Google Play.
+The publishing strategy (App-Docs, 2026-07-10) puts Android after
+the iPhone build. App Store version 1.0 (72) remains Pending
+Developer Release.
 
 ## Standing rulings
 
@@ -106,17 +153,36 @@ finished task.
   self-contained. A person's data stays on the phone. The app does not
   reach out to read or write from the outside world. What is already
   in App Store Connect stays there.
+- **The Android name is `com.molliedog.ElderlyAssistant`.** It is the
+  same id as the iPhone (Patrick, #121-new).
+- **The Android path is Google Play** (Patrick, 2026-10-01). He will
+  ask other people to help make up twelve. He knows six to nine
+  people with Android devices. The public listing waits until twelve
+  have stayed opted in for 14 days. The US$25 and the government ID
+  are not issues.
 
 ## What is open in front of it
 
 The guide remains `docs/designed-implementation.md`. The self-contained
 designed-machine build sheet and its phone proof are complete.
 
-Testers are on TestFlight External. His phone is on build **98n**.
+Testers are on TestFlight External. His phone has that list change,
+and it verifies.
 App Store version **1.0 (72)** is **Pending Developer Release**.
 Release is manual. The journey is `docs/connect-submit.md`. What is
 already in App Store Connect stays there. There is no public website
 for the user's guide.
+
+The preview file is installed on his Galaxy. Every page on that phone
+stops short of the bottom of the screen. Android uses that bottom. He
+will debug it in the next session. It is on every page, so it is not
+the list-only stop from #120-new.
+
+The next sitting also builds the file Google Play can take. The 110 MB
+file at `dist/Memory-1.0.0-preview.apk` is not that file. Do not
+build another website download. He is asking other people to help
+make up twelve. The public listing waits until those twelve have
+stayed opted in for 14 days.
 
 ## Facts worth carrying
 
