@@ -15,7 +15,7 @@ just because it is listed.
 
 ## The desk — in `docs`
 
-- **`handoff.md`** — the opening read. Where the work stands and what is open. Build 97 is on the phone. App Store version 1.0 (72) is Pending Developer Release. #118-new's 24-hour phone check and every older phone check passed. #119-new is in the project, not on the phone: Weekly Done holds until the next real speaking time, a holiday that is the set day stays on the moved day, the same-week move is dropped, and Home badges make room while sliding. What's Next is empty. The separate Reminder Engine folder is history; Memory's own documents are the live engine design.
+- **`handoff.md`** — the opening read. Where the work stands and what is open.
 - **`user-guide.md`** — Settings User's Guide and Helper pop-ups. On the Settings page and in Helper. Options, Delete, Save, Done, Snooze, Banners, and Log are in. Letters and Page are in Settings. Page names are marked in the first two sections. Settings tile names are marked the same way. There is no Reset All Data. The same-week move is not in the Guide (#119-new).
 - **`in-flight.md`** — this session's desk. Replaced every time, never added to. Last written #119-new, closed. Home make-room is written and not yet seen.
 - **`pending.txt`** — Patrick's list, and the source of the Word copy. Brought up to date at every update.
@@ -25,6 +25,8 @@ just because it is listed.
 - **`Memory features.docx`** — the inventory of what the app is and does, not the sell. Home of the substance for the store description (#47-new).
 - **`rfc-eval.md`** — #52-new evaluation of the app against RFC 5545 and RFC 8984. Live for this sitting.
 - **`clock-places.md`** — #52-new. Where the live app still asks the real clock. Written for a different idea than dating items near today.
+- **`testing.md`** — what testing has covered and will cover. Written at #123-new. A during-build sitting is thrown away. A run is not kept.
+- **`testing.docx`** — the Word copy of that file. Arial at 14 point, headings in bold. Generated when Patrick asks. Never hand-edited.
 
 ## Live design — in `docs`
 
@@ -49,7 +51,7 @@ just because it is listed.
 
 - **`parked-items.md`** — the deferred backlog. Last touched at #66.
 - **`publishing.md`** — pointer to App-Docs, and Memory's publishing picture from #46-new and #47-new. Patrick's EAS steps are at the end.
-- **`connect-submit.md`** — beginning-to-end App Store Connect journey for the first submit. Written at #82-new. Use it instead of Apple’s missing-items list.
+- **`connect-submit.md`** — beginning-to-end App Store Connect journey. Written at #82-new. Use it instead of Apple’s missing-items list.
 - **`roadmap.md`** — step-back milestones. Rewritten at #68.
 
 ## Retired — in `docs-ref`

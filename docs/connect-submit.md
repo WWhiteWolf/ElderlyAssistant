@@ -13,7 +13,7 @@ tests. It does not go live on the store.
 
 **App Store review** is Apple looking at the app for the listing.
 After they approve, Patrick releases it himself. That is **manual
-distribution**. The listing is **free**. A version can sit in Waiting
+distribution**. The listing is **$9.99**. A version can sit in Waiting
 for Review and still never appear on the store.
 
 The left-side heading **Waiting for Review** is the App Store queue.
@@ -164,7 +164,7 @@ Skip:
 
 Pricing, if it is not already set:
 
-- Price: **Free**.
+- Price: **$9.99**.
 - Availability: the countries you want.
 - Version release: **manual**.
 
@@ -186,7 +186,7 @@ card, not the TestFlight group.
 
 Fill on this same page:
 
-- Description: the four paragraphs at the bottom of this file.
+- Description: the six paragraphs at the bottom of this file.
 - Keywords, no spaces after the commas, 99 of 100 characters:
 
       daily,weekly,monthly,quarterly,yearly,appointment,birthday,medication,calendar,checklist,alarm,task
@@ -248,13 +248,17 @@ release it by hand.
 
 ## Description to paste
 
-This is a self-contained ordinary personal reminder.
+This is a very serious reminder app that was designed by a retired engineer because he could not find one that could help him with aging memory.
+
+This is a self contained personal reminder:
 
 Daily is the ordinary reminder — 10:00, take your medication — and the standing list with no clock: did I take my vitamins? Have I texted my family? You tell it you did it, and when. Tomorrow it is still there. Whatever from the other pages belongs today shows there too.
 
 Weekly, Monthly, Quarterly, and Yearly are how often a thing comes back. Quarterly can be every 30, 60, or 90 days, for things like a prescription. Appointments are one date, with reminders before. Birthdays come round each year. The Bucket List is for someday, with no deadline.
 
-The app tells you when something is due. When you open it, it tells you what you missed. You can snooze, skip this time, or mark it done. A backup file keeps your lists.
+The app tells you when something is due. When you open it, it tells you what you might have missed. You can snooze, skip this time, or mark it done. A backup file on your own phone keeps your lists. You can email me with problems or suggestions through the Feedback feature on Settings.
+
+You can choose Light or Dark in Settings, whichever is easier on your eyes. You also can turn the phone on its side for viewing.
 
 ## Still blocking a store Submit, if you do this again from scratch
 

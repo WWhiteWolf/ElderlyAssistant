@@ -52,15 +52,21 @@ Google said they would let him know. The Android name is
 `com.molliedog.ElderlyAssistant`, the same id as the iPhone, and it
 is in `app.json`.
 
+#122-new is committed. It keeps the page body above that strip, and
+Android stays upright.
+
 The app is an Expo project and the phone package is produced by EAS.
 The generated ios and android folders are left out of the project.
 This Mac has an ios folder and no android folder. The Siri plugin
 only changes the iPhone project. The App Group module, which the app
 loads at startup, already has an Android file that does nothing, so
 the app can load. `docs/publishing.md` is not in the docs folder.
-The build steps the project rules point at were not there. The store
-file waits until Google says the account can take an app. The store
-profile can move a build number, so the iPhone number has to stay put.
+The build steps the project rules point at were not there. He said
+to build the Play file now, while Google has not opened the account,
+so the sitting is not spent waiting (Patrick, #123-new). The account
+still cannot take the app, so the file is not sent to Play. The store
+profile can move a build number, so the build is Android only and the
+iPhone number stays put.
 
 Google's own pages, read 2026-09-30. A Play Console account is US$25
 once, with no yearly charge. The same US$25 opens a full account for
@@ -156,9 +162,21 @@ finished task.
 - **The Android name is `com.molliedog.ElderlyAssistant`.** It is the
   same id as the iPhone (Patrick, #121-new).
 - **The Android path is Google Play** (Patrick, 2026-10-01). The
-  account was submitted on 2026-10-01. Google said they would let
-  him know.
+  account was submitted on 2026-10-01. Google has not opened it.
+  The Play file is built now anyway, Android only, and it is not
+  sent to Play until the account can take an app (Patrick, #123-new).
 - **Do not raise the closed-test count** (Patrick, #122-new).
+- **The app is $9.99 once, the same on the iPhone and on Android, and
+  there is no trial** (Patrick, #23-new).
+- **Do not file a trademark on the name** (Patrick, #23-new). Use it.
+  The copyright line is his name and the year. File later only if
+  someone else starts using the same name on a similar app, or if he
+  asks.
+- **Do not take up Xcode Cloud** (Patrick, #23-new). Stay with the Expo
+  build steps.
+- **What testing has covered and will cover lives in `docs/testing.md`**
+  (Patrick, #52-new; written #123-new). A during-build sitting is
+  thrown away. A run is not kept.
 
 ## What is open in front of it
 
@@ -179,10 +197,18 @@ body above that strip, and Android stays upright. The Galaxy copy does
 not change until a new install file is built. It is on every page, so
 it is not the list-only stop from #120-new.
 
-The Play Console account was submitted on 2026-10-01. Google said
-they would let him know. The store file waits until that account can
-take an app. The 110 MB file at `dist/Memory-1.0.0-preview.apk` is
-not that file. Do not build another website download.
+The Play Console account was submitted on 2026-10-01. Google has
+not opened it. The Play file is building now, Android only, and it
+is not sent to Play until the account can take an app (Patrick,
+#123-new). The Android count on Expo went from 1 to 2. The iPhone number is
+still 100. The build
+is https://expo.dev/accounts/molliedog/projects/ElderlyAssistant/builds/7d816ec8-3548-4954-a847-bd241270433f.
+The 110 MB file at `dist/Memory-1.0.0-preview.apk` is not that file.
+Do not build another website download.
+
+The iPhone listing is $9.99. The Paid Apps Agreement, the bank, and
+the W-9 are Active. Android still waits until Google opens the Play
+account.
 
 ## Facts worth carrying
 

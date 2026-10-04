@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-10-01 (#122-new)
+Last updated: 2026-10-03 (#123-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. You are the only reader, so this list says you.
@@ -30,18 +30,22 @@ WHAT'S NEXT
    at the bottom, and Android stays upright. The project keeps the page
    body above that strip. The copy on your Galaxy is still the old
    preview. It changes when a new install file is built (2026-10-01).
-3. THE PLAY ACCOUNT. You submitted it. Google said they would let you
-   know. The store file waits until the account can take the app. The
-   110 MB file on this Mac is not that file (2026-10-01).
+3. THE PLAY ACCOUNT. You submitted it. Google has not opened it.
+   The Play file is building now, Android only, and it is not sent
+   to Play until the account can take the app. The Android count on
+   Expo went from 1 to 2. The build page is on expo.dev under
+   molliedog, ElderlyAssistant, build 7d816ec8 (Patrick, #123-new).
+   The 110 MB file on this Mac is not that file.
+4. THE PRICE ON ANDROID. $9.99 once, no trial. The iPhone listing
+   already has that price. Android waits until the Play account can
+   take the app (#23-new).
 
 
 PENDING
 ------------------------------------------------------------------
 Things waiting on something — mostly on a build.
 
-1. A PAGE, SPEC, OR FILE FOR WHAT TESTING HAS COVERED AND
-   WILL COVER (Patrick, #52-new). The during-build tests are
-   thrown away. The run is not kept.
+Nothing is waiting under this heading.
 
 
 FACTS THAT APPLY TO THE ONGOING WORK
@@ -138,6 +142,13 @@ built. None of these is a job to do.
     GitHub website can be no larger than 25 MB. A file sent by git
     is blocked over 100 MB. That file is not how Memory goes on
     Android.
+23. THE APP IS $9.99 ONCE (Patrick, #23-new). The same on the iPhone
+    and on Android. There is no trial. The iPhone listing has that
+    price. The Paid Apps Agreement, the bank, and the W-9 are Active.
+24. DO NOT FILE A TRADEMARK ON THE NAME (Patrick, #23-new). Use it.
+    The copyright line is your name and the year.
+25. DO NOT TAKE UP XCODE CLOUD (Patrick, #23-new). Stay with the Expo
+    build steps.
 
 
 WHAT IS DONE, NEWEST FIRST
@@ -146,6 +157,13 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+176. #123-new — A file for what testing has covered and will cover.
+    It is docs/testing.md. A during-build sitting is thrown away.
+    A run is not kept.
+
+175. #23-new — The iPhone listing is $9.99. No trial. No trademark
+    filing.
 
 174. #121-new — Remember is installed on your Galaxy. Every page stops
     short of the bottom of the screen. You will debug that next session.
