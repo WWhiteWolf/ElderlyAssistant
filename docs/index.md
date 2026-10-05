@@ -17,7 +17,7 @@ just because it is listed.
 
 - **`handoff.md`** — the opening read. Where the work stands and what is open.
 - **`user-guide.md`** — Settings User's Guide and Helper pop-ups. On the Settings page and in Helper. Options, Delete, Save, Done, Snooze, Banners, and Log are in. Letters and Page are in Settings. Page names are marked in the first two sections. Settings tile names are marked the same way. There is no Reset All Data. The same-week move is not in the Guide (#119-new).
-- **`in-flight.md`** — this session's desk. Replaced every time, never added to. Last written #119-new, closed. Home make-room is written and not yet seen.
+- **`in-flight.md`** — this session's desk. Replaced every time, never added to. Last written #125-new, closed. Daily Snooze and saved-list read handling are next.
 - **`pending.txt`** — Patrick's list, and the source of the Word copy. Brought up to date at every update.
 - **`pending.docx`** — the copy Patrick reads. Generated from the txt, never hand-edited.
 - **`make-pending-docx.py`** — makes the Word copy. `python3 docs/make-pending-docx.py`
@@ -25,7 +25,7 @@ just because it is listed.
 - **`Memory features.docx`** — the inventory of what the app is and does, not the sell. Home of the substance for the store description (#47-new).
 - **`rfc-eval.md`** — #52-new evaluation of the app against RFC 5545 and RFC 8984. Live for this sitting.
 - **`clock-places.md`** — #52-new. Where the live app still asks the real clock. Written for a different idea than dating items near today.
-- **`testing.md`** — what testing has covered and will cover. Written at #123-new. A during-build sitting is thrown away. A run is not kept.
+- **`testing.md`** — what testing has covered and will cover. Written at #124-new. A during-build sitting is thrown away. A run is not kept.
 - **`testing.docx`** — the Word copy of that file. Arial at 14 point, headings in bold. Generated when Patrick asks. Never hand-edited.
 
 ## Live design — in `docs`

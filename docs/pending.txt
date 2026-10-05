@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-10-03 (#123-new)
+Last updated: 2026-10-05 (#125-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. You are the only reader, so this list says you.
@@ -24,21 +24,27 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. IOS BUILD 100 is Waiting for Review. When Apple approves, you
+1. DAILY SNOOZE AND A FAILED LIST READ. Daily keeps 15, 30, and
+   60 minutes on the left and gains a 1-through-14 minute wheel
+   starting at 5. The separate list change keeps a failed read
+   different from a truly empty page, suggests closing and reopening
+   Memory, and offers Feedback. The full decisions are in
+   docs/in-flight.md (#125-new).
+2. IOS BUILD 100 is Waiting for Review. When Apple approves, you
    release it yourself. Release is manual (2026-10-01).
-2. THE BOTTOM OF THE GALAXY SCREEN. The phone uses about half an inch
+3. THE BOTTOM OF THE GALAXY SCREEN. The phone uses about half an inch
    at the bottom, and Android stays upright. The project keeps the page
    body above that strip. The copy on your Galaxy is still the old
    preview. It changes when a new install file is built (2026-10-01).
-3. THE PLAY ACCOUNT. You submitted it. Google has not opened it.
+4. THE PLAY ACCOUNT. You submitted it. Google has not opened it.
    The Play file is building now, Android only, and it is not sent
    to Play until the account can take the app. The Android count on
    Expo went from 1 to 2. The build page is on expo.dev under
-   molliedog, ElderlyAssistant, build 7d816ec8 (Patrick, #123-new).
+   molliedog, ElderlyAssistant, build 7d816ec8 (Patrick, #124-new).
    The 110 MB file on this Mac is not that file.
-4. THE PRICE ON ANDROID. $9.99 once, no trial. The iPhone listing
+5. THE PRICE ON ANDROID. $9.99 once, no trial. The iPhone listing
    already has that price. Android waits until the Play account can
-   take the app (#23-new).
+   take the app (#123-new).
 
 
 PENDING
@@ -142,12 +148,12 @@ built. None of these is a job to do.
     GitHub website can be no larger than 25 MB. A file sent by git
     is blocked over 100 MB. That file is not how Memory goes on
     Android.
-23. THE APP IS $9.99 ONCE (Patrick, #23-new). The same on the iPhone
+23. THE APP IS $9.99 ONCE (Patrick, #123-new). The same on the iPhone
     and on Android. There is no trial. The iPhone listing has that
     price. The Paid Apps Agreement, the bank, and the W-9 are Active.
-24. DO NOT FILE A TRADEMARK ON THE NAME (Patrick, #23-new). Use it.
+24. DO NOT FILE A TRADEMARK ON THE NAME (Patrick, #123-new). Use it.
     The copyright line is your name and the year.
-25. DO NOT TAKE UP XCODE CLOUD (Patrick, #23-new). Stay with the Expo
+25. DO NOT TAKE UP XCODE CLOUD (Patrick, #123-new). Stay with the Expo
     build steps.
 
 
@@ -158,11 +164,16 @@ A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
 
-176. #123-new — A file for what testing has covered and will cover.
-    It is docs/testing.md. A during-build sitting is thrown away.
-    A run is not kept.
+177. #125-new — Evaluations 8 judged that Memory reached your own aim:
+    rock solid and consistent first, then the best personal reminder
+    for you while remaining relatively easy. 428 checks passed and
+    TypeScript was clean. No app code changed.
 
-175. #23-new — The iPhone listing is $9.99. No trial. No trademark
+176. #124-new — The testing record and its Word copy were written.
+    The Android-only Play build was started while Google was still
+    considering the account.
+
+175. #123-new — The iPhone listing is $9.99. No trial. No trademark
     filing.
 
 174. #121-new — Remember is installed on your Galaxy. Every page stops

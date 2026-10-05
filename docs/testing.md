@@ -1,6 +1,6 @@
 # What testing has covered and will cover
 
-Written at #123-new. This is the record Pending 1 asked for
+Written at #124-new. This is the record Pending 1 asked for
 (Patrick, #52-new).
 
 A during-build sitting is thrown away. A run is not kept. The

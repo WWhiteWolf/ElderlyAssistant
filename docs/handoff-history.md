@@ -17,6 +17,97 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #125-new (2026-10-05): Evaluation 8; next Daily update settled
+
+**The goal.** Judge how close Memory came to Patrick's aim: reminders
+that are rock solid when used, consistent, and built from established
+practice, then the best personal reminder for him while remaining
+relatively easy to use.
+
+**The evidence.** The live design, testing record, previous evaluations,
+current reminder machinery, and the main user path were read. Three
+independent read-only checks covered reliability, ease of use, and the
+earlier evaluation record. A fresh complete run was 428 passed and
+0 failed. TypeScript was clean.
+
+**The judgment.** Memory reached Patrick's personal aim. Its reminder
+machinery is unusually strong, and Helper, separate pages, and hidden
+advanced choices keep that strength relatively easy to use. It is not
+proved universally best or easiest. Android proof, outside-user use,
+and broad competitor comparison are different claims.
+
+**Suggestions checked.** Larger text already works for Patrick, spoken
+access is outside this app, swipe and hold are ordinary phone gestures,
+and Memory already warns near the phone's notification limit. A saved
+list that cannot be read is a very rare defensive case, not an observed
+failure. The scheduler already leaves existing phone notifications
+alone. The page reader currently turns the failure into `[]`, which
+loses the distinction between unknown and genuinely empty. Feedback is
+the proportionate route if closing and reopening Memory does not clear
+it.
+
+**Next update.** Daily only gets a redesigned Snooze selector: 15, 30,
+and 60 stacked on the left; a spinning 1-through-14 minute wheel in the
+middle, starting at 5; and Up, Snooze, and Down on the right. Up adds
+one, Down removes one, and the ends stop at 1 and 14. The separate
+saved-list change preserves a read failure, suggests closing and
+reopening Memory, and offers Feedback. No separate empty-page marker is
+stored. The settled detail is in `docs/in-flight.md`.
+
+**Code.** No app code changed in this sitting.
+
+## #124-new (2026-10-03): testing record and Android Play build
+
+**Testing record.** `docs/testing.md` records the 428 Mac checks that
+stay, the two temporary sittings that were thrown away, what the iPhone
+has shown, and what remains unproved. `docs/testing.docx` is its
+14-point Arial Word copy. The checks were counted in that sitting, not
+run.
+
+**Play build.** Patrick chose to build the Android Play file while
+Google was still considering the account, instead of spending the
+sitting waiting. The Android-only production build was started on Expo;
+the Android count moved from 1 to 2 and the iPhone stayed at 100. It was
+not sent to Play. The build id is
+`7d816ec8-3548-4954-a847-bd241270433f`.
+
+**Number.** The chat is #124-new. Its opener said #123-new, and that
+mistake reached the live documents. The #125-new refresh corrected
+those live references. Patrick confirmed this sitting committed at the
+opening of #125-new.
+
+## #123-new (2026-10-02): $9.99 once; no trial or trademark filing
+
+**Price.** Memory is $9.99 once on the iPhone and Android, with no
+trial. The Paid Apps Agreement, bank account, and W-9 became Active.
+The iPhone listing was set to $9.99. Android waits for its Play listing.
+
+**Name and services.** No trademark is filed for A Place To Remember;
+use the name and reconsider only if someone begins using it for a
+similar app. The copyright line is Patrick's name and year. Xcode Cloud
+is not taken up.
+
+**Number.** The chat is #123-new. Its opener said #23-new, and that
+mistake reached the live documents. The #125-new refresh corrected
+those live references.
+
+## #122-new (2026-10-01): Android stays upright and clears its bottom strip
+
+**The phone.** The preview was on a Galaxy A15 5G, model SM-A166U. The
+screen size itself was not the fault. Android kept about half an inch
+at the bottom for its own controls, and everything drew a little
+bigger. The sizes were left as the phone drew them.
+
+**The change.** Android stays upright. The startup orientation and
+screen stack both enforce that. The shared page frame keeps the body
+above the bottom inset, and reminder lists and the Log do not add the
+same lift twice. The iPhone's landscape behavior stays unchanged.
+TypeScript was clean. The change was in the project but still needed a
+new Galaxy load.
+
+**Store state.** The Play Console account was submitted. Google said
+they would respond. The closed-test count was not to be raised again.
+
 ## #121-new (2026-10-01): Android path is Google Play; the website file is not the one to use
 
 **The goal.** Package Memory for Android phones.

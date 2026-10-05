@@ -17,6 +17,23 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
+#124-new is committed. It wrote the testing-coverage record and its
+Word copy, then started the Android-only Play build while the account
+was still waiting on Google.
+
+#125-new evaluated how close Memory came to Patrick's aim: rock solid
+and consistent first, then the best personal reminder for him while
+remaining relatively easy to use. The judgment was that it reached
+that personal aim. It is not proved universally best or easiest. A
+fresh run was 428 passed and 0 failed, and TypeScript was clean. No app
+code changed.
+
+The next app update has two separate parts. Daily gets a 1-through-14
+minute Snooze wheel beside its existing 15, 30, and 60 minute choices.
+A failed saved-list read must stay different from a successfully empty
+page and direct the person to close and reopen Memory, then to Feedback
+if the problem remains. The settled detail is in `docs/in-flight.md`.
+
 The lists end above the bottom of the screen, so a swipe to delete does
 not move the page. That is committed, on his phone, and verified working.
 
@@ -63,7 +80,7 @@ loads at startup, already has an Android file that does nothing, so
 the app can load. `docs/publishing.md` is not in the docs folder.
 The build steps the project rules point at were not there. He said
 to build the Play file now, while Google has not opened the account,
-so the sitting is not spent waiting (Patrick, #123-new). The account
+so the sitting is not spent waiting (Patrick, #124-new). The account
 still cannot take the app, so the file is not sent to Play. The store
 profile can move a build number, so the build is Android only and the
 iPhone number stays put.
@@ -164,24 +181,28 @@ finished task.
 - **The Android path is Google Play** (Patrick, 2026-10-01). The
   account was submitted on 2026-10-01. Google has not opened it.
   The Play file is built now anyway, Android only, and it is not
-  sent to Play until the account can take an app (Patrick, #123-new).
+  sent to Play until the account can take an app (Patrick, #124-new).
 - **Do not raise the closed-test count** (Patrick, #122-new).
 - **The app is $9.99 once, the same on the iPhone and on Android, and
-  there is no trial** (Patrick, #23-new).
-- **Do not file a trademark on the name** (Patrick, #23-new). Use it.
+  there is no trial** (Patrick, #123-new).
+- **Do not file a trademark on the name** (Patrick, #123-new). Use it.
   The copyright line is his name and the year. File later only if
   someone else starts using the same name on a similar app, or if he
   asks.
-- **Do not take up Xcode Cloud** (Patrick, #23-new). Stay with the Expo
+- **Do not take up Xcode Cloud** (Patrick, #123-new). Stay with the Expo
   build steps.
 - **What testing has covered and will cover lives in `docs/testing.md`**
-  (Patrick, #52-new; written #123-new). A during-build sitting is
+  (Patrick, #52-new; written #124-new). A during-build sitting is
   thrown away. A run is not kept.
 
 ## What is open in front of it
 
 The guide remains `docs/designed-implementation.md`. The self-contained
 designed-machine build sheet and its phone proof are complete.
+
+The next app update is recorded in `docs/in-flight.md`: Daily's Snooze
+selector, and keeping a saved-list read failure distinct from a
+successfully empty page.
 
 Testers are on TestFlight External. His phone has that list change,
 and it verifies.
@@ -200,7 +221,7 @@ it is not the list-only stop from #120-new.
 The Play Console account was submitted on 2026-10-01. Google has
 not opened it. The Play file is building now, Android only, and it
 is not sent to Play until the account can take an app (Patrick,
-#123-new). The Android count on Expo went from 1 to 2. The iPhone number is
+#124-new). The Android count on Expo went from 1 to 2. The iPhone number is
 still 100. The build
 is https://expo.dev/accounts/molliedog/projects/ElderlyAssistant/builds/7d816ec8-3548-4954-a847-bd241270433f.
 The 110 MB file at `dist/Memory-1.0.0-preview.apk` is not that file.
