@@ -25,6 +25,7 @@ import { advanceDatedItem } from './advance-dated-item';
 import {
     changeSavedReminderItems,
     readSavedReminderItems,
+    type SavedReminderListRead,
 } from './reminder-list-storage';
 export { advanceDatedItem };
 
@@ -103,12 +104,19 @@ export function thisCycleDueStamp(item: ReminderItem, now: number = Date.now()):
     return undefined;
 }
 
-// Roll the day and the week first, then read. A page that draws this list
-// otherwise keeps yesterday's checkmarks until it happens to load again.
-export async function loadReminderItems(): Promise<ReminderItem[]> {
+// Roll the day and the week first, then preserve whether the one saved list
+// could be read. A list page needs that distinction so an unknown list is not
+// drawn as a successfully empty page.
+export async function readReminderItems(): Promise<SavedReminderListRead> {
     await runDailyReset();
     await runWeeklyReset();
-    const saved = await readSavedReminderItems();
+    return readSavedReminderItems();
+}
+
+// Item lookups that cannot act without a known item keep their existing
+// no-op array. List pages use readReminderItems so they can show the failure.
+export async function loadReminderItems(): Promise<ReminderItem[]> {
+    const saved = await readReminderItems();
     return saved.failed ? [] : saved.items;
 }
 

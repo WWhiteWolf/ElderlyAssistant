@@ -40,6 +40,15 @@ function memoryBackend(initial: ReminderItem[]): {
     };
 }
 
+function fixedReadBackend(raw: string | null): ReminderListStorageBackend {
+    return {
+        async getItem() {
+            return raw;
+        },
+        async setItem() {},
+    };
+}
+
 function dailyItem(changes: Partial<ReminderItem> = {}): ReminderItem {
     return {
         id: 'daily',
@@ -59,6 +68,39 @@ function personItem(): ReminderItem {
 }
 
 export async function runSavedListStorageTests(): Promise<void> {
+    await asyncTest('A successful read of an empty saved list stays known and empty', async () => {
+        const store = createSavedReminderListStore(fixedReadBackend('[]'));
+        const saved = await store.read();
+        assertSame(
+            [saved.failed, saved.items],
+            [false, []],
+            'an empty list must not be marked unreadable',
+        );
+    });
+
+    await asyncTest('A storage read failure stays failed instead of becoming empty', async () => {
+        const store = createSavedReminderListStore({
+            async getItem() {
+                throw new Error('unreadable');
+            },
+            async setItem() {},
+        });
+        const saved = await store.read();
+        assert(saved.failed, 'the failed read must remain visible to its caller');
+    });
+
+    await asyncTest('Broken saved JSON stays failed instead of becoming empty', async () => {
+        const store = createSavedReminderListStore(fixedReadBackend('{not json'));
+        const saved = await store.read();
+        assert(saved.failed, 'broken JSON must remain visible to its caller');
+    });
+
+    await asyncTest('A saved value that is not a list stays failed', async () => {
+        const store = createSavedReminderListStore(fixedReadBackend('{"item":"Breakfast"}'));
+        const saved = await store.read();
+        assert(saved.failed, 'a non-list value must remain visible to its caller');
+    });
+
     await asyncTest('A person change waits for an active rollover and keeps both results', async () => {
         const backend = memoryBackend([dailyItem()]);
         const store = createSavedReminderListStore(backend.storage);

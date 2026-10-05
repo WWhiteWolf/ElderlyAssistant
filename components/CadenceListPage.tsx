@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HeaderButton, PageFrame } from './PageFrame';
 import { Cover } from './Cover';
 import { ReminderItemRow } from './ReminderItemRow';
+import SnoozeSelector from './SnoozeSelector';
 import { PAGE_LABELS, pageLabelFor } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
 import { dayListLine } from '../modules/birth-year';
@@ -27,9 +28,9 @@ import {
     applyReminderChange,
     historyKeyFor,
     itemNameOf,
-    loadReminderItems,
     markReminderDone,
     doneActionCodeOf,
+    readReminderItems,
     snoozeChoicesOf,
     sortDailyVisible,
     type ReminderItem,
@@ -68,6 +69,7 @@ export default function CadenceListPage({
     const styles = makeStyles(theme);
     const insets = useSafeAreaInsets();
     const [items, setItems] = useState<ReminderItem[]>([]);
+    const [listReadFailed, setListReadFailed] = useState(false);
     const [showAddPopup, setShowAddPopup] = useState(false);
     const [highlightId, setHighlightId] = useState<string | null>(null);
     const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -97,7 +99,13 @@ export default function CadenceListPage({
     }, [highlight]);
 
     const refreshFromStorage = useCallback(async () => {
-        setItems(await loadReminderItems());
+        const saved = await readReminderItems();
+        if (saved.failed) {
+            setListReadFailed(true);
+            return;
+        }
+        setItems(saved.items);
+        setListReadFailed(false);
     }, []);
 
     useFocusEffect(
@@ -279,36 +287,59 @@ export default function CadenceListPage({
                 directionalLockEnabled
             >
                 <View style={styles.section}>
-                    <Text style={styles.hintText}>Hold and slide to reorder · Tap to edit · Swipe to delete</Text>
-                    {visible.map((item) => (
-                        <View
-                            key={item.id}
-                            onLayout={(e) => {
-                                rowHeights.current[item.id] = e.nativeEvent.layout.height;
-                            }}
-                        >
-                            <ReminderItemRow
-                                item={item}
-                                highlighted={highlightId === item.id}
-                                dragging={draggingId === item.id}
-                                label={kind === 'daily' ? dailyRowLabel(item) : itemNameOf(item)}
-                                subtitle={kind === 'daily' ? undefined : formatItemWhen(item)}
-                                onTap={() => {
-                                    if (highlightId === item.id) {
-                                        setHighlightId(null);
-                                        return;
-                                    }
-                                    router.push({ pathname: '/item-edit', params: { id: item.id, kind: item.kind, returnTo } } as Href);
+                    {listReadFailed ? (
+                        <View style={styles.readFailure}>
+                            <Text style={styles.readFailureTitle}>Memory could not read your saved reminders.</Text>
+                            <Text style={styles.readFailureText}>
+                                Your reminders already on this phone were left alone. Close Memory and reopen it.
+                                If this warning is still here, tap Feedback.
+                            </Text>
+                            <TouchableOpacity
+                                style={styles.readFailureButton}
+                                onPress={() => {
+                                    router.push({
+                                        pathname: '/settings',
+                                        params: { openFeedback: '1' },
+                                    } as Href);
                                 }}
-                                onDragStart={beginDrag}
-                                onDragMove={moveDrag}
-                                onDragEnd={endDrag}
-                                onSnooze={() => setSnoozeItemId(item.id)}
-                                onDone={() => item.completed ? undoDone(item.id) : markDone(item.id)}
-                                onDelete={() => deleteEntry(item.id)}
-                            />
+                            >
+                                <Text style={styles.readFailureButtonText}>Feedback</Text>
+                            </TouchableOpacity>
                         </View>
-                    ))}
+                    ) : (
+                        <>
+                            <Text style={styles.hintText}>Hold and slide to reorder · Tap to edit · Swipe to delete</Text>
+                            {visible.map((item) => (
+                                <View
+                                    key={item.id}
+                                    onLayout={(e) => {
+                                        rowHeights.current[item.id] = e.nativeEvent.layout.height;
+                                    }}
+                                >
+                                    <ReminderItemRow
+                                        item={item}
+                                        highlighted={highlightId === item.id}
+                                        dragging={draggingId === item.id}
+                                        label={kind === 'daily' ? dailyRowLabel(item) : itemNameOf(item)}
+                                        subtitle={kind === 'daily' ? undefined : formatItemWhen(item)}
+                                        onTap={() => {
+                                            if (highlightId === item.id) {
+                                                setHighlightId(null);
+                                                return;
+                                            }
+                                            router.push({ pathname: '/item-edit', params: { id: item.id, kind: item.kind, returnTo } } as Href);
+                                        }}
+                                        onDragStart={beginDrag}
+                                        onDragMove={moveDrag}
+                                        onDragEnd={endDrag}
+                                        onSnooze={() => setSnoozeItemId(item.id)}
+                                        onDone={() => item.completed ? undoDone(item.id) : markDone(item.id)}
+                                        onDelete={() => deleteEntry(item.id)}
+                                    />
+                                </View>
+                            ))}
+                        </>
+                    )}
                 </View>
             </ScrollView>
             </PageFrame>
@@ -345,34 +376,14 @@ export default function CadenceListPage({
                     </View>
                 </Cover>
             )}
-            {snoozeItemId && (
-                <Cover visible={!!snoozeItemId}>
-                    <View style={styles.modalOverlay}>
-                        <View style={styles.pickerModal}>
-                            <Text style={styles.modalTitle}>Snooze Reminder</Text>
-                            <Text style={styles.inputLabel}>
-                                {snoozeTarget?.label} — remind me again in:
-                            </Text>
-                            <View style={styles.snoozeOptionRow}>
-                                {snoozeChoices.map((choice) => (
-                                    <TouchableOpacity
-                                        key={choice.label}
-                                        style={styles.snoozeOption}
-                                        onPress={() => snoozeItem(choice.stampAt, choice.label)}
-                                    >
-                                        <Text style={styles.snoozeOptionText}>{choice.label}</Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
-                            <View style={styles.modalBtns}>
-                                <TouchableOpacity style={styles.cancelBtn} onPress={() => setSnoozeItemId(null)}>
-                                    <Text style={styles.cancelBtnText}>Cancel</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                </Cover>
-            )}
+            <SnoozeSelector
+                visible={snoozeItemId !== null}
+                itemLabel={snoozeTarget?.label ?? ''}
+                choices={snoozeChoices}
+                withDailyMinuteWheel={kind === 'daily'}
+                onChoose={(choice) => snoozeItem(choice.stampAt, choice.label)}
+                onCancel={() => setSnoozeItemId(null)}
+            />
         </GestureHandlerRootView>
     );
 }
@@ -408,21 +419,35 @@ const makeStyles = (t: Theme) =>
             borderColor: t.cardBorder,
         },
         hintText: { fontSize: 11, color: t.mutedText, marginTop: 2, marginBottom: 8 },
-        snoozeOptionRow: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginVertical: 12,
+        readFailure: {
+            paddingHorizontal: 6,
+            paddingVertical: 8,
         },
-        snoozeOption: {
-            flex: 1,
-            backgroundColor: t.delay,
-            paddingVertical: 14,
-            borderRadius: 8,
+        readFailureTitle: {
+            color: t.cardTitle,
+            fontSize: 18,
+            fontWeight: '600',
+            textAlign: 'center',
+        },
+        readFailureText: {
+            color: t.bodyText,
+            fontSize: 15,
+            lineHeight: 21,
+            marginTop: 10,
+            textAlign: 'center',
+        },
+        readFailureButton: {
             alignItems: 'center',
-            marginHorizontal: 4,
+            backgroundColor: t.buttonPrimary,
+            borderRadius: 8,
+            marginTop: 14,
+            paddingVertical: 12,
         },
-        snoozeOptionText: { color: t.delayText, fontWeight: '600', fontSize: 16 },
-        inputLabel: { fontSize: 14, color: t.mutedText, marginBottom: 4 },
+        readFailureButtonText: {
+            color: t.buttonPrimaryText,
+            fontSize: 16,
+            fontWeight: '600',
+        },
         modalOverlay: {
             flex: 1,
             backgroundColor: 'rgba(0,0,0,0.4)',

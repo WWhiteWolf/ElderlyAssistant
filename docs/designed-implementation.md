@@ -53,10 +53,12 @@ route. `app/weekly.tsx` is the pattern:
     return <CadenceListPage kind="weekly" returnTo="weekly" />;
 
 `app/daily.tsx` is that same kind of route, with kind `daily` and
-returnTo `daily`. Daily's jobs — list, row, Done, Snooze, log — live
-in `components/CadenceListPage.tsx`. They do not stay as a second copy
-in `app/daily.tsx`. Extra room under the last row keeps
-a Delete swipe away from the bottom of the phone.
+returnTo `daily`. Daily's list, row, Done, and log live in
+`components/CadenceListPage.tsx`. The Snooze popup lives in
+`components/SnoozeSelector.tsx`; the shared list supplies the item and
+accepts the chosen delay. None of those jobs stays as a second copy in
+`app/daily.tsx`. Extra room under the last row keeps a Delete swipe
+away from the bottom of the phone.
 
 The shared page does Daily's extras. They are:
 
@@ -247,6 +249,15 @@ inside it against the latest list.
 Backup Export reads the saved list through the queued reader, so an
 export requested during a list change receives the finished result.
 The backup shape and `reminder_last_date` stay unchanged.
+
+A list page keeps the result of that read. A successful read with no
+items for the page is genuinely empty. A failed read is unknown, not
+empty, and the page does not draw it as an empty list. It shows a
+warning instead. The warning says that the reminders already on the
+phone were left alone, tells the person to close and reopen Memory, and
+offers Feedback if the warning remains. Feedback opens the existing
+Feedback popup in Settings. There is no separate saved marker for an
+empty page.
 
 When a time or a date does not have to be picked, tapping a field to
 set one still leaves a way back to none. That way back is No time on
@@ -442,6 +453,21 @@ Daily.
 **Same-day undo.** Done is thisCycle. A second tap asks whether to
 mark it not done.
 
+**Daily Snooze selector.** Keep Daily's existing 15, 30, and 60 minute
+buttons, stacked on the left. A spinning 1-through-14 minute wheel sits
+in the middle and starts at 5. On the right, Up adds one minute, Snooze
+confirms the wheel's number, and Down removes one minute. Up and Down
+stop at 14 and 1 and do not wrap. The wheel's number is elapsed minutes
+from the tap. This wheel belongs only to Daily's list popup. The banner
+button sets and the other reminder pages do not gain it.
+
+`components/SnoozeSelector.tsx` owns the whole popup: the ordinary
+choices, Daily's wheel, its controls, and its layout. The shared list
+does not carry that machinery. It opens the selector and applies the
+one choice returned. The 1-through-14 limits, starting number, stepping,
+elapsed-minute calculation, and words live together in
+`modules/daily-snooze.ts` and are checked without the screen.
+
 The log is one piece. Daily, the shared list, and the banner all write
 it. They do not each write their own. The list does not show it. Log in
 the header opens that page’s log only. Daily’s list writes a visitor on
@@ -465,6 +491,17 @@ date-and-time control for that kind, then Note. The date line comes
 from the table. Birthdays say Birthdate. Options in the header
 opens the sheet. Applied options show on the form. Daily’s every-day
 New and Edit have plenty of room between Name, the time, and Note.
+
+After Save succeeds for a new item, Memory asks whether to back up its
+data. Back Up Now opens the existing Backup & Restore process. Not Now
+finishes the ordinary return to the list. The question is for a newly
+added item, not an edit and not a Done tick.
+
+This design uses that question, not automatic backup. A second copy
+inside Memory would be lost with the app or the phone. A useful
+automatic backup would have to write outside the phone, which would
+change the standing self-contained design. Automatic backup was
+considered and is not part of this change.
 
 ## Banner housing
 

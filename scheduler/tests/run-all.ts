@@ -28,6 +28,7 @@ import { runApplyTests } from './apply.test.ts';
 import { runRunGateTests } from './rungate.test.ts';
 import { runResetGateTests } from './resetgate.test.ts';
 import { runBannerActionTests } from './banneractions.test.ts';
+import { runDailySnoozeTests } from './dailysnooze.test.ts';
 import { runOpeningTests } from './opening.test.ts';
 import { runSavedListStorageTests } from './savedliststorage.test.ts';
 import { runBackupSettingsTests } from './backupsettings.test.ts';
@@ -48,6 +49,9 @@ async function runAll(): Promise<void> {
 
     console.log('\nBanner actions');
     runBannerActionTests();
+
+    console.log('\nDaily minute Snooze');
+    runDailySnoozeTests();
 
     console.log('\nRun health');
     runHealthTests();

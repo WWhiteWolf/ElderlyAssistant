@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-10-05 (#125-new)
+Last updated: 2026-10-05 (#126-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. You are the only reader, so this list says you.
@@ -24,12 +24,10 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. DAILY SNOOZE AND A FAILED LIST READ. Daily keeps 15, 30, and
-   60 minutes on the left and gains a 1-through-14 minute wheel
-   starting at 5. The separate list change keeps a failed read
-   different from a truly empty page, suggests closing and reopening
-   Memory, and offers Feedback. The full decisions are in
-   docs/in-flight.md (#125-new).
+1. PHONE PROOF FOR #126-NEW. Check Daily's completed 1-through-14
+   minute Snooze wheel, the saved-list read warning, and the New-save
+   backup question on the phone. The full state is in
+   docs/in-flight.md.
 2. IOS BUILD 100 is Waiting for Review. When Apple approves, you
    release it yourself. Release is manual (2026-10-01).
 3. THE BOTTOM OF THE GALAXY SCREEN. The phone uses about half an inch
@@ -163,6 +161,16 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+178. #126-new — A failed saved-list read now shows a warning instead
+    of an empty page and offers the existing Feedback popup. After a
+    successful New save, Memory asks whether to back up; Back Up Now
+    uses the existing export, while Edit and Done do not ask. Daily
+    keeps its 15, 30, and 60 minute Snooze choices and gains the
+    1-through-14 minute wheel. Its complete popup now lives apart from
+    the shared list. The designed implementation carries all three
+    decisions. 436 Mac checks pass and TypeScript is clean. Not on the
+    phone.
 
 177. #125-new — Evaluations 8 judged that Memory reached your own aim:
     rock solid and consistent first, then the best personal reminder

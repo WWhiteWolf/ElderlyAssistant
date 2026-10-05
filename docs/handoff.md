@@ -21,18 +21,26 @@ who decides. It is not a claim that the files were refreshed.
 Word copy, then started the Android-only Play build while the account
 was still waiting on Google.
 
-#125-new evaluated how close Memory came to Patrick's aim: rock solid
+#125-new is committed. It evaluated how close Memory came to Patrick's
+aim: rock solid
 and consistent first, then the best personal reminder for him while
 remaining relatively easy to use. The judgment was that it reached
 that personal aim. It is not proved universally best or easiest. A
 fresh run was 428 passed and 0 failed, and TypeScript was clean. No app
 code changed.
 
-The next app update has two separate parts. Daily gets a 1-through-14
-minute Snooze wheel beside its existing 15, 30, and 60 minute choices.
-A failed saved-list read must stay different from a successfully empty
-page and direct the person to close and reopen Memory, then to Feedback
-if the problem remains. The settled detail is in `docs/in-flight.md`.
+#126-new is in progress. A failed saved-list read now stays different
+from a successfully empty page. The page leaves the phone's existing
+reminders alone, tells the person to close and reopen Memory, and opens
+the existing Feedback popup if the warning remains. After a successful
+New save, Memory now asks whether to back up. Back Up Now uses the same
+export as Backup & Restore; Not Now makes the ordinary return. Edit and
+Done do not ask. Daily now keeps its 15, 30, and 60 minute choices and
+adds the 1-through-14 minute wheel, starting at 5 and stopping at both
+ends. The whole popup lives in its own Snooze selector; the shared list
+only supplies the item and accepts the choice. 436 Mac checks pass,
+TypeScript is clean, and the changed files pass lint. None of the three
+changes has been checked on the phone.
 
 The lists end above the bottom of the screen, so a swipe to delete does
 not move the page. That is committed, on his phone, and verified working.
@@ -200,9 +208,9 @@ finished task.
 The guide remains `docs/designed-implementation.md`. The self-contained
 designed-machine build sheet and its phone proof are complete.
 
-The next app update is recorded in `docs/in-flight.md`: Daily's Snooze
-selector, and keeping a saved-list read failure distinct from a
-successfully empty page.
+No code change from #126-new remains open. Phone proof covers Daily's
+Snooze selector, the saved-list read warning, and the question after a
+New save.
 
 Testers are on TestFlight External. His phone has that list change,
 and it verifies.

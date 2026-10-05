@@ -16,6 +16,7 @@ import DateTimeControl from '../components/DateTimeControl';
 import { HeaderButton, PageFrame } from '../components/PageFrame';
 import ScreenOptionsSheet from '../components/ScreenOptionsSheet';
 import { Theme, useTheme } from '../constants/Themes';
+import { exportBackup } from '../modules/backup-export';
 import {
     DAY_NAMES,
     applyReminderChange,
@@ -230,6 +231,23 @@ export default function ItemEditScreen() {
         router.replace(pathFor(page, calendarReturn));
     };
 
+    const askToBackUp = () => {
+        Alert.alert(
+            'Back Up Memory?',
+            'Your new item is saved. Would you like to back up Memory now?',
+            [
+                { text: 'Not Now', style: 'cancel', onPress: afterSave },
+                {
+                    text: 'Back Up Now',
+                    onPress: () => {
+                        void exportBackup().finally(afterSave);
+                    },
+                },
+            ],
+            { cancelable: false },
+        );
+    };
+
     useEffect(() => {
         let cancelled = false;
         const setup = async () => {
@@ -385,7 +403,10 @@ export default function ItemEditScreen() {
                 : [...list, next]
         );
         setExisting(next);
-        if (leave) afterSave();
+        if (leave) {
+            if (editingId) afterSave();
+            else askToBackUp();
+        }
     };
 
     const finishSave = () => {

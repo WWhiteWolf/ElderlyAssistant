@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Cover } from '../components/Cover';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
     Alert,
@@ -68,6 +68,7 @@ function LookStepper({
 
 export default function SettingsScreen() {
     const router = useRouter();
+    const { openFeedback: openFeedbackParam } = useLocalSearchParams<{ openFeedback?: string }>();
     const theme = useTheme();
     const styles = makeStyles(theme);
     const { themeName, setThemeName, popupStyle, setPopupStyle, letteringShift, setLetteringShift, pageShift, setPageShift } = useThemeControls();
@@ -96,6 +97,16 @@ export default function SettingsScreen() {
         loadSettings();
         //checkBiometric();
     }, []);
+
+    useEffect(() => {
+        if (openFeedbackParam !== '1') return;
+        setWorked('');
+        setConfusing('');
+        setWanted('');
+        setOther('');
+        setRating(50);
+        setShowFeedback(true);
+    }, [openFeedbackParam]);
 
     const loadSettings = async () => {
         try {

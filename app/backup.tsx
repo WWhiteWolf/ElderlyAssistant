@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as DocumentPicker from 'expo-document-picker';
-import { File, Paths } from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
+import { File } from 'expo-file-system';
 import { useRouter } from 'expo-router';
 import {
     Alert,
@@ -14,17 +13,12 @@ import {
 import { HeaderButton, PageFrame } from '../components/PageFrame';
 import { Theme, useTheme, useThemeControls } from '../constants/Themes';
 import {
-    readBackupSettings,
     writeReplacedBackupSettings,
 } from '../modules/backup-settings';
+import { BACKUP_VERSION, exportBackup } from '../modules/backup-export';
 import { applyReminderChange, type ReminderItem } from '../modules/reminder-items';
-import { readSavedReminderItems } from '../modules/reminder-list-storage';
 import { HEALTH_KEY, MISSES_KEY, NOTICE_SEEN_KEY } from '../scheduler/health.ts';
 import { sanitizeCurrentReminderItems } from '../scheduler/translators/translate.ts';
-
-// Format the backup file. Bump VERSION only if the shape changes,
-// so a future Import can tell how to read an older file.
-const BACKUP_VERSION = 3;
 
 const HEALTH_KEYS = [HEALTH_KEY, MISSES_KEY, NOTICE_SEEN_KEY];
 
@@ -55,75 +49,8 @@ export default function BackupScreen() {
     const { reloadPreferences } = useThemeControls();
     const styles = makeStyles(theme);
 
-    const finishExport = async (data: Record<string, string | null>) => {
-        try {
-            const backup = {
-                app: 'A Place To Remember',
-                type: 'remember-backup',
-                version: BACKUP_VERSION,
-                exportedAt: new Date().toISOString(),
-                data,
-            };
-            const json = JSON.stringify(backup, null, 2);
-
-            const now = new Date();
-            const stamp =
-                `${now.getFullYear()}-` +
-                `${String(now.getMonth() + 1).padStart(2, '0')}-` +
-                `${String(now.getDate()).padStart(2, '0')}-` +
-                `${String(now.getHours()).padStart(2, '0')}` +
-                `${String(now.getMinutes()).padStart(2, '0')}`;
-            const fileName = `Remember-Backup-${stamp}.json`;
-
-            const file = new File(Paths.cache, fileName);
-            if (file.exists) file.delete();
-            file.create();
-            file.write(json);
-
-            const canShare = await Sharing.isAvailableAsync();
-            if (!canShare) {
-                Alert.alert(
-                    'Sharing unavailable',
-                    `Your backup was saved as ${fileName}, but this device can't open the share screen.`,
-                );
-                return;
-            }
-
-            await Sharing.shareAsync(file.uri, {
-                mimeType: 'application/json',
-                UTI: 'public.json',
-                dialogTitle: 'Save your Remember backup',
-            });
-        } catch {
-            Alert.alert(
-                'Export failed',
-                'The backup file could not be created. No file was saved.',
-            );
-        }
-    };
-
-    const handleExport = async () => {
-        try {
-            const [saved, lastDate, settings] = await Promise.all([
-                readSavedReminderItems(),
-                AsyncStorage.getItem('reminder_last_date'),
-                readBackupSettings(AsyncStorage),
-            ]);
-            if (saved.failed) {
-                throw new Error('The saved reminder list could not be read.');
-            }
-            const data: Record<string, string | null> = {
-                reminder_items: saved.raw,
-                reminder_last_date: lastDate,
-                ...settings,
-            };
-            await finishExport(data);
-        } catch {
-            Alert.alert(
-                'Export failed',
-                'Something went wrong while preparing your backup. No file was created.',
-            );
-        }
+    const handleExport = () => {
+        void exportBackup();
     };
 
     const applyReplace = async (backup: RestoredBackup) => {
