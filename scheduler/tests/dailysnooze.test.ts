@@ -2,6 +2,7 @@ import {
     DAILY_SNOOZE_MINUTE_DEFAULT,
     DAILY_SNOOZE_MINUTE_MAX,
     DAILY_SNOOZE_MINUTE_MIN,
+    DAILY_SNOOZE_WHEEL_MINUTES,
     dailySnoozeLabel,
     dailySnoozeMinuteFromOffset,
     dailySnoozeOffsetForMinute,
@@ -35,20 +36,35 @@ export function runDailySnoozeTests(): void {
         );
     });
 
-    test('The spinning wheel maps its first, starting, and last rows to 1, 5, and 14', () => {
+    test('Higher numbers sit above lower numbers on the Daily minute wheel', () => {
+        const five = DAILY_SNOOZE_WHEEL_MINUTES.indexOf(5);
         assertSame(
             [
-                dailySnoozeMinuteFromOffset(0, ROW_HEIGHT),
-                dailySnoozeMinuteFromOffset(4 * ROW_HEIGHT, ROW_HEIGHT),
-                dailySnoozeMinuteFromOffset(13 * ROW_HEIGHT, ROW_HEIGHT),
-                dailySnoozeOffsetForMinute(5, ROW_HEIGHT),
+                DAILY_SNOOZE_WHEEL_MINUTES[0],
+                DAILY_SNOOZE_WHEEL_MINUTES[five - 1],
+                DAILY_SNOOZE_WHEEL_MINUTES[five],
+                DAILY_SNOOZE_WHEEL_MINUTES[five + 1],
+                DAILY_SNOOZE_WHEEL_MINUTES[DAILY_SNOOZE_WHEEL_MINUTES.length - 1],
             ],
-            [1, 5, 14, 4 * ROW_HEIGHT],
-            'the centered wheel row must match the selected minute',
+            [14, 6, 5, 4, 1],
+            'Up must lead to the higher number above the current one',
         );
     });
 
-    test('Daily minute Snooze uses elapsed minutes and readable words', () => {
+    test('The reversed wheel maps its first, starting, and last rows to 14, 5, and 1', () => {
+        assertSame(
+            [
+                dailySnoozeMinuteFromOffset(0, ROW_HEIGHT),
+                dailySnoozeMinuteFromOffset(9 * ROW_HEIGHT, ROW_HEIGHT),
+                dailySnoozeMinuteFromOffset(13 * ROW_HEIGHT, ROW_HEIGHT),
+                dailySnoozeOffsetForMinute(5, ROW_HEIGHT),
+            ],
+            [14, 5, 1, 9 * ROW_HEIGHT],
+            'the centered row and the reset position must both select 5',
+        );
+    });
+
+    test('Daily minute Snooze adds the chosen delay to the machine\'s starting moment', () => {
         assertSame(
             [
                 dailySnoozeStamp(NOW, 5),
@@ -60,7 +76,7 @@ export function runDailySnoozeTests(): void {
                 '1 minute',
                 '5 minutes',
             ],
-            'the wheel must set the selected elapsed-minute delay',
+            'the wheel must add its selected delay and keep readable words',
         );
     });
 }

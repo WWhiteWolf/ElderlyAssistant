@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
     ScrollView,
     StyleSheet,
@@ -11,6 +11,7 @@ import {
     DAILY_SNOOZE_MINUTE_DEFAULT,
     DAILY_SNOOZE_MINUTE_MAX,
     DAILY_SNOOZE_MINUTE_MIN,
+    DAILY_SNOOZE_WHEEL_MINUTES,
     dailySnoozeLabel,
     dailySnoozeMinuteFromOffset,
     dailySnoozeOffsetForMinute,
@@ -21,14 +22,10 @@ import { Cover } from './Cover';
 
 export type SnoozeSelection = {
     label: string;
-    stampAt: (now: number) => number;
+    stampAt: (startsAt: number) => number;
 };
 
 const WHEEL_ROW_HEIGHT = 44;
-const WHEEL_MINUTES = Array.from(
-    { length: DAILY_SNOOZE_MINUTE_MAX - DAILY_SNOOZE_MINUTE_MIN + 1 },
-    (_, index) => DAILY_SNOOZE_MINUTE_MIN + index,
-);
 
 export default function SnoozeSelector({
     visible,
@@ -50,9 +47,20 @@ export default function SnoozeSelector({
     const [minutes, setMinutes] = useState(DAILY_SNOOZE_MINUTE_DEFAULT);
     const wheelRef = useRef<ScrollView | null>(null);
 
+    const resetWheel = useCallback(() => {
+        setMinutes(DAILY_SNOOZE_MINUTE_DEFAULT);
+        wheelRef.current?.scrollTo({
+            y: dailySnoozeOffsetForMinute(
+                DAILY_SNOOZE_MINUTE_DEFAULT,
+                WHEEL_ROW_HEIGHT,
+            ),
+            animated: false,
+        });
+    }, []);
+
     useEffect(() => {
-        if (visible) setMinutes(DAILY_SNOOZE_MINUTE_DEFAULT);
-    }, [visible]);
+        if (visible) resetWheel();
+    }, [resetWheel, visible]);
 
     const stepMinute = (delta: -1 | 1) => {
         const next = stepDailySnoozeMinute(minutes, delta);
@@ -67,7 +75,7 @@ export default function SnoozeSelector({
         const chosenMinutes = minutes;
         onChoose({
             label: dailySnoozeLabel(chosenMinutes),
-            stampAt: (now) => dailySnoozeStamp(now, chosenMinutes),
+            stampAt: (startsAt) => dailySnoozeStamp(startsAt, chosenMinutes),
         });
     };
 
@@ -113,6 +121,7 @@ export default function SnoozeSelector({
                                     nestedScrollEnabled
                                     showsVerticalScrollIndicator={false}
                                     scrollEventThrottle={16}
+                                    onContentSizeChange={resetWheel}
                                     onScroll={(event) => {
                                         const next = dailySnoozeMinuteFromOffset(
                                             event.nativeEvent.contentOffset.y,
@@ -121,7 +130,7 @@ export default function SnoozeSelector({
                                         setMinutes((current) => current === next ? current : next);
                                     }}
                                 >
-                                    {WHEEL_MINUTES.map((minute) => (
+                                    {DAILY_SNOOZE_WHEEL_MINUTES.map((minute) => (
                                         <View
                                             key={minute}
                                             style={[

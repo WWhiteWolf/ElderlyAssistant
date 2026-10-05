@@ -313,7 +313,7 @@ function parseTime(raw: string | null, fallback: TimeOfDay): TimeOfDay {
 }
 
 /** The three fixed times of day, as Settings has them. */
-async function readClockTimes(): Promise<ClockTimes> {
+export async function readClockTimes(): Promise<ClockTimes> {
     return {
         morning: parseTime(await AsyncStorage.getItem('reminder_morning_time'), DEFAULT_CLOCK_TIMES.morning),
         midday: parseTime(await AsyncStorage.getItem('reminder_midday_time'), DEFAULT_CLOCK_TIMES.midday),

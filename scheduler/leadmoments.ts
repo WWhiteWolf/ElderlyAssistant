@@ -75,6 +75,48 @@ export function momentsFor(
 }
 
 /**
+ * The machine's starting moment for a Snooze chosen from a list.
+ *
+ * A Snooze already waiting is the reminder being moved again. Otherwise, an
+ * occurrence still ahead is delayed from its next real speaking moment. Once
+ * today's occurrence has spoken, the delay starts at the tap instead of
+ * jumping to the next cycle. This keeps Snooze from making an unfired
+ * reminder earlier without making a fired reminder wait for tomorrow or next
+ * week.
+ */
+export function snoozeDelayStartsAt(
+    item: ShapedItem,
+    now: number,
+    clockTimes: ClockTimes,
+): number {
+    if (item.pushedBackToStamp !== undefined && item.pushedBackToStamp > now) {
+        return item.pushedBackToStamp;
+    }
+
+    const calendar = calendarFor(item);
+    if (calendar === null) {
+        return now;
+    }
+
+    const today = calendar.partsOf(now);
+    const startOfToday = calendar.at(today.year, today.month, today.day, 0, 0);
+    const firstBaseToday = baseMoment(item, startOfToday - 1);
+    if (firstBaseToday !== null && firstBaseToday.moment <= now) {
+        const due = calendar.partsOf(firstBaseToday.moment);
+        if (
+            due.year === today.year
+            && due.month === today.month
+            && due.day === today.day
+        ) {
+            return now;
+        }
+    }
+
+    const upcoming = momentsFor(item, now, clockTimes);
+    return upcoming.length > 0 ? Math.min(...upcoming) : now;
+}
+
+/**
  * The moment the lead times are counted back from.
  *
  * When the item floats with the phone, local dates mean the machine's ordinary

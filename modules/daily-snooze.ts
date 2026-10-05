@@ -1,6 +1,10 @@
 export const DAILY_SNOOZE_MINUTE_MIN = 1;
 export const DAILY_SNOOZE_MINUTE_MAX = 14;
 export const DAILY_SNOOZE_MINUTE_DEFAULT = 5;
+export const DAILY_SNOOZE_WHEEL_MINUTES = Array.from(
+    { length: DAILY_SNOOZE_MINUTE_MAX - DAILY_SNOOZE_MINUTE_MIN + 1 },
+    (_, index) => DAILY_SNOOZE_MINUTE_MAX - index,
+);
 
 export function dailySnoozeMinute(value: number): number {
     if (!Number.isFinite(value)) return DAILY_SNOOZE_MINUTE_DEFAULT;
@@ -16,16 +20,16 @@ export function stepDailySnoozeMinute(value: number, delta: -1 | 1): number {
 
 export function dailySnoozeMinuteFromOffset(offset: number, rowHeight: number): number {
     return dailySnoozeMinute(
-        Math.round(Math.max(0, offset) / rowHeight) + DAILY_SNOOZE_MINUTE_MIN,
+        DAILY_SNOOZE_MINUTE_MAX - Math.round(Math.max(0, offset) / rowHeight),
     );
 }
 
 export function dailySnoozeOffsetForMinute(value: number, rowHeight: number): number {
-    return (dailySnoozeMinute(value) - DAILY_SNOOZE_MINUTE_MIN) * rowHeight;
+    return (DAILY_SNOOZE_MINUTE_MAX - dailySnoozeMinute(value)) * rowHeight;
 }
 
-export function dailySnoozeStamp(now: number, minutes: number): number {
-    return now + dailySnoozeMinute(minutes) * 60 * 1000;
+export function dailySnoozeStamp(startsAt: number, minutes: number): number {
+    return startsAt + dailySnoozeMinute(minutes) * 60 * 1000;
 }
 
 export function dailySnoozeLabel(minutes: number): string {

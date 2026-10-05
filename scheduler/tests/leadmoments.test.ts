@@ -1,6 +1,12 @@
 // Tests for the piece that turns a lead time into a moment on the clock.
 
-import { momentsFor, shadedDaysInMonth, weeklyDoneCovers, weeklyDoneHoldsUntil } from '../leadmoments.ts';
+import {
+    momentsFor,
+    shadedDaysInMonth,
+    snoozeDelayStartsAt,
+    weeklyDoneCovers,
+    weeklyDoneHoldsUntil,
+} from '../leadmoments.ts';
 import type { ClockTimes } from '../leadmoments.ts';
 import type { LeadTime, ShapedItem } from '../inputshape.ts';
 import { assertSame, test } from './runner.ts';
@@ -93,6 +99,63 @@ export function runLeadMomentsTests(): void {
             }),
             [at(2026, 5, 2, 8, 0)],
             'the day is stepped, so the time of day is kept',
+        );
+    });
+
+    test('List Snooze starts at a Daily reminder that is still ahead today', () => {
+        const daily = item({
+            sourceScreenCode: 'daily',
+            repeatUnitCode: 'day',
+            dueHour: 9,
+            dueMinute: 15,
+            dueMoment: undefined,
+        });
+        assertSame(
+            snoozeDelayStartsAt(daily, NOW, CLOCK),
+            at(2026, 5, 1, 9, 15),
+            'an unfired reminder must not be moved earlier than its set time',
+        );
+    });
+
+    test('List Snooze starts now after today\'s Daily reminder has fired', () => {
+        const daily = item({
+            sourceScreenCode: 'daily',
+            repeatUnitCode: 'day',
+            dueHour: 8,
+            dueMinute: 45,
+            dueMoment: undefined,
+        });
+        assertSame(
+            snoozeDelayStartsAt(daily, NOW, CLOCK),
+            NOW,
+            'a fired reminder must not be delayed from tomorrow\'s occurrence',
+        );
+    });
+
+    test('List Snooze uses the next real speaking moment, including a lead reminder', () => {
+        const oneTime = item({
+            leadTimeList: [
+                {
+                    leadFormCode: 'offset',
+                    leadAmount: 60,
+                    leadUnitCode: 'minutes',
+                },
+                NOTHING_BEFORE,
+            ],
+        });
+        assertSame(
+            snoozeDelayStartsAt(oneTime, NOW, CLOCK),
+            at(2026, 5, 3, 13, 0),
+            'the machine must use the next reminder rather than guess from the due time',
+        );
+    });
+
+    test('List Snooze moves an existing future Snooze instead of making it earlier', () => {
+        const waiting = at(2026, 5, 1, 9, 30);
+        assertSame(
+            snoozeDelayStartsAt(item({ pushedBackToStamp: waiting }), NOW, CLOCK),
+            waiting,
+            'a second Snooze must start at the one already waiting',
         );
     });
 

@@ -38,9 +38,19 @@ export as Backup & Restore; Not Now makes the ordinary return. Edit and
 Done do not ask. Daily now keeps its 15, 30, and 60 minute choices and
 adds the 1-through-14 minute wheel, starting at 5 and stopping at both
 ends. The whole popup lives in its own Snooze selector; the shared list
-only supplies the item and accepts the choice. 436 Mac checks pass,
-TypeScript is clean, and the changed files pass lint. None of the three
-changes has been checked on the phone.
+only supplies the item and accepts the choice.
+
+Build **105** is on Patrick's phone. The backup question was proved
+both ways: Not Now returned normally, and Back Up Now completed the
+existing backup process. A 10-minute wheel Snooze also fired, but it
+fired five minutes before an original reminder that was still fifteen
+minutes away. That exposed the old count-from-the-tap rule. The reminder
+machine now starts a list Snooze at an unfired reminder's real speaking
+moment, or at the tap after today's reminder has spoken. An existing
+future Snooze is moved later from its own time. This correction is
+newer than build 105 and is not yet on the phone. 440 Mac checks pass,
+TypeScript is clean, and lint has no errors. The saved-list read warning
+also remains unproved on the phone.
 
 The lists end above the bottom of the screen, so a swipe to delete does
 not move the page. That is committed, on his phone, and verified working.
@@ -208,9 +218,9 @@ finished task.
 The guide remains `docs/designed-implementation.md`. The self-contained
 designed-machine build sheet and its phone proof are complete.
 
-No code change from #126-new remains open. Phone proof covers Daily's
-Snooze selector, the saved-list read warning, and the question after a
-New save.
+No code change from #126-new remains open. The backup question is
+phone-proved. The latest Snooze timing rule needs a newer phone build
+and proof, and the saved-list read warning remains unproved.
 
 Testers are on TestFlight External. His phone has that list change,
 and it verifies.

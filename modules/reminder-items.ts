@@ -1,7 +1,12 @@
 import { PAGE_LABELS } from '../constants/page-names';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as AppGroup from './app-group';
-import { runDailyReset, runScheduler, runWeeklyReset } from '../scheduler/scheduler';
+import {
+    readClockTimes,
+    runDailyReset,
+    runScheduler,
+    runWeeklyReset,
+} from '../scheduler/scheduler';
 import { lastOccurrence } from '../scheduler/weeklyreset';
 import { pushBackChoicesOf } from '../scheduler/banneractions';
 import { warnIfFull } from '../scheduler/warn';
@@ -18,7 +23,7 @@ import {
     usesWeeklyCycleStampOf,
 } from '../scheduler/translators/translate';
 export { doneActionCodeOf, exclusiveGroupBitsOf, itemNameOf, keepsBirthYearOf };
-import { shadedDaysInMonth } from '../scheduler/leadmoments';
+import { shadedDaysInMonth, snoozeDelayStartsAt } from '../scheduler/leadmoments';
 import { isDateOf, shownOnDate } from '../scheduler/shown-on-date';
 import type { ReminderItem, ReminderKind } from './reminder-types';
 import { advanceDatedItem } from './advance-dated-item';
@@ -139,6 +144,33 @@ export async function applyReminderChange(
     const next = await changeSavedReminderItems(patch);
     await publishReminderItems(next);
     return next;
+}
+
+export type SnoozeReminderResult = {
+    items: ReminderItem[];
+    item: ReminderItem;
+};
+
+// One app-facing Snooze door. The scheduler machine chooses whether the
+// selected delay starts at the tap or at an unfired reminder already ahead.
+// The page supplies only the item and the chosen delay.
+export async function snoozeReminder(
+    id: string,
+    stampAt: SnoozeChoice['stampAt'],
+    now: number = Date.now(),
+): Promise<SnoozeReminderResult | null> {
+    const clockTimes = await readClockTimes();
+    let changed: ReminderItem | undefined;
+    const items = await applyReminderChange((list) => list.map((one) => {
+        if (one.id !== id) return one;
+        const shaped = translateReminderItems([one], now)[0];
+        const startsAt = shaped === undefined
+            ? now
+            : snoozeDelayStartsAt(shaped, now, clockTimes);
+        changed = { ...one, snoozedUntil: stampAt(startsAt) };
+        return changed;
+    }));
+    return changed === undefined ? null : { items, item: changed };
 }
 
 // Which log this kind writes. One Time uses Daily's key.

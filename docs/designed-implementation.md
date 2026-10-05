@@ -457,16 +457,26 @@ mark it not done.
 buttons, stacked on the left. A spinning 1-through-14 minute wheel sits
 in the middle and starts at 5. On the right, Up adds one minute, Snooze
 confirms the wheel's number, and Down removes one minute. Up and Down
-stop at 14 and 1 and do not wrap. The wheel's number is elapsed minutes
-from the tap. This wheel belongs only to Daily's list popup. The banner
-button sets and the other reminder pages do not gain it.
+stop at 14 and 1 and do not wrap. This wheel belongs only to Daily's
+list popup. The banner button sets and the other reminder pages do not
+gain it.
+
+A list Snooze never makes an unfired reminder earlier. Before the next
+real speaking moment, the chosen delay starts at that moment. Once
+today's occurrence has spoken, it starts at the tap. If a Snooze is
+already waiting, another Snooze starts there and moves it later. This
+is the reminder machine's rule for every list Snooze, including the
+existing choices; it is not a Daily-page calculation.
 
 `components/SnoozeSelector.tsx` owns the whole popup: the ordinary
 choices, Daily's wheel, its controls, and its layout. The shared list
 does not carry that machinery. It opens the selector and applies the
 one choice returned. The 1-through-14 limits, starting number, stepping,
-elapsed-minute calculation, and words live together in
-`modules/daily-snooze.ts` and are checked without the screen.
+delay calculation, and words live together in `modules/daily-snooze.ts`.
+The scheduler's `snoozeDelayStartsAt` chooses the real starting moment,
+including an advance reminder or an existing Snooze. The one
+app-facing `snoozeReminder` door saves that answer and runs the
+scheduler. The shared page supplies only the item and chosen delay.
 
 The log is one piece. Daily, the shared list, and the banner all write
 it. They do not each write their own. The list does not show it. Log in

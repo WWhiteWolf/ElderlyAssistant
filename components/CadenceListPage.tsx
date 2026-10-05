@@ -32,6 +32,8 @@ import {
     doneActionCodeOf,
     readReminderItems,
     snoozeChoicesOf,
+    snoozeLineOf,
+    snoozeReminder,
     sortDailyVisible,
     type ReminderItem,
     type ReminderKind,
@@ -172,16 +174,21 @@ export default function CadenceListPage({
         ]);
     };
 
-    const snoozeItem = (stampAt: (now: number) => number, label: string) => {
+    const chooseSnooze = (stampAt: (from: number) => number) => {
         if (!snoozeItemId) return;
         const item = items.find((one) => one.id === snoozeItemId);
         if (!item) { setSnoozeItemId(null); return; }
-        const target = stampAt(Date.now());
-        writeItems((list) => list.map((one) =>
-            one.id === item.id ? { ...one, snoozedUntil: target } : one
-        ));
+        const startedAt = Date.now();
         setSnoozeItemId(null);
-        Alert.alert('Snoozed', `${item.label} reminder set for ${label} from now.`);
+        void snoozeReminder(item.id, stampAt, startedAt).then((result) => {
+            if (result === null) return;
+            setItems(result.items);
+            const line = snoozeLineOf(result.item);
+            Alert.alert(
+                'Snoozed',
+                line === null ? result.item.label : `${result.item.label}\n${line}`,
+            );
+        });
     };
 
     const beginDrag = useCallback((id: string, y: number) => {
@@ -381,7 +388,7 @@ export default function CadenceListPage({
                 itemLabel={snoozeTarget?.label ?? ''}
                 choices={snoozeChoices}
                 withDailyMinuteWheel={kind === 'daily'}
-                onChoose={(choice) => snoozeItem(choice.stampAt, choice.label)}
+                onChoose={(choice) => chooseSnooze(choice.stampAt)}
                 onCancel={() => setSnoozeItemId(null)}
             />
         </GestureHandlerRootView>
