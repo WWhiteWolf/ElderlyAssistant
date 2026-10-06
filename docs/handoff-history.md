@@ -17,6 +17,43 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #127-new (2026-10-06): one-day Done, home arrangement, narrower Daily snooze buttons
+
+**Daily Snooze control.** The spinning minute column became the same
+round up arrow, number, and round down arrow as the other wheels.
+Minutes still run from 1 through 14, start at 5, and stop at both ends.
+Neighboring rows on a reminder list make room while a held row slides,
+and the held row stays in hand past more than one place. Build 110 is
+on his iPhone and works. A One Time item on Daily has the second line
+One Time only.
+
+**The 15, 30, and 60 minute buttons.** On the Daily snooze modal those
+buttons were crowding the minute wheel from the side. Their width is
+half of the stretch they had. The height is unchanged. Not on the phone.
+
+**Done's check.** Weekly, Monthly, Quarterly, Yearly, Birthdays, and
+One Time last that day only, the same as Daily. Weekly still spends
+this week until the next speaking time. Appointments and Bucket List
+stay finished. That is not on the phone.
+
+**User's Guide.** The working document and the in-app copy say the
+dated tick lasts that day only, Weekly will not remind you again this
+week, the 1-through-14 minutes are on the list only, a One Time row
+says One Time only, a new Save asks whether to back up, and holding a
+row slides it. The saved-list read warning stays out of the Guide.
+That copy is not on the phone.
+
+**Home arrangement.** It is the home page's own order, not a Setting.
+Export asks the home page for it. Replace writes it back when the file
+has it. Merge leaves it. A backup made before this does not contain it,
+and it still loads. Not on the phone. 450 Mac checks pass. TypeScript
+is clean.
+
+**Play.** The sentence that said the Play file was building now came
+out of the handoff. Google has not opened the account. The file is
+Android only and is not sent until the account can take an app.
+
+
 ## #126-new (2026-10-05): read warning, backup question, and Daily Snooze wheel
 
 **Saved-list warning.** A failed saved-list read now remains different

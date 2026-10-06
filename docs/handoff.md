@@ -77,6 +77,14 @@ says One Time only. A new Save asks whether to back up. Holding a row
 slides it, and the neighbors make room. The saved-list read warning
 stays out of the Guide. That copy is not on the phone.
 
+The home arrangement is the home page's own order, not a Setting.
+Export asks the home page for it. Replace writes it back. Merge leaves
+it. A backup made before this does not contain it, and it still loads.
+That is not on the phone. On the Daily snooze modal, the 15, 30, and
+60 minute buttons are half as wide as they were. The height is
+unchanged. That is not on the phone. 450 Mac checks pass and
+TypeScript is clean.
+
 The lists end above the bottom of the screen, so a swipe to delete does
 not move the page. That is committed, on his phone, and verified working.
 
@@ -259,8 +267,10 @@ spends this week until the next speaking time. That Done change is not
 on the phone. The User's Guide now matches those recent changes. That
 copy is not on the phone. The saved-list read warning remains unproved
 and stays out of the Guide. The home arrangement is the home page's
-own order. Export saves it and Replace writes it back. That is not
-on the phone. 450 Mac checks pass and TypeScript is clean.
+own order. Export saves it and Replace writes it back. The 15, 30,
+and 60 minute buttons on the Daily snooze modal are half as wide, and
+the height is unchanged. Neither is on the phone. 450 Mac checks pass
+and TypeScript is clean.
 
 Testers are on TestFlight External. His phone has that list change,
 and it verifies.

@@ -32,8 +32,10 @@ WHAT'S NEXT
    Snooze minutes and list reorder. The User's Guide now matches that
    work, including the 1-through-14 minutes on the list only. That copy
    is not on the phone. The saved-list read warning also remains to be
-   proved, and it stays out of the Guide. The full state is in
-   docs/in-flight.md.
+   proved, and it stays out of the Guide. The home arrangement
+   restore is in the project and not on the phone. The Daily 15, 30,
+   and 60 minute buttons are half as wide, and that is not on the
+   phone either. The full state is in docs/in-flight.md.
 2. IOS BUILD 100 is Waiting for Review. When Apple approves, you
    release it yourself. Release is manual (2026-10-01).
 3. THE BOTTOM OF THE GALAXY SCREEN. The phone uses about half an inch
@@ -174,7 +176,11 @@ A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
 
-185. 2026-10-06 — The home arrangement is the home page's own
+186. #127-new — The 15, 30, and 60 minute buttons on the Daily
+    snooze modal are half as wide as they were. The height is
+    unchanged. Not on the phone.
+
+185. #127-new — The home arrangement is the home page's own
     order, not a Setting. Export asks the home page for it.
     Replace writes it back. Merge leaves it. A backup made before
     this does not contain it, and it still loads. Not on the phone.

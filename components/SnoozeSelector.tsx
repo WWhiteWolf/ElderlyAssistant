@@ -63,16 +63,18 @@ export default function SnoozeSelector({
 
                     {withDailyMinuteWheel ? (
                         <View style={styles.dailyRow}>
-                            <View style={styles.choiceColumn}>
-                                {choices.map((choice) => (
-                                    <TouchableOpacity
-                                        key={choice.label}
-                                        style={styles.stackedChoice}
-                                        onPress={() => onChoose(choice)}
-                                    >
-                                        <Text style={styles.stackedChoiceText}>{choice.label}</Text>
-                                    </TouchableOpacity>
-                                ))}
+                            <View style={styles.choiceSlot}>
+                                <View style={styles.choiceColumn}>
+                                    {choices.map((choice) => (
+                                        <TouchableOpacity
+                                            key={choice.label}
+                                            style={styles.stackedChoice}
+                                            onPress={() => onChoose(choice)}
+                                        >
+                                            <Text style={styles.stackedChoiceText}>{choice.label}</Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
                             </View>
 
                             <View style={styles.stepper}>
@@ -181,9 +183,12 @@ const makeStyles = (t: Theme) =>
             justifyContent: 'space-between',
             marginVertical: 12,
         },
-        choiceColumn: {
+        choiceSlot: {
             flex: 1,
+        },
+        choiceColumn: {
             gap: 6,
+            width: '50%',
         },
         stackedChoice: {
             alignItems: 'center',
