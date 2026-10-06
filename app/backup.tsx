@@ -16,6 +16,7 @@ import {
     writeReplacedBackupSettings,
 } from '../modules/backup-settings';
 import { BACKUP_VERSION, exportBackup } from '../modules/backup-export';
+import { homeArrangementFromBackup, writeHomeArrangement } from '../modules/home-badges';
 import { applyReminderChange, type ReminderItem } from '../modules/reminder-items';
 import { HEALTH_KEY, MISSES_KEY, NOTICE_SEEN_KEY } from '../scheduler/health.ts';
 import { sanitizeCurrentReminderItems } from '../scheduler/translators/translate.ts';
@@ -63,6 +64,8 @@ export default function BackupScreen() {
                 await AsyncStorage.removeItem('reminder_last_date');
             }
             await writeReplacedBackupSettings(AsyncStorage, data);
+            const arrangement = homeArrangementFromBackup(data.home_badge_order);
+            if (arrangement) await writeHomeArrangement(AsyncStorage, arrangement);
             await reloadPreferences();
             await AsyncStorage.multiRemove(HEALTH_KEYS);
 
@@ -158,7 +161,7 @@ export default function BackupScreen() {
         if (!backup) return;
         Alert.alert(
             'Replace reminders?',
-            'This will replace the reminders currently in the app with the contents of this backup. The name, the app look, and the reminder times come from the backup when the file has them. The notes about missed reminders and whether reminders ran will come off. This cannot be undone.',
+            'This will replace the reminders currently in the app with the contents of this backup. The name, the app look, the home arrangement, and the reminder times come from the backup when the file has them. The notes about missed reminders and whether reminders ran will come off. This cannot be undone.',
             [
                 { text: 'Cancel', style: 'cancel' },
                 {
@@ -206,10 +209,10 @@ export default function BackupScreen() {
                     Save your reminders to a file you can keep in Files, iCloud, or Google
                     Drive. Choose, replace, or merge to pick a file. Replace puts
                     the backup's reminders in place of what is here, and writes the
-                    name, the app look, and the reminder times when the file has
-                    them. Merge keeps what is here and adds from the backup only
-                    what is not already here. Merge leaves Settings as they are
-                    on this phone.
+                    name, the app look, the home arrangement, and the reminder times
+                    when the file has them. Merge keeps what is here and adds from the backup only
+                    what is not already here. Merge leaves Settings, and the
+                    home arrangement, as they are on this phone.
                 </Text>
 
                 <TouchableOpacity style={styles.bigBtn} onPress={handleExport}>

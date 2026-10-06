@@ -18,11 +18,10 @@ import { PAGE_LABELS } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
 import { FIRST_OPEN_PARAGRAPHS, USER_GUIDE_SEEN_KEY } from '../constants/user-guide';
 import {
-    applySavedHomeOrder,
     HOME_BADGES,
-    HOME_BADGE_ORDER_KEY,
     moveHomeBadge,
-    parseSavedHomeOrder,
+    readHomeArrangement,
+    writeHomeArrangement,
     type HomeBadge,
 } from '../modules/home-badges';
 
@@ -244,7 +243,7 @@ export default function HomeScreen() {
     const rebaseDrag = useRef<((sx: number, sy: number) => void) | null>(null);
 
     const saveOrder = useCallback(async (list: HomeBadge[]) => {
-        await AsyncStorage.setItem(HOME_BADGE_ORDER_KEY, JSON.stringify(list.map((one) => one.id)));
+        await writeHomeArrangement(AsyncStorage, list);
     }, []);
 
     useFocusEffect(
@@ -252,8 +251,7 @@ export default function HomeScreen() {
             const load = async () => {
                 const name = await AsyncStorage.getItem('user_name');
                 if (name) setUserName(name);
-                const raw = await AsyncStorage.getItem(HOME_BADGE_ORDER_KEY);
-                setBadges(applySavedHomeOrder(parseSavedHomeOrder(raw)));
+                setBadges(await readHomeArrangement(AsyncStorage));
                 const seen = await AsyncStorage.getItem(USER_GUIDE_SEEN_KEY);
                 setShowWelcome(seen !== 'true');
             };

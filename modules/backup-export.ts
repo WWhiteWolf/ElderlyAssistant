@@ -3,6 +3,7 @@ import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { Alert } from 'react-native';
 import { readBackupSettings } from './backup-settings';
+import { homeOrderText, readHomeArrangement } from './home-badges';
 import { readSavedReminderItems } from './reminder-list-storage';
 
 // Bump this only when the backup shape changes, so Restore can reject a file
@@ -59,10 +60,11 @@ async function shareBackup(data: Record<string, string | null>): Promise<void> {
 /** Use the same export process from Backup & Restore and after a new item. */
 export async function exportBackup(): Promise<void> {
     try {
-        const [saved, lastDate, settings] = await Promise.all([
+        const [saved, lastDate, settings, arrangement] = await Promise.all([
             readSavedReminderItems(),
             AsyncStorage.getItem('reminder_last_date'),
             readBackupSettings(AsyncStorage),
+            readHomeArrangement(AsyncStorage),
         ]);
         if (saved.failed) {
             throw new Error('The saved reminder list could not be read.');
@@ -70,6 +72,7 @@ export async function exportBackup(): Promise<void> {
         const data: Record<string, string | null> = {
             reminder_items: saved.raw,
             reminder_last_date: lastDate,
+            home_badge_order: homeOrderText(arrangement),
             ...settings,
         };
         await shareBackup(data);

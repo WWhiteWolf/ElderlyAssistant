@@ -740,7 +740,11 @@ here when it has the same identity the app wrote into the backup file.
 The person's name, the app theme, the popup colors, Letters and Page for Light and for Dark,
 and the morning, midday, and evening reminder times are saved. Replace
 writes those from the file when the file has them. Merge does not take
-them. The name is not a special case. Before confirmation, Replace and Merge
+them. The name is not a special case. The home arrangement is the home
+page's own order, not one of those Settings. Export asks the home page
+for it and saves it. Replace writes it back when the file has it. Merge
+leaves the arrangement on the phone. A backup made before this does not
+contain it, and it still loads. Before confirmation, Replace and Merge
 validate the whole saved list against the current kind table and strip
 live Options fields that the kind's row does not allow. When that row
 keeps a birthdate, they

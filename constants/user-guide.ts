@@ -175,7 +175,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
             { text: 'You enter your name.' },
             { text: 'You set Morning Reminder Time, Midday Reminder Time, and Evening Reminder Time.' },
             { text: 'Scheduled Reminders, when tapped, shows the reminders currently armed on your phone.' },
-            { text: 'Backup & Restore is for saving and retrieving your reminders, the name, the app look, and the reminder times.' },
+            { text: 'Backup & Restore is for saving and retrieving your reminders, the name, the app look, the home arrangement, and the reminder times.' },
             { text: "This User's Guide is here." },
             { text: 'Feedback is for emailing the developer with comments, suggestions, or problems you want to pass on.' },
         ],
@@ -238,7 +238,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: "The person's name, the app look, and the reminder times are saved in the backup. Replace writes them when the file has them. Merge leaves Settings as they are on this phone. The app asks you to confirm before it changes anything.",
+        text: "The person's name, the app look, and the reminder times are saved in the backup. The home arrangement is saved too. It is the order of the home page. Replace writes them when the file has them. Merge leaves Settings, and the home arrangement, as they are on this phone. The app asks you to confirm before it changes anything.",
     },
     {
         type: 'paragraph',

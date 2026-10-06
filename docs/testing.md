@@ -78,16 +78,18 @@ Testers are on TestFlight External. His phone has the list change, and it verifi
 
 ## What it will cover
 
-Two things are still untried, and both are already in the handoff.
-
 His Galaxy still has the preview file from 2026-09-30. Every
 page on that copy stops short of the bottom. The project keeps
 the page body above that strip, and Android stays upright. That
 copy changes when a new install file is built. It has not been
 seen on the Galaxy.
 
-No Google Play file has been built. Nothing has been tried by
-that road.
+An Android Play file was started. It is not sent until Google
+opens the account. It has not been tried on a phone.
+
+Replace putting the home arrangement back has not been tried on
+a phone. A backup made before that work does not contain the
+arrangement.
 
 Nothing further is written here as coverage still to come. That
 waits on him.

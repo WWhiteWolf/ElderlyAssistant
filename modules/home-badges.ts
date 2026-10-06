@@ -1,7 +1,7 @@
 // Home badges: which pages sit on Home, and the remembered order.
 // Options is not on this grid. The gear is not a badge.
 
-import { PAGE_LABELS } from '../constants/page-names';
+import { PAGE_LABELS } from '../constants/page-names.ts';
 
 export const HOME_BADGE_ORDER_KEY = 'home_badge_order';
 
@@ -53,6 +53,34 @@ export function applySavedHomeOrder(saved: string[] | null): HomeBadge[] {
         if (!seen.has(one.id)) out.push(one);
     }
     return out;
+}
+
+type HomeOrderRead = { getItem(key: string): Promise<string | null> };
+type HomeOrderWrite = { setItem(key: string, value: string): Promise<void> };
+
+/** The saved arrangement is the badge ids, in the order Home shows. */
+export function homeOrderText(list: HomeBadge[]): string {
+    return JSON.stringify(list.map((one) => one.id));
+}
+
+export async function readHomeArrangement(storage: HomeOrderRead): Promise<HomeBadge[]> {
+    const raw = await storage.getItem(HOME_BADGE_ORDER_KEY);
+    return applySavedHomeOrder(parseSavedHomeOrder(raw));
+}
+
+export async function writeHomeArrangement(storage: HomeOrderWrite, list: HomeBadge[]): Promise<void> {
+    await storage.setItem(HOME_BADGE_ORDER_KEY, homeOrderText(list));
+}
+
+/**
+ * A backup carries the saved id list. A missing or unreadable value is
+ * not an arrangement, so Replace leaves the phone's order alone.
+ */
+export function homeArrangementFromBackup(raw: string | null | undefined): HomeBadge[] | null {
+    if (typeof raw !== 'string' || raw === '') return null;
+    const parsed = parseSavedHomeOrder(raw);
+    if (parsed == null) return null;
+    return applySavedHomeOrder(parsed);
 }
 
 export function moveHomeBadge(list: HomeBadge[], id: string, toIndex: number): HomeBadge[] {

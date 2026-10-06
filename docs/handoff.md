@@ -167,6 +167,11 @@ finished task.
   midday, and evening reminder times. Export saves them. Replace
   writes them from the file. Merge does not take them. The name is
   not a special case.
+- **The home arrangement is the home page's own order** (Patrick,
+  2026-10-06). It is not a Setting. Export asks the home page for it
+  and saves it. Replace writes it back when the file has it. Merge
+  leaves the arrangement on the phone. A backup made before this
+  does not contain it, and it still loads.
 - **Timer Alerts, Vault, Shopping List, and Memory Test have left
   Memory.** Copies remain in `Projects/stray apps`. Do not treat them
   as Memory engine work. The shopping list will have a backup of its
@@ -253,7 +258,9 @@ Yearly, Birthdays, and One Time now lasts that day only; Weekly still
 spends this week until the next speaking time. That Done change is not
 on the phone. The User's Guide now matches those recent changes. That
 copy is not on the phone. The saved-list read warning remains unproved
-and stays out of the Guide.
+and stays out of the Guide. The home arrangement is the home page's
+own order. Export saves it and Replace writes it back. That is not
+on the phone. 450 Mac checks pass and TypeScript is clean.
 
 Testers are on TestFlight External. His phone has that list change,
 and it verifies.
@@ -270,11 +277,10 @@ not change until a new install file is built. It is on every page, so
 it is not the list-only stop from #120-new.
 
 The Play Console account was submitted on 2026-10-01. Google has
-not opened it. The Play file is building now, Android only, and it
-is not sent to Play until the account can take an app (Patrick,
-#124-new). The Android count on Expo went from 1 to 2. The iPhone number is
-still 100. The build
-is https://expo.dev/accounts/molliedog/projects/ElderlyAssistant/builds/7d816ec8-3548-4954-a847-bd241270433f.
+not opened it. The file is Android only, and it is not sent to Play
+until the account can take an app (Patrick, #124-new). The Android
+count on Expo went from 1 to 2. The iPhone number is still 100. The
+build is https://expo.dev/accounts/molliedog/projects/ElderlyAssistant/builds/7d816ec8-3548-4954-a847-bd241270433f.
 The 110 MB file at `dist/Memory-1.0.0-preview.apk` is not that file.
 Do not build another website download.
 

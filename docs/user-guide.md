@@ -151,7 +151,7 @@ Settings is reached by tapping the gear in the header of Home.
 - Scheduled Reminders, when tapped, shows the reminders currently
   armed on your phone.
 - Backup & Restore is for saving and retrieving your reminders, the
-  name, the app look, and the reminder times.
+  name, the app look, the home arrangement, and the reminder times.
 - This User's Guide is here.
 - Feedback is for emailing the developer with comments, suggestions,
   or problems you want to pass on.
@@ -201,8 +201,9 @@ a file you can keep.
   what is not already here.
 
 The person's name, the app look, and the reminder times are saved
-in the backup. Replace writes them when the file has them. Merge
-leaves Settings as they are on this phone. The app asks you to
+in the backup. The home arrangement is saved too. It is the order
+of the home page. Replace writes them when the file has them. Merge
+leaves Settings, and the home arrangement, as they are on this phone. The app asks you to
 confirm before it changes anything.
 
 **User's Guide** is this Guide. Tap it, and it will help you to

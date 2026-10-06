@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-10-06 (#127-new)
+Last updated: 2026-10-06
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. You are the only reader, so this list says you.
@@ -41,11 +41,11 @@ WHAT'S NEXT
    body above that strip. The copy on your Galaxy is still the old
    preview. It changes when a new install file is built (2026-10-01).
 4. THE PLAY ACCOUNT. You submitted it. Google has not opened it.
-   The Play file is building now, Android only, and it is not sent
-   to Play until the account can take the app. The Android count on
-   Expo went from 1 to 2. The build page is on expo.dev under
-   molliedog, ElderlyAssistant, build 7d816ec8 (Patrick, #124-new).
-   The 110 MB file on this Mac is not that file.
+   The file is Android only, and it is not sent to Play until the
+   account can take the app. The Android count on Expo went from 1
+   to 2. The build page is on expo.dev under molliedog,
+   ElderlyAssistant, build 7d816ec8 (Patrick, #124-new). The 110 MB
+   file on this Mac is not that file.
 5. THE PRICE ON ANDROID. $9.99 once, no trial. The iPhone listing
    already has that price. Android waits until the Play account can
    take the app (#123-new).
@@ -173,6 +173,11 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+185. 2026-10-06 — The home arrangement is the home page's own
+    order, not a Setting. Export asks the home page for it.
+    Replace writes it back. Merge leaves it. A backup made before
+    this does not contain it, and it still loads. Not on the phone.
 
 184. #127-new — The User's Guide now has Daily's 1-through-14 minute
     Snooze on the list only, not on the banners; One Time only on the
