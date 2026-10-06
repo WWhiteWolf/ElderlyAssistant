@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-10-05 (#126-new)
+Last updated: 2026-10-06 (#127-new)
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. You are the only reader, so this list says you.
@@ -24,9 +24,10 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. PHONE PROOF FOR #126-NEW. Build the changes made after build 106,
-   then check that higher wheel numbers are above lower ones, every
-   opening starts at 5, and a One Time row says "One Time only." The
+1. PHONE PROOF. Check that Daily's Snooze minutes now use the same
+   round up and down arrows as the other wheels, that every opening
+   starts at 5, that a One Time row says "One Time only," and that
+   neighboring list rows make room while a held row is sliding. The
    saved-list read warning also remains to be proved. The backup
    question and the original-plus-follow-up Snooze already worked on
    the phone. The full state is in docs/in-flight.md.
@@ -164,11 +165,22 @@ A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
 
-178. #126-new — A failed saved-list read now shows a warning instead
-    of an empty page and offers the existing Feedback popup. After a
-    successful New save, Memory asks whether to back up; Back Up Now
-    uses the existing export, while Edit and Done do not ask. Daily
-    keeps its 15, 30, and 60 minute Snooze choices and gains the
+180. #127-new — Neighboring rows on a reminder list make room while a
+    held row is sliding, the same way Home badges do. The new order is
+    kept when you let go. Not on the phone. 442 Mac checks pass and
+    TypeScript is clean.
+
+179. #127-new — Daily Snooze minutes are now the same round up arrow,
+    number, and round down arrow as the other wheels. They still run
+    from 1 through 14, start at 5, and stop at both ends. 15, 30, and
+    60 stay stacked on the left. Not on the phone. 442 Mac checks pass
+    and TypeScript is clean.
+
+178. #126-new, committed — A failed saved-list read now shows a warning
+    instead of an empty page and offers the existing Feedback popup.
+    After a successful New save, Memory asks whether to back up; Back
+    Up Now uses the existing export, while Edit and Done do not ask.
+    Daily keeps its 15, 30, and 60 minute Snooze choices and gains the
     1-through-14 minute wheel. Its complete popup now lives apart from
     the shared list. Build 105 proved both backup answers. Build 106
     proved the corrected timing and that the original and later

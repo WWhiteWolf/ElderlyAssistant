@@ -29,7 +29,7 @@ that personal aim. It is not proved universally best or easiest. A
 fresh run was 428 passed and 0 failed, and TypeScript was clean. No app
 code changed.
 
-#126-new is in progress. A failed saved-list read now stays different
+#126-new is committed. A failed saved-list read now stays different
 from a successfully empty page. The page leaves the phone's existing
 reminders alone, tells the person to close and reopen Memory, and opens
 the existing Feedback popup if the warning remains. After a successful
@@ -51,14 +51,14 @@ while a Snooze after today's reminder starts at the tap. The original
 and the later follow-up both alerted. Patrick chose to keep both because
 that is safer and matches **remind me again**.
 
-Build 106 also exposed two wheel faults: higher numbers were in the
-wrong direction, and reopening could start at 1. The code after build
-106 puts 14 at the top and 1 at the bottom, makes Up go to the higher
-number above, and resets both the number and physical wheel to 5 every
-time. A One Time item on Daily now has the second line **One Time only**.
-Those three display changes are not yet on the phone. 442 Mac checks
-pass, TypeScript is clean, and lint has no errors. The saved-list read
-warning also remains unproved on the phone.
+#127-new replaced Daily's spinning Snooze minutes with the same round
+up arrow, number, and round down arrow as the other wheels. Minutes
+still run from 1 through 14, still start at 5, and still stop at both
+ends. Neighboring rows on a reminder list now make room while a held
+row is sliding, the same way Home badges do. Neither change is on the
+phone. A One Time item on Daily now has the second line **One Time only**.
+442 Mac checks pass, TypeScript is clean, and lint has no errors. The
+saved-list read warning also remains unproved on the phone.
 
 The lists end above the bottom of the screen, so a swipe to delete does
 not move the page. That is committed, on his phone, and verified working.
@@ -226,10 +226,12 @@ finished task.
 The guide remains `docs/designed-implementation.md`. The self-contained
 designed-machine build sheet and its phone proof are complete.
 
-No code change from #126-new remains open. The backup question is
-phone-proved, and build 106 proved the original-plus-follow-up Snooze
-timing. The two wheel corrections and the One Time marker need a newer
-phone build and proof. The saved-list read warning remains unproved.
+The #126-new code is committed. The backup question is phone-proved,
+and build 106 proved the original-plus-follow-up Snooze timing. #127-new
+gave Daily's Snooze minutes the same round-arrow control as the other
+wheels, and list neighbors now make room while a row is sliding. That
+look, the live list reorder, the One Time marker, and the saved-list
+read warning need a newer phone build and proof.
 
 Testers are on TestFlight External. His phone has that list change,
 and it verifies.

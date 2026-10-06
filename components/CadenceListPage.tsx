@@ -1,5 +1,5 @@
 import { useFocusEffect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import {
     Alert,
     AppState,
@@ -45,6 +45,31 @@ function visibleFor(kind: ReminderKind, items: ReminderItem[]): ReminderItem[] {
     return items.filter((one) => one.kind === kind);
 }
 
+function MeasuredRow({
+    id,
+    onSlot,
+    children,
+}: {
+    id: string;
+    onSlot: (id: string, y: number, h: number) => void;
+    children: ReactNode;
+}) {
+    const ref = useRef<View>(null);
+    return (
+        <View
+            ref={ref}
+            collapsable={false}
+            onLayout={() => {
+                ref.current?.measureInWindow((_x, y, _w, h) => {
+                    onSlot(id, y, h);
+                });
+            }}
+        >
+            {children}
+        </View>
+    );
+}
+
 function dailyRowLabel(item: ReminderItem): string {
     const time =
         typeof item.hour === 'number' && typeof item.minute === 'number'
@@ -87,6 +112,7 @@ export default function CadenceListPage({
     const visibleRef = useRef(visible);
     visibleRef.current = visible;
     const rowHeights = useRef<Record<string, number>>({});
+    const rowSlots = useRef<Record<string, { y: number; h: number }>>({});
     const dragMeta = useRef<{
         id: string;
         startY: number;
@@ -95,6 +121,8 @@ export default function CadenceListPage({
     } | null>(null);
     const dragToIndex = useRef(0);
     const draggingIdRef = useRef<string | null>(null);
+    const dragCells = useRef<{ y: number; h: number }[] | null>(null);
+    const rebaseDrag = useRef<((sy: number) => void) | null>(null);
 
     const { highlight } = useLocalSearchParams<{ highlight?: string }>();
     useEffect(() => {
@@ -204,12 +232,40 @@ export default function CadenceListPage({
         };
         dragToIndex.current = startIndex;
         draggingIdRef.current = id;
+        dragCells.current = vis.map((one) => rowSlots.current[one.id]).filter(
+            (slot): slot is { y: number; h: number } => slot != null,
+        );
+        if (dragCells.current.length !== vis.length) dragCells.current = null;
         setDraggingId(id);
     }, []);
 
     const moveDrag = useCallback((y: number) => {
         const meta = dragMeta.current;
         if (!meta) return;
+        const cells = dragCells.current;
+        if (cells) {
+            let best = 0;
+            let bestD = Infinity;
+            cells.forEach((slot, i) => {
+                const cy = slot.y + slot.h / 2;
+                const d = (cy - y) ** 2;
+                if (d < bestD) {
+                    bestD = d;
+                    best = i;
+                }
+            });
+            dragToIndex.current = best;
+            const from = visibleFor(kind, itemsRef.current).findIndex((one) => one.id === meta.id);
+            if (from < 0 || from === best) return;
+            rebaseDrag.current?.(cells[best].y - cells[from].y);
+            const next =
+                kind === 'daily'
+                    ? dragVisibleTo(itemsRef.current, meta.id, best)
+                    : dragKindTo(itemsRef.current, kind, meta.id, best);
+            itemsRef.current = next;
+            setItems(next);
+            return;
+        }
         const vis = visibleFor(kind, meta.snapshot);
         if (vis.length === 0) return;
         const avg =
@@ -235,6 +291,7 @@ export default function CadenceListPage({
         }
         dragMeta.current = null;
         draggingIdRef.current = null;
+        dragCells.current = null;
         setDraggingId(null);
     }, [kind]);
 
@@ -318,10 +375,12 @@ export default function CadenceListPage({
                         <>
                             <Text style={styles.hintText}>Hold and slide to reorder · Tap to edit · Swipe to delete</Text>
                             {visible.map((item) => (
-                                <View
+                                <MeasuredRow
                                     key={item.id}
-                                    onLayout={(e) => {
-                                        rowHeights.current[item.id] = e.nativeEvent.layout.height;
+                                    id={item.id}
+                                    onSlot={(id, y, h) => {
+                                        rowSlots.current[id] = { y, h };
+                                        rowHeights.current[id] = h;
                                     }}
                                 >
                                     <ReminderItemRow
@@ -344,11 +403,14 @@ export default function CadenceListPage({
                                         onDragStart={beginDrag}
                                         onDragMove={moveDrag}
                                         onDragEnd={endDrag}
+                                        onBindRebase={(fn) => {
+                                            rebaseDrag.current = fn;
+                                        }}
                                         onSnooze={() => setSnoozeItemId(item.id)}
                                         onDone={() => item.completed ? undoDone(item.id) : markDone(item.id)}
                                         onDelete={() => deleteEntry(item.id)}
                                     />
-                                </View>
+                                </MeasuredRow>
                             ))}
                         </>
                     )}

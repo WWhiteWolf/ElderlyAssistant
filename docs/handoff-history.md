@@ -17,6 +17,43 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #126-new (2026-10-05): read warning, backup question, and Daily Snooze wheel
+
+**Saved-list warning.** A failed saved-list read now remains different
+from a successfully empty list. The page leaves the phone's reminders
+alone, asks the person to close and reopen Memory, and opens the
+existing Feedback popup if the warning remains.
+
+**Backup question.** After a successful New save, Memory asks whether
+to back up. Back Up Now uses the same export as Backup & Restore; Not
+Now makes the ordinary return. Edit and Done do not ask. Automatic
+backup was considered and not chosen.
+
+**Daily Snooze.** Daily keeps 15, 30, and 60 minutes and adds a spinning
+1-through-14 minute wheel, starting at 5, with Up, Snooze, and Down on
+the right. The complete popup lives in `components/SnoozeSelector.tsx`;
+the shared list only supplies the item and accepts the choice. The
+scheduler machine, not the page, chooses whether the delay starts at an
+unfired speaking moment, the tap after today's reminder, or an existing
+future Snooze.
+
+**Phone proof.** Build 105 proved both backup answers and exposed an
+advance Snooze counting from the tap. Build 106 carried the corrected
+timing. The original reminder and later follow-up both alerted, and
+Patrick kept both because that safety matches **remind me again**.
+
+**Finishing changes.** Build 106 exposed the wheel's numbers running in
+the wrong visual direction and some reopenings starting at 1. The
+finished code puts 14 at the top and 1 at the bottom, makes Up go to the
+higher number above, and resets both the selected number and physical
+wheel to 5 every time. A One Time item on Daily now has the second line
+**One Time only**.
+
+**Checking and close.** 442 Mac checks passed. TypeScript and lint were
+clean. Patrick committed the sitting. The two latest wheel corrections,
+the One Time marker, and the saved-list read warning still need phone
+proof.
+
 ## #125-new (2026-10-05): Evaluation 8; next Daily update settled
 
 **The goal.** Judge how close Memory came to Patrick's aim: reminders

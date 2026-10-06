@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
-    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -11,10 +10,7 @@ import {
     DAILY_SNOOZE_MINUTE_DEFAULT,
     DAILY_SNOOZE_MINUTE_MAX,
     DAILY_SNOOZE_MINUTE_MIN,
-    DAILY_SNOOZE_WHEEL_MINUTES,
     dailySnoozeLabel,
-    dailySnoozeMinuteFromOffset,
-    dailySnoozeOffsetForMinute,
     dailySnoozeStamp,
     stepDailySnoozeMinute,
 } from '../modules/daily-snooze';
@@ -24,8 +20,6 @@ export type SnoozeSelection = {
     label: string;
     stampAt: (startsAt: number) => number;
 };
-
-const WHEEL_ROW_HEIGHT = 44;
 
 export default function SnoozeSelector({
     visible,
@@ -45,31 +39,10 @@ export default function SnoozeSelector({
     const theme = useTheme();
     const styles = makeStyles(theme);
     const [minutes, setMinutes] = useState(DAILY_SNOOZE_MINUTE_DEFAULT);
-    const wheelRef = useRef<ScrollView | null>(null);
-
-    const resetWheel = useCallback(() => {
-        setMinutes(DAILY_SNOOZE_MINUTE_DEFAULT);
-        wheelRef.current?.scrollTo({
-            y: dailySnoozeOffsetForMinute(
-                DAILY_SNOOZE_MINUTE_DEFAULT,
-                WHEEL_ROW_HEIGHT,
-            ),
-            animated: false,
-        });
-    }, []);
 
     useEffect(() => {
-        if (visible) resetWheel();
-    }, [resetWheel, visible]);
-
-    const stepMinute = (delta: -1 | 1) => {
-        const next = stepDailySnoozeMinute(minutes, delta);
-        setMinutes(next);
-        wheelRef.current?.scrollTo({
-            y: dailySnoozeOffsetForMinute(next, WHEEL_ROW_HEIGHT),
-            animated: true,
-        });
-    };
+        if (visible) setMinutes(DAILY_SNOOZE_MINUTE_DEFAULT);
+    }, [visible]);
 
     const chooseMinute = () => {
         const chosenMinutes = minutes;
@@ -102,80 +75,35 @@ export default function SnoozeSelector({
                                 ))}
                             </View>
 
-                            <View style={styles.wheelFrame}>
-                                <ScrollView
-                                    ref={wheelRef}
-                                    style={styles.wheel}
-                                    contentContainerStyle={styles.wheelContent}
-                                    contentOffset={{
-                                        x: 0,
-                                        y: dailySnoozeOffsetForMinute(
-                                            DAILY_SNOOZE_MINUTE_DEFAULT,
-                                            WHEEL_ROW_HEIGHT,
-                                        ),
-                                    }}
-                                    snapToInterval={WHEEL_ROW_HEIGHT}
-                                    snapToAlignment="start"
-                                    decelerationRate="fast"
-                                    bounces={false}
-                                    nestedScrollEnabled
-                                    showsVerticalScrollIndicator={false}
-                                    scrollEventThrottle={16}
-                                    onContentSizeChange={resetWheel}
-                                    onScroll={(event) => {
-                                        const next = dailySnoozeMinuteFromOffset(
-                                            event.nativeEvent.contentOffset.y,
-                                            WHEEL_ROW_HEIGHT,
-                                        );
-                                        setMinutes((current) => current === next ? current : next);
-                                    }}
-                                >
-                                    {DAILY_SNOOZE_WHEEL_MINUTES.map((minute) => (
-                                        <View
-                                            key={minute}
-                                            style={[
-                                                styles.wheelRow,
-                                                minute === minutes && styles.wheelRowSelected,
-                                            ]}
-                                        >
-                                            <Text
-                                                style={[
-                                                    styles.wheelText,
-                                                    minute === minutes && styles.wheelTextSelected,
-                                                ]}
-                                            >
-                                                {minute}
-                                            </Text>
-                                        </View>
-                                    ))}
-                                </ScrollView>
-                            </View>
-
-                            <View style={styles.controls}>
+                            <View style={styles.stepper}>
                                 <TouchableOpacity
                                     style={[
-                                        styles.stepButton,
-                                        minutes >= DAILY_SNOOZE_MINUTE_MAX && styles.stepButtonDisabled,
+                                        styles.adjBtn,
+                                        minutes >= DAILY_SNOOZE_MINUTE_MAX && styles.adjBtnDisabled,
                                     ]}
                                     disabled={minutes >= DAILY_SNOOZE_MINUTE_MAX}
-                                    onPress={() => stepMinute(1)}
+                                    onPress={() => setMinutes(stepDailySnoozeMinute(minutes, 1))}
+                                    hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
                                 >
-                                    <Text style={styles.stepButtonText}>Up</Text>
+                                    <Text style={styles.adjText}>▲</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.snoozeButton} onPress={chooseMinute}>
-                                    <Text style={styles.snoozeButtonText}>Snooze</Text>
-                                </TouchableOpacity>
+                                <Text style={styles.minuteDisplay}>{minutes}</Text>
                                 <TouchableOpacity
                                     style={[
-                                        styles.stepButton,
-                                        minutes <= DAILY_SNOOZE_MINUTE_MIN && styles.stepButtonDisabled,
+                                        styles.adjBtn,
+                                        minutes <= DAILY_SNOOZE_MINUTE_MIN && styles.adjBtnDisabled,
                                     ]}
                                     disabled={minutes <= DAILY_SNOOZE_MINUTE_MIN}
-                                    onPress={() => stepMinute(-1)}
+                                    onPress={() => setMinutes(stepDailySnoozeMinute(minutes, -1))}
+                                    hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
                                 >
-                                    <Text style={styles.stepButtonText}>Down</Text>
+                                    <Text style={styles.adjText}>▼</Text>
                                 </TouchableOpacity>
                             </View>
+
+                            <TouchableOpacity style={styles.snoozeButton} onPress={chooseMinute}>
+                                <Text style={styles.snoozeButtonText}>Snooze</Text>
+                            </TouchableOpacity>
                         </View>
                     ) : (
                         <View style={styles.choiceRow}>
@@ -271,61 +199,31 @@ const makeStyles = (t: Theme) =>
             fontWeight: '600',
             textAlign: 'center',
         },
-        wheelFrame: {
-            borderColor: t.cardBorder,
-            borderRadius: 8,
-            borderWidth: 1,
-            height: WHEEL_ROW_HEIGHT * 3,
-            overflow: 'hidden',
-            width: 64,
-        },
-        wheel: {
-            height: WHEEL_ROW_HEIGHT * 3,
-        },
-        wheelContent: {
-            paddingVertical: WHEEL_ROW_HEIGHT,
-        },
-        wheelRow: {
+        stepper: {
             alignItems: 'center',
-            height: WHEEL_ROW_HEIGHT,
-            justifyContent: 'center',
         },
-        wheelRowSelected: {
-            backgroundColor: t.chip,
-            borderBottomColor: t.cardBorder,
-            borderBottomWidth: 0.5,
-            borderTopColor: t.cardBorder,
-            borderTopWidth: 0.5,
-        },
-        wheelText: {
-            color: t.mutedText,
-            fontSize: 18,
-        },
-        wheelTextSelected: {
-            color: t.cardTitle,
-            fontSize: 24,
-            fontWeight: '700',
-        },
-        controls: {
-            gap: 6,
-            width: 78,
-        },
-        stepButton: {
+        adjBtn: {
             alignItems: 'center',
-            backgroundColor: t.buttonNeutral,
-            borderColor: t.buttonNeutralBorder,
-            borderRadius: 8,
-            borderWidth: 1,
+            backgroundColor: t.buttonPrimary,
+            borderRadius: 20,
             height: 40,
             justifyContent: 'center',
+            marginVertical: 4,
+            width: 40,
         },
-        stepButtonDisabled: {
+        adjBtnDisabled: {
             opacity: 0.35,
         },
-        stepButtonText: {
-            color: t.buttonNeutralText,
-            fontSize: 14,
+        adjText: {
+            color: t.buttonPrimaryText,
+            fontSize: 18,
             fontWeight: '600',
+        },
+        minuteDisplay: {
+            color: t.bodyText,
+            fontSize: 24,
+            fontWeight: '600',
+            marginVertical: 2,
         },
         snoozeButton: {
             alignItems: 'center',
@@ -333,6 +231,7 @@ const makeStyles = (t: Theme) =>
             borderRadius: 8,
             height: 40,
             justifyContent: 'center',
+            width: 78,
         },
         snoozeButtonText: {
             color: t.delayText,

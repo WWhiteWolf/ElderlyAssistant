@@ -232,6 +232,12 @@ from. The screen stack keeps that slide off.
 
 The iPhone sliding the whole app away is the phone, not this app.
 
+## List reorder
+
+On a reminder list you hold a row and slide it. The row follows your
+finger. The neighbors make room while it is sliding, the same way Home
+badges do. The new order is kept when you let go. Built at #127-new.
+
 ## Saved-list boundary
 
 `reminder_items` has one neutral storage module and one queued physical
@@ -456,14 +462,13 @@ Daily.
 mark it not done.
 
 **Daily Snooze selector.** Keep Daily's existing 15, 30, and 60 minute
-buttons, stacked on the left. A spinning 1-through-14 minute wheel sits
-in the middle and starts at 5. On the right, Up adds one minute, Snooze
-confirms the wheel's number, and Down removes one minute. Up and Down
-stop at 14 and 1 and do not wrap. Higher numbers sit above lower ones:
-14 is at the top, 1 is at the bottom, and Up goes to the higher number
-above. Every opening resets both the selected number and the physical
-wheel position to 5. This wheel belongs only to Daily's list popup. The
-banner button sets and the other reminder pages do not gain it.
+buttons, stacked on the left. The 1-through-14 minutes sit in the middle
+as the same kind of control as the other wheels: a round up arrow, the
+number, and a round down arrow. It starts at 5. Snooze on the right
+confirms that number. Up and Down stop at 14 and 1 and do not wrap.
+Every opening resets to 5. This control belongs only to Daily's list
+popup. The banner button sets and the other reminder pages do not gain
+it.
 
 A list Snooze never makes an unfired reminder earlier. Before the next
 real speaking moment, the chosen delay starts at that moment. Once
@@ -478,7 +483,7 @@ later. After seeing both alerts work on build 106, Patrick chose to keep
 that safety. The popup's words remain **remind me again**.
 
 `components/SnoozeSelector.tsx` owns the whole popup: the ordinary
-choices, Daily's wheel, its controls, and its layout. The shared list
+choices, Daily's minutes, its controls, and its layout. The shared list
 does not carry that machinery. It opens the selector and applies the
 one choice returned. The 1-through-14 limits, starting number, stepping,
 delay calculation, and words live together in `modules/daily-snooze.ts`.
