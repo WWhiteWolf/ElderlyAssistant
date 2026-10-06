@@ -55,8 +55,9 @@ that is safer and matches **remind me again**.
 up arrow, number, and round down arrow as the other wheels. Minutes
 still run from 1 through 14, still start at 5, and still stop at both
 ends. Neighboring rows on a reminder list now make room while a held
-row is sliding, the same way Home badges do. Neither change is on the
-phone. A One Time item on Daily now has the second line **One Time only**.
+row is sliding, the same way Home badges do. The held row stays in
+hand past more than one place; an earlier try dropped it after the
+first. Neither change is on the phone. A One Time item on Daily now has the second line **One Time only**.
 442 Mac checks pass, TypeScript is clean, and lint has no errors. The
 saved-list read warning also remains unproved on the phone.
 
@@ -229,9 +230,10 @@ designed-machine build sheet and its phone proof are complete.
 The #126-new code is committed. The backup question is phone-proved,
 and build 106 proved the original-plus-follow-up Snooze timing. #127-new
 gave Daily's Snooze minutes the same round-arrow control as the other
-wheels, and list neighbors now make room while a row is sliding. That
-look, the live list reorder, the One Time marker, and the saved-list
-read warning need a newer phone build and proof.
+wheels, and list neighbors now make room while a row is sliding. The
+held row stays in hand past more than one place. That look, the live
+list reorder, the One Time marker, and the saved-list read warning need
+a newer phone build and proof.
 
 Testers are on TestFlight External. His phone has that list change,
 and it verifies.

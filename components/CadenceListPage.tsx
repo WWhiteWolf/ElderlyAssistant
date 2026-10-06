@@ -45,6 +45,12 @@ function visibleFor(kind: ReminderKind, items: ReminderItem[]): ReminderItem[] {
     return items.filter((one) => one.kind === kind);
 }
 
+function neighborShift(index: number, from: number, to: number, height: number): number {
+    if (from < to && index > from && index <= to) return -height;
+    if (from > to && index >= to && index < from) return height;
+    return 0;
+}
+
 function MeasuredRow({
     id,
     onSlot,
@@ -101,6 +107,8 @@ export default function CadenceListPage({
     const [showAddPopup, setShowAddPopup] = useState(false);
     const [highlightId, setHighlightId] = useState<string | null>(null);
     const [draggingId, setDraggingId] = useState<string | null>(null);
+    const [dragFromIndex, setDragFromIndex] = useState<number | null>(null);
+    const [dragHoverIndex, setDragHoverIndex] = useState<number | null>(null);
     const [snoozeItemId, setSnoozeItemId] = useState<string | null>(null);
     const historyKey = historyKeyFor(kind);
 
@@ -122,7 +130,6 @@ export default function CadenceListPage({
     const dragToIndex = useRef(0);
     const draggingIdRef = useRef<string | null>(null);
     const dragCells = useRef<{ y: number; h: number }[] | null>(null);
-    const rebaseDrag = useRef<((sy: number) => void) | null>(null);
 
     const { highlight } = useLocalSearchParams<{ highlight?: string }>();
     useEffect(() => {
@@ -237,12 +244,15 @@ export default function CadenceListPage({
         );
         if (dragCells.current.length !== vis.length) dragCells.current = null;
         setDraggingId(id);
+        setDragFromIndex(startIndex);
+        setDragHoverIndex(startIndex);
     }, []);
 
     const moveDrag = useCallback((y: number) => {
         const meta = dragMeta.current;
         if (!meta) return;
         const cells = dragCells.current;
+        let nextIndex: number;
         if (cells) {
             let best = 0;
             let bestD = Infinity;
@@ -254,26 +264,19 @@ export default function CadenceListPage({
                     best = i;
                 }
             });
-            dragToIndex.current = best;
-            const from = visibleFor(kind, itemsRef.current).findIndex((one) => one.id === meta.id);
-            if (from < 0 || from === best) return;
-            rebaseDrag.current?.(cells[best].y - cells[from].y);
-            const next =
-                kind === 'daily'
-                    ? dragVisibleTo(itemsRef.current, meta.id, best)
-                    : dragKindTo(itemsRef.current, kind, meta.id, best);
-            itemsRef.current = next;
-            setItems(next);
-            return;
+            nextIndex = best;
+        } else {
+            const vis = visibleFor(kind, meta.snapshot);
+            if (vis.length === 0) return;
+            const avg =
+                vis.reduce((sum, one) => sum + (rowHeights.current[one.id] ?? 40), 0) / vis.length;
+            nextIndex = Math.max(
+                0,
+                Math.min(vis.length - 1, meta.startIndex + Math.round((y - meta.startY) / avg)),
+            );
         }
-        const vis = visibleFor(kind, meta.snapshot);
-        if (vis.length === 0) return;
-        const avg =
-            vis.reduce((sum, one) => sum + (rowHeights.current[one.id] ?? 40), 0) / vis.length;
-        dragToIndex.current = Math.max(
-            0,
-            Math.min(vis.length - 1, meta.startIndex + Math.round((y - meta.startY) / avg)),
-        );
+        dragToIndex.current = nextIndex;
+        setDragHoverIndex((current) => current === nextIndex ? current : nextIndex);
     }, [kind]);
 
     const endDrag = useCallback(() => {
@@ -293,6 +296,8 @@ export default function CadenceListPage({
         draggingIdRef.current = null;
         dragCells.current = null;
         setDraggingId(null);
+        setDragFromIndex(null);
+        setDragHoverIndex(null);
     }, [kind]);
 
     const deleteEntry = (id: string) => {
@@ -374,7 +379,7 @@ export default function CadenceListPage({
                     ) : (
                         <>
                             <Text style={styles.hintText}>Hold and slide to reorder · Tap to edit · Swipe to delete</Text>
-                            {visible.map((item) => (
+                            {visible.map((item, index) => (
                                 <MeasuredRow
                                     key={item.id}
                                     id={item.id}
@@ -387,6 +392,19 @@ export default function CadenceListPage({
                                         item={item}
                                         highlighted={highlightId === item.id}
                                         dragging={draggingId === item.id}
+                                        slotShift={
+                                            draggingId != null
+                                            && item.id !== draggingId
+                                            && dragFromIndex != null
+                                            && dragHoverIndex != null
+                                                ? neighborShift(
+                                                    index,
+                                                    dragFromIndex,
+                                                    dragHoverIndex,
+                                                    rowHeights.current[draggingId] ?? 40,
+                                                )
+                                                : 0
+                                        }
                                         label={kind === 'daily' ? dailyRowLabel(item) : itemNameOf(item)}
                                         subtitle={
                                             kind === 'daily'
@@ -403,9 +421,6 @@ export default function CadenceListPage({
                                         onDragStart={beginDrag}
                                         onDragMove={moveDrag}
                                         onDragEnd={endDrag}
-                                        onBindRebase={(fn) => {
-                                            rebaseDrag.current = fn;
-                                        }}
                                         onSnooze={() => setSnoozeItemId(item.id)}
                                         onDone={() => item.completed ? undoDone(item.id) : markDone(item.id)}
                                         onDelete={() => deleteEntry(item.id)}

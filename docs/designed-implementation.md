@@ -235,8 +235,9 @@ The iPhone sliding the whole app away is the phone, not this app.
 ## List reorder
 
 On a reminder list you hold a row and slide it. The row follows your
-finger. The neighbors make room while it is sliding, the same way Home
-badges do. The new order is kept when you let go. Built at #127-new.
+finger and stays in your hand until you let go. The neighbors make room
+while it is sliding, the same way Home badges do. The new order is kept
+when you let go. Built at #127-new.
 
 ## Saved-list boundary
 

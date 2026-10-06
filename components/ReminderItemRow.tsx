@@ -17,13 +17,13 @@ export function ReminderItemRow({
     item,
     highlighted,
     dragging,
+    slotShift,
     label,
     subtitle,
     onTap,
     onDragStart,
     onDragMove,
     onDragEnd,
-    onBindRebase,
     onSnooze,
     onDone,
     onDelete,
@@ -31,13 +31,13 @@ export function ReminderItemRow({
     item: ReminderItem;
     highlighted: boolean;
     dragging: boolean;
+    slotShift: number;
     label: string;
     subtitle?: string;
     onTap: () => void;
     onDragStart: (id: string, y: number) => void;
     onDragMove: (y: number) => void;
     onDragEnd: () => void;
-    onBindRebase: (rebase: ((sy: number) => void) | null) => void;
     onSnooze: () => void;
     onDone: () => void;
     onDelete: () => void;
@@ -62,20 +62,10 @@ export function ReminderItemRow({
 
     const translateY = useSharedValue(0);
     const lifted = useSharedValue(0);
-    const startAbsY = useSharedValue(0);
-    const fingerY = useSharedValue(0);
-
-    const rebase = useCallback((sy: number) => {
-        startAbsY.value += sy;
-        translateY.value = fingerY.value - startAbsY.value;
-    }, [startAbsY, fingerY, translateY]);
-    const rebaseHolder = useRef(rebase);
-    rebaseHolder.current = rebase;
-    const onBindRebaseRef = useRef(onBindRebase);
-    onBindRebaseRef.current = onBindRebase;
-    const bindLatest = useCallback(() => {
-        onBindRebaseRef.current(rebaseHolder.current);
-    }, []);
+    const slotShiftY = useSharedValue(slotShift);
+    useEffect(() => {
+        slotShiftY.value = slotShift;
+    }, [slotShift, slotShiftY]);
 
     const gesture = useMemo(() => {
         const drag = Gesture.Pan()
@@ -83,14 +73,10 @@ export function ReminderItemRow({
             .onStart((e) => {
                 lifted.value = 1;
                 translateY.value = 0;
-                startAbsY.value = e.absoluteY;
-                fingerY.value = e.absoluteY;
-                runOnJS(bindLatest)();
                 runOnJS(startJS)(item.id, e.absoluteY);
             })
             .onUpdate((e) => {
-                fingerY.value = e.absoluteY;
-                translateY.value = e.absoluteY - startAbsY.value;
+                translateY.value = e.translationY;
                 runOnJS(moveJS)(e.absoluteY);
             })
             .onFinalize(() => {
@@ -102,16 +88,10 @@ export function ReminderItemRow({
             runOnJS(tapJS)();
         });
         return Gesture.Race(drag, tap);
-    }, [item.id, startJS, moveJS, endJS, tapJS, bindLatest, translateY, lifted, startAbsY, fingerY]);
-
-    useEffect(() => {
-        if (!dragging) return;
-        onBindRebaseRef.current(rebase);
-        return () => onBindRebaseRef.current(null);
-    }, [dragging, rebase]);
+    }, [item.id, startJS, moveJS, endJS, tapJS, translateY, lifted]);
 
     const liftedStyle = useAnimatedStyle(() => ({
-        transform: [{ translateY: translateY.value }],
+        transform: [{ translateY: translateY.value + slotShiftY.value }],
         zIndex: lifted.value ? 20 : 0,
         elevation: lifted.value ? 8 : 0,
     }));

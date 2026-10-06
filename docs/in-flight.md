@@ -14,8 +14,9 @@ Last written: 2026-10-06, #127-new, open.
   on the left. Snooze stays on the right. Minutes start at 5 and stop at 1
   and 14. That look is not on the phone.
 - Neighboring rows on a reminder list now make room while a held row is
-  sliding, the same way Home badges do. The new order is kept when you let
-  go. That is not on the phone.
+  sliding, the same way Home badges do. The held row stays in hand past
+  more than one place. The new order is kept when you let go. That is
+  not on the phone.
 - Build 106 proved the original-plus-follow-up Snooze. Keep both: that
   safety is wanted and matches **remind me again**.
 - A One Time item on Daily now says **One Time only** on a second line.
@@ -31,7 +32,8 @@ Time marker, and the saved-list read warning.
 
 Do not restore the spinning minute column. Do not replace the original
 alert with the Snooze. Do not wrap the minutes past 1 or 14. Do not wait
-until release to move the neighboring rows.
+until release to move the neighboring rows. Do not drop the held row
+after the first place.
 Do not add VoiceOver work, text-size work, a new notification-limit
 warning, gesture replacements, or an elaborate storage-recovery system
 from #125-new. Those suggestions were examined and did not remain.

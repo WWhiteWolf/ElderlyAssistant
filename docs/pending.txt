@@ -27,7 +27,8 @@ WHAT'S NEXT
 1. PHONE PROOF. Check that Daily's Snooze minutes now use the same
    round up and down arrows as the other wheels, that every opening
    starts at 5, that a One Time row says "One Time only," and that
-   neighboring list rows make room while a held row is sliding. The
+   neighboring list rows make room while a held row is sliding, past
+   more than one place. The
    saved-list read warning also remains to be proved. The backup
    question and the original-plus-follow-up Snooze already worked on
    the phone. The full state is in docs/in-flight.md.
@@ -166,8 +167,9 @@ renumbered. One line each. The full story is in
 docs/handoff-history.md.
 
 180. #127-new — Neighboring rows on a reminder list make room while a
-    held row is sliding, the same way Home badges do. The new order is
-    kept when you let go. Not on the phone. 442 Mac checks pass and
+    held row is sliding, the same way Home badges do. The held row stays
+    in hand past more than one place; an earlier try dropped it after
+    the first. The new order is kept when you let go. Not on the phone.
     TypeScript is clean.
 
 179. #127-new — Daily Snooze minutes are now the same round up arrow,
