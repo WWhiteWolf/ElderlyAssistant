@@ -17,151 +17,35 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-#124-new is committed. It wrote the testing-coverage record and its
-Word copy, then started the Android-only Play build while the account
-was still waiting on Google.
+#128-new makes the initial load use the phone's text size. You set the
+phone's text larger so you can read it. After a restore, or a download
+and a restore, Memory's writing was the small size again while the rest
+of the phone stayed large. The reading had been taken while Memory was
+still starting, and that ordinary size was the one the writing kept.
+The first writing now waits until the app is active and reads the
+phone's current text size. The pages and the backup are unchanged.
+This is not on the phone.
 
-#125-new is committed. It evaluated how close Memory came to Patrick's
-aim: rock solid
-and consistent first, then the best personal reminder for him while
-remaining relatively easy to use. The judgment was that it reached
-that personal aim. It is not proved universally best or easiest. A
-fresh run was 428 passed and 0 failed, and TypeScript was clean. No app
-code changed.
+Build **110** is on the iPhone. Still not on the phone: Done's check
+on Weekly, Monthly, Quarterly, Yearly, Birthdays, and One Time lasts
+that day only, and Weekly still spends this week until the next
+speaking time. The User's Guide matches that work, and that copy is
+not on the phone. The saved-list read warning remains unproved and
+stays out of the Guide. The home arrangement is the home page's own
+order. Export saves it and Replace writes it back. Merge leaves it.
+A backup made before this does not contain it, and it still loads.
+The Daily 15, 30, and 60 minute buttons are half as wide, and the
+height is unchanged.
 
-#126-new is committed. A failed saved-list read now stays different
-from a successfully empty page. The page leaves the phone's existing
-reminders alone, tells the person to close and reopen Memory, and opens
-the existing Feedback popup if the warning remains. After a successful
-New save, Memory now asks whether to back up. Back Up Now uses the same
-export as Backup & Restore; Not Now makes the ordinary return. Edit and
-Done do not ask. Daily now keeps its 15, 30, and 60 minute choices and
-adds the 1-through-14 minute wheel, starting at 5 and stopping at both
-ends. The whole popup lives in its own Snooze selector; the shared list
-only supplies the item and accepts the choice.
+App Store build **100** is **Waiting for Review**. Release is manual.
+He releases it himself when Apple approves.
 
-Build **105** proved the backup question both ways: Not Now returned
-normally, and Back Up Now completed the existing backup process. It
-also exposed a 10-minute wheel Snooze firing before an original reminder
-that was still fifteen minutes away.
-
-Build **106** is on Patrick's phone and contains the machine correction:
-an advance Snooze starts at the unfired reminder's real speaking moment,
-while a Snooze after today's reminder starts at the tap. The original
-and the later follow-up both alerted. Patrick chose to keep both because
-that is safer and matches **remind me again**.
-
-#127-new replaced Daily's spinning Snooze minutes with the same round
-up arrow, number, and round down arrow as the other wheels. Minutes
-still run from 1 through 14, still start at 5, and still stop at both
-ends. Neighboring rows on a reminder list now make room while a held
-row is sliding, the same way Home badges do. The held row stays in
-hand past more than one place; an earlier try dropped it after the
-first. Build **110** is on his iPhone and works. A One Time item on Daily
-now has the second line **One Time only**. 442 Mac checks pass,
-TypeScript is clean, and lint has no errors. The saved-list read warning
-also remains unproved on the phone.
-
-#127-new then put Done's check on Weekly, Monthly, Quarterly, Yearly,
-Birthdays, and One Time into the machine as lasting that day only, the
-same as Daily. Weekly still spends this week until the next speaking
-time, so that reminder does not fire again after the check is gone.
-Appointments and Bucket List stay finished. That is not on the phone.
-445 Mac checks pass and TypeScript is clean.
-
-#127-new then brought the User's Guide into line with that work, in
-`docs/user-guide.md` and in the in-app copy. The dated tick lasts that
-day only. Weekly will not remind you again this week. Daily's 1-through-14
-minute Snooze is on the list only, not on the banners. A One Time row
-says One Time only. A new Save asks whether to back up. Holding a row
-slides it, and the neighbors make room. The saved-list read warning
-stays out of the Guide. That copy is not on the phone.
-
-The home arrangement is the home page's own order, not a Setting.
-Export asks the home page for it. Replace writes it back. Merge leaves
-it. A backup made before this does not contain it, and it still loads.
-That is not on the phone. On the Daily snooze modal, the 15, 30, and
-60 minute buttons are half as wide as they were. The height is
-unchanged. That is not on the phone. 450 Mac checks pass and
-TypeScript is clean.
-
-The lists end above the bottom of the screen, so a swipe to delete does
-not move the page. That is committed, on his phone, and verified working.
-
-Build **98** fixed the bug still on build **97**. A reminder whose
-set day is a holiday stayed on the holiday. Thanksgiving 2026 still
-showed Thursday 26 November. It now shows Friday the 27th.
-
-Build **97** showed, after 24 hours, that no reminder already
-marked Done fired again. The one reminder that did arrive was for
-something actually missing; the app otherwise acted normally.
-Saved Done state removes every old queued and delivered alert copy for
-that item, keeps the next legitimate cycle, and reports a removal the
-phone cannot confirm.
-
-#119-new is committed and verifies working on this load. Weekly Done
-puts the next real speaking time on the phone, holiday move included, and
-the mark comes off when that time arrives. A reminder that lands on a
-holiday stays on the moved day, including on the calendar. The
-same-week move is dropped: a holiday elsewhere in the week no longer
-pushes the set day. Home badges change order while one is sliding.
-428 Mac checks pass and TypeScript is clean.
-
-Birthday and its attached backup, day-roll lock, #116-new Settings
-backup and back-drag, and the Settings Guide tile names are all
-verified on the phone. The designed-machine jobs from #108-new and
-#109-new are verified too. All phone proof carried in this record is
-complete.
-
-#121-new is committed. It is packaging Memory for Android phones. The path is Google
-Play, the same kind of road as the iPhone App Store (Patrick,
-2026-10-01). The Play Console account was submitted on 2026-10-01.
-Google said they would let him know. The Android name is
-`com.molliedog.ElderlyAssistant`, the same id as the iPhone, and it
-is in `app.json`.
-
-#122-new is committed. It keeps the page body above that strip, and
-Android stays upright.
-
-The app is an Expo project and the phone package is produced by EAS.
-The generated ios and android folders are left out of the project.
-This Mac has an ios folder and no android folder. The Siri plugin
-only changes the iPhone project. The App Group module, which the app
-loads at startup, already has an Android file that does nothing, so
-the app can load. `docs/publishing.md` is not in the docs folder.
-The build steps the project rules point at were not there. He said
-to build the Play file now, while Google has not opened the account,
-so the sitting is not spent waiting (Patrick, #124-new). The account
-still cannot take the app, so the file is not sent to Play. The store
-profile can move a build number, so the build is Android only and the
-iPhone number stays put.
-
-Google's own pages, read 2026-09-30. A Play Console account is US$25
-once, with no yearly charge. The same US$25 opens a full account for
-copies that never go through Play. A limited account is free, stops
-at 20 phones, and asks for no government ID. That account stays a
-20-phone account. A wider reach later means a new account and moving
-the Android name. A personal Play account opened after November 13,
-2023, has to run a closed test with 12 people opted in for 14 days
-straight, then apply. Google usually reviews that in seven days or
-less, and a new personal account also confirms an Android phone
-through the Play Console app. Starting 2026-09-30, in Brazil,
-Indonesia, Singapore, and Thailand, an install from the big stores
-on a certified phone has to come from a verified developer. In 2027
-that spreads to all apps on certified phones, including a file
-downloaded from a website.
-
-A website download was the first path considered. A preview build
-finished on 2026-09-30 and the install file is on this Mac at
-`dist/Memory-1.0.0-preview.apk`. It is 110 MB. Expo created the
-Android signing key on its servers, and the Android version count
-there started at 1. That file cannot go on elyfont.com the way the
-site is published. A file added through the GitHub website can be no
-larger than 25 MB. A file sent by git is blocked over 100 MB. Git
-LFS does not work with GitHub Pages. He then chose Google Play.
-The publishing strategy (App-Docs, 2026-07-10) puts Android after
-the iPhone build. App Store build **100** is **Waiting for Review**.
-Release is manual. He releases it himself when Apple approves.
+The Play Console account was submitted on 2026-10-01. Google has not
+opened it. The Android file is built and is not sent until the account
+can take an app. The iPhone number is still 100. The preview on the
+Galaxy still stops short of the bottom. That copy changes when a new
+install file is built. Android stays upright, and the page body stays
+above that strip.
 
 ## Standing rulings
 
@@ -253,50 +137,23 @@ finished task.
 
 ## What is open in front of it
 
-The guide remains `docs/designed-implementation.md`. The self-contained
-designed-machine build sheet and its phone proof are complete.
+The guide remains `docs/designed-implementation.md`.
 
-The #126-new code is committed. The backup question is phone-proved,
-and build 106 proved the original-plus-follow-up Snooze timing. #127-new
-gave Daily's Snooze minutes the same round-arrow control as the other
-wheels, and list neighbors now make room while a row is sliding. The
-held row stays in hand past more than one place. Build **110** is on
-his iPhone and works. Done's check on Weekly, Monthly, Quarterly,
-Yearly, Birthdays, and One Time now lasts that day only; Weekly still
-spends this week until the next speaking time. That Done change is not
-on the phone. The User's Guide now matches those recent changes. That
-copy is not on the phone. The saved-list read warning remains unproved
-and stays out of the Guide. The home arrangement is the home page's
-own order. Export saves it and Replace writes it back. The 15, 30,
-and 60 minute buttons on the Daily snooze modal are half as wide, and
-the height is unchanged. Neither is on the phone. 450 Mac checks pass
-and TypeScript is clean.
+A new iPhone build, then a fresh open with the phone's text set
+larger, is the proof for #128-new.
 
-Testers are on TestFlight External. His phone has that list change,
-and it verifies.
+Done's one-day check, the matching User's Guide, the home arrangement,
+and the narrower Daily snooze buttons are in the project and not on
+the phone. The saved-list read warning remains unproved and stays out
+of the Guide.
+
 App Store build **100** is **Waiting for Review**. Release is manual.
-He releases it himself when Apple approves. The journey is
-`docs/connect-submit.md`. What is already in App Store Connect stays
-there. There is no public website for the user's guide.
+The journey is `docs/connect-submit.md`. What is already in App Store
+Connect stays there.
 
-The preview file on his Galaxy still stops short of the bottom. Android
-uses that bottom half inch, and everything on that phone draws a bit
-bigger. The sizes stay as the phone draws them. #122-new keeps the page
-body above that strip, and Android stays upright. The Galaxy copy does
-not change until a new install file is built. It is on every page, so
-it is not the list-only stop from #120-new.
-
-The Play Console account was submitted on 2026-10-01. Google has
-not opened it. The file is Android only, and it is not sent to Play
-until the account can take an app (Patrick, #124-new). The Android
-count on Expo went from 1 to 2. The iPhone number is still 100. The
-build is https://expo.dev/accounts/molliedog/projects/ElderlyAssistant/builds/7d816ec8-3548-4954-a847-bd241270433f.
-The 110 MB file at `dist/Memory-1.0.0-preview.apk` is not that file.
-Do not build another website download.
-
-The iPhone listing is $9.99. The Paid Apps Agreement, the bank, and
-the W-9 are Active. Android still waits until Google opens the Play
-account.
+The Galaxy copy is still the old preview. The Play account is not
+open, so the Android file is not sent, and the $9.99 Android listing
+waits for that.
 
 ## Facts worth carrying
 

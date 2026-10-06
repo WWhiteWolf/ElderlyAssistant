@@ -703,6 +703,10 @@ Minus is less — lighter. Each step is a smooth, even move in how light or
 dark it looks, the same size toward lighter and toward darker. Each of Light and Dark keeps its own Letters and Page. They stay on the
 phone. Built at #111-new and #117-new.
 
+The writing size is the phone's text size. Memory reads it when the app
+becomes active, and the first writing uses that size. It is not a
+Setting. A restore or a new download follows that same open (#128-new).
+
 It holds the three named times of day: morning,
 midday, and evening. Those times are the clock for Morning of, Day
 Before, and Night Before. A tap opens the time with the same
@@ -744,7 +748,8 @@ them. The name is not a special case. The home arrangement is the home
 page's own order, not one of those Settings. Export asks the home page
 for it and saves it. Replace writes it back when the file has it. Merge
 leaves the arrangement on the phone. A backup made before this does not
-contain it, and it still loads. Before confirmation, Replace and Merge
+contain it, and it still loads. The writing size is not in the backup.
+It is the phone's text size, read when Memory becomes active. Before confirmation, Replace and Merge
 validate the whole saved list against the current kind table and strip
 live Options fields that the kind's row does not allow. When that row
 keeps a birthdate, they

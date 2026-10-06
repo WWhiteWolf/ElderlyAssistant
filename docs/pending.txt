@@ -5,9 +5,9 @@ This is the "what's still left" list in everyday words. Nothing here
 is urgent. You are the only reader, so this list says you.
 
 The items under each heading are numbered so you can point at one —
-"Pending 4", "Facts 9" — and both of us know which you mean. The
+"What's Next 1", "Done 186" — and both of us know which you mean. The
 numbers belong to the heading above them and start again at 1 under
-each one. Live headings (What's Next, Pending, Facts) shift as
+each one. Live headings (What's Next, Pending) shift as
 things are added and finished. **Done does not:** newest at the
 top, number 1 on the oldest line at the bottom, so a new sitting
 is the next number and nothing else is renumbered.
@@ -24,7 +24,14 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. PHONE PROOF FOR DONE'S ONE-DAY CHECK. Weekly, Monthly, Quarterly,
+1. PHONE TEXT SIZE ON A FRESH OPEN. You set the phone's text larger
+   so you can read it. After a restore, or a download and a restore,
+   Memory's writing was the small size again while the rest of the
+   phone stayed large. The initial load now waits until the app is
+   active, then reads the phone's text size, and the first writing
+   uses that size. The pages and the backup are unchanged. This is
+   not on the phone yet (#128-new).
+2. PHONE PROOF FOR DONE'S ONE-DAY CHECK. Weekly, Monthly, Quarterly,
    Yearly, Birthdays, and One Time should show the check that day only.
    The next morning the row is the next time, with no check. Weekly
    must not fire again this week. A second tap that same day still
@@ -36,19 +43,19 @@ WHAT'S NEXT
    restore is in the project and not on the phone. The Daily 15, 30,
    and 60 minute buttons are half as wide, and that is not on the
    phone either. The full state is in docs/in-flight.md.
-2. IOS BUILD 100 is Waiting for Review. When Apple approves, you
+3. IOS BUILD 100 is Waiting for Review. When Apple approves, you
    release it yourself. Release is manual (2026-10-01).
-3. THE BOTTOM OF THE GALAXY SCREEN. The phone uses about half an inch
+4. THE BOTTOM OF THE GALAXY SCREEN. The phone uses about half an inch
    at the bottom, and Android stays upright. The project keeps the page
    body above that strip. The copy on your Galaxy is still the old
    preview. It changes when a new install file is built (2026-10-01).
-4. THE PLAY ACCOUNT. You submitted it. Google has not opened it.
+5. THE PLAY ACCOUNT. You submitted it. Google has not opened it.
    The file is Android only, and it is not sent to Play until the
    account can take the app. The Android count on Expo went from 1
    to 2. The build page is on expo.dev under molliedog,
    ElderlyAssistant, build 7d816ec8 (Patrick, #124-new). The 110 MB
    file on this Mac is not that file.
-5. THE PRICE ON ANDROID. $9.99 once, no trial. The iPhone listing
+6. THE PRICE ON ANDROID. $9.99 once, no trial. The iPhone listing
    already has that price. Android waits until the Play account can
    take the app (#123-new).
 
@@ -58,115 +65,6 @@ PENDING
 Things waiting on something — mostly on a build.
 
 Nothing is waiting under this heading.
-
-
-FACTS THAT APPLY TO THE ONGOING WORK
-------------------------------------------------------------------
-Settled things worth having in front of you while the pages are
-built. None of these is a job to do.
-
-1. + ADD ON A PAGE GOES TO THAT PAGE'S OWN NEW. Where does it
-   belong? is only on Options, from + Screen. You do not set
-   another page from a different page (#36-new).
-2. DAILY'S OWN ADD IS ONLY ABOUT TODAY. Two kinds: an every-day
-   item, or a One Time for today. On One Time for today the
-   Reminders before chips are only 30 min., 1 hour, 2 hours, and
-   Time of (the item's own time). Save on that kind comes back on
-   Daily. It is Daily's own one-shot, not an Appointment. An
-   Appointment that falls today still shows on Daily as from
-   Appointments, and still lives on Appointments. The other pages keep their
-   own adds, because on those the page is the whole meaning of Repeat.
-   (#78-new)
-3. ONE REMINDER PER ITEM, NOT TWO, and the app puts itself right
-   when you open it: it tells you what you missed, then sets the
-   reminders again. That is your own reasoning and it replaced the
-   old two-days-ahead rule. A Daily item still arms for tomorrow
-   after Done; that is still one reminder, not two (Patrick, #44-new).
-4. ROCK SOLID IS THE TOP GOAL BUT NOT THE ONLY ONE. Consistency
-   stands beside it. That correction is yours, from #17-new.
-5. ROCK SOLID IS FOR WHEN YOU USE IT. An app that is not being
-   opened is not being used, and what the old second copy protected
-   was one day and no more.
-6. TASKS SAVED BEFORE THE DATE FIX carry a date they were given
-    rather than one you chose.
-7. A BIG PIECE GETS A BUILD SHEET FIRST — self-contained, carrying
-    every answer, so whoever builds it never has to ask you a
-    design question.
-8. BARE SESSION NUMBERS mean the old shared chain. This project's
-    own chain is written #1-new, #2-new, and so on.
-9. WORKING DOCUMENTS LIVE IN docs. History lives in docs-ref, and
-    the build sheets are in docs-ref/build-sheets. The index
-    says which file is the home. You call them working documents;
-    live desk means the same thing. (App-Docs, 2026-08-31)
-10. THE CALENDAR PAGE SHOWS DATED ITEMS. No every-day Daily items,
-    no Bucket List. No Done or Snooze on the month or the day’s list.
-    Names in a day box are one line and scroll vertically.
-    Landscape is an optional view: 0°, 90° counter-clockwise, and
-    270° counter-clockwise; 180° upside-down is out. Headers stay
-    at the physical top of the phone, all pages. The calendar month
-    grid was not rebuilt.
-11. HAVING A GOOD IDEA LEADS TO OVERREACHING (Patrick, #52-new).
-    The feedback you need is the trim: what part is worth it,
-    and what is more than is there.
-12. THE DESIGN DESCRIPTION IS THE DESIGNED IMPLEMENTATION
-    (Patrick, #84-new). It is the guide for the whole app. A sitting
-    builds from docs/designed-implementation.md and does not ask
-    Patrick a design question. Home, Helper, Calendar, Settings, Backup,
-    Scheduled Reminders, Options, and Log are in that file.
-13. DATED ITEMS WAIT ABOUT A MONTH (Patrick, 2026-09-09). That wait is
-    a bit on the table. Monthly, Quarterly, Yearly, and Birthdays have
-    it on. Daily, Weekly, Appointments, and the rest have it off. The
-    join reads the bit. Depth stays one. Opening the app arms a waiting
-    item when it has come close enough. Several lead times on one item
-    also use that depth: only the soonest still ahead is armed. When it
-    has fired, the next run arms the next.
-14. EACH CLOSED-APP NOTICE HAS ITS OWN THREAD NAME (Patrick, #105-new).
-    The name is the reminder's key. This Expo does not yet hand that
-    name to the phone, so the listing-down-the-page will wait until
-    Expo is upgraded. The notification library was not poked.
-15. ONE TIME DOES NOT SKIP (Patrick, #107-new; built #108-new). It has
-    no next cycle. Its own banner set has Done, OK, and Delay 15 / 30 /
-    60 min. A delay has its own source and reaches the phone road.
-16. OPENING THROUGH A BANNER IS STILL AN OPENING (#107-new; built
-    #108-new). The day roll, scheduling, and missed-reminder telling
-    finish before the item's page is handed over.
-17. DONE'S SAVED STATE STOPS ITS OLD ALERT COPIES (#118-new). The
-    engine removes every queued base, delay, duplicate, or
-    retired-source copy carrying that item id, and dismisses banners
-    already delivered. It keeps the next legitimate cycle. The phone
-    is read back and a failed removal speaks instead of disappearing
-    silently.
-18. MEMORY'S OWN DOCUMENTS ARE THE LIVE ENGINE DESIGN. The separate
-    Reminder Engine folder remains the historical shared baseline at
-    Reminder Engine 4. Students-Assistant is going away, so that folder
-    is not brought current as a second copy (#118-new).
-19. THE ANDROID NAME IS com.molliedog.ElderlyAssistant (Patrick,
-    #121-new). The same id as the iPhone.
-20. THE ANDROID PATH IS GOOGLE PLAY (Patrick, 2026-10-01). The same
-    kind of road as the iPhone App Store. The account was submitted
-    on 2026-10-01. Google said they would let you know. Do not raise
-    the closed-test count (Patrick, #122-new).
-21. GOOGLE, LOOKED UP 2026-09-30. Play is US$25 once, with no yearly
-    charge. The account check is what is in progress. Do not raise
-    the closed-test count (Patrick, #122-new).
-22. THE WEBSITE INSTALL FILE IS 110 MB (2026-09-30). It is on this
-    Mac at dist/Memory-1.0.0-preview.apk. A file added through the
-    GitHub website can be no larger than 25 MB. A file sent by git
-    is blocked over 100 MB. That file is not how Memory goes on
-    Android.
-23. THE APP IS $9.99 ONCE (Patrick, #123-new). The same on the iPhone
-    and on Android. There is no trial. The iPhone listing has that
-    price. The Paid Apps Agreement, the bank, and the W-9 are Active.
-24. DO NOT FILE A TRADEMARK ON THE NAME (Patrick, #123-new). Use it.
-    The copyright line is your name and the year.
-25. DO NOT TAKE UP XCODE CLOUD (Patrick, #123-new). Stay with the Expo
-    build steps.
-26. DONE'S CHECK LASTS THAT DAY ONLY (Patrick, #127-new). Weekly,
-    Monthly, Quarterly, Yearly, Birthdays, and One Time. The morning
-    takes it off. Weekly still spends this week until the next
-    speaking time, so it does not fire again after the check is gone.
-    Appointments and Bucket List stay finished. Daily already worked
-    this way. In the machine, not a display patch.
 
 
 WHAT IS DONE, NEWEST FIRST

@@ -55,7 +55,8 @@
         }
       ],
       "@react-native-community/datetimepicker",
-      "./plugins/withSiriIntent"
+      "./plugins/withSiriIntent",
+      "./plugins/withPhoneTextSize"
     ],
     "experiments": {
       "typedRoutes": true,
