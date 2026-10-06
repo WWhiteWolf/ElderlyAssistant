@@ -38,6 +38,7 @@ import type {
 import { MONTHLY_WEEKDAY_EXCLUSIVE_GROUP, quarterlyStepCodeOf, quarterlyStepDaysOf } from '../inputshape.ts';
 import type { ReminderListSourceCode } from '../sources.ts';
 import type { ReminderItem } from '../../modules/reminder-types.ts';
+import { weeklyDoneHoldsUntil } from '../leadmoments.ts';
 import {
     birthdayReminderLine,
     birthdayRowName,
@@ -674,9 +675,26 @@ export function translateReminderItems(items: ReminderItem[], now: number): Shap
     const shaped: ShapedItem[] = [];
     for (const one of items) {
         const rules = rulesByKind[one.kind];
-        shaped.push(withSavedOptions(rules, one, translateOne(rules, one, now)));
+        shaped.push(withWeeklySpentCycle(
+            withSavedOptions(rules, one, translateOne(rules, one, now)),
+            now,
+        ));
     }
     return shaped;
+}
+
+/**
+ * Weekly's spent cycle lives on the Done stamp, not on the visible check.
+ * After the morning roll takes the check off, this week is still spent
+ * until the next speaking time.
+ */
+function withWeeklySpentCycle(item: ShapedItem, now: number): ShapedItem {
+    if (item.isDoneBit) return item;
+    if (item.repeatUnitCode !== 'week') return item;
+    if (typeof item.doneAtStamp !== 'number') return item;
+    const hold = weeklyDoneHoldsUntil(item, item.doneAtStamp);
+    if (hold === null || now >= hold) return item;
+    return { ...item, isDoneBit: true };
 }
 
 /**

@@ -8,6 +8,9 @@
 //
 // Nothing in this file touches storage, the phone, React Native or Expo.
 
+import type { ReminderKind } from '../modules/reminder-types.ts';
+import { doneActionCodeOf } from './translators/translate.ts';
+
 /** What the reset needs of a Daily item. */
 export interface ResettableItem {
     id: string;
@@ -41,5 +44,24 @@ export function resetForNewDay<T extends ResettableItem>(items: T[]): T[] {
     return items.map((item) => {
         const { snoozedUntil, ...rest } = item;
         return { ...rest, completed: false } as T;
+    });
+}
+
+/**
+ * Yesterday's check on a repeating item that is not Daily.
+ *
+ * Daily's own reset already took those ticks off, and also yesterday's
+ * snooze. This only takes the visible check off Weekly, dated pages, and
+ * One Time. A Weekly spent-cycle stamp and a snooze stay. Appointments
+ * and Bucket List stay finished.
+ */
+export function clearOvernightRepeatingTicks<T extends { kind: ReminderKind; completed?: boolean }>(
+    items: T[],
+): T[] {
+    return items.map((item) => {
+        if (item.kind === 'daily') return item;
+        if (doneActionCodeOf(item.kind) === 'endItem') return item;
+        if (!item.completed) return item;
+        return { ...item, completed: false };
     });
 }

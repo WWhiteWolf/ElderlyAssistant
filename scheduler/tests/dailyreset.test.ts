@@ -1,7 +1,8 @@
 // Tests for the daily reset.
 
-import { isNewDay, resetForNewDay } from '../dailyreset.ts';
+import { isNewDay, resetForNewDay, clearOvernightRepeatingTicks } from '../dailyreset.ts';
 import type { ResettableItem } from '../dailyreset.ts';
+import type { ReminderKind } from '../../modules/reminder-types.ts';
 import { assert, assertSame, test } from './runner.ts';
 
 interface Item extends ResettableItem {
@@ -67,5 +68,24 @@ export function runDailyResetTests(): void {
 
     test('An empty list resets to an empty list', () => {
         assert(resetForNewDay([]).length === 0, 'expected nothing');
+    });
+
+    test('A new day takes the check off Weekly and dated pages, and leaves Daily to its own reset', () => {
+        const after = clearOvernightRepeatingTicks([
+            { kind: 'daily' as ReminderKind, completed: true, stamp: 1 },
+            { kind: 'weekly' as ReminderKind, completed: true, stamp: 2 },
+            { kind: 'monthly' as ReminderKind, completed: true, stamp: 3 },
+            { kind: 'appointments' as ReminderKind, completed: true, stamp: 4 },
+        ]);
+        assertSame(
+            after.map((one) => one.completed),
+            [true, false, false, true],
+            'Daily and finished items keep their own marks; the others last one day',
+        );
+        assertSame(
+            after.map((one) => one.stamp),
+            [1, 2, 3, 4],
+            'nothing else about those items is touched',
+        );
     });
 }

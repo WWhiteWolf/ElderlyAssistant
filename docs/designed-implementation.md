@@ -282,14 +282,16 @@ Done is a code, `doneActionCode`. The three words are:
 
 - **thisCycle** — this occurrence is done. The item comes round again.
   A second tap the same day asks whether to mark it not done. Cancel
-  leaves the tick. Mark not done takes the tick off. The morning roll
-  takes the tick off. Daily and Weekly.
+  leaves the tick. Mark not done takes the tick off. The tick lasts that
+  day only; the morning roll takes it off. Daily and Weekly. Weekly also
+  keeps a spent-cycle stamp until the next speaking time, so this week's
+  reminder does not fire again after the check is gone.
 - **advanceDate** — this cycle is done, and the saved date moves to the
-  next occurrence. The tick stays until the morning of the next due
-  date, then comes off in the same morning roll as Daily. A second tap
-  while the tick is showing is un-check: this cycle was not done. The
-  tick comes off, and the saved date is the cycle that had been due, not
-  the next one. It is not Done for the newly armed cycle. Monthly,
+  next occurrence. The tick lasts that day only; the morning roll takes
+  it off. It does not sit until the next due date. A second tap while
+  the tick is showing is un-check: this cycle was not done. The tick
+  comes off, and the saved date is the cycle that had been due, not the
+  next one. It is not Done for the newly armed cycle. Monthly,
   Quarterly, Yearly, and Birthdays. Yearly and Birthdays write year on
   the table. The date-advance reads that word. Birthdays keep the
   birthdate with the name. Done moves the derived next fire date, not
@@ -369,8 +371,9 @@ It is not an Appointment. 30 min.,
 always written. Noon if missing. Done is thisCycle. The mark applies
 to the speaking time nearest the moment it is pressed. The next
 speaking time is put on the phone then, holiday move included, and
-stays while the mark is on. The mark comes off when that next
-speaking time arrives. It can be pushed
+stays while this week is spent. The visible check lasts that day only.
+This week stays spent until that next speaking time arrives. It can be
+pushed
 back. Banner set weeklyactions: Done, OK, Skip, Delay 15 / 30 / 60 min,
 and Delay 1 Day. Speaks at the moment itself. Its
 pushed-back source is weeklysnooze.

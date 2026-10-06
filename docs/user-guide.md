@@ -85,7 +85,8 @@ also holds things that are only for today. Those are called One Time
 for today, and they are not appointments. Anything from another page
 that falls today shows here too, with a note saying where it comes
 from. When you add something on Daily, you choose every day, or One
-Time for today.
+Time for today. A One Time row on Daily has a short second line that
+says One Time only.
 
 ## Helper
 
@@ -264,6 +265,10 @@ Delete is how you take a reminder off its page. Swipe the row, and a Delete butt
 
 It really is gone then, not only hidden for today. If a reminder from another page is showing on Daily, deleting it there takes it off that other page too, because it is the same reminder.
 
+## Moving a reminder
+
+On a reminder list, hold a row and slide it. The row follows your finger and stays in your hand until you let go. The neighbors make room while it is sliding. The new order is kept when you let go.
+
 ## Save
 
 Save is on New and Edit. It stays at the top while you scroll, next to Cancel. Save keeps the reminder as you set it, and takes you back to the page it belongs on. Cancel leaves everything as it was.
@@ -274,17 +279,19 @@ If a date or time you typed is not a real one, that box is outlined in red, and 
 
 If you last set the time with the 12-hour spinner, Save asks you to check AM or PM, so the morning or evening is the one you mean. You can go back and change it, or Save from there. If you last set the time with the 24-hour box or the digit spinner, it does not ask.
 
+After Save on a new reminder, the app asks Back Up Memory? Your new item is saved. Would you like to back up Memory now? Back Up Now uses the same Backup & Restore as Settings. Not Now takes you back to the list. Edit and Done do not ask.
+
 ## Done
 
 Done is how you mark that you have taken care of a reminder. On the list the button says Done? Tap it, and it becomes a tick.
 
 On reminders that repeat, Done means this round is taken care of, and it will come round again.
 
-Daily and Weekly: a second tap the same day asks if you want to mark
+Daily, Weekly, and One Time for today: a second tap the same day asks if you want to mark
 it as not done. Cancel leaves the tick. Mark not done takes it off.
-The morning takes it off if you leave it.
+The morning takes it off if you leave it. Weekly will not remind you again this week.
 
-Monthly, Quarterly, Yearly, and Birthdays: Done moves the date to the next time. The tick stays so you can see this cycle was done. A second tap while the tick is showing means this cycle was not done. The app asks if you want to mark it as not done. Cancel leaves the tick. It is not Done for the new cycle.
+Monthly, Quarterly, Yearly, and Birthdays: Done moves the date to the next time. The tick lasts that day only. The morning takes it off if you leave it. A second tap while the tick is showing means this cycle was not done. The app asks if you want to mark it as not done. Cancel leaves the tick. It is not Done for the new cycle.
 
 The next round is armed when it is close enough, so there is room for the before-reminders. Monthly looks about a month ahead. Quarterly, Yearly, and Birthdays look about two months ahead.
 
@@ -302,13 +309,13 @@ The list then says Snoozed till and the new time. If that time is another day, i
 
 Which delays you see depends on the kind.
 
-Daily, and One Time for today: 15, 30, or 60 minutes.
+Daily, and One Time for today: 15, 30, or 60 minutes, and also 1 through 14 minutes. The 15, 30, and 60 sit on the left. The 1 through 14 sit in the middle as a round up arrow, the number, and a round down arrow. It starts at 5. Snooze on the right keeps that number. The arrows stop at 1 and at 14.
 
 Weekly: those three, and Delay 1 Day.
 
 Monthly, Quarterly, and Yearly: Delay 1 Day, Delay 1 Week, or Delay 1 Month.
 
-The banner uses the same delays. Those buttons say Delay.
+The banner uses the same delays, except Daily and One Time for today. Those banners keep 15, 30, and 60 minutes. They do not have the 1 through 14 minutes. Those buttons say Delay.
 
 Appointments, Birthdays, and Bucket List cannot be snoozed. A Daily reminder with no time has no Snooze button, because there is nothing to push back. A One Time for today with no time has no Snooze button either. That is the point of not setting the clock.
 

@@ -15,7 +15,7 @@ import { SchedulableTriggerInputTypes } from 'expo-notifications';
 
 import { reconcile, unreadSourcesFor } from './reconcile.ts';
 import type { Plan, QueueEntry } from './reconcile.ts';
-import { isNewDay, resetForNewDay } from './dailyreset.ts';
+import { isNewDay, resetForNewDay, clearOvernightRepeatingTicks } from './dailyreset.ts';
 import { resetForNewCycle } from './weeklyreset.ts';
 import type { ResettableChore } from './weeklyreset.ts';
 import { HEALTH_KEY, MISSES_KEY, addRun, faultSignature, mergeMisses, missesForRollover } from './health.ts';
@@ -121,8 +121,9 @@ async function rollTheDayOver(): Promise<RunFault[]> {
             const daily = items.filter((one) => one.kind === 'daily');
             const resetDaily = resetForNewDay(daily);
             const byId = new Map(resetDaily.map((one) => [one.id, one]));
+            const withDailyReset = items.map((one) => byId.get(one.id) ?? one);
             return clearStartingOccurrenceTicks(
-                items.map((one) => byId.get(one.id) ?? one),
+                clearOvernightRepeatingTicks(withDailyReset),
                 now,
             );
         });

@@ -60,13 +60,27 @@ export function runWeeklyResetTests(): void {
         assert(after[0].doneAt === undefined, 'expected doneAt gone');
     });
 
+    test('A spent cycle with no check still holds until the next fire', () => {
+        const holds = at(2026, 5, 8, 8, 0);
+        const before = resetForNewCycle(
+            [chore({ completed: false, doneAt: at(2026, 5, 1, 8, 5), doneHoldsUntil: holds })],
+            at(2026, 5, 8, 7, 59),
+        );
+        assertSame(before[0].doneAt, at(2026, 5, 1, 8, 5), 'expected the spent cycle kept until the real fire');
+        const after = resetForNewCycle(
+            [chore({ completed: false, doneAt: at(2026, 5, 1, 8, 5), doneHoldsUntil: holds })],
+            holds,
+        );
+        assert(after[0].doneAt === undefined, 'expected the spent cycle off when that fire arrives');
+    });
+
     test('A mark with a real next fire stays until that fire and then comes off', () => {
         const holds = at(2026, 5, 8, 8, 0);
         const before = resetForNewCycle(
             [chore({ completed: true, doneAt: at(2026, 5, 1, 8, 5), doneHoldsUntil: holds })],
             at(2026, 5, 8, 7, 59),
         );
-        assert(before[0].completed === true, 'expected the mark kept until the real fire');
+        assert(before[0].completed === true, 'expected a same-day mark kept until the real fire');
         const after = resetForNewCycle(
             [chore({ completed: true, doneAt: at(2026, 5, 1, 8, 5), doneHoldsUntil: holds })],
             holds,

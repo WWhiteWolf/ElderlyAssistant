@@ -315,10 +315,10 @@ export function weeklyDoneCovers(item: ShapedItem, doneAt: number): number | nul
 }
 
 /**
- * When a Weekly Done mark comes off: the real fire after the one it covers.
+ * When a Weekly spent cycle ends: the real fire after the one Done covers.
  *
- * The phone holds that fire while the mark is on. The mark comes off
- * when that fire arrives.
+ * The phone holds that fire while this week is spent. The visible check
+ * comes off in the morning. The spent cycle comes off when that fire arrives.
  */
 export function weeklyDoneHoldsUntil(item: ShapedItem, doneAt: number): number | null {
     const covered = weeklyDoneCovers(item, doneAt);

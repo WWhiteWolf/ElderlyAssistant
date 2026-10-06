@@ -228,6 +228,18 @@ export function runTranslatorCadenceTests(): void {
         assert(shaped.isDoneBit, 'the tick comes across so still-wanted can judge it');
     });
 
+    test('A Weekly spent cycle with no check is still this week spent', () => {
+        const shaped = shapeOf(item({
+            kind: 'weekly',
+            day: 1,
+            hour: 8,
+            minute: 0,
+            completed: false,
+            doneAt: new Date(2026, 5, 1, 8, 5, 0, 0).getTime(),
+        }));
+        assert(shaped.isDoneBit, 'the Done stamp spends this week after the check has come off');
+    });
+
     test('A saved skip stamp reaches the common shape', () => {
         const stamp = new Date(2026, 5, 1, 8, 0, 0, 0).getTime();
         const shaped = shapeOf(item({ kind: 'daily', hour: 8, minute: 0, skippedCycleStamp: stamp }));

@@ -57,9 +57,25 @@ still run from 1 through 14, still start at 5, and still stop at both
 ends. Neighboring rows on a reminder list now make room while a held
 row is sliding, the same way Home badges do. The held row stays in
 hand past more than one place; an earlier try dropped it after the
-first. Neither change is on the phone. A One Time item on Daily now has the second line **One Time only**.
-442 Mac checks pass, TypeScript is clean, and lint has no errors. The
-saved-list read warning also remains unproved on the phone.
+first. Build **110** is on his iPhone and works. A One Time item on Daily
+now has the second line **One Time only**. 442 Mac checks pass,
+TypeScript is clean, and lint has no errors. The saved-list read warning
+also remains unproved on the phone.
+
+#127-new then put Done's check on Weekly, Monthly, Quarterly, Yearly,
+Birthdays, and One Time into the machine as lasting that day only, the
+same as Daily. Weekly still spends this week until the next speaking
+time, so that reminder does not fire again after the check is gone.
+Appointments and Bucket List stay finished. That is not on the phone.
+445 Mac checks pass and TypeScript is clean.
+
+#127-new then brought the User's Guide into line with that work, in
+`docs/user-guide.md` and in the in-app copy. The dated tick lasts that
+day only. Weekly will not remind you again this week. Daily's 1-through-14
+minute Snooze is on the list only, not on the banners. A One Time row
+says One Time only. A new Save asks whether to back up. Holding a row
+slides it, and the neighbors make room. The saved-list read warning
+stays out of the Guide. That copy is not on the phone.
 
 The lists end above the bottom of the screen, so a swipe to delete does
 not move the page. That is committed, on his phone, and verified working.
@@ -231,9 +247,13 @@ The #126-new code is committed. The backup question is phone-proved,
 and build 106 proved the original-plus-follow-up Snooze timing. #127-new
 gave Daily's Snooze minutes the same round-arrow control as the other
 wheels, and list neighbors now make room while a row is sliding. The
-held row stays in hand past more than one place. That look, the live
-list reorder, the One Time marker, and the saved-list read warning need
-a newer phone build and proof.
+held row stays in hand past more than one place. Build **110** is on
+his iPhone and works. Done's check on Weekly, Monthly, Quarterly,
+Yearly, Birthdays, and One Time now lasts that day only; Weekly still
+spends this week until the next speaking time. That Done change is not
+on the phone. The User's Guide now matches those recent changes. That
+copy is not on the phone. The saved-list read warning remains unproved
+and stays out of the Guide.
 
 Testers are on TestFlight External. His phone has that list change,
 and it verifies.

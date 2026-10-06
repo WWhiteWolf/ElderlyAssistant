@@ -57,9 +57,10 @@ export function lastOccurrence(day: number, hour: number, minute: number, now: n
 /**
  * The chore list, with anything belonging to a finished cycle cleared.
  *
- * A checkmark says the chore was done, and it holds only until the chore comes
- * round again. So a tick made before the cycle's most recent start is spent,
- * and comes off along with the moment it was made.
+ * A checkmark says the chore was done today. The spent cycle is the
+ * `doneAt` stamp, and it holds until the chore comes round again. So a
+ * stamp made before the cycle's most recent start is spent, and comes
+ * off along with any check still sitting on the row.
  *
  * A postpone belongs to its cycle in the same way: it moves this week's
  * reminder and says nothing about the weeks after it, so a postpone older than
@@ -75,7 +76,7 @@ export function resetForNewCycle<T extends ResettableChore>(chores: T[], now: nu
         const last = lastOccurrence(chore.day, chore.hour, chore.minute, now);
 
         const holdsUntil = next.doneHoldsUntil;
-        const spent = next.completed && next.doneAt != null && (
+        const spent = next.doneAt != null && (
             holdsUntil != null ? now >= holdsUntil : next.doneAt < last
         );
         if (spent) {

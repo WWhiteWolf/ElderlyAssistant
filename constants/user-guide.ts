@@ -97,7 +97,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     { type: 'heading', text: 'Daily' },
     {
         type: 'paragraph',
-        text: 'Daily is a bit of both. It holds the things you do every day, and it also holds things that are only for today. Those are called One Time for today, and they are not appointments. Anything from another page that falls today shows here too, with a note saying where it comes from. When you add something on Daily, you choose every day, or One Time for today.',
+        text: 'Daily is a bit of both. It holds the things you do every day, and it also holds things that are only for today. Those are called One Time for today, and they are not appointments. Anything from another page that falls today shows here too, with a note saying where it comes from. When you add something on Daily, you choose every day, or One Time for today. A One Time row on Daily has a short second line that says One Time only.',
     },
 
     { type: 'heading', text: 'Helper' },
@@ -339,6 +339,12 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
         text: 'It really is gone then, not only hidden for today. If a reminder from another page is showing on Daily, deleting it there takes it off that other page too, because it is the same reminder.',
     },
 
+    { type: 'heading', text: 'Moving a reminder' },
+    {
+        type: 'paragraph',
+        text: 'On a reminder list, hold a row and slide it. The row follows your finger and stays in your hand until you let go. The neighbors make room while it is sliding. The new order is kept when you let go.',
+    },
+
     { type: 'heading', text: 'Save' },
     {
         type: 'paragraph',
@@ -356,6 +362,10 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
         type: 'paragraph',
         text: 'If you last set the time with the 12-hour spinner, Save asks you to check AM or PM, so the morning or evening is the one you mean. You can go back and change it, or Save from there. If you last set the time with the 24-hour box or the digit spinner, it does not ask.',
     },
+    {
+        type: 'paragraph',
+        text: 'After Save on a new reminder, the app asks Back Up Memory? Your new item is saved. Would you like to back up Memory now? Back Up Now uses the same Backup & Restore as Settings. Not Now takes you back to the list. Edit and Done do not ask.',
+    },
 
     { type: 'heading', text: 'Done' },
     {
@@ -368,11 +378,11 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Daily and Weekly: a second tap the same day asks if you want to mark it as not done. Cancel leaves the tick. Mark not done takes it off. The morning takes it off if you leave it.',
+        text: 'Daily, Weekly, and One Time for today: a second tap the same day asks if you want to mark it as not done. Cancel leaves the tick. Mark not done takes it off. The morning takes it off if you leave it. Weekly will not remind you again this week.',
     },
     {
         type: 'paragraph',
-        text: 'Monthly, Quarterly, Yearly, and Birthdays: Done moves the date to the next time. The tick stays so you can see this cycle was done. A second tap while the tick is showing means this cycle was not done. The app asks if you want to mark it as not done. Cancel leaves the tick. It is not Done for the new cycle.',
+        text: 'Monthly, Quarterly, Yearly, and Birthdays: Done moves the date to the next time. The tick lasts that day only. The morning takes it off if you leave it. A second tap while the tick is showing means this cycle was not done. The app asks if you want to mark it as not done. Cancel leaves the tick. It is not Done for the new cycle.',
     },
     {
         type: 'paragraph',
@@ -406,7 +416,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Daily, and One Time for today: 15, 30, or 60 minutes.',
+        text: 'Daily, and One Time for today: 15, 30, or 60 minutes, and also 1 through 14 minutes. The 15, 30, and 60 sit on the left. The 1 through 14 sit in the middle as a round up arrow, the number, and a round down arrow. It starts at 5. Snooze on the right keeps that number. The arrows stop at 1 and at 14.',
     },
     {
         type: 'paragraph',
@@ -418,7 +428,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'The banner uses the same delays. Those buttons say Delay.',
+        text: 'The banner uses the same delays, except Daily and One Time for today. Those banners keep 15, 30, and 60 minutes. They do not have the 1 through 14 minutes. Those buttons say Delay.',
     },
     {
         type: 'paragraph',

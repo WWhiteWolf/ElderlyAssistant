@@ -24,14 +24,16 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. PHONE PROOF. Check that Daily's Snooze minutes now use the same
-   round up and down arrows as the other wheels, that every opening
-   starts at 5, that a One Time row says "One Time only," and that
-   neighboring list rows make room while a held row is sliding, past
-   more than one place. The
-   saved-list read warning also remains to be proved. The backup
-   question and the original-plus-follow-up Snooze already worked on
-   the phone. The full state is in docs/in-flight.md.
+1. PHONE PROOF FOR DONE'S ONE-DAY CHECK. Weekly, Monthly, Quarterly,
+   Yearly, Birthdays, and One Time should show the check that day only.
+   The next morning the row is the next time, with no check. Weekly
+   must not fire again this week. A second tap that same day still
+   takes the check off. Build 110 is already on the iPhone for the
+   Snooze minutes and list reorder. The User's Guide now matches that
+   work, including the 1-through-14 minutes on the list only. That copy
+   is not on the phone. The saved-list read warning also remains to be
+   proved, and it stays out of the Guide. The full state is in
+   docs/in-flight.md.
 2. IOS BUILD 100 is Waiting for Review. When Apple approves, you
    release it yourself. Release is manual (2026-10-01).
 3. THE BOTTOM OF THE GALAXY SCREEN. The phone uses about half an inch
@@ -157,6 +159,12 @@ built. None of these is a job to do.
     The copyright line is your name and the year.
 25. DO NOT TAKE UP XCODE CLOUD (Patrick, #123-new). Stay with the Expo
     build steps.
+26. DONE'S CHECK LASTS THAT DAY ONLY (Patrick, #127-new). Weekly,
+    Monthly, Quarterly, Yearly, Birthdays, and One Time. The morning
+    takes it off. Weekly still spends this week until the next
+    speaking time, so it does not fire again after the check is gone.
+    Appointments and Bucket List stay finished. Daily already worked
+    this way. In the machine, not a display patch.
 
 
 WHAT IS DONE, NEWEST FIRST
@@ -166,17 +174,37 @@ A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
 
+184. #127-new — The User's Guide now has Daily's 1-through-14 minute
+    Snooze on the list only, not on the banners; One Time only on the
+    Daily row; the backup question after a new Save; and holding a row
+    to slide it. The read-failure warning stays out of the Guide. The
+    working document and the in-app copy agree. Not on the phone.
+
+183. #127-new — The User's Guide now says the dated tick lasts that
+    day only, and that Weekly will not remind you again this week.
+    The working document and the in-app copy agree. Not on the phone.
+
+182. #127-new — Done's check on Weekly, Monthly, Quarterly, Yearly,
+    Birthdays, and One Time lasts that day only. Weekly still spends
+    this week until the next speaking time. Appointments and Bucket
+    List stay finished. In the machine, not a display patch. Not on
+    the phone. 445 Mac checks pass and TypeScript is clean.
+
+181. #127-new — Build 110 is on the iPhone and works. Daily Snooze
+    minutes match the other wheels. List neighbors make room while a
+    held row slides, past more than one place.
+
 180. #127-new — Neighboring rows on a reminder list make room while a
     held row is sliding, the same way Home badges do. The held row stays
     in hand past more than one place; an earlier try dropped it after
-    the first. The new order is kept when you let go. Not on the phone.
-    TypeScript is clean.
+    the first. The new order is kept when you let go. On the phone at
+    build 110, and it works. TypeScript is clean.
 
 179. #127-new — Daily Snooze minutes are now the same round up arrow,
     number, and round down arrow as the other wheels. They still run
     from 1 through 14, start at 5, and stop at both ends. 15, 30, and
-    60 stay stacked on the left. Not on the phone. 442 Mac checks pass
-    and TypeScript is clean.
+    60 stay stacked on the left. On the phone at build 110, and it
+    works. 442 Mac checks pass and TypeScript is clean.
 
 178. #126-new, committed — A failed saved-list read now shows a warning
     instead of an empty page and offers the existing Feedback popup.
