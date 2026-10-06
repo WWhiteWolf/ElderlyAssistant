@@ -23,27 +23,30 @@ Last written: 2026-10-05, #126-new, open.
   right, and the ends do not wrap. The whole popup owns its controls
   and layout; the shared list only supplies the item and accepts the
   choice.
-- Build 105 proved that a 10-minute wheel choice fired, and exposed
-  that it counted from the tap even when the original reminder was
-  still fifteen minutes away. That rule was rejected. The scheduler
-  machine now starts a list Snooze at the next unfired speaking moment,
-  starts at the tap after today's occurrence has spoken, and moves an
-  existing future Snooze from its own time. The shared page does not
-  calculate this.
-- 440 Mac checks pass. TypeScript is clean and lint has no errors. The
-  corrected Snooze rule is newer than build 105. The saved-list warning
-  has not been checked on the phone.
+- Build 106 is on Patrick's phone. It contains the machine rule that
+  starts an advance Snooze at the original speaking moment instead of
+  the tap. The original and later follow-up both alerted. Keep both:
+  that safety is wanted and matches **remind me again**.
+- Build 106 exposed the wheel running in the wrong visual direction
+  and sometimes reopening at 1. The code after it puts 14 at the top
+  and 1 at the bottom, makes Up go to the higher number above, and
+  resets both the selected number and physical wheel to 5 on every
+  opening.
+- A One Time item on Daily now says **One Time only** on a second line.
+- 442 Mac checks pass. TypeScript and lint are clean. The latest wheel
+  corrections and One Time marker are not on the phone. The saved-list
+  warning has not been checked there.
 
 ## What is next
 
-A newer phone build and phone proof cover the corrected Snooze timing.
-The saved-list read warning also remains to be proved.
+A newer phone build and phone proof cover the two wheel corrections and
+the One Time marker. The saved-list read warning remains to be proved.
 
 ## Do not reopen
 
-All changes are built, and the backup question is phone-proved. Do not
-rework them unless checking finds a fault. Do not add VoiceOver work,
-text-size work, a new
-notification-limit warning, gesture replacements, or an elaborate
-storage-recovery system from #125-new. Those suggestions were examined
-and did not remain.
+All changes are built. The backup question and the original-plus-
+follow-up Snooze are phone-proved. Do not replace the original alert
+with the Snooze. Do not rework anything unless checking finds a fault.
+Do not add VoiceOver work, text-size work, a new notification-limit
+warning, gesture replacements, or an elaborate storage-recovery system
+from #125-new. Those suggestions were examined and did not remain.

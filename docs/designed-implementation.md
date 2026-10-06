@@ -73,7 +73,8 @@ The shared page does Daily's extras. They are:
 - **Edit** uses the item's own kind, and comes back to Daily. A visitor
   is not saved as Daily.
 - **The row label** is the time, the name, and the from-line. The other
-  pages keep the when-line as the subtitle.
+  pages keep the when-line as the subtitle. A One Time row on Daily has
+  the second line **One Time only**.
 - **Done follows the item**, not the page. A visitor on Daily uses that
   item's Done action.
 
@@ -443,7 +444,8 @@ says Birthday, the first name, and the age, and does not add a
 from-line.
 
 **oneTime.** Daily's filter includes kind `oneTime`. That is not a
-visitor.
+visitor. Its Daily row says **One Time only** on a short second line;
+the saved name itself is unchanged.
 
 **Daily's own add.** + Add on Daily asks only: every-day, or One Time for
 today. It does not ask which page the item belongs on. That question
@@ -457,9 +459,11 @@ mark it not done.
 buttons, stacked on the left. A spinning 1-through-14 minute wheel sits
 in the middle and starts at 5. On the right, Up adds one minute, Snooze
 confirms the wheel's number, and Down removes one minute. Up and Down
-stop at 14 and 1 and do not wrap. This wheel belongs only to Daily's
-list popup. The banner button sets and the other reminder pages do not
-gain it.
+stop at 14 and 1 and do not wrap. Higher numbers sit above lower ones:
+14 is at the top, 1 is at the bottom, and Up goes to the higher number
+above. Every opening resets both the selected number and the physical
+wheel position to 5. This wheel belongs only to Daily's list popup. The
+banner button sets and the other reminder pages do not gain it.
 
 A list Snooze never makes an unfired reminder earlier. Before the next
 real speaking moment, the chosen delay starts at that moment. Once
@@ -467,6 +471,11 @@ today's occurrence has spoken, it starts at the tap. If a Snooze is
 already waiting, another Snooze starts there and moves it later. This
 is the reminder machine's rule for every list Snooze, including the
 existing choices; it is not a Daily-page calculation.
+
+Snooze is a safe follow-up, not a replacement. When it is chosen before
+the original reminder, that original still fires and the Snooze fires
+later. After seeing both alerts work on build 106, Patrick chose to keep
+that safety. The popup's words remain **remind me again**.
 
 `components/SnoozeSelector.tsx` owns the whole popup: the ordinary
 choices, Daily's wheel, its controls, and its layout. The shared list

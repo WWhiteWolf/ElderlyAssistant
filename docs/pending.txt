@@ -24,12 +24,12 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. PHONE PROOF FOR #126-NEW. Build the correction made after build
-   105, then check that a list Snooze cannot make an unfired reminder
-   earlier and still counts from the tap after today's reminder has
-   spoken. The saved-list read warning also remains to be proved. The
-   New-save backup question worked both ways on build 105. The full
-   state is in docs/in-flight.md.
+1. PHONE PROOF FOR #126-NEW. Build the changes made after build 106,
+   then check that higher wheel numbers are above lower ones, every
+   opening starts at 5, and a One Time row says "One Time only." The
+   saved-list read warning also remains to be proved. The backup
+   question and the original-plus-follow-up Snooze already worked on
+   the phone. The full state is in docs/in-flight.md.
 2. IOS BUILD 100 is Waiting for Review. When Apple approves, you
    release it yourself. Release is manual (2026-10-01).
 3. THE BOTTOM OF THE GALAXY SCREEN. The phone uses about half an inch
@@ -170,13 +170,14 @@ docs/handoff-history.md.
     uses the existing export, while Edit and Done do not ask. Daily
     keeps its 15, 30, and 60 minute Snooze choices and gains the
     1-through-14 minute wheel. Its complete popup now lives apart from
-    the shared list. Build 105 proved both backup answers and exposed a
-    Snooze that could fire before an unfired original reminder. The
-    scheduler machine now starts that delay at the real speaking
-    moment, or at the tap after today's reminder has spoken. The
-    designed implementation carries all three decisions. 440 Mac
-    checks pass and TypeScript is clean. The latest Snooze rule and the
-    read warning are not proved on the phone.
+    the shared list. Build 105 proved both backup answers. Build 106
+    proved the corrected timing and that the original and later
+    follow-up both alert; keep that safety. After build 106, the wheel
+    was reversed so Up goes to higher numbers above, every opening was
+    made to reset fully to 5, and One Time rows gained a "One Time
+    only" second line. The designed implementation carries the
+    decisions. 442 Mac checks pass and TypeScript is clean. The latest
+    three display changes and read warning are not proved on the phone.
 
 177. #125-new — Evaluations 8 judged that Memory reached your own aim:
     rock solid and consistent first, then the best personal reminder

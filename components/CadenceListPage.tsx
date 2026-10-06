@@ -19,6 +19,7 @@ import SnoozeSelector from './SnoozeSelector';
 import { PAGE_LABELS, pageLabelFor } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
 import { dayListLine } from '../modules/birth-year';
+import { dailyRowSubtitleOf } from '../modules/daily-row';
 import {
     dragKindTo,
     dragVisibleTo,
@@ -328,7 +329,11 @@ export default function CadenceListPage({
                                         highlighted={highlightId === item.id}
                                         dragging={draggingId === item.id}
                                         label={kind === 'daily' ? dailyRowLabel(item) : itemNameOf(item)}
-                                        subtitle={kind === 'daily' ? undefined : formatItemWhen(item)}
+                                        subtitle={
+                                            kind === 'daily'
+                                                ? dailyRowSubtitleOf(item)
+                                                : formatItemWhen(item)
+                                        }
                                         onTap={() => {
                                             if (highlightId === item.id) {
                                                 setHighlightId(null);

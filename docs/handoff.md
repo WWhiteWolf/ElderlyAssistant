@@ -40,17 +40,25 @@ adds the 1-through-14 minute wheel, starting at 5 and stopping at both
 ends. The whole popup lives in its own Snooze selector; the shared list
 only supplies the item and accepts the choice.
 
-Build **105** is on Patrick's phone. The backup question was proved
-both ways: Not Now returned normally, and Back Up Now completed the
-existing backup process. A 10-minute wheel Snooze also fired, but it
-fired five minutes before an original reminder that was still fifteen
-minutes away. That exposed the old count-from-the-tap rule. The reminder
-machine now starts a list Snooze at an unfired reminder's real speaking
-moment, or at the tap after today's reminder has spoken. An existing
-future Snooze is moved later from its own time. This correction is
-newer than build 105 and is not yet on the phone. 440 Mac checks pass,
-TypeScript is clean, and lint has no errors. The saved-list read warning
-also remains unproved on the phone.
+Build **105** proved the backup question both ways: Not Now returned
+normally, and Back Up Now completed the existing backup process. It
+also exposed a 10-minute wheel Snooze firing before an original reminder
+that was still fifteen minutes away.
+
+Build **106** is on Patrick's phone and contains the machine correction:
+an advance Snooze starts at the unfired reminder's real speaking moment,
+while a Snooze after today's reminder starts at the tap. The original
+and the later follow-up both alerted. Patrick chose to keep both because
+that is safer and matches **remind me again**.
+
+Build 106 also exposed two wheel faults: higher numbers were in the
+wrong direction, and reopening could start at 1. The code after build
+106 puts 14 at the top and 1 at the bottom, makes Up go to the higher
+number above, and resets both the number and physical wheel to 5 every
+time. A One Time item on Daily now has the second line **One Time only**.
+Those three display changes are not yet on the phone. 442 Mac checks
+pass, TypeScript is clean, and lint has no errors. The saved-list read
+warning also remains unproved on the phone.
 
 The lists end above the bottom of the screen, so a swipe to delete does
 not move the page. That is committed, on his phone, and verified working.
@@ -219,8 +227,9 @@ The guide remains `docs/designed-implementation.md`. The self-contained
 designed-machine build sheet and its phone proof are complete.
 
 No code change from #126-new remains open. The backup question is
-phone-proved. The latest Snooze timing rule needs a newer phone build
-and proof, and the saved-list read warning remains unproved.
+phone-proved, and build 106 proved the original-plus-follow-up Snooze
+timing. The two wheel corrections and the One Time marker need a newer
+phone build and proof. The saved-list read warning remains unproved.
 
 Testers are on TestFlight External. His phone has that list change,
 and it verifies.
