@@ -76,16 +76,23 @@ On the load it calls build 98:
 
 Testers are on TestFlight External. His phone has the list change, and it verifies.
 
+## What his Galaxy has shown
+
+Build 3 (1.0.0) is the internal test on the Galaxy. The Play account
+is open. The bottom of the screen is fixed, and that is verified.
+Android does not turn, and that is verified. Restore only opened a
+backup that had already been downloaded onto the phone. Export would
+not save a file on the phone.
+
 ## What it will cover
 
-His Galaxy still has the preview file from 2026-09-30. Every
-page on that copy stops short of the bottom. The project keeps
-the page body above that strip, and Android stays upright. That
-copy changes when a new install file is built. It has not been
-seen on the Galaxy.
+A long reminder list, scrolled, then a short reorder, has not been
+tried on a phone.
 
-An Android Play file was started. It is not sent until Google
-opens the account. It has not been tried on a phone.
+The evened Daily Snooze modal has not been tried on a phone.
+
+Export on Android, choosing a folder on the phone, has not been tried
+on a phone.
 
 Replace putting the home arrangement back has not been tried on
 a phone. A backup made before that work does not contain the

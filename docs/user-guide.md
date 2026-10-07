@@ -193,7 +193,8 @@ maximum, so that none will be dropped.
 
 **Backup & Restore** is for saving a copy of the reminders from your
 phone, and for putting them back on your phone. Export Backup saves
-a file you can keep.
+a file you can keep. On an Android phone you choose the folder on
+the phone.
 
 - Replace from Backup puts the backup's reminders in place of what
   is here.

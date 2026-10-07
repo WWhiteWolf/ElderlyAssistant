@@ -20,6 +20,7 @@ import { PAGE_LABELS, pageLabelFor } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
 import { dayListLine } from '../modules/birth-year';
 import { dailyRowSubtitleOf } from '../modules/daily-row';
+import { placeInList, rowUnderPlace } from '../modules/list-place';
 import {
     dragKindTo,
     dragVisibleTo,
@@ -60,15 +61,12 @@ function MeasuredRow({
     onSlot: (id: string, y: number, h: number) => void;
     children: ReactNode;
 }) {
-    const ref = useRef<View>(null);
     return (
         <View
-            ref={ref}
             collapsable={false}
-            onLayout={() => {
-                ref.current?.measureInWindow((_x, y, _w, h) => {
-                    onSlot(id, y, h);
-                });
+            onLayout={(event) => {
+                const { y, height } = event.nativeEvent.layout;
+                onSlot(id, y, height);
             }}
         >
             {children}
@@ -121,6 +119,10 @@ export default function CadenceListPage({
     visibleRef.current = visible;
     const rowHeights = useRef<Record<string, number>>({});
     const rowSlots = useRef<Record<string, { y: number; h: number }>>({});
+    const listFrame = useRef<View>(null);
+    const listTop = useRef(0);
+    const scrolled = useRef(0);
+    const sectionY = useRef(0);
     const dragMeta = useRef<{
         id: string;
         startY: number;
@@ -239,9 +241,12 @@ export default function CadenceListPage({
         };
         dragToIndex.current = startIndex;
         draggingIdRef.current = id;
-        dragCells.current = vis.map((one) => rowSlots.current[one.id]).filter(
-            (slot): slot is { y: number; h: number } => slot != null,
-        );
+        const top = sectionY.current;
+        dragCells.current = vis.map((one) => {
+            const slot = rowSlots.current[one.id];
+            if (!slot) return null;
+            return { y: top + slot.y, h: slot.h };
+        }).filter((slot): slot is { y: number; h: number } => slot != null);
         if (dragCells.current.length !== vis.length) dragCells.current = null;
         setDraggingId(id);
         setDragFromIndex(startIndex);
@@ -254,17 +259,7 @@ export default function CadenceListPage({
         const cells = dragCells.current;
         let nextIndex: number;
         if (cells) {
-            let best = 0;
-            let bestD = Infinity;
-            cells.forEach((slot, i) => {
-                const cy = slot.y + slot.h / 2;
-                const d = (cy - y) ** 2;
-                if (d < bestD) {
-                    bestD = d;
-                    best = i;
-                }
-            });
-            nextIndex = best;
+            nextIndex = rowUnderPlace(placeInList(y, listTop.current, scrolled.current), cells);
         } else {
             const vis = visibleFor(kind, meta.snapshot);
             if (vis.length === 0) return;
@@ -349,14 +344,31 @@ export default function CadenceListPage({
                     </View>
                 }
             >
+            <View
+                ref={listFrame}
+                style={styles.scroll}
+                onLayout={() => {
+                    listFrame.current?.measureInWindow((_x, y) => {
+                        listTop.current = y;
+                    });
+                }}
+            >
             <ScrollView
                 style={[styles.scroll, Platform.OS === 'android' ? null : { marginBottom: insets.bottom }]}
                 contentContainerStyle={{ paddingBottom: 56 }}
                 scrollEnabled={!draggingId}
                 scrollEventThrottle={16}
                 directionalLockEnabled
+                onScroll={(event) => {
+                    scrolled.current = event.nativeEvent.contentOffset.y;
+                }}
             >
-                <View style={styles.section}>
+                <View
+                    style={styles.section}
+                    onLayout={(event) => {
+                        sectionY.current = event.nativeEvent.layout.y;
+                    }}
+                >
                     {listReadFailed ? (
                         <View style={styles.readFailure}>
                             <Text style={styles.readFailureTitle}>Memory could not read your saved reminders.</Text>
@@ -431,6 +443,7 @@ export default function CadenceListPage({
                     )}
                 </View>
             </ScrollView>
+            </View>
             </PageFrame>
 
             {showAddPopup && (

@@ -17,35 +17,30 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-#128-new makes the initial load use the phone's text size. You set the
-phone's text larger so you can read it. After a restore, or a download
-and a restore, Memory's writing was the small size again while the rest
-of the phone stayed large. The reading had been taken while Memory was
-still starting, and that ordinary size was the one the writing kept.
-The first writing now waits until the app is active and reads the
-phone's current text size. The pages and the backup are unchanged.
-This is not on the phone.
+Build **114** is on the iPhone. Build **3** (1.0.0) is the internal
+test on the Galaxy. The Play account is open. The next Android
+internal-test build is approved. It starts after this commit. The
+Galaxy still has build 3 until that load arrives.
 
-Build **110** is on the iPhone. Still not on the phone: Done's check
-on Weekly, Monthly, Quarterly, Yearly, Birthdays, and One Time lasts
-that day only, and Weekly still spends this week until the next
-speaking time. The User's Guide matches that work, and that copy is
-not on the phone. The saved-list read warning remains unproved and
-stays out of the Guide. The home arrangement is the home page's own
-order. Export saves it and Replace writes it back. Merge leaves it.
-A backup made before this does not contain it, and it still loads.
-The Daily 15, 30, and 60 minute buttons are half as wide, and the
-height is unchanged.
+Not on the phones yet:
+
+The fresh-open text size. The proof is a new iPhone build, then a
+fresh open with the phone's text set larger.
+
+Done's one-day check, and the User's Guide that matches it.
+
+The home arrangement in a backup.
+
+The evened Daily Snooze modal.
+
+A short reorder on a long list.
+
+On Android, Export into a folder chosen on the phone.
+
+The saved-list read warning is unproved and stays out of the Guide.
 
 App Store build **100** is **Waiting for Review**. Release is manual.
-He releases it himself when Apple approves.
-
-The Play Console account was submitted on 2026-10-01. Google has not
-opened it. The Android file is built and is not sent until the account
-can take an app. The iPhone number is still 100. The preview on the
-Galaxy still stops short of the bottom. That copy changes when a new
-install file is built. Android stays upright, and the page body stays
-above that strip.
+The $9.99 Android listing still waits.
 
 ## Standing rulings
 
@@ -103,7 +98,8 @@ finished task.
   counter-clockwise, and 270° counter-clockwise. 180° upside-down is
   out.
 - **Android stays upright** (Patrick, #122-new). The phone does not
-  turn. The landscape ruling above is the iPhone.
+  turn. That is verified on the Galaxy. The landscape ruling above is
+  the iPhone.
 - **Siri is out of sight.** Do not raise the later Siri.
 - **Do not connect `floatDay`** unless Patrick says otherwise.
 - **Each closed-app notice has its own thread name.** This Expo does
@@ -119,9 +115,11 @@ finished task.
 - **The Android name is `com.molliedog.ElderlyAssistant`.** It is the
   same id as the iPhone (Patrick, #121-new).
 - **The Android path is Google Play** (Patrick, 2026-10-01). The
-  account was submitted on 2026-10-01. Google has not opened it.
-  The Play file is built now anyway, Android only, and it is not
-  sent to Play until the account can take an app (Patrick, #124-new).
+  account was submitted on 2026-10-01. It is open (#128-new). Build
+  **3** (1.0.0) is the internal test on the Galaxy. The iPhone number
+  stayed at 100. The $9.99 Android listing still waits.
+- **He makes the iPhone builds.** Android builds are started from the
+  sitting. He does not start them (Patrick, #130-new).
 - **Do not raise the closed-test count** (Patrick, #122-new).
 - **The app is $9.99 once, the same on the iPhone and on Android, and
   there is no trial** (Patrick, #123-new).
@@ -139,21 +137,8 @@ finished task.
 
 The guide remains `docs/designed-implementation.md`.
 
-A new iPhone build, then a fresh open with the phone's text set
-larger, is the proof for #128-new.
-
-Done's one-day check, the matching User's Guide, the home arrangement,
-and the narrower Daily snooze buttons are in the project and not on
-the phone. The saved-list read warning remains unproved and stays out
-of the Guide.
-
-App Store build **100** is **Waiting for Review**. Release is manual.
-The journey is `docs/connect-submit.md`. What is already in App Store
-Connect stays there.
-
-The Galaxy copy is still the old preview. The Play account is not
-open, so the Android file is not sent, and the $9.99 Android listing
-waits for that.
+App Store release is manual. The journey is `docs/connect-submit.md`.
+What is already in App Store Connect stays there.
 
 ## Facts worth carrying
 

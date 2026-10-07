@@ -227,7 +227,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: '**Backup & Restore** is for saving a copy of the reminders from your phone, and for putting them back on your phone. Export Backup saves a file you can keep.',
+        text: '**Backup & Restore** is for saving a copy of the reminders from your phone, and for putting them back on your phone. Export Backup saves a file you can keep. On an Android phone you choose the folder on the phone.',
     },
     {
         type: 'bullets',

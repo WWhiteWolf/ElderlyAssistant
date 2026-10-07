@@ -63,7 +63,7 @@ export default function SnoozeSelector({
 
                     {withDailyMinuteWheel ? (
                         <View style={styles.dailyRow}>
-                            <View style={styles.choiceSlot}>
+                            <View style={styles.zone}>
                                 <View style={styles.choiceColumn}>
                                     {choices.map((choice) => (
                                         <TouchableOpacity
@@ -77,7 +77,8 @@ export default function SnoozeSelector({
                                 </View>
                             </View>
 
-                            <View style={styles.stepper}>
+                            <View style={styles.zone}>
+                                <View style={styles.stepper}>
                                 <TouchableOpacity
                                     style={[
                                         styles.adjBtn,
@@ -101,11 +102,14 @@ export default function SnoozeSelector({
                                 >
                                     <Text style={styles.adjText}>▼</Text>
                                 </TouchableOpacity>
+                                </View>
                             </View>
 
-                            <TouchableOpacity style={styles.snoozeButton} onPress={chooseMinute}>
-                                <Text style={styles.snoozeButtonText}>Snooze</Text>
-                            </TouchableOpacity>
+                            <View style={styles.zone}>
+                                <TouchableOpacity style={styles.snoozeButton} onPress={chooseMinute}>
+                                    <Text style={styles.snoozeButtonText}>Snooze</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     ) : (
                         <View style={styles.choiceRow}>
@@ -179,16 +183,15 @@ const makeStyles = (t: Theme) =>
         dailyRow: {
             alignItems: 'center',
             flexDirection: 'row',
-            gap: 8,
-            justifyContent: 'space-between',
             marginVertical: 12,
         },
-        choiceSlot: {
+        zone: {
+            alignItems: 'center',
             flex: 1,
         },
         choiceColumn: {
             gap: 6,
-            width: '50%',
+            width: '88%',
         },
         stackedChoice: {
             alignItems: 'center',
@@ -236,7 +239,7 @@ const makeStyles = (t: Theme) =>
             borderRadius: 8,
             height: 40,
             justifyContent: 'center',
-            width: 78,
+            width: '88%',
         },
         snoozeButtonText: {
             color: t.delayText,

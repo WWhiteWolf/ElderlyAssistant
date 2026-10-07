@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { File, Paths } from 'expo-file-system';
+import { Directory, File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import { readBackupSettings } from './backup-settings';
 import { homeOrderText, readHomeArrangement } from './home-badges';
 import { readSavedReminderItems } from './reminder-list-storage';
@@ -9,6 +9,34 @@ import { readSavedReminderItems } from './reminder-list-storage';
 // Bump this only when the backup shape changes, so Restore can reject a file
 // whose shape this version does not understand.
 export const BACKUP_VERSION = 3;
+
+function backupFileName(now: Date): string {
+    const stamp =
+        `${now.getFullYear()}-` +
+        `${String(now.getMonth() + 1).padStart(2, '0')}-` +
+        `${String(now.getDate()).padStart(2, '0')}-` +
+        `${String(now.getHours()).padStart(2, '0')}` +
+        `${String(now.getMinutes()).padStart(2, '0')}`;
+    return `Remember-Backup-${stamp}.json`;
+}
+
+function pickerWasCancelled(error: unknown): boolean {
+    const message = error instanceof Error ? error.message : String(error);
+    return message.toLowerCase().includes('cancel');
+}
+
+async function saveBackupIntoChosenFolder(json: string, fileName: string): Promise<void> {
+    let directory;
+    try {
+        directory = await Directory.pickDirectoryAsync();
+    } catch (error) {
+        if (pickerWasCancelled(error)) return;
+        throw error;
+    }
+    const file = directory.createFile(fileName, 'application/json');
+    file.write(json);
+    Alert.alert('Backup saved', `Your backup was saved as ${fileName}.`);
+}
 
 async function shareBackup(data: Record<string, string | null>): Promise<void> {
     try {
@@ -20,15 +48,12 @@ async function shareBackup(data: Record<string, string | null>): Promise<void> {
             data,
         };
         const json = JSON.stringify(backup, null, 2);
+        const fileName = backupFileName(new Date());
 
-        const now = new Date();
-        const stamp =
-            `${now.getFullYear()}-` +
-            `${String(now.getMonth() + 1).padStart(2, '0')}-` +
-            `${String(now.getDate()).padStart(2, '0')}-` +
-            `${String(now.getHours()).padStart(2, '0')}` +
-            `${String(now.getMinutes()).padStart(2, '0')}`;
-        const fileName = `Remember-Backup-${stamp}.json`;
+        if (Platform.OS === 'android') {
+            await saveBackupIntoChosenFolder(json, fileName);
+            return;
+        }
 
         const file = new File(Paths.cache, fileName);
         if (file.exists) file.delete();

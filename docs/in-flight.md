@@ -4,23 +4,28 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-10-06, #128-new.
+Last written: 2026-10-07, #130-new.
 
 ## Read this first
 
-- You set the phone's text larger so you can read it. After a restore,
-  or a download and a restore, Memory's writing was the small size
-  again. The rest of the phone stayed large.
-- The initial load now waits until the app is active, reads the phone's
-  text size, and the first writing uses that size.
-- The pages and the backup are unchanged. This is not on the phone.
+- A long list keeps each row's place, and how far the list has scrolled.
+  A short move stays short. Neighbors still make room. Not on a phone.
+- The Daily Snooze row is three even parts: the minute buttons, the
+  wheel, and Snooze. Not on a phone.
+- Android Export asks for a folder on the phone and saves the backup
+  there. The iPhone keeps the share screen. Not on a phone.
+- You make the iPhone builds. Android builds are started from the sitting.
+- You approved the next Android build. It goes to the internal test the
+  Galaxy already uses. The Galaxy still has build 3. The public listing
+  still waits. The build has not been started.
 
 ## What is next
 
-A new iPhone build, then a fresh open with the phone's text set larger.
+You commit. Then this sitting starts that Android build and sends it
+to the internal test.
 
 ## Do not reopen
 
-Do not add a text-size control in Settings.
-Do not put a text size in the backup.
-Do not change the sizes on the pages one by one.
+Do not send this build to the public $9.99 listing.
+Do not raise the closed-test count.
+Do not start an iPhone build from the sitting.

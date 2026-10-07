@@ -239,6 +239,11 @@ finger and stays in your hand until you let go. The neighbors make room
 while it is sliding, the same way Home badges do. The new order is kept
 when you let go. Built at #127-new.
 
+Each row keeps its place in the list, and the list keeps how far it has
+been scrolled. The row under the finger is that place, shifted by the
+scroll. A short move on a long list lands a short distance away. While
+a row is held, the list does not scroll. (#130-new)
+
 ## Saved-list boundary
 
 `reminder_items` has one neutral storage module and one queued physical
@@ -469,7 +474,9 @@ mark it not done.
 buttons, stacked on the left. The 1-through-14 minutes sit in the middle
 as the same kind of control as the other wheels: a round up arrow, the
 number, and a round down arrow. It starts at 5. Snooze on the right
-confirms that number. Up and Down stop at 14 and 1 and do not wrap.
+confirms that number. The buttons, the wheel, and Snooze share the row
+in three even parts, and each sits in the middle of its part. Up and
+Down stop at 14 and 1 and do not wrap.
 Every opening resets to 5. This control belongs only to Daily's list
 popup. The banner button sets and the other reminder pages do not gain
 it.
@@ -735,7 +742,9 @@ Helper is not on this page.
 
 There are three acts: Export Backup, Replace from Backup, and Merge
 from Backup. You choose Replace or Merge first, then pick a file, then
-confirm. Export saves a file you can keep.
+confirm. Export saves a file you can keep. On Android, Export asks for
+a folder on the phone and writes the backup file there. The iPhone
+keeps the share screen.
 
 Replace puts the backup's reminders in place of what is here, and takes
 off the missed-reminder notes. Merge keeps what is here and adds from

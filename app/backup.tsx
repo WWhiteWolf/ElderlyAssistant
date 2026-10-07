@@ -4,6 +4,7 @@ import { File } from 'expo-file-system';
 import { useRouter } from 'expo-router';
 import {
     Alert,
+    Platform,
     ScrollView,
     StyleSheet,
     Text,
@@ -206,8 +207,10 @@ export default function BackupScreen() {
 
             <ScrollView contentContainerStyle={styles.body}>
                 <Text style={styles.intro}>
-                    Save your reminders to a file you can keep in Files, iCloud, or Google
-                    Drive. Choose, replace, or merge to pick a file. Replace puts
+                    {Platform.OS === 'android'
+                        ? 'Save your reminders into a folder you choose on the phone. '
+                        : 'Save your reminders to a file you can keep in Files, iCloud, or Google Drive. '}
+                    Choose, replace, or merge to pick a file. Replace puts
                     the backup's reminders in place of what is here, and writes the
                     name, the app look, the home arrangement, and the reminder times
                     when the file has them. Merge keeps what is here and adds from the backup only

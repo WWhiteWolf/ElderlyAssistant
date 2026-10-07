@@ -34,6 +34,7 @@ import { runOpeningTests } from './opening.test.ts';
 import { runSavedListStorageTests } from './savedliststorage.test.ts';
 import { runBackupSettingsTests } from './backupsettings.test.ts';
 import { runHomeOrderStorageTests, runHomeOrderTests } from './homeorder.test.ts';
+import { runListPlaceTests } from './listplace.test.ts';
 import { runPresentedTests } from './presented.test.ts';
 
 async function runAll(): Promise<void> {
@@ -99,6 +100,9 @@ async function runAll(): Promise<void> {
 
     console.log('\nBackup Settings');
     await runBackupSettingsTests();
+
+    console.log('\nList place');
+    runListPlaceTests();
 
     console.log('\nHome arrangement');
     runHomeOrderTests();

@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-10-06
+Last updated: 2026-10-07
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. You are the only reader, so this list says you.
@@ -24,40 +24,45 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. PHONE TEXT SIZE ON A FRESH OPEN. You set the phone's text larger
+1. ANDROID INTERNAL TEST. You approved the next Android build. It
+   starts after this commit. It goes to the internal test the Galaxy
+   already uses. The Galaxy still has build 3 until that load arrives.
+   The public listing still waits.
+2. PHONE TEXT SIZE ON A FRESH OPEN. You set the phone's text larger
    so you can read it. After a restore, or a download and a restore,
    Memory's writing was the small size again while the rest of the
    phone stayed large. The initial load now waits until the app is
    active, then reads the phone's text size, and the first writing
    uses that size. The pages and the backup are unchanged. This is
    not on the phone yet (#128-new).
-2. PHONE PROOF FOR DONE'S ONE-DAY CHECK. Weekly, Monthly, Quarterly,
+3. LONG LIST REORDER. A long reminder list keeps each row's place in
+   the list, and how far the list has been scrolled. The row under
+   your finger is that place, shifted by the scroll. A short move
+   lands a short distance away. The neighbors still make room. This
+   is in the project and not on the phone (#130-new).
+4. PHONE PROOF FOR DONE'S ONE-DAY CHECK. Weekly, Monthly, Quarterly,
    Yearly, Birthdays, and One Time should show the check that day only.
    The next morning the row is the next time, with no check. Weekly
    must not fire again this week. A second tap that same day still
-   takes the check off. Build 110 is already on the iPhone for the
+   takes the check off. Build 114 is already on the iPhone for the
    Snooze minutes and list reorder. The User's Guide now matches that
    work, including the 1-through-14 minutes on the list only. That copy
    is not on the phone. The saved-list read warning also remains to be
    proved, and it stays out of the Guide. The home arrangement
-   restore is in the project and not on the phone. The Daily 15, 30,
-   and 60 minute buttons are half as wide, and that is not on the
+   restore is in the project and not on the phone. The Daily Snooze
+   modal shares its row in three even parts, and that is not on the
    phone either. The full state is in docs/in-flight.md.
-3. IOS BUILD 100 is Waiting for Review. When Apple approves, you
+5. IOS BUILD 100 is Waiting for Review. When Apple approves, you
    release it yourself. Release is manual (2026-10-01).
-4. THE BOTTOM OF THE GALAXY SCREEN. The phone uses about half an inch
-   at the bottom, and Android stays upright. The project keeps the page
-   body above that strip. The copy on your Galaxy is still the old
-   preview. It changes when a new install file is built (2026-10-01).
-5. THE PLAY ACCOUNT. You submitted it. Google has not opened it.
-   The file is Android only, and it is not sent to Play until the
-   account can take the app. The Android count on Expo went from 1
-   to 2. The build page is on expo.dev under molliedog,
-   ElderlyAssistant, build 7d816ec8 (Patrick, #124-new). The 110 MB
-   file on this Mac is not that file.
 6. THE PRICE ON ANDROID. $9.99 once, no trial. The iPhone listing
-   already has that price. Android waits until the Play account can
-   take the app (#123-new).
+   already has that price. The Play account is open, and build 3 is
+   the internal test on your Galaxy (#128-new). The public Android
+   listing still waits (#123-new).
+7. ANDROID BACKUP FOLDER. Export on Android asks you to choose a
+   folder on the phone and saves the backup there. The iPhone keeps
+   the share screen. Not on the phone (#130-new). On the Galaxy, in
+   128, Restore only opened a backup that had already been downloaded
+   onto the phone. Export would not save a file on the phone.
 
 
 PENDING
@@ -73,6 +78,33 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+193. #130-new — You make the iPhone builds. Android builds are started
+    from the sitting. You do not start them.
+
+192. #128-new — The live handoff and this list were trimmed. Finished
+    sittings already in the history came out of the handoff. The facts
+    heading that repeated the other files came out of this list.
+
+191. #128-new — The Play account is open. Build 3 (1.0.0) is the
+    internal test on your Galaxy. Restore only opened a backup that
+    had already been downloaded onto the phone. Export would not save
+    a file on the phone.
+
+190. #130-new — Export on Android asks you to choose a folder on the
+    phone and saves the backup there. The iPhone keeps the share
+    screen. Not on the phone.
+
+189. #130-new — The Daily Snooze modal shares its row in three even
+    parts: the 15, 30, and 60 minute buttons, the wheel, and Snooze.
+    Each sits in the middle of its part. Not on the phone.
+
+188. #130-new — A long reminder list keeps each row's place in the list
+    and how far the list has been scrolled. A short move lands a short
+    distance away. The neighbors still make room. Not on the phone.
+
+187. The bottom of the Galaxy screen is fixed. Android does not turn.
+    Both are verified on build 3.
 
 186. #127-new — The 15, 30, and 60 minute buttons on the Daily
     snooze modal are half as wide as they were. The height is

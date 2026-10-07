@@ -17,6 +17,65 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #130-new (2026-10-07): long-list reorder, evened Daily Snooze, Android folder backup
+
+**Long list.** A short move on a long Birthday list was landing at the
+wrong end. A short list of about sixteen was fine, including a fresh
+load. Each row now keeps its place in the list, and the list keeps how
+far it has been scrolled. The row under the finger is that place.
+Neighbors still step aside. The list does not scroll while a row is
+held. Not on a phone.
+
+**Daily Snooze.** The 15, 30, and 60 buttons and the wheel sat at the
+two sides, with an empty middle. The row is three even parts. The
+buttons, the wheel, and Snooze each sit in the middle of their part.
+Not on a phone.
+
+**Android backup.** Export on Android asks for a folder on the phone
+and writes the backup file there. The iPhone keeps the share screen.
+The Backup page says that. Not on a phone.
+
+**The record.** Build 114 is on the iPhone. Build 3 is the internal
+test on the Galaxy. The bottom of the Galaxy is fixed, and Android
+does not turn. Both are verified. The other chat named 130 was deleted
+and never started. #128-new is where the Play account opened and build
+3 was loaded, and where Restore only opened a file already downloaded
+and Export would not save on the phone. This sitting wrote that history
+entry. The live handoff keeps current issues only.
+
+**Who starts a build.** He makes the iPhone builds. Android builds are
+started from the sitting. He does not start them.
+
+**Next.** He commits first. Then this sitting starts the Android build
+and sends it to the internal test the Galaxy already uses. The public
+$9.99 listing still waits. The build has not been started.
+
+## #128-new (2026-10-06): phone text size, Play account open, build 3 on the Galaxy
+
+**Text size.** He set the phone's text larger so he could read it. After
+a restore, or a download and a restore, Memory's writing was the small
+size again while the rest of the phone stayed large. The first reading
+had been taken while Memory was still starting, and that ordinary size
+was the one the writing kept. The first writing now waits until the app
+is active and reads the phone's current text size. The pages and the
+backup are unchanged. This is not on the phone.
+
+**Play.** The account is open. Build 3 (1.0.0) is the internal test on
+the Galaxy. The iPhone number stayed at 100.
+
+**Backup on that Galaxy load.** Restore only opened a backup that had
+already been downloaded onto the phone. Export would not save a file
+on the phone.
+
+**The trim.** The live handoff and the pending list were trimmed.
+Finished sittings already in this history, from #119-new through
+#127-new, the old phone builds, and the Play research came out of the
+handoff. What was still open stayed. The pending list lost the facts
+heading that repeated the other files.
+
+**Close.** This entry was written in #130-new. The sitting ended before
+the close was written.
+
 ## #127-new (2026-10-06): one-day Done, home arrangement, narrower Daily snooze buttons
 
 **Daily Snooze control.** The spinning minute column became the same
