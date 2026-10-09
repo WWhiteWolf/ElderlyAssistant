@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-10-07
+Last updated: 2026-10-08
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. You are the only reader, so this list says you.
@@ -24,8 +24,8 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. ANDROID INTERNAL TEST. You approved the next Android build. It
-   starts after this commit. It goes to the internal test the Galaxy
+1. ANDROID INTERNAL TEST. You approved the next Android build. That
+   work is committed. It goes to the internal test the Galaxy
    already uses. The Galaxy still has build 3 until that load arrives.
    The public listing still waits.
 2. PHONE TEXT SIZE ON A FRESH OPEN. You set the phone's text larger

@@ -19,7 +19,7 @@ who decides. It is not a claim that the files were refreshed.
 
 Build **114** is on the iPhone. Build **3** (1.0.0) is the internal
 test on the Galaxy. The Play account is open. The next Android
-internal-test build is approved. It starts after this commit. The
+internal-test build is approved. That work is committed. The
 Galaxy still has build 3 until that load arrives.
 
 Not on the phones yet:
