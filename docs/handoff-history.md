@@ -17,6 +17,36 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #132-new (2026-10-09): Daily follows the occurrence; weekday options are Monthly only
+
+**Daily.** A repeating reminder was showing on its saved date as well
+as on the day it occurs. Daily now asks the same occurrence the notice
+uses. The saved date does not also put it on Daily. The clock time is
+unchanged. A 2nd Wednesday this October is the 14th. Wednesday after
+the 6th is the 7th. Both follow that occurrence. Save still writes the
+date, and Done still advances it. Not on a phone.
+
+**Options.** Same Day Nth Week and Day of First Full Week are on
+Monthly only. Quarterly and Yearly have Time zone and Holidays. One
+already set on Quarterly or Yearly is no longer used. Quarterly with
+no day chip is still every three months, and that number is on the
+Quarterly row. Not on a phone.
+
+**Names.** Those two options are named Same Day Nth Week and Day of
+First Full Week. Same Day Nth Week is the same day of one particular
+week of each month. Day of First Full Week is a particular day in the
+first full week of each month. Not on a phone.
+
+**The record.** Pending Done 194, 195, and 196. The design, the guide in
+docs, and the page spec match. The in-app guide matches. The Word
+copy of the pending list was not generated.
+
+**Close.** He commits. The next session has What's Next 8, 9, and 10.
+Daily asks for 5, 10, and the rest, with no wheel. Monthly asks
+whether the reminder should move for holidays. The Android backup
+and restore fix from before. The second and third are display
+changes.
+
 ## #130-new (2026-10-07): long-list reorder, evened Daily Snooze, Android folder backup
 
 **Long list.** A short move on a long Birthday list was landing at the

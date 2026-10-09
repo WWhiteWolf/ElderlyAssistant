@@ -199,7 +199,7 @@ no both-true case.
 This is for a difference that looks like bits but must not combine. A
 code word is the right shape when the thing is a choice of names.
 
-**A second Thursday and a Wednesday after the 6th cannot both be true.**
+**Same Day Nth Week and Day of First Full Week cannot both be true.**
 That is one exclusive group, on the translator's table. The Options
 sheet turns the others off when you set the last pattern. The translator
 writes at most one. The saved calendar date is not one of those bits. It
@@ -388,8 +388,9 @@ advanceDate. A 31st stays the 31st. A month with no such day uses the
 last day that exists for that month only. It can be pushed back. Banner
 set cadenceactions: Done, Delay 1 Day / 1 Week / 1 Month. A missing day
 uses shifteddayactions: Then, Next Day. Speaks at the moment itself. A
-second Thursday or Wednesday after the 6th looks from the saved date,
-the same as a numbered day. Done moving the date takes it off Daily.
+Same Day Nth Week or Day of First Full Week is the occurrence. Daily
+shows that day. The saved date does not also put it on Daily. Save
+still writes the date, and Done still advances it.
 Its pushed-back source is monthlydelay.
 
 **quarterly** — page Quarterly. Repeats every three months when the
@@ -398,14 +399,15 @@ is advanceDate. It can be pushed back. Banner set cadenceactions. A
 missing day uses shifteddayactions: Then, Next Day. On Add, the chips
 are selectable. No chip stays every three months. A chip counts that
 many days from the date entered when it is set. One chip at a time.
-The list tile still shows the date. A 30, 60, or 90 day item gets
-Holidays and Time zone only. A second Thursday and a Wednesday after
-are not offered. Its pushed-back source is quarterlydelay.
+The list tile still shows the date. Quarterly gets Holidays and Time
+zone only. Same Day Nth Week and Day of First Full Week are Monthly
+only. Its pushed-back source is quarterlydelay.
 
 **yearly** — page Yearly. Repeats every year. Date required. Done is
 advanceDate. It can be pushed back. Banner set cadenceactions. A
-missing day uses shifteddayactions: Then, Next Day. Its pushed-back
-source is yearlydelay.
+missing day uses shifteddayactions: Then, Next Day. Yearly gets
+Holidays and Time zone only. Same Day Nth Week and Day of First Full
+Week are Monthly only. Its pushed-back source is yearlydelay.
 
 **appointments** — page Appointments. No repeat. Date required. The form
 does not offer to take the date off. Things with no date belong on
@@ -796,8 +798,8 @@ saved field stays as inert history. `floatDay` remains disconnected.
 Save strips every live Options field that the kind's row does not
 allow.
 
-The cases are Holidays, Time zone, a second Thursday, and a Wednesday
-after the 6th. Holidays is Day before or Day after. That is the
+The cases are Holidays, Time zone, Same Day Nth Week, and Day of
+First Full Week. Holidays is Day before or Day after. That is the
 holiday's own day. The same-week move was dropped (#119-new). Time
 zone is Float with phone or Keep this zone. When Keep this zone is
 on, the form line says Keep this zone and the zone name. Then and
@@ -805,13 +807,12 @@ Next Day are the missing-day banner, not an Options case.
 
 Daily and One Time get Time zone only. Weekly gets Holidays and Time
 zone. Appointments and Birthdays get
-Holidays and Time zone. Monthly and Yearly get Holidays, Time zone,
-a second Thursday, and a Wednesday after the 6th. Quarterly with no
-chip gets those four as well. A 30, 60, or 90 day Quarterly item
-gets Holidays and Time zone only. Bucket List gets none.
+Holidays and Time zone. Quarterly and Yearly get Holidays and Time
+zone. Monthly gets Holidays, Time zone, Same Day Nth Week, and Day of
+First Full Week. Bucket List gets none.
 
-On Monthly, Yearly, and Quarterly with no chip, a second Thursday
-and a Wednesday after the 6th are exclusive. Setting one turns the
-other off. With neither on, the item uses its numbered date. In all
-those cases, the saved date remains the cycle anchor: Save writes it
-and Done advances from it.
+On Monthly, Same Day Nth Week and Day of First Full Week are
+exclusive. Setting one turns the other off. With neither on, the item
+uses its numbered date. The saved date remains the cycle anchor: Save
+writes it and Done advances from it. Daily shows the occurrence, not
+the saved date beside it.

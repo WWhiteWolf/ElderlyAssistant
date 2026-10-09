@@ -37,6 +37,12 @@ A short reorder on a long list.
 
 On Android, Export into a folder chosen on the phone.
 
+Daily shows a repeating reminder on the day it occurs. The saved date
+does not also put it there (#132-new).
+
+Same Day Nth Week and Day of First Full Week are on Monthly only
+(#132-new).
+
 The saved-list read warning is unproved and stays out of the Guide.
 
 App Store build **100** is **Waiting for Review**. Release is manual.
@@ -134,6 +140,12 @@ finished task.
   thrown away. A run is not kept.
 
 ## What is open in front of it
+
+For the next session, from #132-new. Daily asks for 5, 10, and the
+rest, with no wheel. Monthly asks whether the reminder should move
+for holidays. The Android backup and restore fix from before. The
+second and third are display changes. They are What's Next 8, 9,
+and 10.
 
 The guide remains `docs/designed-implementation.md`.
 

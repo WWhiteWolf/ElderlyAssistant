@@ -662,14 +662,14 @@ export function runTranslatorCadenceTests(): void {
         );
     });
 
-    test('Quarterly and Yearly use the dated Options list from their rows', () => {
+    test('Quarterly and Yearly have Holidays and Time zone only', () => {
         assertSame(
             [optionCaseIdsFor('quarterly'), optionCaseIdsFor('yearly')],
             [
-                ['holidays', 'timezone', 'secondThursday', 'wednesdayAfter'],
-                ['holidays', 'timezone', 'secondThursday', 'wednesdayAfter'],
+                ['holidays', 'timezone'],
+                ['holidays', 'timezone'],
             ],
-            'no-chip Quarterly and Yearly carry the same allowed Options codes as Monthly',
+            'a second Thursday and a Wednesday after the 6th are Monthly only',
         );
     });
 
@@ -859,7 +859,7 @@ export function runTranslatorCadenceTests(): void {
         );
     });
 
-    test('Monthly, Quarterly, and Yearly carry the weekday exclusive group', () => {
+    test('Only Monthly carries the weekday exclusive group', () => {
         assertSame(
             [
                 exclusiveGroupBitsOf('monthly'),
@@ -869,11 +869,45 @@ export function runTranslatorCadenceTests(): void {
             ],
             [
                 [...MONTHLY_WEEKDAY_EXCLUSIVE_GROUP],
-                [...MONTHLY_WEEKDAY_EXCLUSIVE_GROUP],
-                [...MONTHLY_WEEKDAY_EXCLUSIVE_GROUP],
+                undefined,
+                undefined,
                 undefined,
             ],
-            'a second Thursday and a Wednesday after the 6th cannot both be true',
+            'a second Thursday and a Wednesday after the 6th are Monthly only',
+        );
+    });
+
+    test('A Quarterly or Yearly item that already has a numbered weekday does not use it', () => {
+        const quarterly = shapeOf(item({
+            kind: 'quarterly',
+            year: 2026,
+            month: 0,
+            day: 15,
+            hour: 10,
+            minute: 0,
+            weekdayOrdinal: 2,
+            ordinalWeekday: 3,
+        }));
+        const yearly = shapeOf(item({
+            kind: 'yearly',
+            year: 2026,
+            month: 0,
+            day: 15,
+            hour: 10,
+            minute: 0,
+            afterWeekday: 3,
+            afterDayCount: 6,
+        }));
+        assertSame(
+            [
+                quarterly.repeatWeekdayList,
+                quarterly.repeatAfterDayCount,
+                yearly.repeatUnitCode,
+                yearly.repeatWeekdayList,
+                yearly.repeatAfterDayCount,
+            ],
+            [undefined, undefined, 'year', undefined, undefined],
+            'those saved options no longer change Quarterly or Yearly',
         );
     });
     test('A Quarterly item with no day chip repeats every three months', () => {

@@ -230,8 +230,8 @@ Which choices you see depends on the kind of reminder.
 
 - Time zone
 - Holidays
-- A second Thursday
-- A Wednesday after the 6th
+- Same Day Nth Week
+- Day of First Full Week
 
 Each of these is explained below.
 
@@ -239,11 +239,11 @@ Time zone is for when the reminder should fire. You can let the time follow the 
 
 Holidays moves a reminder to the day before or the day after a holiday. You choose which.
 
-A second Thursday is for a numbered weekday, for example the second Thursday of the month. You pick the weekday and which one: 1st, 2nd, 3rd, 4th, or Last.
+Same Day Nth Week is the same day of one particular week of each month. You pick the weekday and which week: 1st, 2nd, 3rd, 4th, or Last.
 
-A Wednesday after the 6th is the first of that weekday after a numbered day, for example the first Wednesday after the 6th which means 'Wednesday on the first full week of the month'. You pick the weekday and the numbered day.
+Day of First Full Week is a particular day in the first full week of each month. You pick the weekday and the day.
 
-You cannot have both a second Thursday and a Wednesday after the 6th on the same reminder. Setting one clears the other.
+You cannot have both Same Day Nth Week and Day of First Full Week on the same reminder. Setting one clears the other.
 
 Daily and One Time for today have Time zone only.
 
@@ -251,7 +251,9 @@ Weekly has Time zone and Holidays.
 
 Appointments and Birthdays have Time zone and Holidays.
 
-Monthly, Quarterly, and Yearly have Time zone, Holidays, a second Thursday, and a Wednesday after the 6th.
+Monthly has Time zone, Holidays, Same Day Nth Week, and Day of First Full Week.
+
+Quarterly and Yearly have Time zone and Holidays.
 
 Bucket List has no Options.
 

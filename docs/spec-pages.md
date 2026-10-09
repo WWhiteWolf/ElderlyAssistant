@@ -115,6 +115,7 @@ dates that do not exist, not about skipping an occurrence.
 
 **When you open Options, you see** holidays, time zone, the float button,
 Skip, an extra tap on a shifted day, calendar shading, a notes row, a
-second Thursday, and a Wednesday after the 6th. Reminders-before is not
+Same Day Nth Week, and Day of First Full Week. Those two are on
+Monthly only. Reminders-before is not
 a row; it already lives on One Time. Each row opens that case. Options
 has no + Add.

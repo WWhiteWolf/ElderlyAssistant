@@ -117,11 +117,15 @@ export function runAssembleFormTests(): void {
                 next.year,
                 next.month,
                 next.day,
-                next.weekdayOrdinal,
-                next.ordinalWeekday,
+                next.weekdayOrdinal ?? null,
+                next.ordinalWeekday ?? null,
             ]),
-            kinds.map(() => [2026, 5, 10, 2, 4]),
-            'the weekday pattern and the date it advances from are both saved',
+            [
+                [2026, 5, 10, 2, 4],
+                [2026, 5, 10, null, null],
+                [2026, 5, 10, null, null],
+            ],
+            'Monthly keeps the numbered weekday; Quarterly and Yearly keep the date only',
         );
     });
 
@@ -141,11 +145,15 @@ export function runAssembleFormTests(): void {
                 next.year,
                 next.month,
                 next.day,
-                next.afterWeekday,
-                next.afterDayCount,
+                next.afterWeekday ?? null,
+                next.afterDayCount ?? null,
             ]),
-            kinds.map(() => [2026, 5, 10, 3, 6]),
-            'the weekday-after pattern and the date it advances from are both saved',
+            [
+                [2026, 5, 10, 3, 6],
+                [2026, 5, 10, null, null],
+                [2026, 5, 10, null, null],
+            ],
+            'Monthly keeps Wednesday after the 6th; Quarterly and Yearly keep the date only',
         );
     });
 

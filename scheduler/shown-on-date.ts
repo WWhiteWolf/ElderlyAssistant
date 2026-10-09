@@ -22,8 +22,8 @@ export function isDateOf(item: ReminderItem, when: Date): boolean {
  * Daily items belong every day. A Daily one-shot and an Appointment belong
  * only on the saved date. Every repeating visitor uses the same occurrence
  * calculation as the scheduler, so Weekly holiday moves and day-after moves
- * land on the day the engine chose. Dated cadences also keep their saved
- * calendar anchor. Bucket List never belongs; it has no day.
+ * land on the day the engine chose. A repeating item does not also
+ * show on its saved date. Bucket List never belongs; it has no day.
  */
 export function shownOnDate(item: ReminderItem, when: Date): boolean {
     if (item.kind === 'daily') return true;
@@ -32,7 +32,6 @@ export function shownOnDate(item: ReminderItem, when: Date): boolean {
     }
     const shaped = translateReminderItems([item], when.getTime())[0];
     if (!shaped?.repeatUnitCode) return false;
-    if (isDateOf(item, when)) return true;
     const start = new Date(when);
     start.setHours(0, 0, 0, 0);
     const base = baseMoment(shaped, start.getTime() - 1);

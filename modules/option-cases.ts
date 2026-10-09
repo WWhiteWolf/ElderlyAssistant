@@ -56,14 +56,14 @@ export const OPTION_CASES: OptionCase[] = [
     {
         id: 'secondThursday',
         icon: '📆',
-        name: 'A second Thursday',
-        body: 'Every nth weekday in a period — for example the second Thursday of the month.',
+        name: 'Same Day Nth Week',
+        body: 'The same day of one particular week of each month. You pick the weekday and which week: 1st, 2nd, 3rd, 4th, or Last.',
     },
     {
         id: 'wednesdayAfter',
         icon: '📅',
-        name: 'A Wednesday after the 6th',
-        body: 'The first weekday after a numbered day in the period — for example the first Wednesday after the 6th.',
+        name: 'Day of First Full Week',
+        body: 'A particular day in the first full week of each month. You pick the weekday and the day.',
     },
 ];
 

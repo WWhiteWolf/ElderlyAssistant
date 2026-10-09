@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-10-08
+Last updated: 2026-10-09
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. You are the only reader, so this list says you.
@@ -63,6 +63,12 @@ WHAT'S NEXT
    the share screen. Not on the phone (#130-new). On the Galaxy, in
    128, Restore only opened a backup that had already been downloaded
    onto the phone. Export would not save a file on the phone.
+8. DAILY MINUTES. Ask for 5, 10, and the rest, with no wheel. For
+   the next session (#132-new).
+9. MONTHLY HOLIDAYS. Ask whether the reminder should move for
+   holidays. A display change. For the next session (#132-new).
+10. ANDROID BACKUP AND RESTORE. The fix from before. A display
+    change. For the next session (#132-new).
 
 
 PENDING
@@ -78,6 +84,18 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+196. #132-new — The two Monthly options are named Same Day Nth Week
+    and Day of First Full Week. Not on the phone.
+
+195. #132-new — A second Thursday and a Wednesday after the 6th are
+    on Monthly only. Quarterly and Yearly have Time zone and Holidays.
+    One already set on Quarterly or Yearly is no longer used. Not on
+    the phone.
+
+194. #132-new — Daily shows a repeating reminder on the day it occurs.
+    The saved date does not also put it on Daily. The clock time is
+    unchanged. Not on the phone.
 
 193. #130-new — You make the iPhone builds. Android builds are started
     from the sitting. You do not start them.

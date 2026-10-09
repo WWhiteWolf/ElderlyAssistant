@@ -450,7 +450,10 @@ const quarterlyCadenceRules: ScreenRules = {
     waitsUntilNearDays: 60,
     bannerTitleTextOf: () => 'Quarterly',
     quarterlyStepOf: (item) => quarterlyStepCodeOf(item.intervalDays),
+    repeatIntervalCount: 3,
+    allowedOptionCaseCodes: ['holidays', 'timezone'],
     allowedOptionCaseCodesWhenDayStep: ['holidays', 'timezone'],
+    exclusiveGroupBits: undefined,
 };
 
 const yearlyCadenceRules: ScreenRules = {
@@ -460,6 +463,8 @@ const yearlyCadenceRules: ScreenRules = {
     pushBackSourceCode: 'yearlydelay',
     waitsUntilNearDays: 60,
     bannerTitleTextOf: () => 'Yearly',
+    allowedOptionCaseCodes: ['holidays', 'timezone'],
+    exclusiveGroupBits: undefined,
 };
 
 const appointmentsCadenceRules: ScreenRules = {

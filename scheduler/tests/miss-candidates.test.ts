@@ -103,6 +103,23 @@ export function runMissCandidateTests(): void {
         assert(!shownOnDate(monthly, WEDNESDAY), 'expected first Thursday off on Wednesday');
     });
 
+    test('A 2nd Wednesday saved on the 9th stays off Daily until the 14th', () => {
+        const monthly = item({
+            kind: 'monthly',
+            weekdayOrdinal: 2,
+            ordinalWeekday: 3,
+            year: 2026,
+            month: 9,
+            day: 9,
+            hour: 8,
+            minute: 0,
+        });
+        const savedDay = new Date(2026, 9, 9, 10, 0, 0, 0);
+        const secondWednesday = new Date(2026, 9, 14, 10, 0, 0, 0);
+        assert(!shownOnDate(monthly, savedDay), 'expected the saved 9th off Daily');
+        assert(shownOnDate(monthly, secondWednesday), 'expected the 2nd Wednesday on Daily');
+    });
+
     test('Done on a Wednesday-after-the-6th Monthly item takes it off Daily', () => {
         const today = new Date(2026, 8, 9, 10, 0, 0, 0);
         const monthly = item({

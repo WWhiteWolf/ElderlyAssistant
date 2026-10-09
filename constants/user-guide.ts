@@ -271,8 +271,8 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
         items: [
             { text: 'Time zone' },
             { text: 'Holidays' },
-            { text: 'A second Thursday' },
-            { text: 'A Wednesday after the 6th' },
+            { text: 'Same Day Nth Week' },
+            { text: 'Day of First Full Week' },
         ],
     },
     { type: 'paragraph', text: 'Each of these is explained below.' },
@@ -286,15 +286,15 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'A second Thursday is for a numbered weekday, for example the second Thursday of the month. You pick the weekday and which one: 1st, 2nd, 3rd, 4th, or Last.',
+        text: 'Same Day Nth Week is the same day of one particular week of each month. You pick the weekday and which week: 1st, 2nd, 3rd, 4th, or Last.',
     },
     {
         type: 'paragraph',
-        text: 'A Wednesday after the 6th is the first of that weekday after a numbered day, for example the first Wednesday after the 6th which means \'Wednesday on the first full week of the month\'. You pick the weekday and the numbered day.',
+        text: 'Day of First Full Week is a particular day in the first full week of each month. You pick the weekday and the day.',
     },
     {
         type: 'paragraph',
-        text: 'You cannot have both a second Thursday and a Wednesday after the 6th on the same reminder. Setting one clears the other.',
+        text: 'You cannot have both Same Day Nth Week and Day of First Full Week on the same reminder. Setting one clears the other.',
     },
     {
         type: 'paragraph',
@@ -310,7 +310,11 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Monthly, Quarterly, and Yearly have Time zone, Holidays, a second Thursday, and a Wednesday after the 6th.',
+        text: 'Monthly has Time zone, Holidays, Same Day Nth Week, and Day of First Full Week.',
+    },
+    {
+        type: 'paragraph',
+        text: 'Quarterly and Yearly have Time zone and Holidays.',
     },
     {
         type: 'paragraph',
