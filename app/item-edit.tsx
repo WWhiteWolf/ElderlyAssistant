@@ -660,7 +660,34 @@ export default function ItemEditScreen() {
                     multiline
                 />
 
-                {kindOptions.length > 0 && applied.length > 0 && (
+                {!editingId && kindOptions.length > 0 && (
+                    <>
+                        <Text style={styles.inputLabel}>Options</Text>
+                        <View style={styles.optionCard}>
+                            {kindOptions.map((one, i) => {
+                                const chosen = applied.find((row) => row.id === one.id);
+                                return (
+                                    <TouchableOpacity
+                                        key={one.id}
+                                        style={[styles.optionListRow, i > 0 && styles.optionRowBorder]}
+                                        onPress={() => {
+                                            setOptionsStartId(one.id);
+                                            setShowOptions(true);
+                                        }}
+                                    >
+                                        <Text style={styles.optionName}>{one.name}</Text>
+                                        <Text style={styles.optionBrief}>{one.body}</Text>
+                                        {chosen?.value ? (
+                                            <Text style={styles.optionChosen}>{chosen.value}</Text>
+                                        ) : null}
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
+                    </>
+                )}
+
+                {editingId && kindOptions.length > 0 && applied.length > 0 && (
                     <>
                         <Text style={styles.inputLabel}>Options</Text>
                         <View style={styles.optionCard}>
@@ -800,6 +827,12 @@ const makeStyles = (t: Theme) =>
             borderTopWidth: 0.5,
             borderTopColor: t.cardBorder,
         },
+        optionListRow: {
+            paddingVertical: 10,
+            paddingHorizontal: 12,
+        },
         optionName: { fontSize: 15, color: t.cardTitle },
+        optionBrief: { fontSize: 14, color: t.mutedText, marginTop: 2 },
+        optionChosen: { fontSize: 14, color: t.cardTitle, marginTop: 4 },
         optionValue: { flex: 1, fontSize: 15, color: t.mutedText, textAlign: 'right' },
     });

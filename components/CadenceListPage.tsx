@@ -19,6 +19,7 @@ import SnoozeSelector from './SnoozeSelector';
 import { PAGE_LABELS, pageLabelFor } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
 import { dayListLine } from '../modules/birth-year';
+import { dailyListSnoozeChoices } from '../modules/daily-snooze';
 import { dailyRowSubtitleOf } from '../modules/daily-row';
 import { placeInList, rowUnderPlace } from '../modules/list-place';
 import {
@@ -114,7 +115,9 @@ export default function CadenceListPage({
     itemsRef.current = items;
     const visible = visibleFor(kind, items);
     const snoozeTarget = snoozeItemId ? items.find((one) => one.id === snoozeItemId) : undefined;
-    const snoozeChoices = snoozeTarget ? snoozeChoicesOf(snoozeTarget) : [];
+    const snoozeRest = snoozeTarget ? snoozeChoicesOf(snoozeTarget) : [];
+    const asksShortMinutes = snoozeTarget?.kind === 'daily' || snoozeTarget?.kind === 'oneTime';
+    const snoozeChoices = asksShortMinutes ? dailyListSnoozeChoices(snoozeRest) : snoozeRest;
     const visibleRef = useRef(visible);
     visibleRef.current = visible;
     const rowHeights = useRef<Record<string, number>>({});
@@ -482,7 +485,7 @@ export default function CadenceListPage({
                 visible={snoozeItemId !== null}
                 itemLabel={snoozeTarget?.label ?? ''}
                 choices={snoozeChoices}
-                withDailyMinuteWheel={kind === 'daily'}
+                stacked={asksShortMinutes}
                 onChoose={(choice) => chooseSnooze(choice.stampAt)}
                 onCancel={() => setSnoozeItemId(null)}
             />

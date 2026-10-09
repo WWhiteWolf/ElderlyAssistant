@@ -45,7 +45,7 @@ export const OPTION_CASES: OptionCase[] = [
         id: 'holidays',
         icon: '🎉',
         name: 'Holidays',
-        body: 'Move a reminder to the day before or after a holiday. The engine already knows this calendar thinking; this page is where that case lives.',
+        body: 'Moves the reminder to the day before or the day after a holiday.',
     },
     {
         id: 'timezone',

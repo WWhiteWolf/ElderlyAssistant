@@ -4,22 +4,19 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-10-09, #132-new.
+Last written: 2026-10-09, #133-new.
 
 ## Read this first
 
-- Daily shows a repeating reminder on the day it occurs. The saved date
-  does not also put it on Daily. Not on a phone.
-- Same Day Nth Week and Day of First Full Week are on Monthly only.
-  Quarterly and Yearly have Time zone and Holidays. Not on a phone.
-- What's Next 8, 9, and 10 are for the next session. Daily asks for
-  5, 10, and the rest, with no wheel. Monthly asks whether the
-  reminder should move for holidays. The Android backup and restore
-  fix from before is a display change, and so is the holiday question.
+- On New, the choices for that reminder are listed on the form, each
+  with a short description. Not on a phone.
+- Daily asks for 5, 10, 15, 30, or 60 minutes, with no wheel. Not on
+  a phone. The Android backup display is still open. It is What's
+  Next 8.
 
 ## What is next
 
-He commits. The next session takes What's Next 8, 9, and 10.
+The Android backup and restore display, from before.
 
 ## Do not reopen
 

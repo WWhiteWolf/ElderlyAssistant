@@ -264,7 +264,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Which choices you see depends on the kind of reminder.',
+        text: 'Which choices you see depends on the kind of reminder. On New, the choices for that reminder are listed on the form, each with a short description.',
     },
     {
         type: 'bullets',
@@ -420,7 +420,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Daily, and One Time for today: 15, 30, or 60 minutes, and also 1 through 14 minutes. The 15, 30, and 60 sit on the left. The 1 through 14 sit in the middle as a round up arrow, the number, and a round down arrow. It starts at 5. Snooze on the right keeps that number. The arrows stop at 1 and at 14.',
+        text: 'Daily, and One Time for today: 5, 10, 15, 30, or 60 minutes. There is no minute wheel.',
     },
     {
         type: 'paragraph',
@@ -432,7 +432,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'The banner uses the same delays, except Daily and One Time for today. Those banners keep 15, 30, and 60 minutes. They do not have the 1 through 14 minutes. Those buttons say Delay.',
+        text: 'The banner uses the same delays, except Daily and One Time for today. Those banners keep 15, 30, and 60 minutes. They do not ask for 5 or 10. Those buttons say Delay.',
     },
     {
         type: 'paragraph',

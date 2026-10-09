@@ -45,13 +45,11 @@ WHAT'S NEXT
    The next morning the row is the next time, with no check. Weekly
    must not fire again this week. A second tap that same day still
    takes the check off. Build 114 is already on the iPhone for the
-   Snooze minutes and list reorder. The User's Guide now matches that
-   work, including the 1-through-14 minutes on the list only. That copy
+   Snooze minutes and list reorder. The User's Guide now matches the
+   one-day check, and Daily's 5, 10, 15, 30, and 60 minutes. That copy
    is not on the phone. The saved-list read warning also remains to be
    proved, and it stays out of the Guide. The home arrangement
-   restore is in the project and not on the phone. The Daily Snooze
-   modal shares its row in three even parts, and that is not on the
-   phone either. The full state is in docs/in-flight.md.
+   restore is in the project and not on the phone.
 5. IOS BUILD 100 is Waiting for Review. When Apple approves, you
    release it yourself. Release is manual (2026-10-01).
 6. THE PRICE ON ANDROID. $9.99 once, no trial. The iPhone listing
@@ -63,12 +61,8 @@ WHAT'S NEXT
    the share screen. Not on the phone (#130-new). On the Galaxy, in
    128, Restore only opened a backup that had already been downloaded
    onto the phone. Export would not save a file on the phone.
-8. DAILY MINUTES. Ask for 5, 10, and the rest, with no wheel. For
-   the next session (#132-new).
-9. MONTHLY HOLIDAYS. Ask whether the reminder should move for
-   holidays. A display change. For the next session (#132-new).
-10. ANDROID BACKUP AND RESTORE. The fix from before. A display
-    change. For the next session (#132-new).
+8. ANDROID BACKUP AND RESTORE. The fix from before. A display
+   change. For the next session (#132-new).
 
 
 PENDING
@@ -84,6 +78,12 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+198. #133-new — On New, the choices for that reminder are listed on
+    the form, each with a short description. Not on the phone.
+
+197. #133-new — Daily asks for 5, 10, 15, 30, or 60 minutes, with no
+    wheel. Not on the phone.
 
 196. #132-new — The two Monthly options are named Same Day Nth Week
     and Day of First Full Week. Not on the phone.

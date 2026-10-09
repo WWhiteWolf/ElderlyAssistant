@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import {
     StyleSheet,
     Text,
@@ -6,14 +5,6 @@ import {
     View,
 } from 'react-native';
 import { Theme, useTheme } from '../constants/Themes';
-import {
-    DAILY_SNOOZE_MINUTE_DEFAULT,
-    DAILY_SNOOZE_MINUTE_MAX,
-    DAILY_SNOOZE_MINUTE_MIN,
-    dailySnoozeLabel,
-    dailySnoozeStamp,
-    stepDailySnoozeMinute,
-} from '../modules/daily-snooze';
 import { Cover } from './Cover';
 
 export type SnoozeSelection = {
@@ -25,32 +16,30 @@ export default function SnoozeSelector({
     visible,
     itemLabel,
     choices,
-    withDailyMinuteWheel,
+    stacked,
     onChoose,
     onCancel,
 }: {
     visible: boolean;
     itemLabel: string;
     choices: SnoozeSelection[];
-    withDailyMinuteWheel: boolean;
+    stacked: boolean;
     onChoose: (choice: SnoozeSelection) => void;
     onCancel: () => void;
 }) {
     const theme = useTheme();
     const styles = makeStyles(theme);
-    const [minutes, setMinutes] = useState(DAILY_SNOOZE_MINUTE_DEFAULT);
 
-    useEffect(() => {
-        if (visible) setMinutes(DAILY_SNOOZE_MINUTE_DEFAULT);
-    }, [visible]);
-
-    const chooseMinute = () => {
-        const chosenMinutes = minutes;
-        onChoose({
-            label: dailySnoozeLabel(chosenMinutes),
-            stampAt: (startsAt) => dailySnoozeStamp(startsAt, chosenMinutes),
-        });
-    };
+    const buttons = (choiceStyle: object, textStyle: object) =>
+        choices.map((choice) => (
+            <TouchableOpacity
+                key={choice.label}
+                style={choiceStyle}
+                onPress={() => onChoose(choice)}
+            >
+                <Text style={textStyle}>{choice.label}</Text>
+            </TouchableOpacity>
+        ));
 
     return (
         <Cover visible={visible}>
@@ -61,67 +50,13 @@ export default function SnoozeSelector({
                         {itemLabel} — remind me again in:
                     </Text>
 
-                    {withDailyMinuteWheel ? (
-                        <View style={styles.dailyRow}>
-                            <View style={styles.zone}>
-                                <View style={styles.choiceColumn}>
-                                    {choices.map((choice) => (
-                                        <TouchableOpacity
-                                            key={choice.label}
-                                            style={styles.stackedChoice}
-                                            onPress={() => onChoose(choice)}
-                                        >
-                                            <Text style={styles.stackedChoiceText}>{choice.label}</Text>
-                                        </TouchableOpacity>
-                                    ))}
-                                </View>
-                            </View>
-
-                            <View style={styles.zone}>
-                                <View style={styles.stepper}>
-                                <TouchableOpacity
-                                    style={[
-                                        styles.adjBtn,
-                                        minutes >= DAILY_SNOOZE_MINUTE_MAX && styles.adjBtnDisabled,
-                                    ]}
-                                    disabled={minutes >= DAILY_SNOOZE_MINUTE_MAX}
-                                    onPress={() => setMinutes(stepDailySnoozeMinute(minutes, 1))}
-                                    hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
-                                >
-                                    <Text style={styles.adjText}>▲</Text>
-                                </TouchableOpacity>
-                                <Text style={styles.minuteDisplay}>{minutes}</Text>
-                                <TouchableOpacity
-                                    style={[
-                                        styles.adjBtn,
-                                        minutes <= DAILY_SNOOZE_MINUTE_MIN && styles.adjBtnDisabled,
-                                    ]}
-                                    disabled={minutes <= DAILY_SNOOZE_MINUTE_MIN}
-                                    onPress={() => setMinutes(stepDailySnoozeMinute(minutes, -1))}
-                                    hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
-                                >
-                                    <Text style={styles.adjText}>▼</Text>
-                                </TouchableOpacity>
-                                </View>
-                            </View>
-
-                            <View style={styles.zone}>
-                                <TouchableOpacity style={styles.snoozeButton} onPress={chooseMinute}>
-                                    <Text style={styles.snoozeButtonText}>Snooze</Text>
-                                </TouchableOpacity>
-                            </View>
+                    {stacked ? (
+                        <View style={styles.choiceColumn}>
+                            {buttons(styles.stackedChoice, styles.stackedChoiceText)}
                         </View>
                     ) : (
                         <View style={styles.choiceRow}>
-                            {choices.map((choice) => (
-                                <TouchableOpacity
-                                    key={choice.label}
-                                    style={styles.choice}
-                                    onPress={() => onChoose(choice)}
-                                >
-                                    <Text style={styles.choiceText}>{choice.label}</Text>
-                                </TouchableOpacity>
-                            ))}
+                            {buttons(styles.choice, styles.choiceText)}
                         </View>
                     )}
 
@@ -180,18 +115,10 @@ const makeStyles = (t: Theme) =>
             fontSize: 16,
             fontWeight: '600',
         },
-        dailyRow: {
-            alignItems: 'center',
-            flexDirection: 'row',
-            marginVertical: 12,
-        },
-        zone: {
-            alignItems: 'center',
-            flex: 1,
-        },
         choiceColumn: {
             gap: 6,
-            width: '88%',
+            marginVertical: 12,
+            width: '100%',
         },
         stackedChoice: {
             alignItems: 'center',
@@ -206,45 +133,6 @@ const makeStyles = (t: Theme) =>
             fontSize: 14,
             fontWeight: '600',
             textAlign: 'center',
-        },
-        stepper: {
-            alignItems: 'center',
-        },
-        adjBtn: {
-            alignItems: 'center',
-            backgroundColor: t.buttonPrimary,
-            borderRadius: 20,
-            height: 40,
-            justifyContent: 'center',
-            marginVertical: 4,
-            width: 40,
-        },
-        adjBtnDisabled: {
-            opacity: 0.35,
-        },
-        adjText: {
-            color: t.buttonPrimaryText,
-            fontSize: 18,
-            fontWeight: '600',
-        },
-        minuteDisplay: {
-            color: t.bodyText,
-            fontSize: 24,
-            fontWeight: '600',
-            marginVertical: 2,
-        },
-        snoozeButton: {
-            alignItems: 'center',
-            backgroundColor: t.delay,
-            borderRadius: 8,
-            height: 40,
-            justifyContent: 'center',
-            width: '88%',
-        },
-        snoozeButtonText: {
-            color: t.delayText,
-            fontSize: 14,
-            fontWeight: '600',
         },
         cancelButton: {
             alignItems: 'center',

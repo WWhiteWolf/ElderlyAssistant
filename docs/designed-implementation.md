@@ -472,16 +472,11 @@ Daily.
 **Same-day undo.** Done is thisCycle. A second tap asks whether to
 mark it not done.
 
-**Daily Snooze selector.** Keep Daily's existing 15, 30, and 60 minute
-buttons, stacked on the left. The 1-through-14 minutes sit in the middle
-as the same kind of control as the other wheels: a round up arrow, the
-number, and a round down arrow. It starts at 5. Snooze on the right
-confirms that number. The buttons, the wheel, and Snooze share the row
-in three even parts, and each sits in the middle of its part. Up and
-Down stop at 14 and 1 and do not wrap.
-Every opening resets to 5. This control belongs only to Daily's list
-popup. The banner button sets and the other reminder pages do not gain
-it.
+**Daily Snooze selector.** Daily and One Time for today ask for 5, 10,
+15, 30, or 60 minutes. There is no minute wheel. The 5 and 10 sit with
+the 15, 30, and 60 as ordinary buttons. This belongs only to Daily's
+list popup. The banner button sets keep 15, 30, and 60. The other
+reminder pages do not gain the 5 and 10.
 
 A list Snooze never makes an unfired reminder earlier. Before the next
 real speaking moment, the chosen delay starts at that moment. Once
@@ -496,10 +491,10 @@ later. After seeing both alerts work on build 106, Patrick chose to keep
 that safety. The popup's words remain **remind me again**.
 
 `components/SnoozeSelector.tsx` owns the whole popup: the ordinary
-choices, Daily's minutes, its controls, and its layout. The shared list
-does not carry that machinery. It opens the selector and applies the
-one choice returned. The 1-through-14 limits, starting number, stepping,
-delay calculation, and words live together in `modules/daily-snooze.ts`.
+choices and Daily's 5 and 10. The shared list does not carry that
+machinery. It opens the selector and applies the one choice returned.
+The 5 and 10, their delay, and their words live together in
+`modules/daily-snooze.ts`.
 The scheduler's `snoozeDelayStartsAt` chooses the real starting moment,
 including an advance reminder or an existing Snooze. The one
 app-facing `snoozeReminder` door saves that answer and runs the
@@ -799,8 +794,10 @@ Save strips every live Options field that the kind's row does not
 allow.
 
 The cases are Holidays, Time zone, Same Day Nth Week, and Day of
-First Full Week. Holidays is Day before or Day after. That is the
-holiday's own day. The same-week move was dropped (#119-new). Time
+First Full Week. On New, the choices that reminder may carry are
+listed on the form, each with a brief description. Holidays is Day
+before or Day after. That is the holiday's own day. The same-week
+move was dropped (#119-new). Time
 zone is Float with phone or Keep this zone. When Keep this zone is
 on, the form line says Keep this zone and the zone name. Then and
 Next Day are the missing-day banner, not an Options case.

@@ -40,6 +40,11 @@ On Android, Export into a folder chosen on the phone.
 Daily shows a repeating reminder on the day it occurs. The saved date
 does not also put it there (#132-new).
 
+Daily asks for 5, 10, 15, 30, or 60 minutes, with no wheel (#133-new).
+
+On New, the choices for that reminder are listed on the form, each
+with a short description (#133-new).
+
 Same Day Nth Week and Day of First Full Week are on Monthly only
 (#132-new).
 
@@ -141,11 +146,8 @@ finished task.
 
 ## What is open in front of it
 
-For the next session, from #132-new. Daily asks for 5, 10, and the
-rest, with no wheel. Monthly asks whether the reminder should move
-for holidays. The Android backup and restore fix from before. The
-second and third are display changes. They are What's Next 8, 9,
-and 10.
+From #132-new, still to do. The Android backup and restore fix from
+before. It is a display change. It is What's Next 8.
 
 The guide remains `docs/designed-implementation.md`.
 

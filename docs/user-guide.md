@@ -226,7 +226,7 @@ Options is on New and Edit. Tap Options in the header.
 
 It is extra choices for how this reminder comes round, beyond the date and time on the form. It is not a Home page.
 
-Which choices you see depends on the kind of reminder.
+Which choices you see depends on the kind of reminder. On New, the choices for that reminder are listed on the form, each with a short description.
 
 - Time zone
 - Holidays
@@ -313,13 +313,13 @@ The list then says Snoozed till and the new time. If that time is another day, i
 
 Which delays you see depends on the kind.
 
-Daily, and One Time for today: 15, 30, or 60 minutes, and also 1 through 14 minutes. The 15, 30, and 60 sit on the left. The 1 through 14 sit in the middle as a round up arrow, the number, and a round down arrow. It starts at 5. Snooze on the right keeps that number. The arrows stop at 1 and at 14.
+Daily, and One Time for today: 5, 10, 15, 30, or 60 minutes. There is no minute wheel.
 
 Weekly: those three, and Delay 1 Day.
 
 Monthly, Quarterly, and Yearly: Delay 1 Day, Delay 1 Week, or Delay 1 Month.
 
-The banner uses the same delays, except Daily and One Time for today. Those banners keep 15, 30, and 60 minutes. They do not have the 1 through 14 minutes. Those buttons say Delay.
+The banner uses the same delays, except Daily and One Time for today. Those banners keep 15, 30, and 60 minutes. They do not ask for 5 or 10. Those buttons say Delay.
 
 Appointments, Birthdays, and Bucket List cannot be snoozed. A Daily reminder with no time has no Snooze button, because there is nothing to push back. A One Time for today with no time has no Snooze button either. That is the point of not setting the clock.
 
