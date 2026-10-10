@@ -17,6 +17,42 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #134-new (2026-10-10): Daily Snooze rows; Android number 5 on the Galaxy
+
+**Daily Snooze.** Daily and One Time for today use the same modal.
+The buttons are the same side-by-side buttons as the other snooze
+modals, on two rows: 1, 5, and 10, then 15, 30, and 60. There is no
+wheel. The banners stay at 15, 30, and 60. It works on the iPhone and
+on the Galaxy.
+
+**Android.** Build 116 is on the iPhone. Android number 5 (1.0.0) is
+the internal test on the Galaxy, and it is working. Build 3 is no
+longer that load. Play Console on the Mac is the Comcast account. The
+Galaxy's Play Store is the iCloud account. The internal-test link is
+opened on the phone only after the Play Store is on the iCloud
+account. An internal tester is added by the Google email shown in the
+Play Store on that Android phone. A mailbox that receives mail is not
+enough. The join-on-the-web link is emailed to them. Up to 100. The
+closed test was not used. The public $9.99 listing still waits.
+
+**Proved on both phones.** Birthday list reorder. Backup. Daily
+Snooze. Phone text size on a fresh open. Done's one-day check. The
+Android backup and restore display. The home arrangement in a backup.
+Daily shows a repeating reminder on the day it occurs. On New, the
+choices are listed on the form. Same Day Nth Week and Day of First
+Full Week are on Monthly only. The saved-list read warning is on both
+phones and stays out of the Guide.
+
+**Not now.** A one-time load that shows that warning, without changing
+the saved reminders. Expo build usage is high enough. It is Pending 1.
+
+**The record.** Pending Done 200 through 211. The Word copy was
+generated. 452 Mac checks passed. TypeScript was clean. The Play
+submit track in the project is internal.
+
+**Close.** He commits. What's left is App Store build 100, Waiting
+for Review, release manual, and the $9.99 Android listing.
+
 ## #132-new (2026-10-09): Daily follows the occurrence; weekday options are Monthly only
 
 **Daily.** A repeating reminder was showing on its saved date as well

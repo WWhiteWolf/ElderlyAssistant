@@ -24,53 +24,21 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. ANDROID INTERNAL TEST. You approved the next Android build. That
-   work is committed. It goes to the internal test the Galaxy
-   already uses. The Galaxy still has build 3 until that load arrives.
-   The public listing still waits.
-2. PHONE TEXT SIZE ON A FRESH OPEN. You set the phone's text larger
-   so you can read it. After a restore, or a download and a restore,
-   Memory's writing was the small size again while the rest of the
-   phone stayed large. The initial load now waits until the app is
-   active, then reads the phone's text size, and the first writing
-   uses that size. The pages and the backup are unchanged. This is
-   not on the phone yet (#128-new).
-3. LONG LIST REORDER. A long reminder list keeps each row's place in
-   the list, and how far the list has been scrolled. The row under
-   your finger is that place, shifted by the scroll. A short move
-   lands a short distance away. The neighbors still make room. This
-   is in the project and not on the phone (#130-new).
-4. PHONE PROOF FOR DONE'S ONE-DAY CHECK. Weekly, Monthly, Quarterly,
-   Yearly, Birthdays, and One Time should show the check that day only.
-   The next morning the row is the next time, with no check. Weekly
-   must not fire again this week. A second tap that same day still
-   takes the check off. Build 114 is already on the iPhone for the
-   Snooze minutes and list reorder.    The User's Guide now matches the
-   one-day check, and Daily's 1, 5, 10, 15, 30, and 60 minutes on two
-   rows. That copy
-   is not on the phone. The saved-list read warning also remains to be
-   proved, and it stays out of the Guide. The home arrangement
-   restore is in the project and not on the phone.
-5. IOS BUILD 100 is Waiting for Review. When Apple approves, you
+1. IOS BUILD 100 is Waiting for Review. When Apple approves, you
    release it yourself. Release is manual (2026-10-01).
-6. THE PRICE ON ANDROID. $9.99 once, no trial. The iPhone listing
-   already has that price. The Play account is open, and build 3 is
-   the internal test on your Galaxy (#128-new). The public Android
-   listing still waits (#123-new).
-7. ANDROID BACKUP FOLDER. Export on Android asks you to choose a
-   folder on the phone and saves the backup there. The iPhone keeps
-   the share screen. Not on the phone (#130-new). On the Galaxy, in
-   128, Restore only opened a backup that had already been downloaded
-   onto the phone. Export would not save a file on the phone.
-8. ANDROID BACKUP AND RESTORE. The fix from before. A display
-   change. For the next session (#132-new).
+2. THE PRICE ON ANDROID. $9.99 once, no trial. The iPhone listing
+   already has that price. The Play account is open, and Android
+   number 5 is the internal test on your Galaxy (#134-new). The public
+   Android listing still waits (#123-new).
 
 
 PENDING
 ------------------------------------------------------------------
 Things waiting on something — mostly on a build.
 
-Nothing is waiting under this heading.
+1. A one-time load that shows the saved-list read warning, without
+   changing the saved reminders. Not now. Your Expo build usage is
+   high enough.
 
 
 WHAT IS DONE, NEWEST FIRST
@@ -79,6 +47,39 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+211. #134-new — The saved-list read warning is on the iPhone and the
+    Galaxy. It stays out of the Guide.
+
+210. #134-new — The home arrangement in a backup is on the iPhone and
+    the Galaxy.
+
+209. #134-new — Daily shows a repeating reminder on the day it occurs.
+    The saved date does not also put it there. On both phones.
+
+208. #134-new — On New, the choices for that reminder are listed on
+    the form, each with a short description. On both phones.
+
+207. #134-new — Same Day Nth Week and Day of First Full Week are on
+    Monthly only. On both phones.
+
+206. #134-new — The Android backup and restore display is done.
+
+205. #134-new — Done's one-day check is proved.
+
+204. #134-new — Phone text size on a fresh open is done.
+
+203. #134-new — Daily Snooze works on the iPhone and on the Galaxy.
+
+202. #134-new — Backup works on the iPhone and on the Galaxy.
+
+201. #134-new — Birthday list reorder works on the iPhone and on the
+    Galaxy.
+
+200. #134-new — Android number 5 (1.0.0) is the internal test on the
+    Galaxy and it is working. Build 3 is no longer that load. Play
+    Console on the Mac is the Comcast account. The phone's Play Store
+    is the iCloud account.
 
 199. #134-new — Daily and One Time ask for 1, 5, 10, 15, 30, or 60
     minutes, on two rows of the same buttons as the other snooze

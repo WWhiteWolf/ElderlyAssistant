@@ -8,16 +8,17 @@ Last written: 2026-10-10, #134-new.
 
 ## Read this first
 
-- On New, the choices for that reminder are listed on the form, each
-  with a short description. Not on a phone.
-- Daily and One Time ask for 1, 5, 10, 15, 30, or 60 minutes, on two
-  rows of the same buttons as the other snooze modals. There is no
-  wheel. Not on a phone. The Android backup display is still open.
-  It is What's Next 8.
+- Android number 5 is the internal test on the Galaxy, and it is
+  working. Build 116 is on the iPhone. Daily Snooze, Backup, and
+  Birthday list reorder work on both phones.
+- Play Console on the Mac is the Comcast account. The Galaxy's Play
+  Store is the iCloud account. An internal tester is added by the
+  Google email shown in the Play Store on that Android phone.
 
 ## What is next
 
-The Android backup and restore display, from before.
+App Store build 100 is Waiting for Review. Release is manual.
+The $9.99 Android listing still waits.
 
 ## Do not reopen
 

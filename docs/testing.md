@@ -76,27 +76,19 @@ On the load it calls build 98:
 
 Testers are on TestFlight External. His phone has the list change, and it verifies.
 
+#134-new. Birthday list reorder, Backup, and Daily Snooze work on the
+iPhone and on the Galaxy.
+
 ## What his Galaxy has shown
 
-Build 3 (1.0.0) is the internal test on the Galaxy. The Play account
-is open. The bottom of the screen is fixed, and that is verified.
-Android does not turn, and that is verified. Restore only opened a
-backup that had already been downloaded onto the phone. Export would
-not save a file on the phone.
+Android number 5 (1.0.0) is the internal test on the Galaxy, and it
+is working. The Play account is open. The bottom of the screen is
+fixed, and that is verified. Android does not turn, and that is
+verified. Backup works on this load. On the older load, Restore only
+opened a backup that had already been downloaded, and Export would
+not save a file.
 
 ## What it will cover
-
-A long reminder list, scrolled, then a short reorder, has not been
-tried on a phone.
-
-The evened Daily Snooze modal has not been tried on a phone.
-
-Export on Android, choosing a folder on the phone, has not been tried
-on a phone.
-
-Replace putting the home arrangement back has not been tried on
-a phone. A backup made before that work does not contain the
-arrangement.
 
 Nothing further is written here as coverage still to come. That
 waits on him.

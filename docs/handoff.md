@@ -17,38 +17,17 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-Build **114** is on the iPhone. Build **3** (1.0.0) is the internal
-test on the Galaxy. The Play account is open. The next Android
-internal-test build is approved. That work is committed. The
-Galaxy still has build 3 until that load arrives.
+Build **116** is on the iPhone. Android number **5** (1.0.0) is the
+internal test on the Galaxy, and it is working. Build 3 is no longer
+that load. The Play account is open. The public Android listing still
+waits.
 
-Not on the phones yet:
+Daily and One Time ask for 1, 5, 10, 15, 30, or 60 minutes, on two
+rows of the same buttons as the other snooze modals. There is no wheel
+(#134-new). Daily Snooze, Backup, and Birthday list reorder work on
+the iPhone and on the Galaxy.
 
-The fresh-open text size. The proof is a new iPhone build, then a
-fresh open with the phone's text set larger.
-
-Done's one-day check, and the User's Guide that matches it.
-
-The home arrangement in a backup.
-
-The evened Daily Snooze modal.
-
-A short reorder on a long list.
-
-On Android, Export into a folder chosen on the phone.
-
-Daily shows a repeating reminder on the day it occurs. The saved date
-does not also put it there (#132-new).
-
-Daily and One Time ask for 1, 5, 10, 15, 30, or 60 minutes, on two rows of the same buttons as the other snooze modals. There is no wheel (#134-new).
-
-On New, the choices for that reminder are listed on the form, each
-with a short description (#133-new).
-
-Same Day Nth Week and Day of First Full Week are on Monthly only
-(#132-new).
-
-The saved-list read warning is unproved and stays out of the Guide.
+The saved-list read warning is on both phones. It stays out of the Guide.
 
 App Store build **100** is **Waiting for Review**. Release is manual.
 The $9.99 Android listing still waits.
@@ -126,9 +105,20 @@ finished task.
 - **The Android name is `com.molliedog.ElderlyAssistant`.** It is the
   same id as the iPhone (Patrick, #121-new).
 - **The Android path is Google Play** (Patrick, 2026-10-01). The
-  account was submitted on 2026-10-01. It is open (#128-new). Build
-  **3** (1.0.0) is the internal test on the Galaxy. The iPhone number
-  stayed at 100. The $9.99 Android listing still waits.
+  account was submitted on 2026-10-01. It is open (#128-new). Android
+  number **5** (1.0.0) is the internal test on the Galaxy, and it is
+  working (#134-new). The iPhone number stayed at 100. The $9.99
+  Android listing still waits.
+- **Play Console and the phone use two different sign-ins** (Patrick,
+  #134-new). Play Console on the Mac is the Comcast account. The
+  Galaxy's Play Store is the iCloud account. The internal-test link
+  is opened on the phone only after the Play Store is on the iCloud
+  account.
+- **An internal tester is added by the Google email in the Play Store
+  on that Android phone** (Patrick, #134-new). A mailbox that receives
+  mail is not enough, and Play Console says that address does not
+  exist. The join-on-the-web link is emailed to them. Up to 100 can
+  join. Do not use the closed test.
 - **He makes the iPhone builds.** Android builds are started from the
   sitting. He does not start them (Patrick, #130-new).
 - **Do not raise the closed-test count** (Patrick, #122-new).
@@ -145,9 +135,6 @@ finished task.
   thrown away. A run is not kept.
 
 ## What is open in front of it
-
-From #132-new, still to do. The Android backup and restore fix from
-before. It is a display change. It is What's Next 8.
 
 The guide remains `docs/designed-implementation.md`.
 
