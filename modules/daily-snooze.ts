@@ -1,4 +1,4 @@
-export const DAILY_SHORT_SNOOZE_MINUTES = [5, 10] as const;
+export const DAILY_SHORT_SNOOZE_MINUTES = [1, 5, 10] as const;
 
 export function dailyShortSnoozeLabel(minutes: number): string {
     return `Delay ${minutes} min`;
@@ -18,7 +18,7 @@ export function dailyShortSnoozeChoices(): {
     }));
 }
 
-/** Daily and One Time ask for 5 and 10, then the choices they already had. */
+/** Daily and One Time ask for 1, 5, and 10, then the choices they already had. */
 export function dailyListSnoozeChoices<T extends { label: string }>(rest: T[]): (
     | { label: string; stampAt: (startsAt: number) => number }
     | T

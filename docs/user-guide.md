@@ -313,13 +313,13 @@ The list then says Snoozed till and the new time. If that time is another day, i
 
 Which delays you see depends on the kind.
 
-Daily, and One Time for today: 5, 10, 15, 30, or 60 minutes. There is no minute wheel.
+Daily, and One Time for today: 1, 5, 10, 15, 30, or 60 minutes, on two rows. There is no minute wheel.
 
-Weekly: those three, and Delay 1 Day.
+Weekly: 15, 30, or 60 minutes, and Delay 1 Day.
 
 Monthly, Quarterly, and Yearly: Delay 1 Day, Delay 1 Week, or Delay 1 Month.
 
-The banner uses the same delays, except Daily and One Time for today. Those banners keep 15, 30, and 60 minutes. They do not ask for 5 or 10. Those buttons say Delay.
+The banner uses the same delays, except Daily and One Time for today. Those banners keep 15, 30, and 60 minutes. They do not ask for 1, 5, or 10. Those buttons say Delay.
 
 Appointments, Birthdays, and Bucket List cannot be snoozed. A Daily reminder with no time has no Snooze button, because there is nothing to push back. A One Time for today with no time has no Snooze button either. That is the point of not setting the clock.
 

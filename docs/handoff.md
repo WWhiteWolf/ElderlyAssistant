@@ -40,7 +40,7 @@ On Android, Export into a folder chosen on the phone.
 Daily shows a repeating reminder on the day it occurs. The saved date
 does not also put it there (#132-new).
 
-Daily asks for 5, 10, 15, 30, or 60 minutes, with no wheel (#133-new).
+Daily and One Time ask for 1, 5, 10, 15, 30, or 60 minutes, on two rows of the same buttons as the other snooze modals. There is no wheel (#134-new).
 
 On New, the choices for that reminder are listed on the form, each
 with a short description (#133-new).

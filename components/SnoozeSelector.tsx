@@ -16,28 +16,31 @@ export default function SnoozeSelector({
     visible,
     itemLabel,
     choices,
-    stacked,
+    firstRowCount,
     onChoose,
     onCancel,
 }: {
     visible: boolean;
     itemLabel: string;
     choices: SnoozeSelection[];
-    stacked: boolean;
+    firstRowCount?: number;
     onChoose: (choice: SnoozeSelection) => void;
     onCancel: () => void;
 }) {
     const theme = useTheme();
     const styles = makeStyles(theme);
+    const split = typeof firstRowCount === 'number'
+        && firstRowCount > 0
+        && firstRowCount < choices.length;
 
-    const buttons = (choiceStyle: object, textStyle: object) =>
-        choices.map((choice) => (
+    const buttons = (these: SnoozeSelection[]) =>
+        these.map((choice) => (
             <TouchableOpacity
                 key={choice.label}
-                style={choiceStyle}
+                style={styles.choice}
                 onPress={() => onChoose(choice)}
             >
-                <Text style={textStyle}>{choice.label}</Text>
+                <Text style={styles.choiceText}>{choice.label}</Text>
             </TouchableOpacity>
         ));
 
@@ -50,13 +53,18 @@ export default function SnoozeSelector({
                         {itemLabel} — remind me again in:
                     </Text>
 
-                    {stacked ? (
-                        <View style={styles.choiceColumn}>
-                            {buttons(styles.stackedChoice, styles.stackedChoiceText)}
+                    {split ? (
+                        <View style={styles.choiceRows}>
+                            <View style={styles.choiceLine}>
+                                {buttons(choices.slice(0, firstRowCount))}
+                            </View>
+                            <View style={styles.choiceLine}>
+                                {buttons(choices.slice(firstRowCount))}
+                            </View>
                         </View>
                     ) : (
                         <View style={styles.choiceRow}>
-                            {buttons(styles.choice, styles.choiceText)}
+                            {buttons(choices)}
                         </View>
                     )}
 
@@ -102,6 +110,14 @@ const makeStyles = (t: Theme) =>
             justifyContent: 'space-between',
             marginVertical: 12,
         },
+        choiceRows: {
+            gap: 8,
+            marginVertical: 12,
+        },
+        choiceLine: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+        },
         choice: {
             alignItems: 'center',
             backgroundColor: t.delay,
@@ -114,25 +130,6 @@ const makeStyles = (t: Theme) =>
             color: t.delayText,
             fontSize: 16,
             fontWeight: '600',
-        },
-        choiceColumn: {
-            gap: 6,
-            marginVertical: 12,
-            width: '100%',
-        },
-        stackedChoice: {
-            alignItems: 'center',
-            backgroundColor: t.delay,
-            borderRadius: 8,
-            height: 40,
-            justifyContent: 'center',
-            paddingHorizontal: 4,
-        },
-        stackedChoiceText: {
-            color: t.delayText,
-            fontSize: 14,
-            fontWeight: '600',
-            textAlign: 'center',
         },
         cancelButton: {
             alignItems: 'center',

@@ -472,11 +472,13 @@ Daily.
 **Same-day undo.** Done is thisCycle. A second tap asks whether to
 mark it not done.
 
-**Daily Snooze selector.** Daily and One Time for today ask for 5, 10,
-15, 30, or 60 minutes. There is no minute wheel. The 5 and 10 sit with
-the 15, 30, and 60 as ordinary buttons. This belongs only to Daily's
-list popup. The banner button sets keep 15, 30, and 60. The other
-reminder pages do not gain the 5 and 10.
+**Daily Snooze selector.** Daily and One Time for today ask for 1, 5, 10,
+15, 30, or 60 minutes. There is no minute wheel. The buttons are the
+same side-by-side buttons as the other snooze modals, on two rows: 1, 5,
+and 10, then 15, 30, and 60. Recurring Daily and One Time for today use
+that same modal. This belongs only to Daily's list popup. The banner
+button sets keep 15, 30, and 60. The other reminder pages do not gain
+the 1, 5, and 10.
 
 A list Snooze never makes an unfired reminder earlier. Before the next
 real speaking moment, the chosen delay starts at that moment. Once
@@ -491,10 +493,10 @@ later. After seeing both alerts work on build 106, Patrick chose to keep
 that safety. The popup's words remain **remind me again**.
 
 `components/SnoozeSelector.tsx` owns the whole popup: the ordinary
-choices and Daily's 5 and 10. The shared list does not carry that
-machinery. It opens the selector and applies the one choice returned.
-The 5 and 10, their delay, and their words live together in
-`modules/daily-snooze.ts`.
+choices, and Daily's 1, 5, and 10 on the first row. The shared list does
+not carry that machinery. It opens the selector and applies the one
+choice returned. The 1, 5, and 10, their delay, and their words live
+together in `modules/daily-snooze.ts`.
 The scheduler's `snoozeDelayStartsAt` chooses the real starting moment,
 including an advance reminder or an existing Snooze. The one
 app-facing `snoozeReminder` door saves that answer and runs the

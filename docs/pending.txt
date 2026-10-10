@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-10-09
+Last updated: 2026-10-10
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. You are the only reader, so this list says you.
@@ -45,8 +45,9 @@ WHAT'S NEXT
    The next morning the row is the next time, with no check. Weekly
    must not fire again this week. A second tap that same day still
    takes the check off. Build 114 is already on the iPhone for the
-   Snooze minutes and list reorder. The User's Guide now matches the
-   one-day check, and Daily's 5, 10, 15, 30, and 60 minutes. That copy
+   Snooze minutes and list reorder.    The User's Guide now matches the
+   one-day check, and Daily's 1, 5, 10, 15, 30, and 60 minutes on two
+   rows. That copy
    is not on the phone. The saved-list read warning also remains to be
    proved, and it stays out of the Guide. The home arrangement
    restore is in the project and not on the phone.
@@ -78,6 +79,10 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+199. #134-new — Daily and One Time ask for 1, 5, 10, 15, 30, or 60
+    minutes, on two rows of the same buttons as the other snooze
+    modals. The banners stay at 15, 30, and 60. Not on the phone.
 
 198. #133-new — On New, the choices for that reminder are listed on
     the form, each with a short description. Not on the phone.

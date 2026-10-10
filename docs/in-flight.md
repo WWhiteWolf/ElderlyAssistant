@@ -4,15 +4,16 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-10-09, #133-new.
+Last written: 2026-10-10, #134-new.
 
 ## Read this first
 
 - On New, the choices for that reminder are listed on the form, each
   with a short description. Not on a phone.
-- Daily asks for 5, 10, 15, 30, or 60 minutes, with no wheel. Not on
-  a phone. The Android backup display is still open. It is What's
-  Next 8.
+- Daily and One Time ask for 1, 5, 10, 15, 30, or 60 minutes, on two
+  rows of the same buttons as the other snooze modals. There is no
+  wheel. Not on a phone. The Android backup display is still open.
+  It is What's Next 8.
 
 ## What is next
 

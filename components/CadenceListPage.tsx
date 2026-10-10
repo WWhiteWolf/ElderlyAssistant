@@ -19,7 +19,7 @@ import SnoozeSelector from './SnoozeSelector';
 import { PAGE_LABELS, pageLabelFor } from '../constants/page-names';
 import { Theme, useTheme } from '../constants/Themes';
 import { dayListLine } from '../modules/birth-year';
-import { dailyListSnoozeChoices } from '../modules/daily-snooze';
+import { DAILY_SHORT_SNOOZE_MINUTES, dailyListSnoozeChoices } from '../modules/daily-snooze';
 import { dailyRowSubtitleOf } from '../modules/daily-row';
 import { placeInList, rowUnderPlace } from '../modules/list-place';
 import {
@@ -485,7 +485,7 @@ export default function CadenceListPage({
                 visible={snoozeItemId !== null}
                 itemLabel={snoozeTarget?.label ?? ''}
                 choices={snoozeChoices}
-                stacked={asksShortMinutes}
+                firstRowCount={asksShortMinutes ? DAILY_SHORT_SNOOZE_MINUTES.length : undefined}
                 onChoose={(choice) => chooseSnooze(choice.stampAt)}
                 onCancel={() => setSnoozeItemId(null)}
             />

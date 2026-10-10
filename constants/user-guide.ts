@@ -420,11 +420,11 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'Daily, and One Time for today: 5, 10, 15, 30, or 60 minutes. There is no minute wheel.',
+        text: 'Daily, and One Time for today: 1, 5, 10, 15, 30, or 60 minutes, on two rows. There is no minute wheel.',
     },
     {
         type: 'paragraph',
-        text: 'Weekly: those three, and Delay 1 Day.',
+        text: 'Weekly: 15, 30, or 60 minutes, and Delay 1 Day.',
     },
     {
         type: 'paragraph',
@@ -432,7 +432,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'The banner uses the same delays, except Daily and One Time for today. Those banners keep 15, 30, and 60 minutes. They do not ask for 5 or 10. Those buttons say Delay.',
+        text: 'The banner uses the same delays, except Daily and One Time for today. Those banners keep 15, 30, and 60 minutes. They do not ask for 1, 5, or 10. Those buttons say Delay.',
     },
     {
         type: 'paragraph',
