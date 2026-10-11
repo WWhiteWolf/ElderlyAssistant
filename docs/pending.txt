@@ -36,9 +36,10 @@ PENDING
 ------------------------------------------------------------------
 Things waiting on something — mostly on a build.
 
-1. A one-time load that shows the saved-list read warning, without
-   changing the saved reminders. Not now. Your Expo build usage is
-   high enough.
+1. The tester gets the copy already on Play. Send the join link.
+   A text is fine. They open it on the Android phone and install
+   from the Play Store. Do not build a separate file to email.
+   (#135-new)
 
 
 WHAT IS DONE, NEWEST FIRST

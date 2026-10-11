@@ -117,7 +117,8 @@ finished task.
 - **An internal tester is added by the Google email in the Play Store
   on that Android phone** (Patrick, #134-new). A mailbox that receives
   mail is not enough, and Play Console says that address does not
-  exist. The join-on-the-web link is emailed to them. Up to 100 can
+  exist. The join-on-the-web link is emailed to them, or sent in a
+  text (Patrick, #135-new). Up to 100 can
   join. Do not use the closed test.
 - **He makes the iPhone builds.** Android builds are started from the
   sitting. He does not start them (Patrick, #130-new).
@@ -135,6 +136,11 @@ finished task.
   thrown away. A run is not kept.
 
 ## What is open in front of it
+
+The tester gets the copy already on Play. Send the join link. A text
+is fine. They open it on the Android phone and install from the Play
+Store. Do not build a separate file to email. It is Pending 1. The
+Galaxy keeps the internal test already there.
 
 The guide remains `docs/designed-implementation.md`.
 
