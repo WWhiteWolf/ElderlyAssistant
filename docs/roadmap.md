@@ -204,6 +204,13 @@ publishing one obstacle at a time, and nothing here is a promise or a deadline.
 
 - **The path it's on now: EAS Build → Apple TestFlight** (in daily use today).
   The next milestone on this path is the **Apple App Store release**.
+- **The price** (Patrick, #136-new). The download is free. The app counts
+  one month from the day it is first opened. Then it is $9.99 once, inside
+  the app, on the iPhone and on Android. The stores do not run that month.
+  When the month ends and they have not paid, reminders already set keep
+  firing, and adding and changing waits for the $9.99. Build 117 is the
+  code of 116 plus this. App Store build 100 comes off review so 117 can
+  be submitted. Release stays manual.
 - **Finish the store listing** — the name is already "A Place To Remember" in
   App Store Connect (#65). Still open: a home for the **"Memory Assist"**
   tagline (the subtitle field sits empty), the description, screenshots, and

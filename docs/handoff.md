@@ -29,8 +29,11 @@ the iPhone and on the Galaxy.
 
 The saved-list read warning is on both phones. It stays out of the Guide.
 
-App Store build **100** is **Waiting for Review**. Release is manual.
-The $9.99 Android listing still waits.
+App Store build **100** is **Waiting for Review**. It comes off review.
+Build **117** is the code of 116 plus the free month, and that is the
+build to submit. Release is manual. Light-theme screenshots go on that
+submission. The public Android listing still waits. The roadmap was
+updated this sitting with the free month.
 
 ## Standing rulings
 
@@ -100,15 +103,17 @@ finished task.
 - **There is no Reset All Data.** Do not add it.
 - **The user's guide does not go on a website.** The app is
   self-contained. A person's data stays on the phone. The app does not
-  reach out to read or write from the outside world. What is already
+  reach out to read or write from the outside world, except the buy,
+  which talks to Apple or Google and nowhere else. What is already
   in App Store Connect stays there.
 - **The Android name is `com.molliedog.ElderlyAssistant`.** It is the
   same id as the iPhone (Patrick, #121-new).
 - **The Android path is Google Play** (Patrick, 2026-10-01). The
   account was submitted on 2026-10-01. It is open (#128-new). Android
   number **5** (1.0.0) is the internal test on the Galaxy, and it is
-  working (#134-new). The iPhone number stayed at 100. The $9.99
-  Android listing still waits.
+  working (#134-new). The iPhone store build is 100 until it comes
+  off review. Build 117 replaces it. The public Android listing still
+  waits.
 - **Play Console and the phone use two different sign-ins** (Patrick,
   #134-new). Play Console on the Mac is the Comcast account. The
   Galaxy's Play Store is the iCloud account. The internal-test link
@@ -123,8 +128,13 @@ finished task.
 - **He makes the iPhone builds.** Android builds are started from the
   sitting. He does not start them (Patrick, #130-new).
 - **Do not raise the closed-test count** (Patrick, #122-new).
-- **The app is $9.99 once, the same on the iPhone and on Android, and
-  there is no trial** (Patrick, #123-new).
+- **The download is free. The app counts one month from the day it is
+  first opened. Then it is $9.99 once, inside the app, the same on the
+  iPhone and on Android** (Patrick, #136-new). The stores do not run
+  that month. When the month ends and they have not paid, reminders
+  already set keep firing, and adding and changing waits for the
+  $9.99. The buy talks to Apple or Google and nowhere else. A person's
+  data stays on the phone.
 - **Do not file a trademark on the name** (Patrick, #123-new). Use it.
   The copyright line is his name and the year. File later only if
   someone else starts using the same name on a similar app, or if he
@@ -147,6 +157,9 @@ The guide remains `docs/designed-implementation.md`.
 App Store release is manual. The journey is `docs/connect-submit.md`.
 What is already in App Store Connect stays there.
 
+The Expo App Awards entry is `docs/expo-awards.md`. It waits on a
+public iPhone page. Android is not that page.
+
 ## Facts worth carrying
 
 **The hour fix leaves a tail.** Any time set by spinning through noon or
@@ -167,7 +180,11 @@ replaces; never rename anything to or from `index.html` there (see
 `MysteryTracker/docs/DEPLOY.md`).
 
 **The drawing of the shape is not in this folder.** It lives at
-`Projects/Reminder Engine/docs-ref/reminder-shape.drawio`.
+`Projects/Reminder Engine/docs-ref/reminder-shape.drawio`. At #136-new
+the Siri box and its arrow were removed, the last two boxes were
+moved apart so the words between them can be read, and
+`reminder-shape.png` in that folder was exported again. The change
+is written in `docs/expo-awards.md`.
 
 **Working documents live in `docs`.** History lives in `docs-ref`,
 including the build sheets. `docs/index.md` says which file is the home.

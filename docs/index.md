@@ -52,6 +52,8 @@ just because it is listed.
 - **`parked-items.md`** — the deferred backlog. Last touched at #66.
 - **`publishing.md`** — pointer to App-Docs, and Memory's publishing picture from #46-new and #47-new. Patrick's EAS steps are at the end.
 - **`connect-submit.md`** — beginning-to-end App Store Connect journey. Written at #82-new. Use it instead of Apple’s missing-items list.
+- **`expo-awards.md`** — the 2026 Expo App Awards. The form, the words for it, and what has to be true first. Written at #136-new.
+- **`reminder-shape.png`** — not in this folder. The picture of the reminder path, beside the drawing at `Projects/Reminder Engine/docs-ref/reminder-shape.png`. Exported at #136-new after Siri was removed.
 - **`roadmap.md`** — step-back milestones. Rewritten at #68.
 
 ## Retired — in `docs-ref`

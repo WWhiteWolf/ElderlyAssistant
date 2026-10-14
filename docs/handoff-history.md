@@ -17,6 +17,39 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #136-new (2026-10-14): free month, then $9.99 inside the app; Expo awards
+
+**The price.** The download is free on the iPhone and on Android. The
+app counts one month from the day it is first opened. The stores do
+not run that month. Then it is $9.99 once, inside the app. When the
+month ends and they have not paid, reminders already set keep firing,
+and adding and changing waits for the $9.99. Deleting the app and
+installing it again starts the month over. The buy talks to Apple or
+Google and nowhere else. This is not built yet. Build 117 is the code
+of 116 plus this. App Store build 100 is Waiting for Review and comes
+off review. Release stays manual. Light-theme screenshots go on that
+submission.
+
+**Getting paid.** Apple can already pay. The Paid Apps Agreement, the
+bank account, and the W-9 have been active since October 2. Google
+cannot pay yet. The payments profile is not set up, as far as Patrick
+knows. The Android release also waits on 12 testers, which he does
+not have. The iPhone waits on neither.
+
+**The Expo App Awards.** The record is `docs/expo-awards.md`. He wants
+to enter for the publicity, the notoriety, and the validation of the
+quality. Those come only if Expo names the app. The form closes
+October 31. It cannot take a picture. The entry waits on a public
+iPhone page. Android is not that page.
+
+**The drawing.** In `Projects/Reminder Engine/docs-ref/reminder-shape.drawio`,
+the Siri box and its arrow were removed, the last two boxes were moved
+apart so the words between them can be read, and `reminder-shape.png`
+was exported again. The picture is listed in `docs/index.md`.
+
+**Conduct.** He works alone. He makes the rules. Replies do not recite
+the rules he already knows. Written into `Projects/CLAUDE.md`.
+
 ## #134-new (2026-10-10): Daily Snooze rows; Android number 5 on the Galaxy
 
 **Daily Snooze.** Daily and One Time for today use the same modal.

@@ -24,12 +24,19 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. IOS BUILD 100 is Waiting for Review. When Apple approves, you
-   release it yourself. Release is manual (2026-10-01).
-2. THE PRICE ON ANDROID. $9.99 once, no trial. The iPhone listing
-   already has that price. The Play account is open, and Android
-   number 5 is the internal test on your Galaxy (#134-new). The public
-   Android listing still waits (#123-new).
+1. IOS BUILD 100 is Waiting for Review. Take it off review. Build 117
+   is the code of 116 plus the free month. You make that iPhone build.
+   When Apple approves, you release it yourself. Release is manual.
+2. THE PRICE. The download is free. The app counts one month. Then
+   $9.99 once, inside the app, on the iPhone and on Android. When the
+   month ends and they have not paid, reminders already set keep
+   firing, and adding and changing waits. The Play account is open,
+   and Android number 5 is the internal test on your Galaxy. The
+   public Android listing still waits.
+3. THE EXPO APP AWARDS. The record is docs/expo-awards.md. The entry
+   waits on a public iPhone page, and the form closes October 31.
+   Android is not that page. The payments profile is not set up, and
+   the Android release waits on 12 testers, which you do not have.
 
 
 PENDING

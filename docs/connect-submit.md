@@ -13,7 +13,8 @@ tests. It does not go live on the store.
 
 **App Store review** is Apple looking at the app for the listing.
 After they approve, Patrick releases it himself. That is **manual
-distribution**. The listing is **$9.99**. A version can sit in Waiting
+distribution**. The download is **free**. The $9.99 is a one-time
+buy inside the app, after the app has counted one month. A version can sit in Waiting
 for Review and still never appear on the store.
 
 The left-side heading **Waiting for Review** is the App Store queue.
@@ -160,11 +161,15 @@ Skip:
 - Korea, China, Vietnam extra fields, unless you are deliberately
   selling there.
 - Regulated medical device: this is not one.
-- Custom license, App Clips, in-app purchases, Game Center, ads.
+- Custom license, App Clips, Game Center, ads. The $9.99 buy
+  inside the app is not on this skip list.
 
 Pricing, if it is not already set:
 
-- Price: **$9.99**.
+- Download price: **free**.
+- The $9.99 is once, inside the app, after one month counted by the
+  app. The design is **The free month** in
+  `docs/designed-implementation.md`.
 - Availability: the countries you want.
 - Version release: **manual**.
 

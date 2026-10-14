@@ -31,9 +31,27 @@ This file is the guide. There is no password to open the app. The
 phone being open is enough. Do not add another.
 
 The app is self-contained. A person's data stays on the phone. The
-app does not reach out to read or write from the outside world. What
-is already in App Store Connect stays there. There is no public
+app does not reach out to read or write from the outside world, except
+the buy, which talks to Apple or Google and nowhere else. What is
+already in App Store Connect stays there. There is no public
 website for the user's guide.
+
+## The free month
+
+Decided #136-new. Not built yet. Build 117 is the code of 116 plus this.
+
+The download is free on the iPhone and on Android. The app remembers
+the day it is first opened and counts one month from that day. The
+stores do not run the month. The month is kept on the phone. Deleting
+the app and installing it again starts the month over.
+
+During the month the app works as it does now. When the month ends and
+they have not paid, reminders already set keep firing. Adding and
+changing waits until they pay $9.99 once, inside the app. The list
+stays on the phone.
+
+The paid state comes back from their Apple or Google account onto a
+new phone. Nothing of his has to live on a server.
 
 Siri is out of sight. The Shortcuts and Siri phrases are offered no
 more. Keep in the back of the design a later Siri that can go into
