@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-10-14
+Last updated: 2026-10-15
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. You are the only reader, so this list says you.
@@ -24,17 +24,18 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. IOS BUILD 100 is Waiting for Review. Take it off review. Then add
-   the light-theme screenshots. Also add the picture under Review
-   Information on the purchase. That picture is a saved copy of the
-   iPhone screen while the notice is showing. People who download the
-   app never see it. It is separate from the light-theme screenshots.
-   It was not saved, because the notice never appeared. Then add
-   build 117 for review. Build 117 is on the iPhone. You added a new
-   daily item, and it was saved. The notice did not appear. No change
-   to the app was chosen. When Apple approves, you release it
-   yourself. Release is manual. The Galaxy free trial is not in that
-   build.
+1. IOS BUILD 100 is Waiting for Review. The next build is for the
+   picture of the notice. It is in the code and not on the phone yet.
+   You make that iPhone build. When Apple gives no day and you have
+   not paid, that build uses 1 August 2013, so adding or changing
+   opens the notice. Save that screen. People who download the app
+   never see that picture. It is separate from the light-theme
+   screenshots. Take build 100 off review. Then add the light-theme
+   screenshots and that saved screen under Review Information on the
+   purchase. The picture date comes out of the code before the copy
+   that goes to buyers. Then add that buyer build for review. When
+   Apple approves, you release it yourself. Release is manual. The
+   Galaxy free trial is not in that build.
 2. THE PRICE. On the iPhone the download is free. The App Store page
    says it before the download. It is a free one month trial period.
    Then it is $9.99 once, here in Memory. The buyer is not surprised

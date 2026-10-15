@@ -85,8 +85,14 @@ The picture under Review Information on that purchase was not added.
 It is a saved copy of the iPhone screen while the notice is showing.
 People who download the app never see it. It is separate from the
 light-theme screenshots. It goes on after build 100 comes off review,
-and before build 117 is added for review. It was not saved, because
-the notice never appeared (#138-new).
+and before the buyer build is added for review. It was not saved from
+build 117, because the notice never appeared (#138-new).
+
+The next build is for that picture (#138.3-new). When Apple gives no
+day and they have not paid, that build uses 1 August 2013, so the
+month is already over and adding or changing opens the notice. Paying
+still leaves adding open. The Galaxy is unchanged. That date comes out
+before the copy that goes to buyers. Patrick makes the iPhone build.
 
 The paid state comes back from their Apple account onto a new iPhone.
 Nothing of his has to live on a server.
@@ -97,10 +103,10 @@ on 1 August 2013. The real day comes from the real App Store.
 
 Build 117 on the phone came through Expo (#138-new). That copy did
 not receive a day from Apple. Patrick added a new daily item. The
-item was saved. The notice did not appear. If Apple gives no day,
-adding and changing stay open and the notice stays hidden. No change
-to that was chosen. Do not treat a missing day as Apple having given
-one.
+item was saved. The notice did not appear. On the copy that goes to
+buyers, if Apple gives no day, adding and changing stay open and the
+notice stays hidden. Do not treat a missing day as Apple having given
+one, except on the picture build above.
 
 Siri is out of sight. The Shortcuts and Siri phrases are offered no
 more. Keep in the back of the design a later Siri that can go into
