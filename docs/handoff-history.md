@@ -17,6 +17,30 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #137-new (2026-10-14): iPhone purchase in the code; purchase created on Apple's site
+
+**The purchase is in the code.** On the iPhone the app asks Apple for
+the day that account first downloaded it, and for whether they have
+paid. After the month, if they have not paid, adding and changing
+bring up the notice. Done and Snooze still work. Backup still saves a
+file. Replace and Merge wait. The Galaxy was not changed. The month
+counting was checked on the computer. It has not been tried on the
+iPhone. Patrick is making build 117 and loading it on the iPhone.
+
+**On Apple's site.** The purchase is created. The name the app looks
+for is com.molliedog.ElderlyAssistant.full. The reference name and the
+display name are Full purchase. The description is "Free for one
+month, then $9.99 once." The United States price is $9.99. Every
+country was already marked. The status is Prepare for Submission. It
+has not been sent for review.
+
+**Still to type, and still to add.** The store page sentence is
+written and has not been typed onto the store page. The picture under
+Review Information on the purchase was not added. It is for Apple's
+review, and it is separate from the light-theme screenshots. Both go
+on after build 100 comes off review, and before build 117 is added
+for review.
+
 ## #136-new (2026-10-14): free month, then $9.99 inside the app; Expo awards
 
 **The price.** The download is free on the iPhone and on Android. The

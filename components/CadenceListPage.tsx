@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { addingAndChangingWaits } from '../modules/apple-purchase';
 import { HeaderButton, PageFrame } from './PageFrame';
 import { Cover } from './Cover';
 import { ReminderItemRow } from './ReminderItemRow';
@@ -162,7 +163,10 @@ export default function CadenceListPage({
     );
 
     const writeItems = (patch: (list: ReminderItem[]) => ReminderItem[]) => {
-        void applyReminderChange(patch).then(setItems);
+        void addingAndChangingWaits().then((waits) => {
+            if (waits) return;
+            void applyReminderChange(patch).then(setItems);
+        });
     };
 
     const markDone = (id: string) => {
@@ -177,13 +181,20 @@ export default function CadenceListPage({
     const undoDone = (id: string) => {
         const item = items.find((one) => one.id === id);
         if (!item) return;
+        void addingAndChangingWaits().then((waits) => {
+            if (waits) return;
+            confirmUndo(item);
+        });
+    };
+
+    const confirmUndo = (item: ReminderItem) => {
         Alert.alert('Un-check Item', `Mark "${item.label}" as not done?`, [
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Mark not done',
                 onPress: () => {
                     writeItems((list) => list.map((one) => {
-                        if (one.id !== id) return one;
+                        if (one.id !== item.id) return one;
                         if (
                             doneActionCodeOf(one.kind) === 'advanceDate'
                             && typeof one.priorYear === 'number'
@@ -281,13 +292,18 @@ export default function CadenceListPage({
         const meta = dragMeta.current;
         if (!meta && !draggingIdRef.current) return;
         if (meta) {
-            void applyReminderChange((list) =>
-                kind === 'daily'
-                    ? dragVisibleTo(list, meta.id, dragToIndex.current)
-                    : dragKindTo(list, kind, meta.id, dragToIndex.current)
-            ).then((next) => {
-                itemsRef.current = next;
-                setItems(next);
+            const held = meta;
+            const place = dragToIndex.current;
+            void addingAndChangingWaits().then((waits) => {
+                if (waits) return;
+                void applyReminderChange((list) =>
+                    kind === 'daily'
+                        ? dragVisibleTo(list, held.id, place)
+                        : dragKindTo(list, kind, held.id, place)
+                ).then((next) => {
+                    itemsRef.current = next;
+                    setItems(next);
+                });
             });
         }
         dragMeta.current = null;
@@ -299,6 +315,13 @@ export default function CadenceListPage({
     }, [kind]);
 
     const deleteEntry = (id: string) => {
+        void addingAndChangingWaits().then((waits) => {
+            if (waits) return;
+            confirmDelete(id);
+        });
+    };
+
+    const confirmDelete = (id: string) => {
         Alert.alert('Delete', 'Remove this entry?', [
             { text: 'Cancel', style: 'cancel' },
             {
@@ -334,11 +357,14 @@ export default function CadenceListPage({
                             </HeaderButton>
                             <HeaderButton
                                 onPress={() => {
-                                    if (kind === 'daily') {
-                                        setShowAddPopup(true);
-                                        return;
-                                    }
-                                    router.push({ pathname: '/item-edit', params: { kind, returnTo } } as Href);
+                                    void addingAndChangingWaits().then((waits) => {
+                                        if (waits) return;
+                                        if (kind === 'daily') {
+                                            setShowAddPopup(true);
+                                            return;
+                                        }
+                                        router.push({ pathname: '/item-edit', params: { kind, returnTo } } as Href);
+                                    });
                                 }}
                             >
                                 <Text style={styles.headerBtnText}>+ Add</Text>
@@ -431,7 +457,10 @@ export default function CadenceListPage({
                                                 setHighlightId(null);
                                                 return;
                                             }
-                                            router.push({ pathname: '/item-edit', params: { id: item.id, kind: item.kind, returnTo } } as Href);
+                                            void addingAndChangingWaits().then((waits) => {
+                                                if (waits) return;
+                                                router.push({ pathname: '/item-edit', params: { id: item.id, kind: item.kind, returnTo } } as Href);
+                                            });
                                         }}
                                         onDragStart={beginDrag}
                                         onDragMove={moveDrag}
@@ -457,8 +486,14 @@ export default function CadenceListPage({
                             <TouchableOpacity
                                 style={styles.choiceBtn}
                                 onPress={() => {
-                                    setShowAddPopup(false);
-                                    router.push({ pathname: '/item-edit', params: { kind: 'daily', returnTo } } as Href);
+                                    void addingAndChangingWaits().then((waits) => {
+                                        if (waits) {
+                                            setShowAddPopup(false);
+                                            return;
+                                        }
+                                        setShowAddPopup(false);
+                                        router.push({ pathname: '/item-edit', params: { kind: 'daily', returnTo } } as Href);
+                                    });
                                 }}
                             >
                                 <Text style={styles.choiceBtnText}>Every day</Text>
@@ -466,8 +501,14 @@ export default function CadenceListPage({
                             <TouchableOpacity
                                 style={styles.choiceBtn}
                                 onPress={() => {
-                                    setShowAddPopup(false);
-                                    router.push({ pathname: '/item-edit', params: { kind: 'oneTime', returnTo } } as Href);
+                                    void addingAndChangingWaits().then((waits) => {
+                                        if (waits) {
+                                            setShowAddPopup(false);
+                                            return;
+                                        }
+                                        setShowAddPopup(false);
+                                        router.push({ pathname: '/item-edit', params: { kind: 'oneTime', returnTo } } as Href);
+                                    });
                                 }}
                             >
                                 <Text style={styles.choiceBtnText}>One Time for today</Text>

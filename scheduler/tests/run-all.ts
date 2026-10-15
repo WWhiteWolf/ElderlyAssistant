@@ -36,6 +36,7 @@ import { runBackupSettingsTests } from './backupsettings.test.ts';
 import { runHomeOrderStorageTests, runHomeOrderTests } from './homeorder.test.ts';
 import { runListPlaceTests } from './listplace.test.ts';
 import { runPresentedTests } from './presented.test.ts';
+import { runPurchaseStandingTests } from './purchasestanding.test.ts';
 
 async function runAll(): Promise<void> {
     console.log('\nReconcile');
@@ -116,6 +117,9 @@ async function runAll(): Promise<void> {
 
     console.log('\nOpening sequence');
     await runOpeningTests();
+
+    console.log('\nFree month and purchase');
+    runPurchaseStandingTests();
 
     report();
 }

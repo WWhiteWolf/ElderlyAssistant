@@ -16,6 +16,7 @@ import { Theme, useTheme, useThemeControls } from '../constants/Themes';
 import {
     writeReplacedBackupSettings,
 } from '../modules/backup-settings';
+import { addingAndChangingWaits } from '../modules/apple-purchase';
 import { BACKUP_VERSION, exportBackup } from '../modules/backup-export';
 import { homeArrangementFromBackup, writeHomeArrangement } from '../modules/home-badges';
 import { applyReminderChange, type ReminderItem } from '../modules/reminder-items';
@@ -158,6 +159,7 @@ export default function BackupScreen() {
     };
 
     const handleReplace = async () => {
+        if (await addingAndChangingWaits()) return;
         const backup = await pickBackupFile();
         if (!backup) return;
         Alert.alert(
@@ -175,6 +177,7 @@ export default function BackupScreen() {
     };
 
     const handleMerge = async () => {
+        if (await addingAndChangingWaits()) return;
         const backup = await pickBackupFile();
         if (!backup) return;
         Alert.alert(

@@ -1,5 +1,5 @@
-import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useFocusEffect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Alert,
     KeyboardAvoidingView,
@@ -16,6 +16,7 @@ import DateTimeControl from '../components/DateTimeControl';
 import { HeaderButton, PageFrame } from '../components/PageFrame';
 import ScreenOptionsSheet from '../components/ScreenOptionsSheet';
 import { Theme, useTheme } from '../constants/Themes';
+import { addingAndChangingWaits } from '../modules/apple-purchase';
 import { exportBackup } from '../modules/backup-export';
 import {
     DAY_NAMES,
@@ -167,6 +168,14 @@ export default function ItemEditScreen() {
     const page = asParam(returnTo) || 'daily';
     const fromHelper = asParam(viaHelper) === '1';
     const startKind = kindFrom(asParam(kind), page);
+
+    useFocusEffect(useCallback(() => {
+        let alive = true;
+        void addingAndChangingWaits().then((waits) => {
+            if (waits && alive) router.back();
+        });
+        return () => { alive = false; };
+    }, [router]));
     const calendarReturn = page === 'calendar' ? {
         viewYear: asParam(viewYear),
         viewMonth: asParam(viewMonth),
@@ -378,6 +387,7 @@ export default function ItemEditScreen() {
     };
 
     const persist = async (leave: boolean) => {
+        if (await addingAndChangingWaits()) return;
         const name = tempName.trim();
         const id = editingId ?? writtenIdRef.current ?? Date.now().toString();
         writtenIdRef.current = id;

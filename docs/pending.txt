@@ -1,5 +1,5 @@
 A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
-Last updated: 2026-10-10
+Last updated: 2026-10-14
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. You are the only reader, so this list says you.
@@ -24,15 +24,32 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. IOS BUILD 100 is Waiting for Review. Take it off review. Build 117
-   is the code of 116 plus the free month. You make that iPhone build.
-   When Apple approves, you release it yourself. Release is manual.
-2. THE PRICE. The download is free. The app counts one month. Then
-   $9.99 once, inside the app, on the iPhone and on Android. When the
-   month ends and they have not paid, reminders already set keep
-   firing, and adding and changing waits. The Play account is open,
-   and Android number 5 is the internal test on your Galaxy. The
-   public Android listing still waits.
+1. IOS BUILD 100 is Waiting for Review. Take it off review. Then add
+   the light-theme screenshots. Also add the picture under Review
+   Information on the purchase. That picture is for Apple's review,
+   and it is separate from the light-theme screenshots. Then add
+   build 117 for review. You are making build 117 and loading it on
+   the iPhone. When Apple approves, you release it yourself. Release
+   is manual. The Galaxy free trial is not in that build.
+2. THE PRICE. On the iPhone the download is free. The App Store page
+   says it before the download. It is a free one month trial period.
+   Then it is $9.99 once, here in Memory. The buyer is not surprised
+   with that later. Those words have not been typed onto the store
+   page yet. The purchase is in the code. You are making build 117
+   and loading it on the iPhone. The purchase is created in App Store
+   Connect and is waiting. It has not been sent for review. Its name
+   is com.molliedog.ElderlyAssistant.full and the price is $9.99. The
+   app counts one month from the day Apple says you first downloaded
+   it. When the month ends and you have not
+   paid, you meet the payment when you try to add or change. Reminders
+   already set keep firing, and adding and changing waits. Your lists
+   stay on this phone. You can back up what you already have, and
+   restore those lists on another iPhone after the purchase is there.
+   The Galaxy free trial waits until the iPhone is in the App Store
+   and entered in the Expo competition. Whether the Galaxy gets a free
+   trial is still open. The Play account is open, and Android number 5
+   is the internal test on your Galaxy. The public Android listing
+   still waits.
 3. THE EXPO APP AWARDS. The record is docs/expo-awards.md. The entry
    waits on a public iPhone page, and the form closes October 31.
    Android is not that page. The payments profile is not set up, and

@@ -6,6 +6,7 @@ import { AppState, Alert, Platform } from 'react-native';
 import { ThemeProvider, useThemeControls } from '../constants/Themes';
 import { AppOrientationProvider } from '../components/AppOrientation';
 import { CoverRoot } from '../components/Cover';
+import { PurchaseNotice } from '../components/PurchaseNotice';
 import * as AppGroup from '../modules/app-group';
 import {
     applyReminderChange,
@@ -399,6 +400,7 @@ function RootHousing() {
 
   return (
     <CoverRoot>
+    <PurchaseNotice />
     <Stack screenOptions={{ orientation: Platform.OS === 'android' ? 'portrait_up' : 'default', gestureEnabled: false, fullScreenGestureEnabled: false }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="home" options={{ headerShown: false }} />

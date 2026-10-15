@@ -4,27 +4,28 @@
 growing it becomes the thing that thins the next session. Half a page is the
 limit.
 
-Last written: 2026-10-14, #136-new.
+Last written: 2026-10-14, #137-new.
 
 ## Read this first
 
-- Build 116 is on the iPhone. Android number 5 is the internal test
-  on the Galaxy, and it is working.
-- The download is free. The app counts one month, then $9.99 once
-  inside the app. Not built yet. Build 117 is the code of 116 plus that.
-- Build 100 is Waiting for Review and comes off review. Release is
-  manual. Light-theme screenshots go on the 117 submission.
+- The iPhone purchase is in the code. Patrick is making build 117 and
+  loading it on the iPhone. Build 116 was the previous load.
+- The purchase is created in App Store Connect. Status: Prepare for
+  Submission. It has not been sent for review.
+- Build 100 is Waiting for Review and comes off review. After that,
+  add the light-theme screenshots and the review picture on the
+  purchase, then add build 117 for review.
 
 ## What is next
 
-Take 100 off review. Patrick makes the 117 iPhone build.
-The Expo awards record is `docs/expo-awards.md`. The entry waits on
-a public iPhone page, and the form closes October 31.
-Android is not that page. The payments profile is not set up, and
-the release waits on 12 testers, which he does not have.
+The store page sentence is written and has not been typed onto the
+store page yet. The Galaxy free trial waits until the iPhone is in
+the App Store and entered in the Expo competition.
+The Expo awards record is `docs/expo-awards.md`. The form closes
+October 31. Android is not that page.
 
 ## Do not reopen
 
 Do not raise the closed-test count.
-Do not start an iPhone build from the sitting.
+Do not start an iPhone build from the sitting. He is making 117.
 Do not send the old paid download as the live listing.

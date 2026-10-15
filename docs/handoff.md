@@ -30,10 +30,17 @@ the iPhone and on the Galaxy.
 The saved-list read warning is on both phones. It stays out of the Guide.
 
 App Store build **100** is **Waiting for Review**. It comes off review.
-Build **117** is the code of 116 plus the free month, and that is the
-build to submit. Release is manual. Light-theme screenshots go on that
-submission. The public Android listing still waits. The roadmap was
-updated this sitting with the free month.
+Build **117** is the code of 116 plus the iPhone free month and the
+$9.99 purchase. That purchase is in the code. Patrick is making
+build 117 and loading it on the iPhone. The purchase is created in
+App Store Connect. Its status is Prepare for Submission. It has not
+been sent for review. The picture under Review Information on that
+purchase was not added. It is for Apple's review, and it is separate
+from the light-theme screenshots. Both go on after build 100 comes
+off review, and before build 117 is added for review. The store page
+sentence is written here and has not been typed onto the store page
+yet. The Galaxy free trial is not in that build. Release is manual.
+The public Android listing still waits.
 
 ## Standing rulings
 
@@ -128,13 +135,20 @@ finished task.
 - **He makes the iPhone builds.** Android builds are started from the
   sitting. He does not start them (Patrick, #130-new).
 - **Do not raise the closed-test count** (Patrick, #122-new).
-- **The download is free. The app counts one month from the day it is
-  first opened. Then it is $9.99 once, inside the app, the same on the
-  iPhone and on Android** (Patrick, #136-new). The stores do not run
-  that month. When the month ends and they have not paid, reminders
-  already set keep firing, and adding and changing waits for the
-  $9.99. The buy talks to Apple or Google and nowhere else. A person's
-  data stays on the phone.
+- **The download is free. On the iPhone the app counts one month from
+  the day Apple says that account first downloaded it. Then it is
+  $9.99 once, inside the app.** The App Store page says it before the
+  download. It is a free one month trial period. Then it is $9.99
+  once. The buyer is not surprised with that later. The Galaxy free
+  trial waits until the iPhone is in the App Store and entered in the
+  Expo competition.
+  Whether the Galaxy gets a free trial is still open (Patrick,
+  #137-new). Apple does not run the month. When the month ends and
+  they have not paid, reminders already set keep firing, and adding
+  and changing waits for the $9.99. They meet that when they try to
+  add or change. The notice tells them to pay here in Memory, and
+  that the lists stay on this phone. The buy talks to Apple or Google
+  and nowhere else. A person's data stays on the phone.
 - **Do not file a trademark on the name** (Patrick, #123-new). Use it.
   The copyright line is his name and the year. File later only if
   someone else starts using the same name on a similar app, or if he
@@ -151,6 +165,11 @@ The tester gets the copy already on Play. Send the join link. A text
 is fine. They open it on the Android phone and install from the Play
 Store. Do not build a separate file to email. It is Pending 1. The
 Galaxy keeps the internal test already there.
+
+Patrick is making build 117 and loading it on the iPhone. After build
+100 comes off review, add the light-theme screenshots and the review
+picture on the purchase, then add build 117 for review. The store
+page sentence has not been typed onto the store page yet.
 
 The guide remains `docs/designed-implementation.md`.
 

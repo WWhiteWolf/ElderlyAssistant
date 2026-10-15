@@ -56,7 +56,8 @@
       ],
       "@react-native-community/datetimepicker",
       "./plugins/withSiriIntent",
-      "./plugins/withPhoneTextSize"
+      "./plugins/withPhoneTextSize",
+      "expo-iap"
     ],
     "experiments": {
       "typedRoutes": true,

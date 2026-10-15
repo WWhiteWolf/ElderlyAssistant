@@ -38,20 +38,60 @@ website for the user's guide.
 
 ## The free month
 
-Decided #136-new. Not built yet. Build 117 is the code of 116 plus this.
+Decided #136-new. The iPhone part is #137-new. It is in the code.
+Patrick is making build 117, the code of 116 plus this iPhone part,
+and loading it on the iPhone. The Galaxy free trial waits until the iPhone is in the
+App Store and entered in the Expo competition. Whether the Galaxy gets
+a free trial is still open.
 
-The download is free on the iPhone and on Android. The app remembers
-the day it is first opened and counts one month from that day. The
-stores do not run the month. The month is kept on the phone. Deleting
-the app and installing it again starts the month over.
+The download is free. On the iPhone the app asks Apple for the day
+that account first downloaded it, and counts one month from that day.
+Apple does not run the month. Deleting the app and installing it again
+does not start another free month.
 
-During the month the app works as it does now. When the month ends and
-they have not paid, reminders already set keep firing. Adding and
-changing waits until they pay $9.99 once, inside the app. The list
-stays on the phone.
+The App Store page says it before the download. It is a free one month
+trial period. Then it is $9.99 once. The buyer is not surprised with
+that later. Those words are not typed onto the store page yet.
 
-The paid state comes back from their Apple or Google account onto a
-new phone. Nothing of his has to live on a server.
+The app knows free from purchased. Purchased means Apple says they
+have paid $9.99 once. Free means they have not paid. The month may
+still be running, or it may be over. A backup holds the lists.
+Restoring those lists does not change free into purchased, and it
+does not start another free month.
+
+During the month the app works as it does now. The buyer is not asked
+to pay during the month.
+
+When the month ends and they have not paid, reminders already set keep
+firing. Adding and changing waits until they pay. The list stays on
+the phone. The switch is paying $9.99 once, here in Memory, on this
+phone. They meet it when they try to add or change. The notice says:
+
+Your free one month trial is over. This is when you pay. Pay $9.99 once, here
+in Memory, to keep adding and changing. Your lists stay on this phone.
+Reminders you already set keep going. You can back up what you already
+have. If you install Memory again, or put it on another iPhone, you
+can restore those lists after the purchase is on that phone.
+
+Backup stays available from that notice. The Back up button opens
+Backup. Replace and Merge wait until the purchase is on that phone.
+Not now puts the notice away. Done and Snooze still work. Pay buys
+the one-time purchase `com.molliedog.ElderlyAssistant.full` at $9.99.
+That purchase is created in App Store Connect. Its status is Prepare
+for Submission. It has not been sent for review. The way to pay is on
+the notice.
+
+The picture under Review Information on that purchase was not added.
+It is for Apple's review, and it is separate from the light-theme
+screenshots. It goes on after build 100 comes off review, and before
+build 117 is added for review.
+
+The paid state comes back from their Apple account onto a new iPhone.
+Nothing of his has to live on a server.
+
+On Apple's practice store, a try shows the app after the free month
+is over, because that store always says the app was first downloaded
+on 1 August 2013. The real day comes from the real App Store.
 
 Siri is out of sight. The Shortcuts and Siri phrases are offered no
 more. Keep in the back of the design a later Siri that can go into
