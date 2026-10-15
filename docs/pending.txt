@@ -24,24 +24,26 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. IOS BUILD 100 is Waiting for Review. The picture build is on the
-   iPhone. It says My Reminders, and the notice appeared. The fake
-   date is out of the code. You make the next iPhone build from this
-   code. That is the real one. Expo numbers it. It is not on the phone
-   yet. Do not send the picture build to review. Take build 100 off
-   review. The store name on this same app becomes My Reminders. This
-   is not a new app. The purchase display name and reference name
-   become My Reminders. Then add the light-theme screenshots and the
-   saved notice under Review Information on the purchase, and add the
-   real build for review. When Apple approves, you release it
-   yourself. Release is manual. The Galaxy free trial is not in that
-   build.
+1. IOS BUILD 100 is Waiting for Review. Take it off review before
+   you change the name or the screenshots. On the version page, the
+   message at the top says remove this version from review. Build 120
+   is on your iPhone. It is the one for the store. You can add and
+   change on that copy. That is expected. Do not send an older
+   picture build. The store name on this same app becomes My
+   Reminders. This is not a new app. The purchase display name and
+   reference name become My Reminders. Add the saved notice under
+   Review Information on the purchase. Use the picture that says My
+   Reminders. Pictures that say A Place To Remember do not go on.
+   Add the light-theme pictures of the pages on the version page.
+   The build on that page is 120. The purchase goes in that same
+   submission. When Apple approves, you release it yourself. Release
+   is manual. The Galaxy free trial is not in that build.
 2. THE PRICE. On the iPhone the download is free. The App Store page
    says it before the download. It is a free one month trial period.
    Then it is $9.99 once, here in My Reminders. The buyer is not surprised
    with that later. Those words have not been typed onto the store
-   page yet. The purchase is in the code. Build 117 is on the iPhone.
-   The purchase is created in App Store
+   page yet. The purchase is in the code. Build 120 is on the iPhone,
+   and you can add and change on that copy. The purchase is created in App Store
    Connect and is waiting. It has not been sent for review. Its name
    is com.molliedog.ElderlyAssistant.full and the price is $9.99. The
    app counts one month from the day Apple says you first downloaded
@@ -78,6 +80,10 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+212. #138.3-new — The name is My Reminders. Build 120 is on the
+    iPhone and is the build for the store. The pay screen was saved
+    from the picture build. Build 100 is still Waiting for Review.
 
 211. #134-new — The saved-list read warning is on the iPhone and the
     Galaxy. It stays out of the Guide.

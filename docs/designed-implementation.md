@@ -81,17 +81,18 @@ That purchase is created in App Store Connect. Its status is Prepare
 for Submission. It has not been sent for review. The way to pay is on
 the notice.
 
-The picture under Review Information on that purchase was not added.
-It is a saved copy of the iPhone screen while the notice is showing.
+The picture under Review Information on that purchase goes on after
+build 100 comes off review, and before build 120 is added for review.
 People who download the app never see it. It is separate from the
-light-theme screenshots. It goes on after build 100 comes off review,
-and before the buyer build is added for review. It was not saved from
-build 117, because the notice never appeared (#138-new).
+light-theme screenshots. The picture to use says My Reminders in the
+title and in the notice. Pictures that say A Place To Remember do
+not go on.
 
-The picture build is on the iPhone (#138.3-new). It says My Reminders,
-and the notice appeared. The fake date is out of the code. The next
-build Patrick makes is the real one, for the store. The bundle id
-stays. This is not a new app.
+The picture build showed the notice (#138.3-new). The fake date is
+out of the code. Build 120 is on the iPhone and is the one for the
+store. On that phone copy he can add and change, because it came
+through TestFlight and Apple did not give the download day. That is
+not a fault. The bundle id stays. This is not a new app.
 
 The paid state comes back from their Apple account onto a new iPhone.
 Nothing of his has to live on a server.
@@ -105,7 +106,8 @@ not receive a day from Apple. Patrick added a new daily item. The
 item was saved. The notice did not appear. On the copy that goes to
 buyers, if Apple gives no day, adding and changing stay open and the
 notice stays hidden. Do not treat a missing day as Apple having given
-one, except on the picture build above.
+one, except on that past picture build. Do not put the picture build
+on the store.
 
 Siri is out of sight. The Shortcuts and Siri phrases are offered no
 more. Keep in the back of the design a later Siri that can go into

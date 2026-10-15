@@ -17,6 +17,44 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #138.3-new (2026-10-15): My Reminders; build 120 is the store build
+
+**The name.** The store name, the purchase name, and the name in the
+app are My Reminders. The home title, the name under the icon, the
+notice, the backup words, and the guide say those words. Old backup
+files still open. Siri’s hidden phrases were left as they were. This
+is the same app. The id stays com.molliedog.ElderlyAssistant. It is
+not a new project and not a new App Store app.
+
+**The picture build, then the real one.** A one-time copy used
+1 August 2013 when Apple gave no day, so the notice could be saved.
+Patrick saved that screen. It says My Reminders. The date then came
+out of the code. Build 120 is on the iPhone. He can add and change
+on that copy. The copy came through TestFlight, so Apple did not
+give the download day, and the pay screen stays hidden. That is not
+a fault. Build 120 is the one for the store. Do not send the picture
+build.
+
+**What the store build does.** The free time is one month from the
+day Apple says that account first downloaded the app. After that
+month, if they have not paid, the pay screen appears the next time
+they add or change. Reminders already set keep going. They pay
+$9.99 once, here in My Reminders. The app does not take the money
+by itself.
+
+**Numbers.** Commit names and the session number are not one series.
+Do not try to line them up. The store build is 120.
+
+**Still to do on App Store Connect.** Build 100 is Waiting for
+Review. Take it off review before changing the name or the
+screenshots. Then set the app name to My Reminders, set the
+purchase’s display name and reference name to My Reminders, add the
+notice picture that says My Reminders, add the light-theme pictures
+of the pages, and put build 120 on the version with the purchase.
+The store page sentence is not typed yet: It is a free one month
+trial period. Then it is $9.99 once. Release stays manual. Pictures
+that say A Place To Remember do not go on.
+
 ## #138-new (2026-10-14): build 117 on the phone; the notice did not appear
 
 **Build 117 is on the iPhone.** Patrick built it, submitted it, and
