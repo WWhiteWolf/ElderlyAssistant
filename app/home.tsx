@@ -339,11 +339,11 @@ export default function HomeScreen() {
                                 <HeaderButton onPress={leaveEdit}>
                                     <Text style={styles.headerBtnText}>Done</Text>
                                 </HeaderButton>
-                                <Text style={[styles.title, styles.titleInRow]}>A Place To Remember</Text>
+                                <Text style={[styles.title, styles.titleInRow]}>{PAGE_LABELS.home}</Text>
                                 <HeaderButton invisible />
                             </View>
                         ) : (
-                            <Text style={styles.title}>A Place To Remember</Text>
+                            <Text style={styles.title}>{PAGE_LABELS.home}</Text>
                         )}
                         <View style={styles.subtitleRow}>
                             <View style={{ width: 70, alignItems: 'flex-start' }}>

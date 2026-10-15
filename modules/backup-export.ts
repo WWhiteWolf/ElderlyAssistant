@@ -17,7 +17,7 @@ function backupFileName(now: Date): string {
         `${String(now.getDate()).padStart(2, '0')}-` +
         `${String(now.getHours()).padStart(2, '0')}` +
         `${String(now.getMinutes()).padStart(2, '0')}`;
-    return `Remember-Backup-${stamp}.json`;
+    return `My-Reminders-Backup-${stamp}.json`;
 }
 
 function pickerWasCancelled(error: unknown): boolean {
@@ -41,7 +41,7 @@ async function saveBackupIntoChosenFolder(json: string, fileName: string): Promi
 async function shareBackup(data: Record<string, string | null>): Promise<void> {
     try {
         const backup = {
-            app: 'A Place To Remember',
+            app: 'My Reminders',
             type: 'remember-backup',
             version: BACKUP_VERSION,
             exportedAt: new Date().toISOString(),
@@ -72,7 +72,7 @@ async function shareBackup(data: Record<string, string | null>): Promise<void> {
         await Sharing.shareAsync(file.uri, {
             mimeType: 'application/json',
             UTI: 'public.json',
-            dialogTitle: 'Save your Remember backup',
+            dialogTitle: 'Save your My Reminders backup',
         });
     } catch {
         Alert.alert(

@@ -1,4 +1,4 @@
-# Session hand-off — A Place To Remember (Memory, iPhone)
+# Session hand-off — My Reminders (iPhone)
 
 This file is for the next sitting. It says what was done and what
 still needs to be done. It is not the whole history. History lives
@@ -30,25 +30,31 @@ the iPhone and on the Galaxy.
 The saved-list read warning is on both phones. It stays out of the Guide.
 
 App Store build **100** is **Waiting for Review**. It comes off review.
-Build **117** is on the iPhone. The notice did not appear, because that
-copy came through Expo and Expo does not have the day Apple gives.
-The next build is for the picture of the notice. When Apple gives no
-day and they have not paid, that build uses 1 August 2013. That day is
-already more than a month ago, so adding or changing opens the notice.
-Paying still leaves adding open. The Galaxy is unchanged. That date
-comes out before the copy that goes to buyers. Patrick makes the
-iPhone build. It is not on the phone yet.
+The store name on this same app becomes **My Reminders**. The bundle
+id stays `com.molliedog.ElderlyAssistant`. This is not a new app and
+not a new project.
+
+Two builds are still to make. The first is the picture build. It says
+My Reminders, and when Apple gives no day it uses 1 August 2013, so
+adding or changing opens the notice. Patrick makes that iPhone build
+and takes every snapshot from it. The pictures already saved show the
+old name, so they are not the ones that go to Apple. The second build
+is the real one: the same name, and the fake date taken out. That is
+the one for the store. Neither build is on the phone yet.
 
 The purchase is created in App Store Connect. Its status is Prepare
-for Submission. It has not been sent for review. The picture under
+for Submission. It has not been sent for review. Its display name and
+its reference name become **My Reminders**. The id the app asks Apple
+for stays `com.molliedog.ElderlyAssistant.full`. The picture under
 Review Information on that purchase was not added. It is a saved copy
 of the iPhone screen while the notice is showing. People who download
 the app never see it. It is separate from the light-theme screenshots.
-It was not saved, because the notice never appeared. Both go on after
-build 100 comes off review, and before build 117 is added for review.
-The store page sentence is written here and has not been typed onto
-the store page yet. The Galaxy free trial is not in that build.
-Release is manual. The public Android listing still waits.
+The pictures already saved show the old name. New ones come from the
+picture build. Both go on after build 100 comes off review, and before
+the real build is added for review. The store page sentence is written
+here and has not been typed onto the store page yet. The Galaxy free
+trial is not in that build. Release is manual. The public Android
+listing still waits.
 
 ## Standing rulings
 
@@ -155,13 +161,13 @@ finished task.
   adding and changing stay open and the notice stays hidden. A copy
   that came through Expo does not have that day (#138-new). Do not
   treat a missing day as a day Apple gave on the copy that goes to
-  buyers. The picture build is the exception (#138.3-new): it uses
-  1 August 2013 when Apple gives no day, so the notice can be saved.
-  That date comes out before the copy that goes to buyers. When the
-  month ends and they have not paid, reminders already set keep
-  firing, and adding
-  and changing waits for the $9.99. They meet that when they try to
-  add or change. The notice tells them to pay here in Memory, and
+  buyers. The picture build is the exception (#138.3-new): it says
+  My Reminders, and it uses 1 August 2013 when Apple gives no day, so
+  the notice can be saved. The real build keeps the name and that date
+  comes out. When the month ends and they have not paid, reminders
+  already set keep firing, and adding and changing waits for the
+  $9.99. They meet that when they try to add or change. The notice
+  tells them to pay here in My Reminders, and
   that the lists stay on this phone. The buy talks to Apple or Google
   and nowhere else. A person's data stays on the phone.
 - **Do not file a trademark on the name** (Patrick, #123-new). Use it.
@@ -181,13 +187,12 @@ is fine. They open it on the Android phone and install from the Play
 Store. Do not build a separate file to email. It is Pending 1. The
 Galaxy keeps the internal test already there.
 
-The picture build is in the code and not on the phone yet. Patrick
-makes that iPhone build, adds or changes an item, and saves the screen
-while the notice is showing. After build 100 comes off review, add the
-light-theme screenshots and that saved screen on the purchase, then
-add the buyer build for review. The picture date comes out of the code
-before that buyer build. The store page sentence has not been typed
-onto the store page yet.
+The picture build is in the code and not on the phone yet. It says
+My Reminders and keeps the fake date. Patrick makes that iPhone build
+and takes every new snapshot from it, including the notice. The second
+build takes the fake date out and keeps the name. That is the one for
+the store, after build 100 comes off review. The store page sentence
+has not been typed onto the store page yet.
 
 The guide remains `docs/designed-implementation.md`.
 

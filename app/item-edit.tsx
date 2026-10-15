@@ -242,8 +242,8 @@ export default function ItemEditScreen() {
 
     const askToBackUp = () => {
         Alert.alert(
-            'Back Up Memory?',
-            'Your new item is saved. Would you like to back up Memory now?',
+            'Back Up My Reminders?',
+            'Your new item is saved. Would you like to back up My Reminders now?',
             [
                 { text: 'Not Now', style: 'cancel', onPress: afterSave },
                 {

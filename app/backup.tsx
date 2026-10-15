@@ -127,7 +127,7 @@ export default function BackupScreen() {
             if (!parsed || parsed.type !== 'remember-backup' || !parsed.data) {
                 Alert.alert(
                     'Not a backup from this app',
-                    'That file is not a backup made by A Place To Remember. Nothing was changed.',
+                    'That file is not a backup made by My Reminders. Nothing was changed.',
                 );
                 return null;
             }
@@ -144,7 +144,7 @@ export default function BackupScreen() {
             if (reminderItems === null) {
                 Alert.alert(
                     'Not a current backup',
-                    'That file contains reminders this version of A Place To Remember does not recognize. Nothing was changed.',
+                    'That file contains reminders this version of My Reminders does not recognize. Nothing was changed.',
                 );
                 return null;
             }

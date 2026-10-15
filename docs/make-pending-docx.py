@@ -50,7 +50,7 @@ HALF_POINTS = "28"
 # equal to `pending.txt` — the whole guarantee is that the two can be
 # compared word for word. Styling may differ; wording may not.
 HEADINGS = (
-    re.compile(r"^A PLACE TO REMEMBER"),
+    re.compile(r"^MY REMINDERS"),
     re.compile(r"^#\d+-new — "),
     re.compile(r"^[A-Z][A-Z0-9 '\u2019\".,()/-]{3,}$"),
 )

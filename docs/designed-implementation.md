@@ -1,4 +1,4 @@
-# Designed implementation — A Place To Remember
+# Designed implementation — My Reminders
 
 This is the guide for the whole app. A sitting builds from this file. It
 does not ask Patrick a design question. If an answer is not here, the
@@ -64,13 +64,13 @@ to pay during the month.
 
 When the month ends and they have not paid, reminders already set keep
 firing. Adding and changing waits until they pay. The list stays on
-the phone. The switch is paying $9.99 once, here in Memory, on this
+the phone. The switch is paying $9.99 once, here in My Reminders, on this
 phone. They meet it when they try to add or change. The notice says:
 
 Your free one month trial is over. This is when you pay. Pay $9.99 once, here
-in Memory, to keep adding and changing. Your lists stay on this phone.
+in My Reminders, to keep adding and changing. Your lists stay on this phone.
 Reminders you already set keep going. You can back up what you already
-have. If you install Memory again, or put it on another iPhone, you
+have. If you install My Reminders again, or put it on another iPhone, you
 can restore those lists after the purchase is on that phone.
 
 Backup stays available from that notice. The Back up button opens
@@ -88,11 +88,13 @@ light-theme screenshots. It goes on after build 100 comes off review,
 and before the buyer build is added for review. It was not saved from
 build 117, because the notice never appeared (#138-new).
 
-The next build is for that picture (#138.3-new). When Apple gives no
-day and they have not paid, that build uses 1 August 2013, so the
-month is already over and adding or changing opens the notice. Paying
-still leaves adding open. The Galaxy is unchanged. That date comes out
-before the copy that goes to buyers. Patrick makes the iPhone build.
+The next build is the picture build (#138.3-new). It says My Reminders.
+When Apple gives no day and they have not paid, that build uses
+1 August 2013, so the month is already over and adding or changing
+opens the notice. Patrick makes that iPhone build and takes every
+snapshot from it. The pictures already saved show the old name. The
+real build keeps My Reminders and that date comes out. That is the
+one for the store. The bundle id stays. This is not a new app.
 
 The paid state comes back from their Apple account onto a new iPhone.
 Nothing of his has to live on a server.
