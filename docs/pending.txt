@@ -24,41 +24,13 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. IOS BUILD 100 is Waiting for Review. Take it off review before
-   you change the name or the screenshots. On the version page, the
-   message at the top says remove this version from review. Build 120
-   is on your iPhone. It is the one for the store. You can add and
-   change on that copy. That is expected. Do not send an older
-   picture build. The store name on this same app becomes My
-   Reminders. This is not a new app. The purchase display name and
-   reference name become My Reminders. Add the saved notice under
-   Review Information on the purchase. Use the picture that says My
-   Reminders. Pictures that say A Place To Remember do not go on.
-   Add the light-theme pictures of the pages on the version page.
-   The build on that page is 120. The purchase goes in that same
-   submission. When Apple approves, you release it yourself. Release
-   is manual. The Galaxy free trial is not in that build.
-2. THE PRICE. On the iPhone the download is free. The App Store page
-   says it before the download. It is a free one month trial period.
-   Then it is $9.99 once, here in My Reminders. The buyer is not surprised
-   with that later. Those words have not been typed onto the store
-   page yet. The purchase is in the code. Build 120 is on the iPhone,
-   and you can add and change on that copy. The purchase is created in App Store
-   Connect and is waiting. It has not been sent for review. Its name
-   is com.molliedog.ElderlyAssistant.full and the price is $9.99. The
-   app counts one month from the day Apple says you first downloaded
-   it. If Apple gives no day, the notice stays hidden and adding still
-   works. That is what the phone did. When the month ends and you have not
-   paid, you meet the payment when you try to add or change. Reminders
-   already set keep firing, and adding and changing waits. Your lists
-   stay on this phone. You can back up what you already have, and
-   restore those lists on another iPhone after the purchase is there.
-   The Galaxy free trial waits until the iPhone is in the App Store
-   and entered in the Expo competition. Whether the Galaxy gets a free
-   trial is still open. The Play account is open, and Android number 5
-   is the internal test on your Galaxy. The public Android listing
-   still waits.
-3. THE EXPO APP AWARDS. The record is docs/expo-awards.md. The entry
+1. THE GALAXY FREE TRIAL, AND THE PUBLIC ANDROID LISTING. The Galaxy
+   free trial waits until the iPhone is in the App Store and entered
+   in the Expo competition. Whether the Galaxy gets a free trial is
+   still open. The Play account is open, and Android number 5 is the
+   internal test on your Galaxy. The public Android listing still
+   waits.
+2. THE EXPO APP AWARDS. The record is docs/expo-awards.md. The entry
    waits on a public iPhone page, and the form closes October 31.
    Android is not that page. The payments profile is not set up, and
    the Android release waits on 12 testers, which you do not have.
@@ -80,6 +52,10 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+213. #139-new — The work to go to the store with the new name and the
+    new pricing is done. The store name is My Reminders. The page
+    says it is a free one month trial period, then $9.99 once.
 
 212. #138.3-new — The name is My Reminders. Build 120 is on the
     iPhone and is the build for the store. The pay screen was saved

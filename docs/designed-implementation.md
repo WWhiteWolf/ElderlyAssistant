@@ -88,11 +88,21 @@ light-theme screenshots. The picture to use says My Reminders in the
 title and in the notice. Pictures that say A Place To Remember do
 not go on.
 
+<<<<<<< HEAD
 The picture build showed the notice (#138.3-new). The fake date is
 out of the code. Build 120 is on the iPhone and is the one for the
 store. On that phone copy he can add and change, because it came
 through TestFlight and Apple did not give the download day. That is
 not a fault. The bundle id stays. This is not a new app.
+=======
+The next build is the picture build (#138.3-new). It says My Reminders.
+When Apple gives no day and they have not paid, that build uses
+1 August 2013, so the month is already over and adding or changing
+opens the notice. Patrick makes that iPhone build and takes every
+snapshot from it. The pictures already saved show the old name. The
+real build keeps My Reminders and that date comes out. That is the
+one for the store. The bundle id stays. This is not a new app.
+>>>>>>> e686db56d83b8138e8cdd26aeadf7d9a6ee7c2bb
 
 The paid state comes back from their Apple account onto a new iPhone.
 Nothing of his has to live on a server.

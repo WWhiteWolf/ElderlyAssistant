@@ -400,9 +400,9 @@ export default function CadenceListPage({
                 >
                     {listReadFailed ? (
                         <View style={styles.readFailure}>
-                            <Text style={styles.readFailureTitle}>My Reminders could not read your saved reminders.</Text>
+                            <Text style={styles.readFailureTitle}>Daily Reminders could not read your saved reminders.</Text>
                             <Text style={styles.readFailureText}>
-                                Your reminders already on this phone were left alone. Close My Reminders and reopen it.
+                                Your reminders already on this phone were left alone. Close Daily Reminders and reopen it.
                                 If this warning is still here, tap Feedback.
                             </Text>
                             <TouchableOpacity

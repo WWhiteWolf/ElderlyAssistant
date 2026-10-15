@@ -283,7 +283,7 @@ If a date or time you typed is not a real one, that box is outlined in red, and 
 
 If you last set the time with the 12-hour spinner, Save asks you to check AM or PM, so the morning or evening is the one you mean. You can go back and change it, or Save from there. If you last set the time with the 24-hour box or the digit spinner, it does not ask.
 
-After Save on a new reminder, the app asks Back Up My Reminders? Your new item is saved. Would you like to back up My Reminders now? Back Up Now uses the same Backup & Restore as Settings. Not Now takes you back to the list. Edit and Done do not ask.
+After Save on a new reminder, the app asks Back Up Daily Reminders? Your new item is saved. Would you like to back up Daily Reminders now? Back Up Now uses the same Backup & Restore as Settings. Not Now takes you back to the list. Edit and Done do not ask.
 
 ## Done
 

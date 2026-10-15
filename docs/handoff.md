@@ -29,33 +29,27 @@ the iPhone and on the Galaxy.
 
 The saved-list read warning is on both phones. It stays out of the Guide.
 
-App Store build **100** is **Waiting for Review**. It comes off review
-before the name or the screenshots can be changed. While it is
-waiting, Apple will not let the screenshots be changed. The store
-name on this same app becomes **My Reminders**. The id stays
-`com.molliedog.ElderlyAssistant`. This is not a new app and not a
-new project.
+The work to go to the store with the new name and the new pricing is
+done (#139-new). The store name on this same app is **My Reminders**.
+The id stays `com.molliedog.ElderlyAssistant`. This is not a new app
+and not a new project.
 
-Build **120** is on the iPhone. It is the build for the store. Patrick
+Build **120** is on the iPhone. It is the build for the store. The
+picture build already did its job: the notice appeared, and the saved
+screen says My Reminders. The fake date is out of the code. Patrick
 can add and change on that copy. The copy came through TestFlight, so
 Apple did not give the download day, and the pay screen stays hidden.
-That is not a fault. Do not send an older picture build. The picture
-build already did its job: the notice appeared, and the saved screen
-says My Reminders.
+That is not a fault.
 
-The purchase is created in App Store Connect. Its status is Prepare
-for Submission. It has not been sent for review. Its display name and
-its reference name become **My Reminders**. The id the app asks Apple
-for stays `com.molliedog.ElderlyAssistant.full`. The picture under
-Review Information on that purchase goes on after build 100 comes off
-review, and before build 120 is added for review. People who download
-the app never see that picture. The picture to use says My Reminders
-in the title and in the notice. Pictures that say A Place To Remember
-do not go on. It is separate from the light-theme pictures of the
-pages. The store page sentence has not been typed onto the store page
-yet. The words are: It is a free one month trial period. Then it is
-$9.99 once. The Galaxy free trial is not in build 120. Release is
-manual. The public Android listing still waits.
+The purchase is in App Store Connect. Its display name and its
+reference name are **My Reminders**. The id the app asks Apple for
+stays `com.molliedog.ElderlyAssistant.full`. The picture under Review
+Information is the saved screen of the notice. People who download
+the app never see that picture. It says My Reminders in the title and
+in the notice. It is separate from the light-theme pictures of the
+pages. The store page says: It is a free one month trial period. Then
+it is $9.99 once. The Galaxy free trial is not in build 120. Release
+is manual. The public Android listing still waits.
 
 ## Standing rulings
 
@@ -133,9 +127,10 @@ finished task.
 - **The Android path is Google Play** (Patrick, 2026-10-01). The
   account was submitted on 2026-10-01. It is open (#128-new). Android
   number **5** (1.0.0) is the internal test on the Galaxy, and it is
-  working (#134-new). The iPhone store build is 100 until it comes
-  off review. Build 120 replaces it. The public Android listing still
-  waits.
+  working (#134-new). The iPhone store build is 120 (#139-new). The
+  public Android listing still waits.
+- **Commit names and the session number are not one series.** Do not
+  try to line them up. The store build is 120.
 - **Play Console and the phone use two different sign-ins** (Patrick,
   #134-new). Play Console on the Mac is the Comcast account. The
   Galaxy's Play Store is the iCloud account. The internal-test link
@@ -186,33 +181,6 @@ The tester gets the copy already on Play. Send the join link. A text
 is fine. They open it on the Android phone and install from the Play
 Store. Do not build a separate file to email. It is Pending 1. The
 Galaxy keeps the internal test already there.
-
-Build 120 is on the iPhone. It is the one for the store. Do not send
-an older picture build. Patrick can add and change on this phone
-copy, because it came through TestFlight and Apple did not give the
-download day. That is not a fault.
-
-Build 100 is Waiting for Review. Take it off review before changing
-the name or the screenshots. On the version page, the message at the
-top says remove this version from review. The same removal is under
-App Review, on that submission, with Cancel Submission. Taking it off
-review does not remove a build from the phone.
-
-Then the name on App Information becomes My Reminders. On the
-purchase, the display name and the reference name become My Reminders.
-Under Review Information on that purchase, add the saved screen of
-the notice. The picture to use says My Reminders. Pictures that say
-A Place To Remember do not go on. The light-theme pictures of the
-pages are separate, and they go on the version page.
-
-The store page sentence is not typed yet. The words are: It is a free
-one month trial period. Then it is $9.99 once.
-
-The build on the version page is 120. The purchase goes in that same
-submission. Release stays manual.
-
-Commit names and the session number are not one series. Do not try
-to line them up. The store build is 120.
 
 The guide remains `docs/designed-implementation.md`.
 

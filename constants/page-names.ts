@@ -10,7 +10,7 @@
 import type { ReminderKind } from '../modules/reminder-types';
 
 export const PAGE_LABELS = {
-    home: 'My Reminders',
+    home: 'Daily Reminders',
     daily: 'Daily',
     where: 'Helper',
     weekly: 'Weekly',
