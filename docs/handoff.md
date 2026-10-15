@@ -17,7 +17,7 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-Build **116** is on the iPhone. Android number **5** (1.0.0) is the
+Build **117** is on the iPhone. Android number **5** (1.0.0) is the
 internal test on the Galaxy, and it is working. Build 3 is no longer
 that load. The Play account is open. The public Android listing still
 waits.
@@ -30,17 +30,28 @@ the iPhone and on the Galaxy.
 The saved-list read warning is on both phones. It stays out of the Guide.
 
 App Store build **100** is **Waiting for Review**. It comes off review.
-Build **117** is the code of 116 plus the iPhone free month and the
-$9.99 purchase. That purchase is in the code. Patrick is making
-build 117 and loading it on the iPhone. The purchase is created in
-App Store Connect. Its status is Prepare for Submission. It has not
-been sent for review. The picture under Review Information on that
-purchase was not added. It is for Apple's review, and it is separate
-from the light-theme screenshots. Both go on after build 100 comes
-off review, and before build 117 is added for review. The store page
-sentence is written here and has not been typed onto the store page
-yet. The Galaxy free trial is not in that build. Release is manual.
-The public Android listing still waits.
+Build **117** is on the iPhone. It is the code of 116 plus the iPhone
+free month and the $9.99 purchase. Patrick built it, submitted it, and
+downloaded it. He updated the copy already on the phone, and he removed
+the app and downloaded it again. He added a new daily item. The item
+was saved. The notice did not appear.
+
+The notice appears only when Apple has given the day that account
+first downloaded the app, that day is more than a month ago, and they
+have not paid. If Apple gives no day, adding and changing stay open
+and the notice stays hidden. This copy came through Expo. Expo does
+not have that day. No change to the app was chosen.
+
+The purchase is created in App Store Connect. Its status is Prepare
+for Submission. It has not been sent for review. The picture under
+Review Information on that purchase was not added. It is a saved copy
+of the iPhone screen while the notice is showing. People who download
+the app never see it. It is separate from the light-theme screenshots.
+It was not saved, because the notice never appeared. Both go on after
+build 100 comes off review, and before build 117 is added for review.
+The store page sentence is written here and has not been typed onto
+the store page yet. The Galaxy free trial is not in that build.
+Release is manual. The public Android listing still waits.
 
 ## Standing rulings
 
@@ -143,7 +154,10 @@ finished task.
   trial waits until the iPhone is in the App Store and entered in the
   Expo competition.
   Whether the Galaxy gets a free trial is still open (Patrick,
-  #137-new). Apple does not run the month. When the month ends and
+  #137-new). Apple does not run the month. If Apple gives no day,
+  adding and changing stay open and the notice stays hidden. A copy
+  that came through Expo does not have that day (#138-new). Do not
+  treat a missing day as a day Apple gave. When the month ends and
   they have not paid, reminders already set keep firing, and adding
   and changing waits for the $9.99. They meet that when they try to
   add or change. The notice tells them to pay here in Memory, and
@@ -166,10 +180,11 @@ is fine. They open it on the Android phone and install from the Play
 Store. Do not build a separate file to email. It is Pending 1. The
 Galaxy keeps the internal test already there.
 
-Patrick is making build 117 and loading it on the iPhone. After build
-100 comes off review, add the light-theme screenshots and the review
-picture on the purchase, then add build 117 for review. The store
-page sentence has not been typed onto the store page yet.
+Build 117 is on the iPhone. The notice did not appear, and no change
+to the app was chosen. After build 100 comes off review, add the
+light-theme screenshots and the saved screen of the notice on the
+purchase, then add build 117 for review. The store page sentence has
+not been typed onto the store page yet.
 
 The guide remains `docs/designed-implementation.md`.
 

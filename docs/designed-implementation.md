@@ -39,8 +39,8 @@ website for the user's guide.
 ## The free month
 
 Decided #136-new. The iPhone part is #137-new. It is in the code.
-Patrick is making build 117, the code of 116 plus this iPhone part,
-and loading it on the iPhone. The Galaxy free trial waits until the iPhone is in the
+Build 117, the code of 116 plus this iPhone part, is on the iPhone
+(#138-new). The Galaxy free trial waits until the iPhone is in the
 App Store and entered in the Expo competition. Whether the Galaxy gets
 a free trial is still open.
 
@@ -82,9 +82,11 @@ for Submission. It has not been sent for review. The way to pay is on
 the notice.
 
 The picture under Review Information on that purchase was not added.
-It is for Apple's review, and it is separate from the light-theme
-screenshots. It goes on after build 100 comes off review, and before
-build 117 is added for review.
+It is a saved copy of the iPhone screen while the notice is showing.
+People who download the app never see it. It is separate from the
+light-theme screenshots. It goes on after build 100 comes off review,
+and before build 117 is added for review. It was not saved, because
+the notice never appeared (#138-new).
 
 The paid state comes back from their Apple account onto a new iPhone.
 Nothing of his has to live on a server.
@@ -92,6 +94,13 @@ Nothing of his has to live on a server.
 On Apple's practice store, a try shows the app after the free month
 is over, because that store always says the app was first downloaded
 on 1 August 2013. The real day comes from the real App Store.
+
+Build 117 on the phone came through Expo (#138-new). That copy did
+not receive a day from Apple. Patrick added a new daily item. The
+item was saved. The notice did not appear. If Apple gives no day,
+adding and changing stay open and the notice stays hidden. No change
+to that was chosen. Do not treat a missing day as Apple having given
+one.
 
 Siri is out of sight. The Shortcuts and Siri phrases are offered no
 more. Keep in the back of the design a later Siri that can go into

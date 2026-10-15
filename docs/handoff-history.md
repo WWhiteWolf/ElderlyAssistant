@@ -17,6 +17,38 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #138-new (2026-10-14): build 117 on the phone; the notice did not appear
+
+**Build 117 is on the iPhone.** Patrick built it, submitted it, and
+downloaded it. He updated the copy already on the phone, and he
+removed the app and downloaded it again. He added a new daily item.
+The item was saved. The notice did not appear.
+
+**Why the notice stayed hidden.** The notice appears only when Apple
+has given the day that account first downloaded the app, that day is
+more than a month ago, and they have not paid. If Apple gives no day,
+adding and changing stay open and the notice stays hidden. That was
+chosen so a missing answer would not lock the app. This copy came
+through Expo. Expo does not have that day. The app had no day to use.
+
+**The picture for Apple.** The picture under Review Information on
+the purchase is a saved copy of the iPhone screen while the notice is
+showing. The notice says the free month is over, and it has Pay
+$9.99, Back up, and Not now. People who download the app never see
+that picture. It was not saved, because the notice never appeared.
+It is still separate from the light-theme screenshots.
+
+**Not chosen.** No change was made to the app. A change that would
+show the notice when Apple has given no day was talked about and not
+chosen. The public-store month was described as coming from a day
+Apple gives. That description assumes the day arrives. It was not
+settled.
+
+**Still waiting.** Build 100 is Waiting for Review and comes off
+review. The light-theme screenshots, the saved screen of the notice,
+and the store page sentence are still not on Apple's site. Build 117
+has not been added for review.
+
 ## #137-new (2026-10-14): iPhone purchase in the code; purchase created on Apple's site
 
 **The purchase is in the code.** On the iPhone the app asks Apple for
