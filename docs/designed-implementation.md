@@ -1,4 +1,4 @@
-# Designed implementation — My Reminders
+# Designed implementation — Daily Reminders
 
 This is the guide for the whole app. A sitting builds from this file. It
 does not ask Patrick a design question. If an answer is not here, the
@@ -49,9 +49,10 @@ that account first downloaded it, and counts one month from that day.
 Apple does not run the month. Deleting the app and installing it again
 does not start another free month.
 
-The App Store page says it before the download. It is a free one month
-trial period. Then it is $9.99 once. The buyer is not surprised with
-that later. Those words are not typed onto the store page yet.
+The App Store page says it before the download, in Promotional Text.
+It is a free one month trial period. Then it is $9.99 once. The buyer
+is not surprised with that later. Those words are on the store page
+(#139-new).
 
 The app knows free from purchased. Purchased means Apple says they
 have paid $9.99 once. Free means they have not paid. The month may
@@ -64,45 +65,34 @@ to pay during the month.
 
 When the month ends and they have not paid, reminders already set keep
 firing. Adding and changing waits until they pay. The list stays on
-the phone. The switch is paying $9.99 once, here in My Reminders, on this
+the phone. The switch is paying $9.99 once, here in Daily Reminders, on this
 phone. They meet it when they try to add or change. The notice says:
 
 Your free one month trial is over. This is when you pay. Pay $9.99 once, here
-in My Reminders, to keep adding and changing. Your lists stay on this phone.
+in Daily Reminders, to keep adding and changing. Your lists stay on this phone.
 Reminders you already set keep going. You can back up what you already
-have. If you install My Reminders again, or put it on another iPhone, you
+have. If you install Daily Reminders again, or put it on another iPhone, you
 can restore those lists after the purchase is on that phone.
 
 Backup stays available from that notice. The Back up button opens
 Backup. Replace and Merge wait until the purchase is on that phone.
 Not now puts the notice away. Done and Snooze still work. Pay buys
 the one-time purchase `com.molliedog.ElderlyAssistant.full` at $9.99.
-That purchase is created in App Store Connect. Its status is Prepare
-for Submission. It has not been sent for review. The way to pay is on
-the notice.
+That purchase is in App Store Connect. Its display name and reference
+name are Daily Reminders. The way to pay is on the notice.
 
-The picture under Review Information on that purchase goes on after
-build 100 comes off review, and before build 120 is added for review.
-People who download the app never see it. It is separate from the
-light-theme screenshots. The picture to use says My Reminders in the
-title and in the notice. Pictures that say A Place To Remember do
-not go on.
+The picture under Review Information on that purchase is the saved
+screen of the notice. People who download the app never see it. It is
+separate from the light-theme screenshots. It says Daily Reminders in
+the title and in the notice. Pictures that say A Place To Remember or
+My Reminders do not go on.
 
-<<<<<<< HEAD
-The picture build showed the notice (#138.3-new). The fake date is
-out of the code. Build 120 is on the iPhone and is the one for the
-store. On that phone copy he can add and change, because it came
-through TestFlight and Apple did not give the download day. That is
-not a fault. The bundle id stays. This is not a new app.
-=======
-The next build is the picture build (#138.3-new). It says My Reminders.
-When Apple gives no day and they have not paid, that build uses
-1 August 2013, so the month is already over and adding or changing
-opens the notice. Patrick makes that iPhone build and takes every
-snapshot from it. The pictures already saved show the old name. The
-real build keeps My Reminders and that date comes out. That is the
-one for the store. The bundle id stays. This is not a new app.
->>>>>>> e686db56d83b8138e8cdd26aeadf7d9a6ee7c2bb
+The picture build showed the notice (#139-new). The fake date is out
+of the code. Build 125 is on the iPhone and is the one for the store.
+On that phone copy he can add and change, because it came through
+TestFlight and Apple did not give the download day. That is not a
+fault. The bundle id stays. This is not a new app. Apple would not
+take My Reminders. The name is Daily Reminders.
 
 The paid state comes back from their Apple account onto a new iPhone.
 Nothing of his has to live on a server.
@@ -111,13 +101,10 @@ On Apple's practice store, a try shows the app after the free month
 is over, because that store always says the app was first downloaded
 on 1 August 2013. The real day comes from the real App Store.
 
-Build 117 on the phone came through Expo (#138-new). That copy did
-not receive a day from Apple. Patrick added a new daily item. The
-item was saved. The notice did not appear. On the copy that goes to
-buyers, if Apple gives no day, adding and changing stay open and the
-notice stays hidden. Do not treat a missing day as Apple having given
-one, except on that past picture build. Do not put the picture build
-on the store.
+On the copy that goes to buyers, if Apple gives no day, adding and
+changing stay open and the notice stays hidden. Do not treat a missing
+day as Apple having given one, except on that past picture build. Do
+not put the picture build on the store.
 
 Siri is out of sight. The Shortcuts and Siri phrases are offered no
 more. Keep in the back of the design a later Siri that can go into

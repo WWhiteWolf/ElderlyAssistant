@@ -114,11 +114,12 @@
 
 # Working notes for this project
 
-- **The name is "My Reminders".** The store name, the purchase name,
-  and the name in the app are those same words. The name under the
-  icon is My Reminders. (#138.3-new) Bare session numbers mean the old shared
-  chain; this project's own chain is written "#1-new, #2-new, …".
-  No old reference is ever edited.
+- **The name is "Daily Reminders".** The store name, the purchase
+  name, and the name in the app are those same words. The name under
+  the icon is Daily Reminders. Apple would not take My Reminders
+  (#139-new). Bare session numbers mean the old shared chain; this
+  project's own chain is written "#1-new, #2-new, …". No old
+  reference is ever edited.
 - **Patrick's EAS build-and-submit steps**, in his own words,
   live at the end of `docs/publishing.md` under "Build steps".
 - **TypeScript checks (npx tsc) are fine here.** Git never is —

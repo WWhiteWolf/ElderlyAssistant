@@ -1,4 +1,4 @@
-# Session hand-off — My Reminders (iPhone)
+# Session hand-off — Daily Reminders (iPhone)
 
 This file is for the next sitting. It says what was done and what
 still needs to be done. It is not the whole history. History lives
@@ -17,10 +17,23 @@ who decides. It is not a claim that the files were refreshed.
 
 ## Where things stand
 
-Build **120** is on the iPhone. It is the build for the store.
+Build **125** is on the iPhone. It is the build for the store. The
+store name, the purchase name, and the name in the app are **Daily
+Reminders**. The id stays `com.molliedog.ElderlyAssistant`. This is
+not a new app and not a new project. Apple would not take My
+Reminders.
+
+Version 1.0 with build 125, and the purchase, are submitted for App
+Store review (#139-new). Release is manual. After Apple approves,
+Patrick releases it himself. Then the Expo App Awards entry can be
+sent. That record is `docs/expo-awards.md`. The form closes October
+31. Android is not that page.
+
 Android number **5** (1.0.0) is the internal test on the Galaxy, and
-it is working. Build 3 is no longer that load. The Play account is
-open. The public Android listing still waits.
+it is working. The Play account is open. The public Android listing
+still waits. The Galaxy free trial waits until the iPhone is in the
+App Store and entered in the Expo competition. Whether the Galaxy
+gets a free trial is still open.
 
 Daily and One Time ask for 1, 5, 10, 15, 30, or 60 minutes, on two
 rows of the same buttons as the other snooze modals. There is no wheel
@@ -29,27 +42,14 @@ the iPhone and on the Galaxy.
 
 The saved-list read warning is on both phones. It stays out of the Guide.
 
-The work to go to the store with the new name and the new pricing is
-done (#139-new). The store name on this same app is **My Reminders**.
-The id stays `com.molliedog.ElderlyAssistant`. This is not a new app
-and not a new project.
-
-Build **120** is on the iPhone. It is the build for the store. The
-picture build already did its job: the notice appeared, and the saved
-screen says My Reminders. The fake date is out of the code. Patrick
-can add and change on that copy. The copy came through TestFlight, so
-Apple did not give the download day, and the pay screen stays hidden.
-That is not a fault.
-
-The purchase is in App Store Connect. Its display name and its
-reference name are **My Reminders**. The id the app asks Apple for
-stays `com.molliedog.ElderlyAssistant.full`. The picture under Review
-Information is the saved screen of the notice. People who download
-the app never see that picture. It says My Reminders in the title and
-in the notice. It is separate from the light-theme pictures of the
-pages. The store page says: It is a free one month trial period. Then
-it is $9.99 once. The Galaxy free trial is not in build 120. Release
-is manual. The public Android listing still waits.
+The purchase id stays `com.molliedog.ElderlyAssistant.full`. Its
+display name and reference name are Daily Reminders. The picture under
+Review Information is the saved screen of the notice with Daily
+Reminders. People who download the app never see that picture. Six
+light-theme page pictures that say Daily Reminders are on the version
+page, in the iPhone with Dynamic Island large-display slot
+(1320 × 2868). Promotional Text says: It is a free one month trial
+period. Then it is $9.99 once. The fake date is out of the code.
 
 ## Standing rulings
 
@@ -127,10 +127,10 @@ finished task.
 - **The Android path is Google Play** (Patrick, 2026-10-01). The
   account was submitted on 2026-10-01. It is open (#128-new). Android
   number **5** (1.0.0) is the internal test on the Galaxy, and it is
-  working (#134-new). The iPhone store build is 120 (#139-new). The
+  working (#134-new). The iPhone store build is 125 (#139-new). The
   public Android listing still waits.
 - **Commit names and the session number are not one series.** Do not
-  try to line them up. The store build is 120.
+  try to line them up. The store build is 125.
 - **Play Console and the phone use two different sign-ins** (Patrick,
   #134-new). Play Console on the Mac is the Comcast account. The
   Galaxy's Play Store is the iCloud account. The internal-test link
@@ -148,27 +148,28 @@ finished task.
 - **The download is free. On the iPhone the app counts one month from
   the day Apple says that account first downloaded it. Then it is
   $9.99 once, inside the app.** The App Store page says it before the
-  download. It is a free one month trial period. Then it is $9.99
-  once. The buyer is not surprised with that later. The Galaxy free
-  trial waits until the iPhone is in the App Store and entered in the
-  Expo competition.
-  Whether the Galaxy gets a free trial is still open (Patrick,
-  #137-new). Apple does not run the month. If Apple gives no day,
-  adding and changing stay open and the notice stays hidden. A copy
-  that came through Expo does not have that day (#138-new). Do not
-  treat a missing day as a day Apple gave on the copy that goes to
-  buyers. The picture build was a one-time copy so the notice could
-  be saved (#138.3-new). That date is out of the code. Build 120 is
-  the real build, and it is on the phone. When the month ends and
-  they have not paid, reminders already set keep firing, and adding
-  and changing waits for the $9.99. They meet that when they try to
-  add or change. The notice tells them to pay here in My Reminders, and
+  download, in Promotional Text: It is a free one month trial period.
+  Then it is $9.99 once. The buyer is not surprised with that later.
+  The Galaxy free trial waits until the iPhone is in the App Store and
+  entered in the Expo competition. Whether the Galaxy gets a free
+  trial is still open (Patrick, #137-new). Apple does not run the
+  month. If Apple gives no day, adding and changing stay open and the
+  notice stays hidden. A copy that came through Expo does not have
+  that day (#138-new). Do not treat a missing day as a day Apple gave
+  on the copy that goes to buyers. The picture build was a one-time
+  copy so the notice could be saved (#138.3-new, again #139-new for
+  Daily Reminders). That date is out of the code. Build 125 is the
+  real build, and it is on the phone. When the month ends and they
+  have not paid, reminders already set keep firing, and adding and
+  changing waits for the $9.99. They meet that when they try to add
+  or change. The notice tells them to pay here in Daily Reminders, and
   that the lists stay on this phone. The buy talks to Apple or Google
   and nowhere else. A person's data stays on the phone.
 - **Do not file a trademark on the name** (Patrick, #123-new). Use it.
   The copyright line is his name and the year. File later only if
   someone else starts using the same name on a similar app, or if he
-  asks.
+  asks. Apple would not take My Reminders (#139-new). The store name
+  is Daily Reminders.
 - **Do not take up Xcode Cloud** (Patrick, #123-new). Stay with the Expo
   build steps.
 - **What testing has covered and will cover lives in `docs/testing.md`**
@@ -176,6 +177,10 @@ finished task.
   thrown away. A run is not kept.
 
 ## What is open in front of it
+
+Apple has the submission. After approval, Patrick releases version 1.0
+by hand. Then the Expo App Awards entry is next. The record is
+`docs/expo-awards.md`. The form closes October 31.
 
 The tester gets the copy already on Play. Send the join link. A text
 is fine. They open it on the Android phone and install from the Play
@@ -187,8 +192,7 @@ The guide remains `docs/designed-implementation.md`.
 App Store release is manual. The journey is `docs/connect-submit.md`.
 What is already in App Store Connect stays there.
 
-The Expo App Awards entry is `docs/expo-awards.md`. It waits on a
-public iPhone page. Android is not that page.
+The public Android listing still waits. The Galaxy free trial waits.
 
 ## Facts worth carrying
 

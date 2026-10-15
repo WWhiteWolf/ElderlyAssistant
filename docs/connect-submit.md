@@ -1,4 +1,4 @@
-# Connect submit — My Reminders
+# Connect submit — Daily Reminders
 
 Written at #82-new, from the first store trip, then filled in with
 the tester road from the same sitting. Apple’s missing-items list
@@ -130,7 +130,7 @@ this page. Add for Review will not trust an unsaved choice.
 
 Fill:
 
-- Name: **My Reminders**
+- Name: **Daily Reminders**
 - Subtitle: **Memory Assist reminders**
 - Primary category: **Productivity**. The word “Primary” on the
   closed menu is a placeholder, not a choice already made. Open it

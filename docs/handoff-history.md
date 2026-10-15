@@ -17,6 +17,34 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #139-new (2026-10-15): Daily Reminders; build 125 submitted for review
+
+**The name.** Apple would not take My Reminders. The store name, the
+purchase name, and the name in the app are Daily Reminders. The id
+stays com.molliedog.ElderlyAssistant. This is the same app. A person
+sees Daily Reminders on Home, under the icon on the next build, in
+the notice, in backup, in the guide, and in feedback. Siri was left
+alone. Old backups still open.
+
+**The picture build, then the real one.** The fake date was put back
+so the notice could be saved with Daily Reminders. Patrick saved that
+screen. The date then came out. Build 125 is on the iPhone. It is the
+build for the store. The Mac checks passed, 458 of them.
+
+**App Store Connect.** Build 100 came off review. The app name became
+Daily Reminders. The purchase display name and reference name became
+Daily Reminders. The notice picture and six light-theme page pictures
+went on. The page pictures are 1320 × 2868, in the Dynamic Island
+large-display slot. Promotional Text says: It is a free one month
+trial period. Then it is $9.99 once. App Review notes say it is a
+personal reminder app, nothing to log in to. Build 125 and the
+purchase went in the same submission. Submit for Review was accepted.
+Release stays manual.
+
+**Next sitting.** When the app is public on the App Store, enter the
+Expo App Awards. The record is docs/expo-awards.md. The form closes
+October 31.
+
 ## #138.3-new (2026-10-15): My Reminders; build 120 is the store build
 
 **The name.** The store name, the purchase name, and the name in the

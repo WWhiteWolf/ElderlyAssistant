@@ -27,20 +27,16 @@ picture. A picture gets in only as a link pasted in the description.
 ## What has to be true first
 
 The entry waits on a public store page. The iPhone is that page.
-Build 100 is Waiting for Review and comes off review. Build 117 is
-the code of 116 plus the free month, and that is the build to
-submit. Release is manual. The entry can be sent after that page
-is public, and before October 31.
+Build 125 and the purchase are submitted for App Store review
+(#139-new). Release is manual. The entry can be sent after that page
+is public, and before October 31. The store name is Daily Reminders.
 
 Android is not that page. The payments profile is not set up, as
 far as Patrick knows. The Android release also waits on 12 testers,
 which he does not have.
 
-Screenshots already in App Store Connect show the dark theme of the
-home page, the calendar, and the daily list. Some items on the daily
-list have no clock. Light-theme screenshots go on the 117
-submission. While build 100 is Waiting for Review, Apple will not
-let screenshots be added or changed.
+Light-theme screenshots that say Daily Reminders are on the
+submission. The notice picture is on the purchase.
 
 ## The drawing
 
@@ -65,7 +61,7 @@ Changed at #136-new:
 
 ## Words for the description
 
-My Reminders is a personal daily reminder app for iPhone and
+Daily Reminders is a personal daily reminder app for iPhone and
 Android, built with Expo. It does not ask for a block of time or a
 teammate. It is for a person who is having more trouble remembering
 as they grow older.

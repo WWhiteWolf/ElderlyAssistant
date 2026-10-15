@@ -1,4 +1,4 @@
-MY REMINDERS — PENDING WORK, plain-language list
+DAILY REMINDERS — PENDING WORK, plain-language list
 Last updated: 2026-10-15
 
 This is the "what's still left" list in everyday words. Nothing here
@@ -24,16 +24,16 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. THE GALAXY FREE TRIAL, AND THE PUBLIC ANDROID LISTING. The Galaxy
+1. THE EXPO APP AWARDS. After Apple approves and you release Daily
+   Reminders by hand, enter the Expo App Awards. The record is
+   docs/expo-awards.md. The form closes October 31. Android is not
+   that page.
+2. THE GALAXY FREE TRIAL, AND THE PUBLIC ANDROID LISTING. The Galaxy
    free trial waits until the iPhone is in the App Store and entered
    in the Expo competition. Whether the Galaxy gets a free trial is
    still open. The Play account is open, and Android number 5 is the
    internal test on your Galaxy. The public Android listing still
    waits.
-2. THE EXPO APP AWARDS. The record is docs/expo-awards.md. The entry
-   waits on a public iPhone page, and the form closes October 31.
-   Android is not that page. The payments profile is not set up, and
-   the Android release waits on 12 testers, which you do not have.
 
 
 PENDING
@@ -53,9 +53,13 @@ A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
 
-213. #139-new — The work to go to the store with the new name and the
-    new pricing is done. The store name is My Reminders. The page
-    says it is a free one month trial period, then $9.99 once.
+214. #139-new — The store name is Daily Reminders. Build 125 and the
+    purchase are submitted for App Store review. Release is manual.
+    Promotional Text says free one month, then $9.99 once. Next is
+    the Expo awards after the app is public.
+
+213. #139-new — Apple would not take My Reminders. The name in the
+    app and on the store became Daily Reminders.
 
 212. #138.3-new — The name is My Reminders. Build 120 is on the
     iPhone and is the build for the store. The pay screen was saved
