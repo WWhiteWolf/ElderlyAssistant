@@ -50,20 +50,20 @@ export function runPurchaseStandingTests(): void {
         );
     });
 
-    test('The picture build uses 1 August 2013 when Apple gives no day', () => {
+    test('The real build stays open when Apple gives no day', () => {
         const now = new Date(2026, 9, 15, 12, 0, 0);
         const end = trialEndsAt(PRACTICE_DOWNLOAD_MS);
         assert(end.getFullYear() === 2013, '1 August 2013 ends in 2013');
         assert(end.getMonth() === 8, 'September is the next month');
         assert(end.getDate() === 1, 'The day stays the 1st');
-        assert(PICTURE_BUILD === true, 'The fake date is in this build');
+        assert(PICTURE_BUILD === false, 'The fake date is out of this build');
         assert(
-            addingAndChangingWaitsNow(true, null, now) === true,
-            'No day on the iPhone opens the notice',
+            addingAndChangingWaitsNow(true, null, now) === false,
+            'No day on the iPhone stays open',
         );
         assert(
-            addingAndChangingWaitsNow(true, { originalPurchaseMs: null, purchased: false }, now) === true,
-            'A saved standing with no day opens the notice',
+            addingAndChangingWaitsNow(true, { originalPurchaseMs: null, purchased: false }, now) === false,
+            'A saved standing with no day stays open',
         );
         assert(
             addingAndChangingWaitsNow(false, null, now) === false,

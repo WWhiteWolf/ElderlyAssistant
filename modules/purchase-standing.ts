@@ -5,11 +5,10 @@
 export const FULL_PRODUCT_ID = 'com.molliedog.ElderlyAssistant.full';
 
 /**
- * On for the picture build. A missing day uses 1 August 2013 so the
- * notice can be saved. Off for the real build. Buyers are not locked
- * when Apple gives no day.
+ * Off for the real build. Buyers are not locked when Apple gives no day.
+ * The picture build had this on, so a missing day used 1 August 2013.
  */
-export const PICTURE_BUILD = true;
+export const PICTURE_BUILD = false;
 
 /** 1 August 2013. Apple's practice store always reports this download day. */
 export const PRACTICE_DOWNLOAD_MS = new Date(2013, 7, 1, 0, 0, 0).getTime();
