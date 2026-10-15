@@ -65,7 +65,7 @@ Changed at #136-new:
 
 ## Words for the description
 
-A Place To Remember is a personal daily reminder app for iPhone and
+My Reminders is a personal daily reminder app for iPhone and
 Android, built with Expo. It does not ask for a block of time or a
 teammate. It is for a person who is having more trouble remembering
 as they grow older.

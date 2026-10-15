@@ -1,4 +1,4 @@
-A PLACE TO REMEMBER (badge: Memory) — PENDING WORK, plain-language list
+MY REMINDERS — PENDING WORK, plain-language list
 Last updated: 2026-10-15
 
 This is the "what's still left" list in everyday words. Nothing here
@@ -24,21 +24,22 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. IOS BUILD 100 is Waiting for Review. The next build is for the
-   picture of the notice. It is in the code and not on the phone yet.
-   You make that iPhone build. When Apple gives no day and you have
-   not paid, that build uses 1 August 2013, so adding or changing
-   opens the notice. Save that screen. People who download the app
-   never see that picture. It is separate from the light-theme
-   screenshots. Take build 100 off review. Then add the light-theme
-   screenshots and that saved screen under Review Information on the
-   purchase. The picture date comes out of the code before the copy
-   that goes to buyers. Then add that buyer build for review. When
-   Apple approves, you release it yourself. Release is manual. The
-   Galaxy free trial is not in that build.
+1. IOS BUILD 100 is Waiting for Review. Take it off review. The store
+   name on this same app becomes My Reminders. This is not a new app.
+   Two builds are still to make. The first says My Reminders and uses
+   1 August 2013 when Apple gives no day, so adding or changing opens
+   the notice. You make that iPhone build and take every new snapshot
+   from it, including the notice. The pictures you already saved show
+   the old name. The second build keeps My Reminders and takes that
+   date out. That is the one for the store. The purchase display name
+   and reference name become My Reminders. Then add the light-theme
+   screenshots and the saved notice under Review Information on the
+   purchase, and add the real build for review. When Apple approves,
+   you release it yourself. Release is manual. The Galaxy free trial
+   is not in that build.
 2. THE PRICE. On the iPhone the download is free. The App Store page
    says it before the download. It is a free one month trial period.
-   Then it is $9.99 once, here in Memory. The buyer is not surprised
+   Then it is $9.99 once, here in My Reminders. The buyer is not surprised
    with that later. Those words have not been typed onto the store
    page yet. The purchase is in the code. Build 117 is on the iPhone.
    The purchase is created in App Store

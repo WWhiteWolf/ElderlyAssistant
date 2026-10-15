@@ -11,7 +11,7 @@ import {
 } from '../modules/apple-purchase';
 import { Cover } from './Cover';
 
-const NOTICE = 'Your free one month trial is over. This is when you pay. Pay $9.99 once, here in Memory, to keep adding and changing. Your lists stay on this phone. Reminders you already set keep going. You can back up what you already have. If you install Memory again, or put it on another iPhone, you can restore those lists after the purchase is on that phone.';
+const NOTICE = 'Your free one month trial is over. This is when you pay. Pay $9.99 once, here in My Reminders, to keep adding and changing. Your lists stay on this phone. Reminders you already set keep going. You can back up what you already have. If you install My Reminders again, or put it on another iPhone, you can restore those lists after the purchase is on that phone.';
 
 /** The notice the buyer sees when adding or changing has to wait. */
 export function PurchaseNotice() {

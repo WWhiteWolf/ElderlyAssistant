@@ -209,7 +209,7 @@ export default function SettingsScreen() {
 
     const sendFeedback = async () => {
         const body =
-            `A Place To Remember Feedback\n\n` +
+            `My Reminders Feedback\n\n` +
             `1. Did the app work correctly?\n${worked || '(not answered)'}\n\n` +
             `2. Do you find anything confusing or hard to use?\n${confusing.trim() || '(none)'}\n\n` +
             `3. Are there any features you would like it to have?\n${wanted.trim() || '(none)'}\n\n` +
@@ -217,7 +217,7 @@ export default function SettingsScreen() {
             `5. Rating: ${rating}%`;
         const url =
             `mailto:${FEEDBACK_MAIL}` +
-            `?subject=${encodeURIComponent('A Place To Remember Feedback')}` +
+            `?subject=${encodeURIComponent('My Reminders Feedback')}` +
             `&body=${encodeURIComponent(body)}`;
         try {
             await Linking.openURL(url);
@@ -379,7 +379,7 @@ export default function SettingsScreen() {
                         </TouchableOpacity>
                     </View>
 
-                    <Text style={styles.versionText}>A Place To Remember v1.0</Text>
+                    <Text style={styles.versionText}>My Reminders v1.0</Text>
 
                 </ScrollView>
             </PageFrame>

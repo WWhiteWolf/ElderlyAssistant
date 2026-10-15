@@ -368,7 +368,7 @@ export const USER_GUIDE_BLOCKS: GuideBlock[] = [
     },
     {
         type: 'paragraph',
-        text: 'After Save on a new reminder, the app asks Back Up Memory? Your new item is saved. Would you like to back up Memory now? Back Up Now uses the same Backup & Restore as Settings. Not Now takes you back to the list. Edit and Done do not ask.',
+        text: 'After Save on a new reminder, the app asks Back Up My Reminders? Your new item is saved. Would you like to back up My Reminders now? Back Up Now uses the same Backup & Restore as Settings. Not Now takes you back to the list. Edit and Done do not ask.',
     },
 
     { type: 'heading', text: 'Done' },
