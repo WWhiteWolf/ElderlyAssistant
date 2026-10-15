@@ -24,19 +24,18 @@ own.
 
 WHAT'S NEXT
 ------------------------------------------------------------------
-1. IOS BUILD 100 is Waiting for Review. Take it off review. The store
-   name on this same app becomes My Reminders. This is not a new app.
-   Two builds are still to make. The first says My Reminders and uses
-   1 August 2013 when Apple gives no day, so adding or changing opens
-   the notice. You make that iPhone build and take every new snapshot
-   from it, including the notice. The pictures you already saved show
-   the old name. The second build keeps My Reminders and takes that
-   date out. That is the one for the store. The purchase display name
-   and reference name become My Reminders. Then add the light-theme
-   screenshots and the saved notice under Review Information on the
-   purchase, and add the real build for review. When Apple approves,
-   you release it yourself. Release is manual. The Galaxy free trial
-   is not in that build.
+1. IOS BUILD 100 is Waiting for Review. The picture build is on the
+   iPhone. It says My Reminders, and the notice appeared. The fake
+   date is out of the code. You make the next iPhone build from this
+   code. That is the real one. Expo numbers it. It is not on the phone
+   yet. Do not send the picture build to review. Take build 100 off
+   review. The store name on this same app becomes My Reminders. This
+   is not a new app. The purchase display name and reference name
+   become My Reminders. Then add the light-theme screenshots and the
+   saved notice under Review Information on the purchase, and add the
+   real build for review. When Apple approves, you release it
+   yourself. Release is manual. The Galaxy free trial is not in that
+   build.
 2. THE PRICE. On the iPhone the download is free. The App Store page
    says it before the download. It is a free one month trial period.
    Then it is $9.99 once, here in My Reminders. The buyer is not surprised

@@ -5,11 +5,10 @@
 export const FULL_PRODUCT_ID = 'com.molliedog.ElderlyAssistant.full';
 
 /**
- * On for this build, so the notice can be saved.
- * When Apple gives no download day, the check uses 1 August 2013.
- * Turn this off before the copy that goes to buyers.
+ * Off for the real build. Buyers are not locked when Apple gives no day.
+ * The picture build had this on, so a missing day used 1 August 2013.
  */
-export const PICTURE_BUILD = true;
+export const PICTURE_BUILD = false;
 
 /** 1 August 2013. Apple's practice store always reports this download day. */
 export const PRACTICE_DOWNLOAD_MS = new Date(2013, 7, 1, 0, 0, 0).getTime();
@@ -31,8 +30,8 @@ export function trialEndsAt(originalPurchaseMs: number): Date {
 /**
  * Adding and changing wait only on the iPhone, only after the trial
  * is over, and only when the account has not paid.
- * On this picture build, no download day from Apple uses 1 August 2013.
  * With PICTURE_BUILD off, no answer from Apple is not a reason to lock the app.
+ * With it on, a missing day uses 1 August 2013 so the notice can be saved.
  */
 export function addingAndChangingWaitsNow(
     onIphone: boolean,
