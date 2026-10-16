@@ -7,6 +7,7 @@ import {
     bannerActionOf,
     bannerActionsOf,
     bannerButtonsCodes,
+    bannerDoneApplies,
     pushBackActionsOf,
     pushBackChoicesOf,
     pushBackStampOf,
@@ -137,5 +138,14 @@ export function runBannerActionTests(): void {
                 `${categoryCode} reads one set of titles and calculations`,
             );
         }
+    });
+
+    test('A banner Done from today still marks today', () => {
+        assert(bannerDoneApplies(NOW, NOW), 'today’s banner belongs to today');
+    });
+
+    test('A banner Done from an earlier day is thrown away', () => {
+        const yesterday = new Date(2026, 0, 14, 10, 20, 0, 0).getTime();
+        assert(!bannerDoneApplies(yesterday, NOW), 'yesterday’s banner does not mark today');
     });
 }

@@ -634,7 +634,10 @@ A response is looked up in the category carried by that notification.
 Before an effect changes anything, the housing loads the item by id
 and confirms that its current row can carry that category. An old or
 impossible action changes nothing. Done, Skip, push-back, and the log
-go through the same change door the pages use. OK acknowledges. Then
+go through the same change door the pages use. A banner Done from an
+earlier day is the old reminder. It is thrown away and does not mark
+the current occurrence. A banner Done from today marks today. The
+list’s Done is the current occurrence. OK acknowledges. Then
 keeps the shifted last day. Next Day moves that occurrence to tomorrow
 at the item's saved clock time. The list popup takes its push-back
 choices and words from this same catalog.

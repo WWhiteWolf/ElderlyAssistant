@@ -8,7 +8,7 @@ import {
     runWeeklyReset,
 } from '../scheduler/scheduler';
 import { lastOccurrence } from '../scheduler/weeklyreset';
-import { pushBackChoicesOf } from '../scheduler/banneractions';
+import { bannerDoneApplies, pushBackChoicesOf } from '../scheduler/banneractions';
 import { warnIfFull } from '../scheduler/warn';
 import {
     quarterlyStepCodeOf,
@@ -223,7 +223,9 @@ export async function markReminderDone(
     id: string,
     historyKey: string | null,
     clockTime: string,
+    firedAt: number = Date.now(),
 ): Promise<void> {
+    if (!bannerDoneApplies(firedAt, Date.now())) return;
     const items = await loadReminderItems();
     const item = items.find((one) => one.id === id);
     if (!item) return;

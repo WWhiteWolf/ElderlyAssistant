@@ -355,7 +355,7 @@ function RootHousing() {
           minute: '2-digit',
           hour12: false,
         });
-        await markReminderDone(itemId, historyKeyFor(item.kind), clockTime);
+        await markReminderDone(itemId, historyKeyFor(item.kind), clockTime, fired.getTime());
         return;
       }
 

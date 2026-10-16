@@ -1,5 +1,5 @@
 DAILY REMINDERS — PENDING WORK, plain-language list
-Last updated: 2026-10-15
+Last updated: 2026-10-16
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. You are the only reader, so this list says you.
@@ -44,6 +44,11 @@ Things waiting on something — mostly on a build.
    A text is fine. They open it on the Android phone and install
    from the Play Store. Do not build a separate file to email.
    (#135-new)
+2. A weekly item is set aside (#140-new). Yesterday it was on Daily.
+   You snoozed it one day. It left Daily, and it was on Weekly with
+   the snooze note. Today it was not on Daily. The hanging notice
+   named it from yesterday. A new weekly item snoozed today stayed
+   on Daily. It was not a mistaken Done tap. Not solved.
 
 
 WHAT IS DONE, NEWEST FIRST

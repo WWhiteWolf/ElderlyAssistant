@@ -194,6 +194,8 @@ What is already in App Store Connect stays there.
 
 The public Android listing still waits. The Galaxy free trial waits.
 
+A weekly item is set aside (#140-new). Yesterday it was on Daily, snoozed one day, and it left the Daily list. It was on Weekly with the snooze note. Today it was not on the Daily list, and the hanging notice named it from yesterday. A new weekly item snoozed today stayed on Daily. It was not a mistaken Done tap. Not solved.
+
 ## Facts worth carrying
 
 **The hour fix leaves a tail.** Any time set by spinning through noon or

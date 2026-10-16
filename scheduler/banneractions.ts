@@ -265,3 +265,18 @@ export function pushBackChoicesOf(
         stampAt: (now) => pushBackStampOf(action.pushBackCalculationCode, now, item),
     }));
 }
+
+/**
+ * Whether a banner Done still belongs to the current occurrence.
+ *
+ * The banner's own day is the occurrence it speaks for. A Done from an
+ * earlier day is the old reminder: it is thrown away, and today's reminder
+ * is left alone. A banner from today still marks today.
+ */
+export function bannerDoneApplies(firedAt: number, now: number): boolean {
+    const fired = new Date(firedAt);
+    const current = new Date(now);
+    return fired.getFullYear() === current.getFullYear()
+        && fired.getMonth() === current.getMonth()
+        && fired.getDate() === current.getDate();
+}
