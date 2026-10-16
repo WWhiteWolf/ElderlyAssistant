@@ -57,8 +57,6 @@ period. Then it is $9.99 once. The fake date is out of the code.
 These are common work that still governs. They are not the design of a
 finished task.
 
-- **Restore with Merge is done.** Do not treat Merge as dropped. The
-  designed implementation holds how Replace and Merge work.
 - **These Settings go in the backup** (Patrick, #116-new): the name,
   the app theme, the popup colors, Letters and Page for Light and for Dark, and the morning,
   midday, and evening reminder times. Export saves them. Replace
@@ -69,11 +67,6 @@ finished task.
   and saves it. Replace writes it back when the file has it. Merge
   leaves the arrangement on the phone. A backup made before this
   does not contain it, and it still loads.
-- **Timer Alerts, Vault, Shopping List, and Memory Test have left
-  Memory.** Copies remain in `Projects/stray apps`. Do not treat them
-  as Memory engine work. The shopping list will have a backup of its
-  own when it exists again. How those four become apps is a later
-  decision; do not raise it.
 - **The run record on Scheduled Reminders, Check My Reminders, and
   the background task that tops the queue are nice-to-have.** He is
   not doing them now. Do not raise them in reports.
@@ -117,12 +110,6 @@ finished task.
   library to make it work early.
 - **There is no password to open the app.** The phone being open is
   enough. Do not add another.
-- **There is no Reset All Data.** Do not add it.
-- **The user's guide does not go on a website.** The app is
-  self-contained. A person's data stays on the phone. The app does not
-  reach out to read or write from the outside world, except the buy,
-  which talks to Apple or Google and nowhere else. What is already
-  in App Store Connect stays there.
 - **The Android name is `com.molliedog.ElderlyAssistant`.** It is the
   same id as the iPhone (Patrick, #121-new).
 - **The Android path is Google Play** (Patrick, 2026-10-01). The
@@ -146,26 +133,6 @@ finished task.
 - **He makes the iPhone builds.** Android builds are started from the
   sitting. He does not start them (Patrick, #130-new).
 - **Do not raise the closed-test count** (Patrick, #122-new).
-- **The download is free. On the iPhone the app counts one month from
-  the day Apple says that account first downloaded it. Then it is
-  $9.99 once, inside the app.** The App Store page says it before the
-  download, in Promotional Text: It is a free one month trial period.
-  Then it is $9.99 once. The buyer is not surprised with that later.
-  The Galaxy free trial waits until the iPhone is in the App Store and
-  entered in the Expo competition. Whether the Galaxy gets a free
-  trial is still open (Patrick, #137-new). Apple does not run the
-  month. If Apple gives no day, adding and changing stay open and the
-  notice stays hidden. A copy that came through Expo does not have
-  that day (#138-new). Do not treat a missing day as a day Apple gave
-  on the copy that goes to buyers. The picture build was a one-time
-  copy so the notice could be saved (#138.3-new, again #139-new for
-  Daily Reminders). That date is out of the code. Build 125 is the
-  real build, and it is on the phone. When the month ends and they
-  have not paid, reminders already set keep firing, and adding and
-  changing waits for the $9.99. They meet that when they try to add
-  or change. The notice tells them to pay here in Daily Reminders, and
-  that the lists stay on this phone. The buy talks to Apple or Google
-  and nowhere else. A person's data stays on the phone.
 - **Do not file a trademark on the name** (Patrick, #123-new). Use it.
   The copyright line is his name and the year. File later only if
   someone else starts using the same name on a similar app, or if he
@@ -183,9 +150,6 @@ Apple has the submission. After approval, Patrick releases version 1.0
 by hand. Then he pastes the Expo App Awards entry from
 `docs/expo-awards.md` (ready at #141-new). The form closes October 31.
 He fills developer name and the store link from the public listing.
-
-`docs/roadmap.md` was brought current for publishing at #141-new
-(quiet file; drop this note next sitting).
 
 The tester gets the copy already on Play. Send the join link. A text
 is fine. They open it on the Android phone and install from the Play

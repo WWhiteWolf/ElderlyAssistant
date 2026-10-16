@@ -59,6 +59,10 @@ A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
 
+216. #142-new — reminder-shape is the live engine again. If no
+    time is entered on an Appointment or a Birthday, 12:00 pm is
+    the default.
+
 215. #141-new — Expo App Awards description settled, and a
     ready-to-paste block is in docs/expo-awards.md. You fill the
     live form after the App Store page is public. Form closes

@@ -483,7 +483,7 @@ Week are Monthly only. Its pushed-back source is yearlydelay.
 **appointments** — page Appointments. No repeat. Date required. The form
 does not offer to take the date off. Things with no date belong on
 Bucket List. Time is optional. After a time is set, there is a way back
-to none. Done is endItem. It cannot be pushed back. Banner set
+to none. If no time is entered, 12:00 pm is the default. Done is endItem. It cannot be pushed back. Banner set
 appointmentsok: OK only, which closes without opening the app. The form
 can have any and all Reminders before chips on at once. Save does not
 ask again when none of them is on. They remind at the set time, like
@@ -496,7 +496,7 @@ day-before chips stay.
 **birthdays** — page Birthdays. Own kind. A copy of Appointments on the
 screen, and a yearly reminder on the one list. Date required. The date
 line is Birthdate. Time is optional. After a time is set, there is a
-way back to none. Done is advanceDate. It cannot be pushed back. Banner
+way back to none. If no time is entered, 12:00 pm is the default. Done is advanceDate. It cannot be pushed back. Banner
 set appointmentsok. Same Reminders before chips as Appointments. The
 form can have any and all on at once. The phone holds only the soonest
 still ahead. Save does not ask again when none of them is on. A missing

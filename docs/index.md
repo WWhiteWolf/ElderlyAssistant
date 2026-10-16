@@ -42,9 +42,7 @@ just because it is listed.
 ## Tracing — in `docs`
 
 - **`handoff-history.md`** — the archive of the handoff. Newest sittings at the top. Headings are its index. Never read whole.
-- **`reminder-rebuild.md`** — #15-new through #18-new. Not the live design. One live part: "What is already right."
 - **`outside-review.md`** — Grok's #17-new reading of the reminder code, marked later true or not.
-- **`ElderlyAssistant-notification-findings.md`** — a read-only review of the notification faults, 19 August 2026.
 - **`grok-review-2026-09-05.md`** — Grok 4.6 High read-only review of the live app, September 2026.
 
 ## Quiet — in `docs`
@@ -60,7 +58,6 @@ just because it is listed.
 
 - **`easiest-and-best.md`** — #95-new sitting brief for the #99-new look. Retired at #101-new. Not needed.
 - **`pending.rtf`** — old reading copy. Not kept current. Do not edit.
-- **`make-pending-rtf.py`** — made that rtf. Retired. Do not run.
 
 ## Reference — in `docs-ref`
 
@@ -96,3 +93,6 @@ History, not the road. Record of what was built and why.
 ## Not here any more
 
 - **`reminder-shape.drawio`** — at `Projects/Reminder Engine/docs-ref/reminder-shape.drawio`.
+- **`reminder-rebuild.md`** — deleted at #142-new. It was the account of #15-new through #18-new.
+- **`ElderlyAssistant-notification-findings.md`** — deleted at #142-new. It was the 19 August 2026 review of the old notification faults.
+- **`make-pending-rtf.py`** — deleted at #142-new. It made `pending.rtf`.

@@ -17,6 +17,41 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #142-new (2026-10-16): reminder-shape brought current
+
+**The engine file.** `docs/reminder-shape.md` was still the August
+design of five screens. It is now the live machinery. One saved list,
+one translator, and one row per kind. The still-wanted block, depth
+of one, the morning roll, and what Done does to the phone are written
+there from the code. My Day, Pets, My Week, Look Ahead, To-Do, the
+Memory Test, and the Timer are not in it. Siri is not a way back into
+the loop.
+
+**12:00 pm.** If no time is entered, 12:00 pm is the default. That
+sentence is on Appointments and on Birthdays in
+`docs/designed-implementation.md`, and in the engine file. Daily and
+One Time with no time are not armed.
+
+**Left as it was.** The drawing in `Projects/Reminder Engine` was not
+changed. It was last touched at #136-new.
+
+**Docs.** master-handoff, handoff, pending, and this history were
+brought current. The #141 note to drop the roadmap line from the
+handoff was dropped.
+
+**Handoff.** Five standing rulings came out. Merge, Reset All Data,
+the guide staying off a website, and the free month already live in
+the designed implementation. Timer Alerts, Vault, Shopping List, and
+Memory Test having left already lives in pending.
+
+**Deleted.** Patrick deleted three files. `docs/reminder-rebuild.md`
+was the account of #15-new through #18-new.
+`docs/ElderlyAssistant-notification-findings.md` was the 19 August
+2026 review of the old notification faults.
+`docs-ref/make-pending-rtf.py` made the old rtf copy and was already
+retired. Nothing current lived only in them. The index and this
+project's `CLAUDE.md` no longer name them.
+
 ## #141-new (2026-10-16): Expo App Awards form ready to paste
 
 **The description.** The awards words in docs/expo-awards.md were
