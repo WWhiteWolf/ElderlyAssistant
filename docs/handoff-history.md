@@ -17,6 +17,24 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #141-new (2026-10-16): Expo App Awards form ready to paste
+
+**The description.** The awards words in docs/expo-awards.md were
+reviewed. The audience line now names a person having more trouble
+remembering as they grow older, and anyone too busy to keep ordinary
+daily life in their head. The opening names iPhone only, not Android.
+A birthday keeps the birth date, and comes back the next year.
+
+**Ready to paste.** A block at the end of that file holds the form
+answers: Daily Reminders, Patrick Murphy, jojoMurphy@tuta.com, Most
+Innovative, and the description above. Developer name and the store
+link wait on the public App Store listing. Patrick fills the live
+form at expo.dev/awards/2026 after he releases. The form closes
+October 31. Android is not that page.
+
+**Docs.** master-handoff, handoff, pending, and roadmap were brought
+current for this sitting.
+
 ## #139-new (2026-10-15): Daily Reminders; build 125 submitted for review
 
 **The name.** Apple would not take My Reminders. The store name, the

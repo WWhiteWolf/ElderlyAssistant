@@ -25,9 +25,10 @@ Reminders.
 
 Version 1.0 with build 125, and the purchase, are submitted for App
 Store review (#139-new). Release is manual. After Apple approves,
-Patrick releases it himself. Then the Expo App Awards entry can be
-sent. That record is `docs/expo-awards.md`. The form closes October
-31. Android is not that page.
+Patrick releases it himself. Then he fills the Expo App Awards form
+from the ready-to-paste block in `docs/expo-awards.md` (#141-new).
+The form closes October 31. Android is not that page. Developer name
+and store link wait on the public listing.
 
 Android number **5** (1.0.0) is the internal test on the Galaxy, and
 it is working. The Play account is open. The public Android listing
@@ -179,8 +180,12 @@ finished task.
 ## What is open in front of it
 
 Apple has the submission. After approval, Patrick releases version 1.0
-by hand. Then the Expo App Awards entry is next. The record is
-`docs/expo-awards.md`. The form closes October 31.
+by hand. Then he pastes the Expo App Awards entry from
+`docs/expo-awards.md` (ready at #141-new). The form closes October 31.
+He fills developer name and the store link from the public listing.
+
+`docs/roadmap.md` was brought current for publishing at #141-new
+(quiet file; drop this note next sitting).
 
 The tester gets the copy already on Play. Send the join link. A text
 is fine. They open it on the Android phone and install from the Play

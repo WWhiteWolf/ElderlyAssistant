@@ -61,10 +61,11 @@ Changed at #136-new:
 
 ## Words for the description
 
-Daily Reminders is a personal daily reminder app for iPhone and
-Android, built with Expo. It does not ask for a block of time or a
+Daily Reminders is a personal daily reminder app for iPhone,
+built with Expo. It does not ask for a block of time or a
 teammate. It is for a person who is having more trouble remembering
-as they grow older.
+as they grow older, and for anyone too busy to keep ordinary
+daily life in their head.
 
 The heart of it is the engine. Every reminder is one shape. The
 screens write an item, when it comes due, and how far ahead to
@@ -72,7 +73,7 @@ speak. The kind — daily, one time, weekly, monthly, quarterly,
 yearly, appointment, or birthday — decides what that reminder is
 allowed to do. An appointment cannot be snoozed. A daily reminder
 can be marked done and comes back the next day. A birthday keeps
-the birth date and advances the year.
+the birth date, and comes back the next year.
 
 That saved reminder meets one question: is this still wanted? If it
 is not, nothing is armed. If it is, the engine decides how far ahead
@@ -89,3 +90,20 @@ the list so the person can check it off and know they have done it.
 Bucket List is not a reminder page. It has no date, no time, and no
 banner. It is a list to check off when something is done, and it
 stays until then.
+
+## Ready to paste
+
+For the form at expo.dev/awards/2026, after the App Store page is
+public. Patrick fills the live form. Copy from here.
+
+- **App name:** Daily Reminders
+- **Your name:** Patrick Murphy
+- **Developer name:** *(copy from the public App Store listing when
+  it is up — not known until then)*
+- **Email:** jojoMurphy@tuta.com
+- **Store link:** *(paste the public App Store URL after you
+  release)*
+- **Award:** Most Innovative
+- **Description:** the Words for the description section above,
+  from “Daily Reminders is a personal…” through the Bucket List
+  paragraph.

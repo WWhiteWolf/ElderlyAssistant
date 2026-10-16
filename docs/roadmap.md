@@ -10,12 +10,10 @@ plain-English build description of the whole app (its own milestone track below)
 Until the Spec is written, this roadmap keeps the tools appendix at the end; the
 appendix moves into the Spec when it exists.
 
-> **On names.** The rename is DONE (#65): the app is **"A Place To Remember"** on
-> the phone's Home screen, on the Settings version line, and in the App Store
-> Connect listing. The older working names still live inside the project — the
-> folder `elderlyassistant`, `app.json`'s "Remember", the bundle identifier
-> `com.molliedog.ElderlyAssistant` — harmless internal plumbing, left alone on
-> purpose.
+> **On names.** The store name, the purchase name, and the name in the app are
+> **Daily Reminders** (#139-new). Apple would not take My Reminders. The folder
+> `elderlyassistant` and the bundle identifier `com.molliedog.ElderlyAssistant`
+> stay as internal plumbing.
 
 ---
 
@@ -37,17 +35,17 @@ every addition keeps to the same rule: simple, calm, no pressure.
 
 ## Where it stands today
 
-The app is **stable, complete in its daily role, and in daily use on the phone**,
-delivered through Apple TestFlight (App Store ahead). It is a single-person iOS
-app built with React Native and Expo, with its working data stored privately on
-the device. (The one thing that can leave the device is a **backup file** you
-export — `Remember-Backup-<date>.json` — and you choose where it goes, which can
-be a cloud location like iCloud Drive.)
+The store name is **Daily Reminders**. Build **125** (version 1.0) and the
+purchase are submitted for App Store review (#139-new). Release is manual.
+After the App Store page is public, the Expo App Awards entry is next; the
+form answers are ready to paste in `docs/expo-awards.md` (#141-new), and the
+form closes October 31. Android number **5** is the internal test on the
+Galaxy; the public Android listing still waits.
 
-Everything below is live and **phone-verified through session #67** — the most
-recent build carried the Vault's user-defined categories, and Patrick confirmed
-the whole package working on the phone. What remains open is small: a handful of
-minor quirks tracked in `pending.txt`, and the milestone tracks below.
+It is a single-person app built with React Native and Expo. A person's data
+stays on the phone. The buy talks to Apple or Google and nowhere else. A
+backup file the person exports can leave the device if they choose where it
+goes. Live detail stays in `handoff.md` and `pending.txt`.
 
 ---
 
@@ -202,19 +200,18 @@ How the app reaches beyond the phone it lives on. The near-term path is real and
 underway; the rest are **ideas, not commitments** — Patrick is working through
 publishing one obstacle at a time, and nothing here is a promise or a deadline.
 
-- **The path it's on now: EAS Build → Apple TestFlight** (in daily use today).
-  The next milestone on this path is the **Apple App Store release**.
-- **The price** (Patrick, #136-new). The download is free. The app counts
-  one month from the day it is first opened. Then it is $9.99 once, inside
-  the app, on the iPhone and on Android. The stores do not run that month.
-  When the month ends and they have not paid, reminders already set keep
-  firing, and adding and changing waits for the $9.99. Build 117 is the
-  code of 116 plus this. App Store build 100 comes off review so 117 can
-  be submitted. Release stays manual.
-- **Finish the store listing** — the name is already "A Place To Remember" in
-  App Store Connect (#65). Still open: a home for the **"Memory Assist"**
-  tagline (the subtitle field sits empty), the description, screenshots, and
-  Apple's review questions.
+- **The path it's on now:** build 125 and the purchase are in App Store
+  review. Release is manual. After the page is public, enter the Expo App
+  Awards from `docs/expo-awards.md` before October 31 (#141-new).
+- **The price** (Patrick, #137-new / #139-new). The download is free. On the
+  iPhone the app counts one month from the day Apple says that account first
+  downloaded it. Then it is $9.99 once, inside the app. Promotional Text
+  says that before the download. The Galaxy free trial waits until the
+  iPhone is in the App Store and entered in the Expo competition; whether
+  the Galaxy gets a free trial is still open.
+- **Store listing** — the name is Daily Reminders. Screenshots and
+  Promotional Text are on the version page. What is already in App Store
+  Connect stays there.
 - **Store art** — the Android icon set and the splash (startup) image still
   carry old placeholder art; derive them from the approved happy-face design.
 - **Hard-won submission lessons, kept** — an expired developer agreement and the

@@ -25,9 +25,10 @@ own.
 WHAT'S NEXT
 ------------------------------------------------------------------
 1. THE EXPO APP AWARDS. After Apple approves and you release Daily
-   Reminders by hand, enter the Expo App Awards. The record is
-   docs/expo-awards.md. The form closes October 31. Android is not
-   that page.
+   Reminders by hand, paste the entry from the ready-to-paste block
+   in docs/expo-awards.md. Copy developer name and the store link
+   from the public listing. The form closes October 31. Android is
+   not that page.
 2. THE GALAXY FREE TRIAL, AND THE PUBLIC ANDROID LISTING. The Galaxy
    free trial waits until the iPhone is in the App Store and entered
    in the Expo competition. Whether the Galaxy gets a free trial is
@@ -57,6 +58,11 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+215. #141-new — Expo App Awards description settled, and a
+    ready-to-paste block is in docs/expo-awards.md. You fill the
+    live form after the App Store page is public. Form closes
+    October 31.
 
 214. #139-new — The store name is Daily Reminders. Build 125 and the
     purchase are submitted for App Store review. Release is manual.
