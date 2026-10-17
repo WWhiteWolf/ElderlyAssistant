@@ -1,5 +1,5 @@
 DAILY REMINDERS — PENDING WORK, plain-language list
-Last updated: 2026-10-16
+Last updated: 2026-10-17
 
 This is the "what's still left" list in everyday words. Nothing here
 is urgent. You are the only reader, so this list says you.
@@ -58,6 +58,11 @@ Newest at the top. Number 1 is the oldest line, at the bottom.
 A new sitting gets the next number on top; nothing else is
 renumbered. One line each. The full story is in
 docs/handoff-history.md.
+
+217. #142-new — You accepted the updated Paid Applications
+    Schedule. You submitted the Small Business Program. Apple has
+    not approved it yet. The lower rate starts after they do. The
+    price stays $9.99.
 
 216. #142-new — reminder-shape is the live engine again. If no
     time is entered on an Appointment or a Birthday, 12:00 pm is

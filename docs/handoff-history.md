@@ -17,6 +17,37 @@ edited. The chain proper begins at #1-new; the two transition
 sessions stand at the bottom of the session list, above the
 Appendix.
 
+## #142-new (2026-10-17): Small Business Program submitted
+
+**The guidelines email.** Apple's note about the App Review Guidelines
+was a broadcast, not a rejection of Daily Reminders. He does not have
+to make the optional creative assets. The price stays in Promotional
+Text.
+
+**The paid schedule.** He accepted the updated Paid Applications
+Schedule on 2026-10-17. The warning in App Store Connect is gone.
+Banking and tax had been active since October 2. The October 15
+submission of build 125 still went in. Re-entering bank or tax can
+force a new agreement. Apple's confirmation email also names in-app
+purchases. The purchase already exists. Do not make a second one.
+
+**The program.** He submitted the App Store Small Business Program
+the same day. Apple reviews it and emails when it is approved. The
+lower rate is 15 percent instead of 30 percent. It begins fifteen
+days after the end of the Apple fiscal month in which they approve
+it. The buyer still pays $9.99.
+
+**One account.** The free agreement and the paid agreement are two
+agreements on the one developer account. A different app on that
+account is not a second membership. He listed no associated account.
+The email on the form is the Apple Account he signs in with. The
+Team ID is ten characters, with letters, on the developer membership
+page. The number in the upper right of App Store Connect is not the
+Team ID.
+
+**Docs.** master-handoff, handoff, and pending were brought current
+for this close.
+
 ## #142-new (2026-10-16): reminder-shape brought current
 
 **The engine file.** `docs/reminder-shape.md` was still the August

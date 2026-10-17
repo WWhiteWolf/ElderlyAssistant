@@ -52,6 +52,10 @@ page, in the iPhone with Dynamic Island large-display slot
 (1320 × 2868). Promotional Text says: It is a free one month trial
 period. Then it is $9.99 once. The fake date is out of the code.
 
+The Paid Applications Schedule was accepted on 2026-10-17. The Small
+Business Program enrollment was submitted the same day and is waiting
+on Apple. The lower rate has not started. The price stays $9.99.
+
 ## Standing rulings
 
 These are common work that still governs. They are not the design of a
@@ -143,6 +147,10 @@ finished task.
 - **What testing has covered and will cover lives in `docs/testing.md`**
   (Patrick, #52-new; written #124-new). A during-build sitting is
   thrown away. A run is not kept.
+- **Do not re-enter banking or tax, and do not make a second in-app
+  purchase.** Apple's confirmation email lists them. They were already
+  done. There is one developer account. The free agreement and the
+  paid agreement are that same account.
 
 ## What is open in front of it
 
@@ -162,6 +170,9 @@ App Store release is manual. The journey is `docs/connect-submit.md`.
 What is already in App Store Connect stays there.
 
 The public Android listing still waits. The Galaxy free trial waits.
+
+The Small Business Program is submitted. Wait for Apple's email. Do
+not send it again.
 
 A weekly item is set aside (#140-new). Yesterday it was on Daily, snoozed one day, and it left the Daily list. It was on Weekly with the snooze note. Today it was not on the Daily list, and the hanging notice named it from yesterday. A new weekly item snoozed today stayed on Daily. It was not a mistaken Done tap. Not solved.
 
